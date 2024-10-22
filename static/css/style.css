@@ -1,0 +1,81 @@
+.text-turquoise {
+    color: rgb(0, 164, 176);
+}
+.text-red {
+    color: rgb(252, 102, 75);
+}
+.bg-turquoise {
+    background-color: rgb(0, 164, 176);
+}
+.bg-red {
+    background-color: rgb(252, 102, 75);
+}
+.border-turquoise {
+    border-color: rgb(0, 164, 176);
+}
+.border-red {
+    border-color: rgb(252, 102, 75);
+}
+
+
+hr {
+    margin: 0.5rem auto !important;
+    border: 1;
+    border-color: rgb(0, 164, 176);
+}
+@media (prefers-color-scheme: dark) {
+    hr {
+        border-color: rgb(252, 102, 75);
+    }
+}
+
+
+/* FORMULAIRE */
+input, textarea {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 2px;
+    border-color: rgb(0, 164, 176);
+}
+
+input:focus, textarea:focus {
+    outline: 2px dashed rgb(8, 51, 68);
+    outline-offset: 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+    input, textarea {
+        background-color: rgba(0, 0, 0, 0);
+        border-width: 2px;
+        border-color: rgb(252, 102, 75);
+    }
+
+    input:focus, textarea:focus {
+        outline: 2px dashed rgb(0, 164, 176);
+        outline-offset: 1px;
+    }
+}
+/* FIN FORMULAIRE */
+
+
+/* INPUT SUBMIT */
+input[type=submit] {
+    margin-right: 8px;
+    border: none;
+    background: rgb(252, 102, 75);
+}
+
+input[type=submit]:hover {
+    background: rgb(255, 122, 95);
+}
+
+@media (prefers-color-scheme: dark) {
+    input[type=submit] {
+        color: #000;
+        background: rgb(252, 102, 75);
+    }
+
+    input[type=submit]:hover {
+        background: rgb(232, 82, 55);
+    }
+}
+/* FIN INPUT SUBMIT */

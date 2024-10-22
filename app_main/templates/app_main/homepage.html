@@ -1,1 +1,12 @@
-coucou
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+test
+<form method="post"  enctype="multipart/form-data" action="generation_CR/" name="form">
+    {% csrf_token %}
+    coucou
+</form>
+
+{% endblock content %}

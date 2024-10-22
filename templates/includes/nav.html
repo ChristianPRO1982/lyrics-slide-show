@@ -1,0 +1,30 @@
+{% comment %} https://symbl.cc/fr/ {% endcomment %}
+
+<a class="mx-2 hidden md:block" href="{% url "homepage" %}">🏠 Accueil</a>
+{% if user.is_authenticated %}
+        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 Liste des champs</a>
+        <a class="mx-2 hidden md:block" href="{% url "animations" %}">📢 Liste des animations</a>
+        <div class="mx-2 hidden md:block">
+                <form method="POST" action="/admin/logout/?next=/">
+                        {% csrf_token %}
+                        <button type="submit">⇏ LOGOUT</button>
+                </form>
+        </div>
+{% else %}
+        <a class="mx-2 hidden md:block" href="/admin/login/?next=/">⇒ LOGIN</a>
+{% endif %}
+                
+        {% comment %} SMARTPHONE {% endcomment %}
+        <a class="mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a>
+{% if user.is_authenticated %}
+        <a class="mx-2 block md:hidden" href="{% url "songs" %}">💬</a>
+        <a class="mx-2 block md:hidden" href="{% url "animations" %}">📢</a>
+        <div class="mx-2 block md:hidden">
+                <form method="POST" action="/admin/logout/?next=/">
+                        {% csrf_token %}
+                        <button type="submit">⇏</button>
+                </form>
+        </div>
+{% else %}
+        <a class="mx-2 block md:hidden" href="/admin/login/?next=/">⇒</a>
+{% endif %}
