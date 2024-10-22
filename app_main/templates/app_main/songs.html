@@ -24,11 +24,11 @@
         </tr>
         {% endfor %}
         <tr>
-            <form method="post" action="{% url 'songs' %}">
+            <form method="post">
                 {% csrf_token %}
-                <td><input type="text" name="title" placeholder="New song title" maxlength="255"></td>
-                <td><input type="text" name="description" placeholder="Description"></td>
-                <td><button type="submit">Add</button></td>
+                <td><input type="text" name="title" placeholder="Nouveau chant" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
+                <td><input type="text" name="description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
+                <td><input name="new_song" value="Ajouter" type="submit" /></td>
             </form>
         </tr>
     </tbody>
@@ -39,5 +39,10 @@
             <th>Actions</th>
         </tr>
     </tfoot>
+    {% if form.errors.title %}
+        <div class="error">
+            <p>{{ form.errors.title }}</p>
+        </div>
+    {% endif %}
 </table>
 {% endblock content %}

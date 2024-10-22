@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmer la suppression du chant{% endblock title %}
+{% block title_h1 %}Confirmer la suppression du chant{% endblock title_h1 %}
+
+{% block content %}
+<p>Confirmer la suppression du chant <i>{{ song.title }}</i></p>
+<form method="post" action="{% url "songs" song.id %}">
+    {% csrf_token %}
+    <hr>
+    <input name="submit" value="Supprimer" type="submit" />
+    <input name="cancel" value="Annuler" type="submit" />
+</form>  
+{% endblock content %}
