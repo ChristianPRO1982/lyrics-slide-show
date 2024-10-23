@@ -14,21 +14,24 @@
         <label for="id_description">Description</label><br>
         <textarea name="description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
     </div>
-    <hr>
+
     {% for verse in verses %}
-        <input type="hidden" name="verse_id_{{ forloop.counter0 }}" value="{{ verse.id }}">
-        <label for="verse_num_{{ forloop.counter0 }}">Numéro :</label>
-        <input type="text" name="verse_num_{{ forloop.counter0 }}" value="{{ verse.num }}"><br>
-        
-        <label for="verse_chorus_{{ forloop.counter0 }}">Chorus :</label>
-        <input type="checkbox" name="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %}><br>
-        
-        <label for="verse_text_{{ forloop.counter0 }}">Texte :</label>
-        <textarea name="verse_text_{{ forloop.counter0 }}">{{ verse.text }}</textarea><br>
+        <div class="mt-1 px-1 border border-pink">
+            <input type="hidden" name="verse_id_{{ forloop.counter0 }}" value="{{ verse.id }}">
+            
+            <label for="verse_chorus_{{ forloop.counter0 }}">Refrain :</label>
+            <input style="width: 10%;" type="checkbox" name="verse_chorus_{{ forloop.counter0 }}"
+            id="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %}>
+            {% if not verse.chorus %}couplet n°{{ verse.num_verse }}{% endif %}<br>
+            
+            <textarea name="verse_text_{{ forloop.counter0 }}">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
+        </div>
     {% endfor %}
+
     <hr>
     <input name="new_chorus" value="Nouveau refrain/couplet" type="submit" />
     <hr>
+
     <input name="save" value="Enregistrer" type="submit" />
     <input name="save_exit" value="Enregsitrer + retour à la liste" type="submit" />
     <input name="cancel" value="Annuler" type="submit" />

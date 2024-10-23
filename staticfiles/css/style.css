@@ -5,7 +5,7 @@
     background-color: rgb(254, 245, 248);
 }
 .border-pink {
-    border-color: rgb(240, 23, 88);
+    border: 2px solid rgb(240, 23, 88);
 }
 
 hr {

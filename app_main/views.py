@@ -82,8 +82,12 @@ def modify_song(request, song_id):
     
     # Recalculate the 'num' for all choruses/verses
     verses = Verse.objects.filter(song=song).order_by('num')
+    num_verse = 1
     for index, verse in enumerate(verses):
         verse.num = (index + 1) * 2
+        verse.num_verse = num_verse
+        if not verse.chorus:
+            num_verse = num_verse + 1
         verse.save()
 
     verses = Verse.objects.filter(song=song).order_by('num')
