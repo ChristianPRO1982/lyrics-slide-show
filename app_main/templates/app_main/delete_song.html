@@ -5,10 +5,10 @@
 
 {% block content %}
 <p>Confirmer la suppression du chant <i>{{ song.title }}</i></p>
-<form method="post" action="{% url "songs" song.id %}">
+<form method="post" action="{% url "delete_song" song.id %}">
     {% csrf_token %}
     <hr>
-    <input name="submit" value="Supprimer" type="submit" />
+    <input name="delete" value="Supprimer" type="submit" />
     <input name="cancel" value="Annuler" type="submit" />
 </form>  
 {% endblock content %}

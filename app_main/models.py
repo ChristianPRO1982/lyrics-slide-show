@@ -9,3 +9,14 @@ class Song(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class Verse(models.Model):
+    id = models.AutoField(primary_key=True)
+    song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='verses')
+    num = models.IntegerField()
+    chorus = models.BooleanField()
+    text = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Verse {self.num} - {'Chorus' if self.chorus else 'Verse'}"

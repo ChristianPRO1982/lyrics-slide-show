@@ -18,8 +18,8 @@
             <td>{{ song.title }}</td>
             <td>{{ song.description }}</td>
             <td>
-                <a href="{% url 'modify_song' song.id %}">Modify</a>
-                <a href="{% url 'delete_song' song.id %}">Delete</a>
+                <a href="{% url 'modify_song' song.id %}">Modifier</a> |
+                <a href="{% url 'delete_song' song.id %}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
