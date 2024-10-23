@@ -24,7 +24,7 @@
             id="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %}>
             {% if not verse.chorus %}couplet n°{{ verse.num_verse }}{% endif %}<br>
             
-            <textarea name="verse_text_{{ forloop.counter0 }}">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
+            <textarea name="verse_text_{{ forloop.counter0 }}" rows="3">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
         </div>
     {% endfor %}
 

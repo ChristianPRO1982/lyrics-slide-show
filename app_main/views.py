@@ -44,7 +44,8 @@ def songs(request):
 @login_required
 def modify_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
-
+    verses = Verse.objects.filter(song=song).order_by('num')
+    
     error = ''
     
     if request.method == 'POST':
@@ -62,19 +63,12 @@ def modify_song(request, song_id):
                 if 'new_chorus' in request.POST:
                     Verse.objects.create(song=song, num=1000, num_verse=0, chorus=False)
                 
-                num_verses = int(request.POST.get('num_verses', '0'))
-                
-                for i in range(num_verses):
-                    verse_num = request.POST.get(f'verse_num_{i}')
-                    chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
-                    text = request.POST.get(f'verse_text_{i}')
-
+                for i in range(len(verses)):
                     verse_id = request.POST.get(f'verse_id_{i}')
                     if verse_id:
                         verse = get_object_or_404(Verse, id=verse_id, song=song)
-                        verse.num = verse_num
-                        verse.chorus = chorus
-                        verse.text = text
+                        verse.text = request.POST.get(f'verse_text_{i}')
+                        verse.chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
                         verse.save()
 
         if any(key in request.POST for key in ['save_exit', 'cancel']):
