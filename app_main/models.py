@@ -15,6 +15,7 @@ class Verse(models.Model):
     id = models.AutoField(primary_key=True)
     song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='verses')
     num = models.IntegerField()
+    num_verse = models.IntegerField()
     chorus = models.BooleanField()
     text = models.TextField(null=True, blank=True)
 

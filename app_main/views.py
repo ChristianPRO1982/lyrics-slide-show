@@ -48,37 +48,45 @@ def modify_song(request, song_id):
     error = ''
     
     if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        
-        if not title:
-            error = "Le titre est obligatoire."
-        else:
-            song.title = title
-            song.description = description
-            song.save()
-
-            num_verses = int(request.POST.get('num_verses', '0'))
+        if 'cancel' not in request.POST:
+            title = request.POST.get('title')
+            description = request.POST.get('description')
             
-            for i in range(num_verses):
-                verse_num = request.POST.get(f'verse_num_{i}')
-                chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
-                text = request.POST.get(f'verse_text_{i}')
+            if not title:
+                error = "Le titre est obligatoire."
+            else:
+                song.title = title
+                song.description = description
+                song.save()
 
-                verse_id = request.POST.get(f'verse_id_{i}')
-                if verse_id:
-                    verse = get_object_or_404(Verse, id=verse_id, song=song)
-                    verse.num = verse_num
-                    verse.chorus = chorus
-                    verse.text = text
-                    verse.save()
-                else:
-                    Verse.objects.create(song=song, num=verse_num, chorus=chorus, text=text)
+                if 'new_chorus' in request.POST:
+                    Verse.objects.create(song=song, num=1000, num_verse=0, chorus=False)
+                
+                num_verses = int(request.POST.get('num_verses', '0'))
+                
+                for i in range(num_verses):
+                    verse_num = request.POST.get(f'verse_num_{i}')
+                    chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
+                    text = request.POST.get(f'verse_text_{i}')
 
-            if any(key in request.POST for key in ['save_exit', 'cancel']):
-                return redirect('songs')
+                    verse_id = request.POST.get(f'verse_id_{i}')
+                    if verse_id:
+                        verse = get_object_or_404(Verse, id=verse_id, song=song)
+                        verse.num = verse_num
+                        verse.chorus = chorus
+                        verse.text = text
+                        verse.save()
+
+        if any(key in request.POST for key in ['save_exit', 'cancel']):
+            return redirect('songs')
     
-    verses = Verse.objects.filter(song=song)
+    # Recalculate the 'num' for all choruses/verses
+    verses = Verse.objects.filter(song=song).order_by('num')
+    for index, verse in enumerate(verses):
+        verse.num = (index + 1) * 2
+        verse.save()
+
+    verses = Verse.objects.filter(song=song).order_by('num')
     
     return render(request, 'app_main/modify_song.html', {
         'song': song,
