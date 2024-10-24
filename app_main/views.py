@@ -67,9 +67,12 @@ def modify_song(request, song_id):
                     verse_id = request.POST.get(f'verse_id_{i}')
                     if verse_id:
                         verse = get_object_or_404(Verse, id=verse_id, song=song)
-                        verse.text = request.POST.get(f'verse_text_{i}')
-                        verse.chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
-                        verse.save()
+                        if request.POST.get(f'delete_chorus_{i}', 'off') == 'on':
+                            verse.delete()
+                        else:
+                            verse.text = request.POST.get(f'verse_text_{i}')
+                            verse.chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
+                            verse.save()
 
         if any(key in request.POST for key in ['save_exit', 'cancel']):
             return redirect('songs')

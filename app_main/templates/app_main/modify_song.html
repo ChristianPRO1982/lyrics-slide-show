@@ -19,10 +19,13 @@
         <div class="mt-1 px-1 border border-pink">
             <input type="hidden" name="verse_id_{{ forloop.counter0 }}" value="{{ verse.id }}">
             
-            <label for="verse_chorus_{{ forloop.counter0 }}">Refrain :</label>
             <input style="width: 10%;" type="checkbox" name="verse_chorus_{{ forloop.counter0 }}"
-            id="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %}>
-            {% if not verse.chorus %}couplet n°{{ verse.num_verse }}{% endif %}<br>
+            id="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %} />
+            <label for="verse_chorus_{{ forloop.counter0 }}">Refrain</label>
+            {% if not verse.chorus %}couplet n°{{ verse.num_verse }}{% endif %}
+            <input style="width: 10%;" type="checkbox" name="delete_chorus_{{ forloop.counter0 }}"
+            id="delete_chorus_{{ forloop.counter0 }}" />
+            <label for="delete_chorus_{{ forloop.counter0 }}">Supprimer</label><br>
             
             <textarea name="verse_text_{{ forloop.counter0 }}" rows="3">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
         </div>
