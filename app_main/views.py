@@ -13,7 +13,9 @@ def error_404(request, exception):
 
 
 def homepage(request):
-    return render(request, 'app_main/homepage.html')
+    return render(request, 'app_main/homepage.html', {
+        'error': '',
+    })
 
 
 @login_required
@@ -114,3 +116,10 @@ def delete_song(request, song_id):
         'song': song,
         'error': error,
         })
+
+
+@login_required
+def animation(request):
+    return render(request, 'app_main/animations.html', {
+        'error': '',
+    })
