@@ -3,7 +3,7 @@
 {% block title %}Chant : {{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{{ song_lyrics }}{% endblock bloc2 %}
+{% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 <form method="post" action="{% url "modify_song" song.id %}">
