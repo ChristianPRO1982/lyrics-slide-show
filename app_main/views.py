@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from .models import Song, Verse
 from .forms import SongForm, VerseForm
+from .utils import get_song_lyrics
 
 
 
@@ -61,7 +62,7 @@ def modify_song(request, song_id):
                 song.save()
 
                 if 'new_chorus' in request.POST:
-                    Verse.objects.create(song=song, num=1000, num_verse=0, chorus=False)
+                    Verse.objects.create(song=song, num=1000, num_verse=0, chorus=False, followed=False)
                 
                 for i in range(len(verses)):
                     verse_id = request.POST.get(f'verse_id_{i}')
@@ -72,6 +73,7 @@ def modify_song(request, song_id):
                         else:
                             verse.text = request.POST.get(f'verse_text_{i}')
                             verse.chorus = request.POST.get(f'verse_chorus_{i}', 'off') == 'on'
+                            verse.followed = request.POST.get(f'verse_followed_{i}', 'off') == 'on'
                             verse.save()
 
         if any(key in request.POST for key in ['save_exit', 'cancel']):
@@ -88,10 +90,11 @@ def modify_song(request, song_id):
         verse.save()
 
     verses = Verse.objects.filter(song=song).order_by('num')
-    
+
     return render(request, 'app_main/modify_song.html', {
         'song': song,
         'verses': verses,
+        'song_lyrics': get_song_lyrics(song_id),
         'error': error,
     })
 

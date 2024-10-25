@@ -17,6 +17,7 @@ class Verse(models.Model):
     num = models.IntegerField()
     num_verse = models.IntegerField()
     chorus = models.BooleanField()
+    followed = models.BooleanField()
     text = models.TextField(null=True, blank=True)
 
     def __str__(self):

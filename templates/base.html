@@ -10,7 +10,7 @@
     <meta content="description" name="{{ description }}">
     <link rel="icon" sizes="192x192" href="{% static "images/Avatar_IC.png" %}" type="image/png"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="{% static "css/lyrics_slide_show.css" %}">
     <script src="{% static 'js/script.js' %}"></script>
 </head>
 <body class="text-pink bg-pink">
@@ -31,7 +31,7 @@
                     <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
                     <!-- §§§§§ SECONDAY BLOC (left) §§§§§ -->
                     <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    {% include 'bloc1.html' %}
+                    {% block bloc1 %}{% endblock %}
                 </div>
             </div>
             <div class="lg:w-1/4 mx-2 mt-4">
@@ -39,7 +39,7 @@
                     <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
                     <!-- §§§§§ THIRD BLOC (right) §§§§§ -->
                     <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    {% include 'bloc2.html' %}
+                    {% block bloc2 %}{% endblock %}
                 </div>
             </div>
         </div>
