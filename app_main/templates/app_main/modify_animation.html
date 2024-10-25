@@ -1,54 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Chant : {{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% endblock title_h1 %}
+{% block title %}Animation : {{ animation.name }}{% endblock title %}
+{% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url "modify_song" song.id %}">
+<form method="post" action="{% url "modify_animation" animation.id %}">
     {% csrf_token %}
     <div>
-        <label for="id_title">Titre</label><br>
-        <input type="text" name="title" id="id_title" maxlength="255" value="{{ song.title }}" required style="width: 100%;">
+        <label for="id_name">Nom</label><br>
+        <input type="text" name="name" id="id_name" maxlength="255" value="{{ animation.name }}" required style="width: 100%;">
         </div>
         <div>
         <label for="id_description">Description</label><br>
-        <textarea name="description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
+        <textarea name="description" id="id_description" style="width: 100%;">{{ animation.description }}</textarea>
     </div>
 
-    {% for verse in verses %}
-        <div class="mt-1 px-1 border border-pink">
-            <input type="hidden" name="verse_id_{{ forloop.counter0 }}" value="{{ verse.id }}">
-            
-            <div style="display: flex; justify-content: space-between;">
-                <div style="text-align: left; width: {% if verse.chorus %}75%{% else %}50%{% endif %};">
-                    <input style="width: 10%;" type="checkbox" name="verse_chorus_{{ forloop.counter0 }}"
-                    id="verse_chorus_{{ forloop.counter0 }}" {% if verse.chorus %}checked{% endif %} />
-                    <label for="verse_chorus_{{ forloop.counter0 }}">Refrain</label>
-
-                    <input style="width: 10%;" type="checkbox" name="verse_followed_{{ forloop.counter0 }}"
-                    id="verse_followed_{{ forloop.counter0 }}" {% if verse.followed %}checked{% endif %} />
-                    <label for="verse_followed_{{ forloop.counter0 }}">Suivi</label>
-                </div>
-                {% if not verse.chorus %}
-                <div style="text-align: center; width: 25%;">
-                    <b>couplet n°{{ verse.num_verse }}</b>
-                </div>
-                {% endif %}
-                <div style="text-align: right; width: 25%;">
-                    <input style="width: 10%;" type="checkbox" name="delete_chorus_{{ forloop.counter0 }}"
-                    id="delete_chorus_{{ forloop.counter0 }}" />
-                    <label for="delete_chorus_{{ forloop.counter0 }}">Supprimer</label>
-                </div>
-            </div>
-            
-            <textarea name="verse_text_{{ forloop.counter0 }}" rows="3">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
-        </div>
-    {% endfor %}
+    
 
     <hr>
-    <input name="new_chorus" value="Nouveau refrain/couplet" type="submit" />
+    <input name="new_song" value="Nouveau chant" type="submit" />
     <hr>
 
     <input name="save" value="Enregistrer" type="submit" />

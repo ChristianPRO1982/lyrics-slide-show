@@ -145,7 +145,29 @@ def animations(request):
 
 @login_required
 def modify_animation(request, animation_id):
-    pass
+    animation = get_object_or_404(Animation, id=animation_id)
+    
+    error = ''
+    
+    if request.method == 'POST':
+        if 'cancel' not in request.POST:
+            name = request.POST.get('name')
+            description = request.POST.get('description')
+            
+            if not name:
+                error = "Le nom est obligatoire."
+            else:
+                animation.name = name
+                animation.description = description
+                animation.save()
+        
+        if any(key in request.POST for key in ['save_exit', 'cancel']):
+            return redirect('animations')
+
+    return render(request, 'app_main/modify_animation.html', {
+        'animation': animation,
+        'error': error,
+    })
 
 
 @login_required
