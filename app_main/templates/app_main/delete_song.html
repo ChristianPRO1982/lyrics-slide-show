@@ -10,7 +10,9 @@
 <form method="post" action="{% url "delete_song" song.id %}">
     {% csrf_token %}
     <hr>
-    <input name="delete" value="Supprimer" type="submit" />
-    <input name="cancel" value="Annuler" type="submit" />
+    <div class="text-center">
+        <input style="width: 45%;" name="delete" value="Supprimer" type="submit" />
+        <input style="width: 45%;" name="cancel" value="Annuler" type="submit" />
+    </div>
 </form>  
 {% endblock content %}

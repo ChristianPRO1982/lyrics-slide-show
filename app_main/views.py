@@ -131,7 +131,7 @@ def animations(request):
         elif Animation.objects.filter(name=request.POST.get('name')).exists():
             name = request.POST.get('name')
             description = request.POST.get('description')
-            error = 'Ce titre existe déjà'
+            error = 'Ce nom existe déjà'
     
     all_animations = Animation.objects.all().order_by('name')
     
@@ -139,5 +139,27 @@ def animations(request):
         'animations': all_animations,
         'name': name,
         'description': description,
+        'error': error,
+        })
+
+
+@login_required
+def modify_animation(request, animation_id):
+    pass
+
+
+@login_required
+def delete_animation(request, animation_id):
+    animation = get_object_or_404(Animation, id=animation_id)
+
+    error = ''
+    
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            animation.delete()
+        return redirect('animations')
+    
+    return render(request, 'app_main/delete_animation.html', {
+        'animation': animation,
         'error': error,
         })
