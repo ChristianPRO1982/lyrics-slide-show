@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.forms import modelformset_factory
-from .models import Song, Verse
-from .forms import SongForm, VerseForm
+from .models import Song, Verse, Animation, AnimationSong
+from .forms import SongForm, VerseForm, AnimationForm, AnimationSongForm
 from .utils import get_song_lyrics
 
 
@@ -119,7 +118,26 @@ def delete_song(request, song_id):
 
 
 @login_required
-def animation(request):
+def animations(request):
+    name = ''
+    description = ''
+
+    error = ''
+    
+    if request.method == 'POST':
+        form = AnimationForm(request.POST)
+        if form.is_valid() and 'new_animation' in request.POST:
+            form.save()
+        elif Animation.objects.filter(name=request.POST.get('name')).exists():
+            name = request.POST.get('name')
+            description = request.POST.get('description')
+            error = 'Ce titre existe déjà'
+    
+    all_animations = Animation.objects.all().order_by('name')
+    
     return render(request, 'app_main/animations.html', {
-        'error': '',
-    })
+        'animations': all_animations,
+        'name': name,
+        'description': description,
+        'error': error,
+        })

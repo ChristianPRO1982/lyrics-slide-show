@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmer la suppression de l'animation{% endblock title %}
+{% block title_h1 %}Confirmer la suppression de l'animation{% endblock title_h1 %}
+{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc2 %}{% endblock bloc2 %}
+
+{% block content %}
+<p>Confirmer la suppression de l'animation <i>{{ animation.title }}</i></p>
+<form method="post" action="{% url "delete_animation" animation.id %}">
+    {% csrf_token %}
+    <hr>
+    <input name="delete" value="Supprimer" type="submit" />
+    <input name="cancel" value="Annuler" type="submit" />
+</form>  
+{% endblock content %}

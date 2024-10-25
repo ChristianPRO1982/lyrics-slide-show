@@ -1,5 +1,5 @@
 from django import forms
-from .models import Song, Verse
+from .models import Song, Verse, Animation, AnimationSong
 
 
 
@@ -14,7 +14,7 @@ class VerseForm(forms.ModelForm):
         model = Verse
         fields = '__all__'
 
-        
+
 class AnimationForm(forms.ModelForm):
     class Meta:
         model = Animation
