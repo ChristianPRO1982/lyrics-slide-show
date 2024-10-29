@@ -146,6 +146,7 @@ def animations(request):
 @login_required
 def modify_animation(request, animation_id):
     animation = get_object_or_404(Animation, id=animation_id)
+    animation_songs = AnimationSong.objects.filter(animation=animation).order_by('order')
     
     error = ''
     
@@ -160,12 +161,36 @@ def modify_animation(request, animation_id):
                 animation.name = name
                 animation.description = description
                 animation.save()
+
+                if 'new_song' in request.POST:
+                    new_song_id = request.POST.get('new_song_select')
+                    new_song = get_object_or_404(Song, id=new_song_id)
+                    AnimationSong.objects.create(animation=animation, song=new_song, order=1000)
+                
+                for i in range(1, len(animation_songs) + 1):
+                    song_id = request.POST.get(f'song_id_{i}')
+                    print('coco')
+                    if song_id:
+                        animation_song = get_object_or_404(AnimationSong, id=song_id, animation=animation)
+                        if request.POST.get(f'delete_song_{song_id}', 'off') == 'on':
+                            print('DELETE')
+                            animation_song.delete()
+                        else:
+                            # song.text = request.POST.get(f'song_text_{i}')
+                            # song.chorus = request.POST.get(f'song_chorus_{i}', 'off') == 'on'
+                            # song.followed = request.POST.get(f'song_followed_{i}', 'off') == 'on'
+                            # song.save()
+                            pass
         
         if any(key in request.POST for key in ['save_exit', 'cancel']):
             return redirect('animations')
-
+        
+    all_songs = Song.objects.all().order_by('title')
+    
     return render(request, 'app_main/modify_animation.html', {
         'animation': animation,
+        'songs': animation_songs,
+        'all_songs': [{'id': song.id, 'title': song.title} for song in all_songs],
         'error': error,
     })
 

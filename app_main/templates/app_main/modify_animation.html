@@ -17,10 +17,27 @@
         <textarea name="description" id="id_description" style="width: 100%;">{{ animation.description }}</textarea>
     </div>
 
-    
+    {% for song in songs %}
+        <div class="mt-1 px-1 border border-pink">
+            <input type="hidden" name="song_id_{{ song.id }}" value="{{ song.id }}">
+            
+            
+
+            <input style="width: 10%;" type="checkbox" name="delete_song_{{ song.id }}"
+            id="delete_song_{{ song.id }}" />
+            <label for="delete_song_{{ song.id }}">Supprimer</label>
+        </div>
+    {% endfor %}
 
     <hr>
-    <input name="new_song" value="Nouveau chant" type="submit" />
+    <div style="text-align: center;">
+        <select style="width: 69%;" name="new_song_select" style="width: 100%;">
+            {% for song in all_songs %}
+                <option value="{{ song.id }}">{{ song.title }}</option>
+            {% endfor %}
+        </select>
+        <input style="width: 30%;" name="new_song" value="Ajouter ce chant" type="submit" />
+    </div>
     <hr>
 
     <input name="save" value="Enregistrer" type="submit" />
