@@ -17,7 +17,7 @@
     <tbody>
         {% for song in songs %}
         <tr>
-            <td>{{ song.title }}</td>
+            <td>{{ song.title }}{% if song.sub_title != "" %}<br>{{ song.sub_title }}{% endif %}</td>
             <td>{{ song.description }}</td>
             <td>
                 <a href="{% url 'modify_song' song.id %}">Modifier</a> |
@@ -28,8 +28,8 @@
         <tr>
             <form method="post">
                 {% csrf_token %}
-                <td><input type="text" name="title" placeholder="Nouveau chant" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
-                <td><input type="text" name="description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
+                <td><input type="text" name="txt_new_title" placeholder="Nouveau chant" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
+                <td><input type="text" name="txt_new_description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
                 <td><input name="new_song" value="Ajouter" type="submit" /></td>
             </form>
         </tr>
