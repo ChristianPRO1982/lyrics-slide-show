@@ -23,10 +23,13 @@ def songs(request):
 
         if request.method == 'POST':
             new_song = Song(
-                title=request.POST.get('txt_new_title'),
-                sub_title="",
-                description=request.POST.get('txt_new_description'))
+                title = request.POST.get('txt_new_title'),
+                sub_title = "",
+                description = request.POST.get('txt_new_description'))
             new_song.save()
+            request.POST = request.POST.copy()
+            request.POST['txt_new_title'] = ''
+            request.POST['txt_new_description'] = ''
             
     songs = Song.get_all_songs()
 
@@ -39,9 +42,57 @@ def songs(request):
         })
 
 
-def modify_song(request):
-    return render(request, 'app_main/homepage.html', {
-        'error': '',
+@login_required
+def modify_song(request, song_id):
+    error = ''
+
+    song = Song.get_song_by_id(song_id)
+    song.get_verses()
+
+    if request.method == 'POST':
+        if 'btn_cancel' not in request.POST:
+            if not song.title:
+                error = "Le titre est obligatoire."
+            else:
+                song.title = request.POST.get('txt_title')
+                song.sub_title = request.POST.get('txt_sub_title')
+                song.description = request.POST.get('txt_description')
+                song.save()
+
+                if 'btn_new_chorus' in request.POST:
+                    song.new_verse()
+                
+                for verse in song.verses:
+                    if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
+                        verse.delete()
+                    else:
+                        verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
+                        verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                        verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
+                        if verse.text is None:
+                            verse.text = ''
+                    
+                    verse.save()
+                    song.get_verses()
+
+        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
+            return redirect('songs')
+
+    # Recalculate the 'num' for all choruses/verses
+    num_verse = 1
+    for index, verse in enumerate(song.verses):
+        verse.num = (index + 1) * 2
+        verse.num_verse = num_verse
+        if not verse.chorus:
+            num_verse = num_verse + 1
+        verse.save()
+
+
+    return render(request, 'app_main/modify_song.html', {
+        'song': song,
+        'verses': song.verses,
+        'song_lyrics': '',
+        'error': error,
     })
 
 
