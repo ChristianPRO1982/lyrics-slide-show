@@ -20,6 +20,12 @@
         <label for="id_description">Description</label><br>
         <textarea name="txt_description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
     </div>
+    <div>
+        <label for="id_artist">Artiste</label><br>
+        <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
+    </div>
+
+    <hr>
 
     {% for verse in verses %}
         <div class="mt-1 px-1 border border-pink">
@@ -40,7 +46,7 @@
                 {% endif %}
                 <div style="text-align: right; width: 25%;">
                     <input style="width: 10%;" type="checkbox" name="box_delete_{{ verse.verse_id }}"
-                    id="box_delete_{{ verse.verse_id }}" />
+                    id="box_delete_{{ verse.verse_id }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');" />
                     <label for="box_delete_{{ verse.verse_id }}">Supprimer</label>
                 </div>
             </div>

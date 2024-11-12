@@ -25,7 +25,9 @@ def songs(request):
             new_song = Song(
                 title = request.POST.get('txt_new_title'),
                 sub_title = "",
-                description = request.POST.get('txt_new_description'))
+                description = request.POST.get('txt_new_description'),
+                artist = "",
+                )
             new_song.save()
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
@@ -57,6 +59,7 @@ def modify_song(request, song_id):
                 song.title = request.POST.get('txt_title')
                 song.sub_title = request.POST.get('txt_sub_title')
                 song.description = request.POST.get('txt_description')
+                song.artist = request.POST.get('txt_artist')
                 song.save()
 
                 if 'btn_new_chorus' in request.POST:
@@ -87,16 +90,28 @@ def modify_song(request, song_id):
             num_verse = num_verse + 1
         verse.save()
 
+    song_lyrics = song.get_lyrics()
+
 
     return render(request, 'app_main/modify_song.html', {
         'song': song,
         'verses': song.verses,
-        'song_lyrics': '',
+        'song_lyrics': song_lyrics,
         'error': error,
     })
 
 
-def delete_song(request):
-    return render(request, 'app_main/homepage.html', {
-        'error': '',
+def delete_song(request, song_id):
+    error = ''
+
+    song = Song.get_song_by_id(song_id)
+
+    if request.method == 'POST':
+        if 'btn_delete' in request.POST:
+            song.delete()
+        return redirect('songs')
+
+    return render(request, 'app_main/delete_song.html', {
+        'song': song,
+        'error': error,
     })

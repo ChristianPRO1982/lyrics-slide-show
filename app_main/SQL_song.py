@@ -1,9 +1,13 @@
 from django.db import connection
 import os
+import django.utils.html
 
 
 
-SQL_REQUEST = os.environ.get('SQL_REQUEST') == '1'
+SQL_REQUEST = os.environ
+
+def addslashes(s):
+    return django.utils.html.escape(s)
 
 ##############################################
 ##############################################
@@ -11,11 +15,12 @@ SQL_REQUEST = os.environ.get('SQL_REQUEST') == '1'
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
         self.description = description
+        self.artist = artist
         self.verses = []
 
 
@@ -29,9 +34,31 @@ ORDER BY title, sub_title
 
         if SQL_REQUEST: print("", request, "")
         with connection.cursor() as cursor:
-            cursor.execute(request)
+            cursor.execute(request, [song_id])
             rows = cursor.fetchall()
-        return [{'id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3]} for row in rows]
+        return [{'id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4]} for row in rows]
+    
+
+    def get_lyrics(self):
+        choruses = []
+        lyrics = ""
+
+        # Get all choruses
+        for verse in self.verses:
+            if verse.chorus:
+                choruses.append("<b>" + verse.text.replace("\n", "<br>") + "</b>")
+
+        for verse in self.verses:
+            if not verse.chorus:
+                lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
+                if not verse.followed:
+                    lyrics += "<br><br>".join(choruses) + "<br><br>"
+        
+        if not lyrics:
+            lyrics = "<br><br>".join(choruses)
+
+        
+        return lyrics
     
 
     @classmethod
@@ -47,7 +74,7 @@ SELECT *
             cursor.execute(request)
             row = cursor.fetchone()
         if row:
-            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3])
+            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4])
         return None
 
     def save(self):
@@ -57,7 +84,8 @@ SELECT *
 UPDATE l_songs
    SET title = "{self.title}",
        sub_title = "{self.sub_title}",
-       description = "{self.description}"
+       description = "{self.description}",
+       artist = "{self.artist}"
  WHERE song_id = {self.song_id}"""
                 
                 if SQL_REQUEST: print("", request, "")
@@ -65,8 +93,8 @@ UPDATE l_songs
 
             else:
                 request = f"""
-INSERT INTO l_songs (title, sub_title, description)
-     VALUES ("{self.title}", "{self.sub_title}", "{self.description}")"""
+INSERT INTO l_songs (title, sub_title, description, artist)
+     VALUES ("{self.title}", "{self.sub_title}", "{self.description}", "{self.artist}")"""
                 
                 if SQL_REQUEST: print("", request, "")
                 cursor.execute(request)

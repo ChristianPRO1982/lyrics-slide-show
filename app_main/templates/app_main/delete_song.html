@@ -6,13 +6,13 @@
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-<p>Confirmer la suppression du chant <i>{{ song.title }}</i></p>
-<form method="post" action="{% url "delete_song" song.id %}">
+<p>Confirmer la suppression du chant <b><i>{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</i></b></p>
+<form method="post" action="{% url "delete_song" song.song_id %}">
     {% csrf_token %}
     <hr>
     <div class="text-center">
-        <input style="width: 45%;" name="delete" value="Supprimer" type="submit" />
-        <input style="width: 45%;" name="cancel" value="Annuler" type="submit" />
+        <input style="width: 45%;" name="btn_delete" value="Supprimer" type="submit" />
+        <input style="width: 45%;" name="btn_cancel" value="Annuler" type="submit" />
     </div>
-</form>  
+</form>
 {% endblock content %}
