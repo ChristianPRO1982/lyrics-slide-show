@@ -5,9 +5,12 @@ import django.utils.html
 
 
 SQL_REQUEST = os.environ
+code_file = """
+SQL_song.py"""
 
 def addslashes(s):
     return django.utils.html.escape(s)
+
 
 ##############################################
 ##############################################
@@ -32,9 +35,9 @@ class Song:
 ORDER BY title, sub_title
 """
 
-        if SQL_REQUEST: print("", request, "")
+        if SQL_REQUEST: print(code_file, ": SELECT_1", request)
         with connection.cursor() as cursor:
-            cursor.execute(request, [song_id])
+            cursor.execute(request)
             rows = cursor.fetchall()
         return [{'id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4]} for row in rows]
     
@@ -70,7 +73,7 @@ SELECT *
  WHERE song_id = {song_id}
 """
             
-            if SQL_REQUEST: print("", request, "")
+            if SQL_REQUEST: print(code_file, ": SELECT_2", request)
             cursor.execute(request)
             row = cursor.fetchone()
         if row:
@@ -88,7 +91,7 @@ UPDATE l_songs
        artist = "{self.artist}"
  WHERE song_id = {self.song_id}"""
                 
-                if SQL_REQUEST: print("", request, "")
+                if SQL_REQUEST: print(code_file, ": UPDATE_1", request)
                 cursor.execute(request)
 
             else:
@@ -96,7 +99,7 @@ UPDATE l_songs
 INSERT INTO l_songs (title, sub_title, description, artist)
      VALUES ("{self.title}", "{self.sub_title}", "{self.description}", "{self.artist}")"""
                 
-                if SQL_REQUEST: print("", request, "")
+                if SQL_REQUEST: print(code_file, ": INSERT_1", request)
                 cursor.execute(request)
                 self.song_id = cursor.lastrowid
 
@@ -109,7 +112,7 @@ INSERT INTO l_songs (title, sub_title, description, artist)
 DELETE FROM l_songs
       WHERE song_id = {self.song_id}"""
 
-            if SQL_REQUEST: print("", request, "")
+            if SQL_REQUEST: print(code_file, ": DELETE_1", request)
             cursor.execute(request)
 
 
@@ -154,7 +157,7 @@ SELECT verse_id,
 ORDER BY num
 """
 
-            if SQL_REQUEST: print("", request, "")
+            if SQL_REQUEST: print(code_file, ": SELECT_3", request)
             cursor.execute(request)
             rows = cursor.fetchall()
         return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], text=row[5]) for row in rows]
@@ -172,7 +175,7 @@ UPDATE l_verses
  WHERE verse_id = {self.verse_id}
  """
 
-                if SQL_REQUEST: print("", request, "")
+                if SQL_REQUEST: print(code_file, ": UPDATE_2", request)
                 cursor.execute(request)
 
             else:
@@ -181,7 +184,7 @@ INSERT INTO l_verses (song_id)
      VALUES ({self.song_id})
 """
 
-                if SQL_REQUEST: print("", request, "")
+                if SQL_REQUEST: print(code_file, ": INSERT_2", request)
                 cursor.execute(request)
                 self.verse_id = cursor.lastrowid
 
@@ -190,4 +193,10 @@ INSERT INTO l_verses (song_id)
         if not self.verse_id:
             raise ValueError("L'ID du couplet est requis pour le supprimer.")
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM l_verses WHERE verse_id = %s", [self.verse_id])
+            request = f"""
+DELETE FROM l_verses
+        WHERE verse_id = {self.verse_id}
+"""
+            
+            if SQL_REQUEST: print(code_file, ": DELETE_2", request)
+            cursor.execute(request)
