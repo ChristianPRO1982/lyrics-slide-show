@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 
 
 
+SQL_REQUEST_LOG = os.environ
+
+
+# Répertoire des logs
 LOG_DIR = os.path.join(settings.BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
@@ -17,16 +21,38 @@ def get_log_file(app_name):
     return os.path.join(LOG_DIR, f"{app_name}_{date_str}.log")
 
 
-def create_log(app_name, function_name, text, log_type='info'):
+def setup_logger(app_name):
     log_file = get_log_file(app_name)
     logger = logging.getLogger(app_name)
-    handler = logging.FileHandler(log_file)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    log_method = getattr(logger, log_type, 'info')
+    if not logger.hasHandlers():  # Prevents adding handlers multiple times
+        handler = logging.FileHandler(log_file)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.DEBUG)  # default level
+    return logger
+
+
+def create_log(app_name, function_name, text, log_type='info'):
+    logger = setup_logger(app_name)
+    log_method = getattr(logger, log_type, logger.info)  # défault 'info'
     log_method(f"{function_name}: {text}")
-    logger.removeHandler(handler)
+
+
+def create_SQL_log(app_name, function_name, request_name, request, params):
+    if SQL_REQUEST_LOG:
+        formatted_params = [
+            f"'{str(param).replace('\'', '\\\'')}'" if isinstance(param, str) else str(param)
+            for param in params
+        ]
+        
+        request_for_print = request
+        for param in formatted_params:
+            request_for_print = request_for_print.replace('%s', param, 1)
+        
+        print(f"[{request_name}]: {request_for_print}")
+        
+    create_log(app_name, function_name, f"SQL: {request_name}")
 
 
 def delete_old_logs():
@@ -35,9 +61,12 @@ def delete_old_logs():
     for log_file in os.listdir(LOG_DIR):
         log_path = os.path.join(LOG_DIR, log_file)
         if os.path.isfile(log_path):
-            file_mod_time = datetime.fromtimestamp(os.path.getmtime(log_path))
-            if file_mod_time < cutoff_date:
-                os.remove(log_path)
+            try:
+                file_mod_time = datetime.fromtimestamp(os.path.getmtime(log_path))
+                if file_mod_time < cutoff_date:
+                    os.remove(log_path)
+            except Exception as e:
+                create_log('system', 'delete_old_logs', f"Erreur lors de la suppression de {log_file}: {e}", 'error')
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -45,6 +74,11 @@ def view_logs(request):
     log_files = os.listdir(LOG_DIR)
     log_content = ""
     for log_file in log_files:
-        with open(os.path.join(LOG_DIR, log_file), 'r') as file:
-            log_content += file.read() + "\n"
+        log_path = os.path.join(LOG_DIR, log_file)
+        try:
+            with open(log_path, 'r') as file:
+                log_content += f"==== {log_file} ====\n"
+                log_content += file.read() + "\n\n"
+        except Exception as e:
+            log_content += f"Erreur lors de la lecture de {log_file}: {e}\n\n"
     return HttpResponse(f"<pre>{log_content}</pre>")
