@@ -47,7 +47,7 @@ def create_SQL_log(app_name, function_name, request_name, request, params):
         for param in formatted_params:
             request_for_print = request_for_print.replace('%s', param, 1)
         
-        print(f"[{request_name}]: {request_for_print}")
+        print(f"[{app_name}][{request_name}]: {request_for_print}")
         
     create_log(app_name, function_name, f"SQL: {request_name}")
 

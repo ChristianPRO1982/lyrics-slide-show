@@ -5,7 +5,7 @@ import os
 
 
 code_file = """
-SQL_song.py"""
+SQL_animation.py"""
 
 
 ##############################################
@@ -13,30 +13,29 @@ SQL_song.py"""
 #################### SONG ####################
 ##############################################
 ##############################################
-class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None):
-        self.song_id = song_id
-        self.title = title
-        self.sub_title = sub_title
+class Animation:
+    def __init__(self, animation_id=None, name=None, description=None, date=None):
+        self.animation_id = animation_id
+        self.name = name
         self.description = description
-        self.artist = artist
-        self.verses = []
+        self.date = date
+        self.songs = []
 
 
     @staticmethod
-    def get_all_songs():
+    def get_all_animations():
         request = """
   SELECT *
-    FROM l_songs
-ORDER BY title, sub_title
+    FROM l_animations
+ORDER BY date DESC, name
 """
         params = []
 
-        create_SQL_log(code_file, "Song.get_all_songs", "SELECT_1", request, params)
+        create_SQL_log(code_file, "Animation.get_all_animations", "SELECT_1", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4]} for row in rows]
+        return [{'id': row[0], 'name': row[1], 'sub_name': row[2], 'description': row[3], 'date': row[4]} for row in rows]
     
 
     def get_lyrics(self):
@@ -44,12 +43,12 @@ ORDER BY title, sub_title
         lyrics = ""
 
         # Get all choruses
-        for verse in self.verses:
+        for verse in self.songs:
             if verse.chorus:
                 choruses.append("<b>" + verse.text.replace("\n", "<br>") + "</b>")
 
         start_by_chorus = True
-        for verse in self.verses:
+        for verse in self.songs:
             if not verse.chorus:
                 lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
                 if not verse.followed and choruses:
@@ -66,72 +65,72 @@ ORDER BY title, sub_title
     
 
     @classmethod
-    def get_song_by_id(cls, song_id):
+    def get_song_by_id(cls, animation_id):
         with connection.cursor() as cursor:
             request = """
 SELECT *
   FROM l_songs
- WHERE song_id = %s
+ WHERE animation_id = %s
 """
-            params = [song_id]
+            params = [animation_id]
             
-            create_SQL_log(code_file, "Song.get_song_by_id", "SELECT_2", request, params)
+            create_SQL_log(code_file, "Animation.get_song_by_id", "SELECT_2", request, params)
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4])
+            return cls(animation_id=row[0], name=row[1], sub_name=row[2], description=row[3], date=row[4])
         return None
 
     def save(self):
         with connection.cursor() as cursor:
-            if self.song_id:
+            if self.animation_id:
                 request = f"""
 UPDATE l_songs
-   SET title = %s,
-       sub_title = %s,
+   SET name = %s,
+       sub_name = %s,
        description = %s,
-       artist = %s
- WHERE song_id = %s
+       date = %s
+ WHERE animation_id = %s
 """
-                params = [self.title, self.sub_title, self.description, self.artist, self.song_id]
+                params = [self.name, self.sub_name, self.description, self.date, self.animation_id]
                 
-                create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
+                create_SQL_log(code_file, "Animation.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
 
             else:
                 request = """
-INSERT INTO l_songs (title, sub_title, description, artist)
+INSERT INTO l_songs (name, sub_name, description, date)
      VALUES (%s, %s, %s, %s)
 """
-                params = [self.title, self.sub_title, self.description, self.artist]
+                params = [self.name, self.sub_name, self.description, self.date]
                 
-                create_SQL_log(code_file, "Song.save", "INSERT_1", request, params)
+                create_SQL_log(code_file, "Animation.save", "INSERT_1", request, params)
                 cursor.execute(request, params)
-                self.song_id = cursor.lastrowid
+                self.animation_id = cursor.lastrowid
 
 
     def delete(self):
-        if not self.song_id:
+        if not self.animation_id:
             raise ValueError("L'ID du chant est requis pour le supprimer.")
         with connection.cursor() as cursor:
             request = """
 DELETE FROM l_songs
-      WHERE song_id = %s
+      WHERE animation_id = %s
 """
-            params = [self.song_id]
+            params = [self.animation_id]
 
-            create_SQL_log(code_file, "Song.delete", "DELETE_1", request, params)
+            create_SQL_log(code_file, "Animation.delete", "DELETE_1", request, params)
             cursor.execute(request, params)
 
 
-    def get_verses(self):
-        self.verses = Verse.get_verses_by_song_id(self.song_id)
+    def get_songs(self):
+        self.songs = Verse.get_songs_by_animation_id(self.animation_id)
 
 
     def new_verse(self):
-        verse = Verse(song_id=self.song_id)
+        verse = Verse(animation_id=self.animation_id)
         verse.save()
-        self.get_verses()
+        self.get_songs()
 
 
 
@@ -141,9 +140,9 @@ DELETE FROM l_songs
 ######################################################
 ######################################################
 class Verse:
-    def __init__(self, verse_id=None, song_id=None, num=None, num_verse=None, chorus=False, followed=False, text=""):
+    def __init__(self, verse_id=None, animation_id=None, num=None, num_verse=None, chorus=False, followed=False, text=""):
         self.verse_id = verse_id
-        self.song_id = song_id
+        self.animation_id = animation_id
         self.num = num
         self.num_verse = num_verse
         self.chorus = chorus
@@ -151,7 +150,7 @@ class Verse:
         self.text = text
 
     @staticmethod
-    def get_verses_by_song_id(song_id):
+    def get_songs_by_animation_id(animation_id):
         with connection.cursor() as cursor:
             request = """
 SELECT verse_id,
@@ -160,22 +159,22 @@ SELECT verse_id,
        chorus,
        followed,
        text
-    FROM l_verses
-   WHERE song_id = %s
+    FROM l_songs
+   WHERE animation_id = %s
 ORDER BY num
 """
-            params = [song_id]
+            params = [animation_id]
 
-            create_SQL_log(code_file, "Verse.get_verses_by_song_id", "SELECT_3", request, params)
+            create_SQL_log(code_file, "Verse.get_songs_by_animation_id", "SELECT_3", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], text=row[5]) for row in rows]
+        return [Verse(verse_id=row[0], animation_id=animation_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], text=row[5]) for row in rows]
 
     def save(self):
         with connection.cursor() as cursor:
             if self.verse_id:
                 request = """
-UPDATE l_verses
+UPDATE l_songs
    SET num = %s,
        num_verse = %s,
        chorus = %s,
@@ -190,10 +189,10 @@ UPDATE l_verses
 
             else:
                 request = """
-INSERT INTO l_verses (song_id)
+INSERT INTO l_songs (animation_id)
      VALUES (%s)
 """
-                params = [self.song_id]
+                params = [self.animation_id]
 
                 create_SQL_log(code_file, "Verse.save", "INSERT_2", request, params)
                 cursor.execute(request, params)
@@ -205,7 +204,7 @@ INSERT INTO l_verses (song_id)
             raise ValueError("L'ID du couplet est requis pour le supprimer.")
         with connection.cursor() as cursor:
             request = """
-DELETE FROM l_verses
+DELETE FROM l_songs
         WHERE verse_id = %s
 """
             params = [self.verse_id]

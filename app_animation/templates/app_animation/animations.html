@@ -9,28 +9,28 @@
 <table style="width: 100%;">
     <thead>
         <tr>
-            <th style="width: 35%;">Nom</th>
+            <th style="width: 35%;">Titre</th>
             <th style="width: 35%;">Description</th>
             <th style="width: 30%;">Actions</th>
         </tr>
     </thead>
     <tbody>
-        {% for animation in animations %}
+        {% for song in songs %}
         <tr>
-            <td>{{ animation.name }}</td>
-            <td>{{ animation.description }}</td>
+            <td>{{ song.title }}{% if song.sub_title != "" %}<small>&nbsp;- {{ song.sub_title }}{% endif %}</small></td>
+            <td>{{ song.description }}</td>
             <td>
-                <a href="{% url 'modify_animation' animation.id %}">Modifier</a> |
-                <a href="{% url 'delete_animation' animation.id %}">Supprimer</a>
+                <a href="{% url 'modify_song' song.id %}">Modifier</a> |
+                <a href="{% url 'delete_song' song.id %}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
         <tr>
             <form method="post">
                 {% csrf_token %}
-                <td><input type="text" name="name" placeholder="Nouvelle animation" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required /></td>
-                <td><input type="text" name="description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
-                <td><input name="new_animation" value="Ajouter" type="submit" /></td>
+                <td><input type="text" name="txt_new_title" placeholder="Nouveau chant" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
+                <td><input type="text" name="txt_new_description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
+                <td><input name="btn_new_song" value="Ajouter" type="submit" /></td>
             </form>
         </tr>
     </tbody>
@@ -41,7 +41,7 @@
             <th>Actions</th>
         </tr>
     </tfoot>
-    {% if form.errors.name %}
+    {% if form.errors.title %}
         <div class="error">
             <p>{{ form.errors.title }}</p>
         </div>
