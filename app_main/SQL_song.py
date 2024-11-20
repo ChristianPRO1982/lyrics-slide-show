@@ -1,15 +1,12 @@
 from django.db import connection
-import os
 import django.utils.html
+import os
 
 
 
 SQL_REQUEST = os.environ
 code_file = """
 SQL_song.py"""
-
-def addslashes(s):
-    return django.utils.html.escape(s)
 
 
 ##############################################
