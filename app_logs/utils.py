@@ -8,9 +8,6 @@ from datetime import datetime, timedelta
 
 
 SQL_REQUEST_LOG = os.environ
-
-
-# Répertoire des logs
 LOG_DIR = os.path.join(settings.BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)

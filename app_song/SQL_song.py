@@ -70,7 +70,7 @@ ORDER BY title, sub_title
     @classmethod
     def get_song_by_id(cls, song_id):
         with connection.cursor() as cursor:
-            request = f"""
+            request = """
 SELECT *
   FROM l_songs
  WHERE song_id = %s
@@ -101,7 +101,7 @@ UPDATE l_songs
                 cursor.execute(request, params)
 
             else:
-                request = f"""
+                request = """
 INSERT INTO l_songs (title, sub_title, description, artist)
      VALUES (%s, %s, %s, %s)
 """
@@ -116,7 +116,7 @@ INSERT INTO l_songs (title, sub_title, description, artist)
         if not self.song_id:
             raise ValueError("L'ID du chant est requis pour le supprimer.")
         with connection.cursor() as cursor:
-            request = f"""
+            request = """
 DELETE FROM l_songs
       WHERE song_id = %s
 """
@@ -155,7 +155,7 @@ class Verse:
     @staticmethod
     def get_verses_by_song_id(song_id):
         with connection.cursor() as cursor:
-            request = f"""
+            request = """
 SELECT verse_id,
        num,
        num_verse,
@@ -163,7 +163,7 @@ SELECT verse_id,
        followed,
        text
     FROM l_verses
-   WHERE song_id = {song_id}
+   WHERE song_id = %s
 ORDER BY num
 """
             params = [song_id]
@@ -176,7 +176,7 @@ ORDER BY num
     def save(self):
         with connection.cursor() as cursor:
             if self.verse_id:
-                request = f"""
+                request = """
 UPDATE l_verses
    SET num = %s,
        num_verse = %s,
@@ -191,7 +191,7 @@ UPDATE l_verses
                 cursor.execute(request, params)
 
             else:
-                request = f"""
+                request = """
 INSERT INTO l_verses (song_id)
      VALUES (%s)
 """
@@ -206,7 +206,7 @@ INSERT INTO l_verses (song_id)
         if not self.verse_id:
             raise ValueError("L'ID du couplet est requis pour le supprimer.")
         with connection.cursor() as cursor:
-            request = f"""
+            request = """
 DELETE FROM l_verses
         WHERE verse_id = %s
 """
