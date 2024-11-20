@@ -51,11 +51,15 @@ ORDER BY title, sub_title
             if verse.chorus:
                 choruses.append("<b>" + verse.text.replace("\n", "<br>") + "</b>")
 
+        start_by_chorus = True
         for verse in self.verses:
             if not verse.chorus:
                 lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
-                if not verse.followed:
+                if not verse.followed and choruses:
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
+            elif start_by_chorus:
+                lyrics += "<br><br>".join(choruses) + "<br><br>"
+            start_by_chorus = False
         
         if not lyrics:
             lyrics = "<br><br>".join(choruses)
