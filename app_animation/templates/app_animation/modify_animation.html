@@ -19,7 +19,6 @@
     <div>
         <label for="id_date">Date</label><br>
         <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
-        >>>>>{{ animation.date }}
     </div>
 
     {% for animation in animations %}
@@ -38,7 +37,7 @@
                 <option value="{{ animation.id }}">{{ animation.title }}</option>
             {% endfor %}
         </select>
-        <input style="width: 30%;" name="new_animation" value="Ajouter ce chant" type="submit" />
+        <input style="width: 30%;" name="btn_new_song" value="Ajouter ce chant" type="submit" />
     </div>
     <hr>
 

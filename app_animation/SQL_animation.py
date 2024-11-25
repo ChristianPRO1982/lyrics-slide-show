@@ -54,6 +54,7 @@ SELECT *
             return cls(animation_id=row[0], name=row[1], description=row[2], date=row[3])
         return None
 
+
     def save(self):
         with connection.cursor() as cursor:
             if self.animation_id:

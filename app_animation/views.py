@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_animation import Animation
+from app_song.SQL_song import Song
 
 
 
@@ -51,8 +52,8 @@ def modify_animation(request, animation_id):
                 animation.date = request.POST.get('dt_date')
                 animation.save()
 
-                if 'btn_new_chorus' in request.POST:
-                    animation.new_verse()
+                if 'btn_new_song' in request.POST:
+                    animation.new_song()
                 
                 # for verse in animation.verses:
                 #     if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
@@ -69,10 +70,13 @@ def modify_animation(request, animation_id):
 
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('animations')
+    
+    animation = Animation.get_animation_by_id(animation_id)
 
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
+        'all_songs': all_songs,
         'error': error,
     })
 
