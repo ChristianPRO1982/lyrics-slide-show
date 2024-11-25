@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% block title %}Liste des animations{% endblock title %}
-{% block title_h1 %}Liste des animations{% endblock title_h1 %}
+{% block name %}Liste des animations{% endblock name %}
+{% block name_h1 %}Liste des animations{% endblock name_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
@@ -9,41 +9,44 @@
 <table style="width: 100%;">
     <thead>
         <tr>
-            <th style="width: 35%;">Titre</th>
-            <th style="width: 35%;">Description</th>
-            <th style="width: 30%;">Actions</th>
+            <th style="width: 25%;">Nom</th>
+            <th style="width: 25%;">Description</th>
+            <th style="width: 25%;">Date</th>
+            <th style="width: 24%;">Actions</th>
         </tr>
     </thead>
     <tbody>
-        {% for song in songs %}
+        {% for animation in animations %}
         <tr>
-            <td>{{ song.title }}{% if song.sub_title != "" %}<small>&nbsp;- {{ song.sub_title }}{% endif %}</small></td>
-            <td>{{ song.description }}</td>
+            <td>{{ animation.name }}</td>
+            <td>{{ animation.description }}</td>
+            <td>{{ animation.date }}</td>
             <td>
-                <a href="{% url 'modify_song' song.id %}">Modifier</a> |
-                <a href="{% url 'delete_song' song.id %}">Supprimer</a>
+                <a href="{% url 'modify_animation' animation.animation_id %}">Modifier</a> |
+                <a href="{% url 'delete_animation' animation.animation_id %}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
         <tr>
             <form method="post">
                 {% csrf_token %}
-                <td><input type="text" name="txt_new_title" placeholder="Nouveau chant" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
+                <td><input type="text" name="txt_new_name" placeholder="Nouvel animation" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required /></td>
                 <td><input type="text" name="txt_new_description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
-                <td><input name="btn_new_song" value="Ajouter" type="submit" /></td>
+                <td><input type="text" name="txt_new_date" placeholder="AAAA-MM-JJ" {% if date != '' %}value="{{ date }}"{% endif %} required /></td>
+                <td><input name="btn_new_animation" value="Ajouter" type="submit" /></td>
             </form>
         </tr>
     </tbody>
     <tfoot>
         <tr>
-            <th>Titre</th>
+            <th>Nom</th>
             <th>Description</th>
             <th>Actions</th>
         </tr>
     </tfoot>
-    {% if form.errors.title %}
+    {% if form.errors.name %}
         <div class="error">
-            <p>{{ form.errors.title }}</p>
+            <p>{{ form.errors.name }}</p>
         </div>
     {% endif %}
 </table>
