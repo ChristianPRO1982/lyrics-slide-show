@@ -10,15 +10,16 @@
     {% csrf_token %}
     <div>
         <label for="id_name">Nom</label><br>
-        <input type="text" name="name" id="id_name" maxlength="255" value="{{ animation.name }}" required style="width: 100%;">
+        <input type="text" name="txt_name" id="id_name" maxlength="255" value="{{ animation.name }}" style="width: 100%;" required>
     </div>
     <div>
         <label for="id_description">Description</label><br>
-        <textarea name="description" id="id_description" style="width: 100%;">{{ animation.description }}</textarea>
+        <textarea name="txt_description" id="id_description" style="width: 100%;">{{ animation.description }}</textarea>
     </div>
     <div>
         <label for="id_date">Date</label><br>
-        <textarea name="date" id="id_date" style="width: 100%;">{{ animation.date }}</textarea>
+        <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
+        >>>>>{{ animation.date }}
     </div>
 
     {% for animation in animations %}
@@ -41,8 +42,8 @@
     </div>
     <hr>
 
-    <input name="save" value="Enregistrer" type="submit" />
-    <input name="save_exit" value="Enregsitrer + retour à la liste" type="submit" />
-    <input name="cancel" value="Annuler" type="submit" />
+    <input name="btn_save" value="Enregistrer" type="submit" />
+    <input name="btn_save_exit" value="Enregsitrer + retour à la liste" type="submit" />
+    <input name="btn_cancel" value="Annuler" type="submit" />
 </form>
 {% endblock content %}

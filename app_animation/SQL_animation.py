@@ -1,6 +1,5 @@
 from django.db import connection
-from app_logs.utils import create_log, create_SQL_log
-import os
+from app_logs.utils import create_SQL_log
 
 
 
@@ -8,11 +7,11 @@ code_file = """
 SQL_animation.py"""
 
 
-##############################################
-##############################################
-#################### SONG ####################
-##############################################
-##############################################
+###################################################
+###################################################
+#################### ANIMATION ####################
+###################################################
+###################################################
 class Animation:
     def __init__(self, animation_id=None, name=None, description=None, date=None):
         self.animation_id = animation_id

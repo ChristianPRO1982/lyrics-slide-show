@@ -1,6 +1,5 @@
 from django.db import connection
-from app_logs.utils import create_log, create_SQL_log
-import os
+from app_logs.utils import create_SQL_log
 
 
 

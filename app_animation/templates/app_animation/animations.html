@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% block name %}Liste des animations{% endblock name %}
-{% block name_h1 %}Liste des animations{% endblock name_h1 %}
+{% block title %}Liste des animations{% endblock title %}
+{% block title_h1 %}Liste des animations{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
@@ -32,7 +32,7 @@
                 {% csrf_token %}
                 <td><input type="text" name="txt_new_name" placeholder="Nouvel animation" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required /></td>
                 <td><input type="text" name="txt_new_description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
-                <td><input type="text" name="txt_new_date" placeholder="AAAA-MM-JJ" {% if date != '' %}value="{{ date }}"{% endif %} required /></td>
+                <td><input type="date" name="dt_new_date" placeholder="AAAA-MM-JJ" {% if date != '' %}value="{{ date }}"{% endif %} required /></td>
                 <td><input name="btn_new_animation" value="Ajouter" type="submit" /></td>
             </form>
         </tr>

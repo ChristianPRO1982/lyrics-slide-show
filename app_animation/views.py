@@ -15,7 +15,7 @@ def animations(request):
             new_animation = Animation(
                             name = request.POST.get('txt_new_name'),
                             description = request.POST.get('txt_new_description'),
-                            date = request.POST.get('txt_new_date'),
+                            date = request.POST.get('dt_new_date'),
                            )
             new_animation.save()
             request.POST = request.POST.copy()
@@ -47,26 +47,25 @@ def modify_animation(request, animation_id):
                 error = "Le nom est obligatoire."
             else:
                 animation.name = request.POST.get('txt_name')
-                animation.sub_name = request.POST.get('txt_sub_name')
                 animation.description = request.POST.get('txt_description')
-                animation.artist = request.POST.get('txt_artist')
+                animation.date = request.POST.get('dt_date')
                 animation.save()
 
                 if 'btn_new_chorus' in request.POST:
                     animation.new_verse()
                 
-                for verse in animation.verses:
-                    if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
-                        verse.delete()
-                    else:
-                        verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
-                        verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
-                        verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
-                        if verse.text is None:
-                            verse.text = ''
+                # for verse in animation.verses:
+                #     if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
+                #         verse.delete()
+                #     else:
+                #         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
+                #         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                #         verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
+                #         if verse.text is None:
+                #             verse.text = ''
                     
-                    verse.save()
-                    animation.get_verses()
+                #     verse.save()
+                #     animation.get_verses()
 
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('animations')
