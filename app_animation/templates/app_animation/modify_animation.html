@@ -32,9 +32,9 @@
 
     <hr>
     <div style="text-align: center;">
-        <select style="width: 69%;" name="new_animation_select" style="width: 100%;">
-            {% for animation in all_animations %}
-                <option value="{{ animation.id }}">{{ animation.title }}</option>
+        <select style="width: 69%;" name="lis_song_id" style="width: 100%;">
+            {% for song in all_songs %}
+                <option value="{{ song.song_id }}">{% if song.artist %}{{ song.artist }} - {% endif %}{{ song.title }} - {{ song.sub_title }}</option>
             {% endfor %}
         </select>
         <input style="width: 30%;" name="btn_new_song" value="Ajouter ce chant" type="submit" />

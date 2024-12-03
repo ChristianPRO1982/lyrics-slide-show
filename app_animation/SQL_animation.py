@@ -1,10 +1,10 @@
 from django.db import connection
 from app_logs.utils import create_SQL_log
+from app_song.SQL_song import Song
 
 
 
-code_file = """
-SQL_animation.py"""
+code_file = "SQL_animation.py"
 
 
 ###################################################
@@ -19,6 +19,7 @@ class Animation:
         self.description = description
         self.date = date
         self.songs = []
+        self.all_songs()
 
 
     @staticmethod
@@ -35,6 +36,22 @@ ORDER BY date, name
             cursor.execute(request, params)
             rows = cursor.fetchall()
         return [{'animation_id': row[0], 'name': row[1], 'description': row[2], 'date': row[3]} for row in rows]
+    
+
+    @staticmethod
+    def get_all_songs():
+        request = """
+  SELECT song_id, artist, title, sub_title
+    FROM l_songs
+ORDER BY artist, title, sub_title
+"""
+        params = []
+
+        create_SQL_log(code_file, "Animations.get_all_songs", "SELECT_4", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+        return [{'song_id': row[0], 'artist': row[1], 'title': row[2], 'sub_title': row[3]} for row in rows]
     
 
     @classmethod
@@ -94,3 +111,20 @@ DELETE FROM l_anmations
 
             create_SQL_log(code_file, "Animations.delete", "DELETE_1", request, params)
             cursor.execute(request, params)
+
+
+    def all_songs(self):
+        if not self.animation_id:
+            raise ValueError("L'ID de l'animation est requis pour obtenir les chants.")
+        with connection.cursor() as cursor:
+            request = """
+SELECT *
+  FROM l_animation_song
+ WHERE animation_id = %s
+"""
+            params = [self.animation_id]
+
+            create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
+            cursor.execute(request, params)
+            self.songs = cursor.fetchall()
+    

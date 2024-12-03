@@ -76,7 +76,7 @@ def modify_animation(request, animation_id):
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
-        'all_songs': all_songs,
+        'all_songs': animation.get_all_songs(),
         'error': error,
     })
 

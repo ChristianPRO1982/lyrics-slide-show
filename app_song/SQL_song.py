@@ -3,8 +3,7 @@ from app_logs.utils import create_SQL_log
 
 
 
-code_file = """
-SQL_song.py"""
+code_file = "SQL_song.py"
 
 
 ##############################################
