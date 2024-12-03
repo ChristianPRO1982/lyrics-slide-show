@@ -67,6 +67,9 @@ def modify_animation(request, animation_id):
                     
                 #     verse.save()
                 #     animation.get_verses()
+            
+            # reload animation
+            animation = Animation.get_animation_by_id(animation_id)
 
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('animations')
@@ -74,12 +77,23 @@ def modify_animation(request, animation_id):
         # Recalculate the 'order' for all songs
         for index, song in enumerate(animation.songs):
             animation.update_song_order(song['animation_song_id'], (index + 1) * 2)
-
+    
+    # import song's lyrics
+    lyrics = []
+    for song in animation.songs:
+        song_lyrics = Song.get_song_by_id(song['song_id'])
+        song_lyrics.get_verses()
+        lyrics.append({
+            'song_id': song['song_id'],
+            'full_title': song_lyrics.full_title,
+            'lyrics':  song_lyrics.get_lyrics(),
+        })
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
-        'all_songs': animation.get_all_songs(),
+        'all_songs': Song.get_all_songs(),
         'songs_already_in': animation.get_songs_already_in(),
+        'lyrics': lyrics,
         'error': error,
     })
 

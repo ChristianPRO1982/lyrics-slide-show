@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import connection
 from app_logs.utils import create_SQL_log
 
@@ -12,21 +13,30 @@ code_file = "SQL_song.py"
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None, full_title=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
         self.description = description
         self.artist = artist
+        self.full_title = full_title
         self.verses = []
 
 
     @staticmethod
     def get_all_songs():
         request = """
-  SELECT *
+  SELECT *, CONCAT(
+                   CASE 
+                       WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
+                       ELSE title
+                   END,
+                   CASE 
+                       WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                       ELSE ''
+                   END) AS full_title
     FROM l_songs
-ORDER BY title, sub_title
+ORDER BY artist, title, sub_title
 """
         params = []
 
@@ -34,7 +44,7 @@ ORDER BY title, sub_title
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4]} for row in rows]
+        return [{'song_id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4], 'full_title': row[5]} for row in rows]
     
 
     def get_lyrics(self):
@@ -67,7 +77,15 @@ ORDER BY title, sub_title
     def get_song_by_id(cls, song_id):
         with connection.cursor() as cursor:
             request = """
-SELECT *
+SELECT *, CONCAT(
+                 CASE 
+                     WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
+                     ELSE title
+                 END,
+                 CASE 
+                     WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                     ELSE ''
+                 END) AS full_title
   FROM l_songs
  WHERE song_id = %s
 """
@@ -77,7 +95,7 @@ SELECT *
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4])
+            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4], full_title=row[5])
         return None
 
     def save(self):

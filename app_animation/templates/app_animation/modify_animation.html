@@ -3,9 +3,39 @@
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc2 %}
+<div id="song-lyrics">
+    <h3>Select a song to see details</h3>
+</div>
+{% endblock bloc2 %}
 
 {% block content %}
+<script>
+    const pythonLyrics = JSON.parse(
+        '{{ lyrics|safe|escapejs }}'
+    );
+    {% comment %} const database = {
+        1: { title: "Song 1", lyrics: "Description for Song 1" },
+        2: { title: "Song 2", lyrics: "Description for Song 2" },
+        3: { title: "Song 3", lyrics: "Description for Song 3" }
+    }; {% endcomment %}
+    const database = {};
+    pythonLyrics.forEach(item => {
+        database[item.song_id] = { title: item.title, lyrics: item.lyrics };
+    });
+
+
+    function updateDiv(songId) {
+        const song = database[songId];
+        if (song) {
+            document.getElementById('song-lyrics').innerHTML = `
+                <h3>${song.title}</h3>
+                <p>${song.lyrics}</p>
+            `;
+        }
+    }
+</script>
+
 <form method="post" action="{% url "modify_animation" animation.animation_id %}">
     {% csrf_token %}
     <div>
@@ -24,7 +54,9 @@
     {% for song in animation.songs %}
         <hr>
         <div class="mt-1 px-1 border border-pink">
-            <h2 class"mb-1">{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</h2>
+            <h2 class"mb-1">{% for s in all_songs %}
+                {% if s.song_id == song.song_id %}{{ s.full_title }}{% endif %}
+            {% endfor %}</h2>
             <input type="hidden" name="animation_id_{{ song.animation_song_id }}" value="{{ song.animation_song_id }}">
             <input style="width: 10%;" type="checkbox" name="delete_song_{{ song.animation_song_id }}" id="delete_song_{{ song.animation_song_id }}" />
             <label for="delete_song_{{ song.animation_song_id }}">Supprimer</label>
@@ -36,16 +68,25 @@
     <div style="text-align: center;">
         <select style="width: 69%;" name="sel_song_id" style="width: 100%;">
             {% for song in all_songs %}
-                <option value="{{ song.song_id }}">{% if song.song_id in songs_already_in %}# {% endif %}{% if song.artist %}[{{ song.artist }}] {% endif %}{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</option>
+                <option value="{{ song.song_id }}">{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title }}</option>
             {% endfor %}
         </select>
         <input style="width: 30%;" name="btn_new_song" value="Ajouter ce chant" type="submit" />
     </div>
     
     <hr>
-
+    
     <input name="btn_save" value="Enregistrer" type="submit" />
     <input name="btn_save_exit" value="Enregsitrer + retour à la liste" type="submit" />
     <input name="btn_cancel" value="Annuler" type="submit" />
 </form>
+
+
+{% comment %} {{ lyrics }} {% endcomment %}
+
+<div>
+    <a href="javascript:void(0);" onclick="updateDiv(1)">Song 1</a><br>
+    <a href="javascript:void(0);" onclick="updateDiv(11)">Song 2</a><br>
+    <a href="javascript:void(0);" onclick="updateDiv(3)">Song 3</a><br>
+</div>
 {% endblock content %}

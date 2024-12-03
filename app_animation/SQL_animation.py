@@ -38,22 +38,6 @@ ORDER BY date, name
         return [{'animation_id': row[0], 'name': row[1], 'description': row[2], 'date': row[3]} for row in rows]
     
 
-    @staticmethod
-    def get_all_songs():
-        request = """
-  SELECT song_id, artist, title, sub_title
-    FROM l_songs
-ORDER BY artist, title, sub_title
-"""
-        params = []
-
-        create_SQL_log(code_file, "Animations.get_all_songs", "SELECT_4", request, params)
-        with connection.cursor() as cursor:
-            cursor.execute(request, params)
-            rows = cursor.fetchall()
-        return [{'song_id': row[0], 'artist': row[1], 'title': row[2], 'sub_title': row[3]} for row in rows]
-    
-
     @classmethod
     def get_animation_by_id(cls, animation_id):
         with connection.cursor() as cursor:

@@ -20,8 +20,8 @@
             <td>{{ song.title }}{% if song.sub_title != "" %}<small>&nbsp;- {{ song.sub_title }}</small>{% endif %}</td>
             <td>{{ song.description }}</td>
             <td>
-                <a href="{% url 'modify_song' song.id %}">Modifier</a> |
-                <a href="{% url 'delete_song' song.id %}">Supprimer</a>
+                <a href="{% url 'modify_song' song.song_id %}">Modifier</a> |
+                <a href="{% url 'delete_song' song.song_id %}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
