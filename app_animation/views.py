@@ -53,30 +53,33 @@ def modify_animation(request, animation_id):
                 animation.save()
 
                 if 'btn_new_song' in request.POST:
-                    animation.new_song(request.POST.get('sel_song_id'))
+                    animation.new_song_verses(request.POST.get('sel_song_id'))
                 
-                for verse in animation.verses:
-                    if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
-                        verse.delete()
-                    else:
-                        verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
-                        verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
-                        verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
-                        if verse.text is None:
-                            verse.text = ''
+                # for verse in animation.verses:
+                #     if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
+                #         verse.delete()
+                #     else:
+                #         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
+                #         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                #         verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
+                #         if verse.text is None:
+                #             verse.text = ''
                     
-                    verse.save()
-                    animation.get_verses()
+                #     verse.save()
+                #     animation.get_verses()
 
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('animations')
     
-    animation = Animation.get_animation_by_id(animation_id)
+        # Recalculate the 'order' for all songs
+        for index, song in enumerate(animation.songs):
+            animation.update_song_order(song['animation_song_id'], (index + 1) * 2)
 
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
         'all_songs': animation.get_all_songs(),
+        'songs_already_in': animation.get_songs_already_in(),
         'error': error,
     })
 

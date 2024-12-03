@@ -21,24 +21,27 @@
         <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
     </div>
 
-    {% for animation in animations %}
+    {% for song in animation.songs %}
+        <hr>
         <div class="mt-1 px-1 border border-pink">
-            <input type="hidden" name="animation_id_{{ animation.animation_id }}" value="{{ animation.animation_id }}">
-            <input style="width: 10%;" type="checkbox" name="delete_animation_{{ animation.animation_id }}"
-            id="delete_animation_{{ animation.animation_id }}" />
-            <label for="delete_animation_{{ animation.animation_id }}">Supprimer</label>
+            <h2 class"mb-1">{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</h2>
+            <input type="hidden" name="animation_id_{{ song.animation_song_id }}" value="{{ song.animation_song_id }}">
+            <input style="width: 10%;" type="checkbox" name="delete_song_{{ song.animation_song_id }}" id="delete_song_{{ song.animation_song_id }}" />
+            <label for="delete_song_{{ song.animation_song_id }}">Supprimer</label>
         </div>
     {% endfor %}
 
     <hr>
+
     <div style="text-align: center;">
         <select style="width: 69%;" name="sel_song_id" style="width: 100%;">
             {% for song in all_songs %}
-                <option value="{{ song.song_id }}">{% if song.artist %}[{{ song.artist }}] {% endif %}{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</option>
+                <option value="{{ song.song_id }}">{% if song.song_id in songs_already_in %}# {% endif %}{% if song.artist %}[{{ song.artist }}] {% endif %}{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</option>
             {% endfor %}
         </select>
         <input style="width: 30%;" name="btn_new_song" value="Ajouter ce chant" type="submit" />
     </div>
+    
     <hr>
 
     <input name="btn_save" value="Enregistrer" type="submit" />

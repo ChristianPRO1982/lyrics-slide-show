@@ -126,10 +126,11 @@ SELECT *
 
             create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
             cursor.execute(request, params)
-            self.songs = cursor.fetchall()
+            rows = cursor.fetchall()
+            self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'order': row[3], 'verses': row[4]} for row in rows]
     
 
-    def new_song(self, song_id=None):
+    def new_song_verses(self, song_id=None):
         if not self.animation_id:
             raise ValueError("L'ID de l'animation est requis pour ajouter un chant.")
         if not song_id:
@@ -144,7 +145,7 @@ SELECT verse_id
 """
             params = [song_id]
 
-            create_SQL_log(code_file, "Animations.new_song", "SELECT_5", request, params)
+            create_SQL_log(code_file, "Animations.new_song_verses", "SELECT_5", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
             verses = ','.join(str(row[0]) for row in rows)
@@ -158,3 +159,31 @@ INSERT INTO l_animation_song (animation_id, song_id, verses)
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
             cursor.execute(request, params)
+
+
+    def update_song_order(self, animation_song_id, order):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_animation_song
+   SET `order` = %s
+ WHERE animation_song_id = %s
+"""
+            params = [order, animation_song_id]
+
+            create_SQL_log(code_file, "Animations.update_song_order", "UPDATE_2", request, params)
+            cursor.execute(request, params)
+    
+
+    def get_songs_already_in(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT song_id
+  FROM l_animation_song
+ WHERE animation_id = %s
+    """
+            params = [self.animation_id]
+
+            create_SQL_log(code_file, "Animations.get_songs_already_in", "SELECT_6", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [row[0] for row in rows]

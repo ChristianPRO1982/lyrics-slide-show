@@ -7,8 +7,10 @@ from datetime import datetime, timedelta
 
 
 
-SQL_REQUEST_LOG = os.environ
+DEBUG = os.getenv('DEBUG')
+SQL_REQUEST_LOG = os.getenv('SQL_REQUEST_LOG')
 LOG_DIR = os.path.join(settings.BASE_DIR, 'logs')
+
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -37,7 +39,10 @@ def create_log(app_name, function_name, text, log_type='info'):
 
 
 def create_SQL_log(app_name, function_name, request_name, request, params):
-    if SQL_REQUEST_LOG:
+    if SQL_REQUEST_LOG == '1':
+        print(f"[{app_name}][{request_name}]")
+        
+    elif SQL_REQUEST_LOG == '2':
         formatted_params = [
             f"'{str(param).replace('\'', '\\\'')}'" if isinstance(param, str) else str(param)
             for param in params

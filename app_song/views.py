@@ -71,14 +71,14 @@ def modify_song(request, song_id):
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('songs')
 
-    # Recalculate the 'num' for all choruses/verses
-    num_verse = 1
-    for index, verse in enumerate(song.verses):
-        verse.num = (index + 1) * 2
-        verse.num_verse = num_verse
-        if not verse.chorus:
-            num_verse = num_verse + 1
-        verse.save()
+        # Recalculate the 'num' for all choruses/verses
+        num_verse = 1
+        for index, verse in enumerate(song.verses):
+            verse.num = (index + 1) * 2
+            verse.num_verse = num_verse
+            if not verse.chorus:
+                num_verse = num_verse + 1
+            verse.save()
 
     song_lyrics = song.get_lyrics()
 
