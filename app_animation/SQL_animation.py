@@ -128,3 +128,33 @@ SELECT *
             cursor.execute(request, params)
             self.songs = cursor.fetchall()
     
+
+    def new_song(self, song_id=None):
+        if not self.animation_id:
+            raise ValueError("L'ID de l'animation est requis pour ajouter un chant.")
+        if not song_id:
+            raise ValueError("L'ID du chant est requis pour ajouter un chant.")
+        
+        with connection.cursor() as cursor:
+            request = """
+SELECT verse_id
+  FROM l_verses
+ WHERE song_id = %s
+   AND chorus = FALSE
+"""
+            params = [song_id]
+
+            create_SQL_log(code_file, "Animations.new_song", "SELECT_5", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            verses = ','.join(str(row[0]) for row in rows)
+
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_animation_song (animation_id, song_id, verses)
+     VALUES (%s, %s, %s)
+"""
+            params = [self.animation_id, song_id, verses]
+
+            create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
+            cursor.execute(request, params)
