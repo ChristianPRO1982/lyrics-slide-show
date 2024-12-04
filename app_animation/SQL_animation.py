@@ -98,21 +98,20 @@ DELETE FROM l_anmations
 
 
     def all_songs(self):
-        if not self.animation_id:
-            raise ValueError("L'ID de l'animation est requis pour obtenir les chants.")
-        with connection.cursor() as cursor:
-            request = """
+        if self.animation_id:
+            with connection.cursor() as cursor:
+                request = """
   SELECT *
     FROM l_animation_song
    WHERE animation_id = %s
 ORDER BY num
 """
-            params = [self.animation_id]
+                params = [self.animation_id]
 
-            create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
-            cursor.execute(request, params)
-            rows = cursor.fetchall()
-            self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'num': row[3], 'verses': row[4]} for row in rows]
+                create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'num': row[3], 'verses': row[4]} for row in rows]
     
 
     def new_song_verses(self, song_id=None):

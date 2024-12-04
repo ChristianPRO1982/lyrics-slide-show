@@ -76,7 +76,7 @@ def modify_animation(request, animation_id):
     
         # Recalculate the 'order' for all songs
         for index, song in enumerate(animation.songs):
-            animation.update_song_order(song['animation_song_id'], (index + 1) * 2)
+            animation.update_song_num(song['animation_song_id'], (index + 1) * 2)
     
     # import song's lyrics
     lyrics = []
