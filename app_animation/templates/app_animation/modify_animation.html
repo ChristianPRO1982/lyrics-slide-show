@@ -5,31 +5,27 @@
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}
 <div id="song-lyrics">
-    <h3>Select a song to see details</h3>
+    Sélectionnez un chant pour voir les paroles
 </div>
 {% endblock bloc2 %}
 
 {% block content %}
 <script>
-    const pythonLyrics = JSON.parse(
-        '{{ lyrics|safe|escapejs }}'
-    );
-    {% comment %} const database = {
-        1: { title: "Song 1", lyrics: "Description for Song 1" },
-        2: { title: "Song 2", lyrics: "Description for Song 2" },
-        3: { title: "Song 3", lyrics: "Description for Song 3" }
-    }; {% endcomment %}
     const database = {};
-    pythonLyrics.forEach(item => {
-        database[item.song_id] = { title: item.title, lyrics: item.lyrics };
-    });
+
+    {% for lyrics in list_lyrics %}
+    i = {{ lyrics.song_id }};
+    v_title = "{{ lyrics.full_title }}";
+    v_lyrics = "{{ lyrics.lyrics|safe|escapejs }}";
+    database[i] = { title: v_title, lyrics: v_lyrics };
+    {% endfor %}
 
 
     function updateDiv(songId) {
         const song = database[songId];
         if (song) {
             document.getElementById('song-lyrics').innerHTML = `
-                <h3>${song.title}</h3>
+                <h3 class="font-bold text-xl p-4">${song.title}</h3>
                 <p>${song.lyrics}</p>
             `;
         }
@@ -59,7 +55,8 @@
             {% endfor %}</h2>
             <input type="hidden" name="animation_id_{{ song.animation_song_id }}" value="{{ song.animation_song_id }}">
             <input style="width: 10%;" type="checkbox" name="delete_song_{{ song.animation_song_id }}" id="delete_song_{{ song.animation_song_id }}" />
-            <label for="delete_song_{{ song.animation_song_id }}">Supprimer</label>
+            <label for="delete_song_{{ song.animation_song_id }}">Supprimer</label><hr>
+            <a href="javascript:void(0);" onclick="updateDiv({{ song.song_id }})">Voir le chant</a>
         </div>
     {% endfor %}
 
@@ -80,13 +77,4 @@
     <input name="btn_save_exit" value="Enregsitrer + retour à la liste" type="submit" />
     <input name="btn_cancel" value="Annuler" type="submit" />
 </form>
-
-
-{% comment %} {{ lyrics }} {% endcomment %}
-
-<div>
-    <a href="javascript:void(0);" onclick="updateDiv(1)">Song 1</a><br>
-    <a href="javascript:void(0);" onclick="updateDiv(11)">Song 2</a><br>
-    <a href="javascript:void(0);" onclick="updateDiv(3)">Song 3</a><br>
-</div>
 {% endblock content %}

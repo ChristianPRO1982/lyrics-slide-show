@@ -79,11 +79,15 @@ def modify_animation(request, animation_id):
             animation.update_song_num(song['animation_song_id'], (index + 1) * 2)
     
     # import song's lyrics
-    lyrics = []
+    database = ''
+    list_lyrics = []
     for song in animation.songs:
         song_lyrics = Song.get_song_by_id(song['song_id'])
         song_lyrics.get_verses()
-        lyrics.append({
+        
+        full_title = song_lyrics.full_title
+        print('>>>>>', full_title)
+        list_lyrics.append({
             'song_id': song['song_id'],
             'full_title': song_lyrics.full_title,
             'lyrics':  song_lyrics.get_lyrics(),
@@ -93,7 +97,7 @@ def modify_animation(request, animation_id):
         'animation': animation,
         'all_songs': Song.get_all_songs(),
         'songs_already_in': animation.get_songs_already_in(),
-        'lyrics': lyrics,
+        'list_lyrics': list_lyrics,
         'error': error,
     })
 
