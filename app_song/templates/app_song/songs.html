@@ -17,7 +17,7 @@
     <tbody>
         {% for song in songs %}
         <tr>
-            <td>{{ song.title }}{% if song.sub_title != "" %}<small>&nbsp;- {{ song.sub_title }}</small>{% endif %}</td>
+            <td>{{ song.full_title }}</td>
             <td>{{ song.description }}</td>
             <td>
                 <a href="{% url 'modify_song' song.song_id %}">Modifier</a> |

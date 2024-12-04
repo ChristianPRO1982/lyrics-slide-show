@@ -102,16 +102,17 @@ DELETE FROM l_anmations
             raise ValueError("L'ID de l'animation est requis pour obtenir les chants.")
         with connection.cursor() as cursor:
             request = """
-SELECT *
-  FROM l_animation_song
- WHERE animation_id = %s
+  SELECT *
+    FROM l_animation_song
+   WHERE animation_id = %s
+ORDER BY num
 """
             params = [self.animation_id]
 
             create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
-            self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'order': row[3], 'verses': row[4]} for row in rows]
+            self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'num': row[3], 'verses': row[4]} for row in rows]
     
 
     def new_song_verses(self, song_id=None):
@@ -145,16 +146,16 @@ INSERT INTO l_animation_song (animation_id, song_id, verses)
             cursor.execute(request, params)
 
 
-    def update_song_order(self, animation_song_id, order):
+    def update_song_num(self, animation_song_id, num):
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song
-   SET `order` = %s
+   SET num = %s
  WHERE animation_song_id = %s
 """
-            params = [order, animation_song_id]
+            params = [num, animation_song_id]
 
-            create_SQL_log(code_file, "Animations.update_song_order", "UPDATE_2", request, params)
+            create_SQL_log(code_file, "Animations.update_song_num", "UPDATE_2", request, params)
             cursor.execute(request, params)
     
 
