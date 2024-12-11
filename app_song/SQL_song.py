@@ -59,7 +59,8 @@ ORDER BY artist, title, sub_title
         start_by_chorus = True
         for verse in self.verses:
             if not verse.chorus:
-                lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
+                if verse.text:
+                    lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
                 if not verse.followed and choruses:
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
             elif start_by_chorus:
