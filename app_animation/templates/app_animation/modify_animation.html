@@ -52,19 +52,16 @@
         <div class="mt-1 px-1 border border-pink">
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 60%;">
-                    <h2 class"mb-1"><p class="font-bold">{% for s in all_songs %}
-                        {% if s.song_id == song.song_id %}{{ s.full_title }}{% endif %}
-                    {% endfor %}</p></h2>
+                    <h2 class"mb-1"><p class="font-bold">{{ song.full_title }}</p></h2>
                 </div>
                 <div style="text-align: right; width: 40%;">
                     Déplacer :
-                    {{ animation.songs }}
-                    <select name="lis_move_to_{{ song.animation_song_id }} }}">
+                    <select name="lis_move_to_{{ song.animation_song_id }} }}" style="width: 100%;">
                         <optgroup label="avant">
                             {% for lis_move_to_song in animation.songs %}
                                 {% if lis_move_to_song.num < song.num %}
                                     <option value="{{ lis_move_to_song.num|add:"-1" }}">
-                                        chant n°{{ lis_move_to_song.num }} : {{ lis_move_to_song.title }}
+                                        chant n°{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -74,7 +71,7 @@
                             {% for lis_move_to_song in animation.songs %}
                                 {% if lis_move_to_song.num > song.num %}
                                     <option value="{{ lis_move_to_song.num|add:"+1" }}">
-                                        chant n°{{ lis_move_to_song.num }} : {{ lis_move_to_song.title }}
+                                        chant n°{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
                                     </option>
                                 {% endif %}
                             {% endfor %}

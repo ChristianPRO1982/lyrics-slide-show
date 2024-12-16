@@ -48,7 +48,7 @@
                 </div>
                 <div style="text-align: right; width: 35%;">
                     Déplacer :
-                    <select name="lis_move_to_{{ verse.verse_id }}">
+                    <select name="lis_move_to_{{ verse.verse_id }}" style="width: 100%;">
                         <optgroup label="avant">
                             {% for lis_move_to_verse in verses %}
                                 {% if lis_move_to_verse.num < verse.num %}

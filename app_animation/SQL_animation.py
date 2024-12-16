@@ -101,17 +101,35 @@ DELETE FROM l_anmations
         if self.animation_id:
             with connection.cursor() as cursor:
                 request = """
-  SELECT *
-    FROM l_animation_song
-   WHERE animation_id = %s
-ORDER BY num
+  SELECT las.*, CONCAT(
+                      CASE 
+                          WHEN s.artist != '' THEN CONCAT('[', s.artist, '] - ', s.title)
+                          ELSE title
+                      END,
+                      CASE 
+                          WHEN s.sub_title != '' THEN CONCAT(' - ', s.sub_title)
+                          ELSE ''
+                      END) AS full_title,
+         ROUND(las.num / 2, 0) as numD2
+    FROM l_animation_song las
+    JOIN l_songs s ON las.song_id = s.song_id
+   WHERE las.animation_id = %s
+ORDER BY s.title, s.sub_title
 """
                 params = [self.animation_id]
 
                 create_SQL_log(code_file, "Animations.all_songs", "SELECT_3", request, params)
                 cursor.execute(request, params)
                 rows = cursor.fetchall()
-                self.songs = [{'animation_song_id': row[0], 'animation_id': row[1], 'song_id': row[2], 'num': row[3], 'verses': row[4]} for row in rows]
+                self.songs = [{
+                        'animation_song_id': row[0],
+                        'animation_id': row[1],
+                        'song_id': row[2],
+                        'num': row[3],
+                        'verses': row[4],
+                        'full_title': row[5],
+                        'numD2': row[6],
+                    } for row in rows]
     
 
     def new_song_verses(self, song_id=None):
