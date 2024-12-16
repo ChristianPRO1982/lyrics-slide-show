@@ -58,7 +58,7 @@ CREATE TABLE `l_verses` (
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-CREATE DEFINER=`admin`@`localhost` TRIGGER `before_update_l_verses` BEFORE UPDATE ON `l_verses` FOR EACH ROW BEGIN
+CREATE DEFINER=`root`@`localhost` TRIGGER `before_update_l_verses` BEFORE UPDATE ON `l_verses` FOR EACH ROW BEGIN
     IF NEW.chorus = TRUE THEN
         SET NEW.followed = FALSE;
     END IF;

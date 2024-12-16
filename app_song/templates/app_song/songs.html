@@ -18,7 +18,10 @@
         {% for song in songs %}
         <tr>
             <td>{{ song.full_title }}</td>
-            <td>{{ song.description }}</td>
+            <td>
+                {{ song.description|slice:":100" }}
+                {% if song.description|length > 100 %} [...] {% endif %}
+            </td>
             <td>
                 <a href="{% url 'modify_song' song.song_id %}">Modifier</a> |
                 <a href="{% url 'delete_song' song.song_id %}">Supprimer</a>
