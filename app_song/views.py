@@ -52,7 +52,7 @@ def modify_song(request, song_id):
                 song.artist = request.POST.get('txt_artist')
                 song.save()
 
-                if 'btn_new_chorus' in request.POST:
+                if 'btn_new_verse' in request.POST:
                     song.new_verse()
                 
                 for verse in song.verses:
@@ -61,6 +61,7 @@ def modify_song(request, song_id):
                     else:
                         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
                         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                        verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
                         verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
                         if verse.text is None:
                             verse.text = ''
@@ -71,7 +72,7 @@ def modify_song(request, song_id):
         if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
             return redirect('songs')
 
-        # Recalculate the 'num' for all choruses/verses
+        # Recalculate 'num' and 'num_verse' the for all choruses/verses
         num_verse = 1
         for index, verse in enumerate(song.verses):
             verse.num = (index + 1) * 2

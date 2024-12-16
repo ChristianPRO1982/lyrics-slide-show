@@ -30,21 +30,54 @@
     {% for verse in verses %}
         <div class="mt-1 px-1 border border-pink">
             <div style="display: flex; justify-content: space-between;">
-                <div style="text-align: left; width: {% if verse.chorus %}75%{% else %}50%{% endif %};">
+                <div style="text-align: left; width: 40%;">
                     <input style="width: 10%;" type="checkbox" name="box_verse_chorus_{{ verse.verse_id }}"
                     id="box_verse_chorus_{{ verse.verse_id }}" {% if verse.chorus %}checked{% endif %} />
                     <label for="box_verse_chorus_{{ verse.verse_id }}">Refrain</label>
-
-                    <input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
-                    id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
-                    <label for="box_verse_followed_{{ verse.verse_id }}">Suivi</label>
+                    
+                    {% if not verse.chorus %}
+                        <input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
+                        id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
+                        <label for="box_verse_followed_{{ verse.verse_id }}">Suivi</label>
+                    {% endif %}
                 </div>
-                {% if not verse.chorus %}
                 <div style="text-align: center; width: 25%;">
-                    <b>couplet n°{{ verse.num_verse }}</b>
+                    {% if not verse.chorus %}
+                        <b>couplet n°{{ verse.num_verse }}</b>
+                    {% endif %}
                 </div>
-                {% endif %}
-                <div style="text-align: right; width: 25%;">
+                <div style="text-align: right; width: 35%;">
+                    Déplacer :
+                    <select name="lis_move_to_{{ verse.verse_id }}">
+                        <optgroup label="avant">
+                            {% for lis_move_to_verse in verses %}
+                                {% if lis_move_to_verse.num < verse.num %}
+                                    <option value="{{ lis_move_to_verse.num|add:"-1" }}">
+                                        {% if lis_move_to_verse.chorus %}
+                                            refrain
+                                        {% else %}
+                                            couplet n°{{ lis_move_to_verse.num_verse }}
+                                        {% endif %}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                        <option selected="selected" value="{{ verse.num }}">[ne rien faire]</option>
+                        <optgroup label="après">
+                            {% for lis_move_to_verse in verses %}
+                                {% if lis_move_to_verse.num > verse.num %}
+                                    <option value="{{ lis_move_to_verse.num|add:"+1" }}">
+                                        {% if lis_move_to_verse.chorus %}
+                                            refrain
+                                        {% else %}
+                                            couplet n°{{ lis_move_to_verse.num_verse }}
+                                        {% endif %}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                    <br>
                     <input style="width: 10%;" type="checkbox" name="box_delete_{{ verse.verse_id }}"
                     id="box_delete_{{ verse.verse_id }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');" />
                     <label for="box_delete_{{ verse.verse_id }}">Supprimer</label>
@@ -56,7 +89,7 @@
     {% endfor %}
 
     <hr>
-    <input name="btn_new_chorus" value="Nouveau refrain/couplet" type="submit" />
+    <input name="btn_new_verse" value="Nouveau refrain/couplet" type="submit" />
     <hr>
 
     <input name="btn_save" value="Enregistrer" type="submit" />

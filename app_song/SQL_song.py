@@ -146,7 +146,7 @@ DELETE FROM l_songs
 
 
     def new_verse(self):
-        verse = Verse(song_id=self.song_id)
+        verse = Verse(song_id=self.song_id, num=1000)
         verse.save()
         self.get_verses()
 
@@ -158,7 +158,7 @@ DELETE FROM l_songs
 ######################################################
 ######################################################
 class Verse:
-    def __init__(self, verse_id=None, song_id=None, num=None, num_verse=None, chorus=False, followed=False, text=""):
+    def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=False, followed=False, text=""):
         self.verse_id = verse_id
         self.song_id = song_id
         self.num = num
@@ -189,6 +189,9 @@ ORDER BY num
         return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], text=row[5]) for row in rows]
 
     def save(self):
+        if not self.num:
+            self.num = 1000
+            
         with connection.cursor() as cursor:
             if self.verse_id:
                 request = """
