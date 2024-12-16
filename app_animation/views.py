@@ -55,9 +55,9 @@ def modify_animation(request, animation_id):
                 if 'btn_new_song' in request.POST:
                     animation.new_song_verses(request.POST.get('sel_song_id'))
                 
-                # for verse in animation.verses:
-                #     if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
-                #         verse.delete()
+                for song in animation.songs:
+                    if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
+                        animation.delete_song(song['animation_song_id'])
                 #     else:
                 #         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
                 #         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
@@ -65,8 +65,8 @@ def modify_animation(request, animation_id):
                 #         if verse.text is None:
                 #             verse.text = ''
                     
-                #     verse.save()
-                #     animation.get_verses()
+                    # verse.save()
+                    # animation.get_verses()
             
             # reload animation
             animation = Animation.get_animation_by_id(animation_id)
@@ -86,7 +86,6 @@ def modify_animation(request, animation_id):
         song_lyrics.get_verses()
         
         full_title = song_lyrics.full_title
-        print('>>>>>', full_title)
         list_lyrics.append({
             'song_id': song['song_id'],
             'full_title': song_lyrics.full_title,

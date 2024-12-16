@@ -79,7 +79,8 @@
                     </select>
                     <br>
                     <input style="width: 10%;" type="checkbox" name="box_delete_{{ verse.verse_id }}"
-                    id="box_delete_{{ verse.verse_id }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');" />
+                    id="box_delete_{{ verse.verse_id }}"
+                    onclick="if(this.checked) {return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');}" />
                     <label for="box_delete_{{ verse.verse_id }}">Supprimer</label>
                 </div>
             </div>

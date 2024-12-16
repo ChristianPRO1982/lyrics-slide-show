@@ -50,12 +50,43 @@
     {% for song in animation.songs %}
         <hr>
         <div class="mt-1 px-1 border border-pink">
-            <h2 class"mb-1">{% for s in all_songs %}
-                {% if s.song_id == song.song_id %}{{ s.full_title }}{% endif %}
-            {% endfor %}</h2>
-            <input type="hidden" name="animation_id_{{ song.animation_song_id }}" value="{{ song.animation_song_id }}">
-            <input style="width: 10%;" type="checkbox" name="delete_song_{{ song.animation_song_id }}" id="delete_song_{{ song.animation_song_id }}" />
-            <label for="delete_song_{{ song.animation_song_id }}">Supprimer</label><hr>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="text-align: left; width: 60%;">
+                    <h2 class"mb-1"><p class="font-bold">{% for s in all_songs %}
+                        {% if s.song_id == song.song_id %}{{ s.full_title }}{% endif %}
+                    {% endfor %}</p></h2>
+                </div>
+                <div style="text-align: right; width: 40%;">
+                    Déplacer :
+                    {{ animation.songs }}
+                    <select name="lis_move_to_{{ song.animation_song_id }} }}">
+                        <optgroup label="avant">
+                            {% for lis_move_to_song in animation.songs %}
+                                {% if lis_move_to_song.num < song.num %}
+                                    <option value="{{ lis_move_to_song.num|add:"-1" }}">
+                                        chant n°{{ lis_move_to_song.num }} : {{ lis_move_to_song.title }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                        <option selected="selected" value="{{ song.num }}">[ne rien faire]</option>
+                        <optgroup label="après">
+                            {% for lis_move_to_song in animation.songs %}
+                                {% if lis_move_to_song.num > song.num %}
+                                    <option value="{{ lis_move_to_song.num|add:"+1" }}">
+                                        chant n°{{ lis_move_to_song.num }} : {{ lis_move_to_song.title }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                    <br>
+                    <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
+                    onclick="if(this.checked) { return confirm('Êtes-vous sûr de vouloir supprimer ce chant ?'); }"/>
+                    <label for="box_delete_song_{{ song.animation_song_id }}">Supprimer</label>
+                </div>
+            </div>
+            <hr>
             <a href="javascript:void(0);" onclick="updateDiv({{ song.song_id }})">Voir le chant</a>
         </div>
     {% endfor %}

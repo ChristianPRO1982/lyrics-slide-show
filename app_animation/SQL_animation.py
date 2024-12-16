@@ -164,10 +164,24 @@ UPDATE l_animation_song
 SELECT song_id
   FROM l_animation_song
  WHERE animation_id = %s
-    """
+"""
             params = [self.animation_id]
 
             create_SQL_log(code_file, "Animations.get_songs_already_in", "SELECT_6", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [row[0] for row in rows]
+    
+
+    def delete_song(self, animation_song_id):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_animation_song
+      WHERE animation_song_id = %s
+"""
+            params = [animation_song_id]
+
+            create_SQL_log(code_file, "Animations.delete_song", "DELETE_2", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
             return [row[0] for row in rows]
