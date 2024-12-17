@@ -58,15 +58,8 @@ def modify_animation(request, animation_id):
                 for song in animation.songs:
                     if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
                         animation.delete_song(song['animation_song_id'])
-                #     else:
-                #         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
-                #         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
-                #         verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
-                #         if verse.text is None:
-                #             verse.text = ''
-                    
-                    # verse.save()
-                    # animation.get_verses()
+                    else:
+                        animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}', 'off') == 'on')
             
             # reload animation
             animation = Animation.get_animation_by_id(animation_id)
@@ -77,7 +70,8 @@ def modify_animation(request, animation_id):
         # Recalculate the 'order' for all songs
         for index, song in enumerate(animation.songs):
             animation.update_song_num(song['animation_song_id'], (index + 1) * 2)
-    
+        animation.all_songs()
+
     # import song's lyrics
     database = ''
     list_lyrics = []
