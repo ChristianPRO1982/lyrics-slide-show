@@ -59,7 +59,8 @@ def modify_animation(request, animation_id):
                     if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
                         animation.delete_song(song['animation_song_id'])
                     else:
-                        animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}', 'off') == 'on')
+                        print(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
+                        animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
             
             # reload animation
             animation = Animation.get_animation_by_id(animation_id)
