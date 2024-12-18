@@ -88,15 +88,6 @@ def modify_animation(request, animation_id):
 
     # verses
     all_verses = []
-    list_song_id = []
-    for song in animation.songs:
-        verses_id = []
-        if song['song_id'] not in list_song_id:
-            for verse in song['verses'].split(','):
-                verses_id.append(verse)
-            song_verses = {'song_id': song['song_id'], 'verses_id': verses_id}
-            all_verses.append(song_verses)
-            list_song_id.append(song['song_id'])
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,

@@ -20,8 +20,6 @@ class Animation:
         self.date = date
         self.songs = []
         self.all_songs()
-        self.verses = []
-        self.all_verses()
 
 
     @staticmethod
@@ -128,9 +126,8 @@ ORDER BY las.num
                         'animation_id': row[1],
                         'song_id': row[2],
                         'num': row[3],
-                        'verses': row[4],
-                        'numD2': row[5],
-                        'full_title': row[6],
+                        'numD2': row[4],
+                        'full_title': row[5],
                     } for row in rows]
 
 
@@ -160,31 +157,29 @@ LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
             raise ValueError("L'ID de l'animation est requis pour ajouter un chant.")
         if not song_id:
             raise ValueError("L'ID du chant est requis pour ajouter un chant.")
-        
-        with connection.cursor() as cursor:
-            request = """
-SELECT verse_id
-  FROM l_verses
- WHERE song_id = %s
-   AND chorus = FALSE
-"""
-            params = [song_id]
-
-            create_SQL_log(code_file, "Animations.new_song_verses", "SELECT_5", request, params)
-            cursor.execute(request, params)
-            rows = cursor.fetchall()
-            verses = ','.join(str(row[0]) for row in rows)
 
         with connection.cursor() as cursor:
             request = """
-INSERT INTO l_animation_song (animation_id, song_id, verses)
-     VALUES (%s, %s, %s)
+INSERT INTO l_animation_song (animation_id, song_id)
+     VALUES (%s, %s)
 """
-            params = [self.animation_id, song_id, verses]
+            params = [self.animation_id, song_id]
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
             cursor.execute(request, params)
 
+        with connection.cursor() as cursor:
+            request = """
+INSERT IGNORE INTO l_animation_song_verse (animation_song_id, verse_id)
+         SELECT las.animation_song_id, lv.verse_id
+           FROM l_animation_song las 
+LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
+"""
+            params = []
+
+            create_SQL_log(code_file, "Animations.new_song", "INSERT_3", request, params)
+            cursor.execute(request, params)
+            
 
     def update_song_num(self, animation_song_id, num):
         with connection.cursor() as cursor:
@@ -208,7 +203,7 @@ SELECT song_id
 """
             params = [self.animation_id]
 
-            create_SQL_log(code_file, "Animations.get_songs_already_in", "SELECT_6", request, params)
+            create_SQL_log(code_file, "Animations.get_songs_already_in", "SELECT_5", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
             return [row[0] for row in rows]
