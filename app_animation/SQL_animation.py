@@ -135,11 +135,10 @@ ORDER BY las.num
         if self.animation_id:
             with connection.cursor() as cursor:
                 request = """
-         SELECT lv.song_id, lv.verse_id 
-           FROM l_animation_song las 
-LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id 
-          WHERE las.animation_id = %s
-            AND lv.chorus = 0
+SELECT lasv.*
+FROM l_animation_song_verse lasv 
+JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+WHERE las.animation_id = %s
 """
                 params = [self.animation_id]
 
