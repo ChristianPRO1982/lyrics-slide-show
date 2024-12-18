@@ -20,6 +20,8 @@ class Animation:
         self.date = date
         self.songs = []
         self.all_songs()
+        self.verses = []
+        self.all_verses()
 
 
     @staticmethod
@@ -129,6 +131,27 @@ ORDER BY las.num
                         'verses': row[4],
                         'numD2': row[5],
                         'full_title': row[6],
+                    } for row in rows]
+
+
+    def all_verses(self):
+        if self.animation_id:
+            with connection.cursor() as cursor:
+                request = """
+         SELECT lv.song_id, lv.verse_id 
+           FROM l_animation_song las 
+LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id 
+          WHERE las.animation_id = %s
+            AND lv.chorus = 0
+"""
+                params = [self.animation_id]
+
+                create_SQL_log(code_file, "Animations.all_songs", "SELECT_4", request, params)
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                self.verses = [{
+                        'song_id': row[0],
+                        'verse_id': row[1],
                     } for row in rows]
     
 
