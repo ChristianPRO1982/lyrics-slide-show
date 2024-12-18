@@ -59,7 +59,6 @@ def modify_animation(request, animation_id):
                     if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
                         animation.delete_song(song['animation_song_id'])
                     else:
-                        print(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
                         animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
             
             # reload animation
@@ -87,11 +86,24 @@ def modify_animation(request, animation_id):
             'lyrics':  song_lyrics.get_lyrics(),
         })
 
+    # verses
+    all_verses = []
+    list_song_id = []
+    for song in animation.songs:
+        verses_id = []
+        if song['song_id'] not in list_song_id:
+            for verse in song['verses'].split(','):
+                verses_id.append(verse)
+            song_verses = {'song_id': song['song_id'], 'verses_id': verses_id}
+            all_verses.append(song_verses)
+            list_song_id.append(song['song_id'])
+
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
         'all_songs': Song.get_all_songs(),
         'songs_already_in': animation.get_songs_already_in(),
         'list_lyrics': list_lyrics,
+        'all_verses': all_verses,
         'error': error,
     })
 

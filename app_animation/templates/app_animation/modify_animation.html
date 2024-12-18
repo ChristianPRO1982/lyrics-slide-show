@@ -53,6 +53,15 @@
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 60%;">
                     <h2 class"mb-1"><p class="font-bold">{{ song.full_title }}</p></h2>
+                    {% for song_verses in all_verses %}
+                        {% if song.song_id == song_verses.song_id %}
+                        {% for verse_id in song_verses.verses_id %}
+                            <input style="width: 10%;" type="checkbox" name="box_verse_{{ song.animation_song_id }}_{{ verse_id }}"
+                            id="box_verse_{{ song.animation_song_id }}_{{ verse_id }}" />
+                            <label for="box_verse_{{ song.animation_song_id }}_{{ verse_id }}">couplet n°{{ forloop.counter }}</label>
+                        {% endfor %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 <div style="text-align: right; width: 40%;">
                     Déplacer :
