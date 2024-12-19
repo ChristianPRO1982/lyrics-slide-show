@@ -228,3 +228,17 @@ DELETE FROM l_animation_song
             cursor.execute(request, params)
             rows = cursor.fetchall()
             return [row[0] for row in rows]
+        
+
+    def update_verse_selected(self, animation_song_id, verse_id, selected):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_animation_song_verse
+   SET selected = %s
+ WHERE animation_song_id = %s
+   AND verse_id = %s
+"""
+            params = [selected, animation_song_id, verse_id]
+
+            create_SQL_log(code_file, "Animations.update_verse_selected", "UPDATE_3", request, params)
+            cursor.execute(request, params)

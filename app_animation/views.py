@@ -60,6 +60,17 @@ def modify_animation(request, animation_id):
                         animation.delete_song(song['animation_song_id'])
                     else:
                         animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
+                
+                # verses selected
+                for verse in animation.verses:
+                    animation_song_id = verse['animation_song_id']
+                    verse_id = verse['verse_id']
+                    box_name = f"box_verse_{animation_song_id}_{verse_id}"
+                    
+                    if request.POST.get(box_name, 'off') == 'on':
+                        animation.update_verse_selected(animation_song_id, verse_id, True)
+                    else:
+                        animation.update_verse_selected(animation_song_id, verse_id, False)
             
             # reload animation
             animation = Animation.get_animation_by_id(animation_id)
