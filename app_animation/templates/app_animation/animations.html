@@ -19,7 +19,10 @@
         {% for animation in animations %}
         <tr>
             <td>{{ animation.name }}</td>
-            <td>{{ animation.description }}</td>
+            <td>
+                {{ animation.description|slice:":100" }}
+                {% if animation.description|length > 100 %} [...] {% endif %}
+            </td>
             <td>{{ animation.date }}</td>
             <td>
                 <a href="{% url 'modify_animation' animation.animation_id %}">Modifier</a> |

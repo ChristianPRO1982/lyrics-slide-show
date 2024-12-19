@@ -20,6 +20,8 @@ class Animation:
         self.date = date
         self.songs = []
         self.all_songs()
+        self.verses = []
+        self.all_verses()
 
 
     @staticmethod
@@ -103,11 +105,11 @@ DELETE FROM l_anmations
                 request = """
   SELECT las.*, ROUND(las.num / 2, 0) as numD2,
          CONCAT(
-                CASE 
+                CASE
                     WHEN s.artist != '' THEN CONCAT('[', s.artist, '] - ', s.title)
                     ELSE title
                 END,
-                CASE 
+                CASE
                     WHEN s.sub_title != '' THEN CONCAT(' - ', s.sub_title)
                     ELSE ''
                 END) AS full_title
@@ -135,19 +137,25 @@ ORDER BY las.num
         if self.animation_id:
             with connection.cursor() as cursor:
                 request = """
-SELECT lasv.*
-FROM l_animation_song_verse lasv 
-JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
-WHERE las.animation_id = %s
+  SELECT lasv.*, lv.num_verse, lv.text
+    FROM l_animation_song_verse lasv
+    JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+    JOIN l_verses lv ON lv.verse_id = lasv.verse_id
+   WHERE lv.chorus = FALSE
+     AND las.animation_id = %s
+ORDER BY lv.num
 """
                 params = [self.animation_id]
 
-                create_SQL_log(code_file, "Animations.all_songs", "SELECT_4", request, params)
+                create_SQL_log(code_file, "Animations.all_verses", "SELECT_4", request, params)
                 cursor.execute(request, params)
                 rows = cursor.fetchall()
                 self.verses = [{
-                        'song_id': row[0],
+                        'animation_song_id': row[0],
                         'verse_id': row[1],
+                        'selected': row[2],
+                        'num_verse': row[3],
+                        'text': row[4],
                     } for row in rows]
     
 

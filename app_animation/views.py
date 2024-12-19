@@ -86,15 +86,11 @@ def modify_animation(request, animation_id):
             'lyrics':  song_lyrics.get_lyrics(),
         })
 
-    # verses
-    all_verses = []
-
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
         'all_songs': Song.get_all_songs(),
         'songs_already_in': animation.get_songs_already_in(),
         'list_lyrics': list_lyrics,
-        'all_verses': all_verses,
         'error': error,
     })
 
