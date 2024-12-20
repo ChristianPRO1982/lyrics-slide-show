@@ -90,7 +90,7 @@ INSERT INTO l_animations (name, description, date)
             raise ValueError("L'ID de l'animation est requis pour la supprimer.")
         with connection.cursor() as cursor:
             request = """
-DELETE FROM l_anmations
+DELETE FROM l_animations
       WHERE animation_id = %s
 """
             params = [self.animation_id]

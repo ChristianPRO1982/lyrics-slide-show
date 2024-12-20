@@ -108,4 +108,16 @@ def modify_animation(request, animation_id):
 
 @login_required
 def delete_animation(request, animation_id):
-    render(request, 'app_animation/animations.html')
+    error = ''
+
+    animation = Animation.get_animation_by_id(animation_id)
+
+    if request.method == 'POST':
+        if 'btn_delete' in request.POST:
+            animation.delete()
+        return redirect('animations')
+
+    return render(request, 'app_animation/delete_animation.html', {
+        'animation': animation,
+        'error': error,
+    })
