@@ -1,0 +1,11 @@
+{
+  "branches": ["main", "dev"],
+  "repositoryUrl": "https://github.com/ChristianPRO1982/transcription-API",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/git",
+    "@semantic-release/github"
+  ]
+}
