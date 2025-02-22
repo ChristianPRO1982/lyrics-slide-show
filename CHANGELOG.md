@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.0...v1.0.1) (2025-02-22)
+
+
+### Bug Fixes
+
+* README: email ([9820e1c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9820e1cefbf63444f422038d8447c8d73fa6fa49))
+
 # 1.0.0 (2025-02-22)
 
 
