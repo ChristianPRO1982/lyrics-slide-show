@@ -1,6 +1,6 @@
 {
   "branches": ["main", "dev"],
-  "repositoryUrl": "https://github.com/ChristianPRO1982/transcription-API",
+  "repositoryUrl": "https://github.com/ChristianPRO1982/lyrics-slide-show",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
