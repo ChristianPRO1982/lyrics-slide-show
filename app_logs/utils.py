@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 DEBUG = os.getenv('DEBUG')
 SQL_REQUEST_LOG = os.getenv('SQL_REQUEST_LOG')
+SQL_REQUEST_LOG_NAME = os.getenv('SQL_REQUEST_LOG_NAME')
 LOG_DIR = os.path.join(settings.BASE_DIR, 'logs')
 
 if not os.path.exists(LOG_DIR):
@@ -39,10 +40,12 @@ def create_log(app_name, function_name, text, log_type='info'):
 
 
 def create_SQL_log(app_name, function_name, request_name, request, params):
-    if SQL_REQUEST_LOG == '1':
+    create_log(app_name, function_name, f"SQL: {request_name}")
+
+    if SQL_REQUEST_LOG == '1' and SQL_REQUEST_LOG_NAME != request_name:
         print(f"[{app_name}][{request_name}]")
         
-    elif SQL_REQUEST_LOG == '2':
+    elif SQL_REQUEST_LOG == '2' or SQL_REQUEST_LOG_NAME == request_name:
         formatted_params = [
             f"'{str(param).replace('\'', '\\\'')}'" if isinstance(param, str) else str(param)
             for param in params
@@ -53,8 +56,8 @@ def create_SQL_log(app_name, function_name, request_name, request, params):
             request_for_print = request_for_print.replace('%s', param, 1)
         
         print(f"[{app_name}][{request_name}]: {request_for_print}")
-        
-    create_log(app_name, function_name, f"SQL: {request_name}")
+        if SQL_REQUEST_LOG_NAME == request_name:
+            create_log(app_name, function_name, f"SQL: {request_for_print}")
 
 
 def delete_old_logs():

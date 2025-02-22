@@ -7,12 +7,12 @@
 
 {% block content %}
 <p>Confirmer la suppression de l'animation <i>{{ animation.name }}</i></p>
-<form method="post" action="{% url "delete_animation" animation.id %}">
+<form method="post" action="{% url "delete_animation" animation.animation_id %}">
     {% csrf_token %}
     <hr>
     <div class="text-center">
-        <input style="width: 45%;" name="delete" value="Supprimer" type="submit" />
-        <input style="width: 45%;" name="cancel" value="Annuler" type="submit" />
+        <input style="width: 45%;" name="btn_delete" value="Supprimer" type="submit" />
+        <input style="width: 45%;" name="btn_cancel" value="Annuler" type="submit" />
     </div>
 </form>  
 {% endblock content %}

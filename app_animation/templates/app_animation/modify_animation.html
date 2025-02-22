@@ -62,9 +62,19 @@
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
-                    {{ animation.verses }}
                     {% for verse in animation.verses %}
-                    <br> > {{ verse.song_id }} : {{ verse.verse_id }}
+                        {% if song.animation_song_id == verse.animation_song_id %}
+                            <p>
+                                <label for="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}">
+                                    Couplet n°{{ verse.num_verse }} :
+                                </label>
+                                <input style="width: 10%;" type="checkbox"
+                                name="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
+                                id="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
+                                {% if verse.selected %}checked{% endif %} />
+                                {{ verse.text|slice:":25" }}
+                            </p>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div style="text-align: right; width: 40%;">

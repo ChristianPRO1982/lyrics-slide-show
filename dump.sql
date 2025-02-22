@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS `l_animation_song_verse`;
+DROP TABLE IF EXISTS `l_animation_song`;
+DROP TABLE IF EXISTS `l_animations`;
+DROP TABLE IF EXISTS `l_verses`;
+DROP TABLE IF EXISTS `l_songs`;
+
 -- carthographie.l_songs definition
 
 CREATE TABLE `l_songs` (

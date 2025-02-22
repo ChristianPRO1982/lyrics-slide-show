@@ -60,6 +60,17 @@ def modify_animation(request, animation_id):
                         animation.delete_song(song['animation_song_id'])
                     else:
                         animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
+                
+                # verses selected
+                for verse in animation.verses:
+                    animation_song_id = verse['animation_song_id']
+                    verse_id = verse['verse_id']
+                    box_name = f"box_verse_{animation_song_id}_{verse_id}"
+                    
+                    if request.POST.get(box_name, 'off') == 'on':
+                        animation.update_verse_selected(animation_song_id, verse_id, True)
+                    else:
+                        animation.update_verse_selected(animation_song_id, verse_id, False)
             
             # reload animation
             animation = Animation.get_animation_by_id(animation_id)
@@ -86,19 +97,27 @@ def modify_animation(request, animation_id):
             'lyrics':  song_lyrics.get_lyrics(),
         })
 
-    # verses
-    all_verses = []
-
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
         'all_songs': Song.get_all_songs(),
         'songs_already_in': animation.get_songs_already_in(),
         'list_lyrics': list_lyrics,
-        'all_verses': all_verses,
         'error': error,
     })
 
 
 @login_required
 def delete_animation(request, animation_id):
-    render(request, 'app_animation/animations.html')
+    error = ''
+
+    animation = Animation.get_animation_by_id(animation_id)
+
+    if request.method == 'POST':
+        if 'btn_delete' in request.POST:
+            animation.delete()
+        return redirect('animations')
+
+    return render(request, 'app_animation/delete_animation.html', {
+        'animation': animation,
+        'error': error,
+    })
