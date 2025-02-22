@@ -16,7 +16,8 @@
 {% for group in groups %}
     <li class="flex items-center space-x-2">
         <span>👥</span>
-        <span>{{ song.full_title }}</span>
+        <span>{{ group.name }}</span>
+        <span>{{ group.info }}</span>
     </li>
 {% endfor %}
 </ul>

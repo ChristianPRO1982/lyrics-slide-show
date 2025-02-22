@@ -13,8 +13,8 @@ code_file = "SQL_group.py"
 ###############################################
 ###############################################
 class Group:
-    def __init__(self, song_id=None, name=None, info=None, login=None, token=None):
-        self.song_id = song_id
+    def __init__(self, group_id=None, name=None, info=None, login=None, token=None):
+        self.group_id = group_id
         self.name = name
         self.info = info
         self.login = login
@@ -30,8 +30,36 @@ ORDER BY name
 """
         params = []
 
-        create_SQL_log(code_file, "Song.get_all_songs", "SELECT_1", request, params)
+        create_SQL_log(code_file, "Group.get_all_groups", "SELECT_1", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'song_id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4], 'full_title': row[5]} for row in rows]
+        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'login': row[3], 'token': row[4]} for row in rows]
+    
+
+    def save(self):
+        with connection.cursor() as cursor:
+            if self.group_id:
+                request = f"""
+UPDATE c_groups
+   SET name = %s,
+       info = %s,
+       login = %s,
+       token = %s
+ WHERE group_id = %s
+"""
+                params = [self.name, self.info, self.login, self.token, self.group_id]
+                
+                create_SQL_log(code_file, "Group.save", "UPDATE_1", request, params)
+                cursor.execute(request, params)
+
+            else:
+                request = """
+INSERT INTO c_groups (name)
+     VALUES (%s)
+"""
+                params = [self.name]
+                
+                create_SQL_log(code_file, "Group.save", "INSERT_1", request, params)
+                cursor.execute(request, params)
+                self.group_id = cursor.lastrowid
