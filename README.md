@@ -47,4 +47,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries, please contact [Christian to cARThographie](mailto:carthographie@outlook.fr).
+For any inquiries, please contact [Christian from cARThographie](mailto:carthographie@outlook.fr).
