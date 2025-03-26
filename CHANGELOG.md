@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.0...v1.1.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* badge django ([b81c528](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b81c528d04c7da9a2037d4bb84d20ab32e098734))
+
 # [1.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.2...v1.1.0) (2025-03-26)
 
 
