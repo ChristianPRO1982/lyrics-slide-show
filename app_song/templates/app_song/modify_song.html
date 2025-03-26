@@ -24,7 +24,9 @@
         <label for="id_artist">Artiste</label><br>
         <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
     </div>
-
+    {% for link in song.links %}
+    <a href="{{ link }}">{{ link }}</a><br>
+    {% endfor %}
     <hr>
 
     {% for verse in verses %}

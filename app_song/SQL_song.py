@@ -21,6 +21,10 @@ class Song:
         self.artist = artist
         self.full_title = full_title
         self.verses = []
+        self.genres = []
+        self.links = []
+
+        self.get_links()
 
 
     @staticmethod
@@ -151,6 +155,23 @@ DELETE FROM l_songs
         verse = Verse(song_id=self.song_id, num=1000)
         verse.save()
         self.get_verses()
+
+    
+    def get_links(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT link
+  FROM l_song_link
+ WHERE song_id = %s
+"""
+            params = [self.song_id]
+            
+            create_SQL_log(code_file, "Song.get_links", "SELECT_4", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+
+            for row in rows:
+                self.links.append(row[0])
 
 
 
