@@ -32,10 +32,10 @@
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 40%;">
                     <input style="width: 10%;" type="checkbox" name="box_verse_chorus_{{ verse.verse_id }}"
-                    id="box_verse_chorus_{{ verse.verse_id }}" {% if verse.chorus %}checked{% endif %} />
+                    id="box_verse_chorus_{{ verse.verse_id }}" {% if verse.chorus == 1 %}checked{% endif %} />
                     <label for="box_verse_chorus_{{ verse.verse_id }}">Refrain</label>
                     
-                    {% if verse.chorus == 0 %}
+                    {% if verse.chorus != 1 %}
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
                         id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
                         <label for="box_verse_followed_{{ verse.verse_id }}">Suivi</label>

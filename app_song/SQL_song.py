@@ -53,14 +53,16 @@ ORDER BY artist, title, sub_title
 
         # Get all choruses
         for verse in self.verses:
-            if verse.chorus:
+            if verse.chorus == 1:
                 choruses.append("<b>" + verse.text.replace("\n", "<br>") + "</b>")
 
         start_by_chorus = True
         for verse in self.verses:
-            if not verse.chorus:
-                if verse.text:
+            if verse.chorus != 1:
+                if verse.text and not verse.like_chorus:
                     lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
+                if verse.text and verse.like_chorus:
+                    lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and choruses:
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
             elif start_by_chorus:

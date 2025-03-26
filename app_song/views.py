@@ -78,7 +78,7 @@ def modify_song(request, song_id):
         for index, verse in enumerate(song.verses):
             verse.num = (index + 1) * 2
             verse.num_verse = num_verse
-            if not verse.chorus:
+            if not verse.chorus and not verse.like_chorus:
                 num_verse = num_verse + 1
             verse.save()
 
