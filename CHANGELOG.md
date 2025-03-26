@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.2...v1.1.0) (2025-03-26)
+
+
+### Features
+
+* license ([a6a4f80](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a6a4f800daee65fc989c5c09e09926b5675926d8))
+
 ## [1.0.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.1...v1.0.2) (2025-03-26)
 
 
