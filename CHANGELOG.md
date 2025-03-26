@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.2...v1.1.3) (2025-03-26)
+
+
+### Bug Fixes
+
+* README ([ed5c371](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ed5c371ceed60aeeb62a0cabf1e376bfc193522d))
+
 ## [1.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.1...v1.1.2) (2025-03-26)
 
 
