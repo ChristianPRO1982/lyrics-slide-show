@@ -1,5 +1,9 @@
 # Lyrics Slide Show
 
+[![Latest Release](https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg)](https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/ChristianPRO1982/lyrics-slide-show.svg)](https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/LICENSE)
+
 “Lyrics Slide Show” is an application that lets you easily manage the display of slides linked to songs. The display is not linear, but follows the order of the song's verses and choruses.
 
 ## Features
