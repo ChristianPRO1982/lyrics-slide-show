@@ -35,10 +35,13 @@
                     id="box_verse_chorus_{{ verse.verse_id }}" {% if verse.chorus %}checked{% endif %} />
                     <label for="box_verse_chorus_{{ verse.verse_id }}">Refrain</label>
                     
-                    {% if not verse.chorus %}
-                        <input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
+                    {% if verse.chorus == 0 %}
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
                         id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
                         <label for="box_verse_followed_{{ verse.verse_id }}">Suivi</label>
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
+                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus %}checked{% endif %} />
+                        <label for="box_verse_like_chorus_{{ verse.verse_id }}">Comme un refrain</label>
                     {% endif %}
                 </div>
                 <div style="text-align: center; width: 25%;">

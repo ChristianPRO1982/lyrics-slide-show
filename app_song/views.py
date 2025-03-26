@@ -61,6 +61,7 @@ def modify_song(request, song_id):
                     else:
                         verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
                         verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                        verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
                         verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
                         verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
                         if verse.text is None:

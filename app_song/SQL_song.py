@@ -27,11 +27,11 @@ class Song:
     def get_all_songs():
         request = """
   SELECT *, CONCAT(
-                   CASE 
+                   CASE
                        WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
                        ELSE title
                    END,
-                   CASE 
+                   CASE
                        WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
                        ELSE ''
                    END) AS full_title
@@ -44,7 +44,7 @@ ORDER BY artist, title, sub_title
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'song_id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4], 'full_title': row[5]} for row in rows]
+        return [{'song_id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4], 'status': row[5], 'full_title': row[6]} for row in rows]
     
 
     def get_lyrics(self):
@@ -158,13 +158,14 @@ DELETE FROM l_songs
 ######################################################
 ######################################################
 class Verse:
-    def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=False, followed=False, text=""):
+    def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=False, followed=False, like_chorus=False, text=""):
         self.verse_id = verse_id
         self.song_id = song_id
         self.num = num
         self.num_verse = num_verse
         self.chorus = chorus
         self.followed = followed
+        self.like_chorus = like_chorus
         self.text = text
 
     @staticmethod
@@ -174,8 +175,9 @@ class Verse:
 SELECT verse_id,
        num,
        num_verse,
-       chorus,
+       CASE WHEN chorus = 2 THEN 0 ELSE chorus END AS chorus,
        followed,
+       CASE WHEN chorus = 2 THEN 1 ELSE 0 END AS like_chorus,
        text
     FROM l_verses
    WHERE song_id = %s
@@ -186,11 +188,14 @@ ORDER BY num
             create_SQL_log(code_file, "Verse.get_verses_by_song_id", "SELECT_3", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], text=row[5]) for row in rows]
+        return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], like_chorus=row[5], text=row[6]) for row in rows]
 
     def save(self):
         if not self.num:
             self.num = 1000
+        
+        if self.chorus == 0 and self.like_chorus == 1:
+            self.chorus = 2
             
         with connection.cursor() as cursor:
             if self.verse_id:
