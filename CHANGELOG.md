@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.3...v1.2.0) (2025-03-26)
+
+
+### Features
+
+* refrain différent à chaque couplet ([71e8878](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/71e8878df54c8cf461663dea84330f2993734338))
+
 ## [1.1.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.2...v1.1.3) (2025-03-26)
 
 
