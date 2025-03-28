@@ -55,13 +55,13 @@ def add_group(request):
                     error = 'Password and confirm password do not match'
                 else:
                     hashed_password = hashlib.md5(txt_new_admin_password.encode()).hexdigest()
-                    # new_group = Group(
-                    #     name=name,
-                    #     info=info,
-                    #     admin_email=admin_email,
-                    #     admin_password=hashed_password
-                    # )
-                    # new_group.save()
+                    new_group = Group(
+                        name=name,
+                        info=info,
+                        admin_email=admin_email,
+                        admin_password=hashed_password
+                    )
+                    new_group.save()
                     valided = 'Groupe enregistré'
 
 

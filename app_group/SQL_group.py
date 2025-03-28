@@ -13,12 +13,12 @@ code_file = "SQL_group.py"
 ###############################################
 ###############################################
 class Group:
-    def __init__(self, group_id=None, name=None, info=None, login=None, token=None):
+    def __init__(self, group_id=None, name=None, info=None, admin_email=None, admin_password=None):
         self.group_id = group_id
         self.name = name
         self.info = info
-        self.login = login
-        self.token = token
+        self.admin_email = admin_email
+        self.admin_password = admin_password
 
 
     @staticmethod
@@ -40,25 +40,25 @@ ORDER BY name
     def save(self):
         with connection.cursor() as cursor:
             if self.group_id:
-                request = f"""
+                request = """
 UPDATE c_groups
    SET name = %s,
        info = %s,
-       login = %s,
-       token = %s
+       admin_email = %s,
+       admin_password = %s
  WHERE group_id = %s
 """
-                params = [self.name, self.info, self.login, self.token, self.group_id]
+                params = [self.name, self.info, self.admin_email, self.token, self.group_id]
                 
                 create_SQL_log(code_file, "Group.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
 
             else:
                 request = """
-INSERT INTO c_groups (name)
-     VALUES (%s)
+INSERT INTO c_groups (name, info, admin_email, admin_password)
+     VALUES (%s, %s, %s, %s)
 """
-                params = [self.name]
+                params = [self.name, self.info, self.admin_email, self.admin_password]
                 
                 create_SQL_log(code_file, "Group.save", "INSERT_1", request, params)
                 cursor.execute(request, params)
