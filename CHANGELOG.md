@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.0...v1.3.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* bugs ([c67a90b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c67a90b1b5262f288786614ee733c5f983e8fbdc))
+
 # [1.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.2.0...v1.3.0) (2025-03-28)
 
 
