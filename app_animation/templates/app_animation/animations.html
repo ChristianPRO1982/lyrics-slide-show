@@ -30,6 +30,7 @@
             </td>
         </tr>
         {% endfor %}
+        {% if error == '' %}
         <tr>
             <form method="post">
                 {% csrf_token %}
@@ -39,6 +40,7 @@
                 <td><input name="btn_new_animation" value="Ajouter" type="submit" /></td>
             </form>
         </tr>
+        {% endif %}
     </tbody>
     <tfoot>
         <tr>

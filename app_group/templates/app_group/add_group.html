@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Création d'un groupe{% endblock title %}
+{% block title_h1 %}{{ name }}{% endblock title_h1 %}
+{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc2 %}{% endblock bloc2 %}
+
+{% block content %}
+
+{% if valided == '' %}
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="txt_new_name" placeholder="Nouveau groupe" maxlength="255" value="{{ name }}" required /><br>
+    <textarea name="txt_new_info" placeholder="Description" maxlength="255">{{ info }}</textarea><br>
+    ADMIN [non obligatoire]<br>
+    <input type="text" name="txt_new_admin_email" placeholder="Email (si vide > pas d'administration et le groupe est libre)" maxlength="255" value="{{ admin_email }}" /><br>
+    <input type="password" name="txt_new_admin_password" placeholder="Mot de passe" maxlength="255" /><br>
+    <input type="password" name="txt_new_admin_password_confirm" placeholder="Confirmation du mot de passe" maxlength="255" /><br>
+    <input name="btn_add_group" value="Ajouter" type="submit" />
+</form>
+{% endif %}
+
+{% if valided != '' %}
+<p>{{ valided }}</p>
+{% endif %}
+
+{% endblock content %}

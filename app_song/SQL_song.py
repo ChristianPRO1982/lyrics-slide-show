@@ -171,7 +171,7 @@ SELECT link
             rows = cursor.fetchall()
 
             for row in rows:
-                self.links.append(row[0])
+                self.links.append((row[0], row[0].split('/')[2] if '//' in row[0] else 'LIEN'))
 
 
 

@@ -4,7 +4,7 @@
 {% block title_h1 %}Liste des groupes{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}
-<form method="post">
+<form method="post" action="{% url "add_group" %}">
     {% csrf_token %}
     <input type="text" name="txt_new_name" placeholder="Nouveau groupe" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required />
     <input name="btn_new_group" value="Ajouter" type="submit" />

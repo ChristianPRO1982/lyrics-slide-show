@@ -10,21 +10,28 @@ from app_song.SQL_song import Song
 def animations(request):
     error = ''
 
-    if request.method == 'POST':
-
+    selected_group = request.session.get('selected_group')
+    
+    if selected_group:
         if request.method == 'POST':
-            new_animation = Animation(
-                            name = request.POST.get('txt_new_name'),
-                            description = request.POST.get('txt_new_description'),
-                            date = request.POST.get('dt_new_date'),
-                           )
-            new_animation.save()
-            request.POST = request.POST.copy()
-            request.POST['txt_new_name'] = ''
-            request.POST['txt_new_description'] = ''
-            request.POST['txt_new_date'] = ''
-            
-    animations = Animation.get_all_animations()
+
+            if request.method == 'POST':
+                new_animation = Animation(
+                                name = request.POST.get('txt_new_name'),
+                                description = request.POST.get('txt_new_description'),
+                                date = request.POST.get('dt_new_date'),
+                            )
+                new_animation.save()
+                request.POST = request.POST.copy()
+                request.POST['txt_new_name'] = ''
+                request.POST['txt_new_description'] = ''
+                request.POST['txt_new_date'] = ''
+                
+        animations = Animation.get_all_animations()
+    
+    else:
+        animations = []
+        error = "Aucun groupe n'est sélectionné"
 
 
     return render(request, 'app_animation/animations.html', {

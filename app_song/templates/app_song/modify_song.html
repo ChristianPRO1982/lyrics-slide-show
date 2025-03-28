@@ -2,7 +2,11 @@
 
 {% block title %}Chant : {{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc1 %}
+    {% for link in song.links %}
+        <a href="{{ link|first }}">{{ link|last }}</a><br>
+    {% endfor %}
+{% endblock bloc1 %}
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
@@ -24,9 +28,7 @@
         <label for="id_artist">Artiste</label><br>
         <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
     </div>
-    {% for link in song.links %}
-    <a href="{{ link }}">{{ link }}</a><br>
-    {% endfor %}
+
     <hr>
 
     {% for verse in verses %}
