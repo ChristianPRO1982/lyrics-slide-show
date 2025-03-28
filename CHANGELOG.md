@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.2.0...v1.3.0) (2025-03-28)
+
+
+### Features
+
+* création d'un groupe avec admin et MD5 ([f0911ef](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f0911efba694e54d4bc4f2a941895074e2d43882))
+
 # [1.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.3...v1.2.0) (2025-03-26)
 
 
