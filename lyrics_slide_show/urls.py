@@ -24,6 +24,7 @@ handler404 = 'app_main.views.error_404'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("account/", include("allauth.urls")),
     path('', include('app_main.urls')),
     path('groups/', include('app_group.urls')),
     path('songs/', include('app_song.urls')),

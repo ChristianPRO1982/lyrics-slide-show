@@ -1,7 +1,9 @@
 django<6
 python-dotenv==1.0.1
 mysqlclient==2.2.5
+django-allauth
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
 requests
+jwt
