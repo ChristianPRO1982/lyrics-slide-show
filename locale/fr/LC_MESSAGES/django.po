@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 15:46+0200\n"
+"POT-Creation-Date: 2025-04-04 15:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,47 +28,87 @@ msgid "Welcome"
 msgstr "Bienvenu !"
 
 #: templates/account/login.html:6 templates/account/login.html:7
-#: templates/account/login.html:40
+#: templates/account/login.html:41
 msgid "Sign In"
-msgstr ""
+msgstr "Créer un compte"
 
-#: templates/account/login.html:28
+#: templates/account/login.html:9
+msgid "New account"
+msgstr "Nouveau compte"
+
+#: templates/account/login.html:12 templates/account/signup.html:11
+msgid "info_signup"
+msgstr "La création d'un compte est obligatoire pour gérer un groupe.<br>Vous pouvez vous connecter avec votre compte Google.<br><i>La plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>La création d'un compte est sans engagement et <b>100% gratuite</b>."
+
+#: templates/account/login.html:29
 #, python-format
 msgid ""
 "If you have not created an account yet, then please %(link)ssign "
 "up%(end_link)s first."
 msgstr ""
 
-#: templates/account/login.html:51
+#: templates/account/login.html:52
 msgid "Sign in with a passkey"
 msgstr ""
 
-#: templates/account/login.html:56
+#: templates/account/login.html:57
 msgid "Send me a sign-in code"
 msgstr ""
 
 #: templates/account/logout.html:5 templates/account/logout.html:6
 #: templates/account/logout.html:132
 msgid "Sign Out"
-msgstr ""
+msgstr "Déconnection"
 
 #: templates/account/logout.html:122
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "Êtes-vous sûr de vous déconnecter ?"
 
 #: templates/account/signup.html:6 templates/account/signup.html:7
-#: templates/account/signup.html:21 templates/account/signup.html:43
+#: templates/account/signup.html:16 templates/account/signup.html:38
 msgid "Sign Up"
-msgstr ""
+msgstr "Création d'un compte"
 
-#: templates/account/signup.html:30
+#: templates/account/signup.html:9
+msgid "connection"
+msgstr "connexion"
+
+#: templates/account/signup.html:25
 #, python-format
 msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
 msgstr ""
 
-#: templates/account/signup.html:52
+#: templates/account/signup.html:47
 msgid "Sign up using a passkey"
 msgstr ""
+
+#: templates/includes/nav.html:4
+msgid "nav_home"
+msgstr "Accueil"
+
+#: templates/includes/nav.html:6
+msgid "nav_groups_list"
+msgstr "Liste des groupes"
+
+#: templates/includes/nav.html:7
+msgid "nav_songs_list"
+msgstr "Liste des chants"
+
+#: templates/includes/nav.html:8
+msgid "nav_animations_list"
+msgstr "Liste des animations"
+
+#: templates/includes/nav.html:9
+msgid "nav_logout"
+msgstr "Déconnexion"
+
+#: templates/includes/nav.html:11
+msgid "nav_login"
+msgstr "Connexion"
+
+#: templates/includes/nav.html:12
+msgid "nav_signup"
+msgstr "Créer un compte"
 
 #: templates/socialaccount/snippets/login.html:11
 msgid "Or use a third-party"

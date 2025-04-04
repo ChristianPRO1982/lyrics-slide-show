@@ -1,14 +1,15 @@
 {% comment %} https://symbl.cc/fr/ {% endcomment %}
+{% load i18n %}
 
-<a class="mx-2 hidden md:block" href="{% url "homepage" %}">🏠 Accueil</a>
+<a class="mx-2 hidden md:block" href="{% url "homepage" %}">🏠 {% trans "nav_home" %}</a>
 {% if user.is_authenticated %}
-        <a class="mx-2 hidden md:block" href="{% url "groups" %}">👥 Liste des groupes</a>
-        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 Liste des champs</a>
-        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️ Liste des animations</a>
-        <a class="mx-2 hidden md:block" href="{% url 'account_logout' %}">⥇ LOGOUT</a>
+        <a class="mx-2 hidden md:block" href="{% url "groups" %}">👥 {% trans "nav_groups_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 {% trans "nav_songs_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️ {% trans "nav_animations_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url 'account_logout' %}">⥇ {% trans "nav_logout" %}</a>
 {% else %}
-        <a class="mx-2 hidden md:block" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> LOGIN</a>
-        <a class="mx-2 hidden md:block" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> SIGNUP</a>
+        <a class="mx-2 hidden md:block" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> {% trans "nav_login" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> {% trans "nav_signup" %}</a>
         {% endif %}
         
         {% comment %} SMARTPHONE {% endcomment %}
