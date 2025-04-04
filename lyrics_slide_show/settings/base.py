@@ -164,6 +164,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'fr-fr'
 
+LANGUAGES = [
+    ('fr', 'Français'),
+    ('en', 'English'),
+]
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
+
 # TIME_ZONE = 'UTC'
 TIME_ZONE = 'Europe/Paris'
 
