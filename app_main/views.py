@@ -12,15 +12,3 @@ def homepage(request):
     return render(request, 'app_main/homepage.html', {
         'error': '',
     })
-
-
-def login(request):
-    return render(request, 'app_main/login.html', {
-        'error': '',
-    })
-
-
-def logout(request):
-    return render(request, 'app_main/logout.html', {
-        'error': '',
-    })
