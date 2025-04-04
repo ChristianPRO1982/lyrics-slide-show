@@ -6,14 +6,9 @@
 {% block title %}{% trans "Sign Up" %}{% endblock title %}
 {% block title_h1 %}{% trans "Sign Up" %}{% endblock title_h1 %}
 {% block bloc1 %}
-    <a href="{% url 'account_login' %}">Connexion</a>
+    <a href="{% url 'account_login' %}">{% trans "connection" %}</a>
 {% endblock bloc1 %}
-{% block bloc2 %}
-La création d'un compte est obligatoire pour gérer un groupe.<br>
-Vous pouvez vous connecter avec votre compte Google.<br>
-<i>La plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>
-La création d'un compte est sans engagement et <b>100% gratuite</b>.
-{% endblock bloc2 %}
+{% block bloc2 %}{% trans "info_signup" %}{% endblock bloc2 %}
 
 {% load allauth i18n %}
 {% block content %}

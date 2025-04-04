@@ -6,9 +6,10 @@
 {% block title %}{% trans "Sign In" %}{% endblock title %}
 {% block title_h1 %}{% trans "Sign In" %}{% endblock title_h1 %}
 {% block bloc1 %}
-    <a href="{% url 'account_signup' %}">SIGNUP - création d'un compte</a>
+    <a href="{% url 'account_signup' %}">{% trans "New account" %}</a>
 {% endblock bloc1 %}
 {% block bloc2 %}
+{% trans "info_signup" %}
 La création d'un compte est obligatoire pour gérer un groupe.<br>
 Vous pouvez vous connecter avec votre compte Google.<br>
 <i>La plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>

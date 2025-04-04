@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 15:38+0200\n"
+"POT-Creation-Date: 2025-04-04 15:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: app_main/templates/app_main/homepage.html:5
+#: app_main/templates/app_main/homepage.html:6
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: app_main/templates/app_main/homepage.html:11
+msgid "Welcome"
+msgstr "Bienvenu !"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:40
@@ -1317,3 +1326,6 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
 msgid "Redirected but the response is missing a Location: header."
 msgstr ""
+
+#~ msgid "Welcome to my awesome site"
+#~ msgstr "coco"

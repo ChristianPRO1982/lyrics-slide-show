@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock title %}
-{% block title_h1 %}Dashboard{% endblock title_h1 %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock title %}
+{% block title_h1 %}{% trans "Dashboard" %}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-coucou
+<p>{% trans "Welcome" %}</p>
 {% endblock content %}
