@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.0...v1.4.1) (2025-04-04)
+
+
+### Bug Fixes
+
+* readme ([de9bbe1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/de9bbe1e5ded2b509996050f37fda618539fe638))
+
 # [1.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.1...v1.4.0) (2025-04-04)
 
 
