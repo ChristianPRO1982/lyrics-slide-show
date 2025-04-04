@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load socialaccount %}
 
 {% block title %}Login{% endblock title %}
 {% block title_h1 %}Login{% endblock title_h1 %}
@@ -6,5 +7,29 @@
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-coucou
+<form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div>
+        <label for="id_username">Username:</label>
+        <input type="text" name="username" id="id_username" required>
+    </div>
+    <div>
+        <label for="id_password">Password:</label>
+        <input type="password" name="password" id="id_password" required>
+    </div>
+    <input name="btn_login" value="Connexion" type="submit" />
+</form>
+
+<hr>
+
+<div>
+    <p>Or login with:</p>
+    <ul>
+        {% for provider in socialaccount_providers %}
+            <li>
+                <a href="{% provider_login_url provider.id %}">{{ provider.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock content %}
