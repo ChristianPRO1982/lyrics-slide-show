@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Liste des groupes{% endblock title %}
-{% block title_h1 %}Liste des groupes{% endblock title_h1 %}
+{% load i18n %}
+
+{% block title %}{% trans "groups_list" %}{% endblock title %}
+{% block title_h1 %}{% trans "groups_list" %}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}
 <form method="post" action="{% url "add_group" %}">
     {% csrf_token %}
-    <input type="text" name="txt_new_name" placeholder="Nouveau groupe" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required />
-    <input name="btn_new_group" value="Ajouter" type="submit" />
+    <input type="text" name="txt_new_name" placeholder="{% trans "new_group" %}" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required />
+    <input name="btn_new_group" value="{% trans "add" %}" type="submit" />
 </form>
 {% endblock bloc2 %}
 

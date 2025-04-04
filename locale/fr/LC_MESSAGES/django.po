@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 15:57+0200\n"
+"POT-Creation-Date: 2025-04-04 17:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: app_group/templates/app_group/add_group.html:5
+msgid "Create a new group"
+msgstr "Création d'un nouveau groupe"
+
+#: app_group/templates/app_group/add_group.html:15
+msgid "New group"
+msgstr ""
+
+#: app_group/templates/app_group/add_group.html:16
+msgid "Description"
+msgstr ""
+
+#: app_group/templates/app_group/add_group.html:17
+msgid "admin_info"
+msgstr "ADMIN [non obligatoire]"
+
+#: app_group/templates/app_group/add_group.html:18
+msgid "placeholder_email_group"
+msgstr "Email (si vide > pas d'administration et le groupe est libre)"
+
+#: app_group/templates/app_group/add_group.html:19
+msgid "password"
+msgstr "Mot de passe"
+
+#: app_group/templates/app_group/add_group.html:20
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+#: app_group/templates/app_group/add_group.html:21
+msgid "Add"
+msgstr ""
+
+#: app_group/templates/app_group/groups.html:5
+#: app_group/templates/app_group/groups.html:6
+msgid "groups_list"
+msgstr "Liste des groupes"
+
+#: app_group/templates/app_group/groups.html:11
+msgid "new_group"
+msgstr "Nouveau groupe"
+
+#: app_group/templates/app_group/groups.html:12
+#: app_song/templates/app_song/songs.html:38
+msgid "add"
+msgstr "Ajouter"
 
 #: app_main/templates/app_main/homepage.html:5
 #: app_main/templates/app_main/homepage.html:6
@@ -27,51 +73,151 @@ msgstr "Tableau de bord"
 msgid "Welcome"
 msgstr "Bienvenu !"
 
+#: app_song/templates/app_song/modify_song.html:5
+msgid "song2dot"
+msgstr "Chant : "
+
+#: app_song/templates/app_song/modify_song.html:18
+#: app_song/templates/app_song/songs.html:14
+#: app_song/templates/app_song/songs.html:44
+msgid "title"
+msgstr "Titre"
+
+#: app_song/templates/app_song/modify_song.html:22
+msgid "subtitle"
+msgstr "Sous-titre"
+
+#: app_song/templates/app_song/modify_song.html:26
+#: app_song/templates/app_song/songs.html:15
+#: app_song/templates/app_song/songs.html:37
+#: app_song/templates/app_song/songs.html:45
+msgid "description"
+msgstr "Description"
+
+#: app_song/templates/app_song/modify_song.html:30
+msgid "artist"
+msgstr "Artiste"
+
+#: app_song/templates/app_song/modify_song.html:42
+#: app_song/templates/app_song/modify_song.html:66
+#: app_song/templates/app_song/modify_song.html:80
+msgid "chorus"
+msgstr "Refrain"
+
+#: app_song/templates/app_song/modify_song.html:47
+msgid "followed"
+msgstr "Suivi"
+
+#: app_song/templates/app_song/modify_song.html:50
+msgid "like_a_chorus"
+msgstr "Comme un refrain"
+
+#: app_song/templates/app_song/modify_song.html:55
+#: app_song/templates/app_song/modify_song.html:68
+#: app_song/templates/app_song/modify_song.html:82
+msgid "verse_num"
+msgstr "Couplet n°"
+
+#: app_song/templates/app_song/modify_song.html:59
+msgid "move2dot"
+msgstr "Déplacer :"
+
+#: app_song/templates/app_song/modify_song.html:61
+msgid "before"
+msgstr "Avant"
+
+#: app_song/templates/app_song/modify_song.html:74
+msgid "dont_do_nothing"
+msgstr "[ne rien faire]"
+
+#: app_song/templates/app_song/modify_song.html:75
+msgid "after"
+msgstr "Après"
+
+#: app_song/templates/app_song/modify_song.html:93
+#: app_song/templates/app_song/songs.html:29
+msgid "delete"
+msgstr "Supprimer"
+
+#: app_song/templates/app_song/modify_song.html:102
+msgid "new_verse"
+msgstr "Nouveau couplet/refrain"
+
+#: app_song/templates/app_song/modify_song.html:105
+msgid "save"
+msgstr "Enregistrer"
+
+#: app_song/templates/app_song/modify_song.html:106
+msgid "save_exit"
+msgstr "Enregistrer + revenir à la liste des chants"
+
+#: app_song/templates/app_song/modify_song.html:107
+msgid "cancel"
+msgstr "Annuler (perdre toutes les modifications en cours)"
+
+#: app_song/templates/app_song/songs.html:5
+#: app_song/templates/app_song/songs.html:6
+msgid "songs_list"
+msgstr "Liste des chants"
+
+#: app_song/templates/app_song/songs.html:16
+#: app_song/templates/app_song/songs.html:46
+msgid "actions"
+msgstr "Actions"
+
+#: app_song/templates/app_song/songs.html:28
+msgid "update"
+msgstr "Modifier"
+
+#: app_song/templates/app_song/songs.html:36
+msgid "new_song"
+msgstr "Nouveau chant"
+
 #: templates/account/login.html:6 templates/account/login.html:7
-#: templates/account/login.html:41
+#: templates/account/login.html:35
 msgid "Sign In"
-msgstr "Créer un compte"
+msgstr ""
 
 #: templates/account/login.html:9
 msgid "New account"
-msgstr "Nouveau compte"
+msgstr ""
 
-#: templates/account/login.html:12 templates/account/signup.html:11
+#: templates/account/login.html:11 templates/account/signup.html:11
 msgid "info_signup"
-msgstr "La création d'un compte est obligatoire pour gérer un groupe.<br>Vous pouvez vous connecter avec votre compte Google.<br><i>La plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>La création d'un compte est sans engagement et <b>100% gratuite</b>."
+msgstr ""
 
-#: templates/account/login.html:29
+#: templates/account/login.html:23
 #, python-format
 msgid ""
 "If you have not created an account yet, then please %(link)ssign "
 "up%(end_link)s first."
 msgstr ""
 
-#: templates/account/login.html:52
+#: templates/account/login.html:46
 msgid "Sign in with a passkey"
 msgstr ""
 
-#: templates/account/login.html:57
+#: templates/account/login.html:51
 msgid "Send me a sign-in code"
 msgstr ""
 
 #: templates/account/logout.html:5 templates/account/logout.html:6
 #: templates/account/logout.html:132
 msgid "Sign Out"
-msgstr "Déconnection"
+msgstr ""
 
 #: templates/account/logout.html:122
 msgid "Are you sure you want to sign out?"
-msgstr "Êtes-vous sûr de vous déconnecter ?"
+msgstr ""
 
 #: templates/account/signup.html:6 templates/account/signup.html:7
 #: templates/account/signup.html:16 templates/account/signup.html:38
 msgid "Sign Up"
-msgstr "Création d'un compte"
+msgstr ""
 
 #: templates/account/signup.html:9
 msgid "connection"
-msgstr "connexion"
+msgstr ""
 
 #: templates/account/signup.html:25
 #, python-format
@@ -82,31 +228,31 @@ msgstr ""
 msgid "Sign up using a passkey"
 msgstr ""
 
-#: templates/includes/nav.html:4
+#: templates/includes/nav.html:5
 msgid "nav_home"
 msgstr "Accueil"
 
-#: templates/includes/nav.html:6
+#: templates/includes/nav.html:7
 msgid "nav_groups_list"
 msgstr "Liste des groupes"
 
-#: templates/includes/nav.html:7
+#: templates/includes/nav.html:8
 msgid "nav_songs_list"
 msgstr "Liste des chants"
 
-#: templates/includes/nav.html:8
+#: templates/includes/nav.html:9
 msgid "nav_animations_list"
 msgstr "Liste des animations"
 
-#: templates/includes/nav.html:9
+#: templates/includes/nav.html:10
 msgid "nav_logout"
 msgstr "Déconnexion"
 
-#: templates/includes/nav.html:11
+#: templates/includes/nav.html:12
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/nav.html:12
+#: templates/includes/nav.html:13
 msgid "nav_signup"
 msgstr "Créer un compte"
 
@@ -1366,6 +1512,3 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
 msgid "Redirected but the response is missing a Location: header."
 msgstr ""
-
-#~ msgid "Welcome to my awesome site"
-#~ msgstr "coco"
