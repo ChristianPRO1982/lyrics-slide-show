@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.1...v1.4.0) (2025-04-04)
+
+
+### Features
+
+* Google connection ([1b1669f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1b1669fadf5f9b8a944074ea29433296e21d8b9c))
+
 ## [1.3.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.0...v1.3.1) (2025-03-28)
 
 
