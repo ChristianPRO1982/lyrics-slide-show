@@ -1,0 +1,21 @@
+{% load static %}
+{% load i18n %}
+{% load allauth %}
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+    {% if not SOCIALACCOUNT_ONLY %}
+        {% element hr %}
+        {% endelement %}
+        {% element h2 %}
+            {% translate "Or use a third-party" %}
+        {% endelement %}
+    {% endif %}
+    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4 flex items-center space-x-4" role="alert">
+        <img src="{% static 'images/logo_google.png' %}" alt="Google" class="h-20">
+        <p class="font-bold">
+            {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </p>
+    </div>
+    {% include "socialaccount/snippets/login_extra.html" %}
+{% endif %}

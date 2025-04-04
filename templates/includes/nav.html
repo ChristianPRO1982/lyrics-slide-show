@@ -14,7 +14,7 @@
         </div>
 {% else %}
         {% comment %} <a class="mx-2 hidden md:block" href="/admin/login/?next=/">⇒ LOGIN</a> {% endcomment %}
-        <a class="mx-2 hidden md:block" href="/login/">⇒ LOGIN</a>
+        <a class="mx-2 hidden md:block" href="{% url 'account_login' %}">⇒ LOGIN</a>
 {% endif %}
                 
         {% comment %} SMARTPHONE {% endcomment %}
@@ -32,5 +32,5 @@
         </div>
 {% else %}
         {% comment %} <a class="mx-2 block md:hidden" href="/admin/login/?next=/">⇒</a> {% endcomment %}
-        <a class="mx-2 block md:hidden" href="/login/">⇒</a>
+        <a class="mx-2 block md:hidden" href="{% url 'account_login' %}">⇒</a>
 {% endif %}

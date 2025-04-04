@@ -186,12 +186,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1  # Allauth en a besoin pour fonctionner
 
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path("accounts/", include("allauth.urls")),  # Corrige 'account' → 'accounts'
-# ]
-
 # LOGIN_URL = '/admin/login/?next=/admin/'
-LOGIN_URL = '/login/'
+LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
