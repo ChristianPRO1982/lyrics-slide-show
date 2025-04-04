@@ -1,3 +1,19 @@
+# [1.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.1...v1.5.0) (2025-04-04)
+
+
+### Bug Fixes
+
+* link "top" update ([af86bdf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/af86bdf4cbc8f4b1f285735a863c2a94b388f3d2))
+* login ([df87df2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/df87df234e551a9ef35917b6cab04eb7ce3d585c))
+* logout ([176d2aa](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/176d2aa4e3a56b48f47f2e09c11b42d1059be819))
+* remove old login logout html templates ([53395c6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/53395c6e48701ef259301a013e64d2d792271612))
+* trans nav_bar ([2af6936](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2af6936fde6a93eefc9d297f4daf6db71ad67276))
+
+
+### Features
+
+* translation ([7b1f4e5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7b1f4e58144d46d34df58d9c958cb8e9215685f6))
+
 ## [1.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.0...v1.4.1) (2025-04-04)
 
 
