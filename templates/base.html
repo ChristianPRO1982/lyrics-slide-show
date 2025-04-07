@@ -27,8 +27,22 @@
                     {% if error != '' %}
                         {% if error == '[ERR1]' %}
                             <p class="text-red-500">{% trans "ERR1" %}</p>
-                            {% elif error == '[ERR2]' %}
+                        {% elif error == '[ERR2]' %}
                             <p class="text-red-500">{% trans "ERR2" %}</p>
+                        {% elif error == '[ERR3]' %}
+                            <p class="text-red-500">{% trans "ERR3" %}</p>
+                        {% elif error == '[ERR4]' %}
+                            <p class="text-red-500">{% trans "ERR4" %}</p>
+                        {% elif error == '[ERR5]' %}
+                            <p class="text-red-500">{% trans "ERR5" %}</p>
+                        {% elif error == '[ERR6]' %}
+                            <p class="text-red-500">{% trans "ERR5" %}</p>
+                        {% elif error == '[ERR7]' %}
+                            <p class="text-red-500">{% trans "ERR7" %}</p>
+                        {% elif error == '[ERR8]' %}
+                            <p class="text-red-500">{% trans "ERR8" %}</p>
+                        {% elif error == '[ERR9]' %}
+                            <p class="text-red-500">{% trans "ERR9" %}</p>
                         {% else %}
                             <p class="text-red-600">{{ error }}</p>
                         {% endif %}

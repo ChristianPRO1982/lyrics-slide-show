@@ -13,12 +13,11 @@ code_file = "SQL_group.py"
 ###############################################
 ###############################################
 class Group:
-    def __init__(self, group_id=None, name=None, info=None, admin_email=None, admin_password=None):
+    def __init__(self, group_id=None, name=None, info=None, token=None):
         self.group_id = group_id
         self.name = name
         self.info = info
-        self.admin_email = admin_email
-        self.admin_password = admin_password
+        self.token = token
 
 
     @staticmethod
@@ -34,7 +33,7 @@ ORDER BY name
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'login': row[3], 'token': row[4]} for row in rows]
+        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'token': row[3]} for row in rows]
     
 
     def save(self):
@@ -44,8 +43,7 @@ ORDER BY name
 UPDATE c_groups
    SET name = %s,
        info = %s,
-       admin_email = %s,
-       admin_password = %s
+       token = %s
  WHERE group_id = %s
 """
                 params = [self.name, self.info, self.admin_email, self.token, self.group_id]
@@ -54,12 +52,58 @@ UPDATE c_groups
                 cursor.execute(request, params)
 
             else:
-                request = """
-INSERT INTO c_groups (name, info, admin_email, admin_password)
-     VALUES (%s, %s, %s, %s)
+                try:
+                    request = """
+INSERT INTO c_groups (name, info)
+     VALUES (%s, %s)
 """
-                params = [self.name, self.info, self.admin_email, self.admin_password]
-                
-                create_SQL_log(code_file, "Group.save", "INSERT_1", request, params)
+                    params = [self.name, self.info]
+                    
+                    create_SQL_log(code_file, "Group.save", "INSERT_1", request, params)
+                    cursor.execute(request, params)
+                    self.group_id = cursor.lastrowid
+
+                    return ''
+
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return "[ERR8]"
+                    return "[ERR9]"
+
+
+    def add_admin(self, username, admin=0):
+        try:
+            request = """
+SELECT COUNT(1)
+  FROM auth_user
+ WHERE username = %s
+        """
+            params = [username]
+
+            create_SQL_log(code_file, "Group.add_admin", "SELECT_2", request, params)
+            with connection.cursor() as cursor:
                 cursor.execute(request, params)
-                self.group_id = cursor.lastrowid
+                count = cursor.fetchone()[0]
+            
+            if count == 0:
+                raise Exception('DB_ERR_1')
+            
+            request = """
+INSERT INTO c_group_user
+     VALUES (%s, %s, %s)
+"""
+            params = [self.group_id, username, admin]
+
+            try:
+                create_SQL_log(code_file, "Group.add_admin", "INSERT_2", request, params)
+                with connection.cursor() as cursor:
+                    cursor.execute(request, params)
+            except Exception as e:
+                return "[ERR7]"
+            
+            return ''
+            
+        except Exception as e:
+            if 'DB_ERR_1' in str(e):
+                return "[ERR5]"
+            return "[ERR6]"

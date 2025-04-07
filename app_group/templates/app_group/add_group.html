@@ -13,7 +13,8 @@
 <form method="post">
     {% csrf_token %}
     <input type="text" name="txt_new_name" placeholder="{% trans "New group" %}" maxlength="255" value="{{ name }}" required /><br>
-    <textarea name="txt_new_info" placeholder="{% trans "Description" %}" maxlength="255">{{ info }}</textarea><br>
+    <textarea name="txt_new_info" placeholder="{% trans "Description" %}" maxlength="255">{{ info }}</textarea>
+    <hr>
     {% trans "admin_info" %}<br>
     {% trans "Username2dot" %}
     <input type="text" name="txt_username" placeholder="{% trans "Username" %}" maxlength="255" value="{{ username }}" required /><br>
@@ -22,7 +23,7 @@
 {% endif %}
 
 {% if valided != '' %}
-<p>{{ valided }}</p>
+<p>{% trans "Group saved" %}</p>
 {% endif %}
 
 {% endblock content %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from .SQL_group import Group
-import hashlib
 
 
 
@@ -39,36 +39,32 @@ def add_group(request):
         if request.POST.get('btn_new_group'):
             name = request.POST.get('txt_new_name')
             info = ''
-            username
+            username = request.user.username
 
         elif request.POST.get('btn_add_group'):
             name = request.POST.get('txt_new_name')
             info = request.POST.get('txt_new_info')
-            admin_email = request.POST.get('txt_new_admin_email')
-            txt_new_admin_password = request.POST.get('txt_new_admin_password')
-            txt_new_admin_password_confirm = request.POST.get('txt_new_admin_password_confirm')
+            username = request.POST.get('txt_username')
 
             if name.strip() == '':
-                error = 'Group name is required'
+                error = '[ERR3]'
+            elif not User.objects.filter(username=username).exists():
+                error = '[ERR4]'
             else:
-                if txt_new_admin_password != txt_new_admin_password_confirm:
-                    error = 'Password and confirm password do not match'
-                else:
-                    hashed_password = hashlib.md5(txt_new_admin_password.encode()).hexdigest()
-                    new_group = Group(
-                        name=name,
-                        info=info,
-                        admin_email=admin_email,
-                        admin_password=hashed_password
-                    )
-                    new_group.save()
+                new_group = Group(
+                    name=name,
+                    info=info
+                )
+                error = new_group.save()
+                if error == '':
+                    error =new_group.add_admin(username, 1)
                     valided = 'Groupe enregistré'
 
 
     return render(request, 'app_group/add_group.html', {
         'name': name,
         'info': info,
-        'admin_email': admin_email,
+        'username': username,
         'valided': valided,
         'error': error,
         })

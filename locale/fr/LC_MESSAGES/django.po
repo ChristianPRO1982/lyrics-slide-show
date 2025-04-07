@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 14:28+0200\n"
+"POT-Creation-Date: 2025-04-07 17:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgid "new_animation"
 msgstr "Nouvelle animation"
 
 #: app_animation/templates/app_animation/animations.html:42
-#: app_group/templates/app_group/add_group.html:20
+#: app_group/templates/app_group/add_group.html:21
 msgid "Add"
 msgstr "Ajouter"
 
@@ -84,25 +84,33 @@ msgstr "Création d'un nouveau groupe"
 
 #: app_group/templates/app_group/add_group.html:8
 msgid "admin_info_plus"
-msgstr "Afin de mieux modérer les groupes, un ou plusieurs administrateurs sont obligatoire. Ils permettent de gérer le fonctionnement du groupes et des éléments associés (animations, etc.).<br><br>Le groupe peut être ouvert, c'est-à-dire qu'il n'est pas obligé d'avoir d'un compte pour y accéder. <b>Seul l'administration est obligatoire</b>.<br><br>Dans le cas où le groupe est fermé, alors tous ses membres doivent se connecter pour y accéder."
+msgstr ""
+"Afin de mieux modérer les groupes, un ou plusieurs administrateurs sont "
+"obligatoire. Ils permettent de gérer le fonctionnement du groupes et des "
+"éléments associés (animations, etc.).<br><br>Le groupe peut être ouvert, "
+"c'est-à-dire qu'il n'est pas obligé d'avoir d'un compte pour y accéder. "
+"<b>Seul l'administration est obligatoire</b>.<br><br>Dans le cas où le "
+"groupe est fermé, alors tous ses membres doivent se connecter pour y accéder."
 
 #: app_group/templates/app_group/add_group.html:15
 msgid "New group"
 msgstr "Nouveau groupe"
 
-#: app_group/templates/app_group/add_group.html:17
+#: app_group/templates/app_group/add_group.html:18
 msgid "admin_info"
 msgstr "ADMIN [obligatoire]"
 
-#: app_group/templates/app_group/add_group.html:18
-#, fuzzy
-#| msgid "move2dot"
-msgid "Username2dot"
-msgstr "Déplacer&nbsp;:"
-
 #: app_group/templates/app_group/add_group.html:19
+msgid "Username2dot"
+msgstr "Username&nbsp;:"
+
+#: app_group/templates/app_group/add_group.html:20
 msgid "Username"
 msgstr ""
+
+#: app_group/templates/app_group/add_group.html:26
+msgid "Group saved"
+msgstr "Groupe enregistré."
 
 #: app_group/templates/app_group/groups.html:5
 #: app_group/templates/app_group/groups.html:6
@@ -310,6 +318,34 @@ msgstr "Aucun groupe n'est sélectionné"
 #: templates/base.html:31
 msgid "ERR2"
 msgstr "Le nom est obligatoire."
+
+#: templates/base.html:33
+msgid "ERR3"
+msgstr "Le nom du groupe est obligatoire."
+
+#: templates/base.html:35
+msgid "ERR4"
+msgstr ""
+"Le 'username' indiqué ne se trouve pas en base de données. Merci d'indiquer "
+"un 'username' valide."
+
+#: templates/base.html:37 templates/base.html:39
+msgid "ERR5"
+msgstr ""
+"Impossible d'ajouter le 'username' comme admin du groupe car il n'est pas "
+"reconnu dans le système. Contactez l'administrateur du site."
+
+#: templates/base.html:41
+msgid "ERR7"
+msgstr "Impossible d'ajouter 'username' comme administrateur du groupe."
+
+#: templates/base.html:43
+msgid "ERR8"
+msgstr "Le nom du groupe est déjà utilisé. Deux groupes ne peuvent pas avoir le même nom."
+
+#: templates/base.html:45
+msgid "ERR9"
+msgstr "Impossible de créer le groupe. Contactez l'administrateur du site"
 
 #: templates/includes/nav.html:5
 msgid "nav_home"
@@ -1591,6 +1627,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
 msgid "Redirected but the response is missing a Location: header."
 msgstr ""
+
+#~ msgid "ERR6"
+#~ msgstr "Erreur dans 'Group.add_admin'"
 
 #~ msgid "placeholder_email_group"
 #~ msgstr "Email (si vide > pas d'administration et le groupe est libre)"
