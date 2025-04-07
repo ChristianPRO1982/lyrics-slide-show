@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html class="scroll-smooth" template="true" lang="fr-fr">
@@ -23,7 +24,16 @@
                     <!-- §§§§§§§§§§§§§§§§§§§§§ -->
                     <!-- §§§§§ MAIN BLOC §§§§§ -->
                     <!-- §§§§§§§§§§§§§§§§§§§§§ -->
-                    {% if error != '' %}{{ error }}<hr>{% endif %}
+                    {% if error != '' %}
+                        {% if error == '[ERR1]' %}
+                            <p class="text-red-500">{% trans "ERR1" %}</p>
+                            {% elif error == '[ERR2]' %}
+                            <p class="text-red-500">{% trans "ERR2" %}</p>
+                        {% else %}
+                            <p class="text-red-600">{{ error }}</p>
+                        {% endif %}
+                        <hr>
+                    {% endif %}
                     <h1 class="font-bold text-4xl p-4">{% block title_h1 %}{% endblock title_h1 %}</h1>
                     {% block content %}{% endblock %}
                 </div>

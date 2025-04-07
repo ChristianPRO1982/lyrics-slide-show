@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 11:17+0200\n"
+"POT-Creation-Date: 2025-04-07 11:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,72 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: app_animation/templates/app_animation/animations.html:5
+#: app_animation/templates/app_animation/animations.html:6
+msgid "animations_title"
+msgstr "Liste des animations"
+
+#: app_animation/templates/app_animation/animations.html:14
+#: app_animation/templates/app_animation/animations.html:49
+msgid "Name"
+msgstr "Nom"
+
+#: app_animation/templates/app_animation/animations.html:15
+#: app_animation/templates/app_animation/animations.html:40
+#: app_animation/templates/app_animation/animations.html:50
+#: app_group/templates/app_group/add_group.html:16
+msgid "Description"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:16
+#: app_animation/templates/app_animation/animations.html:51
+msgid "Date"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:17
+#: app_animation/templates/app_animation/animations.html:52
+#, fuzzy
+#| msgid "actions"
+msgid "Actions"
+msgstr "Actions"
+
+#: app_animation/templates/app_animation/animations.html:30
+#: app_animation/templates/app_animation/delete_animation.html:16
+#: app_animation/templates/app_animation/delete_animation.html:17
+#, fuzzy
+#| msgid "update"
+msgid "Update"
+msgstr "Modifier"
+
+#: app_animation/templates/app_animation/animations.html:31
+#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
+msgid "Delete"
+msgstr "Supprimer"
+
+#: app_animation/templates/app_animation/animations.html:39
+msgid "new_animation"
+msgstr "Nouvelle animation"
+
+#: app_animation/templates/app_animation/animations.html:42
+#: app_group/templates/app_group/add_group.html:21
+msgid "Add"
+msgstr "Ajouter"
+
+#: app_animation/templates/app_animation/delete_animation.html:5
+#: app_animation/templates/app_animation/delete_animation.html:6
+msgid "confirm_delete_animation_title"
+msgstr "Confirmation de suppression"
+
+#: app_animation/templates/app_animation/delete_animation.html:11
+msgid "confirm_delete_animation_2dot"
+msgstr "Confirmer la suppression de cette animation&nbsp;: "
+
 #: app_group/templates/app_group/add_group.html:5
 msgid "Create a new group"
 msgstr "Création d'un nouveau groupe"
 
 #: app_group/templates/app_group/add_group.html:15
 msgid "New group"
-msgstr ""
-
-#: app_group/templates/app_group/add_group.html:16
-msgid "Description"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:17
@@ -45,10 +101,6 @@ msgstr "Mot de passe"
 #: app_group/templates/app_group/add_group.html:20
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
-
-#: app_group/templates/app_group/add_group.html:21
-msgid "Add"
-msgstr ""
 
 #: app_group/templates/app_group/groups.html:5
 #: app_group/templates/app_group/groups.html:6
@@ -244,6 +296,14 @@ msgstr ""
 #: templates/account/signup.html:47
 msgid "Sign up using a passkey"
 msgstr ""
+
+#: templates/base.html:29
+msgid "ERR1"
+msgstr "Aucun groupe n'est sélectionné"
+
+#: templates/base.html:31
+msgid "ERR2"
+msgstr "Le nom est obligatoire."
 
 #: templates/includes/nav.html:5
 msgid "nav_home"
@@ -865,10 +925,6 @@ msgstr[1] ""
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
 msgid "Order"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
-msgid "Delete"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/forms/models.py:901

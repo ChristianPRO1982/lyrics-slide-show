@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Liste des animations{% endblock title %}
-{% block title_h1 %}Liste des animations{% endblock title_h1 %}
+{% load i18n %}
+
+{% block title %}{% trans "animations_title" %}{% endblock title %}
+{% block title_h1 %}{% trans "animations_title" %}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
@@ -9,10 +11,10 @@
 <table style="width: 100%;">
     <thead>
         <tr>
-            <th style="width: 25%;">Nom</th>
-            <th style="width: 25%;">Description</th>
-            <th style="width: 25%;">Date</th>
-            <th style="width: 24%;">Actions</th>
+            <th style="width: 25%;">{% trans "Name" %}</th>
+            <th style="width: 25%;">{% trans "Description" %}</th>
+            <th style="width: 25%;">{% trans "Date" %}</th>
+            <th style="width: 24%;">{% trans "Actions" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -25,8 +27,8 @@
             </td>
             <td>{{ animation.date }}</td>
             <td>
-                <a href="{% url 'modify_animation' animation.animation_id %}">Modifier</a> |
-                <a href="{% url 'delete_animation' animation.animation_id %}">Supprimer</a>
+                <a href="{% url 'modify_animation' animation.animation_id %}">{% trans "Update" %}</a> |
+                <a href="{% url 'delete_animation' animation.animation_id %}">{% trans "Delete" %}</a>
             </td>
         </tr>
         {% endfor %}
@@ -34,19 +36,20 @@
         <tr>
             <form method="post">
                 {% csrf_token %}
-                <td><input type="text" name="txt_new_name" placeholder="Nouvel animation" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required /></td>
-                <td><input type="text" name="txt_new_description" placeholder="Description" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
+                <td><input type="text" name="txt_new_name" placeholder="{% trans "new_animation" %}" maxlength="255" {% if name != '' %}value="{{ name }}"{% endif %} required /></td>
+                <td><input type="text" name="txt_new_description" placeholder="{% trans "Description" %}" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
                 <td><input type="date" name="dt_new_date" placeholder="AAAA-MM-JJ" {% if date != '' %}value="{{ date }}"{% endif %} required /></td>
-                <td><input name="btn_new_animation" value="Ajouter" type="submit" /></td>
+                <td><input name="btn_new_animation" value="{% trans "Add" %}" type="submit" /></td>
             </form>
         </tr>
         {% endif %}
     </tbody>
     <tfoot>
         <tr>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>Actions</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
     </tfoot>
     {% if form.errors.name %}

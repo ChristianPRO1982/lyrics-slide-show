@@ -31,7 +31,7 @@ def animations(request):
     
     else:
         animations = []
-        error = "Aucun groupe n'est sélectionné"
+        error = "[ERR1]"
 
 
     return render(request, 'app_animation/animations.html', {
@@ -52,7 +52,7 @@ def modify_animation(request, animation_id):
     if request.method == 'POST':
         if 'btn_cancel' not in request.POST:
             if not animation.name:
-                error = "Le nom est obligatoire."
+                error = "[ERR2]"
             else:
                 animation.name = request.POST.get('txt_name')
                 animation.description = request.POST.get('txt_description')
