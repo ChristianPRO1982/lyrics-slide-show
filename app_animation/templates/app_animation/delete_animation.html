@@ -2,13 +2,13 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "confirm_delete_animation_title" %}Confirmer la suppression de l'animation{% endblock title %}
-{% block title_h1 %}{% trans "confirm_delete_animation_title" %}Confirmer la suppression de l'animation{% endblock title_h1 %}
+{% block title %}{% trans "confirm_delete_animation_title" %}{% endblock title %}
+{% block title_h1 %}{% trans "confirm_delete_animation_title" %}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-<p>{% trans "confirm_delete_animation_2dot" %}Confirmer la suppression de l'animation<i>{{ animation.name }}</i></p>
+<p>{% trans "confirm_delete_animation_2dot" %}<i>{{ animation.name }}</i></p>
 <form method="post" action="{% url "delete_animation" animation.animation_id %}">
     {% csrf_token %}
     <hr>
