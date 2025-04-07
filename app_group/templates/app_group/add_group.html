@@ -5,7 +5,7 @@
 {% block title %}{% trans "Create a new group" %}Création d'un groupe{% endblock title %}
 {% block title_h1 %}{{ name }}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc2 %}{% trans "admin_info_plus" %}{% endblock bloc2 %}
 
 {% block content %}
 
@@ -15,9 +15,8 @@
     <input type="text" name="txt_new_name" placeholder="{% trans "New group" %}" maxlength="255" value="{{ name }}" required /><br>
     <textarea name="txt_new_info" placeholder="{% trans "Description" %}" maxlength="255">{{ info }}</textarea><br>
     {% trans "admin_info" %}<br>
-    <input type="text" name="txt_new_admin_email" placeholder="{% trans "placeholder_email_group" %}" maxlength="255" value="{{ admin_email }}" /><br>
-    <input type="password" name="txt_new_admin_password" placeholder="{% trans "password" %}" maxlength="255" /><br>
-    <input type="password" name="txt_new_admin_password_confirm" placeholder="{% trans "Confirm password" %}" maxlength="255" /><br>
+    {% trans "Username2dot" %}
+    <input type="text" name="txt_username" placeholder="{% trans "Username" %}" maxlength="255" value="{{ username }}" required /><br>
     <input name="btn_add_group" value="{% trans "Add" %}" type="submit" />
 </form>
 {% endif %}

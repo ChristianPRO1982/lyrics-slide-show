@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 14:05+0200\n"
+"POT-Creation-Date: 2025-04-07 14:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,7 @@ msgid "new_animation"
 msgstr "Nouvelle animation"
 
 #: app_animation/templates/app_animation/animations.html:42
-#: app_group/templates/app_group/add_group.html:21
+#: app_group/templates/app_group/add_group.html:20
 msgid "Add"
 msgstr "Ajouter"
 
@@ -82,25 +82,27 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 msgid "Create a new group"
 msgstr "Création d'un nouveau groupe"
 
+#: app_group/templates/app_group/add_group.html:8
+msgid "admin_info_plus"
+msgstr "Afin de mieux modérer les groupes, un ou plusieurs administrateurs sont obligatoire. Ils permettent de gérer le fonctionnement du groupes et des éléments associés (animations, etc.).<br><br>Le groupe peut être ouvert, c'est-à-dire qu'il n'est pas obligé d'avoir d'un compte pour y accéder. <b>Seul l'administration est obligatoire</b>.<br><br>Dans le cas où le groupe est fermé, alors tous ses membres doivent se connecter pour y accéder."
+
 #: app_group/templates/app_group/add_group.html:15
 msgid "New group"
-msgstr ""
+msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/add_group.html:17
 msgid "admin_info"
-msgstr "ADMIN [non obligatoire]"
+msgstr "ADMIN [obligatoire]"
 
 #: app_group/templates/app_group/add_group.html:18
-msgid "placeholder_email_group"
-msgstr "Email (si vide > pas d'administration et le groupe est libre)"
+#, fuzzy
+#| msgid "move2dot"
+msgid "Username2dot"
+msgstr "Déplacer&nbsp;:"
 
 #: app_group/templates/app_group/add_group.html:19
-msgid "password"
-msgstr "Mot de passe"
-
-#: app_group/templates/app_group/add_group.html:20
-msgid "Confirm password"
-msgstr "Confirmer le mot de passe"
+msgid "Username"
+msgstr ""
 
 #: app_group/templates/app_group/groups.html:5
 #: app_group/templates/app_group/groups.html:6
@@ -253,7 +255,11 @@ msgstr "Créer un nouveau compte"
 
 #: templates/account/login.html:11 templates/account/signup.html:11
 msgid "info_signup"
-msgstr "<b>Bienvenu !</b><br><br>La création d'un compte est obligatoire pour gérer un groupe.<br>Vous pouvez vous connecter avec votre compte Google.<br><i>La plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>La création d'un compte est sans engagement et <b>100% gratuite</b>."
+msgstr ""
+"<b>Bienvenu !</b><br><br>La création d'un compte est obligatoire pour gérer "
+"un groupe.<br>Vous pouvez vous connecter avec votre compte Google.<br><i>La "
+"plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>La "
+"création d'un compte est sans engagement et <b>100% gratuite</b>."
 
 #: templates/account/login.html:23
 #, python-format
@@ -1585,3 +1591,12 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
 msgid "Redirected but the response is missing a Location: header."
 msgstr ""
+
+#~ msgid "placeholder_email_group"
+#~ msgstr "Email (si vide > pas d'administration et le groupe est libre)"
+
+#~ msgid "password"
+#~ msgstr "Mot de passe"
+
+#~ msgid "Confirm password"
+#~ msgstr "Confirmer le mot de passe"

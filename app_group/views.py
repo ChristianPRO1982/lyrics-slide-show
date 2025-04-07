@@ -32,14 +32,14 @@ def add_group(request):
     error = ''
     name = ''
     info = ''
-    admin_email = ''
+    username = ''
     valided = ''
 
     if request.method == 'POST':
         if request.POST.get('btn_new_group'):
             name = request.POST.get('txt_new_name')
             info = ''
-            admin_email = ''
+            username
 
         elif request.POST.get('btn_add_group'):
             name = request.POST.get('txt_new_name')
