@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-04 17:06+0200\n"
+"POT-Creation-Date: 2025-04-07 11:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,9 +73,26 @@ msgstr "Tableau de bord"
 msgid "Welcome"
 msgstr "Bienvenu !"
 
+#: app_song/templates/app_song/delete_song.html:5
+#: app_song/templates/app_song/delete_song.html:6
+msgid "confirm_delete_song_title"
+msgstr "Confirmation de suppression"
+
+#: app_song/templates/app_song/delete_song.html:11
+msgid "confirm_delete_song_2dot"
+msgstr "Confirmer la suppression de ce chant&nbsp;: "
+
+#: app_song/templates/app_song/delete_song.html:16
+msgid "btn_delete"
+msgstr "Supprimer"
+
+#: app_song/templates/app_song/delete_song.html:17
+msgid "btn_cancel"
+msgstr "Annuler"
+
 #: app_song/templates/app_song/modify_song.html:5
 msgid "song2dot"
-msgstr "Chant : "
+msgstr "Chant&nbsp;: "
 
 #: app_song/templates/app_song/modify_song.html:18
 #: app_song/templates/app_song/songs.html:14
@@ -120,7 +137,7 @@ msgstr "Couplet n°"
 
 #: app_song/templates/app_song/modify_song.html:59
 msgid "move2dot"
-msgstr "Déplacer :"
+msgstr "Déplacer&nbsp;:"
 
 #: app_song/templates/app_song/modify_song.html:61
 msgid "before"
@@ -152,7 +169,7 @@ msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
 #: app_song/templates/app_song/modify_song.html:107
-msgid "cancel"
+msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
 #: app_song/templates/app_song/songs.html:5

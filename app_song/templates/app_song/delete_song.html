@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Confirmer la suppression du chant{% endblock title %}
-{% block title_h1 %}Confirmer la suppression du chant{% endblock title_h1 %}
+{% load i18n %}
+
+{% block title %}{% trans "confirm_delete_song_title" %}{% endblock title %}
+{% block title_h1 %}{% trans "confirm_delete_song_title" %}{% endblock title_h1 %}
 {% block bloc1 %}{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-<p>Confirmer la suppression du chant <b><i>{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</i></b></p>
+<p>{% trans "confirm_delete_song_2dot" %}<b><i>{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</i></b></p>
 <form method="post" action="{% url "delete_song" song.song_id %}">
     {% csrf_token %}
     <hr>
     <div class="text-center">
-        <input style="width: 45%;" name="btn_delete" value="Supprimer" type="submit" />
-        <input style="width: 45%;" name="btn_cancel" value="Annuler" type="submit" />
+        <input style="width: 45%;" name="btn_delete" value="{% trans "btn_delete" %}" type="submit" />
+        <input style="width: 45%;" name="btn_cancel" value="{% trans "btn_cancel" %}" type="submit" />
     </div>
 </form>
 {% endblock content %}
