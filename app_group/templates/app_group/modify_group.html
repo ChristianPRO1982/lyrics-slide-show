@@ -3,24 +3,47 @@
 {% load i18n %}
 
 {% block title %}{{ group.name }}{% trans "2dotModify" %}{% endblock title %}
-{% block title_h1 %}{{ group.name }}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{% trans "token_info2" %}{% endblock bloc2 %}
+{% block title_h1 %}{{ group.name }}{% if group.private %}{% trans "private_group" %}{% endif %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% if group.token %}
+    <a class="hover:underline" href="{{ group_url }}">{% trans "group_url" %}</a>
+    <button onclick="copyToClipboard('{{ group_url }}')">{% trans "Copy URL" %}</button>
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert("{% trans 'URL copied to clipboard!' %}");
+            }, function(err) {
+                alert("{% trans 'Failed to copy URL.' %}");
+            });
+        }
+    </script><br>
+    <img src="data:image/png;base64,{{ group_url_qr }}" alt="{% trans 'error_group_ar_code' %}" class="w-full h-auto">
+{% endif %}
+{% endblock bloc1 %}
+{% block bloc2 %}{% trans "private_info2" %}<hr>{% trans "token_info2" %}{% endblock bloc2 %}
 
 {% block content %}
 
 <form method="post">
     {% csrf_token %}
     <input type="text" name="txt_group_name" placeholder="{% trans "MANDATORY" %}" maxlength="255" value="{{ group.name }}" required /><br>
-    <textarea name="txt_group_info" placeholder="{% trans "Description" %}" maxlength="255">{{ info }}</textarea>
+    <textarea name="txt_group_info" placeholder="{% trans "Description" %}" maxlength="255">{{ group.info }}</textarea>
     <hr>
-    {% trans "token_info1" %}<br>
-    <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" value="{{ username }}" />
-    <label for="box_group_token">{% trans "New group token" %}</label>
-    {% if group.token %}
-    <br><span>{{ group.token }}</span><br>
-    <input class="w-4 h-4" id="box_group_token_delete" type="checkbox" name="box_group_token_delete" maxlength="255" value="{{ username }}" />
-    <label for="box_group_token_delete">{% trans "Delete group token" %}</label>
+    <h2 class="text-xl font-bold">{% trans "Private group" %}</h2>
+    {% trans "private_info1" %}<br>
+    <input class="w-4 h-4" id="box_group_private" type="checkbox" name="box_group_private" maxlength="255"{% if group.private %} checked="checked"{% endif %} />
+    <label for="box_group_private">{% trans "Make the group private" %}</label>
+    {% if group.private == 0 %}
+        <hr>
+        <h2 class="text-xl font-bold">{% trans "Token" %}</h2>
+        {% trans "token_info1" %}<br>
+        <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" />
+        <label for="box_group_token">{% trans "New group token" %}</label>
+        {% if group.token %}
+        <br><span>{{ group.token }}</span><br>
+        <input class="w-4 h-4" id="box_group_token_delete" type="checkbox" name="box_group_token_delete" maxlength="255" />
+        <label for="box_group_token_delete">{% trans "Delete group token" %}</label>
+        {% endif %}
     {% endif %}
     <hr>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />

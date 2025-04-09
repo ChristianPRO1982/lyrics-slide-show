@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+import qrcode
+from io import BytesIO
+import base64
+import uuid
 from .SQL_group import Group
 
 
@@ -88,7 +92,9 @@ def add_group(request):
 def modify_group(request, group_id):
     error = ''
 
-    group = Group(Group.get_group_by_id(group_id))
+    group = Group.get_group_by_id(group_id)
+    group_url = ''
+    qr_code_base64 = ''
     
     if group is None:
         error = '[ERR11]'
@@ -97,19 +103,50 @@ def modify_group(request, group_id):
     else:
         if request.method == 'POST':
             if 'btn_cancel' not in request.POST:
-                group.name = request.POST.get('txt_name')
-                group.info = request.POST.get('txt_info')
+                group.name = request.POST.get('txt_group_name')
+                group.info = request.POST.get('txt_group_info')
 
-                if request.POST.get('box_group_token') == 'on':
-                    print("coco")
+                if request.POST.get('box_group_private') is not None:
+                    group.private = 1
+                else:
+                    group.private = 0
+
+                if request.POST.get('box_group_token') is not None:
+                    group.token = str(uuid.uuid4())
+                if request.POST.get('box_group_token_delete') is not None:
+                    group.token = ''
 
                 group.save()
 
             else:
                 return redirect('groups')
+    
+    if group.token != '':
+        group_url = f"{request.scheme}://{request.get_host()}/groups/{group.group_id}/{group.token}"
+        # Generate QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(group_url)
+        qr.make(fit=True)
+
+        # Create an image from the QR Code instance
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Convert the image to a base64 string
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        buffer.seek(0)
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        buffer.close()
 
     return render(request, 'app_group/modify_group.html', {
         'group': group,
+        'group_url': group_url,
+        'group_url_qr': qr_code_base64,
         'error': error,
         })
 

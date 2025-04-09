@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:43+0200\n"
+"POT-Creation-Date: 2025-04-09 15:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr "Nom"
 #: app_animation/templates/app_animation/animations.html:50
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/delete_group.html:16
-#: app_group/templates/app_group/modify_group.html:15
+#: app_group/templates/app_group/modify_group.html:30
 msgid "Description"
 msgstr ""
 
@@ -148,41 +148,89 @@ msgstr "modifier"
 msgid "2dotModify"
 msgstr " : modification"
 
-#: app_group/templates/app_group/modify_group.html:8
+#: app_group/templates/app_group/modify_group.html:6
+msgid "private_group"
+msgstr " [groupe privé]"
+
+#: app_group/templates/app_group/modify_group.html:9
+msgid "group_url"
+msgstr "url d'accès direct au groupe"
+
+#: app_group/templates/app_group/modify_group.html:10
+msgid "Copy URL"
+msgstr "📋 Copié"
+
+#: app_group/templates/app_group/modify_group.html:14
+msgid "URL copied to clipboard!"
+msgstr "Le lien de l'accès au groupe est copié."
+
+#: app_group/templates/app_group/modify_group.html:16
+msgid "Failed to copy URL."
+msgstr ""
+
+#: app_group/templates/app_group/modify_group.html:20
+msgid "error_group_ar_code"
+msgstr "Erreur lors de la génération du QR code"
+
+#: app_group/templates/app_group/modify_group.html:23
+msgid "private_info2"
+msgstr ""
+"(*) Un groupe privé n'est accéssible que par des membres connectés au site "
+"et dont l'affiliation au groupe a été effectué. Même avec le token actif, un "
+"groupe privé n'est accessible qu'aux membres du groupe. Dans le cas où le "
+"groupe n'est plus privé, alors le token s'il existe prend le relai."
+
+#: app_group/templates/app_group/modify_group.html:23
 msgid "token_info2"
 msgstr ""
-"(*) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
+"(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
 "au groupe. Ils n'ont pas besoin d'avoir un compte sur le site et d'être "
 "logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
 "sur la case “créer un nouveau token“. Si un token existait déjà, il sera "
 "détruit. Un groupe avec un token ne peut être accéssible que par les membres "
-"du groupe ainsi que ceux qui connaissent ce token. <br><br>Il est possible "
+"du groupe ainsi que ceux qui connaissent ce token&nbsp;; sauf si le groupe est privé dans quel cas le groupe n'est accessible qu'aux membres du groupe<br><br>Il est possible "
 "aussi de supprimer le token avec la case à cocher “supprimer le token“. Un "
 "groupe sans token est accessible par n'importe quel visiteur du site qui "
 "auront les droits de modification."
 
-#: app_group/templates/app_group/modify_group.html:14
+#: app_group/templates/app_group/modify_group.html:29
 msgid "MANDATORY"
 msgstr "OBLIGATOIRE"
 
-#: app_group/templates/app_group/modify_group.html:17
-msgid "token_info1"
-msgstr "Gestion du token pour accéder au groupe (*)."
+#: app_group/templates/app_group/modify_group.html:32
+msgid "Private group"
+msgstr "Création d'un groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:19
+#: app_group/templates/app_group/modify_group.html:33
+msgid "private_info1"
+msgstr "Seul les membres du groupe peuvent y accéder (*)."
+
+#: app_group/templates/app_group/modify_group.html:35
+msgid "Make the group private"
+msgstr "Rendre le groupe privé"
+
+#: app_group/templates/app_group/modify_group.html:38
+msgid "Token"
+msgstr ""
+
+#: app_group/templates/app_group/modify_group.html:39
+msgid "token_info1"
+msgstr "Gestion du token pour accéder au groupe (**)."
+
+#: app_group/templates/app_group/modify_group.html:41
 msgid "New group token"
 msgstr "Nouveau token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:23
+#: app_group/templates/app_group/modify_group.html:45
 msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:26
+#: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/modify_song.html:105
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_group/templates/app_group/modify_group.html:27
+#: app_group/templates/app_group/modify_group.html:50
 #, fuzzy
 #| msgid "btn_cancel"
 msgid "cancel"
@@ -389,8 +437,9 @@ msgstr ""
 
 #: templates/base.html:37 templates/base.html:39
 msgid "ERR5"
-msgstr "[ERR5] Impossible d'ajouter le 'username' comme admin du groupe car il n'est pas "
-"reconnu dans le système. Contactez l'administrateur du site."
+msgstr ""
+"[ERR5] Impossible d'ajouter le 'username' comme admin du groupe car il n'est "
+"pas reconnu dans le système. Contactez l'administrateur du site."
 
 #: templates/base.html:41
 msgid "ERR7"
@@ -404,7 +453,8 @@ msgstr ""
 
 #: templates/base.html:45
 msgid "ERR9"
-msgstr "[ERR9] Impossible de créer le groupe. Contactez l'administrateur du site."
+msgstr ""
+"[ERR9] Impossible de créer le groupe. Contactez l'administrateur du site."
 
 #: templates/base.html:47
 msgid "ERR10"
@@ -412,7 +462,8 @@ msgstr "Ce groupe n'existe pas."
 
 #: templates/base.html:49
 msgid "ERR11"
-msgstr "[ERR11] Impossible d'accéder au groupe. Contactez l'administrateur du site."
+msgstr ""
+"[ERR11] Impossible d'accéder au groupe. Contactez l'administrateur du site."
 
 #: templates/base.html:51
 msgid "ERR12"

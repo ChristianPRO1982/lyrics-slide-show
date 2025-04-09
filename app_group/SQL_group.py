@@ -13,11 +13,12 @@ code_file = "SQL_group.py"
 ###############################################
 ###############################################
 class Group:
-    def __init__(self, group_id=None, name=None, info=None, token=None):
+    def __init__(self, group_id=None, name=None, info=None, token=None, private=None):
         self.group_id = group_id
         self.name = name
         self.info = info
         self.token = token
+        self.private = private
 
 
     @staticmethod
@@ -33,7 +34,7 @@ ORDER BY name
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'token': row[3]} for row in rows]
+        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'token': row[3], 'private': row[4]} for row in rows]
     
 
     def save(self):
@@ -43,10 +44,11 @@ ORDER BY name
 UPDATE c_groups
    SET name = %s,
        info = %s,
-       token = %s
+       token = %s,
+       private = %s
  WHERE group_id = %s
 """
-                params = [self.name, self.info, self.token, self.group_id]
+                params = [self.name, self.info, self.token, self.private, self.group_id]
                 
                 create_SQL_log(code_file, "Group.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
