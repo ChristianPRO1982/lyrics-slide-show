@@ -126,7 +126,7 @@ SELECT *
                 row = cursor.fetchone()
             
             if row:
-                return Group(group_id=row[0], name=row[1], info=row[2], token=row[3])
+                return Group(group_id=row[0], name=row[1], info=row[2], token=row[3], private=row[4])
             else:
                 return 0
         
