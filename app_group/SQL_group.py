@@ -111,13 +111,45 @@ INSERT INTO c_group_user
             return "[ERR6]"
         
 
-    def get_group_by_id(group_id):
+    def get_group_by_id(group_id, url_token, username):
         request = """
 SELECT *
-  FROM c_groups
- WHERE group_id = %s
+  FROM c_groups cg
+ WHERE cg.group_id = %s
+   AND (
+           cg.private = 0 AND cg.token = ''
+        OR cg.private = 0 AND cg.token = %s
+        OR %s IN (SELECT username FROM c_group_user cgu WHERE cgu.group_id = %s)
+       )
 """
-        params = [group_id]
+        params = [group_id, url_token, username, group_id]
+
+        create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_3", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                row = cursor.fetchone()
+            
+            if row:
+                return Group(group_id=row[0], name=row[1], info=row[2], token=row[3], private=row[4])
+            else:
+                return 0
+        
+        except Exception as e:
+            return None
+        
+
+    def get_admin_group_by_id(group_id, username):
+        request = """
+SELECT *
+  FROM c_groups cg
+ WHERE cg.group_id = %s
+   AND %s IN (SELECT username
+                FROM c_group_user cgu
+               WHERE cgu.group_id = %s
+                 AND cgu.admin = 1)
+"""
+        params = [group_id, username, group_id]
 
         create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_3", request, params)
         try:

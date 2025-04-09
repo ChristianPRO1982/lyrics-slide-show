@@ -11,6 +11,8 @@ from .SQL_group import Group
 def groups(request):
     error = ''
 
+    group_selected = ''
+
     if request.method == 'POST':
 
         if request.method == 'POST':
@@ -23,26 +25,33 @@ def groups(request):
 
     groups = Group.get_all_groups
 
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group_selected = group.name
+
 
     return render(request, 'app_group/groups.html', {
         'groups': groups,
+        'group_selected': group_selected,
         'error': error,
         })
 
 
-def select_group(request):
-    error = ''
+def select_group(request, group_id):
+    url_token = ''
+    username = request.user.username
 
-    group = Group.get_group_by_id(request.POST.get('group_id'))
+    group = Group.get_group_by_id(group_id, url_token, username)
 
-    if request.method == 'POST':
-        if 'btn_cancel' not in request.POST:
-            pass
+    if group is None: group_id = ''
+    if group == 0: group_id = ''
+        
+    request.session['group_id'] = group_id
+    request.session['url_token'] = url_token
 
-    return render(request, 'app_group/groups.html', {
-        'group': group,
-        'error': error,
-        })
+    return redirect('groups')
 
 
 def add_group(request):
@@ -90,7 +99,10 @@ def add_group(request):
 def modify_group(request, group_id):
     error = ''
 
-    group = Group.get_group_by_id(group_id)
+    url_token = ''
+    username = request.user.username
+
+    group = Group.get_admin_group_by_id(group_id, username)
     group_url = ''
     qr_code_base64 = ''
     
@@ -119,27 +131,27 @@ def modify_group(request, group_id):
             else:
                 return redirect('groups')
     
-    if group.token != '':
-        group_url = f"{request.scheme}://{request.get_host()}/groups/{group.group_id}/{group.token}"
-        # Generate QR code
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(group_url)
-        qr.make(fit=True)
+        if group.token != '':
+            group_url = f"{request.scheme}://{request.get_host()}/groups/{group.group_id}/{group.token}"
+            # Generate QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(group_url)
+            qr.make(fit=True)
 
-        # Create an image from the QR Code instance
-        img = qr.make_image(fill_color="black", back_color="white")
+            # Create an image from the QR Code instance
+            img = qr.make_image(fill_color="black", back_color="white")
 
-        # Convert the image to a base64 string
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        buffer.seek(0)
-        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-        buffer.close()
+            # Convert the image to a base64 string
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            buffer.seek(0)
+            qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            buffer.close()
 
     return render(request, 'app_group/modify_group.html', {
         'group': group,
