@@ -11,7 +11,9 @@
         <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 {% trans "nav_songs_list" %}</a>
         <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️ {% trans "nav_animations_list" %}</a>
         <a class="mx-2 hidden md:block" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> {% trans "nav_login" %}</a>
-        <a class="mx-2 hidden md:block" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> {% trans "nav_signup" %}</a>
+        {% if request.path == '/account/login/' %}
+                <a class="mx-2 hidden md:block" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> {% trans "nav_signup" %}</a>
+        {% endif %}
 {% endif %}
 
 {% comment %} SMARTPHONE {% endcomment %}
@@ -25,5 +27,7 @@
         <a class="mx-2 block md:hidden" href="{% url "songs" %}">💬</a>
         <a class="mx-2 block md:hidden" href="{% url "animations" %}">🗣️</a>
         <a class="mx-2 block md:hidden" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span></a>
-        <a class="mx-2 block md:hidden" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span></a>
+        {% if request.path == '/account/login/' %}
+                <a class="mx-2 block md:hidden" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span></a>
+        {% endif %}
 {% endif %}

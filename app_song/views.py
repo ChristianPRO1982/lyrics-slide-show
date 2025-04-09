@@ -4,7 +4,6 @@ from .SQL_song import Song
 
 
 
-@login_required
 def songs(request):
     error = ''
 
@@ -92,6 +91,7 @@ def modify_song(request, song_id):
     })
 
 
+@login_required
 def delete_song(request, song_id):
     error = ''
 
