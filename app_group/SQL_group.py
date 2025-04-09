@@ -107,3 +107,26 @@ INSERT INTO c_group_user
             if 'DB_ERR_1' in str(e):
                 return "[ERR5]"
             return "[ERR6]"
+        
+
+    def get_group_by_id(group_id):
+        request = """
+SELECT *
+  FROM c_groups
+ WHERE group_id = %s
+"""
+        params = [group_id]
+
+        create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_3", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                row = cursor.fetchone()
+            
+            if row:
+                return Group(group_id=row[0], name=row[1], info=row[2], token=row[3])
+            else:
+                return 0
+        
+        except Exception as e:
+            return None

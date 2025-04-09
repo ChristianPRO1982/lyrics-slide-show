@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .SQL_group import Group
 
@@ -24,6 +24,21 @@ def groups(request):
         'groups': groups,
         # 'title': request.POST.get('txt_new_title', ''),
         # 'description': request.POST.get('txt_new_description', ''),
+        'error': error,
+        })
+
+
+def select_group(request):
+    error = ''
+
+    group = Group.get_group_by_id(request.POST.get('group_id'))
+
+    if request.method == 'POST':
+        if 'btn_cancel' not in request.POST:
+            pass
+
+    return render(request, 'app_group/modify_group.html', {
+        'group': group,
         'error': error,
         })
 
@@ -66,5 +81,45 @@ def add_group(request):
         'info': info,
         'username': username,
         'valided': valided,
+        'error': error,
+        })
+
+
+def modify_group(request, group_id):
+    error = ''
+
+    group = Group.get_group_by_id(group_id)
+    print(">>>>>", group)
+    if group is None:
+        error = '[ERR11]'
+    elif group == 0:
+        error = '[ERR10]'
+    else:
+        if request.method == 'POST':
+            if 'btn_cancel' not in request.POST:
+                pass
+
+            else:
+                return redirect('groups')
+
+    return render(request, 'app_group/modify_group.html', {
+        'group': group,
+        'error': error,
+        })
+
+
+def delete_group(request):
+    error = ''
+
+    group = Group.get_group_by_id(request.POST.get('group_id'))
+    if group is None:
+        error = '[ERR1111]'
+    else:
+        if request.method == 'POST':
+            if 'btn_cancel' not in request.POST:
+                pass
+
+    return render(request, 'app_group/modify_group.html', {
+        'group': group,
         'error': error,
         })

@@ -20,6 +20,7 @@
         <span>👥</span>
         <span>{{ group.name }}</span>
         <span>{{ group.info }}</span>
+        <span><a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
     </li>
 {% endfor %}
 </ul>

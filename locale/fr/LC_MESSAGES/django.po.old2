@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:43+0200\n"
+"POT-Creation-Date: 2025-04-09 11:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr "Nom"
 #: app_animation/templates/app_animation/animations.html:50
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/delete_group.html:16
-#: app_group/templates/app_group/modify_group.html:15
+#: app_group/templates/app_group/modifiy_group.html:15
 msgid "Description"
 msgstr ""
 
@@ -109,6 +109,7 @@ msgstr "ADMIN [obligatoire]"
 
 #: app_group/templates/app_group/add_group.html:19
 #: app_group/templates/app_group/delete_group.html:19
+#: app_group/templates/app_group/modifiy_group.html:18
 msgid "Username2dot"
 msgstr "Username&nbsp;:"
 
@@ -144,45 +145,39 @@ msgstr "sélectionner"
 msgid "modify"
 msgstr "modifier"
 
-#: app_group/templates/app_group/modify_group.html:5
+#: app_group/templates/app_group/modifiy_group.html:5
 msgid "2dotModify"
 msgstr " : modification"
 
-#: app_group/templates/app_group/modify_group.html:8
+#: app_group/templates/app_group/modifiy_group.html:8
 msgid "token_info2"
 msgstr ""
-"(*) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
-"au groupe. Ils n'ont pas besoin d'avoir un compte sur le site et d'être "
-"logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
-"sur la case “créer un nouveau token“. Si un token existait déjà, il sera "
-"détruit. Un groupe avec un token ne peut être accéssible que par les membres "
-"du groupe ainsi que ceux qui connaissent ce token. <br><br>Il est possible "
-"aussi de supprimer le token avec la case à cocher “supprimer le token“. Un "
-"groupe sans token est accessible par n'importe quel visiteur du site qui "
-"auront les droits de modification."
+"(*) Le token est permanent et permet à ceux qui l'ont reçu de se connecter au groupe. Ils n'ont pas besoin d'avoir un compte sur le site et d'être logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer sur la case “créer un nouveau token“. Si un token existait déjà, il sera détruit. Un groupe avec un token ne peut être accéssible que par les membres du groupe ainsi que ceux qui connaissent ce token. <br><br>Il est possible aussi de supprimer le token avec la case à cocher “supprimer le token“. Un groupe sans token est accessible par n'importe quel visiteur du site qui auront les droits de modification."
 
-#: app_group/templates/app_group/modify_group.html:14
+#: app_group/templates/app_group/modifiy_group.html:14
 msgid "MANDATORY"
 msgstr "OBLIGATOIRE"
 
-#: app_group/templates/app_group/modify_group.html:17
+#: app_group/templates/app_group/modifiy_group.html:17
+#, fuzzy
+#| msgid "token_info"
 msgid "token_info1"
-msgstr "Gestion du token pour accéder au groupe (*)."
+msgstr ""
+"Gestion du token pour accéder au groupe (*)."
+"ceux qui l'ont reçu"
 
-#: app_group/templates/app_group/modify_group.html:19
+#: app_group/templates/app_group/modifiy_group.html:20
+#, fuzzy
+#| msgid "New group"
 msgid "New group token"
-msgstr "Nouveau token de groupe"
+msgstr "Nouveau groupe"
 
-#: app_group/templates/app_group/modify_group.html:23
-msgid "Delete group token"
-msgstr "Suppression du token de groupe"
-
-#: app_group/templates/app_group/modify_group.html:26
+#: app_group/templates/app_group/modifiy_group.html:21
 #: app_song/templates/app_song/modify_song.html:105
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_group/templates/app_group/modify_group.html:27
+#: app_group/templates/app_group/modifiy_group.html:22
 #, fuzzy
 #| msgid "btn_cancel"
 msgid "cancel"
@@ -383,13 +378,12 @@ msgstr "Le nom du groupe est obligatoire."
 
 #: templates/base.html:35
 msgid "ERR4"
-msgstr ""
-"Le 'username' indiqué ne se trouve pas en base de données. Merci d'indiquer "
+msgstr "Le 'username' indiqué ne se trouve pas en base de données. Merci d'indiquer "
 "un 'username' valide."
 
 #: templates/base.html:37 templates/base.html:39
 msgid "ERR5"
-msgstr "[ERR5] Impossible d'ajouter le 'username' comme admin du groupe car il n'est pas "
+msgstr "Impossible d'ajouter le 'username' comme admin du groupe car il n'est pas "
 "reconnu dans le système. Contactez l'administrateur du site."
 
 #: templates/base.html:41
@@ -398,21 +392,20 @@ msgstr "Impossible d'ajouter 'username' comme administrateur du groupe."
 
 #: templates/base.html:43
 msgid "ERR8"
-msgstr ""
-"Le nom du groupe est déjà utilisé. Deux groupes ne peuvent pas avoir le même "
+msgstr "Le nom du groupe est déjà utilisé. Deux groupes ne peuvent pas avoir le même "
 "nom."
 
 #: templates/base.html:45
 msgid "ERR9"
-msgstr "[ERR9] Impossible de créer le groupe. Contactez l'administrateur du site."
+msgstr "Impossible de créer le groupe. Contactez l'administrateur du site"
 
 #: templates/base.html:47
 msgid "ERR10"
-msgstr "Ce groupe n'existe pas."
+msgstr ""
 
 #: templates/base.html:49
 msgid "ERR11"
-msgstr "[ERR11] Impossible d'accéder au groupe. Contactez l'administrateur du site."
+msgstr ""
 
 #: templates/base.html:51
 msgid "ERR12"
@@ -1732,7 +1725,7 @@ msgid "Redirected but the response is missing a Location: header."
 msgstr ""
 
 #~ msgid "ERR6"
-#~ msgstr "[ERR6] Erreur dans 'Group.add_admin'"
+#~ msgstr "Erreur dans 'Group.add_admin'"
 
 #~ msgid "placeholder_email_group"
 #~ msgstr "Email (si vide > pas d'administration et le groupe est libre)"
