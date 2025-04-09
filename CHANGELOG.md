@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.0...v1.7.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* navigation ([980825d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/980825dcfc0744e7afaaa91e5c2dd7dacaa7c49c))
+
 # [1.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.6.0...v1.7.0) (2025-04-09)
 
 
