@@ -1,10 +1,20 @@
 <footer style="height: 33px; margin-top: 0px; padding-top: 0px;" class="py-4 w-full relative bottom-auto md:fixed md:bottom-1 text-red border-4 border-turquoise bg-white dark:bg-pink-950">
-    <div class="pl-5 lg:hidden">
-        {{ company_name_small }}
-    </div>
+    <div class="pl-5 flex items-center space-x-2 lg:hidden">
+        <span>{{ company_name_small }}</span>
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
+           target="_blank" rel="noopener noreferrer">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+                 alt="Latest Release" class="h-5">
+        </a>
+    </div>    
     
-    <div class="pl-5 hidden lg:block">
-        {{ company_name }}
+    <div class="pl-5 hidden lg:flex lg:items-center space-x-2">
+        <span>{{ company_name }}</span>
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
+           target="_blank" rel="noopener noreferrer">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+                 alt="Latest Release" class="h-6">
+        </a>
     </div>
 </footer>
 
