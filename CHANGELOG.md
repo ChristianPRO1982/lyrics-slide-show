@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.1...v1.8.0) (2025-04-09)
+
+
+### Features
+
+* status for insert and update song ([f7a032b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f7a032b425a1708b23b506dafcde54a79475f8dd))
+
 ## [1.7.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.0...v1.7.1) (2025-04-09)
 
 
