@@ -54,6 +54,21 @@ def select_group(request, group_id):
     return redirect('groups')
 
 
+def select_group_by_token(request, group_id, url_token):
+    username = request.user.username
+
+    group = Group.get_group_by_id(group_id, url_token, username)
+
+    if group is None or group == 0:
+        group_id = ''
+        url_token = ''
+        
+    request.session['group_id'] = group_id
+    request.session['url_token'] = url_token
+
+    return redirect('groups')
+
+
 def add_group(request):
     error = ''
     name = ''
