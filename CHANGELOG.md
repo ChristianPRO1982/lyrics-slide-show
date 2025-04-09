@@ -1,3 +1,19 @@
+# [1.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.5.0...v1.6.0) (2025-04-09)
+
+
+### Bug Fixes
+
+* texte "error" ([fa7fa19](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fa7fa19751aef20085d497bbef567178cfa4e234))
+* textes de la partie chant ([b76b80e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b76b80ef7e6930b23bf80248a7229af6eaa3f2f7))
+* translate group pages ([da88c4b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/da88c4b0f8a5e3045946688cdef0f0232f0b8b2d))
+* translation in progress ([9f6fd92](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9f6fd923924a49510b498ec02b73ee60f4d81edf))
+* updage translate for login and signup ([c26d21d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c26d21d801f05f16407086ef10a09ff6a4636fbc))
+
+
+### Features
+
+* add group creation ([e78ce90](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e78ce9063db9fdfdb674f2be8dc0cc611091f573))
+
 # [1.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.1...v1.5.0) (2025-04-04)
 
 
