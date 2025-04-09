@@ -1,3 +1,24 @@
+# [1.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.6.0...v1.7.0) (2025-04-09)
+
+
+### Bug Fixes
+
+* add cryptography in requirements ([c440c19](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c440c19c1cade916ba3a0b8f7e96d2b48c114692))
+* admin group: token and privacy ([8358a18](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8358a18e10baf635e8dbeafbb84a99c4f272c0b9))
+* emoji private and token in groups HTML page ([4062136](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4062136c0c36a959d1639b402c9098412d87d83e))
+* footer: add github release tag ([b22fe9d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b22fe9ddd7d5f8dd65ad3629d23cce4890beec41))
+* prefix name log ([bed2e32](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bed2e328211b716aac8c2293fbb8a31032352396))
+* readme: bash commands for translation ([5363432](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/53634326b02af77cae8476c0d95f9c50a334f788))
+* refresh private group page ([4b3272f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4b3272f7ce39c0bab0ea743bf8d06dba0f60ec85))
+* select group by token ([59adc36](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/59adc36f10a9ff73b5d8b2fcf9e10527d12e2169))
+* selection group by id ([93a8fb8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/93a8fb82558a8207a0201831e4b19d3c0a61eab0))
+
+
+### Features
+
+* modify group ([51eaa1d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/51eaa1dd27a34ecef46f320e11c0de2f0d349e98))
+* modify group ([ea674e2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ea674e2225d816134c2c697d204311fde9b81858))
+
 # [1.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.5.0...v1.6.0) (2025-04-09)
 
 
