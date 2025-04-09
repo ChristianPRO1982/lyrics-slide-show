@@ -84,3 +84,20 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 For any inquiries, please contact [Christian from cARThographie](mailto:carthographie@outlook.fr).
+
+# Memo
+
+## commands for translations
+
+### messages extraction
+
+```bash
+django-admin makemessages -l fr
+django-admin makemessages -l en
+```
+
+### compile messages
+
+```bash
+django-admin compilemessages
+```
