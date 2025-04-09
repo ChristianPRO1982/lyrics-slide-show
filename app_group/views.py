@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 import qrcode
 from io import BytesIO
 import base64
@@ -69,6 +70,7 @@ def select_group_by_token(request, group_id, url_token):
     return redirect('groups')
 
 
+@login_required
 def add_group(request):
     error = ''
     name = ''
@@ -111,6 +113,7 @@ def add_group(request):
         })
 
 
+@login_required
 def modify_group(request, group_id):
     error = ''
 
@@ -176,6 +179,7 @@ def modify_group(request, group_id):
         })
 
 
+@login_required
 def delete_group(request):
     error = ''
 

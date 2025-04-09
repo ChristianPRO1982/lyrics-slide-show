@@ -16,7 +16,8 @@ def songs(request):
                             description = request.POST.get('txt_new_description'),
                             artist = "",
                            )
-            new_song.save()
+            if not new_song.save():
+                error = '[ERR12]'
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
             request.POST['txt_new_description'] = ''
@@ -32,12 +33,12 @@ def songs(request):
         })
 
 
-@login_required
 def modify_song(request, song_id):
     error = ''
 
     song = Song.get_song_by_id(song_id)
     song.get_verses()
+    status = -1
 
     if request.method == 'POST':
         if 'btn_cancel' not in request.POST:
@@ -48,27 +49,30 @@ def modify_song(request, song_id):
                 song.sub_title = request.POST.get('txt_sub_title')
                 song.description = request.POST.get('txt_description')
                 song.artist = request.POST.get('txt_artist')
-                song.save()
+                status = song.save()
 
-                if 'btn_new_verse' in request.POST:
-                    song.new_verse()
-                
-                for verse in song.verses:
-                    if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
-                        verse.delete()
-                    else:
-                        verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
-                        verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
-                        verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
-                        verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
-                        verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
-                        if verse.text is None:
-                            verse.text = ''
+                if status:
+                    if 'btn_new_verse' in request.POST:
+                        song.new_verse()
                     
-                    verse.save()
-                    song.get_verses()
+                    for verse in song.verses:
+                        if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
+                            verse.delete()
+                        else:
+                            verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
+                            verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                            verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
+                            verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
+                            verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
+                            if verse.text is None:
+                                verse.text = ''
+                        
+                        verse.save()
+                        song.get_verses()
+                else:
+                    error = '[ERR13]'
 
-        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
+        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']) and status != False:
             return redirect('songs')
 
         # Recalculate 'num' and 'num_verse' the for all choruses/verses
@@ -91,7 +95,6 @@ def modify_song(request, song_id):
     })
 
 
-@login_required
 def delete_song(request, song_id):
     error = ''
 

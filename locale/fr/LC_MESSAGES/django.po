@@ -484,11 +484,11 @@ msgstr ""
 
 #: templates/base.html:51
 msgid "ERR12"
-msgstr ""
+msgstr "[ERR12] Impossible d'enregistrer ce chant. Contactez l'administrateur du site."
 
 #: templates/base.html:53
 msgid "ERR13"
-msgstr ""
+msgstr "[ERR13] Impossible d'enregistrer ce chant. Contactez l'administrateur du site."
 
 #: templates/base.html:55
 msgid "ERR14"

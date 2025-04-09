@@ -115,11 +115,14 @@ UPDATE l_songs
        description = %s,
        artist = %s
  WHERE song_id = %s
+   AND status = 0
 """
                 params = [self.title, self.sub_title, self.description, self.artist, self.song_id]
                 
                 create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
+                affected_rows = cursor.rowcount
+                return affected_rows > 0
 
             else:
                 request = """
@@ -129,8 +132,12 @@ INSERT INTO l_songs (title, sub_title, description, artist)
                 params = [self.title, self.sub_title, self.description, self.artist]
                 
                 create_SQL_log(code_file, "Song.save", "INSERT_1", request, params)
-                cursor.execute(request, params)
-                self.song_id = cursor.lastrowid
+                try:
+                    cursor.execute(request, params)
+                    self.song_id = cursor.lastrowid
+                    return True
+                except Exception as e:
+                    return False
 
 
     def delete(self):
