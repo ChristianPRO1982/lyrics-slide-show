@@ -88,8 +88,8 @@ def add_group(request):
 def modify_group(request, group_id):
     error = ''
 
-    group = Group.get_group_by_id(group_id)
-    print(">>>>>", group)
+    group = Group(Group.get_group_by_id(group_id))
+    
     if group is None:
         error = '[ERR11]'
     elif group == 0:
@@ -97,7 +97,13 @@ def modify_group(request, group_id):
     else:
         if request.method == 'POST':
             if 'btn_cancel' not in request.POST:
-                pass
+                group.name = request.POST.get('txt_name')
+                group.info = request.POST.get('txt_info')
+
+                if request.POST.get('box_group_token') == 'on':
+                    print("coco")
+
+                group.save()
 
             else:
                 return redirect('groups')

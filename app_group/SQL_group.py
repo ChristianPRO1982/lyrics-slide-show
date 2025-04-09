@@ -46,7 +46,7 @@ UPDATE c_groups
        token = %s
  WHERE group_id = %s
 """
-                params = [self.name, self.info, self.admin_email, self.token, self.group_id]
+                params = [self.name, self.info, self.token, self.group_id]
                 
                 create_SQL_log(code_file, "Group.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
