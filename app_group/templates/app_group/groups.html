@@ -19,6 +19,11 @@
     <li class="flex items-center space-x-2">
         <span>👥</span>
         <span>{{ group.name }}</span>
+        {% if group.private %}
+        <span title="{% trans 'This group is private' %}">🔐</span>
+        {% else %}
+        {% if group.token %}<span title="{% trans 'You need to know the token for use this group' %}">📱</span>{% endif %}
+        {% endif %}
         <span>{{ group.info }}</span>
         <span><a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
     </li>

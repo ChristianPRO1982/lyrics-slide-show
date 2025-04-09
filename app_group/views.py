@@ -26,8 +26,6 @@ def groups(request):
 
     return render(request, 'app_group/groups.html', {
         'groups': groups,
-        # 'title': request.POST.get('txt_new_title', ''),
-        # 'description': request.POST.get('txt_new_description', ''),
         'error': error,
         })
 
@@ -41,7 +39,7 @@ def select_group(request):
         if 'btn_cancel' not in request.POST:
             pass
 
-    return render(request, 'app_group/modify_group.html', {
+    return render(request, 'app_group/groups.html', {
         'group': group,
         'error': error,
         })

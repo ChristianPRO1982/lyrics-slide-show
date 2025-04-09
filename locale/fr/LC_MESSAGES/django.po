@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 15:22+0200\n"
+"POT-Creation-Date: 2025-04-09 15:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,10 +137,18 @@ msgid "add"
 msgstr "ajouter"
 
 #: app_group/templates/app_group/groups.html:23
+msgid "This group is private"
+msgstr "Ce groupe est privé"
+
+#: app_group/templates/app_group/groups.html:25
+msgid "You need to know the token for use this group"
+msgstr "Vous devez connaitre le token pour utiliser ce groupe"
+
+#: app_group/templates/app_group/groups.html:28
 msgid "select"
 msgstr "sélectionner"
 
-#: app_group/templates/app_group/groups.html:23
+#: app_group/templates/app_group/groups.html:28
 msgid "modify"
 msgstr "modifier"
 
@@ -188,10 +196,11 @@ msgstr ""
 "logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
 "sur la case “créer un nouveau token“. Si un token existait déjà, il sera "
 "détruit. Un groupe avec un token ne peut être accéssible que par les membres "
-"du groupe ainsi que ceux qui connaissent ce token&nbsp;; sauf si le groupe est privé dans quel cas le groupe n'est accessible qu'aux membres du groupe<br><br>Il est possible "
-"aussi de supprimer le token avec la case à cocher “supprimer le token“. Un "
-"groupe sans token est accessible par n'importe quel visiteur du site qui "
-"auront les droits de modification."
+"du groupe ainsi que ceux qui connaissent ce token&nbsp;; sauf si le groupe "
+"est privé dans quel cas le groupe n'est accessible qu'aux membres du "
+"groupe<br><br>Il est possible aussi de supprimer le token avec la case à "
+"cocher “supprimer le token“. Un groupe sans token est accessible par "
+"n'importe quel visiteur du site qui auront les droits de modification."
 
 #: app_group/templates/app_group/modify_group.html:29
 msgid "MANDATORY"
