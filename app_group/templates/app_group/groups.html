@@ -20,11 +20,14 @@
 {% for group in groups %}
     <li class="flex items-center space-x-2">
         <span>👥</span>
-        <span>{{ group.name }}</span>
         {% if group.private %}
-        <span title="{% trans 'This group is private' %}">🔐</span>
+            <span title="{% trans 'This group is private' %}">{{ group.name }} 🔐</span>
         {% else %}
-        {% if group.token %}<span title="{% trans 'You need to know the token for use this group' %}">📱</span>{% endif %}
+            {% if group.token %}
+                <span title="{% trans 'You need to know the token for use this group' %}">{{ group.name }} 📱</span>
+            {% else %}
+            <span title="{% trans 'This group is open' %}">{{ group.name }} 🌐</span>
+            {% endif %}
         {% endif %}
         <span>{{ group.info }}</span>
         <span>- <a class="hover:underline" href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a class="hover:underline" href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
