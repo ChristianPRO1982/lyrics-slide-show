@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% endblock title_h1 %}
+{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
     {% for link in song.links %}
         <a href="{{ link|first }}">{{ link|last }}</a><br>
@@ -23,7 +23,7 @@
         <hr>
     {% endif %}
     <div>
-        <label for="id_title">{% trans "title" %}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}</label><br>
+        <label for="id_title">{% trans "title" %}</label><br>
         <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ song.title }}" required style="width: 100%;">
     </div>
     <div>

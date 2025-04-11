@@ -204,6 +204,34 @@ SELECT link
             for row in rows:
                 self.links.append((row[0], row[0].split('/')[2] if '//' in row[0] else 'LIEN'))
 
+    def moderator_new_message(self, message: str)->int:
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_songs_mod_message (song_id, message)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, message]
+            
+            try:
+                create_SQL_log(code_file, "Song.moderator_new_message", "INSERT_3", request, params)
+                cursor.execute(request, params)
+                
+                request = """
+UPDATE l_songs
+   SET status = 2
+ WHERE song_id = %s
+"""
+                params = [self.song_id]
+
+                try:
+                    create_SQL_log(code_file, "Song.moderator_new_message", "UPDATE_4", request, params)
+                    cursor.execute(request, params)
+                    return 0
+                except Exception as e:
+                    return 2
+            except Exception as e:
+                return 1
+
 
 
 ######################################################

@@ -1,17 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
+from app_main.utils import is_moderator
 
 
 
 def songs(request):
     error = ''
 
-    #MODERATOR
-    moderator = False
-    if request.user.is_authenticated:
-        if request.user.is_superuser or request.user.is_staff:
-            moderator = True
+    moderator = is_moderator(request)
 
     if request.method == 'POST':
 
@@ -46,12 +43,7 @@ def modify_song(request, song_id):
     song = Song.get_song_by_id(song_id)
     song.get_verses()
     status = -1
-
-    #MODERATOR
-    moderator = False
-    if request.user.is_authenticated:
-        if request.user.is_superuser or request.user.is_staff:
-            moderator = True
+    moderator = is_moderator(request)
 
     if request.method == 'POST':
         if 'btn_cancel' not in request.POST:
@@ -142,10 +134,12 @@ def goto_song(request, song_id):
     song = Song.get_song_by_id(song_id)
     song.get_verses()
     song_lyrics = song.get_lyrics()
+    moderator = is_moderator(request)
 
     return render(request, 'app_song/goto_song.html', {
         'song': song,
         'song_lyrics': song_lyrics,
+        'moderator': moderator,
         'error': error,
     })
 
@@ -154,13 +148,23 @@ def moderator_song(request, song_id):
     error = ''
 
     song = Song.get_song_by_id(song_id)
+    song.get_verses()
+    song_lyrics = song.get_lyrics()
+    valided = False
 
     if request.method == 'POST':
-        if 'btn_delete' in request.POST:
-            song.delete()
-        return redirect('songs')
+        if 'btn_save' in request.POST:
+            status = song.moderator_new_message(request.POST.get('txt_message'))
+            if status == 0:
+                valided = True
+            elif status == 1:
+                error = '[ERR14]'
+            elif status == 2:
+                error = '[ERR15]'
 
-    return render(request, 'app_song/delete_song.html', {
+    return render(request, 'app_song/moderator_song.html', {
         'song': song,
+        'song_lyrics': song_lyrics,
+        'valided': valided,
         'error': error,
     })

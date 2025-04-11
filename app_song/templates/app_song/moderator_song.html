@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% endblock title_h1 %}
+{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
     {% for link in song.links %}
         <a href="{{ link|first }}">{{ link|last }}</a><br>
@@ -12,106 +12,22 @@
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url "modify_song" song.song_id %}">
-    {% csrf_token %}
-    {% if moderator %}
+{% if valided %}
+    <div>{% trans "Message saved" %}</div>
+    <div><a href="{% url 'goto_song' song.song_id %}">{% trans "Back to the song" %}</a></div>
+{% else %}
+    <form method="post" action="{% url "moderator_song" song.song_id %}">
+        {% csrf_token %}
         <div>
-            <input class="w-4 h-4" type="checkbox" name="box_song_approved"
-            id="box_song_approved"{% if song.status >= 1 %} checked="checked"{% endif %} />
-            <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+            <label for="id_message">{% trans "Message" %}</label><br>
+            <textarea name="txt_message" rows="10" id="id_message" style="width: 100%;" required ></textarea>
         </div>
-        <hr>
-    {% endif %}
-    <div>
-        <label for="id_title">{% trans "title" %}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}</label><br>
-        <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ song.title }}" required style="width: 100%;">
-    </div>
-    <div>
-        <label for="id_sub_title">{% trans "subtitle" %}</label><br>
-        <input type="text" name="txt_sub_title" id="id_sub_title" maxlength="255" value="{{ song.sub_title }}" style="width: 100%;">
-    </div>
-    <div>
-        <label for="id_description">{% trans "description" %}</label><br>
-        <textarea name="txt_description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
-    </div>
-    <div>
-        <label for="id_artist">{% trans "artist" %}</label><br>
-        <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
-    </div>
-
-    <hr>
-
-    {% for verse in verses %}
-        <div class="mt-1 px-1 border border-pink">
-            <div style="display: flex; justify-content: space-between;">
-                <div style="text-align: left; width: 40%;">
-                    <input style="width: 10%;" type="checkbox" name="box_verse_chorus_{{ verse.verse_id }}"
-                    id="box_verse_chorus_{{ verse.verse_id }}" {% if verse.chorus == 1 %}checked{% endif %} />
-                    <label for="box_verse_chorus_{{ verse.verse_id }}">{% trans "chorus" %}</label>
-                    
-                    {% if verse.chorus != 1 %}
-                        <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
-                        id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
-                        <label for="box_verse_followed_{{ verse.verse_id }}">{% trans "followed" %}</label>
-                        <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
-                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus %}checked{% endif %} />
-                        <label for="box_verse_like_chorus_{{ verse.verse_id }}">{% trans "like_a_chorus" %}</label>
-                    {% endif %}
-                </div>
-                <div style="text-align: center; width: 25%;">
-                    {% if not verse.chorus %}
-                        <b>{% trans "verse_num" %}{{ verse.num_verse }}</b>
-                    {% endif %}
-                </div>
-                <div style="text-align: right; width: 35%;">
-                    {% trans "move2dot" %}
-                    <select name="lis_move_to_{{ verse.verse_id }}" style="width: 100%;">
-                        <optgroup label="{% trans "before" %}">
-                            {% for lis_move_to_verse in verses %}
-                                {% if lis_move_to_verse.num < verse.num %}
-                                    <option value="{{ lis_move_to_verse.num|add:"-1" }}">
-                                        {% if lis_move_to_verse.chorus %}
-                                        {% trans "chorus" %}
-                                        {% else %}
-                                        {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
-                                        {% endif %}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </optgroup>
-                        <option selected="selected" value="{{ verse.num }}">{% trans "dont_do_nothing" %}</option>
-                        <optgroup label="{% trans "after" %}">
-                            {% for lis_move_to_verse in verses %}
-                                {% if lis_move_to_verse.num > verse.num %}
-                                    <option value="{{ lis_move_to_verse.num|add:"+1" }}">
-                                        {% if lis_move_to_verse.chorus %}
-                                        {% trans "chorus" %}
-                                        {% else %}
-                                        {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
-                                        {% endif %}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </optgroup>
-                    </select>
-                    <br>
-                    <input style="width: 10%;" type="checkbox" name="box_delete_{{ verse.verse_id }}"
-                    id="box_delete_{{ verse.verse_id }}"
-                    onclick="if(this.checked) {return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');}" />
-                    <label for="box_delete_{{ verse.verse_id }}">{% trans "delete" %}</label>
-                </div>
-            </div>
-            
-            <textarea name="txt_verse_text_{{ verse.verse_id }}" rows="3">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
-        </div>
-    {% endfor %}
-
-    <hr>
-    <input name="btn_new_verse" value="{% trans "new_verse" %}" type="submit" />
-    <hr>
-
-    <input name="btn_save" value="{% trans "save" %}" type="submit" />
-    <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
-    <input name="btn_cancel" value="{% trans "cancel_info" %}" type="submit" />
-</form>
+        
+        <input name="btn_save" value="{% trans "save" %}" type="submit" />
+    </form>
+    <form method="post" action="{% url "goto_song" song.song_id %}">
+        {% csrf_token %}
+        <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
+    </form>
+{% endif %}
 {% endblock content %}

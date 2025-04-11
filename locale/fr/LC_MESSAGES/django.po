@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 11:32+0200\n"
+"POT-Creation-Date: 2025-04-11 14:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:45
+#: app_song/templates/app_song/songs.html:43
 msgid "add"
 msgstr "ajouter"
 
@@ -247,6 +247,7 @@ msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
 #: app_group/templates/app_group/modify_group.html:49
+#: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:113
 msgid "save"
 msgstr "Enregistrer"
@@ -283,9 +284,52 @@ msgstr "Supprimer"
 msgid "btn_cancel"
 msgstr "Annuler"
 
+#: app_song/templates/app_song/goto_song.html:5
+#: app_song/templates/app_song/moderator_song.html:5
 #: app_song/templates/app_song/modify_song.html:5
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
+
+#: app_song/templates/app_song/goto_song.html:14
+#: app_song/templates/app_song/songs.html:29
+msgid "update"
+msgstr "Modifier"
+
+#: app_song/templates/app_song/goto_song.html:15
+#: app_song/templates/app_song/modify_song.html:101
+#: app_song/templates/app_song/songs.html:30
+msgid "delete"
+msgstr "Supprimer"
+
+#: app_song/templates/app_song/goto_song.html:17
+#: app_song/templates/app_song/songs.html:33
+msgid "contact_moderators_info"
+msgstr ""
+"Contacter les modérateurs pour indiquer une modification à apporter à ce "
+"chant"
+
+#: app_song/templates/app_song/goto_song.html:17
+#: app_song/templates/app_song/songs.html:33
+msgid "Contact moderators"
+msgstr "Contacter les modérateurs"
+
+#: app_song/templates/app_song/moderator_song.html:16
+msgid "Message saved"
+msgstr "Message sauvegardé"
+
+#: app_song/templates/app_song/moderator_song.html:17
+msgid "Back to the song"
+msgstr "Retour au chant"
+
+#: app_song/templates/app_song/moderator_song.html:22
+msgid "Message"
+msgstr ""
+
+#: app_song/templates/app_song/moderator_song.html:30
+#, fuzzy
+#| msgid "btn_cancel"
+msgid "Cancel"
+msgstr "Annuler"
 
 #: app_song/templates/app_song/modify_song.html:21
 msgid "song_approved_info"
@@ -299,7 +343,7 @@ msgstr "Chanson validée"
 
 #: app_song/templates/app_song/modify_song.html:26
 #: app_song/templates/app_song/songs.html:14
-#: app_song/templates/app_song/songs.html:51
+#: app_song/templates/app_song/songs.html:49
 msgid "title"
 msgstr "Titre"
 
@@ -309,8 +353,8 @@ msgstr "Sous-titre"
 
 #: app_song/templates/app_song/modify_song.html:34
 #: app_song/templates/app_song/songs.html:15
-#: app_song/templates/app_song/songs.html:44
-#: app_song/templates/app_song/songs.html:52
+#: app_song/templates/app_song/songs.html:42
+#: app_song/templates/app_song/songs.html:50
 msgid "description"
 msgstr "Description"
 
@@ -354,11 +398,6 @@ msgstr "[ne rien faire]"
 msgid "after"
 msgstr "Après"
 
-#: app_song/templates/app_song/modify_song.html:101
-#: app_song/templates/app_song/songs.html:30
-msgid "delete"
-msgstr "Supprimer"
-
 #: app_song/templates/app_song/modify_song.html:110
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
@@ -377,27 +416,15 @@ msgid "songs_list"
 msgstr "Liste des chants"
 
 #: app_song/templates/app_song/songs.html:16
-#: app_song/templates/app_song/songs.html:53
+#: app_song/templates/app_song/songs.html:51
 msgid "actions"
 msgstr "Actions"
-
-#: app_song/templates/app_song/songs.html:29
-msgid "update"
-msgstr "Modifier"
 
 #: app_song/templates/app_song/songs.html:32
 msgid "Go to"
 msgstr "Voir"
 
-#: app_song/templates/app_song/songs.html:33
-msgid "Contact moderators"
-msgstr "Contacter les modérateurs"
-
-#: app_song/templates/app_song/songs.html:34
-msgid "contact_moderators_info"
-msgstr "Contacter les modérateurs pour indiquer une modification à apporter à ce chant"
-
-#: app_song/templates/app_song/songs.html:43
+#: app_song/templates/app_song/songs.html:41
 msgid "new_song"
 msgstr "Nouveau chant"
 
@@ -523,10 +550,14 @@ msgstr ""
 #: templates/base.html:55
 msgid "ERR14"
 msgstr ""
+"[ERR14] Impossible d'enregistrer ce message. Contactez l'administrateur du "
+"site"
 
 #: templates/base.html:57
 msgid "ERR15"
 msgstr ""
+"[ERR15] Message sauvegardé mais le statut du chant n'a pas pu être modifié. "
+"Contactez l'administrateur du site"
 
 #: templates/base.html:59
 msgid "ERR16"
