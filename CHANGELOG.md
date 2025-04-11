@@ -1,3 +1,18 @@
+# [1.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.0...v1.9.0) (2025-04-11)
+
+
+### Bug Fixes
+
+* translate in groups list HTML page ([2aef304](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2aef30405962cdc183a7b1c355067de676816029))
+
+
+### Features
+
+* "mod message for song done" ([2cc3f1d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2cc3f1d9aea59c9f3822ec1a995de97154672405))
+* goto song ([039d4ba](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/039d4ba468a643aab39ab3d341236de7969e1cb1))
+* song status = 1 ([d0e1194](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d0e1194e817d1cd3673dfcf71f4426f77bf6d143))
+* song status = 2 > add message to moderator for a song ([268f6a9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/268f6a9d046af78f87db2a5f664160b140f0d045))
+
 # [1.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.1...v1.8.0) (2025-04-09)
 
 
