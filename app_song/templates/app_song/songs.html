@@ -19,7 +19,7 @@
     <tbody>
         {% for song in songs %}
         <tr class="border border-pink-800">
-            <td>{{ song.full_title }}</td>
+            <td><a href="{% url 'goto_song' song.song_id %}">{{ song.full_title }}</a></td>
             <td>
                 {{ song.description|slice:":100" }}
                 {% if song.description|length > 100 %} [...] {% endif %}
@@ -29,7 +29,8 @@
                     <a href="{% url 'modify_song' song.song_id %}">{% trans "update" %}</a> |
                     <a href="{% url 'delete_song' song.song_id %}">{% trans "delete" %}</a>
                 {% else %}
-                    VOIR
+                    <a href="{% url 'goto_song' song.song_id %}">{% trans "Go to" %}</a> |
+                    <a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
                 {% endif %}
             </td>
         </tr>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 09:58+0200\n"
+"POT-Creation-Date: 2025-04-11 11:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:38
+#: app_song/templates/app_song/songs.html:45
 msgid "add"
 msgstr "ajouter"
 
@@ -206,12 +206,12 @@ msgstr ""
 "(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
 "au groupe. Ils n'ont pas besoin d'avoir un compte sur le site et d'être "
 "logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
-"sur la case “créer un nouveau token“. Si un token existait déjà, il sera "
+"sur la case “créer un nouveau token”. Si un token existait déjà, il sera "
 "détruit. Un groupe avec un token ne peut être accéssible que par les membres "
 "du groupe ainsi que ceux qui connaissent ce token&nbsp;; sauf si le groupe "
 "est privé dans quel cas le groupe n'est accessible qu'aux membres du "
 "groupe<br><br>Il est possible aussi de supprimer le token avec la case à "
-"cocher “supprimer le token“. Un groupe sans token est accessible par "
+"cocher “supprimer le token”. Un groupe sans token est accessible par "
 "n'importe quel visiteur du site qui auront les droits de modification."
 
 #: app_group/templates/app_group/modify_group.html:29
@@ -247,7 +247,7 @@ msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
 #: app_group/templates/app_group/modify_group.html:49
-#: app_song/templates/app_song/modify_song.html:110
+#: app_song/templates/app_song/modify_song.html:113
 msgid "save"
 msgstr "Enregistrer"
 
@@ -287,85 +287,87 @@ msgstr "Annuler"
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
 
-#: app_song/templates/app_song/modify_song.html:20
+#: app_song/templates/app_song/modify_song.html:21
 msgid "song_approved_info"
-msgstr "Une chanson validée ne peut plus être modifée. Seul les modérateurs et les administrateurs peuvent valider une chanson."
+msgstr ""
+"Une chanson validée ne peut plus être modifée. Seul les modérateurs et les "
+"administrateurs peuvent valider une chanson."
 
-#: app_song/templates/app_song/modify_song.html:20
+#: app_song/templates/app_song/modify_song.html:21
 msgid "Song approved"
 msgstr "Chanson validée"
 
-#: app_song/templates/app_song/modify_song.html:23
+#: app_song/templates/app_song/modify_song.html:26
 #: app_song/templates/app_song/songs.html:14
-#: app_song/templates/app_song/songs.html:44
+#: app_song/templates/app_song/songs.html:51
 msgid "title"
 msgstr "Titre"
 
-#: app_song/templates/app_song/modify_song.html:27
+#: app_song/templates/app_song/modify_song.html:30
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:31
+#: app_song/templates/app_song/modify_song.html:34
 #: app_song/templates/app_song/songs.html:15
-#: app_song/templates/app_song/songs.html:37
-#: app_song/templates/app_song/songs.html:45
+#: app_song/templates/app_song/songs.html:44
+#: app_song/templates/app_song/songs.html:52
 msgid "description"
 msgstr "Description"
 
-#: app_song/templates/app_song/modify_song.html:35
+#: app_song/templates/app_song/modify_song.html:38
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/modify_song.html:47
-#: app_song/templates/app_song/modify_song.html:71
-#: app_song/templates/app_song/modify_song.html:85
+#: app_song/templates/app_song/modify_song.html:50
+#: app_song/templates/app_song/modify_song.html:74
+#: app_song/templates/app_song/modify_song.html:88
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:52
+#: app_song/templates/app_song/modify_song.html:55
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:55
+#: app_song/templates/app_song/modify_song.html:58
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:60
-#: app_song/templates/app_song/modify_song.html:73
-#: app_song/templates/app_song/modify_song.html:87
+#: app_song/templates/app_song/modify_song.html:63
+#: app_song/templates/app_song/modify_song.html:76
+#: app_song/templates/app_song/modify_song.html:90
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_song/templates/app_song/modify_song.html:64
+#: app_song/templates/app_song/modify_song.html:67
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:66
+#: app_song/templates/app_song/modify_song.html:69
 msgid "before"
 msgstr "Avant"
 
-#: app_song/templates/app_song/modify_song.html:79
+#: app_song/templates/app_song/modify_song.html:82
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_song/templates/app_song/modify_song.html:80
+#: app_song/templates/app_song/modify_song.html:83
 msgid "after"
 msgstr "Après"
 
-#: app_song/templates/app_song/modify_song.html:98
-#: app_song/templates/app_song/songs.html:29
+#: app_song/templates/app_song/modify_song.html:101
+#: app_song/templates/app_song/songs.html:30
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:107
+#: app_song/templates/app_song/modify_song.html:110
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:111
+#: app_song/templates/app_song/modify_song.html:114
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
-#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:115
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -375,15 +377,27 @@ msgid "songs_list"
 msgstr "Liste des chants"
 
 #: app_song/templates/app_song/songs.html:16
-#: app_song/templates/app_song/songs.html:46
+#: app_song/templates/app_song/songs.html:53
 msgid "actions"
 msgstr "Actions"
 
-#: app_song/templates/app_song/songs.html:28
+#: app_song/templates/app_song/songs.html:29
 msgid "update"
 msgstr "Modifier"
 
-#: app_song/templates/app_song/songs.html:36
+#: app_song/templates/app_song/songs.html:32
+msgid "Go to"
+msgstr "Voir"
+
+#: app_song/templates/app_song/songs.html:33
+msgid "Contact moderators"
+msgstr "Contacter les modérateurs"
+
+#: app_song/templates/app_song/songs.html:34
+msgid "contact_moderators_info"
+msgstr "Contacter les modérateurs pour indiquer une modification à apporter à ce chant"
+
+#: app_song/templates/app_song/songs.html:43
 msgid "new_song"
 msgstr "Nouveau chant"
 
@@ -503,8 +517,8 @@ msgstr ""
 #: templates/base.html:53
 msgid "ERR13"
 msgstr ""
-"[ERR13] Impossible d'enregistrer ce chant. Contactez l'administrateur du "
-"site."
+"[ERR13] Impossible d'enregistrer ce chant, il est peut-être “validé” (marqué "
+"“✔️”). Contactez un modérateur ou un administrateur du site."
 
 #: templates/base.html:55
 msgid "ERR14"

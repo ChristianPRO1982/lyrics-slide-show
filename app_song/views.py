@@ -134,3 +134,33 @@ def delete_song(request, song_id):
         'song': song,
         'error': error,
     })
+
+
+def goto_song(request, song_id):
+    error = ''
+
+    song = Song.get_song_by_id(song_id)
+    song.get_verses()
+    song_lyrics = song.get_lyrics()
+
+    return render(request, 'app_song/goto_song.html', {
+        'song': song,
+        'song_lyrics': song_lyrics,
+        'error': error,
+    })
+
+
+def moderator_song(request, song_id):
+    error = ''
+
+    song = Song.get_song_by_id(song_id)
+
+    if request.method == 'POST':
+        if 'btn_delete' in request.POST:
+            song.delete()
+        return redirect('songs')
+
+    return render(request, 'app_song/delete_song.html', {
+        'song': song,
+        'error': error,
+    })
