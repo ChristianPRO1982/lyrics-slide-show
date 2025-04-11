@@ -101,3 +101,17 @@ django-admin makemessages -l en
 ```bash
 django-admin compilemessages
 ```
+
+## django
+
+```bash
+python manage.py runserver
+python manage.py collectstatic
+python manage.py makemigrations
+python manage.py migrate
+```
+
+## MySQL
+```sql
+mysqldump -u root -p --no-data carthographie > schema.sql
+```

@@ -32,7 +32,7 @@ CREATE TABLE `account_emailaddress` (
   UNIQUE KEY `account_emailaddress_user_id_email_987c8728_uniq` (`user_id`,`email`),
   KEY `account_emailaddress_email_03be32b2` (`email`),
   CONSTRAINT `account_emailaddress_user_id_2c513194_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `auth_group` (
   `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,7 +147,7 @@ CREATE TABLE `auth_user_groups` (
   KEY `auth_user_groups_group_id_97559544_fk_auth_group_id` (`group_id`),
   CONSTRAINT `auth_user_groups_group_id_97559544_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
   CONSTRAINT `auth_user_groups_user_id_6a12ed8b_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,7 +178,7 @@ DROP TABLE IF EXISTS `c_group_user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `c_group_user` (
   `group_id` mediumint NOT NULL,
-  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`,`username`),
   KEY `c_group_user_admin_IDX` (`admin`) USING BTREE,
@@ -200,10 +200,12 @@ CREATE TABLE `c_groups` (
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `private` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`),
   UNIQUE KEY `c_groups_unique` (`name`),
-  KEY `c_groups_private_key_IDX` (`token`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `c_groups_private_key_IDX` (`token`) USING BTREE,
+  KEY `c_groups_private_IDX` (`private`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -228,7 +230,7 @@ CREATE TABLE `django_admin_log` (
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`),
   CONSTRAINT `django_admin_log_chk_1` CHECK ((`action_flag` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +294,7 @@ CREATE TABLE `django_site` (
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_site_domain_a2e37b91_uniq` (`domain`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -304,18 +306,18 @@ DROP TABLE IF EXISTS `doc_choralepolefontainebleau`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doc_choralepolefontainebleau` (
   `dc_id` mediumint NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category1` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category1` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `category2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `author` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference` text COLLATE utf8mb4_unicode_ci,
+  `author` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `lyrics_html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `lyrics_md` text COLLATE utf8mb4_unicode_ci,
+  `lyrics_md` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`dc_id`),
   UNIQUE KEY `doc_choralepolefontainebleau_unique` (`url`),
   KEY `doc_choralepolefontainebleau_title_IDX` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1963 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,16 +329,16 @@ DROP TABLE IF EXISTS `doc_emmanuel`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doc_emmanuel` (
   `de_id` mediumint NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category1` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category2` text COLLATE utf8mb4_unicode_ci,
-  `lyrics_html` text COLLATE utf8mb4_unicode_ci,
-  `lyrics_md` text COLLATE utf8mb4_unicode_ci,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category1` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category2` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `lyrics_html` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `lyrics_md` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`de_id`),
   UNIQUE KEY `doc_emmanuel_unique` (`url`),
   KEY `doc_emmanuel_title_IDX` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,15 +350,15 @@ DROP TABLE IF EXISTS `doc_evangelizo_prayers`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doc_evangelizo_prayers` (
   `dep_id` mediumint NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`dep_id`),
   UNIQUE KEY `doc_evangelizo_prayers_unique` (`url`),
   KEY `doc_evangelizo_prayers_category_IDX` (`category`) USING BTREE,
   KEY `doc_evangelizo_prayers_title_IDX` (`title`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -368,13 +370,13 @@ DROP TABLE IF EXISTS `doc_glossaire`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doc_glossaire` (
   `dg_id` mediumint NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `term` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `definition` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `definition` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`dg_id`),
   UNIQUE KEY `doc_glossaire_unique` (`url`),
   KEY `doc_glossaire_term_IDX` (`term`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4042 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5049 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -386,13 +388,13 @@ DROP TABLE IF EXISTS `doc_site_catholique`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doc_site_catholique` (
   `dsc_id` mediumint NOT NULL AUTO_INCREMENT,
-  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `text` text COLLATE utf8mb4_unicode_ci,
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`dsc_id`),
   UNIQUE KEY `doc_site_catholique_unique` (`url`),
   KEY `doc_site_catholique_type_IDX` (`type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=18709 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=85530 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,7 +415,7 @@ CREATE TABLE `l_animation_song` (
   KEY `l_animation_song_l_songs_FK` (`song_id`),
   CONSTRAINT `l_animation_song_l_animations_FK` FOREIGN KEY (`animation_id`) REFERENCES `l_animations` (`animation_id`) ON DELETE CASCADE,
   CONSTRAINT `l_animation_song_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -449,7 +451,7 @@ CREATE TABLE `l_animations` (
   `date` date NOT NULL,
   PRIMARY KEY (`animation_id`),
   KEY `l_animations_date_IDX` (`date`,`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -462,7 +464,7 @@ DROP TABLE IF EXISTS `l_genre`;
 CREATE TABLE `l_genre` (
   `genre_id` mediumint NOT NULL AUTO_INCREMENT,
   `order` mediumint NOT NULL DEFAULT '1000',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`genre_id`),
   UNIQUE KEY `l_song_genre_unique` (`name`),
   KEY `l_song_genre_order_IDX` (`order`) USING BTREE
@@ -495,7 +497,7 @@ DROP TABLE IF EXISTS `l_song_link`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `l_song_link` (
   `song_id` mediumint NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`song_id`,`link`),
   KEY `l_song_link_song_id_IDX` (`song_id`) USING BTREE,
   CONSTRAINT `l_song_link_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
@@ -519,7 +521,28 @@ CREATE TABLE `l_songs` (
   PRIMARY KEY (`song_id`),
   UNIQUE KEY `l_songs_unique` (`title`,`sub_title`),
   KEY `l_songs_title_IDX` (`title`,`sub_title`,`artist`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10085 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `l_songs_mod_message`
+--
+
+DROP TABLE IF EXISTS `l_songs_mod_message`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `l_songs_mod_message` (
+  `message_id` mediumint NOT NULL AUTO_INCREMENT,
+  `song_id` mediumint NOT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` smallint NOT NULL DEFAULT '0',
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`),
+  KEY `l_songs_mod_message_l_songs_FK` (`song_id`),
+  KEY `l_songs_mod_message_status_IDX` (`status`) USING BTREE,
+  KEY `l_songs_mod_message_date_IDX` (`date`) USING BTREE,
+  CONSTRAINT `l_songs_mod_message_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -542,7 +565,7 @@ CREATE TABLE `l_verses` (
   KEY `l_verses_num_IDX` (`num`) USING BTREE,
   KEY `l_verses_chorus_IDX` (`chorus`) USING BTREE,
   CONSTRAINT `l_verses_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27034 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40572 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -583,7 +606,7 @@ CREATE TABLE `socialaccount_socialaccount` (
   UNIQUE KEY `socialaccount_socialaccount_provider_uid_fc810c6e_uniq` (`provider`,`uid`),
   KEY `socialaccount_socialaccount_user_id_8146e70c_fk_auth_user_id` (`user_id`),
   CONSTRAINT `socialaccount_socialaccount_user_id_8146e70c_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -603,7 +626,7 @@ CREATE TABLE `socialaccount_socialapp` (
   `provider_id` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `settings` json NOT NULL DEFAULT (_utf8mb3'{}'),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -622,7 +645,7 @@ CREATE TABLE `socialaccount_socialapp_sites` (
   KEY `socialaccount_socialapp_sites_site_id_2579dee5_fk_django_site_id` (`site_id`),
   CONSTRAINT `socialaccount_social_socialapp_id_97fb6e7d_fk_socialacc` FOREIGN KEY (`socialapp_id`) REFERENCES `socialaccount_socialapp` (`id`),
   CONSTRAINT `socialaccount_socialapp_sites_site_id_2579dee5_fk_django_site_id` FOREIGN KEY (`site_id`) REFERENCES `django_site` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -656,4 +679,4 @@ CREATE TABLE `socialaccount_socialtoken` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-09  9:14:35
+-- Dump completed on 2025-04-11 17:24:51
