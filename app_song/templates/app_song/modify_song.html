@@ -14,8 +14,16 @@
 {% block content %}
 <form method="post" action="{% url "modify_song" song.song_id %}">
     {% csrf_token %}
+    {% if moderator %}
+        <div>
+            <input class="w-4 h-4" type="checkbox" name="box_song_approved"
+            id="box_song_approved"{% if song.status >= 1 %} checked="checked"{% endif %} />
+            <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+        </div>
+        <hr>
+    {% endif %}
     <div>
-        <label for="id_title">{% trans "title" %}</label><br>
+        <label for="id_title">{% trans "title" %}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}</label><br>
         <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ song.title }}" required style="width: 100%;">
     </div>
     <div>

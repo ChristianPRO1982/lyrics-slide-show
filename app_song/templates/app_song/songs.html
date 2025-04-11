@@ -25,8 +25,12 @@
                 {% if song.description|length > 100 %} [...] {% endif %}
             </td>
             <td>
-                <a href="{% url 'modify_song' song.song_id %}">{% trans "update" %}</a> |
-                <a href="{% url 'delete_song' song.song_id %}">{% trans "delete" %}</a>
+                {% if song.status == 0 or moderator %}
+                    <a href="{% url 'modify_song' song.song_id %}">{% trans "update" %}</a> |
+                    <a href="{% url 'delete_song' song.song_id %}">{% trans "delete" %}</a>
+                {% else %}
+                    VOIR
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

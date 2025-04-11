@@ -7,6 +7,12 @@ from .SQL_song import Song
 def songs(request):
     error = ''
 
+    #MODERATOR
+    moderator = False
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.is_staff:
+            moderator = True
+
     if request.method == 'POST':
 
         if request.method == 'POST':
@@ -29,6 +35,7 @@ def songs(request):
         'songs': songs,
         'title': request.POST.get('txt_new_title', ''),
         'description': request.POST.get('txt_new_description', ''),
+        'moderator': moderator,
         'error': error,
         })
 
@@ -40,6 +47,12 @@ def modify_song(request, song_id):
     song.get_verses()
     status = -1
 
+    #MODERATOR
+    moderator = False
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.is_staff:
+            moderator = True
+
     if request.method == 'POST':
         if 'btn_cancel' not in request.POST:
             if not song.title:
@@ -49,7 +62,8 @@ def modify_song(request, song_id):
                 song.sub_title = request.POST.get('txt_sub_title')
                 song.description = request.POST.get('txt_description')
                 song.artist = request.POST.get('txt_artist')
-                status = song.save()
+                # ✔️⁉️✖️
+                status = song.save(moderator)
 
                 if status:
                     if 'btn_new_verse' in request.POST:
@@ -69,6 +83,16 @@ def modify_song(request, song_id):
                         
                         verse.save()
                         song.get_verses()
+                    
+                    if moderator:
+                        song_approved = request.POST.get('box_song_approved', 'off') == 'on'
+                        if song_approved and song.status == 0:
+                            song.update_status(1)
+                            song.status = 1
+                        if not song_approved and song.status == 1:
+                            song.update_status(0)
+                            song.status = 0
+
                 else:
                     error = '[ERR13]'
 
@@ -91,6 +115,7 @@ def modify_song(request, song_id):
         'song': song,
         'verses': song.verses,
         'song_lyrics': song_lyrics,
+        'moderator': moderator,
         'error': error,
     })
 

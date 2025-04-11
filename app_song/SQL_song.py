@@ -13,12 +13,13 @@ code_file = "SQL_song.py"
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None, full_title=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None, status=None, full_title=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
         self.description = description
         self.artist = artist
+        self.status = status
         self.full_title = full_title
         self.verses = []
         self.genres = []
@@ -31,14 +32,19 @@ class Song:
     def get_all_songs():
         request = """
   SELECT *, CONCAT(
-                   CASE
-                       WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
-                       ELSE title
-                   END,
-                   CASE
-                       WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
-                       ELSE ''
-                   END) AS full_title
+                 CASE
+                     WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
+                     ELSE title
+                 END,
+                 CASE
+                     WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN status = 1 THEN ' ✔️'
+                     WHEN status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END) AS full_title
     FROM l_songs
 ORDER BY artist, title, sub_title
 """
@@ -85,12 +91,17 @@ ORDER BY artist, title, sub_title
         with connection.cursor() as cursor:
             request = """
 SELECT *, CONCAT(
-                 CASE 
+                 CASE
                      WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
                      ELSE title
                  END,
-                 CASE 
+                 CASE
                      WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN status = 1 THEN ' ✔️'
+                     WHEN status = 2 THEN ' ✔️⁉️'
                      ELSE ''
                  END) AS full_title
   FROM l_songs
@@ -102,22 +113,22 @@ SELECT *, CONCAT(
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4], full_title=row[5])
+            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4], status=row[5], full_title=row[6])
         return None
 
-    def save(self):
+    def save(self, moderator=0):
         with connection.cursor() as cursor:
             if self.song_id:
-                request = f"""
+                request = """
 UPDATE l_songs
    SET title = %s,
        sub_title = %s,
        description = %s,
        artist = %s
  WHERE song_id = %s
-   AND status = 0
+   AND (status = 0 OR 1 = %s)
 """
-                params = [self.title, self.sub_title, self.description, self.artist, self.song_id]
+                params = [self.title, self.sub_title, self.description, self.artist, self.song_id, moderator]
                 
                 create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
@@ -151,6 +162,19 @@ DELETE FROM l_songs
             params = [self.song_id]
 
             create_SQL_log(code_file, "Song.delete", "DELETE_1", request, params)
+            cursor.execute(request, params)
+
+
+    def update_status(self, status):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_songs
+   SET status = %s
+ WHERE song_id = %s
+"""
+            params = [status, self.song_id]
+            
+            create_SQL_log(code_file, "Song.update_status", "UPDATE_3", request, params)
             cursor.execute(request, params)
 
 

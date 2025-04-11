@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 09:43+0200\n"
+"POT-Creation-Date: 2025-04-11 09:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -247,7 +247,7 @@ msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
 #: app_group/templates/app_group/modify_group.html:49
-#: app_song/templates/app_song/modify_song.html:105
+#: app_song/templates/app_song/modify_song.html:110
 msgid "save"
 msgstr "Enregistrer"
 
@@ -287,77 +287,85 @@ msgstr "Annuler"
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
 
-#: app_song/templates/app_song/modify_song.html:18
+#: app_song/templates/app_song/modify_song.html:20
+msgid "song_approved_info"
+msgstr "Une chanson validée ne peut plus être modifée. Seul les modérateurs et les administrateurs peuvent valider une chanson."
+
+#: app_song/templates/app_song/modify_song.html:20
+msgid "Song approved"
+msgstr "Chanson validée"
+
+#: app_song/templates/app_song/modify_song.html:23
 #: app_song/templates/app_song/songs.html:14
 #: app_song/templates/app_song/songs.html:44
 msgid "title"
 msgstr "Titre"
 
-#: app_song/templates/app_song/modify_song.html:22
+#: app_song/templates/app_song/modify_song.html:27
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:26
+#: app_song/templates/app_song/modify_song.html:31
 #: app_song/templates/app_song/songs.html:15
 #: app_song/templates/app_song/songs.html:37
 #: app_song/templates/app_song/songs.html:45
 msgid "description"
 msgstr "Description"
 
-#: app_song/templates/app_song/modify_song.html:30
+#: app_song/templates/app_song/modify_song.html:35
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/modify_song.html:42
-#: app_song/templates/app_song/modify_song.html:66
-#: app_song/templates/app_song/modify_song.html:80
+#: app_song/templates/app_song/modify_song.html:47
+#: app_song/templates/app_song/modify_song.html:71
+#: app_song/templates/app_song/modify_song.html:85
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:47
+#: app_song/templates/app_song/modify_song.html:52
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:50
+#: app_song/templates/app_song/modify_song.html:55
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/modify_song.html:68
-#: app_song/templates/app_song/modify_song.html:82
+#: app_song/templates/app_song/modify_song.html:60
+#: app_song/templates/app_song/modify_song.html:73
+#: app_song/templates/app_song/modify_song.html:87
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_song/templates/app_song/modify_song.html:59
+#: app_song/templates/app_song/modify_song.html:64
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:61
+#: app_song/templates/app_song/modify_song.html:66
 msgid "before"
 msgstr "Avant"
 
-#: app_song/templates/app_song/modify_song.html:74
+#: app_song/templates/app_song/modify_song.html:79
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_song/templates/app_song/modify_song.html:75
+#: app_song/templates/app_song/modify_song.html:80
 msgid "after"
 msgstr "Après"
 
-#: app_song/templates/app_song/modify_song.html:93
+#: app_song/templates/app_song/modify_song.html:98
 #: app_song/templates/app_song/songs.html:29
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:102
+#: app_song/templates/app_song/modify_song.html:107
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:106
+#: app_song/templates/app_song/modify_song.html:111
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
-#: app_song/templates/app_song/modify_song.html:107
+#: app_song/templates/app_song/modify_song.html:112
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
