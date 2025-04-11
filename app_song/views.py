@@ -44,6 +44,8 @@ def modify_song(request, song_id):
     song.get_verses()
     status = -1
     moderator = is_moderator(request)
+    mod_new_messages = []
+    mod_old_messages = []
 
     if request.method == 'POST':
         if 'btn_cancel' not in request.POST:
@@ -84,6 +86,11 @@ def modify_song(request, song_id):
                         if not song_approved and song.status == 1:
                             song.update_status(0)
                             song.status = 0
+                        message_id_list = request.POST.get('txt_message_id_list')
+                        message_ids = message_id_list.split('|') if message_id_list else []
+                        for message_id in message_ids:
+                            if message_id:
+                                song.moderator_message_done(message_id)
 
                 else:
                     error = '[ERR13]'
@@ -102,12 +109,18 @@ def modify_song(request, song_id):
 
     song_lyrics = song.get_lyrics()
 
+    if moderator:
+        mod_new_messages = song.get_moderator_new_messages()
+        mod_old_messages = song.get_moderator_old_messages()
+
 
     return render(request, 'app_song/modify_song.html', {
         'song': song,
         'verses': song.verses,
         'song_lyrics': song_lyrics,
         'moderator': moderator,
+        'mod_new_messages': mod_new_messages,
+        'mod_old_messages': mod_old_messages,
         'error': error,
     })
 

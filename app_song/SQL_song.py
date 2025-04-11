@@ -231,6 +231,59 @@ UPDATE l_songs
                     return 2
             except Exception as e:
                 return 1
+            
+
+    def get_moderator_new_messages(self):
+        with connection.cursor() as cursor:
+            request = """
+  SELECT message_id, message, date
+    FROM l_songs_mod_message
+   WHERE song_id = %s
+     AND (status = 0 OR date >= SYSDATE() - 7)
+ORDER BY date DESC
+"""
+            params = [self.song_id]
+            
+            create_SQL_log(code_file, "Song.get_moderator_new_messages", "SELECT_5", request, params)
+            cursor.execute(request, params)
+            mod_new_messages = [
+                {'id': row[0], 'message': row[1], 'date': row[2]}
+                for row in cursor.fetchall()
+            ]
+            return mod_new_messages
+
+
+    def get_moderator_old_messages(self):
+        with connection.cursor() as cursor:
+            request = """
+  SELECT message_id, message, date
+    FROM l_songs_mod_message
+   WHERE song_id = %s
+     AND status = 1
+     AND date < SYSDATE() - 7
+ORDER BY date DESC
+"""
+            params = [self.song_id]
+            
+            create_SQL_log(code_file, "Song.get_moderator_old_messages", "SELECT_6", request, params)
+            cursor.execute(request, params)
+            mod_old_messages = [
+                {'id': row[0], 'message': row[1], 'date': row[2]}
+                for row in cursor.fetchall()
+            ]
+            return mod_old_messages
+        
+
+    def moderator_message_done(self, message_id: int):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_songs_mod_message
+   SET status = 1
+ WHERE message_id = %s
+"""
+            params = [message_id]
+            create_SQL_log(code_file, "Song.moderator_message_done", "UPDATE_5", request, params)
+            cursor.execute(request, params)
 
 
 
