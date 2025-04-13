@@ -26,6 +26,8 @@ class Song:
         self.links = []
 
         self.get_links()
+        if self.song_id:
+            self.moderator_songs_with_all_message_done()
 
 
     @staticmethod
@@ -283,6 +285,39 @@ UPDATE l_songs_mod_message
 """
             params = [message_id]
             create_SQL_log(code_file, "Song.moderator_message_done", "UPDATE_5", request, params)
+            cursor.execute(request, params)
+
+        self.moderator_songs_with_all_message_done()
+
+
+    def moderator_songs_with_all_message_done(self):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_songs ls
+   SET status = 1
+ WHERE ls.song_id = %s
+   AND ls.status = 2
+   AND 0 IN (SELECT COUNT(1)
+               FROM l_songs_mod_message lsmm
+              WHERE lsmm.song_id = %s
+                AND lsmm.status = 0)
+"""
+            params = [self.song_id, self.song_id]
+            create_SQL_log(code_file, "Song.moderator_songs_with_all_message_done", "UPDATE_6", request, params)
+            cursor.execute(request, params)
+
+            request = """
+UPDATE l_songs ls
+   SET status = 2
+ WHERE ls.song_id = %s
+   AND ls.status = 1
+   AND 0 < (SELECT COUNT(1)
+              FROM l_songs_mod_message lsmm
+             WHERE lsmm.song_id = %s
+               AND lsmm.status = 0)
+"""
+            params = [self.song_id, self.song_id]
+            create_SQL_log(code_file, "Song.moderator_songs_with_all_message_done", "UPDATE_7", request, params)
             cursor.execute(request, params)
 
 

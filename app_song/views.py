@@ -56,8 +56,8 @@ def modify_song(request, song_id):
                 song.sub_title = request.POST.get('txt_sub_title')
                 song.description = request.POST.get('txt_description')
                 song.artist = request.POST.get('txt_artist')
-                # ✔️⁉️✖️
-                status = song.save(moderator)
+                
+                status = song.save(moderator) # ✔️⁉️✖️
 
                 if status:
                     if 'btn_new_verse' in request.POST:
