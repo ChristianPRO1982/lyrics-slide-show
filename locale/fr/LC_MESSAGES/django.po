@@ -52,8 +52,6 @@ msgstr "Actions"
 #: app_animation/templates/app_animation/animations.html:30
 #: app_animation/templates/app_animation/delete_animation.html:16
 #: app_animation/templates/app_animation/delete_animation.html:17
-#, fuzzy
-#| msgid "update"
 msgid "Update"
 msgstr "Modifier"
 
