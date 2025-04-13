@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.0...v1.10.0) (2025-04-13)
+
+
+### Bug Fixes
+
+* group selected ([c89e9f8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c89e9f8bcfeac52fc29daa8ae313196b23cfa4db))
+* status messages for songs ([a822168](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a8221685e7c3baa237eb69719bca499fe9bb7ec1))
+
+
+### Features
+
+* group <-> animation ([dc7d44e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dc7d44eece8fd0f9632a1936df617bef70a5029a))
+
 # [1.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.0...v1.9.0) (2025-04-11)
 
 
