@@ -7,7 +7,6 @@ from app_group.SQL_group import Group
 
 
 
-@login_required
 def animations(request):
     error = ''
 
@@ -51,7 +50,6 @@ def animations(request):
         })
 
 
-@login_required
 def modify_animation(request, animation_id):
     error = ''
 
@@ -137,7 +135,6 @@ def modify_animation(request, animation_id):
     })
 
 
-@login_required
 def delete_animation(request, animation_id):
     error = ''
 
