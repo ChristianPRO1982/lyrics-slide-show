@@ -1,3 +1,25 @@
+# [1.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.0...v1.11.0) (2025-04-14)
+
+
+### Bug Fixes
+
+* add "⚠️" for error messages ([5eeb468](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5eeb468d7571804e55ebcdea3471dc9c0fbc7d0d))
+* DB ([ca3009a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ca3009a4aadb100c044448249fb0a7ce75f49aa1))
+* delete from requirements: google-auth ([61d220e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/61d220e583034dae09e988876458046bff1a7e19))
+* error message for modify a bad song ([d754db9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d754db990403ffd874eb2d500d908ea6fbcf1657))
+* error message for select a bad song ([a4278cd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a4278cde5133381b3a77b3e79bec952c8ae59f88))
+* logos ([12b47b0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/12b47b009627233e34636db6f333ee618c701e9b))
+* no connection for access animations ([f738a1c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f738a1c81358eeb489f5e1bc4d84038e6d1b98b7))
+* translation ([447fbcd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/447fbcdb3a646fab7c392a7475726c64dc1c66da))
+
+
+### Features
+
+* add remote for "lyrics slide show" ([5a06c8a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5a06c8a73707472d8432aeae91722787868ffe11))
+* goto_song from animation ([93dcec4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/93dcec420187a4c522503e47cae23712d6f836cb))
+* loader for long pages ([70c6534](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/70c6534c3286ffcaecf7bc9195e82807b95de421))
+* smart research song for animation ([6143382](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6143382c31092f60c629b423890d8c7e786c68de))
+
 # [1.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.0...v1.10.0) (2025-04-13)
 
 
