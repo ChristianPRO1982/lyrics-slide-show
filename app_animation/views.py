@@ -174,6 +174,31 @@ def delete_animation(request, animation_id):
     })
 
 
+def lyrics_slide_show(request, animation_id):
+    error = ''
+    no_loader = is_no_loader(request)
+
+    animation = None
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group_selected = group.name
+    
+    if group_selected:
+        animation = Animation.get_animation_by_id(animation_id, group_id)
+        if not animation:
+            return redirect('animations')
+
+    return render(request, 'app_animation/lyrics_slide_show.html', {
+        'animation': animation,
+        'group_selected': group_selected,
+        'error': error,
+        'no_loader': no_loader,
+    })
+
+
 def anim1(request, animation_id):
     return render(request, 'app_animation/anim1.html', {
         'animation_id': animation_id,

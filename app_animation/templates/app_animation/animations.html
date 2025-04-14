@@ -22,7 +22,7 @@
     <tbody>
         {% for animation in animations %}
         <tr>
-            <td>{{ animation.name }}</td>
+            <td><a href="{% url "lyrics_slide_show" animation.animation_id %}">{{ animation.name }}</a></td>
             <td>
                 {{ animation.description|slice:":100" }}
                 {% if animation.description|length > 100 %} [...] {% endif %}

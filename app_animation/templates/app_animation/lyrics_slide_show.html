@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Animation : {{ animation.name }}{% endblock title %}
+{% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
+{% block bloc1 %}
+{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+<div class="controls">
+    <button id="openDisplayWindow">Ouvrir l'écran secondaire</button>
+</div>
+<script src="{% static 'js/remote.js' %}"></script>
+{% endblock bloc2 %}
+
+{% block content %}
+<div class="slide-list" id="slideList">
+<!-- Slides générées dynamiquement -->
+</div>
+{% endblock content %}
