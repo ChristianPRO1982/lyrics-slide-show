@@ -8,9 +8,13 @@ from app_main.utils import is_moderator
 def songs(request):
     error = ''
 
-    if request.session['error']:
-        error = request.session['error']
-        del request.session['error']
+    try:
+        if request.session['error']:
+            error = request.session['error']
+            del request.session['error']
+    except KeyError:
+        pass
+
     moderator = is_moderator(request)
 
     if request.method == 'POST':
@@ -44,6 +48,9 @@ def modify_song(request, song_id):
     error = ''
 
     song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
     song.get_verses()
     status = -1
     moderator = is_moderator(request)
