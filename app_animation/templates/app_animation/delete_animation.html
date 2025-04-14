@@ -4,7 +4,9 @@
 
 {% block title %}{% trans "confirm_delete_animation_title" %}{% endblock title %}
 {% block title_h1 %}{% trans "confirm_delete_animation_title" %}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc1 %}
+{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
@@ -13,8 +15,8 @@
     {% csrf_token %}
     <hr>
     <div class="text-center">
-        <input style="width: 45%;" name="btn_delete" value="{% trans "Update" %}Supprimer" type="submit" />
-        <input style="width: 45%;" name="btn_cancel" value="{% trans "Update" %}Annuler" type="submit" />
+        <input style="width: 45%;" name="btn_delete" value="{% trans "Delete" %}" type="submit" />
+        <input style="width: 45%;" name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
     </div>
 </form>  
 {% endblock content %}

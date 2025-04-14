@@ -4,7 +4,9 @@
 
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc1 %}
+{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% endblock bloc1 %}
 {% block bloc2 %}
 <div id="song-lyrics">
     Sélectionnez un chant pour voir les paroles

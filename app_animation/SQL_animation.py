@@ -13,8 +13,9 @@ code_file = "SQL_animation.py"
 ###################################################
 ###################################################
 class Animation:
-    def __init__(self, animation_id=None, name=None, description=None, date=None):
+    def __init__(self, animation_id=None, group_id=None, name=None, description=None, date=None):
         self.animation_id = animation_id
+        self.group_id = group_id
         self.name = name
         self.description = description
         self.date = date
@@ -25,36 +26,38 @@ class Animation:
 
 
     @staticmethod
-    def get_all_animations():
+    def get_all_animations(group_id):
         request = """
   SELECT *
     FROM l_animations
+   WHERE group_id = %s
 ORDER BY date, name
 """
-        params = []
+        params = [group_id]
 
         create_SQL_log(code_file, "Animations.get_all_animations", "SELECT_1", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'animation_id': row[0], 'name': row[1], 'description': row[2], 'date': row[3]} for row in rows]
+        return [{'animation_id': row[0], 'group_id': row[1], 'name': row[2], 'description': row[3], 'date': row[4]} for row in rows]
     
 
     @classmethod
-    def get_animation_by_id(cls, animation_id):
+    def get_animation_by_id(cls, animation_id, group_id):
         with connection.cursor() as cursor:
             request = """
 SELECT *
   FROM l_animations
  WHERE animation_id = %s
+   AND group_id = %s
 """
-            params = [animation_id]
+            params = [animation_id, group_id]
             
             create_SQL_log(code_file, "Animations.get_animation_by_id", "SELECT_2", request, params)
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(animation_id=row[0], name=row[1], description=row[2], date=row[3])
+            return cls(animation_id=row[0], group_id=row[1], name=row[2], description=row[3], date=row[4])
         return None
 
 
@@ -75,10 +78,10 @@ UPDATE l_animations
 
             else:
                 request = """
-INSERT INTO l_animations (name, description, date)
-     VALUES (%s, %s, %s)
+INSERT INTO l_animations (group_id, name, description, date)
+     VALUES (%s, %s, %s, %s)
 """
-                params = [self.name, self.description, self.date]
+                params = [self.group_id, self.name, self.description, self.date]
                 
                 create_SQL_log(code_file, "Animations.save", "INSERT_1", request, params)
                 cursor.execute(request, params)
