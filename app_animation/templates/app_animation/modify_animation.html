@@ -113,7 +113,15 @@
                 </div>
             </div>
             <hr>
-            <a href="#" onclick="updateDiv({{ song.song_id }})">{% trans "See the song" %}</a>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <div style="text-align: left;">
+                    <a href="#" onclick="updateDiv({{ song.song_id }})">👁️ {% trans "See the song" %}</a>
+                </div>
+                <div style="text-align: right;">
+                    <a href="#" onclick="if(confirm('{% trans "Changes will be lost, do you really want to leave this page?" %}'))
+                        { window.location.href = '{% url "goto_song" song.song_id %}'; }">🔗 {% trans "see the song" %}</a>
+                </div>
+            </div>
         </div>
     {% endfor %}
 
