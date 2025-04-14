@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-14 12:14+0200\n"
+"POT-Creation-Date: 2025-04-14 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,7 +105,7 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:19
-#: app_animation/templates/app_animation/modify_animation.html:136
+#: app_animation/templates/app_animation/modify_animation.html:144
 #: app_song/templates/app_song/moderator_song.html:30
 msgid "Cancel"
 msgstr "Annuler"
@@ -151,30 +151,38 @@ msgstr "Après"
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:116
+#: app_animation/templates/app_animation/modify_animation.html:118
 msgid "See the song"
 msgstr "Voir le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:123
+#: app_animation/templates/app_animation/modify_animation.html:121
+msgid "Changes will be lost, do you really want to leave this page?"
+msgstr "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
+
+#: app_animation/templates/app_animation/modify_animation.html:122
+msgid "Go to the song"
+msgstr "Voir le au chant"
+
+#: app_animation/templates/app_animation/modify_animation.html:131
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:124
+#: app_animation/templates/app_animation/modify_animation.html:132
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:128
+#: app_animation/templates/app_animation/modify_animation.html:136
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:134
+#: app_animation/templates/app_animation/modify_animation.html:142
 #: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:140
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_animation.html:135
+#: app_animation/templates/app_animation/modify_animation.html:143
 #: app_song/templates/app_song/modify_song.html:141
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
