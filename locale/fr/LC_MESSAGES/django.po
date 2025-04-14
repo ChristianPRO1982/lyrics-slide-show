@@ -640,7 +640,7 @@ msgstr ""
 
 #: templates/base.html:59
 msgid "ERR16"
-msgstr ""
+msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 
 #: templates/base.html:61
 msgid "ERR17"

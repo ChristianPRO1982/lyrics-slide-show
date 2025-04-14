@@ -5,8 +5,6 @@
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
-<a href="{% url "anim1" animation.animation_id %}">LIEN 1</a><br>
-<a href="{% url "anim2" animation.animation_id %}">LIEN 2</a><hr>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}

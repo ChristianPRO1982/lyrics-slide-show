@@ -8,6 +8,9 @@ from app_main.utils import is_moderator
 def songs(request):
     error = ''
 
+    if request.session['error']:
+        error = request.session['error']
+        del request.session['error']
     moderator = is_moderator(request)
 
     if request.method == 'POST':
@@ -145,8 +148,13 @@ def goto_song(request, song_id):
     error = ''
 
     song = Song.get_song_by_id(song_id)
-    song.get_verses()
-    song_lyrics = song.get_lyrics()
+    if song:
+        song.get_verses()
+        song_lyrics = song.get_lyrics()
+    else:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
     moderator = is_moderator(request)
 
     return render(request, 'app_song/goto_song.html', {
