@@ -239,7 +239,7 @@ UPDATE l_songs
   SELECT message_id, message, date
     FROM l_songs_mod_message
    WHERE song_id = %s
-     AND (status = 0 OR date >= SYSDATE() - 7)
+     AND status <> 1
 ORDER BY date DESC
 """
             params = [self.song_id]
@@ -260,7 +260,6 @@ ORDER BY date DESC
     FROM l_songs_mod_message
    WHERE song_id = %s
      AND status = 1
-     AND date < SYSDATE() - 7
 ORDER BY date DESC
 """
             params = [self.song_id]
