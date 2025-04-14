@@ -25,6 +25,7 @@
                     <!-- §§§§§ MAIN BLOC §§§§§ -->
                     <!-- §§§§§§§§§§§§§§§§§§§§§ -->
                     {% if error != '' %}
+                        <span class="text-xl float-left">⚠️</span>
                         {% if error == '[ERR1]' %}
                             <p class="text-red-500">{% trans "ERR1" %}</p>
                         {% elif error == '[ERR2]' %}
