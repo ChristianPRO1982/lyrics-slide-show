@@ -1,15 +1,15 @@
 {% comment %} https://symbl.cc/fr/ {% endcomment %}
 {% load i18n %}
 
-<a class="mx-2 hidden md:block" href="{% url "homepage" %}">🏠 {% trans "nav_home" %}</a>
+<a class="mx-2 hidden md:block" href="{% url "homepage" %}">🏠<span class="text-3xl"></span> {% trans "nav_home" %}</a>
 {% if user.is_authenticated %}
-        <a class="mx-2 hidden md:block" href="{% url "groups" %}">👥 {% trans "nav_groups_list" %}</a>
-        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 {% trans "nav_songs_list" %}</a>
-        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️ {% trans "nav_animations_list" %}</a>
-        <a class="mx-2 hidden md:block" href="{% url 'account_logout' %}">⥇ {% trans "nav_logout" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "groups" %}">👥<span class="text-3xl"></span> {% trans "nav_groups_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span> {% trans "nav_logout" %}</a>
 {% else %}
-        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬 {% trans "nav_songs_list" %}</a>
-        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️ {% trans "nav_animations_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "songs" %}">💬<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
+        <a class="mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
         <a class="mx-2 hidden md:block" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> {% trans "nav_login" %}</a>
         {% if request.path == '/account/login/' %}
                 <a class="mx-2 hidden md:block" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> {% trans "nav_signup" %}</a>
