@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
-from app_main.utils import is_moderator
+from app_main.utils import is_moderator, is_no_loader
 
 
 
 def songs(request):
     error = ''
+    no_loader = is_no_loader(request)
 
     try:
         if request.session['error']:
@@ -41,11 +42,13 @@ def songs(request):
         'description': request.POST.get('txt_new_description', ''),
         'moderator': moderator,
         'error': error,
+        'no_loader': no_loader,
         })
 
 
 def modify_song(request, song_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
     if not song:
@@ -132,11 +135,13 @@ def modify_song(request, song_id):
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
         'error': error,
+        'no_loader': no_loader,
     })
 
 
 def delete_song(request, song_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
 
@@ -148,11 +153,13 @@ def delete_song(request, song_id):
     return render(request, 'app_song/delete_song.html', {
         'song': song,
         'error': error,
+        'no_loader': no_loader,
     })
 
 
 def goto_song(request, song_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
     if song:
@@ -169,11 +176,13 @@ def goto_song(request, song_id):
         'song_lyrics': song_lyrics,
         'moderator': moderator,
         'error': error,
+        'no_loader': no_loader,
     })
 
 
 def moderator_song(request, song_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
     song.get_verses()
@@ -195,4 +204,5 @@ def moderator_song(request, song_id):
         'song_lyrics': song_lyrics,
         'valided': valided,
         'error': error,
+        'no_loader': no_loader,
     })

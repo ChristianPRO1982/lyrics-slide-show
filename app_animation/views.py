@@ -4,11 +4,13 @@ from django.contrib.auth.decorators import login_required
 from .SQL_animation import Animation
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
+from app_main.utils import is_no_loader
 
 
 
 def animations(request):
     error = ''
+    no_loader = is_no_loader(request)
 
     group_selected = ''
     group_id = request.session.get('group_id', '')
@@ -47,11 +49,13 @@ def animations(request):
         'date': request.POST.get('txt_new_date', ''),
         'group_selected': group_selected,
         'error': error,
+        'no_loader': no_loader,
         })
 
 
 def modify_animation(request, animation_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     animation = None
     songs_already_in = []
@@ -136,11 +140,13 @@ def modify_animation(request, animation_id):
         'list_lyrics': list_lyrics,
         'group_selected': group_selected,
         'error': error,
+        'no_loader': no_loader,
     })
 
 
 def delete_animation(request, animation_id):
     error = ''
+    no_loader = is_no_loader(request)
 
     animation = None
     group_selected = ''
@@ -164,6 +170,7 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
+        'no_loader': no_loader,
     })
 
 

@@ -15,83 +15,104 @@
     <script src="{% static 'js/lyrics_slide_show.js' %}"></script>
 </head>
 <body class="text-pink bg-pink">
-    {% include 'includes/header.html' %}
-
-    <div class="container mx-auto p-4">
-        <div class="flex flex-col lg:flex-row mb-4 items-stretch">
-            <div class="lg:w-3/4 flex flex-col md:flex-row">
-                <div class="md:w-2/3 p-4 mx-2 mt-4 shadow-lg md:order-2">
-                    <!-- §§§§§§§§§§§§§§§§§§§§§ -->
-                    <!-- §§§§§ MAIN BLOC §§§§§ -->
-                    <!-- §§§§§§§§§§§§§§§§§§§§§ -->
-                    {% if error != '' %}
-                        <span class="text-xl float-left">⚠️</span>
-                        {% if error == '[ERR1]' %}
-                            <p class="text-red-500">{% trans "ERR1" %}</p>
-                        {% elif error == '[ERR2]' %}
-                            <p class="text-red-500">{% trans "ERR2" %}</p>
-                        {% elif error == '[ERR3]' %}
-                            <p class="text-red-500">{% trans "ERR3" %}</p>
-                        {% elif error == '[ERR4]' %}
-                            <p class="text-red-500">{% trans "ERR4" %}</p>
-                        {% elif error == '[ERR5]' %}
-                            <p class="text-red-500">{% trans "ERR5" %}</p>
-                        {% elif error == '[ERR6]' %}
-                            <p class="text-red-500">{% trans "ERR5" %}</p>
-                        {% elif error == '[ERR7]' %}
-                            <p class="text-red-500">{% trans "ERR7" %}</p>
-                        {% elif error == '[ERR8]' %}
-                            <p class="text-red-500">{% trans "ERR8" %}</p>
-                        {% elif error == '[ERR9]' %}
-                            <p class="text-red-500">{% trans "ERR9" %}</p>
-                        {% elif error == '[ERR10]' %}
-                            <p class="text-red-500">{% trans "ERR10" %}</p>
-                        {% elif error == '[ERR11]' %}
-                            <p class="text-red-500">{% trans "ERR11" %}</p>
-                        {% elif error == '[ERR12]' %}
-                            <p class="text-red-500">{% trans "ERR12" %}</p>
-                        {% elif error == '[ERR13]' %}
-                            <p class="text-red-500">{% trans "ERR13" %}</p>
-                        {% elif error == '[ERR14]' %}
-                            <p class="text-red-500">{% trans "ERR14" %}</p>
-                        {% elif error == '[ERR15]' %}
-                            <p class="text-red-500">{% trans "ERR15" %}</p>
-                        {% elif error == '[ERR16]' %}
-                            <p class="text-red-500">{% trans "ERR16" %}</p>
-                        {% elif error == '[ERR17]' %}
-                            <p class="text-red-500">{% trans "ERR17" %}</p>
-                        {% elif error == '[ERR18]' %}
-                            <p class="text-red-500">{% trans "ERR18" %}</p>
-                        {% elif error == '[ERR19]' %}
-                            <p class="text-red-500">{% trans "ERR19" %}</p>
-                        {% elif error == '[ERR20]' %}
-                            <p class="text-red-500">{% trans "ERR20" %}</p>
-                        {% else %}
-                            <p class="text-red-600">{{ error }}</p>
-                        {% endif %}
-                        <hr>
-                    {% endif %}
-                    <h1 class="font-bold text-4xl p-4">{% block title_h1 %}{% endblock title_h1 %}</h1>
-                    {% block content %}{% endblock %}
-                </div>
-                <div class="md:w-1/3 mx-2 mt-4 p-4 shadow-lg bg-black bg-opacity-10">
-                    <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    <!-- §§§§§ SECONDAY BLOC (left) §§§§§ -->
-                    <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    {% block bloc1 %}{% endblock %}
-                </div>
+    {% if not no_loader %}
+    <div id="loader" class="hover:underline text-l fixed inset-0 z-50 flex items-center justify-center">
+        <a href="{% url "kill_loader" %}"><div>
+            <div class="fixed inset-0 z-50 flex items-center justify-center">
+                <img src="{% static 'images/loading.gif' %}" alt="🔄" title="{% trans 'Loading...' %}" class="w-96 h-48">
             </div>
-            <div class="lg:w-1/4 mx-2 mt-4">
-                 <div class="p-4 shadow-lg order-3 bg-black bg-opacity-10 h-full">
-                    <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    <!-- §§§§§ THIRD BLOC (right) §§§§§ -->
-                    <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                    {% block bloc2 %}{% endblock %}
+            <br><br><br>
+            <div class="text-center">
+                <b>{% trans 'Loading...' %}</b>
+            </div>
+            <br><br><br>
+            <div class="text-center">
+                {% trans "Page not displayed after a few seconds? Click here" %}
+            </div></a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div id="general" {% if not no_loader %}style="display: none;"{% endif %}>
+        {% include 'includes/header.html' %}
+
+        <div class="container mx-auto p-4">
+            <div class="flex flex-col lg:flex-row mb-4 items-stretch">
+                <div class="lg:w-3/4 flex flex-col md:flex-row">
+                    <div class="md:w-2/3 p-4 mx-2 mt-4 shadow-lg md:order-2">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ MAIN BLOC §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
+                        {% if error != '' %}
+                            <span class="text-xl float-left">⚠️</span>
+                            {% if error == '[ERR1]' %}
+                                <p class="text-red-500">{% trans "ERR1" %}</p>
+                            {% elif error == '[ERR2]' %}
+                                <p class="text-red-500">{% trans "ERR2" %}</p>
+                            {% elif error == '[ERR3]' %}
+                                <p class="text-red-500">{% trans "ERR3" %}</p>
+                            {% elif error == '[ERR4]' %}
+                                <p class="text-red-500">{% trans "ERR4" %}</p>
+                            {% elif error == '[ERR5]' %}
+                                <p class="text-red-500">{% trans "ERR5" %}</p>
+                            {% elif error == '[ERR6]' %}
+                                <p class="text-red-500">{% trans "ERR5" %}</p>
+                            {% elif error == '[ERR7]' %}
+                                <p class="text-red-500">{% trans "ERR7" %}</p>
+                            {% elif error == '[ERR8]' %}
+                                <p class="text-red-500">{% trans "ERR8" %}</p>
+                            {% elif error == '[ERR9]' %}
+                                <p class="text-red-500">{% trans "ERR9" %}</p>
+                            {% elif error == '[ERR10]' %}
+                                <p class="text-red-500">{% trans "ERR10" %}</p>
+                            {% elif error == '[ERR11]' %}
+                                <p class="text-red-500">{% trans "ERR11" %}</p>
+                            {% elif error == '[ERR12]' %}
+                                <p class="text-red-500">{% trans "ERR12" %}</p>
+                            {% elif error == '[ERR13]' %}
+                                <p class="text-red-500">{% trans "ERR13" %}</p>
+                            {% elif error == '[ERR14]' %}
+                                <p class="text-red-500">{% trans "ERR14" %}</p>
+                            {% elif error == '[ERR15]' %}
+                                <p class="text-red-500">{% trans "ERR15" %}</p>
+                            {% elif error == '[ERR16]' %}
+                                <p class="text-red-500">{% trans "ERR16" %}</p>
+                            {% elif error == '[ERR17]' %}
+                                <p class="text-red-500">{% trans "ERR17" %}</p>
+                            {% elif error == '[ERR18]' %}
+                                <p class="text-red-500">{% trans "ERR18" %}</p>
+                            {% elif error == '[ERR19]' %}
+                                <p class="text-red-500">{% trans "ERR19" %}</p>
+                            {% elif error == '[ERR20]' %}
+                                <p class="text-red-500">{% trans "ERR20" %}</p>
+                            {% else %}
+                                <p class="text-red-600">{{ error }}</p>
+                            {% endif %}
+                            <hr>
+                        {% endif %}
+                        <h1 class="font-bold text-4xl p-4">{% block title_h1 %}{% endblock title_h1 %}</h1>
+                        {% block content %}{% endblock %}
+                    </div>
+                    <div class="md:w-1/3 mx-2 mt-4 p-4 shadow-lg bg-black bg-opacity-10">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ SECONDAY BLOC (left) §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        {% block bloc1 %}{% endblock %}
+                    </div>
+                </div>
+                <div class="lg:w-1/4 mx-2 mt-4">
+                    <div class="p-4 shadow-lg order-3 bg-black bg-opacity-10 h-full">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ THIRD BLOC (right) §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        {% block bloc2 %}{% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
+        {% include 'includes/footer.html' %}
     </div>
 
-    {% include 'includes/footer.html' %}
+    <script src="{% static 'js/loader.js' %}"></script>
 </body>
 </html>
