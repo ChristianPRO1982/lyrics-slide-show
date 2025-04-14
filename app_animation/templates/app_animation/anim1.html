@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyrics Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #search {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 5px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+    #txt_add_songs {
+      width: 100%;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Search for a Song</h1>
+  <input type="text" id="search" placeholder="Type the name of a song...">
+  <ul id="song-list" style="max-height: 200px; overflow-y: auto;">
+    <!-- Songs will be dynamically filtered here -->
+  </ul>
+  <input type="text" id="txt_add_songs_name" placeholder="Selected song IDs will appear here..." readonly><br>
+  <input type="text" id="txt_add_songs_id" placeholder="Selected song IDs will appear here..." readonly>
+
+  <script>
+    const songs = [
+      { id: 1, name: "Amazing Grace" },
+      { id: 2, name: "Hallelujah" },
+      { id: 3, name: "Bohemian Rhapsody" },
+      { id: 4, name: "Imagine" },
+      { id: 5, name: "Hey Jude" },
+      { id: 6, name: "Let It Be" },
+      { id: 7, name: "Yesterday" },
+      { id: 8, name: "Stairway to Heaven" },
+      { id: 9, name: "Hotel California" },
+      { id: 10, name: "Sweet Child O' Mine" },
+      { id: 11, name: "Wonderwall" },
+      { id: 12, name: "Smells Like Teen Spirit" },
+      { id: 13, name: "Shape of You" },
+      { id: 14, name: "Someone Like You" },
+      { id: 15, name: "Rolling in the Deep" },
+      { id: 16, name: "Fix You" },
+      { id: 17, name: "Clocks" },
+      { id: 18, name: "Viva La Vida" },
+      { id: 19, name: "Shallow" },
+      { id: 20, name: "Perfect" },
+      { id: 21, name: "Thinking Out Loud" },
+      { id: 22, name: "Let Her Go" },
+      { id: 23, name: "Counting Stars" },
+      { id: 24, name: "Take Me to Church" },
+      { id: 25, name: "Believer" },
+      { id: 26, name: "Radioactive" },
+      { id: 27, name: "Demons" },
+      { id: 28, name: "Thunder" },
+      { id: 29, name: "Uptown Funk" },
+      { id: 30, name: "Happy" },
+      { id: 31, name: "Don't worry, be happy" }
+    ];
+  
+    const searchInput = document.getElementById('search');
+    const songList = document.getElementById('song-list');
+    const txtAddSongsId = document.getElementById('txt_add_songs_id');
+    const txtAddSongsName = document.getElementById('txt_add_songs_name');
+  
+    function updateSongList(query) {
+      songList.innerHTML = '';
+      const filteredSongs = query.length >= 3
+        ? songs.filter(song => song.name.toLowerCase().includes(query.toLowerCase()))
+        : songs;
+  
+      filteredSongs.forEach(song => {
+        const li = document.createElement('li');
+        li.textContent = song.name;
+  
+        const button = document.createElement('button');
+        button.textContent = 'Add';
+        button.addEventListener('click', () => {
+          addSong(song.id, song.name);
+        });
+  
+        li.appendChild(button);
+        songList.appendChild(li);
+      });
+    }
+  
+    function addSong(songId, songName) {
+      const currentIds = txtAddSongsId.value ? txtAddSongsId.value.split('|') : [];
+      const currentNames = txtAddSongsName.value ? txtAddSongsName.value.split('|') : [];
+  
+      currentIds.push(songId);
+      currentNames.push(songName);
+  
+      txtAddSongsId.value = currentIds.join('|');
+      txtAddSongsName.value = currentNames.join('|');
+    }
+  
+    searchInput.addEventListener('input', (e) => {
+      updateSongList(e.target.value);
+    });
+  
+    updateSongList('');
+  </script> 
+
+  <div style="text-align: center;">
+    <select style="width: 69%;" name="sel_song_id" style="width: 100%;">
+        {% for song in all_songs %}
+            <option value="{{ song.song_id }}">{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title }}</option>
+        {% endfor %}
+    </select>
+    <input style="width: 30%;" name="btn_new_song" value="{% trans "Add a song" %}" type="submit" />
+</div>
+</body>
+</html>

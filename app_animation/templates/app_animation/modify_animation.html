@@ -5,11 +5,13 @@
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
+<a href="{% url "anim1" animation.animation_id %}">LIEN 1</a><br>
+<a href="{% url "anim2" animation.animation_id %}">LIEN 2</a><hr>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div id="song-lyrics">
-    Sélectionnez un chant pour voir les paroles
+    {% trans "Select a song to view the lyrics" %}
 </div>
 {% endblock bloc2 %}
 
@@ -62,7 +64,7 @@
                             {% for verse_id in song_verses.verses_id %}
                                 <input style="width: 10%;" type="checkbox" name="box_verse_{{ song.animation_song_id }}_{{ verse_id }}"
                                 id="box_verse_{{ song.animation_song_id }}_{{ verse_id }}" />
-                                <label for="box_verse_{{ song.animation_song_id }}_{{ verse_id }}">couplet n°{{ forloop.counter }}</label>
+                                <label for="box_verse_{{ song.animation_song_id }}_{{ verse_id }}">{% trans "verse_num" %}{{ forloop.counter }}</label>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
@@ -70,7 +72,7 @@
                         {% if song.animation_song_id == verse.animation_song_id %}
                             <p>
                                 <label for="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}">
-                                    Couplet n°{{ verse.num_verse }} :
+                                    {% trans "verse_num" %}{{ verse.num_verse }} :
                                 </label>
                                 <input style="width: 10%;" type="checkbox"
                                 name="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
@@ -82,23 +84,23 @@
                     {% endfor %}
                 </div>
                 <div style="text-align: right; width: 40%;">
-                    Déplacer :
+                    {% trans "move2dot" %}
                     <select name="lis_move_to_{{ song.animation_song_id }}" style="width: 100%;">
-                        <optgroup label="avant">
+                        <optgroup label="{% trans "before" %}">
                             {% for lis_move_to_song in animation.songs %}
                                 {% if lis_move_to_song.num < song.num %}
                                     <option value="{{ lis_move_to_song.num|add:"-1" }}">
-                                        chant n°{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
+                                        {% trans "song_num" %}{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
                                     </option>
                                 {% endif %}
                             {% endfor %}
                         </optgroup>
-                        <option selected="selected" value="{{ song.num }}">[ne rien faire]</option>
-                        <optgroup label="après">
+                        <option selected="selected" value="{{ song.num }}">{% trans "dont_do_nothing" %}</option>
+                        <optgroup label="{% trans "after" %}">
                             {% for lis_move_to_song in animation.songs %}
                                 {% if lis_move_to_song.num > song.num %}
                                     <option value="{{ lis_move_to_song.num|add:"+1" }}">
-                                        chant n°{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
+                                        {% trans "song_num" %}{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -106,30 +108,83 @@
                     </select>
                     <br>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
-                    onclick="if(this.checked) { return confirm('Êtes-vous sûr de vouloir supprimer ce chant ?'); }"/>
-                    <label for="box_delete_song_{{ song.animation_song_id }}">Supprimer</label>
+                    onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
+                    <label for="box_delete_song_{{ song.animation_song_id }}">{% trans "Delete" %}</label>
                 </div>
             </div>
             <hr>
-            <a href="javascript:void(0);" onclick="updateDiv({{ song.song_id }})">Voir le chant</a>
+            <a href="#" onclick="updateDiv({{ song.song_id }})">{% trans "See the song" %}</a>
         </div>
     {% endfor %}
 
-    <hr>
+    <br><hr><br>
 
-    <div style="text-align: center;">
-        <select style="width: 69%;" name="sel_song_id" style="width: 100%;">
-            {% for song in all_songs %}
-                <option value="{{ song.song_id }}">{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title }}</option>
-            {% endfor %}
-        </select>
-        <input style="width: 30%;" name="btn_new_song" value="Ajouter ce chant" type="submit" />
+    <div>
+        {% trans "Song research" %}
+        <input type="text" id="search" placeholder="{% trans "Type the name of a song..." %}">
+        <ul id="song-list" style="max-height: 200px; overflow-y: auto;">
+            <!-- Songs will be dynamically filtered here -->
+        </ul>
+        <input type="text" id="txt_add_songs_name" placeholder="{% trans "Selected song will appear here..." %}" readonly><br>
+        <input class="hidden" type="text" id="txt_add_songs_id" name="txt_new_songs" readonly>
     </div>
     
-    <hr>
+    <br><hr><br>
     
-    <input name="btn_save" value="Enregistrer" type="submit" />
-    <input name="btn_save_exit" value="Enregsitrer + retour à la liste" type="submit" />
-    <input name="btn_cancel" value="Annuler" type="submit" />
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
+    <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
+    <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
 </form>
+
+<script>
+    const songs = [
+    {% for song in all_songs %}
+        { id: {{ song.song_id }}, name: "{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title }}" },
+    {% endfor %}
+    ];
+  
+    const searchInput = document.getElementById('search');
+    const songList = document.getElementById('song-list');
+    const txtAddSongsId = document.getElementById('txt_add_songs_id');
+    const txtAddSongsName = document.getElementById('txt_add_songs_name');
+  
+    function updateSongList(query) {
+      songList.innerHTML = '';
+      const filteredSongs = query.length >= 3
+        ? songs.filter(song => song.name.toLowerCase().includes(query.toLowerCase()))
+        : songs;
+  
+      filteredSongs.forEach(song => {
+        const li = document.createElement('li');
+        li.textContent = song.name + ' - ';
+  
+        const link = document.createElement('a');
+        link.href = 'javascript:void(0);';
+        link.textContent = 'Add';
+        link.addEventListener('click', () => {
+          addSong(song.id, song.name);
+        });
+      
+        li.appendChild(link);
+        songList.appendChild(li);
+      });
+    }
+  
+    function addSong(songId, songName) {
+      const currentIds = txtAddSongsId.value ? txtAddSongsId.value.split('|') : [];
+      const currentNames = txtAddSongsName.value ? txtAddSongsName.value.split(' / ') : [];
+  
+      currentIds.push(songId);
+      currentNames.push(songName);
+  
+      txtAddSongsId.value = currentIds.join('|');
+      txtAddSongsName.value = currentNames.join('|');
+    }
+  
+    searchInput.addEventListener('input', (e) => {
+      updateSongList(e.target.value);
+    });
+  
+    updateSongList('');
+</script>
 {% endblock content %}

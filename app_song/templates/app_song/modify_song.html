@@ -124,7 +124,7 @@
                     <br>
                     <input style="width: 10%;" type="checkbox" name="box_delete_{{ verse.verse_id }}"
                     id="box_delete_{{ verse.verse_id }}"
-                    onclick="if(this.checked) {return confirm('Êtes-vous sûr de vouloir supprimer ce couplet ?');}" />
+                    onclick="if(this.checked) {return confirm('{% trans "Are you sure you want to delete this verse?" %}');}" />
                     <label for="box_delete_{{ verse.verse_id }}">{% trans "delete" %}</label>
                 </div>
             </div>

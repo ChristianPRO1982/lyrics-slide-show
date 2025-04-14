@@ -78,8 +78,12 @@ def modify_animation(request, animation_id):
                     animation.date = request.POST.get('dt_date')
                     animation.save()
 
-                    if 'btn_new_song' in request.POST:
-                        animation.new_song_verses(request.POST.get('sel_song_id'))
+                    # if 'btn_new_song' in request.POST:
+                    #     animation.new_song_verses(request.POST.get('sel_song_id'))
+                    if request.POST.get('txt_new_songs', '').strip():
+                        new_songs = request.POST.get('txt_new_songs').split('|')
+                        for song_id in new_songs:
+                            animation.new_song_verses(song_id)
                     
                     for song in animation.songs:
                         if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
@@ -160,4 +164,14 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
+    })
+
+
+def anim1(request, animation_id):
+    return render(request, 'app_animation/anim1.html', {
+        'animation_id': animation_id,
+    })
+def anim2(request, animation_id):
+    return render(request, 'app_animation/animations_old.html', {
+        'animation_id': animation_id,
     })
