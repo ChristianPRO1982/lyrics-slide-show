@@ -41,10 +41,13 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
     `);
     });
 
+let last_text = '';
+
 function showSlide(index, text) {
     // Vérifier si la fenêtre secondaire est ouverte
     if (displayWindow) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
+        last_text = text;
     }
 
     // Mettre à jour l'interface pour montrer la slide sélectionnée
@@ -54,4 +57,20 @@ function showSlide(index, text) {
     
     const div = document.getElementById(index);
     div.classList.add('active');
+}
+
+function blackMode() {
+    // Vérifier si la div n'a pas déjà la classe 'active'
+    const div = document.getElementById('blackMode');
+    if (!div.classList.contains('active')) {
+        if (displayWindow) {
+            displayWindow.document.getElementById('slideContent').innerHTML = '';
+        }
+        div.classList.add('active');
+    } else {
+        if (displayWindow) {
+            displayWindow.document.getElementById('slideContent').innerHTML = last_text;
+        }
+        div.classList.remove('active');
+    }
 }

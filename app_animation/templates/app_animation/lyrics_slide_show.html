@@ -14,6 +14,12 @@
     <button id="showOpenDisplayWindow" style="display:none;" onClick="document.getElementById('openDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Reopen second screen" %}</button>
 </div>
 <script src="{% static 'js/remote.js' %}"></script>
+<hr>
+<div id="blackMode"
+    onClick="blackMode();"
+    class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
+    BLACK MODE
+</div>
 {% endblock bloc2 %}
 
 {% block content %}
