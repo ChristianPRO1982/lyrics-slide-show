@@ -1,3 +1,19 @@
+# [1.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.11.0...v1.12.0) (2025-04-15)
+
+
+### Bug Fixes
+
+* MySQL LAG() don't work correctly with multiple ORDER BY > flag with python ([842ca6a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/842ca6a56bb8f71067afaa1a47f2935ba4291a92))
+* MySQL LAG() fixed ([485a823](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/485a823768e3d2538875e474c14856158fe1e153))
+* remote ([5159926](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/515992652b8d46618994752a2e81f07adac27135))
+* trans for remote ([c6385c8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c6385c8449c6c966de78328adb9cbe99ae21d6a4))
+
+
+### Features
+
+* blackmode ([21ff324](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/21ff324db3fe795309c2f8330bf915a5417392fd))
+* remote V0 done ([6aab663](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6aab663e38e49f66b4ca42752a54ac979f1cb64c))
+
 # [1.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.0...v1.11.0) (2025-04-14)
 
 
