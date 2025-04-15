@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-15 09:06+0200\n"
+"POT-Creation-Date: 2025-04-15 12:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: app_animation/templates/app_animation/anim1.html:135
-msgid "Add a song"
-msgstr "Ajouter un chant"
 
 #: app_animation/templates/app_animation/animations.html:5
 #: app_animation/templates/app_animation/animations.html:6
@@ -83,7 +79,7 @@ msgstr "Modifier"
 
 #: app_animation/templates/app_animation/animations.html:33
 #: app_animation/templates/app_animation/delete_animation.html:18
-#: app_animation/templates/app_animation/modify_animation.html:110
+#: app_animation/templates/app_animation/modify_animation.html:112
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr "Supprimer"
@@ -108,18 +104,18 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:19
-#: app_animation/templates/app_animation/modify_animation.html:142
+#: app_animation/templates/app_animation/modify_animation.html:144
 #: app_song/templates/app_song/moderator_song.html:30
 msgid "Cancel"
 msgstr "Annuler"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:13
 msgid "Open a second screen"
-msgstr ""
+msgstr "Ouvrir le second écran"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:14
 msgid "Reopen second screen"
-msgstr ""
+msgstr "Rouvrir le second écran"
 
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "Select a song to view the lyrics"
@@ -133,68 +129,68 @@ msgstr "Sélectionnez un chant pour voir les paroles"
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:85
+#: app_animation/templates/app_animation/modify_animation.html:87
 #: app_song/templates/app_song/modify_song.html:94
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:87
+#: app_animation/templates/app_animation/modify_animation.html:89
 #: app_song/templates/app_song/modify_song.html:96
 msgid "before"
 msgstr "Avant"
 
-#: app_animation/templates/app_animation/modify_animation.html:91
-#: app_animation/templates/app_animation/modify_animation.html:101
+#: app_animation/templates/app_animation/modify_animation.html:93
+#: app_animation/templates/app_animation/modify_animation.html:103
 msgid "song_num"
 msgstr "chant n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:96
+#: app_animation/templates/app_animation/modify_animation.html:98
 #: app_song/templates/app_song/modify_song.html:109
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_animation/templates/app_animation/modify_animation.html:97
+#: app_animation/templates/app_animation/modify_animation.html:99
 #: app_song/templates/app_song/modify_song.html:110
 msgid "after"
 msgstr "Après"
 
-#: app_animation/templates/app_animation/modify_animation.html:109
+#: app_animation/templates/app_animation/modify_animation.html:111
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:116
+#: app_animation/templates/app_animation/modify_animation.html:118
 msgid "See the song"
 msgstr "Voir le texte du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:119
+#: app_animation/templates/app_animation/modify_animation.html:121
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:120
+#: app_animation/templates/app_animation/modify_animation.html:122
 msgid "Go to the song"
 msgstr "Aller vers le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:129
+#: app_animation/templates/app_animation/modify_animation.html:131
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:130
+#: app_animation/templates/app_animation/modify_animation.html:132
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:134
+#: app_animation/templates/app_animation/modify_animation.html:136
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:140
+#: app_animation/templates/app_animation/modify_animation.html:142
 #: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:140
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_animation.html:141
+#: app_animation/templates/app_animation/modify_animation.html:143
 #: app_song/templates/app_song/modify_song.html:141
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
@@ -1929,6 +1925,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Add a song"
+#~ msgstr "Ajouter un chant"
 
 #~ msgid "ERR6"
 #~ msgstr "[ERR6] Erreur dans 'Group.add_admin'"
