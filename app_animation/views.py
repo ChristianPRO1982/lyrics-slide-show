@@ -192,6 +192,10 @@ def lyrics_slide_show(request, animation_id):
             return redirect('animations')
         
     slides = animation.get_slides()
+    previous_id = None
+    for item in slides:
+        item['new_animation_song'] = item['animation_song_id'] != previous_id
+        previous_id = item['animation_song_id']
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,

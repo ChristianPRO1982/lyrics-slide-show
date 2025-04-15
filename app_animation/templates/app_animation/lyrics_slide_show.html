@@ -15,43 +15,89 @@
 </div>
 <script src="{% static 'js/remote.js' %}"></script>
 <hr>
-<div id="blackMode"
-    onClick="blackMode();"
-    class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
-    BLACK MODE
+<div class="sticky top-0 p-2">
+    <div id="blackMode"
+        onClick="blackMode();"
+        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
+        BLACK MODE
+    </div>
+    <br>
+    <div id="blackMode"
+        onClick="blackMode();"
+        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
+        BLACK MODE
+    </div>
 </div>
 {% endblock bloc2 %}
 
 {% block content %}
-<div class="grid grid-cols-3 gap-4">
+<div>
 {% for slide in slides %}
+    {% if slide.new_animation_song == 1 or forloop.counter == 1 %}
+        </div>
+        <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
+        <div class="grid grid-cols-3 gap-4">
+    {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
         onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{{ slide.text|safe }}')"
-        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
-        {{ slide.text|safe }}
+        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus == 1 %} font-bold{% endif %}">
+        {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
     </div>
 {% endfor %}
 </div>
 
 <script>
-    let slides = []
+    let verses_choruses = [];
     {% for slide in slides %}
-    text = '{{ slide.text }}'
-    slides.push(text);
+        dict = {
+            "animation_song_id": "{{ slide.animation_song_id }}",
+            "verse_id": "{{ slide.verse_id }}",
+            "chorus": {{ slide.chorus }},
+            "num_verse": {{ slide.num_verse }},
+            "followed": {{ slide.followed }},
+            "text": "{{ slide.text }}",
+            "new_animation_song": {{ slide.new_animation_song }}
+        };
+        verses_choruses.push(dict);
     {% endfor %}
-    {% comment %} let slides = ['Slide 1', 'Slide 2', 'Slide 3', 'Slide 4', 'Slide 5']; {% endcomment %}
-    let slideList = document.getElementById('slideList');
-    let displayWindow;
+    
+    // songs link
+    let songs = [];
+    let preview_song_id = "";
+    let song_id = "";
+    let next_song_id = "";
+    for (let i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].new_animation_song == 1) {
+            preview_song_id = song_id;
+            song_id = next_song_id;
+            next_song_id = verses_choruses[i].animation_song_id
+            dict = {
+                "preview_song_id": preview_song_id,
+                "song_id": song_id,
+                "next_song_id": next_song_id
+            };
+            if (song_id) {
+                songs.push(dict);
+            }
+        }
+    }
+    preview_song_id = song_id;
+    song_id = next_song_id;
+    next_song_id = ''
+    dict = {
+        "preview_song_id": preview_song_id,
+        "song_id": song_id,
+        "next_song_id": next_song_id
+    };
+    songs.push(dict);
 
-    // Générer la liste des slides dynamiquement
-    slides.forEach((slide, index) => {
-        let slideElement = document.createElement('div');
-        slideElement.classList.add('slide');
-        slideElement.innerText = slide;
-        slideElement.addEventListener('click', () => {
-        selectSlide(index, slideElement);
-        });
-        slideList.appendChild(slideElement);
-    });
+    // slide link
+    let slides = [];
+
+    for (let i = 0; i < verses_choruses.length; i++) {
+        slides.push(verses_choruses[i].num_verse);
+    }
+
+    // alert(slides)
 </script>
 {% endblock content %}

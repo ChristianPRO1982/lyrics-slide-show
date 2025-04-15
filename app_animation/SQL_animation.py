@@ -261,13 +261,7 @@ UPDATE l_animation_song_verse
          lv.chorus,
          lv.num_verse,
          lv.followed,
-         REPLACE(REPLACE(REPLACE(lv.text, '\r\n', '<br>'), '\r', '<br>'), '\n', '<br>') text,
-         CASE
-             WHEN lag(lasv.animation_song_id) OVER (ORDER BY lasv.animation_song_id, lv.num_verse) != lasv.animation_song_id
-                 OR lag(lasv.animation_song_id) OVER (ORDER BY lasv.animation_song_id, lv.num_verse) IS NULL
-             THEN TRUE
-             ELSE FALSE
-         END AS new_animation_song
+         REPLACE(REPLACE(REPLACE(lv.text, '\r\n', '<br>'), '\r', '<br>'), '\n', '<br>') text
     FROM l_animation_song_verse lasv
     JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
     JOIN l_songs ls ON ls.song_id = las.song_id
@@ -291,7 +285,6 @@ ORDER BY las.num, lv.num_verse
                         'num_verse': row[4],
                         'followed': row[5],
                         'text': row[6],
-                        'new_animation_song': row[7],
                     } for row in rows]
             
             except Exception as e:

@@ -1,39 +1,156 @@
+
+
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html class="scroll-smooth" template="true" lang="fr-fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Blocks</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - Lyrics Slide Show</title>
+    <meta content="author" name="Chris">
+    <meta content="description" name="cARThographie - des outils gratuits pour vos projets">
+    <link rel="icon" sizes="192x192" href="/static/images/cARThographie.png" type="image/png"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/lyrics_slide_show.css">
+    <script src="/static/js/lyrics_slide_show.js"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="container mx-auto p-4">
-    <div class="grid grid-cols-3 gap-4">
-      <!-- Block 1 -->
-      <div class="bg-blue-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 1
-      </div>
-      <!-- Block 2 -->
-      <div class="bg-green-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 2
-      </div>
-      <!-- Block 3 -->
-      <div class="bg-red-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 3
-      </div>
-      <!-- Block 4 -->
-      <div class="bg-yellow-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 4
-      </div>
-      <!-- Block 5 -->
-      <div class="bg-purple-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 5
-      </div>
-      <!-- Block 6 -->
-      <div class="bg-pink-500 h-36 flex items-center justify-center text-white font-bold">
-        Block 6
-      </div>
+<body class="text-pink bg-pink">
+    
+    <div id="loader" class="hover:underline text-l fixed inset-0 z-50 flex items-center justify-center">
+        <a href="/kill_loader"><div>
+            <div class="fixed inset-0 z-50 flex items-center justify-center">
+                <img src="/static/images/loading.gif" alt="🔄" title="Chargement..." class="w-96 h-48">
+            </div>
+            <br><br><br>
+            <div class="text-center">
+                <b>Chargement...</b>
+            </div>
+            <br><br><br>
+            <div class="text-center">
+                La page ne s'affiche pas au bout de quelque seconde ? Cliquer ici
+            </div></a>
+        </div>
     </div>
-  </div>
+    
+    
+    <div id="general" style="display: none;">
+        
+
+<header class="py-4 text-red font-bold border-4 border-turquoise bg-white dark:bg-cyan-950">
+    <nav class="pl-5 container mx-auto flex items-center h-full">
+        <a href="/"><img src="/static/images/cARThographie.png" alt="✞🎙🎨" style="width:30px;height:30px;"></a>
+        
+
+
+<a class="mx-2 hidden md:block" href="/">🏠<span class="text-3xl"></span> Accueil</a>
+
+        <a class="mx-2 hidden md:block" href="/groups/">👥<span class="text-3xl"></span> Liste des groupes</a>
+        <a class="mx-2 hidden md:block" href="/songs/">💬<span class="text-3xl"></span> Liste des chants</a>
+        <a class="mx-2 hidden md:block" href="/animations/">🗣️<span class="text-3xl"></span> Liste des animations</a>
+        <a class="mx-2 hidden md:block" href="/account/logout/"><span class="text-3xl">⥇</span> Déconnexion</a>
+
+
+
+<a class="mx-2 block md:hidden" href="/">🏠</a>
+
+        <a class="mx-2 block md:hidden" href="/groups/">👥</a>
+        <a class="mx-2 block md:hidden" href="/songs/">💬</a>
+        <a class="mx-2 block md:hidden" href="/animations/">🗣️</a>
+        <a class="mx-2 block md:hidden" href="/account/logout/"><span class="text-3xl">⥇</span></a>
+
+    </nav>
+</header>
+
+
+        <div class="container mx-auto p-4">
+            <div class="flex flex-col lg:flex-row mb-4 items-stretch">
+                <div class="lg:w-3/4 flex flex-col md:flex-row">
+                    <div class="md:w-2/3 p-4 mx-2 mt-4 shadow-lg md:order-2">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ MAIN BLOC §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
+                        
+                        <h1 class="font-bold text-4xl p-4">Tableau de bord</h1>
+                        
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+                        <p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p><p>Bienvenu !</p>
+
+                    </div>
+                    <div class="md:w-1/3 mx-2 mt-4 p-4 shadow-lg bg-black bg-opacity-10">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ SECONDAY BLOC (left) §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        
+<a href="http://127.0.0.1:8000/groups/36/29adc070-7d99-41a2-91d5-7a068b3834b4">LIEN</a><hr>
+<a href="http://127.0.0.1:8000/groups/35/b1c5574b-ca5d-4875-b696-7ba7478bafff">LIEN</a>
+
+                    </div>
+                </div>
+                <div class="lg:w-1/4 mx-2 mt-4">
+                    <div class="p-4 shadow-lg order-3 bg-black bg-opacity-10 h-full">
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        <!-- §§§§§ THIRD BLOC (right) §§§§§ -->
+                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
+                        
+                        <div class="sticky top-0 bg-white shadow-md p-4">
+                            <h2 class="text-xl font-bold">Bloc Fixe</h2>
+                            <p>Ce contenu reste toujours visible en haut de l'écran lorsque vous scrollez.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer style="height: 33px; margin-top: 0px; padding-top: 0px;" class="py-4 w-full relative bottom-auto md:fixed md:bottom-1 text-red border-4 border-turquoise bg-white dark:bg-pink-950">
+    <div class="pl-5 flex items-center space-x-2 lg:hidden">
+        <span>✞🎙🎨</span>
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
+           target="_blank" rel="noopener noreferrer">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+                 alt="Latest Release" class="h-5">
+        </a>
+    </div>    
+    
+    <div class="pl-5 hidden lg:flex lg:items-center space-x-2">
+        <span>cARThographie</span>
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
+           target="_blank" rel="noopener noreferrer">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+                 alt="Latest Release" class="h-6">
+        </a>
+    </div>
+</footer>
+
+<div class="p-1 md:p-2 fixed bottom-1 right-1 bg-pink-300 text-pink-900 text-xl dark:bg-pink-900 dark:text-pink-400 md:bottom-7 md:right-5 md:text-xl rounded-tl-lg rounded-br-lg">
+    <a href="#">⬆️</a>
+</div>
+
+    </div>
+
+    <script src="/static/js/loader.js"></script>
 </body>
 </html>
