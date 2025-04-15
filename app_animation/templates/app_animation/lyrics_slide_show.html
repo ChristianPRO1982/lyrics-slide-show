@@ -17,12 +17,23 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<div class="slide-list" id="slideList">
-<!-- Slides générées dynamiquement -->
+<div class="grid grid-cols-3 gap-4">
+{% for slide in slides %}
+    <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
+        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{{ slide.text|safe }}')"
+        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
+        {{ slide.text|safe }}
+    </div>
+{% endfor %}
 </div>
 
 <script>
-    let slides = ['Slide 1', 'Slide 2', 'Slide 3', 'Slide 4', 'Slide 5'];
+    let slides = []
+    {% for slide in slides %}
+    text = '{{ slide.text }}'
+    slides.push(text);
+    {% endfor %}
+    {% comment %} let slides = ['Slide 1', 'Slide 2', 'Slide 3', 'Slide 4', 'Slide 5']; {% endcomment %}
     let slideList = document.getElementById('slideList');
     let displayWindow;
 

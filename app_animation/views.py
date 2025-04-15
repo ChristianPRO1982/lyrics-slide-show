@@ -191,16 +191,7 @@ def lyrics_slide_show(request, animation_id):
         if not animation:
             return redirect('animations')
         
-    slides = ''
-    songs = {}
-    for song in animation.songs:
-        songs[song['animation_song_id']] = song['full_title']
-    
-    for verse in animation.verses:
-        # print(">>>>> verse", verse, verse['animation_song_id'])
-        song_id = verse['animation_song_id']
-        song_name = songs[song_id]
-        # print(">>>>> song_id", song_id, song_name)
+    slides = animation.get_slides()
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,

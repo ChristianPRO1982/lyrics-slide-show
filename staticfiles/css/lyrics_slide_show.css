@@ -14,6 +14,15 @@ hr {
     border-color: rgb(240, 23, 88) !important;
 }
 
+slide {
+    border-color: rgb(240, 23, 88);
+}
+
+active {
+    border-color: rgb(62, 4, 21);
+    border-radius: 0%;
+}
+
 @media (prefers-color-scheme: dark) {
     .text-pink {
         color: rgb(180, 12, 62);
@@ -26,6 +35,13 @@ hr {
     }
     hr {
         border-color: rgb(128, 9, 45);
+    }
+    .slide {
+        border-color: rgb(128, 9, 45);
+    }
+    .active {
+        border-color: rgb(255, 50, 200);
+        border-radius: 0%;
     }
 }
 

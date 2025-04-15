@@ -41,16 +41,17 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
     `);
     });
 
-// Fonction pour sélectionner une slide et l'afficher dans la fenêtre secondaire
-function selectSlide(index, element) {
+function showSlide(index, text) {
+    // Vérifier si la fenêtre secondaire est ouverte
+    if (displayWindow) {
+        displayWindow.document.getElementById('slideContent').innerHTML = text;
+    }
+
     // Mettre à jour l'interface pour montrer la slide sélectionnée
     document.querySelectorAll('.slide').forEach(slide => {
-    slide.classList.remove('active');
+        slide.classList.remove('active');
     });
-    element.classList.add('active');
-
-    // Envoyer la slide à la fenêtre secondaire
-    if (displayWindow) {
-    displayWindow.document.getElementById('slideContent').innerText = slides[index];
-    }
+    
+    const div = document.getElementById(index);
+    div.classList.add('active');
 }

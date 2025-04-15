@@ -144,7 +144,7 @@ ORDER BY las.num
     FROM l_animation_song_verse lasv
     JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
     JOIN l_verses lv ON lv.verse_id = lasv.verse_id
-   WHERE lv.chorus = FALSE
+   WHERE lv.chorus <> 1
      AND las.animation_id = %s
 ORDER BY lv.num
 """
@@ -245,3 +245,54 @@ UPDATE l_animation_song_verse
 
             create_SQL_log(code_file, "Animations.update_verse_selected", "UPDATE_3", request, params)
             cursor.execute(request, params)
+
+
+    def get_slides(self):
+        with connection.cursor() as cursor:
+            request = """
+  SELECT lasv.animation_song_id,
+         lasv.verse_id,
+         CONCAT(
+                ls.title,
+                CASE
+                    WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                    ELSE ''
+                END) AS full_title,
+         lv.chorus,
+         lv.num_verse,
+         lv.followed,
+         REPLACE(REPLACE(REPLACE(lv.text, '\r\n', '<br>'), '\r', '<br>'), '\n', '<br>') text,
+         CASE
+             WHEN lag(lasv.animation_song_id) OVER (ORDER BY lasv.animation_song_id, lv.num_verse) != lasv.animation_song_id
+                 OR lag(lasv.animation_song_id) OVER (ORDER BY lasv.animation_song_id, lv.num_verse) IS NULL
+             THEN TRUE
+             ELSE FALSE
+         END AS new_animation_song
+    FROM l_animation_song_verse lasv
+    JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+    JOIN l_songs ls ON ls.song_id = las.song_id
+    JOIN l_verses lv ON lv.verse_id = lasv.verse_id
+   WHERE las.animation_id = %s
+     AND lasv.selected IS TRUE
+ORDER BY las.num, lv.num_verse
+"""
+            params = [self.animation_id]
+
+            create_SQL_log(code_file, "Animations.get_slides", "SELECT_6", request, params)
+
+            try:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                return [{
+                        'animation_song_id': row[0],
+                        'verse_id': row[1],
+                        'full_title': row[2],
+                        'chorus': row[3],
+                        'num_verse': row[4],
+                        'followed': row[5],
+                        'text': row[6],
+                        'new_animation_song': row[7],
+                    } for row in rows]
+            
+            except Exception as e:
+                return None

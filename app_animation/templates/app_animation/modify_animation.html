@@ -55,7 +55,7 @@
         <hr>
         <div class="mt-1 px-1 border border-pink">
             <div style="display: flex; justify-content: space-between;">
-                <div style="text-align: left; width: 60%;">
+                <div style="text-align: left; width: 75%;">
                     <h2 class"mb-1"><p class="font-bold">{{ song.full_title }}</p></h2>
                     {% for song_verses in all_verses %}
                         {% if song.song_id == song_verses.song_id %}
@@ -76,12 +76,14 @@
                                 name="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
                                 id="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
                                 {% if verse.selected %}checked{% endif %} />
-                                {{ verse.text|slice:":25" }}
+                                <label for="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}">
+                                    {{ verse.text|slice:":45" }}
+                                </label>
                             </p>
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div style="text-align: right; width: 40%;">
+                <div style="text-align: right; width: 25%;">
                     {% trans "move2dot" %}
                     <select name="lis_move_to_{{ song.animation_song_id }}" style="width: 100%;">
                         <optgroup label="{% trans "before" %}">
