@@ -10,7 +10,8 @@
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="controls">
-    <button id="openDisplayWindow">Ouvrir l'écran secondaire</button>
+    <button id="openDisplayWindow" onClick="document.getElementById('showOpenDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Open a second screen" %}</button>
+    <button id="showOpenDisplayWindow" style="display:none;" onClick="document.getElementById('openDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Reopen second screen" %}</button>
 </div>
 <script src="{% static 'js/remote.js' %}"></script>
 {% endblock bloc2 %}
@@ -19,4 +20,21 @@
 <div class="slide-list" id="slideList">
 <!-- Slides générées dynamiquement -->
 </div>
+
+<script>
+    let slides = ['Slide 1', 'Slide 2', 'Slide 3', 'Slide 4', 'Slide 5'];
+    let slideList = document.getElementById('slideList');
+    let displayWindow;
+
+    // Générer la liste des slides dynamiquement
+    slides.forEach((slide, index) => {
+        let slideElement = document.createElement('div');
+        slideElement.classList.add('slide');
+        slideElement.innerText = slide;
+        slideElement.addEventListener('click', () => {
+        selectSlide(index, slideElement);
+        });
+        slideList.appendChild(slideElement);
+    });
+</script>
 {% endblock content %}

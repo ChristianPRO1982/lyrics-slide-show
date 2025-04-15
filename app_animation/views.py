@@ -190,10 +190,22 @@ def lyrics_slide_show(request, animation_id):
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
             return redirect('animations')
+        
+    slides = ''
+    songs = {}
+    for song in animation.songs:
+        songs[song['animation_song_id']] = song['full_title']
+    
+    for verse in animation.verses:
+        # print(">>>>> verse", verse, verse['animation_song_id'])
+        song_id = verse['animation_song_id']
+        song_name = songs[song_id]
+        # print(">>>>> song_id", song_id, song_name)
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
         'group_selected': group_selected,
+        'slides': slides,
         'error': error,
         'no_loader': no_loader,
     })

@@ -1,18 +1,11 @@
-let slides = ['Slide 1', 'Slide 2', 'Slide 3', 'Slide 4', 'Slide 5']; // Exemple de slides
-let slideList = document.getElementById('slideList');
-let displayWindow;
-
-// Générer la liste des slides dynamiquement
-slides.forEach((slide, index) => {
-    let slideElement = document.createElement('div');
-    slideElement.classList.add('slide');
-    slideElement.innerText = slide;
-    slideElement.addEventListener('click', () => {
-    selectSlide(index, slideElement);
-    });
-    slideList.appendChild(slideElement);
-});
-
+// TRANSLATION
+const pageLanguage = document.documentElement.lang || 'fr';
+// Convertir la langue de la page en minuscule
+if (pageLanguage.toLowerCase() == 'fr-fr') {
+    txt_fullscreen = 'APPUYEZ SUR F11 SUR CETTE ÉCRAN';
+} else {
+    txt_fullscreen = 'PRESS F11 ON THIS SCREEN';
+}
 
 // Ouvrir la fenêtre pour l'écran secondaire en plein écran
 document.getElementById('openDisplayWindow').addEventListener('click', () => {
@@ -23,7 +16,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>APPUYEZ SUR F11 SUR CETTE ÉCRAN</title>
+        <title>` + txt_fullscreen + `</title>
         <style>
             body {
             margin: 0;
@@ -42,7 +35,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         </style>
         </head>
         <body>
-        <div class="full-screen" id="slideContent">APPUYEZ SUR F11 SUR CETTE ÉCRAN</div>
+        <div class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
         </body>
         </html>
     `);

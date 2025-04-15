@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-14 15:32+0200\n"
+"POT-Creation-Date: 2025-04-15 09:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,7 @@ msgstr "Liste des animations"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
+#: app_animation/templates/app_animation/lyrics_slide_show.html:9
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected1"
@@ -36,6 +37,7 @@ msgstr "[ "
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
+#: app_animation/templates/app_animation/lyrics_slide_show.html:9
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected2"
@@ -43,6 +45,7 @@ msgstr " ]"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
+#: app_animation/templates/app_animation/lyrics_slide_show.html:9
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "No group selected"
@@ -110,6 +113,14 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 msgid "Cancel"
 msgstr "Annuler"
 
+#: app_animation/templates/app_animation/lyrics_slide_show.html:13
+msgid "Open a second screen"
+msgstr ""
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:14
+msgid "Reopen second screen"
+msgstr ""
+
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "Select a song to view the lyrics"
 msgstr "Sélectionnez un chant pour voir les paroles"
@@ -153,7 +164,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
 #: app_animation/templates/app_animation/modify_animation.html:116
 msgid "See the song"
-msgstr "Voir le chant"
+msgstr "Voir le texte du chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:119
 msgid "Changes will be lost, do you really want to leave this page?"
@@ -162,7 +173,7 @@ msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:120
 msgid "Go to the song"
-msgstr "Voir le au chant"
+msgstr "Aller vers le chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:129
 msgid "Song research"
@@ -349,12 +360,12 @@ msgstr "Suppression du token de groupe"
 msgid "cancel"
 msgstr "annuler"
 
-#: app_main/templates/app_main/homepage.html:5
 #: app_main/templates/app_main/homepage.html:6
+#: app_main/templates/app_main/homepage.html:7
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: app_main/templates/app_main/homepage.html:14
+#: app_main/templates/app_main/homepage.html:17
 msgid "Welcome"
 msgstr "Bienvenu !"
 
@@ -567,103 +578,103 @@ msgstr ""
 msgid "Sign up using a passkey"
 msgstr ""
 
-#: templates/base.html:21 templates/base.html:25
+#: templates/base.html:22 templates/base.html:26
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: templates/base.html:29
+#: templates/base.html:30
 msgid "Page not displayed after a few seconds? Click here"
 msgstr "La page ne s'affiche pas au bout de quelque seconde ? Cliquer ici"
 
-#: templates/base.html:47
+#: templates/base.html:49
 msgid "ERR1"
 msgstr "Aucun groupe n'est sélectionné"
 
-#: templates/base.html:49
+#: templates/base.html:51
 msgid "ERR2"
 msgstr "Le nom est obligatoire."
 
-#: templates/base.html:51
+#: templates/base.html:53
 msgid "ERR3"
 msgstr "Le nom du groupe est obligatoire."
 
-#: templates/base.html:53
+#: templates/base.html:55
 msgid "ERR4"
 msgstr ""
 "Le 'username' indiqué ne se trouve pas en base de données. Merci d'indiquer "
 "un 'username' valide."
 
-#: templates/base.html:55 templates/base.html:57
+#: templates/base.html:57 templates/base.html:59
 msgid "ERR5"
 msgstr ""
 "[ERR5] Impossible d'ajouter le 'username' comme admin du groupe car il n'est "
 "pas reconnu dans le système. Contactez l'administrateur du site."
 
-#: templates/base.html:59
+#: templates/base.html:61
 msgid "ERR7"
 msgstr "Impossible d'ajouter 'username' comme administrateur du groupe."
 
-#: templates/base.html:61
+#: templates/base.html:63
 msgid "ERR8"
 msgstr ""
 "Le nom du groupe est déjà utilisé. Deux groupes ne peuvent pas avoir le même "
 "nom."
 
-#: templates/base.html:63
+#: templates/base.html:65
 msgid "ERR9"
 msgstr ""
 "[ERR9] Impossible de créer le groupe. Contactez l'administrateur du site."
 
-#: templates/base.html:65
+#: templates/base.html:67
 msgid "ERR10"
 msgstr "Ce groupe n'existe pas ou vous n'êtes pas admis à y accéder."
 
-#: templates/base.html:67
+#: templates/base.html:69
 msgid "ERR11"
 msgstr ""
 "[ERR11] Impossible d'accéder au groupe. Contactez l'administrateur du site."
 
-#: templates/base.html:69
+#: templates/base.html:71
 msgid "ERR12"
 msgstr ""
 "[ERR12] Impossible d'enregistrer ce chant. Contactez l'administrateur du "
 "site."
 
-#: templates/base.html:71
+#: templates/base.html:73
 msgid "ERR13"
 msgstr ""
 "[ERR13] Impossible d'enregistrer ce chant, il est peut-être “validé” (marqué "
 "“✔️”). Contactez un modérateur ou un administrateur du site."
 
-#: templates/base.html:73
+#: templates/base.html:75
 msgid "ERR14"
 msgstr ""
 "[ERR14] Impossible d'enregistrer ce message. Contactez l'administrateur du "
 "site"
 
-#: templates/base.html:75
+#: templates/base.html:77
 msgid "ERR15"
 msgstr ""
 "[ERR15] Message sauvegardé mais le statut du chant n'a pas pu être modifié. "
 "Contactez l'administrateur du site"
 
-#: templates/base.html:77
+#: templates/base.html:79
 msgid "ERR16"
 msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 
-#: templates/base.html:79
+#: templates/base.html:81
 msgid "ERR17"
 msgstr ""
 
-#: templates/base.html:81
+#: templates/base.html:83
 msgid "ERR18"
 msgstr ""
 
-#: templates/base.html:83
+#: templates/base.html:85
 msgid "ERR19"
 msgstr ""
 
-#: templates/base.html:85
+#: templates/base.html:87
 msgid "ERR20"
 msgstr ""
 
