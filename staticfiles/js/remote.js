@@ -41,10 +41,13 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
     `);
     });
 
+let last_text = '';
+
 function showSlide(index, text) {
     // Vérifier si la fenêtre secondaire est ouverte
     if (displayWindow) {
-        displayWindow.document.getElementById('slideContent').innerText = text;
+        displayWindow.document.getElementById('slideContent').innerHTML = text;
+        last_text = text;
     }
 
     // Mettre à jour l'interface pour montrer la slide sélectionnée
@@ -52,20 +55,22 @@ function showSlide(index, text) {
         slide.classList.remove('active');
     });
     
-    const div = document.getElementById(index);
-    div.classList.add('active');
+    const divs = document.querySelectorAll(`[id="${index}"]`);
+    divs.forEach(div => div.classList.add('active'));
 }
 
-// Fonction pour sélectionner une slide et l'afficher dans la fenêtre secondaire
-function selectSlide(index, element) {
-    // Mettre à jour l'interface pour montrer la slide sélectionnée
-    document.querySelectorAll('.slide').forEach(slide => {
-    slide.classList.remove('active');
-    });
-    element.classList.add('active');
-
-    // Envoyer la slide à la fenêtre secondaire
-    if (displayWindow) {
-    displayWindow.document.getElementById('slideContent').innerText = slides[index];
+function blackMode() {
+    // Vérifier si la div n'a pas déjà la classe 'active'
+    const div = document.getElementById('blackMode');
+    if (!div.classList.contains('active')) {
+        if (displayWindow) {
+            displayWindow.document.getElementById('slideContent').innerHTML = '';
+        }
+        div.classList.add('active');
+    } else {
+        if (displayWindow) {
+            displayWindow.document.getElementById('slideContent').innerHTML = last_text;
+        }
+        div.classList.remove('active');
     }
 }

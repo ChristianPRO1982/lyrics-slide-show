@@ -74,3 +74,66 @@ function blackMode() {
         div.classList.remove('active');
     }
 }
+
+function navSongs(index) {
+    const navPreviousSongDiv = document.getElementById('nav_previous_song');
+    if (navPreviousSongDiv) {
+        navPreviousSongDiv.innerHTML = '';
+    }
+    const navPreviousSongFullTitleDiv = document.getElementById('nav_previous_song_full_title');
+    if (navPreviousSongFullTitleDiv) {
+        navPreviousSongFullTitleDiv.innerHTML = '';
+    }
+    // const navSongDiv = document.getElementById('nav_song');
+    // if (navSongDiv) {
+    //     navSongDiv.innerHTML = '';
+    // }
+    const navNextSongDiv = document.getElementById('nav_next_song');
+    if (navNextSongDiv) {
+        navNextSongDiv.innerHTML = '';
+    }
+    const navNextSongFullTitleDiv = document.getElementById('nav_next_full_title');
+    if (navNextSongFullTitleDiv) {
+        navNextSongFullTitleDiv.innerHTML = '';
+    }
+
+    
+    if (navPreviousSongDiv) {
+        navPreviousSongDiv.innerHTML = '<a href="#song_' + songs[index].previous_song_id +
+        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
+        navPreviousSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].previous_song_full_title + '</span>';
+    }
+    // if (navSongDiv) {
+        //     navSongDiv.innerHTML = songs[index].song_id;
+        //     current_song_id = songs[index].song_id;
+    // }
+    if (navNextSongDiv) {
+        navNextSongDiv.innerHTML = '<a href="#song_' + songs[index].next_song_id +
+        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
+        navNextSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].next_song_full_title + '</span>';
+    }
+
+    current_song_id = songs[index].song_id;
+}
+
+function navPreviousSong() {
+    if (songs[songIdToIndex(current_song_id)].previous_song_id != '') {
+        navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].previous_song_id));
+    }
+}
+
+function navNextSong() {
+    if (songs[songIdToIndex(current_song_id)].next_song_id != '') {
+        navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].next_song_id));
+    }
+}
+
+function songIdToIndex(song_id) {
+    for (i = 0; i < songs.length; i++) {
+        let song = songs[i];
+        if (song.song_id == song_id) {
+            return i;
+        }
+    }
+    return 0;
+}

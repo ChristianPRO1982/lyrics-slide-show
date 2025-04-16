@@ -1,11 +1,83 @@
 {% extends "base.html" %}
 
+{% comment %} ▶️ ⏸️ ⏹️ ⏺️ ⏭️ ⏮️ ⏩ ⏪ 🔁 🔂 🔄 🔀 🔇 🔈 🔉 🔊 🎧 🎵 🎶 🎼 📻 📢 🔔 🔕 🎙️ 🎚️ 🎛️ 📼 💿 📀 📲 {% endcomment %}
+
 {% load static %}
 {% load i18n %}
 
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
+<script>
+    let verses_choruses = [];
+    {% for slide in slides %}
+        dict = {
+            "animation_song_id": "{{ slide.animation_song_id }}",
+            "full_title": "{{ slide.full_title }}",
+            "verse_id": "{{ slide.verse_id }}",
+            "chorus": {{ slide.chorus }},
+            "num_verse": {{ slide.num_verse }},
+            "followed": {{ slide.followed }},
+            "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
+            "new_animation_song": {{ slide.new_animation_song }}
+        };
+        verses_choruses.push(dict);
+    {% endfor %}
+    
+    // songs link
+    let songs = [];
+    let previous_song_id = "";
+    let previous_song_full_title = "";
+    let song_id = "";
+    let song_full_title = "";
+    let next_song_id = "";
+    let next_song_full_title = "";
+    for (let i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].new_animation_song == 1) {
+            previous_song_id = song_id;
+            previous_song_full_title = song_full_title;
+            song_id = next_song_id;
+            song_full_title = next_song_full_title;
+            next_song_id = verses_choruses[i].animation_song_id
+            next_song_full_title = verses_choruses[i].full_title;
+            dict = {
+                "previous_song_id": previous_song_id,
+                "previous_song_full_title": previous_song_full_title,
+                "song_id": song_id,
+                "song_full_title": song_full_title,
+                "next_song_id": next_song_id,
+                "next_song_full_title": next_song_full_title
+            };
+            if (song_id) {
+                songs.push(dict);
+            }
+        }
+    }
+    previous_song_id = song_id;
+    previous_song_full_title = song_full_title;
+    song_id = next_song_id;
+    song_full_title = next_song_full_title;
+    next_song_id = ''
+    next_song_full_title = '';
+    dict = {
+        "previous_song_id": previous_song_id,
+        "previous_song_full_title": previous_song_full_title,
+        "song_id": song_id,
+        "song_full_title": song_full_title,
+        "next_song_id": next_song_id,
+        "next_song_full_title": next_song_full_title
+    };
+    songs.push(dict);
+
+    // slide link
+    let slides = [];
+
+    for (let i = 0; i < verses_choruses.length; i++) {
+        slides.push(verses_choruses[i].num_verse);
+    }
+
+    // alert(slides)
+</script>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
 {% trans "actions" %}<br>
@@ -22,16 +94,28 @@
 <div class="sticky top-0 p-2">
     <div id="blackMode"
         onClick="blackMode();"
-        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
-        BLACK MODE
+        class="slide flex h-36 p-2 items-center justify-center border rounded-lg">
+        {% trans "BLACK MODE" %}
     </div>
     <br>
-    <div id="blackMode"
-        onClick="blackMode();"
-        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg">
-        BLACK MODE
+    <div id="nav_slide">SLIDE</div>
+    <p>_Chants</p>
+    <div class="flex">
+        <div id="nav_previous_song" onClick="navPreviousSong();" class="flex w-1/2"></div>
+        {% comment %} <div id="nav_song" class="hiddene"></div> {% endcomment %}
+        <div id="nav_next_song" onClick="navNextSong();" class="flex w-1/2"></div>
+    </div>
+    <div class="flex">
+        <div id="nav_previous_song_full_title" onClick="navPreviousSong();" class="flex w-1/2"></div>
+        <div id="nav_next_full_title" class="flex w-1/2"></div>
     </div>
 </div>
+<script>
+    current_song_id = "{{ slides.0.animation_song_id }}";
+    previous_song_id = 0;
+    next_song_id = 0;
+    navSongs(songIdToIndex(0));
+</script>
 {% endblock bloc2 %}
 
 {% block content %}
@@ -39,72 +123,17 @@
 {% for slide in slides %}
     {% if slide.new_animation_song == 1 %}
         </div>
+        <a id="song_{{ slide.animation_song_id }}"></a>
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
-        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text|safe }}{% if slide.chorus > 0 %}</b>{% endif %}')"
+        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text|safe }}{% if slide.chorus > 0 %}</b>{% endif %}');
+        navSongs(songIdToIndex({{ slide.animation_song_id }}));
+        {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
         class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
     </div>
 {% endfor %}
 </div>
-
-<script>
-    let verses_choruses = [];
-    {% for slide in slides %}
-        dict = {
-            "animation_song_id": "{{ slide.animation_song_id }}",
-            "verse_id": "{{ slide.verse_id }}",
-            "chorus": {{ slide.chorus }},
-            "num_verse": {{ slide.num_verse }},
-            "followed": {{ slide.followed }},
-            "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
-            "new_animation_song": {{ slide.new_animation_song }}
-        };
-        verses_choruses.push(dict);
-    {% endfor %}
-    
-    // songs link
-    let songs = [];
-    let preview_song_id = "";
-    let song_id = "";
-    let next_song_id = "";
-    for (let i = 0; i < verses_choruses.length; i++) {
-        if (verses_choruses[i].new_animation_song == 1) {
-            preview_song_id = song_id;
-            song_id = next_song_id;
-            next_song_id = verses_choruses[i].animation_song_id
-            dict = {
-                "preview_song_id": preview_song_id,
-                "song_id": song_id,
-                "next_song_id": next_song_id
-            };
-            if (song_id) {
-                songs.push(dict);
-            }
-        }
-    }
-    preview_song_id = song_id;
-    song_id = next_song_id;
-    next_song_id = ''
-    dict = {
-        "preview_song_id": preview_song_id,
-        "song_id": song_id,
-        "next_song_id": next_song_id
-    };
-    songs.push(dict);
-    // for (let i = 0; i < songs.length; i++) {
-    //     alert(songs[i].preview_song_id + " - " + songs[i].song_id + " - " + songs[i].next_song_id);
-    // }
-
-    // slide link
-    let slides = [];
-
-    for (let i = 0; i < verses_choruses.length; i++) {
-        slides.push(verses_choruses[i].num_verse);
-    }
-
-    // alert(slides)
-</script>
 {% endblock content %}
