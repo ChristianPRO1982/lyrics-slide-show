@@ -37,7 +37,7 @@
 {% block content %}
 <div>
 {% for slide in slides %}
-    {% if slide.new_animation_song == 1 or forloop.counter == 1 %}
+    {% if slide.new_animation_song == 1 %}
         </div>
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
         <div class="grid grid-cols-3 gap-4">
@@ -94,6 +94,9 @@
         "next_song_id": next_song_id
     };
     songs.push(dict);
+    // for (let i = 0; i < songs.length; i++) {
+    //     alert(songs[i].preview_song_id + " - " + songs[i].song_id + " - " + songs[i].next_song_id);
+    // }
 
     // slide link
     let slides = [];
