@@ -7,6 +7,10 @@
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+<hr>
+{% trans "actions" %}<br>
+<a href="{% url "modify_animation" animation.animation_id %}">{% trans "modify" %}</a>
+<hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="controls">
