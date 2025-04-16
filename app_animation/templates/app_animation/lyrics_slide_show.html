@@ -43,8 +43,8 @@
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
-        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{{ slide.text|safe }}')"
-        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus == 1 %} font-bold{% endif %}">
+        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text|safe }}{% if slide.chorus > 0 %}</b>{% endif %}')"
+        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
     </div>
 {% endfor %}
@@ -59,7 +59,7 @@
             "chorus": {{ slide.chorus }},
             "num_verse": {{ slide.num_verse }},
             "followed": {{ slide.followed }},
-            "text": "{{ slide.text }}",
+            "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
             "new_animation_song": {{ slide.new_animation_song }}
         };
         verses_choruses.push(dict);

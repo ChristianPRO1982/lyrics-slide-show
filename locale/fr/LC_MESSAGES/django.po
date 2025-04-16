@@ -657,7 +657,7 @@ msgstr ""
 msgid "ERR14"
 msgstr ""
 "[ERR14] Impossible d'enregistrer ce message. Contactez l'administrateur du "
-"site"
+"site."
 
 #: templates/base.html:77
 msgid "ERR15"
@@ -671,7 +671,7 @@ msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 
 #: templates/base.html:81
 msgid "ERR17"
-msgstr ""
+msgstr "[ERR17] Impossible de générer les slides. Contacter l'administrateur du site."
 
 #: templates/base.html:83
 msgid "ERR18"

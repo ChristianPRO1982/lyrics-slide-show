@@ -55,8 +55,8 @@ function showSlide(index, text) {
         slide.classList.remove('active');
     });
     
-    const div = document.getElementById(index);
-    div.classList.add('active');
+    const divs = document.querySelectorAll(`[id="${index}"]`);
+    divs.forEach(div => div.classList.add('active'));
 }
 
 function blackMode() {
