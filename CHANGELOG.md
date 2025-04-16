@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.12.0...v1.12.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* trans nav buttons ([2493aeb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2493aeb4bfff3484d10842e45c67b78c22c0201e))
+
 # [1.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.11.0...v1.12.0) (2025-04-15)
 
 
