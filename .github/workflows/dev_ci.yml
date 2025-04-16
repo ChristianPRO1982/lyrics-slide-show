@@ -1,0 +1,38 @@
+name: CI - Dev Branch
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Set environment variables
+      run: |
+        echo "DEBUG=4" >> $GITHUB_ENV
+        echo "LOGS_PATH=./logs/" >> $GITHUB_ENV
+
+    - name: Run pytest
+      run: |
+        source venv/bin/activate
+        pytest --disable-warnings -q
