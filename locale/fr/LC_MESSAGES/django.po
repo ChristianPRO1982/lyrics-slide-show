@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 09:24+0200\n"
+"POT-Creation-Date: 2025-04-17 09:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr "Liste des animations"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:9
+#: app_animation/templates/app_animation/lyrics_slide_show.html:82
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected1"
@@ -33,7 +33,7 @@ msgstr "[ "
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:9
+#: app_animation/templates/app_animation/lyrics_slide_show.html:82
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected2"
@@ -41,7 +41,7 @@ msgstr " ]"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:9
+#: app_animation/templates/app_animation/lyrics_slide_show.html:82
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "No group selected"
@@ -109,27 +109,39 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:11
+#: app_animation/templates/app_animation/lyrics_slide_show.html:84
 #: app_animation/templates/app_animation/modify_animation.html:10
 #: app_song/templates/app_song/songs.html:16
 #: app_song/templates/app_song/songs.html:51
 msgid "actions"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:12
+#: app_animation/templates/app_animation/lyrics_slide_show.html:85
 #: app_group/templates/app_group/groups.html:33
 msgid "modify"
 msgstr "modifier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:17
+#: app_animation/templates/app_animation/lyrics_slide_show.html:90
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:18
+#: app_animation/templates/app_animation/lyrics_slide_show.html:91
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:48
+#: app_animation/templates/app_animation/lyrics_slide_show.html:99
+msgid "BLACK MODE"
+msgstr ""
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:102
+msgid "Smart nav"
+msgstr ""
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
+msgid "Songs"
+msgstr "Chants"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:138
 msgid "chorus_prefix"
 msgstr "R- "
 
@@ -657,7 +669,7 @@ msgstr ""
 msgid "ERR14"
 msgstr ""
 "[ERR14] Impossible d'enregistrer ce message. Contactez l'administrateur du "
-"site"
+"site."
 
 #: templates/base.html:77
 msgid "ERR15"
@@ -672,6 +684,7 @@ msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 #: templates/base.html:81
 msgid "ERR17"
 msgstr ""
+"[ERR17] Impossible de générer les slides. Contacter l'administrateur du site."
 
 #: templates/base.html:83
 msgid "ERR18"
@@ -715,6 +728,11 @@ msgstr "Créer un compte"
 
 #: templates/socialaccount/snippets/login.html:11
 msgid "Or use a third-party"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/_pytest/config/argparsing.py:474
+#, python-format
+msgid "ambiguous option: %(option)s could match %(matches)s"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16

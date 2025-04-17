@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_animation import Animation
+from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
 from app_main.utils import is_no_loader
@@ -192,10 +193,9 @@ def lyrics_slide_show(request, animation_id):
             return redirect('animations')
         
     slides = animation.get_slides()
-    # previous_id = None
-    # for item in slides:
-    #     item['new_animation_song'] = item['animation_song_id'] != previous_id
-    #     previous_id = item['animation_song_id']
+    slides = all_lyrics(slides)
+    if not slides:
+        error = "[ERR17]"
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
