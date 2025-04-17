@@ -103,7 +103,7 @@
     </div>
     <br>
     <p>{% trans "Smart nav" %}</p>
-    <div id="nav_slide">
+    <div id="nav_slide" class="flex">
         <div id="nav_next_slide" onClick="navNextSlide();" class="flex w-1/2"></div>
         <div id="nav_chorus" onClick="navChorus();" class="flex w-1/2"></div>
     </div>
@@ -120,19 +120,14 @@
     <br>
     <p>{% trans "Options" %}</p>
     <div class="flex">
-        <div id="dis_choruses" onClick="disChoruses();" class="flex"></div>
+        <div id="dis_choruses" onClick="disChoruses(true);" class="flex w-1/2"></div>
     </div>
 </div>
 <script>
     let current_song_id = "{{ slides.0.animation_song_id }}";
-    slides = getSongSlides();
-    let current_slide = -1;
-    previous_song_id = 0;
-    next_song_id = 0;
-    display_choruses = 0;
-    navNextSlideInit();
     navSongs(songIdToIndex(0));
-    disChoruses();
+    display_choruses = 0;
+    disChoruses(true);
 </script>
 {% endblock bloc2 %}
 

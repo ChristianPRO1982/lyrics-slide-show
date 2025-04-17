@@ -41,7 +41,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
 
 let last_text = '';
 
-function showSlide(index) {
+function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
     
     if (displayWindow) {
@@ -56,7 +56,8 @@ function showSlide(index) {
     const divs = document.querySelectorAll(`[id="${index}"]`);
     divs.forEach(div => div.classList.add('active'));
 
-    // alert(chorusSet[0]);
+    if (updateCurrentSlide) {nextChorusSlideSelect(index);}
+    disChoruses();
 }
 
 function decodeHTMLEntities(str) {
@@ -65,6 +66,11 @@ function decodeHTMLEntities(str) {
     return txt.value;
 }
 
+function nextChorusSlideSelect(index) {
+    current_chorus_slide = 0;
+    for (i = 0; i < chorus.length; i++) {if (chorus[i] == index) {current_chorus_slide = i + 1;}}
+    if (current_chorus_slide + 1 > chorus.length) {current_chorus_slide = 0;}
+}
 
 function getText(index) {
     let [animation_song_id, verse_id] = index.split('_');
@@ -78,7 +84,7 @@ function getText(index) {
 
 function getSongSlides() {
     slides = [];
-    let chorusSet = new Set();
+    chorusSet = new Set();
 
     for (i = 0; i < all_slides.length; i++) {
         let [animation_song_id, verse_id] = all_slides[i].split('_');
@@ -91,12 +97,14 @@ function getSongSlides() {
         }
     }
     
+    chorus = Array.from(chorusSet);
+
     return slides;
 }
 
 function isChorus(id1, id2) {
     for (i2 = 0; i2 < verses_choruses.length; i2++) {
-        if (verses_choruses[i2].animation_song_id == id1 && verses_choruses[i2].verse_id == id2 && verses_choruses[i2].chorus > 0) {
+        if (verses_choruses[i2].animation_song_id == id1 && verses_choruses[i2].verse_id == id2 && verses_choruses[i2].chorus == 1) {
             return true;
         }
     }
@@ -153,6 +161,23 @@ function navChorus() {
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '';
     }
+    
+    if (navChorusDiv) {
+        navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
+        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+    }
+    
+    showSlide(chorus[current_chorus_slide], false);
+    
+    current_chorus_slide += 1;
+    if (current_chorus_slide + 1 > chorus.length) {current_chorus_slide = 0;}
+}
+
+function navChorusInit() {
+    const navChorusDiv = document.getElementById('nav_chorus');
+    if (navChorusDiv) {
+        navChorusDiv.innerHTML = '';
+    }
 
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
@@ -192,6 +217,13 @@ function navSongs(index) {
     }
 
     current_song_id = songs[index].song_id;
+    slides = getSongSlides();
+    current_slide = -1;
+    previous_song_id = 0;
+    next_song_id = 0;
+    current_chorus_slide = 0;
+    navNextSlideInit();
+    navChorusInit();
 }
 
 function navPreviousSong() {
@@ -216,29 +248,33 @@ function songIdToIndex(song_id) {
     return 0;
 }
 
-function disChoruses() {
+function disChoruses(change = false) {
     const disChorusesDiv = document.getElementById('dis_choruses');
     if (disChorusesDiv) {
         disChorusesDiv.innerHTML = '';
     }
 
+    if (change == true) {
+        if (display_choruses == 1) {
+            display_choruses = 0;
+        } else {
+            display_choruses = 1;
+        }
+    }
+
     if (display_choruses == 1) {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<a href="#song_' + current_song_id +
-            '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div></a>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.add('hidden');
             });
         }
-        display_choruses = 0;
     } else {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<a href="#song_' + current_song_id +
-            '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div></a>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.remove('hidden');
             });
         }
-        display_choruses = 1;
     }
 }
