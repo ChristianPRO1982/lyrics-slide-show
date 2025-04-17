@@ -43,13 +43,15 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
 
 let last_text = '';
 
-function showSlide(index, text) {
+function showSlide(index) {
+    text = decodeHTMLEntities(getText(index));
+    
     // Vérifier si la fenêtre secondaire est ouverte
     if (displayWindow) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
         last_text = text;
     }
-
+    
     // Mettre à jour l'interface pour montrer la slide sélectionnée
     document.querySelectorAll('.slide').forEach(slide => {
         slide.classList.remove('active');
@@ -57,6 +59,34 @@ function showSlide(index, text) {
     
     const divs = document.querySelectorAll(`[id="${index}"]`);
     divs.forEach(div => div.classList.add('active'));
+}
+
+function decodeHTMLEntities(str) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = str;
+    return txt.value;
+}
+
+
+function getText(index) {
+    let [animation_song_id, song_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].verse_id == song_id && verses_choruses[i].animation_song_id == animation_song_id) {
+            text = verses_choruses[i].text;
+            return text;
+        }
+    }
+}
+
+function getSongSlides() {
+    slides = [];
+    for (i = 0; i < all_slides.length; i++) {
+        let [animation_song_id, song_id] = all_slides[i].split('_');
+        if (animation_song_id == current_song_id) {
+            slides.push(all_slides[i]);
+        }
+    }
+    return slides;
 }
 
 function blackMode() {
@@ -72,6 +102,36 @@ function blackMode() {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
         }
         div.classList.remove('active');
+    }
+}
+
+function navNextSlide() {
+    current_slide += 1;
+    if (current_slide >= slides.length) {
+        current_slide = 0;
+    }
+    showSlide(slides[current_slide]);
+
+    const navNextSlideDiv = document.getElementById('nav_next_slide');
+    if (navNextSlideDiv) {
+        navNextSlideDiv.innerHTML = '';
+    }
+
+    if (navNextSlideDiv) {
+        navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
+        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟 🎶📜</div></a>';
+    }
+}
+
+function navNextSlideInit() {
+    const navNextSlideDiv = document.getElementById('nav_next_slide');
+    if (navNextSlideDiv) {
+        navNextSlideDiv.innerHTML = '';
+    }
+
+    if (navNextSlideDiv) {
+        navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
+        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
 }
 
@@ -136,4 +196,31 @@ function songIdToIndex(song_id) {
         }
     }
     return 0;
+}
+
+function disChoruses() {
+    const disChorusesDiv = document.getElementById('dis_choruses');
+    if (disChorusesDiv) {
+        disChorusesDiv.innerHTML = '';
+    }
+
+    if (display_choruses == 1) {
+        if (disChorusesDiv) {
+            disChorusesDiv.innerHTML = '<a href="#song_' + current_song_id +
+            '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div></a>';
+            document.querySelectorAll('.chorus').forEach(chorus => {
+                chorus.classList.add('hidden');
+            });
+        }
+        display_choruses = 0;
+    } else {
+        if (disChorusesDiv) {
+            disChorusesDiv.innerHTML = '<a href="#song_' + current_song_id +
+            '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div></a>';
+            document.querySelectorAll('.chorus').forEach(chorus => {
+                chorus.classList.remove('hidden');
+            });
+        }
+        display_choruses = 1;
+    }
 }

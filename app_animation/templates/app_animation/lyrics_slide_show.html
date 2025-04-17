@@ -24,7 +24,7 @@
         verses_choruses.push(dict);
     {% endfor %}
     
-    // songs link
+    // songs link   
     let songs = [];
     let previous_song_id = "";
     let previous_song_full_title = "";
@@ -70,13 +70,13 @@
     songs.push(dict);
 
     // slide link
-    let slides = [];
-
+    let all_slides = [];
+    
     for (let i = 0; i < verses_choruses.length; i++) {
-        slides.push(verses_choruses[i].num_verse);
+        all_slides.push(verses_choruses[i].animation_song_id + '_' + verses_choruses[i].verse_id);
     }
 
-    // alert(slides)
+    {% comment %} alert(all_slides) {% endcomment %}
 </script>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
@@ -94,27 +94,45 @@
 <div class="sticky top-0 p-2">
     <div id="blackMode"
         onClick="blackMode();"
-        class="slide flex h-36 p-2 items-center justify-center border rounded-lg">
+        class="slide flex h-36 p-2 text-center items-center justify-center border rounded-lg">
+        <span class="text-4xl">🖥️</span>
+    </div>
+    <div onClick="blackMode();"
+        class="slide text-center">
         {% trans "BLACK MODE" %}
     </div>
     <br>
-    <div id="nav_slide">SLIDE</div>
-    <p>_Chants</p>
+    <p>{% trans "Smart nav" %}</p>
+    <div id="nav_slide">
+        <div id="nav_next_slide" onClick="navNextSlide();" class="flex w-1/2"></div>
+        <div id="nav_chorus" onClick="navChorus();" class="flex w-1/2"></div>
+    </div>
+    <br>
+    <p>{% trans "Songs" %}</p>
     <div class="flex">
         <div id="nav_previous_song" onClick="navPreviousSong();" class="flex w-1/2"></div>
-        {% comment %} <div id="nav_song" class="hiddene"></div> {% endcomment %}
         <div id="nav_next_song" onClick="navNextSong();" class="flex w-1/2"></div>
     </div>
     <div class="flex">
         <div id="nav_previous_song_full_title" onClick="navPreviousSong();" class="flex w-1/2"></div>
         <div id="nav_next_full_title" class="flex w-1/2"></div>
     </div>
+    <br>
+    <p>{% trans "Options" %}</p>
+    <div class="flex">
+        <div id="dis_choruses" onClick="disChoruses();" class="flex"></div>
+    </div>
 </div>
 <script>
-    current_song_id = "{{ slides.0.animation_song_id }}";
+    let current_song_id = "{{ slides.0.animation_song_id }}";
+    slides = getSongSlides();
+    let current_slide = -1;
     previous_song_id = 0;
     next_song_id = 0;
+    display_choruses = 0;
+    navNextSlideInit();
     navSongs(songIdToIndex(0));
+    disChoruses();
 </script>
 {% endblock bloc2 %}
 
@@ -128,10 +146,10 @@
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
-        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}', '{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text|safe }}{% if slide.chorus > 0 %}</b>{% endif %}');
+        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
         navSongs(songIdToIndex({{ slide.animation_song_id }}));
         {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
-        class="slide flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
+        class="slide {% if slide.chorus %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
     </div>
 {% endfor %}
