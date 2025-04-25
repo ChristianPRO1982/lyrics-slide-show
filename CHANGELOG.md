@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.0...v1.1.0) (2025-04-25)
+
+
+### Bug Fixes
+
+* docker-compose ([957069f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/957069f7a8648f7d81458cc62c32e35f286be978))
+
+
+### Features
+
+* css: normal.css + scout.css ([d4cb5cb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d4cb5cb9696f17bc53da6fccba40757ee076f69d))
+
 # 1.0.0 (2025-04-17)
 
 
