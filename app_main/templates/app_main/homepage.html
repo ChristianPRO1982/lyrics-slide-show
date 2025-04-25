@@ -6,8 +6,11 @@
 {% block title %}{% trans "Dashboard" %}{% endblock title %}
 {% block title_h1 %}{% trans "Dashboard" %}{% endblock title_h1 %}
 {% block bloc1 %}
-<a href="http://127.0.0.1:8000/groups/36/29adc070-7d99-41a2-91d5-7a068b3834b4">LIEN</a><hr>
-<a href="http://127.0.0.1:8000/groups/35/b1c5574b-ca5d-4875-b696-7ba7478bafff">LIEN</a>
+
+<hr>
+{% trans "Themes" %}<br>
+<a href="{% url 'theme_normal' %}">Normal (taizé)</a><br>
+<a href="{% url 'theme_scout' %}">Scout</a><br>
 {% endblock bloc1 %}
 {% block bloc2 %}
 <img class="w-72" src="{% static "images/cARThographie.png" %}">

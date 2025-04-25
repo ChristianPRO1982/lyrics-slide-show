@@ -33,7 +33,7 @@
         const song = database[songId];
         if (song) {
             document.getElementById('song-lyrics').innerHTML = `
-                <h3 class="font-bold text-xl p-4">${song.title}</h3>
+                <h3 class="L_H3">${song.title}</h3>
                 <p>${song.lyrics}</p>
             `;
         }
@@ -57,7 +57,7 @@
 
     {% for song in animation.songs %}
         <hr>
-        <div class="mt-1 px-1 border border-pink">
+        <div class="mt-1 px-1 border L_DIV_BORDER">
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 75%;">
                     <h2 class"mb-1"><p class="font-bold">{{ song.full_title }}</p></h2>

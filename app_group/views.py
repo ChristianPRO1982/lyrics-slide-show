@@ -12,6 +12,7 @@ from app_main.utils import is_no_loader
 
 def groups(request):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     group_selected = ''
@@ -39,6 +40,7 @@ def groups(request):
         'groups': groups,
         'group_selected': group_selected,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })
 
@@ -76,6 +78,7 @@ def select_group_by_token(request, group_id, url_token):
 @login_required
 def add_group(request):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     name = ''
@@ -115,6 +118,7 @@ def add_group(request):
         'username': username,
         'valided': valided,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })
 
@@ -122,6 +126,7 @@ def add_group(request):
 @login_required
 def modify_group(request, group_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     url_token = ''
@@ -183,6 +188,7 @@ def modify_group(request, group_id):
         'group_url': group_url,
         'group_url_qr': qr_code_base64,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })
 
@@ -190,6 +196,7 @@ def modify_group(request, group_id):
 @login_required
 def delete_group(request):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     group = Group.get_group_by_id(request.POST.get('group_id'))
@@ -203,5 +210,6 @@ def delete_group(request):
     return render(request, 'app_group/modify_group.html', {
         'group': group,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })

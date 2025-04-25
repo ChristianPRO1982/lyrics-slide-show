@@ -7,6 +7,7 @@ from app_main.utils import is_moderator, is_no_loader
 
 def songs(request):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     try:
@@ -42,12 +43,14 @@ def songs(request):
         'description': request.POST.get('txt_new_description', ''),
         'moderator': moderator,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })
 
 
 def modify_song(request, song_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
@@ -135,12 +138,14 @@ def modify_song(request, song_id):
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 
 
 def delete_song(request, song_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
@@ -159,6 +164,7 @@ def delete_song(request, song_id):
 
 def goto_song(request, song_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
@@ -176,12 +182,14 @@ def goto_song(request, song_id):
         'song_lyrics': song_lyrics,
         'moderator': moderator,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 
 
 def moderator_song(request, song_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
@@ -204,5 +212,6 @@ def moderator_song(request, song_id):
         'song_lyrics': song_lyrics,
         'valided': valided,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })

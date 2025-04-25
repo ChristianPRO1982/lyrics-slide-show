@@ -5,7 +5,7 @@
 {% block title %}{% trans "groups_list" %}{% endblock title %}
 {% block title_h1 %}{% trans "groups_list" %}{% endblock title_h1 %}
 {% block bloc1 %}
-{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% if group_selected %}<span class="L_GROUP_SELECTED">{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}</span>{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <form method="post" action="{% url "add_group" %}">
@@ -30,7 +30,7 @@
             {% endif %}
         {% endif %}
         <span>{{ group.info }}</span>
-        <span>- <a class="hover:underline" href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a class="hover:underline" href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
+        <span>- <a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
     </li>
 {% endfor %}
 </ul>

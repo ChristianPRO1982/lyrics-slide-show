@@ -7,4 +7,6 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('kill_loader', views.kill_loader, name='kill_loader'),
     path('loader', views.loader, name='loader'),
+    path('theme_normal', views.theme_normal, name='theme_normal'),
+    path('theme_scout', views.theme_scout, name='theme_scout'),
 ]
