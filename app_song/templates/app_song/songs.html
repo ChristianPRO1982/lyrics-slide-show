@@ -18,7 +18,7 @@
     </thead>
     <tbody>
         {% for song in songs %}
-        <tr class="border border-pink-800">
+        <tr class="border L_TABLE_TR">
             <td><a href="{% url 'goto_song' song.song_id %}">{{ song.full_title }}</a></td>
             <td>
                 {{ song.description|slice:":100" }}
@@ -52,7 +52,7 @@
         </tr>
     </tfoot>
     {% if form.errors.title %}
-        <div class="error">
+        <div class="L_ERROR">
             <p>{{ form.errors.title }}</p>
         </div>
     {% endif %}

@@ -1,0 +1,117 @@
+body {
+    background-color: #fef8f4;
+    color: #5a2b1f;
+  }
+  
+  .topbar, .footer {
+    background-color: #8b1e1e;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .H1 {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #6b1f1f;
+    margin-bottom: 1rem;
+  }
+  
+  .H2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: #8b1e1e;
+    margin-bottom: 0.75rem;
+  }
+  
+  .H3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #8b1e1e;
+    margin-bottom: 0.5rem;
+  }
+  
+  .H4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #8b1e1e;
+    margin-bottom: 0.25rem;
+  }
+  
+  .HR {
+    border-top: 1px solid #8b1e1e;
+    margin: 1.5rem 0;
+  }
+  
+  .card {
+    background-color: #fff4f0;
+    border: 1px solid #8b1e1e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  
+  .input-text, .textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #8b1e1e;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    color: #5a2b1f;
+  }
+  
+  .btn {
+    background-color: #8b1e1e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #6e1717;
+  }
+  
+  /* MODE DARK */
+  
+  .dark body {
+    background-color: #1c1a1a;
+    color: #ffece3;
+  }
+  
+  .dark .topbar, .dark .footer {
+    background-color: #290a0a;
+    color: #ffece3;
+  }
+  
+  .dark .H1, .dark .H2, .dark .H3, .dark .H4 {
+    color: #f7bdb1;
+  }
+  
+  .dark .HR {
+    border-top: 1px solid #f7bdb1;
+  }
+  
+  .dark .card {
+    background-color: #2d1b1b;
+    border: 1px solid #f7bdb1;
+    color: #ffece3;
+  }
+  
+  .dark .input-text, .dark .textarea {
+    background-color: #3b2a2a;
+    border: 1px solid #f7bdb1;
+    color: #ffece3;
+  }
+  
+  .dark .btn {
+    background-color: #a83636;
+    color: white;
+  }
+  
+  .dark .btn:hover {
+    background-color: #8e2c2c;
+  }
+  

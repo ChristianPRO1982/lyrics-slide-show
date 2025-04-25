@@ -6,7 +6,7 @@
 {% block title_h1 %}{{ group.name }}{% if group.private %}{% trans "private_group" %}{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
 {% if group.token %}
-    <a class="hover:underline" href="{{ group_url }}">{% trans "group_url" %}</a>
+    <a href="{{ group_url }}">{% trans "group_url" %}</a>
     <button onclick="copyToClipboard('{{ group_url }}')">{% trans "Copy URL" %}</button>
     <script>
         function copyToClipboard(text) {
@@ -29,13 +29,13 @@
     <input type="text" name="txt_group_name" placeholder="{% trans "MANDATORY" %}" maxlength="255" value="{{ group.name }}" required /><br>
     <textarea name="txt_group_info" placeholder="{% trans "Description" %}" maxlength="255">{{ group.info }}</textarea>
     <hr>
-    <h2 class="text-xl font-bold">{% trans "Private group" %}</h2>
+    <h2 class="L_H2">{% trans "Private group" %}</h2>
     {% trans "private_info1" %}<br>
     <input class="w-4 h-4" id="box_group_private" type="checkbox" name="box_group_private" maxlength="255"{% if group.private %} checked="checked"{% endif %} />
     <label for="box_group_private">{% trans "Make the group private" %}</label>
     {% if group.private == 0 %}
         <hr>
-        <h2 class="text-xl font-bold">{% trans "Token" %}</h2>
+        <h2 class="L_H2">{% trans "Token" %}</h2>
         {% trans "token_info1" %}<br>
         <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" />
         <label for="box_group_token">{% trans "New group token" %}</label>

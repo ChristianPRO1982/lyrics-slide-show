@@ -11,6 +11,7 @@ from app_main.utils import is_no_loader
 
 def animations(request):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     group_selected = ''
@@ -50,12 +51,14 @@ def animations(request):
         'date': request.POST.get('txt_new_date', ''),
         'group_selected': group_selected,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
         })
 
 
 def modify_animation(request, animation_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     animation = None
@@ -141,12 +144,14 @@ def modify_animation(request, animation_id):
         'list_lyrics': list_lyrics,
         'group_selected': group_selected,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 
 
 def delete_animation(request, animation_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     animation = None
@@ -171,12 +176,14 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 
 
 def lyrics_slide_show(request, animation_id):
     error = ''
+    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
     animation = None
@@ -202,15 +209,6 @@ def lyrics_slide_show(request, animation_id):
         'group_selected': group_selected,
         'slides': slides,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
-    })
-
-
-def anim1(request, animation_id):
-    return render(request, 'app_animation/anim1.html', {
-        'animation_id': animation_id,
-    })
-def anim2(request, animation_id):
-    return render(request, 'app_animation/animations_old.html', {
-        'animation_id': animation_id,
     })
