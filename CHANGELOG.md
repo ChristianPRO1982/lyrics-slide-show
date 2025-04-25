@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.0...v1.1.1) (2025-04-25)
+
+
+### Bug Fixes
+
+* docker compose .env + trans Themes ([f8ba777](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f8ba7778a09c2e7d9eca908d2b5b63f863f49ff9))
+
 # [1.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.0.0...v1.1.0) (2025-04-25)
 
 
