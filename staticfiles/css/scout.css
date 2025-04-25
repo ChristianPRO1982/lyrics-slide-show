@@ -1,0 +1,213 @@
+.L_TEXT {
+    color: #1C4E4A;
+}
+.L_BG{
+    background-color: #E6F0ED;
+}
+
+a {
+    color: #795107;
+    text-decoration: underline !important;
+}
+
+a:hover {
+    color: #b3780b;
+    text-decoration: overline underline !important;
+}
+
+hr {
+    margin: 0.5rem auto !important;
+    border: 1 !important;
+    border-color: solid #54e7db !important;
+}
+
+.L_TABLE_TR {
+    background-color: #fff4f0;
+    border: 1px solid #54e7db;
+}
+
+.L_DIV_BORDER {
+    background-color: #fff4f0;
+    border: 1px solid #54e7db;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.L_GROUP_SELECTED {
+    background-color: #fff4f0;
+    border: 1px solid #54e7db;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.L_H1 {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #002C2B;
+    margin-bottom: 1rem;
+}
+
+.L_H2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: #1C4E4A;
+    margin-bottom: 0.75rem;
+}
+
+.L_H3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #1C4E4A;
+    margin-bottom: 0.5rem;
+}
+
+.L_H4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #1C4E4A;
+    margin-bottom: 0.25rem;
+}
+
+.L_ERROR {
+    color: #dd0000;
+}
+
+.L_ERROR_OTHER {
+    color: #aa0000;
+}
+
+.L_BOX_TOP {
+    color: #6b1f1f;
+    background-color: #eea78e;
+}
+
+.L_BOX_HEADER {
+    color: #54e7db;
+    background-color: #1C4E4A;
+    border: 4px solid #774205;
+}
+
+.L_BOX_FOOTER {
+    /* color: #6b1f1f; */
+    /* background-color: #eea78e; */
+    border: 0px solid #774205;
+}
+
+slide {
+    border-color: rgb(240, 23, 88);
+}
+
+active {
+    border-color: rgb(62, 4, 21);
+    border-radius: 0%;
+}
+
+@media (prefers-color-scheme: dark) {
+    .L_TEXT, .L_H2, .L_H3, .L_H4 {
+        color: #3d5a4b;
+    }
+    .L_H1 {
+        color: #85b4a4;
+    }
+    .L_BG {
+        background-color: #0B1F26;
+    }
+    a {
+        color: #aa6339;
+    }
+    a:hover {
+        color: #fd9153;
+    }
+    hr {
+        border-color: solid #3d5a4b !important;
+    }
+    .L_TABLE_TR, .L_DIV_BORDER, .L_GROUP_SELECTED {
+        background-color: #2d1b1b;
+        border: 1px solid #3d5a4b;
+        color: #3d5a4b;
+    }
+    .L_ERROR {
+        color: #bb0000;
+    }
+    .L_ERROR_OTHER {
+        color: #ee0000;
+    }
+    .slide {
+        border-color: rgb(128, 9, 45);
+    }
+    .active {
+        border-color: rgb(255, 50, 200);
+        border-radius: 0%;
+    }
+
+    .L_BOX_TOP {
+        color: #b82b08;
+        background-color: #33241e;
+    }
+    
+    .L_BOX_HEADER {
+        color: #2f7c76;
+        background-color: #02141D;
+        border: 4px solid #3a2003;
+    }
+    
+    .L_BOX_FOOTER {
+        /* color: #6b1f1f; */
+        /* background-color: #eea78e; */
+        border: 0px solid #3a2003;
+    }
+}
+
+
+/* FORMULAIRE */
+input, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #1C4E4A;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #1C4E4A;
+}
+
+input:focus, textarea:focus {
+    outline: 2px dashed #1C4E4A;
+    outline-offset: 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+    input, textarea {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    input:focus, textarea:focus {
+        outline: 2px dashed #1C4E4A;
+        outline-offset: 1px;
+    }
+}
+/* FIN FORMULAIRE */
+
+
+/* INPUT SUBMIT */
+input[type=submit] {
+    background-color: #1C4E4A;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #14403D;
+}
+
+@media (prefers-color-scheme: dark) {
+    input[type=submit] {
+        color: #D2F5E3;
+        background-color: #143835;
+    }
+}
+/* FIN INPUT SUBMIT */
