@@ -4,57 +4,70 @@
 
 {% block title %}{% trans "songs_list" %}{% endblock title %}
 {% block title_h1 %}{% trans "songs_list" %}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc1 %}
+    {% if song.status != 0 and not moderator %}
+        {% trans "contact_moderators_info_gen" %}
+    {% endif %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+<div class="sticky top-0 p-2">
+    <h3 class="L_H3">{% trans "Song research" %}</h3>
+    <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ new_song_title }}" />
+    <br><br><hr><br>
+    {% trans "✔️: Song valided" %}<br>
+    {% trans "✔️⁉️: Song valided with messages" %}
+    <br><br><hr><br>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="txt_new_title" placeholder="{% trans "new_song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /><br>
+        <input type="text" name="txt_new_description" placeholder="{% trans "description" %}" {% if description != '' %}value="{{ description }}"{% endif %} /><br>
+        <input name="btn_new_song" value="{% trans "add" %}" type="submit" />
+    </form>
+</div>
+
+<script>
+    const songs = [
+    {% for song in songs %}
+        {
+            song_id: {{ song.song_id }},
+            full_title: "{{ song.full_title }}",
+            description: "{{ song.description|escapejs }}"
+        },
+    {% endfor %}
+    ];
+  
+    const searchInput = document.getElementById('search');
+    const songList = document.getElementById('song-list');
+  
+    function updateSongList(query) {
+        songList.innerHTML = '';
+        
+        const filteredSongs = query.length >= 3
+            ? songs.filter(song => song.full_title.toLowerCase().includes(query.toLowerCase()))
+            : songs;
+        
+        filteredSongs.forEach(song => {
+            const li = document.createElement('li');
+            li.classList.add('L_LI');
+            li.innerHTML = '<a href="/songs/song/' + song.song_id + '">' + song.full_title + '</a><br>';
+            li.innerHTML += '<span title="' + song.description + '">' + txt_Description + '</span> - ';
+            li.innerHTML += '<a href="/songs/modify_song/' + song.song_id + '/">' + txt_Modify + '</a>';
+            li.innerHTML += ' - <a href="/songs/delete_song/' + song.song_id + '/">' + txt_Delete + '</a>';
+        
+            songList.appendChild(li);
+        });
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        updateSongList(e.target.value);
+    });
+    
+    updateSongList('{{ new_song_title }}');
+</script>
+{% endblock bloc2 %}
 
 {% block content %}
-<table class="table-fixed" style="width: 100%;">
-    <thead>
-        <tr>
-            <th class="w-3/6">{% trans "title" %}</th>
-            <th class="w-2/6">{% trans "description" %}</th>
-            <th class="w-1/6">{% trans "actions" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for song in songs %}
-        <tr class="border L_TABLE_TR">
-            <td><a href="{% url 'goto_song' song.song_id %}">{{ song.full_title }}</a></td>
-            <td>
-                {{ song.description|slice:":100" }}
-                {% if song.description|length > 100 %} [...] {% endif %}
-            </td>
-            <td>
-                {% if song.status == 0 or moderator %}
-                    <a href="{% url 'modify_song' song.song_id %}">{% trans "update" %}</a> |
-                    <a href="{% url 'delete_song' song.song_id %}">{% trans "delete" %}</a>
-                {% else %}
-                    <a href="{% url 'goto_song' song.song_id %}">{% trans "Go to" %}</a> |
-                    <a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <form method="post">
-                {% csrf_token %}
-                <td><input type="text" name="txt_new_title" placeholder="{% trans "new_song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /></td>
-                <td><input type="text" name="txt_new_description" placeholder="{% trans "description" %}" {% if description != '' %}value="{{ description }}"{% endif %} /></td>
-                <td><input name="btn_new_song" value="{% trans "add" %}" type="submit" /></td>
-            </form>
-        </tr>
-    </tbody>
-    <tfoot>
-        <tr>
-            <th class="w-3/5">{% trans "title" %}</th>
-            <th>{% trans "description" %}</th>
-            <th>{% trans "actions" %}</th>
-        </tr>
-    </tfoot>
-    {% if form.errors.title %}
-        <div class="L_ERROR">
-            <p>{{ form.errors.title }}</p>
-        </div>
-    {% endif %}
-</table>
+<ul id="song-list">
+    <!-- Songs will be dynamically filtered here -->
+</ul>
 {% endblock content %}

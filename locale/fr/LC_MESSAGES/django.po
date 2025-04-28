@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-25 14:31+0200\n"
+"POT-Creation-Date: 2025-04-28 12:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,9 +110,8 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:85
-#: app_animation/templates/app_animation/modify_animation.html:10
-#: app_song/templates/app_song/songs.html:16
-#: app_song/templates/app_song/songs.html:51
+#: app_animation/templates/app_animation/modify_animation.html:10 chris/songs
+#: copy.html:19 copy.html:49
 msgid "actions"
 msgstr "Actions"
 
@@ -210,6 +209,7 @@ msgid "Go to the song"
 msgstr "Aller vers le chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:135
+#: app_song/templates/app_song/songs.html:14
 msgid "Song research"
 msgstr "Recherche de chant"
 
@@ -284,7 +284,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:43
+#: app_song/templates/app_song/songs.html:24
 msgid "add"
 msgstr "ajouter"
 
@@ -426,26 +426,22 @@ msgstr "Annuler"
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
 
-#: app_song/templates/app_song/goto_song.html:14
-#: app_song/templates/app_song/songs.html:29
+#: app_song/templates/app_song/goto_song.html:13 chris/songs copy.html:32
 msgid "update"
 msgstr "Modifier"
 
-#: app_song/templates/app_song/goto_song.html:15
-#: app_song/templates/app_song/modify_song.html:128
-#: app_song/templates/app_song/songs.html:30
+#: app_song/templates/app_song/goto_song.html:14
+#: app_song/templates/app_song/modify_song.html:128 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/goto_song.html:17
-#: app_song/templates/app_song/songs.html:33
+#: app_song/templates/app_song/goto_song.html:16 chris/songs copy.html:36
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
 "chant"
 
-#: app_song/templates/app_song/goto_song.html:17
-#: app_song/templates/app_song/songs.html:33
+#: app_song/templates/app_song/goto_song.html:16 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -488,9 +484,8 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chanson validée"
 
-#: app_song/templates/app_song/modify_song.html:53
-#: app_song/templates/app_song/songs.html:14
-#: app_song/templates/app_song/songs.html:49
+#: app_song/templates/app_song/modify_song.html:53 chris/songs copy.html:17
+#: copy.html:47
 msgid "title"
 msgstr "Titre"
 
@@ -499,9 +494,8 @@ msgid "subtitle"
 msgstr "Sous-titre"
 
 #: app_song/templates/app_song/modify_song.html:61
-#: app_song/templates/app_song/songs.html:15
-#: app_song/templates/app_song/songs.html:42
-#: app_song/templates/app_song/songs.html:50
+#: app_song/templates/app_song/songs.html:23 chris/songs copy.html:18
+#: copy.html:48
 msgid "description"
 msgstr "Description"
 
@@ -536,17 +530,33 @@ msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6
+#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
-#: app_song/templates/app_song/songs.html:32
-msgid "Go to"
-msgstr "Voir"
+#: app_song/templates/app_song/songs.html:9
+msgid "contact_moderators_info_gen"
+msgstr "Contacter les modérateurs pour indiquer une modification à apporter sur un chant. Vous trouverer un lien vers le formulaire sur la page du chant."
 
-#: app_song/templates/app_song/songs.html:41
+#: app_song/templates/app_song/songs.html:15
+msgid "Minimum 3 characters"
+msgstr "Minimum 3 caractères"
+
+#: app_song/templates/app_song/songs.html:17
+msgid "✔️: Song valided"
+msgstr "✔️ : Chant validé"
+
+#: app_song/templates/app_song/songs.html:18
+msgid "✔️⁉️: Song valided with messages"
+msgstr "✔️⁉️ : Chant validé avec des messages"
+
+#: app_song/templates/app_song/songs.html:22
 msgid "new_song"
 msgstr "Nouveau chant"
+
+#: chris/songs copy.html:35
+msgid "Go to"
+msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35

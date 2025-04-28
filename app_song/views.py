@@ -9,6 +9,7 @@ def songs(request):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+    new_song_title = '';
 
     try:
         if request.session['error']:
@@ -42,6 +43,7 @@ def songs(request):
         'title': request.POST.get('txt_new_title', ''),
         'description': request.POST.get('txt_new_description', ''),
         'moderator': moderator,
+        'new_song_title': new_song_title,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -158,6 +160,7 @@ def delete_song(request, song_id):
     return render(request, 'app_song/delete_song.html', {
         'song': song,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 

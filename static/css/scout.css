@@ -34,6 +34,14 @@ hr {
     border: 1px solid #54e7db;
 }
 
+.L_LI {
+    background-color: #fff4f0;
+    border: 1px solid #54e7db;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 0;
+}
+
 .L_DIV_BORDER {
     background-color: #fff4f0;
     border: 1px solid #54e7db;
@@ -132,6 +140,11 @@ active {
         border-color: solid #3d5a4b !important;
     }
     .L_TABLE_TR, .L_DIV_BORDER, .L_GROUP_SELECTED {
+        background-color: #2d1b1b;
+        border: 1px solid #3d5a4b;
+        color: #3d5a4b;
+    }
+    .L_LI {
         background-color: #2d1b1b;
         border: 1px solid #3d5a4b;
         color: #3d5a4b;
