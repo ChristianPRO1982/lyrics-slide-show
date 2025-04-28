@@ -7,12 +7,20 @@
 
 a {
     color: #795107;
-    text-decoration: underline !important;
+    text-decoration: underline dotted !important;
 }
 
 a:hover {
     color: #b3780b;
-    text-decoration: overline underline !important;
+    text-decoration: underline !important;
+}
+
+a.NAV {
+    text-decoration: none !important;
+}
+
+a.NAV:hover {
+    text-decoration: underline !important;
 }
 
 hr {
