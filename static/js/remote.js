@@ -1,11 +1,3 @@
-// TRANSLATION
-const pageLanguage = document.documentElement.lang || 'fr';
-if (pageLanguage.toLowerCase() == 'fr-fr') {
-    txt_fullscreen = 'APPUYEZ SUR F11 SUR CETTE ÉCRAN';
-} else {
-    txt_fullscreen = 'PRESS F11 ON THIS SCREEN';
-}
-
 document.getElementById('openDisplayWindow').addEventListener('click', () => {
     displayWindow = window.open('', 'SlideDisplay', 'width=800,height=600');
     displayWindow.document.write(`
