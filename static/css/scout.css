@@ -23,6 +23,10 @@ a.NAV:hover {
     text-decoration: underline !important;
 }
 
+.L_LIKE_A {
+    text-decoration: underline dotted !important;
+}
+
 hr {
     margin: 0.5rem auto !important;
     border: 1 !important;

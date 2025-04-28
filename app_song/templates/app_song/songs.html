@@ -31,7 +31,8 @@
         {
             song_id: {{ song.song_id }},
             full_title: "{{ song.full_title }}",
-            description: "{{ song.description|escapejs }}"
+            description: "{{ song.description|escapejs }}",
+            status: {{ song.status }}
         },
     {% endfor %}
     ];
@@ -50,9 +51,13 @@
             const li = document.createElement('li');
             li.classList.add('L_LI');
             li.innerHTML = '<a href="/songs/song/' + song.song_id + '">' + song.full_title + '</a><br>';
-            li.innerHTML += '<span title="' + song.description + '">' + txt_Description + '</span> - ';
-            li.innerHTML += '<a href="/songs/modify_song/' + song.song_id + '/">' + txt_Modify + '</a>';
-            li.innerHTML += ' - <a href="/songs/delete_song/' + song.song_id + '/">' + txt_Delete + '</a>';
+            li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + '</span> - ';
+            if (song.status != 0) {
+                li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';
+            } else {
+                li.innerHTML += '<a href="/songs/modify_song/' + song.song_id + '/">' + txt_Modify + '</a>';
+                li.innerHTML += ' - <a href="/songs/delete_song/' + song.song_id + '/">' + txt_Delete + '</a>';
+            }
         
             songList.appendChild(li);
         });
