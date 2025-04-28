@@ -31,6 +31,8 @@ def songs(request):
                            )
             if not new_song.save():
                 error = '[ERR12]'
+            else:
+                new_song_title = new_song.title
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
             request.POST['txt_new_description'] = ''
