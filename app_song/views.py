@@ -151,6 +151,10 @@ def delete_song(request, song_id):
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
+    moderator = is_moderator(request)
+    if song.status == 1 and not moderator:
+        request.session['error'] = '[ERR18]'
+        return redirect('songs')
 
     if request.method == 'POST':
         if 'btn_delete' in request.POST:

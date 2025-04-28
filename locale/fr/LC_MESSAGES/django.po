@@ -683,7 +683,7 @@ msgstr ""
 msgid "ERR13"
 msgstr ""
 "[ERR13] Impossible d'enregistrer ce chant, il est peut-être “validé” (marqué "
-"“✔️”). Contactez un modérateur ou un administrateur du site."
+"“✔️”). Contactez un modérateur."
 
 #: templates/base.html:75
 msgid "ERR14"
@@ -708,7 +708,7 @@ msgstr ""
 
 #: templates/base.html:83
 msgid "ERR18"
-msgstr ""
+msgstr "Ce chant est au statut “validé” (marqué “✔️”). Contactez un modérateur."
 
 #: templates/base.html:85
 msgid "ERR19"
