@@ -1,0 +1,27 @@
+chris/
+
+# Fichiers sensibles
+.env
+*.pem
+*.key
+*.crt
+
+# Git
+.git
+.gitignore
+
+# Environnements virtuels / dépendances
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+node_modules/
+
+# Logs
+*.log
+
+# Autres
+Dockerfile
+docker-compose.yml
