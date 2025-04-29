@@ -7,15 +7,16 @@
 {% block bloc1 %}
     {% if song.status != 0 and not moderator %}
         {% trans "contact_moderators_info_gen" %}
+        <br><br><hr><br>
     {% endif %}
+    {% trans "✔️: Song valided" %}<br>
+    {% trans "✔️⁉️: Song valided with messages" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="sticky top-0 p-2">
+    <a name="search"></a>
     <h3 class="L_H3">{% trans "Song research" %}</h3>
     <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ new_song_title }}" />
-    <br><br><hr><br>
-    {% trans "✔️: Song valided" %}<br>
-    {% trans "✔️⁉️: Song valided with messages" %}
     <br><br><hr><br>
     <form method="post">
         {% csrf_token %}
@@ -69,6 +70,9 @@
     
     updateSongList('{{ new_song_title }}');
 </script>
+<div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+    <a href="#search" class="text-3xl">🔎</a>
+</div>
 {% endblock bloc2 %}
 
 {% block content %}
