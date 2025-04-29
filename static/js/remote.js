@@ -208,6 +208,9 @@ function navSongs(index) {
         navNextSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].next_song_full_title + '</span>';
     }
 
+    let currentSongTitleDiv = document.getElementById('current_song_title');
+    currentSongTitleDiv.textContent = songs[index].song_full_title;
+
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
     current_slide = -1;
