@@ -270,3 +270,75 @@ function disChoruses(change = false) {
         }
     }
 }
+
+document.addEventListener('keydown', (event) => {
+    // alert(event.key);
+
+    // BLACK MODE \\
+    if (event.key.toLowerCase() === 'escape') {
+        blackMode();
+    }
+    if (event.key.toLowerCase() === 'b') {
+        blackMode();
+    }
+    if (event.key.toLowerCase() === 'arrowup') {
+        blackMode();
+    }
+
+    // NEXT SLIDE \\
+    if (event.key.toLowerCase() === 'arrowdown') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === 's') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === 'v') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === ' ') {
+        navNextSlide();
+    }
+
+    // CHORUS \\
+    if (event.key.toLowerCase() === 'c') {
+        navChorus();
+    }
+    if (event.key.toLowerCase() === 'r') {
+        navChorus();
+    }
+
+    // PREVIOUS SONG \\
+    if (event.key.toLowerCase() === 'arrowleft') {
+        navPreviousSong();
+    }
+    if (event.key.toLowerCase() === 'p') {
+        navPreviousSong();
+    }
+
+    // NEXT SONG \\
+    if (event.key.toLowerCase() === 'arrowright') {
+        navNextSong();
+    }
+    if (event.key.toLowerCase() === 'enter') {
+        navNextSong();
+    }
+    if (event.key.toLowerCase() === 'n') {
+        navNextSong();
+    }
+
+    // OPTIONS \\
+    // display choruses
+    if (event.key.toLowerCase() === 'a') {
+        disChoruses(true);
+    }
+    if (event.key.toLowerCase() === 'd') {
+        disChoruses(true);
+    }
+    // undisplay choruses
+    if (event.key.toLowerCase() === 'm') {
+        disChoruses(false);
+    }
+    if (event.key.toLowerCase() === 'u') {
+        disChoruses(false);
+    }
+});

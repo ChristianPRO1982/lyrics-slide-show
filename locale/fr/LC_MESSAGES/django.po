@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-29 09:37+0200\n"
+"POT-Creation-Date: 2025-04-29 10:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,33 +120,37 @@ msgstr "Actions"
 msgid "modify"
 msgstr "modifier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:91
+#: app_animation/templates/app_animation/lyrics_slide_show.html:88
+msgid "help_buttons"
+msgstr "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Slide suivante : Espace / S / V / ⬆️<br>Refrain : R / C<br>Chant précédent : P / ⬅️<br>Chant suivant : Entrée / N / ➡️<br>Afficher les refrains : A / D<br>Masquer les refrains : M / U<br><br>en majuscule ou minuscule"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:92
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:92
+#: app_animation/templates/app_animation/lyrics_slide_show.html:93
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:104
+#: app_animation/templates/app_animation/lyrics_slide_show.html:105
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:107
+#: app_animation/templates/app_animation/lyrics_slide_show.html:108
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:113
+#: app_animation/templates/app_animation/lyrics_slide_show.html:114
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:123
+#: app_animation/templates/app_animation/lyrics_slide_show.html:124
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:150
+#: app_animation/templates/app_animation/lyrics_slide_show.html:151
 msgid "chorus_prefix"
 msgstr "R- "
 
@@ -209,7 +213,7 @@ msgid "Go to the song"
 msgstr "Aller vers le chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:135
-#: app_song/templates/app_song/songs.html:14
+#: app_song/templates/app_song/songs.html:18
 msgid "Song research"
 msgstr "Recherche de chant"
 
@@ -284,7 +288,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:24
+#: app_song/templates/app_song/songs.html:25
 msgid "add"
 msgstr "ajouter"
 
@@ -444,7 +448,7 @@ msgstr ""
 
 #: app_song/templates/app_song/goto_song.html:16
 #: app_song/templates/app_song/modify_song.html:38
-#: app_song/templates/app_song/songs.html:56 chris/songs copy.html:36
+#: app_song/templates/app_song/songs.html:57 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -497,7 +501,7 @@ msgid "subtitle"
 msgstr "Sous-titre"
 
 #: app_song/templates/app_song/modify_song.html:64
-#: app_song/templates/app_song/songs.html:23 chris/songs copy.html:18
+#: app_song/templates/app_song/songs.html:24 chris/songs copy.html:18
 #: copy.html:48
 msgid "description"
 msgstr "Description"
@@ -543,19 +547,19 @@ msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter sur un "
 "chant. Vous trouverer un lien vers le formulaire sur la page du chant."
 
-#: app_song/templates/app_song/songs.html:15
-msgid "Minimum 3 characters"
-msgstr "Minimum 3 caractères"
-
-#: app_song/templates/app_song/songs.html:17
+#: app_song/templates/app_song/songs.html:12
 msgid "✔️: Song valided"
 msgstr "✔️ : Chant validé"
 
-#: app_song/templates/app_song/songs.html:18
+#: app_song/templates/app_song/songs.html:13
 msgid "✔️⁉️: Song valided with messages"
 msgstr "✔️⁉️ : Chant validé avec des messages"
 
-#: app_song/templates/app_song/songs.html:22
+#: app_song/templates/app_song/songs.html:19
+msgid "Minimum 3 characters"
+msgstr "Minimum 3 caractères"
+
+#: app_song/templates/app_song/songs.html:23
 msgid "new_song"
 msgstr "Nouveau chant"
 
