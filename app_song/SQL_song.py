@@ -33,22 +33,22 @@ class Song:
     @staticmethod
     def get_all_songs():
         request = """
-  SELECT *, CONCAT(
-                 CASE
-                     WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
-                     ELSE title
-                 END,
-                 CASE
-                     WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN status = 1 THEN ' ✔️'
-                     WHEN status = 2 THEN ' ✔️⁉️'
-                     ELSE ''
-                 END) AS full_title
+  SELECT *, CONCAT(title,
+                   CASE
+                       WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                       ELSE ''
+                   END,
+                   CASE
+                       WHEN artist != '' THEN CONCAT(' [', artist, ']')
+                       ELSE title
+                   END,
+                   CASE
+                       WHEN status = 1 THEN ' ✔️'
+                       WHEN status = 2 THEN ' ✔️⁉️'
+                       ELSE ''
+                   END) AS full_title
     FROM l_songs
-ORDER BY artist, title, sub_title
+ORDER BY title, sub_title
 """
         params = []
 
@@ -92,14 +92,14 @@ ORDER BY artist, title, sub_title
     def get_song_by_id(cls, song_id):
         with connection.cursor() as cursor:
             request = """
-SELECT *, CONCAT(
-                 CASE
-                     WHEN artist != '' THEN CONCAT('[', artist, '] - ', title)
-                     ELSE title
-                 END,
+SELECT *, CONCAT(title,
                  CASE
                      WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
                      ELSE ''
+                 END,
+                 CASE
+                     WHEN artist != '' THEN CONCAT(' [', artist, ']')
+                     ELSE title
                  END,
                  CASE
                      WHEN status = 1 THEN ' ✔️'
