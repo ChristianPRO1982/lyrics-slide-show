@@ -225,12 +225,16 @@ function navPreviousSong() {
     if (songs[songIdToIndex(current_song_id)].previous_song_id != '') {
         navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].previous_song_id));
     }
+    targetElement = document.getElementById("song_" + current_song_id);
+    targetElement.scrollIntoView();
 }
 
 function navNextSong() {
     if (songs[songIdToIndex(current_song_id)].next_song_id != '') {
         navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].next_song_id));
     }
+    targetElement = document.getElementById("song_" + current_song_id);
+    targetElement.scrollIntoView();
 }
 
 function songIdToIndex(song_id) {
