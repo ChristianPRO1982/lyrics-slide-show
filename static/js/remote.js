@@ -327,18 +327,58 @@ document.addEventListener('keydown', (event) => {
     }
 
     // OPTIONS \\
-    // display choruses
+    // display-undisplay choruses
     if (event.key.toLowerCase() === 'a') {
         disChoruses(true);
     }
     if (event.key.toLowerCase() === 'd') {
         disChoruses(true);
     }
-    // undisplay choruses
-    if (event.key.toLowerCase() === 'm') {
-        disChoruses(false);
-    }
-    if (event.key.toLowerCase() === 'u') {
-        disChoruses(false);
+    // scrollable
+    if (event.key.toLowerCase() === 'l') {
+        scrollable();
     }
 });
+
+let blockScrollKeys = true;
+
+function handleKeydown(event) {
+    const keysToBlock = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
+
+    if (blockScrollKeys && keysToBlock.includes(event.key)) {
+        event.preventDefault();
+    }
+}
+
+function enableScrollKeyBlocking() {
+    blockScrollKeys = true;
+}
+
+function disableScrollKeyBlocking() {
+    blockScrollKeys = false;
+}
+
+function scrollable() {
+    if (blockScrollKeys) {
+        blockScrollKeys = false;
+    } else {
+        blockScrollKeys = true;
+    }
+
+    const scrollableDiv = document.getElementById('scrollable');
+    if (scrollableDiv) {
+        scrollableDiv.innerHTML = '';
+    }
+
+    if (blockScrollKeys == 1) {
+        if (scrollableDiv) {
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🧱</div>';
+        }
+    } else {
+        if (scrollableDiv) {
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">↕️</div>';
+        }
+    }
+}
+
+window.addEventListener('keydown', handleKeydown, { passive: false });

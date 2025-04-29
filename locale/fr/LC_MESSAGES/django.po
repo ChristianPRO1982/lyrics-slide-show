@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-29 10:43+0200\n"
+"POT-Creation-Date: 2025-04-29 15:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,7 +122,11 @@ msgstr "modifier"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:88
 msgid "help_buttons"
-msgstr "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Slide suivante : Espace / S / V / ⬆️<br>Refrain : R / C<br>Chant précédent : P / ⬅️<br>Chant suivant : Entrée / N / ➡️<br>Afficher les refrains : A / D<br>Masquer les refrains : M / U<br><br>en majuscule ou minuscule"
+msgstr ""
+"Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Slide suivante : "
+"Espace / S / V / ⬆️<br>Refrain : R / C<br>Chant précédent : P / ⬅️<br>Chant "
+"suivant : Entrée / N / ➡️<br>Afficher-masquer les refrains : A / D<br>"
+"Scroll ↕️ ou 🧱: L<br><br>en majuscule ou minuscule"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:92
 msgid "Open a second screen"
@@ -150,7 +154,7 @@ msgstr "Chants"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:151
+#: app_animation/templates/app_animation/lyrics_slide_show.html:153
 msgid "chorus_prefix"
 msgstr "R- "
 

@@ -122,6 +122,7 @@
     <p>{% trans "Options" %}</p>
     <div class="flex">
         <div id="dis_choruses" onClick="disChoruses(true);" class="flex w-1/2"></div>
+        <div id="scrollable" onClick="scrollable();" class="flex w-1/2"></div>
     </div>
 </div>
 <script>
@@ -129,6 +130,7 @@
     navSongs(songIdToIndex(0));
     display_choruses = 0;
     disChoruses(true);
+    scrollable();
 </script>
 {% endblock bloc2 %}
 
