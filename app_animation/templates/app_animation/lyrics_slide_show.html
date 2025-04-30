@@ -92,7 +92,7 @@
 </div>
 <div class="flex items-center space-x-2">
     <img src="{% static 'images/k1-space-2.png' %}" title="{% trans "Space bar" %}" class="w-6 h-6">
-    <img src="{% static 'images/k2-B.png' %}" title="B" class="w-6 h-6">
+    <img src="{% static 'images/k2-S.png' %}" title="S" class="w-6 h-6">
     <img src="{% static 'images/k2-V.png' %}" title="V" class="w-6 h-6">
     <img src="{% static 'images/k1-arrowDown.png' %}" title="⬇️" class="w-6 h-6">
     &nbsp;&nbsp;: {% trans "Next slide" %}
@@ -138,7 +138,7 @@
         <span class="text-4xl">🖥️</span>
     </div>
     <div onClick="blackMode();"
-        class="slide text-center">
+        class="text-center">
         {% trans "BLACK MODE" %}
     </div>
     <br>
@@ -146,6 +146,10 @@
     <div id="nav_slide" class="flex">
         <div id="nav_next_slide" onClick="navNextSlide();" class="flex w-1/2"></div>
         <div id="nav_chorus" onClick="navChorus();" class="flex w-1/2"></div>
+    </div>
+    <div id="nav_slide" class="flex">
+        <div onClick="navNextSlide();" class="flex w-1/2">{% trans "Next slide" %}</div>
+        <div onClick="navChorus();" class="flex w-1/2">{% trans "Chorus" %}</div>
     </div>
     <br>
     <p>{% trans "Songs" %}<br><span class="italic" id="current_song_title">coco</span></p>
@@ -187,7 +191,7 @@
         navSongs(songIdToIndex({{ slide.animation_song_id }}));
         {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
         class="slide {% if slide.chorus %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
-        {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
+        {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:100 }}
     </div>
 {% endfor %}
 </div>
