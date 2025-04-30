@@ -83,7 +83,46 @@
 {% trans "actions" %}<br>
 <a href="{% url "modify_animation" animation.animation_id %}">{% trans "modify" %}</a>
 <hr>
-{% trans "help_buttons" %}
+{% trans "Shortcuts:" %}
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k1-esc.png' %}" title="Esc" class="w-6 h-6">
+    <img src="{% static 'images/k2-B.png' %}" title="B" class="w-6 h-6">
+    <img src="{% static 'images/k1-arrowUp.png' %}" title="⬆️" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "BLACK MODE" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k1-space-2.png' %}" title="{% trans "Space bar" %}" class="w-6 h-6">
+    <img src="{% static 'images/k2-B.png' %}" title="B" class="w-6 h-6">
+    <img src="{% static 'images/k2-V.png' %}" title="V" class="w-6 h-6">
+    <img src="{% static 'images/k1-arrowDown.png' %}" title="⬇️" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Next slide" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k2-R.png' %}" title="R" class="w-6 h-6">
+    <img src="{% static 'images/k2-C.png' %}" title="C" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Chorus" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k2-P.png' %}" title="P" class="w-6 h-6">
+    <img src="{% static 'images/k1-arrowLeft.png' %}" title="⬅️" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Previous song" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k1-enter.png' %}" title="⏎" class="w-6 h-6">
+    <img src="{% static 'images/k2-N.png' %}" title="N" class="w-6 h-6">
+    <img src="{% static 'images/k1-arrowRight.png' %}" title="➡️" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Next song" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k2-A.png' %}" title="A" class="w-6 h-6">
+    <img src="{% static 'images/k2-D.png' %}" title="D" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Display/hide choruses" %}
+</div>
+<div class="flex items-center space-x-2">
+    <img src="{% static 'images/k2-L.png' %}" title="L" class="w-6 h-6">
+    &nbsp;&nbsp;: {% trans "Scroll on ↕️ or not 🧱" %}
+</div><br>
+{% trans "in upper or lower case" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="controls">
