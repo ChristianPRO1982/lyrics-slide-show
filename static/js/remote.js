@@ -132,7 +132,7 @@ function navNextSlide() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
 }
 
@@ -144,7 +144,7 @@ function navNextSlideInit() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
 }
 
@@ -156,7 +156,7 @@ function navChorus() {
     
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
     }
     
     showSlide(chorus[current_chorus_slide], false);
@@ -173,7 +173,7 @@ function navChorusInit() {
 
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
     }
 }
 
@@ -199,12 +199,12 @@ function navSongs(index) {
     
     if (navPreviousSongDiv) {
         navPreviousSongDiv.innerHTML = '<a href="#song_' + songs[index].previous_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
         navPreviousSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].previous_song_full_title + '</span>';
     }
     if (navNextSongDiv) {
         navNextSongDiv.innerHTML = '<a href="#song_' + songs[index].next_song_id +
-        '" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
         navNextSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].next_song_full_title + '</span>';
     }
 
