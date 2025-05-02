@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 11:46+0200\n"
+"POT-Creation-Date: 2025-05-02 10:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,7 @@ msgstr "Liste des animations"
 #: app_animation/templates/app_animation/delete_animation.html:8
 #: app_animation/templates/app_animation/lyrics_slide_show.html:83
 #: app_animation/templates/app_animation/modify_animation.html:8
+#: app_animation/templates/app_animation/modify_animation_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected1"
 msgstr "[ "
@@ -35,6 +36,7 @@ msgstr "[ "
 #: app_animation/templates/app_animation/delete_animation.html:8
 #: app_animation/templates/app_animation/lyrics_slide_show.html:83
 #: app_animation/templates/app_animation/modify_animation.html:8
+#: app_animation/templates/app_animation/modify_animation_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected2"
 msgstr " ]"
@@ -43,6 +45,7 @@ msgstr " ]"
 #: app_animation/templates/app_animation/delete_animation.html:8
 #: app_animation/templates/app_animation/lyrics_slide_show.html:83
 #: app_animation/templates/app_animation/modify_animation.html:8
+#: app_animation/templates/app_animation/modify_animation_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "No group selected"
 msgstr "Aucun groupe sélectionné"
@@ -78,8 +81,10 @@ msgid "Update"
 msgstr "Modifier"
 
 #: app_animation/templates/app_animation/animations.html:33
-#: app_animation/templates/app_animation/delete_animation.html:18
-#: app_animation/templates/app_animation/modify_animation.html:116
+#: app_animation/templates/app_animation/delete_animation.html:21
+#: app_animation/templates/app_animation/modify_animation.html:115
+#: app_animation/templates/app_animation/modify_animation_colors.html:21
+#: app_animation/templates/common/actions.html:8
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr "Supprimer"
@@ -96,179 +101,187 @@ msgstr "Ajouter"
 
 #: app_animation/templates/app_animation/delete_animation.html:5
 #: app_animation/templates/app_animation/delete_animation.html:6
+#: app_animation/templates/app_animation/modify_animation_colors.html:5
+#: app_animation/templates/app_animation/modify_animation_colors.html:6
 msgid "confirm_delete_animation_title"
 msgstr "Confirmer la suppression de l'animation"
 
-#: app_animation/templates/app_animation/delete_animation.html:13
+#: app_animation/templates/app_animation/delete_animation.html:16
+#: app_animation/templates/app_animation/modify_animation_colors.html:16
 msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
-#: app_animation/templates/app_animation/delete_animation.html:19
-#: app_animation/templates/app_animation/modify_animation.html:148
+#: app_animation/templates/app_animation/delete_animation.html:22
+#: app_animation/templates/app_animation/modify_animation.html:147
+#: app_animation/templates/app_animation/modify_animation_colors.html:22
 #: app_song/templates/app_song/moderator_song.html:30
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:85
-#: app_animation/templates/app_animation/modify_animation.html:10 chris/songs
-#: copy.html:19 copy.html:49
-msgid "actions"
-msgstr "Actions"
-
-#: app_animation/templates/app_animation/lyrics_slide_show.html:86
-#: app_group/templates/app_group/groups.html:33
-msgid "modify"
-msgstr "modifier"
-
-#: app_animation/templates/app_animation/lyrics_slide_show.html:88
+#: app_animation/templates/app_animation/lyrics_slide_show.html:87
 msgid "Shortcuts:"
 msgstr "Raccourcis clavier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:93
-#: app_animation/templates/app_animation/lyrics_slide_show.html:146
+#: app_animation/templates/app_animation/lyrics_slide_show.html:92
+#: app_animation/templates/app_animation/lyrics_slide_show.html:143
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:96
+#: app_animation/templates/app_animation/lyrics_slide_show.html:95
 msgid "Space bar"
 msgstr "Barre espace"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:100
+#: app_animation/templates/app_animation/lyrics_slide_show.html:99
+#: app_animation/templates/app_animation/lyrics_slide_show.html:152
 msgid "Next slide"
 msgstr "Slide suivante"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:105
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
+#: app_animation/templates/app_animation/lyrics_slide_show.html:153
 msgid "Chorus"
 msgstr "Refrain"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:110
+#: app_animation/templates/app_animation/lyrics_slide_show.html:109
 msgid "Previous song"
 msgstr "Chant précédent"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:116
+#: app_animation/templates/app_animation/lyrics_slide_show.html:115
 msgid "Next song"
 msgstr "Chant suivant"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:121
+#: app_animation/templates/app_animation/lyrics_slide_show.html:120
 msgid "Display/hide choruses"
 msgstr "Afficher/masquer les refrains"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:125
+#: app_animation/templates/app_animation/lyrics_slide_show.html:124
 msgid "Scroll on ↕️ or not 🧱"
 msgstr "Scroll activé ↕️ ou bloqué 🧱"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:127
+#: app_animation/templates/app_animation/lyrics_slide_show.html:126
 msgid "in upper or lower case"
 msgstr "en majuscule ou minuscule"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:133
+#: app_animation/templates/app_animation/lyrics_slide_show.html:130
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:134
+#: app_animation/templates/app_animation/lyrics_slide_show.html:131
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:149
+#: app_animation/templates/app_animation/lyrics_slide_show.html:146
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:155
+#: app_animation/templates/app_animation/lyrics_slide_show.html:156
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:165
+#: app_animation/templates/app_animation/lyrics_slide_show.html:166
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:194
+#: app_animation/templates/app_animation/lyrics_slide_show.html:195
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/modify_animation.html:11
-msgid "Slide show"
-msgstr "Diaporama"
-
-#: app_animation/templates/app_animation/modify_animation.html:16
+#: app_animation/templates/app_animation/modify_animation.html:15
 msgid "Select a song to view the lyrics"
 msgstr "Sélectionnez un chant pour voir les paroles"
 
-#: app_animation/templates/app_animation/modify_animation.html:69
-#: app_animation/templates/app_animation/modify_animation.html:77
+#: app_animation/templates/app_animation/modify_animation.html:68
+#: app_animation/templates/app_animation/modify_animation.html:76
 #: app_song/templates/app_song/modify_song.html:93
 #: app_song/templates/app_song/modify_song.html:106
 #: app_song/templates/app_song/modify_song.html:120
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:91
+#: app_animation/templates/app_animation/modify_animation.html:90
 #: app_song/templates/app_song/modify_song.html:97
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:93
+#: app_animation/templates/app_animation/modify_animation.html:92
 #: app_song/templates/app_song/modify_song.html:99
 msgid "before"
 msgstr "Avant"
 
-#: app_animation/templates/app_animation/modify_animation.html:97
-#: app_animation/templates/app_animation/modify_animation.html:107
+#: app_animation/templates/app_animation/modify_animation.html:96
+#: app_animation/templates/app_animation/modify_animation.html:106
 msgid "song_num"
 msgstr "chant n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:102
+#: app_animation/templates/app_animation/modify_animation.html:101
 #: app_song/templates/app_song/modify_song.html:112
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_animation/templates/app_animation/modify_animation.html:103
+#: app_animation/templates/app_animation/modify_animation.html:102
 #: app_song/templates/app_song/modify_song.html:113
 msgid "after"
 msgstr "Après"
 
-#: app_animation/templates/app_animation/modify_animation.html:115
+#: app_animation/templates/app_animation/modify_animation.html:114
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:122
+#: app_animation/templates/app_animation/modify_animation.html:121
 msgid "See the song"
 msgstr "Voir le texte du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:125
+#: app_animation/templates/app_animation/modify_animation.html:124
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:126
+#: app_animation/templates/app_animation/modify_animation.html:125
 msgid "Go to the song"
 msgstr "Aller vers le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:135
+#: app_animation/templates/app_animation/modify_animation.html:134
 #: app_song/templates/app_song/songs.html:18
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:136
+#: app_animation/templates/app_animation/modify_animation.html:135
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:140
+#: app_animation/templates/app_animation/modify_animation.html:139
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:146
+#: app_animation/templates/app_animation/modify_animation.html:145
 #: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:143
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_animation.html:147
+#: app_animation/templates/app_animation/modify_animation.html:146
 #: app_song/templates/app_song/modify_song.html:144
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
+
+#: app_animation/templates/common/actions.html:3 chris/songs copy.html:19
+#: copy.html:49
+msgid "actions"
+msgstr "Actions"
+
+#: app_animation/templates/common/actions.html:5
+msgid "Slide show"
+msgstr "Diaporama"
+
+#: app_animation/templates/common/actions.html:6
+msgid "Modify"
+msgstr "modifier"
+
+#: app_animation/templates/common/actions.html:7
+msgid "Modify colors"
+msgstr "Modifier les courleurs"
 
 #: app_group/templates/app_group/add_group.html:5
 #: app_group/templates/app_group/delete_group.html:5
@@ -340,6 +353,10 @@ msgstr "Ce groupe est ouvert"
 #: app_group/templates/app_group/groups.html:33
 msgid "select"
 msgstr "sélectionner"
+
+#: app_group/templates/app_group/groups.html:33
+msgid "modify"
+msgstr "modifier"
 
 #: app_group/templates/app_group/modify_group.html:5
 msgid "2dotModify"
@@ -436,7 +453,7 @@ msgstr "Tableau de bord"
 msgid "Themes"
 msgstr "Thèmes"
 
-#: app_main/templates/app_main/homepage.html:20
+#: app_main/templates/app_main/homepage.html:25
 msgid "Welcome"
 msgstr "Bienvenue !"
 

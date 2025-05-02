@@ -80,8 +80,7 @@
 </script>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
-{% trans "actions" %}<br>
-<a href="{% url "modify_animation" animation.animation_id %}">{% trans "modify" %}</a>
+{% include "common/actions.html" %}
 <hr>
 {% trans "Shortcuts:" %}
 <div class="flex items-center space-x-2">

@@ -7,8 +7,7 @@
 {% block bloc1 %}
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
-{% trans "actions" %}<br>
-<a href="{% url "lyrics_slide_show" animation.animation_id %}">{% trans "Slide show" %}</a>
+{% include "common/actions.html" %}
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
