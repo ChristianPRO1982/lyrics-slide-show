@@ -2,8 +2,8 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "confirm_delete_animation_title" %}{% endblock title %}
-{% block title_h1 %}{% trans "confirm_delete_animation_title" %}{% endblock title_h1 %}
+{% block title %}Animation : {{ animation.name }}{% endblock title %}
+{% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
@@ -13,13 +13,58 @@
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}
-<p>{% trans "confirm_delete_animation_2dot" %}<i>{{ animation.name }}</i></p>
-<form method="post" action="{% url "delete_animation" animation.animation_id %}">
-    {% csrf_token %}
-    <hr>
-    <div class="text-center">
-        <input style="width: 45%;" name="btn_delete" value="{% trans "Delete" %}" type="submit" />
-        <input style="width: 45%;" name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
-    </div>
-</form>  
+<h2 class="L_H2">{% trans "Modify colors" %}</h2>
+{% load static %}
+  <link rel="stylesheet" href="{% static 'css/classic.min.css' %}">
+  <script src="{% static 'js/pickr.min.js' %}"></script>
+  <div class="picker-container">
+    <p>Couleur du texte :</p>
+    <div id="text-color-picker"></div>
+  </div>
+
+  <div class="picker-container">
+    <p>Couleur du fond :</p>
+    <div id="bg-color-picker"></div>
+  </div>
+
+  <div id="preview">
+    Ceci est un aperçu de votre slide personnalisée.
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const preview = document.getElementById('preview');
+
+      const createColorPicker = (el, defaultColor, onChangeCallback) => {
+        return Pickr.create({
+          el: el,
+          theme: 'classic',
+          default: defaultColor,
+          swatches: null,
+          components: {
+            preview: true,
+            opacity: false,
+            hue: true,
+            interaction: {
+              hex: true,
+              rgba: true,
+              input: true,
+              save: true
+            }
+          }
+        }).on('change', (color) => {
+          const rgbaColor = color.toRGBA().toString();
+          onChangeCallback(rgbaColor);
+        });
+      };
+
+      createColorPicker('#text-color-picker', '#000000', (color) => {
+        preview.style.color = color;
+      });
+
+      createColorPicker('#bg-color-picker', '#ffffff', (color) => {
+        preview.style.backgroundColor = color;
+      });
+    });
+  </script>
 {% endblock content %}
