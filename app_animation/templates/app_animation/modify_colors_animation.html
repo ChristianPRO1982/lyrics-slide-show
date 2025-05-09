@@ -40,10 +40,19 @@
           el: el,
           theme: 'classic',
           default: defaultColor,
-          swatches: null,
+          swatches: [
+            '#ff0000', // Rouge
+            '#00ff00', // Vert
+            '#0000ff', // Bleu
+            '#ffff00', // Jaune
+            '#ff00ff', // Magenta
+            '#00ffff', // Cyan
+            '#000000', // Noir
+            '#ffffff'  // Blanc
+          ],
           components: {
             preview: true,
-            opacity: false,
+            opacity: true,
             hue: true,
             interaction: {
               hex: true,
@@ -59,12 +68,23 @@
       };
 
       createColorPicker('#text-color-picker', '#000000', (color) => {
-        preview.style.color = color;
-      });
-
+        const rgba = color.toRGBA().toString();
+        preview.style.color = rgba;
+        textColorValue.textContent = `Texte : ${rgba}`;
+      }, [
+        '#ff0000', '#00ff00', '#0000ff', '#ffff00',
+        '#ff00ff', '#00ffff', '#000000', '#ffffff'
+      ]);
+      
       createColorPicker('#bg-color-picker', '#ffffff', (color) => {
-        preview.style.backgroundColor = color;
-      });
+        const rgba = color.toRGBA().toString();
+        preview.style.backgroundColor = rgba;
+        bgColorValue.textContent = `Fond : ${rgba}`;
+      }, [
+        '#ff0000', '#00ff00', '#0000ff', '#ffff00',
+        '#ff00ff', '#00ffff', '#000000', '#ffffff'
+      ]);
+      
     });
   </script>
 {% endblock content %}
