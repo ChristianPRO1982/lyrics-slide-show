@@ -20,7 +20,8 @@
 
 ```bash
 DEBUG=1
-SQL_REQUEST_LOG=2 # 0: no log, 1: SQL name, 2: SQL name and request
+SQL_REQUEST_LOG=1 # 0: no log, 1: SQL name, 2: SQL name and request
+SQL_REQUEST_LOG_NAME_PREFIX='[DEV]'
 LOG_RETENTION_DAYS=1
 
 ###########
