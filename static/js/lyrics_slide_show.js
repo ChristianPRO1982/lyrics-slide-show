@@ -22,3 +22,16 @@ function toggleVisibility(id) {
         element.style.display = "none";
     }
 }
+
+function toggleDivDisplay(id_div, id_a, txt_show, txt_hide) {
+    const div = document.getElementById(id_div);
+    const a = document.getElementById(id_a);
+    if (!div || !a) return;
+    if (div.style.display === "none" || div.style.display === "") {
+        div.style.display = "block";
+        a.textContent = txt_hide;
+    } else {
+        div.style.display = "none";
+        a.textContent = txt_show;
+    }
+}
