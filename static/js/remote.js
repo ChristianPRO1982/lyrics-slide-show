@@ -11,7 +11,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
             body {
             margin: 0;
             padding: 0;
-            color: white;
+            color: grey;
             background-color: black;
             display: flex;
             justify-content: center;
@@ -25,7 +25,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         </style>
         </head>
         <body>
-        <div class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
+        <div style="color: ` + color_rgba + `; background-color: ` + bg_rgba + `;" class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
         </body>
         </html>
     `);
