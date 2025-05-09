@@ -10,81 +10,83 @@
 {% include "common/actions.html" %}
 <hr>
 {% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc2 %}
+<div id="preview" style="color: {{ animation.color_rgba }}; Background: {{ animation.bg_rgba }}" class="h-[100px]">
+  {% trans "text_test" %}
+</div>
+{% endblock bloc2 %}
 
 {% block content %}
-<h2 class="L_H2">{% trans "Modify colors" %}</h2>
 {% load static %}
-  <link rel="stylesheet" href="{% static 'css/classic.min.css' %}">
+    <h2 class="L_H2">{% trans "Modify colors" %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="picker-container">
+            <label><h3 class="L_H3">{% trans "Text color:" %}</h3></label>
+            <div id="text-color-picker"></div>
+            <input type="text" name="text_color" id="text-color-input" value="{{ animation.color_rgba }}" readonly>
+        </div>
+
+        <div class="picker-container">
+            <label><h3 class="L_H3">{% trans "Background color:" %}</h3></label>
+            <div id="bg-color-picker"></div>
+            <input type="text" name="bg_color" id="bg-color-input" value="{{ animation.bg_rgba }}" readonly>
+        </div>
+
+        <input name="btn_save" value="{% trans "save" %}" type="submit" />
+    </form>
+
+    <link rel="stylesheet" href="{% static 'css/classic.min.css' %}">
   <script src="{% static 'js/pickr.min.js' %}"></script>
-  <div class="picker-container">
-    <p>Couleur du texte :</p>
-    <div id="text-color-picker"></div>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const preview = document.getElementById('preview');
+            const textInput = document.getElementById('text-color-input');
+            const bgInput = document.getElementById('bg-color-input');
 
-  <div class="picker-container">
-    <p>Couleur du fond :</p>
-    <div id="bg-color-picker"></div>
-  </div>
+            const createColorPicker = (selector, defaultColor, callback) => {
+                return Pickr.create({
+                    el: selector,
+                    theme: 'classic',
+                    default: defaultColor,
+                    swatches: [
+                        'rgba(244, 67, 54, 1)',
+                        'rgba(233, 30, 99, 0.95)',
+                        'rgba(156, 39, 176, 0.9)',
+                        'rgba(103, 58, 183, 0.85)',
+                        'rgba(63, 81, 181, 0.8)',
+                        'rgba(33, 150, 243, 0.75)',
+                        'rgba(0, 188, 212, 0.7)',
+                        'rgba(0, 150, 136, 0.7)'
+                    ],
+                    components: {
+                        preview: true,
+                        opacity: true,
+                        hue: true,
+                        interaction: {
+                            hex: true,
+                            rgba: true,
+                            input: true,
+                            save: true
+                        }
+                    }
+                }).on('change', (color) => {
+                    const rgba = color.toRGBA().toString();
+                    callback(rgba);
+                });
+            };
 
-  <div id="preview">
-    Ceci est un aperçu de votre slide personnalisée.
-  </div>
+            createColorPicker('#text-color-picker', '{{ animation.color_rgba }}', (rgba) => {
+                preview.style.color = rgba;
+                textInput.value = rgba;
+            });
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const preview = document.getElementById('preview');
-
-      const createColorPicker = (el, defaultColor, onChangeCallback) => {
-        return Pickr.create({
-          el: el,
-          theme: 'classic',
-          default: defaultColor,
-          swatches: [
-            '#ff0000', // Rouge
-            '#00ff00', // Vert
-            '#0000ff', // Bleu
-            '#ffff00', // Jaune
-            '#ff00ff', // Magenta
-            '#00ffff', // Cyan
-            '#000000', // Noir
-            '#ffffff'  // Blanc
-          ],
-          components: {
-            preview: true,
-            opacity: true,
-            hue: true,
-            interaction: {
-              hex: true,
-              rgba: true,
-              input: true,
-              save: true
-            }
-          }
-        }).on('change', (color) => {
-          const rgbaColor = color.toRGBA().toString();
-          onChangeCallback(rgbaColor);
+            createColorPicker('#bg-color-picker', '{{ animation.bg_rgba }}', (rgba) => {
+                preview.style.backgroundColor = rgba;
+                bgInput.value = rgba;
+            });
         });
-      };
+    </script>
 
-      createColorPicker('#text-color-picker', '#000000', (color) => {
-        const rgba = color.toRGBA().toString();
-        preview.style.color = rgba;
-        textColorValue.textContent = `Texte : ${rgba}`;
-      }, [
-        '#ff0000', '#00ff00', '#0000ff', '#ffff00',
-        '#ff00ff', '#00ffff', '#000000', '#ffffff'
-      ]);
-      
-      createColorPicker('#bg-color-picker', '#ffffff', (color) => {
-        const rgba = color.toRGBA().toString();
-        preview.style.backgroundColor = rgba;
-        bgColorValue.textContent = `Fond : ${rgba}`;
-      }, [
-        '#ff0000', '#00ff00', '#0000ff', '#ffff00',
-        '#ff00ff', '#00ffff', '#000000', '#ffffff'
-      ]);
-      
-    });
-  </script>
+
 {% endblock content %}

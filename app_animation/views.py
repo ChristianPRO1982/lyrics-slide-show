@@ -233,14 +233,10 @@ def modify_colors_animation(request, animation_id):
             return redirect('animations')
 
         if request.method == 'POST':
-            if 'btn_save_exit' in request.POST:
-                animation.update_colors(
-                    request.POST.get('txt_color_1'),
-                    request.POST.get('txt_color_2'),
-                    request.POST.get('txt_color_3'),
-                    request.POST.get('txt_color_4'),
-                    request.POST.get('txt_color_5'),
-                )
+            if 'btn_save' in request.POST:
+                animation.color_rgba = request.POST.get('text_color')
+                animation.bg_rgba = request.POST.get('bg_color')
+                animation.save()
                 return redirect('animations')
     
     return render(request, 'app_animation/modify_colors_animation.html', {

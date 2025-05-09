@@ -13,12 +13,14 @@ code_file = "SQL_animation.py"
 ###################################################
 ###################################################
 class Animation:
-    def __init__(self, animation_id=None, group_id=None, name=None, description=None, date=None):
+    def __init__(self, animation_id=None, group_id=None, name=None, description=None, date=None, color_rgba=None, bg_rgba=None):
         self.animation_id = animation_id
         self.group_id = group_id
         self.name = name
         self.description = description
         self.date = date
+        self.color_rgba = color_rgba
+        self.bg_rgba = bg_rgba
         self.songs = []
         self.all_songs()
         self.verses = []
@@ -57,7 +59,13 @@ SELECT *
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(animation_id=row[0], group_id=row[1], name=row[2], description=row[3], date=row[4])
+            return cls(animation_id=row[0],
+                       group_id=row[1],
+                       name=row[2],
+                       description=row[3],
+                       date=row[4],
+                       color_rgba=row[5],
+                       bg_rgba=row[6])
         return None
 
 
@@ -68,10 +76,12 @@ SELECT *
 UPDATE l_animations
    SET name = %s,
        description = %s,
-       date = %s
+       date = %s,
+       color_rgba = %s,
+       bg_rgba = %s
  WHERE animation_id = %s
 """
-                params = [self.name, self.description, self.date, self.animation_id]
+                params = [self.name, self.description, self.date, self.color_rgba, self.bg_rgba, self.animation_id]
                 
                 create_SQL_log(code_file, "Animations.save", "UPDATE_1", request, params)
                 cursor.execute(request, params)
