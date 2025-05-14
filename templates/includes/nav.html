@@ -17,7 +17,7 @@
 {% endif %}
 
 {% comment %} SMARTPHONE {% endcomment %}
-<a class="NAV mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a>
+{% comment %} <a class="NAV mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a> {% endcomment %}
 {% if user.is_authenticated %}
         <a class="NAV mx-2 block md:hidden" href="{% url "groups" %}">👥</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">💬</a>
