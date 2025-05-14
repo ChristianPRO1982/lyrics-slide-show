@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 10:50+0200\n"
+"POT-Creation-Date: 2025-05-14 17:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid "hide"
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:95
-#: app_animation/templates/app_animation/lyrics_slide_show.html:155
+#: app_animation/templates/app_animation/lyrics_slide_show.html:159
 msgid "BLACK MODE"
 msgstr ""
 
@@ -135,12 +135,12 @@ msgid "Space bar"
 msgstr "Barre espace"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:102
-#: app_animation/templates/app_animation/lyrics_slide_show.html:164
+#: app_animation/templates/app_animation/lyrics_slide_show.html:168
 msgid "Next slide"
 msgstr "Slide suivante"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:107
-#: app_animation/templates/app_animation/lyrics_slide_show.html:165
+#: app_animation/templates/app_animation/lyrics_slide_show.html:169
 msgid "Chorus"
 msgstr "Refrain"
 
@@ -172,21 +172,21 @@ msgstr "Ouvrir le second écran"
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:158
+#: app_animation/templates/app_animation/lyrics_slide_show.html:162
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:168
+#: app_animation/templates/app_animation/lyrics_slide_show.html:172
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:178
+#: app_animation/templates/app_animation/lyrics_slide_show.html:182
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:207
+#: app_animation/templates/app_animation/lyrics_slide_show.html:211
 msgid "chorus_prefix"
 msgstr "R- "
 
@@ -258,6 +258,7 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:145
+#: app_animation/templates/app_animation/modify_colors_animation.html:36
 #: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:143
@@ -285,10 +286,6 @@ msgstr "Couleur du texte :"
 #: app_animation/templates/app_animation/modify_colors_animation.html:31
 msgid "Background color:"
 msgstr "Couleur du fond :"
-
-#: app_animation/templates/app_animation/modify_colors_animation.html:36
-msgid "Save"
-msgstr "Enregistrer"
 
 #: app_animation/templates/common/actions.html:3 chris/songs copy.html:19
 #: copy.html:49
@@ -2137,6 +2134,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
 msgid "Redirected but the response is missing a Location: header."
 msgstr ""
+
+#~ msgid "Save"
+#~ msgstr "Enregistrer"
 
 #~ msgid "help_buttons"
 #~ msgstr ""
