@@ -40,7 +40,7 @@ class Song:
                    END,
                    CASE
                        WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                       ELSE title
+                       ELSE ''
                    END,
                    CASE
                        WHEN status = 1 THEN ' ✔️'
@@ -99,7 +99,7 @@ SELECT *, CONCAT(title,
                  END,
                  CASE
                      WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                     ELSE title
+                     ELSE ''
                  END,
                  CASE
                      WHEN status = 1 THEN ' ✔️'
