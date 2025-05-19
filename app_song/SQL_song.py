@@ -75,7 +75,7 @@ ORDER BY title, sub_title
                     lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
-                if not verse.followed and choruses:
+                if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
             elif start_by_chorus:
                 lyrics += "<br><br>".join(choruses) + "<br><br>"
@@ -327,14 +327,17 @@ UPDATE l_songs ls
 ######################################################
 ######################################################
 class Verse:
-    def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=False, followed=False, like_chorus=False, text=""):
+    def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=0,
+                 followed=0, notcontinuenumbering=1, like_chorus=0, notdisplaychorusnext=0, text=""):
         self.verse_id = verse_id
         self.song_id = song_id
         self.num = num
         self.num_verse = num_verse
         self.chorus = chorus
         self.followed = followed
+        self.notcontinuenumbering = notcontinuenumbering
         self.like_chorus = like_chorus
+        self.notdisplaychorusnext = notdisplaychorusnext
         self.text = text
 
     @staticmethod
@@ -344,9 +347,11 @@ class Verse:
 SELECT verse_id,
        num,
        num_verse,
-       CASE WHEN chorus = 2 THEN 0 ELSE chorus END AS chorus,
+       CASE WHEN chorus > 1 THEN 0 ELSE chorus END AS chorus,
        followed,
-       CASE WHEN chorus = 2 THEN 1 ELSE 0 END AS like_chorus,
+       notcontinuenumbering,
+       CASE WHEN chorus > 1 THEN 1 ELSE 0 END AS like_chorus,
+       CASE WHEN chorus = 3 THEN 1 ELSE 0 END AS notdisplaychorusnext,
        text
     FROM l_verses
    WHERE song_id = %s
@@ -357,14 +362,24 @@ ORDER BY num
             create_SQL_log(code_file, "Verse.get_verses_by_song_id", "SELECT_3", request, params)
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [Verse(verse_id=row[0], song_id=song_id, num=row[1], num_verse=row[2], chorus=row[3], followed=row[4], like_chorus=row[5], text=row[6]) for row in rows]
+            
+        return [Verse(verse_id=row[0],
+                      song_id=song_id,
+                      num=row[1],
+                      num_verse=row[2],
+                      chorus=row[3],
+                      followed=row[4],
+                      notcontinuenumbering=row[5],
+                      like_chorus=row[6],
+                      notdisplaychorusnext=row[7],
+                      text=row[8]) for row in rows]
 
     def save(self):
         if not self.num:
             self.num = 1000
-        
-        if self.chorus == 0 and self.like_chorus == 1:
-            self.chorus = 2
+
+        if self.chorus == 0 and self.like_chorus == 1 and self.notdisplaychorusnext == 0: self.chorus = 2
+        if self.chorus == 0 and self.like_chorus == 1 and self.notdisplaychorusnext == 1: self.chorus = 3
             
         with connection.cursor() as cursor:
             if self.verse_id:
@@ -374,10 +389,11 @@ UPDATE l_verses
        num_verse = %s,
        chorus = %s,
        followed = %s,
+       notcontinuenumbering = %s,
        text = %s
  WHERE verse_id = %s
  """
-                params = [self.num, self.num_verse, self.chorus, self.followed, self.text, self.verse_id]
+                params = [self.num, self.num_verse, self.chorus, self.followed, self.notcontinuenumbering, self.text, self.verse_id]
 
                 create_SQL_log(code_file, "Verse.save", "UPDATE_2", request, params)
                 cursor.execute(request, params)

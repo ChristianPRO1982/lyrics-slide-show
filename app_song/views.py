@@ -89,7 +89,9 @@ def modify_song(request, song_id):
                         else:
                             verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
                             verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                            verse.notcontinuenumbering = request.POST.get(f'box_verse_notcontinuenumbering_{verse.verse_id}', 'off') == 'on'
                             verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
+                            verse.notdisplaychorusnext = request.POST.get(f'box_verse_notdisplaychorusnext_{verse.verse_id}', 'off') == 'on'
                             verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
                             verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
                             if verse.text is None:
@@ -119,12 +121,12 @@ def modify_song(request, song_id):
             return redirect('songs')
 
         # Recalculate 'num' and 'num_verse' the for all choruses/verses
-        num_verse = 1
+        num_verse = 0
         for index, verse in enumerate(song.verses):
             verse.num = (index + 1) * 2
-            verse.num_verse = num_verse
-            if not verse.chorus and not verse.like_chorus:
+            if not verse.chorus and not verse.like_chorus and not verse.notcontinuenumbering:
                 num_verse = num_verse + 1
+            verse.num_verse = num_verse
             verse.save()
 
     song_lyrics = song.get_lyrics()

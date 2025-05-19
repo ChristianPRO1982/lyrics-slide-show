@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-14 17:56+0200\n"
+"POT-Creation-Date: 2025-05-19 11:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -196,19 +196,19 @@ msgstr "Sélectionnez un chant pour voir les paroles"
 
 #: app_animation/templates/app_animation/modify_animation.html:68
 #: app_animation/templates/app_animation/modify_animation.html:76
-#: app_song/templates/app_song/modify_song.html:93
-#: app_song/templates/app_song/modify_song.html:106
-#: app_song/templates/app_song/modify_song.html:120
+#: app_song/templates/app_song/modify_song.html:99
+#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:126
 msgid "verse_num"
 msgstr "Couplet n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:90
-#: app_song/templates/app_song/modify_song.html:97
+#: app_song/templates/app_song/modify_song.html:103
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:92
-#: app_song/templates/app_song/modify_song.html:99
+#: app_song/templates/app_song/modify_song.html:105
 msgid "before"
 msgstr "Avant"
 
@@ -218,12 +218,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:101
-#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:118
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:102
-#: app_song/templates/app_song/modify_song.html:113
+#: app_song/templates/app_song/modify_song.html:119
 msgid "after"
 msgstr "Après"
 
@@ -261,12 +261,12 @@ msgstr "Les chants sélectionnés seront placés ici..."
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
 #: app_group/templates/app_group/modify_group.html:49
 #: app_song/templates/app_song/moderator_song.html:26
-#: app_song/templates/app_song/modify_song.html:143
+#: app_song/templates/app_song/modify_song.html:149
 msgid "save"
 msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:146
-#: app_song/templates/app_song/modify_song.html:144
+#: app_song/templates/app_song/modify_song.html:150
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -502,7 +502,7 @@ msgid "update"
 msgstr "Modifier"
 
 #: app_song/templates/app_song/goto_song.html:14
-#: app_song/templates/app_song/modify_song.html:131 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:137 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
@@ -578,28 +578,40 @@ msgid "artist"
 msgstr "Artiste"
 
 #: app_song/templates/app_song/modify_song.html:80
-#: app_song/templates/app_song/modify_song.html:104
-#: app_song/templates/app_song/modify_song.html:118
+#: app_song/templates/app_song/modify_song.html:110
+#: app_song/templates/app_song/modify_song.html:124
 msgid "chorus"
 msgstr "Refrain"
 
 #: app_song/templates/app_song/modify_song.html:85
+msgid "Not continue numbering"
+msgstr "Ne pas continuer la numérotation"
+
+#: app_song/templates/app_song/modify_song.html:85
+msgid "Not C. num ⓘ"
+msgstr ""
+
+#: app_song/templates/app_song/modify_song.html:88
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:88
+#: app_song/templates/app_song/modify_song.html:91
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:130
+#: app_song/templates/app_song/modify_song.html:94
+msgid "Do not display the chorus after"
+msgstr "Ne pas afficher le refrain après"
+
+#: app_song/templates/app_song/modify_song.html:136
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:140
+#: app_song/templates/app_song/modify_song.html:146
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:145
+#: app_song/templates/app_song/modify_song.html:151
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
