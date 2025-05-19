@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "actions" %}<br>
+
+{% if not "modify_song" in request.path %}<a href="{% url "modify_song" song.song_id %}">{% trans "Modify" %}</a><br>{% endif %}
+{% if not "delete_song" in request.path %}<a href="{% url "delete_song" song.song_id %}">{% trans "Delete" %}</a><br>{% endif %}

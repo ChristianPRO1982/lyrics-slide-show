@@ -5,6 +5,8 @@
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
+    {% include "common/song_actions.html" %}
+    <hr>
     {% if moderator %}
         <button type="button" onclick="toggleVisibility('new_messages')">{% trans "New messages" %} 👀</button><br>
         <div id="new_messages" style="display: none;">
