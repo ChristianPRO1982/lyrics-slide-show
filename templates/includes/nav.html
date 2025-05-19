@@ -4,11 +4,11 @@
 <a class="NAV mx-2 hidden md:block" href="{% url "homepage" %}">🏠<span class="text-3xl"></span> {% trans "nav_home" %}</a>
 {% if user.is_authenticated %}
         <a class="NAV mx-2 hidden md:block" href="{% url "groups" %}">👥<span class="text-3xl"></span> {% trans "nav_groups_list" %}</a>
-        <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">💬<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
+        <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">🎼<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span> {% trans "nav_logout" %}</a>
 {% else %}
-        <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">💬<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
+        <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">🎼<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> {% trans "nav_login" %}</a>
         {% if request.path == '/account/login/' %}
@@ -20,11 +20,11 @@
 {% comment %} <a class="NAV mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a> {% endcomment %}
 {% if user.is_authenticated %}
         <a class="NAV mx-2 block md:hidden" href="{% url "groups" %}">👥</a>
-        <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">💬</a>
+        <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">🎼</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "animations" %}">🗣️</a>
         <a class="NAV mx-2 block md:hidden" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span></a>
 {% else %}
-        <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">💬</a>
+        <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">🎼</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "animations" %}">🗣️</a>
         <a class="NAV mx-2 block md:hidden" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span></a>
         {% if request.path == '/account/login/' %}
