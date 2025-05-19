@@ -95,13 +95,14 @@ CREATE TABLE `l_verses` (
   `num_verse` smallint NOT NULL DEFAULT '1000',
   `chorus` tinyint(1) NOT NULL DEFAULT '0',
   `followed` tinyint(1) NOT NULL DEFAULT '0',
+  `notcontinuenumbering` tinyint(1) NOT NULL DEFAULT '0',
   `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`verse_id`),
   KEY `l_verses_song_id_IDX` (`song_id`) USING BTREE,
   KEY `l_verses_num_IDX` (`num`) USING BTREE,
   KEY `l_verses_chorus_IDX` (`chorus`) USING BTREE,
   CONSTRAINT `l_verses_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27077 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40616 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_animations` (
   `animation_id` mediumint NOT NULL AUTO_INCREMENT,
