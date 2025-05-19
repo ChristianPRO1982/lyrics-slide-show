@@ -193,9 +193,10 @@ UPDATE l_songs
     def get_links(self):
         with connection.cursor() as cursor:
             request = """
-SELECT link
-  FROM l_song_link
- WHERE song_id = %s
+  SELECT link
+    FROM l_song_link
+   WHERE song_id = %s
+ORDER BY link
 """
             params = [self.song_id]
             
@@ -204,7 +205,7 @@ SELECT link
             rows = cursor.fetchall()
 
             for row in rows:
-                self.links.append((row[0], row[0].split('/')[2] if '//' in row[0] else 'LIEN'))
+                self.links.append((row[0], row[0].split('/')[2] if '//' in row[0] else 'LINK'))
 
     def moderator_new_message(self, message: str)->int:
         with connection.cursor() as cursor:
@@ -318,6 +319,27 @@ UPDATE l_songs ls
             params = [self.song_id, self.song_id]
             create_SQL_log(code_file, "Song.moderator_songs_with_all_message_done", "UPDATE_7", request, params)
             cursor.execute(request, params)
+
+
+    def add_link(self, link: str):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_link (song_id, link)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, link]
+            
+            create_SQL_log(code_file, "Song.add_link", "INSERT_4", request, params)
+            try:
+                cursor.execute(request, params)
+                return None
+            except Exception as e:
+                return e
+                # if "Duplicate entry" in str(e):
+                #     return "Duplicate entry"
+                # else:
+                #     return "error"
+                
 
 
 

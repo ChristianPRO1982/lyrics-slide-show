@@ -2,5 +2,11 @@
 
 {% trans "actions" %}<br>
 
-{% if not "modify_song" in request.path %}<a href="{% url "modify_song" song.song_id %}">{% trans "Modify" %}</a><br>{% endif %}
-{% if not "delete_song" in request.path %}<a href="{% url "delete_song" song.song_id %}">{% trans "Delete" %}</a><br>{% endif %}
+{% if not "/song/" in request.path %}<a href="{% url "goto_song" song.song_id %}">{% trans "Display" %}</a><br>{% endif %}
+{% if song.status == 0 or moderator %}
+    {% if not "modify_song" in request.path %}<a href="{% url 'modify_song' song.song_id %}">{% trans "Modify" %}</a><br>{% endif %}
+    {% if not "song_metadata" in request.path %}<a href="{% url 'song_metadata' song.song_id %}">{% trans "Metadata" %}</a><br>{% endif %}
+    {% if not "delete_song" in request.path %}<a href="{% url 'delete_song' song.song_id %}">{% trans "Delete" %}</a><br>{% endif %}
+{% else %}
+    <a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %} ⓘ</a>
+{% endif %}

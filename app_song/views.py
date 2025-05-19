@@ -226,3 +226,39 @@ def moderator_song(request, song_id):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+def song_metadata(request, song_id):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    moderator = is_moderator(request)
+
+    if request.method == 'POST':
+        if 'btn_save' in request.POST:
+            new_link = request.POST.get('txt_new_link')
+            new_link = new_link.strip()
+            if new_link:
+                returned = str(song.add_link(new_link))
+                if "Duplicate entry" in returned:
+                    error = '[ERR19]'
+                elif returned != None:
+                    error = '[ERR20]'
+
+    song.get_verses()
+    song_lyrics = song.get_lyrics()
+
+    return render(request, 'app_song/song_metadata.html', {
+        'song': song,
+        'error': error,
+        'css': css,
+        'moderator': moderator,
+        'no_loader': no_loader,
+        'song_lyrics': song_lyrics,
+    })
