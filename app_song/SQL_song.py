@@ -335,10 +335,22 @@ INSERT INTO l_song_link (song_id, link)
                 return None
             except Exception as e:
                 return e
-                # if "Duplicate entry" in str(e):
-                #     return "Duplicate entry"
-                # else:
-                #     return "error"
+            
+
+    def delete_link(self, link: str):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_link
+      WHERE song_id = %s
+        AND link = %s
+"""
+            params = [self.song_id, link]
+            create_SQL_log(code_file, "Song.delete_link", "DELETE_3", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR21]'
                 
 
 

@@ -241,15 +241,20 @@ def song_metadata(request, song_id):
     moderator = is_moderator(request)
 
     if request.method == 'POST':
-        if 'btn_save' in request.POST:
-            new_link = request.POST.get('txt_new_link')
-            new_link = new_link.strip()
-            if new_link:
-                returned = str(song.add_link(new_link))
-                if "Duplicate entry" in returned:
-                    error = '[ERR19]'
-                elif returned != None:
-                    error = '[ERR20]'
+        # if 'btn_save' in request.POST:
+        new_link = request.POST.get('txt_new_link')
+        new_link = new_link.strip()
+        if new_link:
+            returned = str(song.add_link(new_link))
+            if "Duplicate entry" in returned:
+                error = '[ERR19]'
+            elif returned != None:
+                error = '[ERR20]'
+
+        if error == '':
+            for link in song.links:
+                if f'btn_delete_link_{link[0]}' in request.POST:
+                    link.delete()
 
     song.get_verses()
     song_lyrics = song.get_lyrics()

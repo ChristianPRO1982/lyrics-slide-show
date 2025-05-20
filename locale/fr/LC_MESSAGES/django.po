@@ -833,64 +833,44 @@ msgid "ERR20"
 msgstr "[ERR20] Impossible d'enregistrer ce lien. Contacter l'administrateur du site."
 
 #: templates/base.html:89
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR21"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR21] Impossible de supprimer ce lien. Contacter l'administrateur du site."
 
 #: templates/base.html:91
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR22"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR22] no message"
 
 #: templates/base.html:93
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR23"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR23] no message"
 
 #: templates/base.html:95
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR24"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR24] no message"
 
 #: templates/base.html:97
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR25"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR25] no message"
 
 #: templates/base.html:99
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR26"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR26] no message"
 
 #: templates/base.html:101
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR27"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR27] no message"
 
 #: templates/base.html:103
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR28"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR28] no message"
 
 #: templates/base.html:105
-#, fuzzy
-#| msgid "ERR2"
 msgid "ERR29"
-msgstr "Le nom est obligatoire."
+msgstr "[ERR] no message"
 
 #: templates/base.html:107
-#, fuzzy
-#| msgid "ERR3"
 msgid "ERR30"
-msgstr "Le nom du groupe est obligatoire."
+msgstr "[ERR30] no message"
 
 #: templates/includes/nav.html:5
 msgid "nav_home"
