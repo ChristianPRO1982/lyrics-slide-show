@@ -121,11 +121,11 @@ msgstr "Raccourcis clavier"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:89
 msgid "show"
-msgstr ""
+msgstr "Afficher"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:89
 msgid "hide"
-msgstr ""
+msgstr "Masquer"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:95
 #: app_animation/templates/app_animation/lyrics_slide_show.html:159
