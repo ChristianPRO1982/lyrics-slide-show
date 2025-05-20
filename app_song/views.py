@@ -248,13 +248,24 @@ def song_metadata(request, song_id):
             returned = str(song.add_link(new_link))
             if "Duplicate entry" in returned:
                 error = '[ERR19]'
-            elif returned != None:
+            elif returned != '':
                 error = '[ERR20]'
 
         if error == '':
-            for link in song.links:
-                if f'btn_delete_link_{link[0]}' in request.POST:
-                    link.delete()
+            for index, link in enumerate(song.links):
+                error = song.update_link(link[0], request.POST.get(f'txt_link_{index + 1}'))
+                if error != '':
+                    break
+
+        if error == '':
+            for index, link in enumerate(song.links):
+                if f'btn_delete_link_{index + 1}' in request.POST:
+                    error = song.delete_link(link[0])
+                if error != '':
+                    break
+
+        # refresh
+        song.get_links()
 
     song.get_verses()
     song_lyrics = song.get_lyrics()

@@ -191,6 +191,8 @@ UPDATE l_songs
 
     
     def get_links(self):
+        self.links = []
+
         with connection.cursor() as cursor:
             request = """
   SELECT link
@@ -332,7 +334,7 @@ INSERT INTO l_song_link (song_id, link)
             create_SQL_log(code_file, "Song.add_link", "INSERT_4", request, params)
             try:
                 cursor.execute(request, params)
-                return None
+                return ''
             except Exception as e:
                 return e
             
@@ -351,7 +353,24 @@ DELETE FROM l_song_link
                 return ''
             except Exception as e:
                 return '[ERR21]'
-                
+
+
+    def update_link(self, old_link: str, new_link: str):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_song_link
+   SET link = %s
+ WHERE song_id = %s
+   AND link = %s
+"""
+            params = [new_link, self.song_id, old_link]
+            create_SQL_log(code_file, "Song.upadate_link", "UPDATE_8", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                print(">>>>>", e)
+                return '[ERR22]'
 
 
 

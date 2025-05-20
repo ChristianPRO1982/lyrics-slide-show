@@ -20,6 +20,9 @@
 <h2 class="L_H2">{{ song.sub_title }}</h2>
 <form method="post" action="{% url "song_metadata" song.song_id %}">
     {% csrf_token %}
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
+
+    <hr>
 
     <table>
         <thead>
@@ -32,8 +35,8 @@
         <tbody>
             {% for link in song.links %}
             <tr>
-                <td><input name="name" value="{{ link.0 }}"></td>
-                <td><input name="name" value="{{ link.1 }}" readonly="readonly"></td>
+                <td><input name="txt_link_{{ forloop.counter }}" value="{{ link.0 }}"></td>
+                <td><input value="{{ link.1 }}" readonly="readonly"></td>
                 <td>
                     <input name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
                 </td>
@@ -54,6 +57,7 @@
             </tr>
         </tfoot>
     </table>
+
     <hr>
 
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
