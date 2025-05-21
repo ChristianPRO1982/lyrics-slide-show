@@ -253,7 +253,11 @@ def song_metadata(request, song_id):
 
         if error == '':
             for index, link in enumerate(song.links):
-                error = song.update_link(link[0], request.POST.get(f'txt_link_{index + 1}'))
+                returned = str(song.update_link(link[0], request.POST.get(f'txt_link_{index + 1}')))
+                if "Duplicate entry" in returned:
+                    error = '[ERR19]'
+                elif returned != '':
+                    error = '[ERR22]'
                 if error != '':
                     break
 

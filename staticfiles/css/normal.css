@@ -92,10 +92,12 @@ hr {
 
 .L_ERROR {
     color: #dd0000;
+    background-color: #f55;
 }
 
 .L_ERROR_OTHER {
     color: #aa0000;
+    background-color: #f55;
 }
 
 .L_BOX_TOP {

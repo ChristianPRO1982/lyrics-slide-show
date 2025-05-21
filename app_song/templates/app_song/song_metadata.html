@@ -18,11 +18,14 @@
 
 {% block content %}
 <h2 class="L_H2">{{ song.sub_title }}</h2>
+<h3 class="L_H3">{% trans "Metadata" %}</h3>
 <form method="post" action="{% url "song_metadata" song.song_id %}">
     {% csrf_token %}
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
 
     <hr>
+
+    <h4 class="L_H4">Lien web</h4>
 
     <table>
         <thead>
@@ -57,6 +60,10 @@
             </tr>
         </tfoot>
     </table>
+
+    <hr>
+
+    <h4 class="L_H4">Genre</h4>
 
     <hr>
 

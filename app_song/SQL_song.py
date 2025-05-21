@@ -369,8 +369,7 @@ UPDATE l_song_link
                 cursor.execute(request, params)
                 return ''
             except Exception as e:
-                print(">>>>>", e)
-                return '[ERR22]'
+                return "co"
 
 
 
