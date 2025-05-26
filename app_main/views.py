@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from app_logs.utils import delete_old_logs
-from .utils import is_no_loader, save_user_theme
+from .utils import is_moderator, is_no_loader, save_user_theme
 from .SQL_main import User
-
 
 
 def error_404(request, exception):
@@ -22,11 +21,14 @@ def homepage(request):
 
     css = request.session.get('css', 'normal.css')
 
+    moderator = is_moderator(request)
+
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
         'css': css,
         'no_loader': no_loader,
+        'moderator': moderator,
     })
 
 

@@ -1,7 +1,7 @@
 {% comment %} https://symbl.cc/fr/ {% endcomment %}
 {% load i18n %}
 
-<a class="NAV mx-2 hidden md:block" href="{% url "homepage" %}">🏠<span class="text-3xl"></span> {% trans "nav_home" %}</a>
+{% comment %} <a class="NAV mx-2 hidden md:block" href="{% url "homepage" %}">🏠<span class="text-3xl"></span> {% trans "nav_home" %}</a> {% endcomment %}
 {% if user.is_authenticated %}
         <a class="NAV mx-2 hidden md:block" href="{% url "groups" %}">👥<span class="text-3xl"></span> {% trans "nav_groups_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">🎼<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
