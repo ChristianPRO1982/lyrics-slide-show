@@ -21,9 +21,7 @@ def homepage(request):
         user = User(username)
         request.session['css'] = user.theme
 
-    songs = []
-    if moderator:
-        songs = Songs()
+    songs = Songs()
 
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
