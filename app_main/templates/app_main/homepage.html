@@ -24,5 +24,14 @@
 {% block content %}
 <p>{% trans "Welcome" %}</p>
 
-{% if moderator %}coco{% endif %}
+{% if moderator %}
+<hr>
+<h2 class="L_H2">{% trans "Moderator" %}</h2>
+<h3 class="L_H3">{% trans "List of songs to be moderated" %}</h3>
+<ul>
+{% for song in songs %}
+<li><a href="{% url 'modify_song' song.song_id %}">{{ song.full_title }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
 {% endblock content %}

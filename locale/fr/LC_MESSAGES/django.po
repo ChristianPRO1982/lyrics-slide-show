@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-21 09:24+0200\n"
+"POT-Creation-Date: 2025-05-26 10:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -267,7 +267,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 #: app_song/templates/app_song/moderator_song.html:26
 #: app_song/templates/app_song/modify_song.html:151
 #: app_song/templates/app_song/song_metadata.html:24
-#: app_song/templates/app_song/song_metadata.html:66
+#: app_song/templates/app_song/song_metadata.html:70
 msgid "save"
 msgstr "Enregistrer"
 
@@ -480,6 +480,14 @@ msgstr "Thèmes"
 #: app_main/templates/app_main/homepage.html:25
 msgid "Welcome"
 msgstr "Bienvenue !"
+
+#: app_main/templates/app_main/homepage.html:29
+msgid "Moderator"
+msgstr "Modérateur"
+
+#: app_main/templates/app_main/homepage.html:30
+msgid "List of songs to be moderated"
+msgstr "Liste des chants à modérer"
 
 #: app_song/templates/app_song/delete_song.html:5
 #: app_song/templates/app_song/delete_song.html:6
@@ -836,7 +844,8 @@ msgstr ""
 
 #: templates/base.html:91
 msgid "ERR22"
-msgstr "[ERR22] Impossible de modifier un lien. Contacter l'administrateur du site."
+msgstr ""
+"[ERR22] Impossible de modifier un lien. Contacter l'administrateur du site."
 
 #: templates/base.html:93
 msgid "ERR23"
@@ -870,31 +879,27 @@ msgstr "[ERR] no message"
 msgid "ERR30"
 msgstr "[ERR30] no message"
 
-#: templates/includes/nav.html:5
-msgid "nav_home"
-msgstr "Accueil"
-
-#: templates/includes/nav.html:7
+#: templates/includes/nav.html:8
 msgid "nav_groups_list"
 msgstr "Liste des groupes"
 
-#: templates/includes/nav.html:8 templates/includes/nav.html:12
+#: templates/includes/nav.html:9 templates/includes/nav.html:13
 msgid "nav_songs_list"
 msgstr "Liste des chants"
 
-#: templates/includes/nav.html:9 templates/includes/nav.html:13
+#: templates/includes/nav.html:10 templates/includes/nav.html:14
 msgid "nav_animations_list"
 msgstr "Liste des animations"
 
-#: templates/includes/nav.html:10
+#: templates/includes/nav.html:11
 msgid "nav_logout"
 msgstr "Déconnexion"
 
-#: templates/includes/nav.html:14
+#: templates/includes/nav.html:15
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/nav.html:16
+#: templates/includes/nav.html:17
 msgid "nav_signup"
 msgstr "Créer un compte"
 
@@ -2126,6 +2131,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "nav_home"
+#~ msgstr "Accueil"
 
 #~ msgid "update"
 #~ msgstr "Modifier"

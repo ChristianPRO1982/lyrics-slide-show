@@ -71,3 +71,38 @@ UPDATE c_users
         create_SQL_log(code_file, "User.save", "UPDATE_1", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
+
+
+##############################################
+##############################################
+#################### SONG ####################
+##############################################
+##############################################
+class Songs:
+    def __init__(self):
+        self.get_songs_to_be_moderated()
+
+
+    def get_songs_to_be_moderated(self):
+        request = """
+SELECT song_id,
+       CONCAT(title,
+              CASE
+                  WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
+                  ELSE ''
+              END,
+              CASE
+                  WHEN artist != '' THEN CONCAT(' [', artist, ']')
+                  ELSE ''
+              END) AS full_title,
+       description
+  FROM l_songs
+ WHERE status IN (2)
+"""
+        params = []
+
+        create_SQL_log(code_file, "Songs.get_songs_to_be_moderated", "SELECT_2", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+        self.songs = [Song(song_id=row[0], full_title=row[1], description=row[2]) for row in rows] if rows else []
