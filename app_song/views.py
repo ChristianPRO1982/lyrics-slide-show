@@ -72,10 +72,10 @@ def modify_song(request, song_id):
             if not song.title:
                 error = "Le titre est obligatoire."
             else:
-                song.title = request.POST.get('txt_title')
-                song.sub_title = request.POST.get('txt_sub_title')
-                song.description = request.POST.get('txt_description')
-                song.artist = request.POST.get('txt_artist')
+                song.title = request.POST.get('txt_title').strip()
+                song.sub_title = request.POST.get('txt_sub_title').strip()
+                song.description = request.POST.get('txt_description').strip()
+                song.artist = request.POST.get('txt_artist').strip()
                 
                 status = song.save(moderator) # ✔️⁉️✖️
 
@@ -93,7 +93,7 @@ def modify_song(request, song_id):
                             verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
                             verse.notdisplaychorusnext = request.POST.get(f'box_verse_notdisplaychorusnext_{verse.verse_id}', 'off') == 'on'
                             verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
-                            verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
+                            verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}').strip()
                             if verse.text is None:
                                 verse.text = ''
                         
