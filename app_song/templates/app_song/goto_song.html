@@ -12,7 +12,7 @@
     {% endfor %}
 {% endblock bloc1 %}
 {% block bloc2 %}
-{{ song.description|safe }}
+{{ song.description|linebreaksbr|safe }}
 {% endblock bloc2 %}
 
 {% block content %}
