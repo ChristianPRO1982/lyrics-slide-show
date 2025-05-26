@@ -93,8 +93,8 @@ def modify_song(request, song_id):
                             verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
                             verse.notdisplaychorusnext = request.POST.get(f'box_verse_notdisplaychorusnext_{verse.verse_id}', 'off') == 'on'
                             verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
-                            verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}').strip()
-                            if verse.text is None:
+                            verse.text = str(request.POST.get(f'txt_verse_text_{verse.verse_id}')).strip()
+                            if verse.text == "None":
                                 verse.text = ''
                         
                         verse.save()
