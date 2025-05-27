@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
+{% block title_h1 %}{{ song.full_title }}{% endblock title_h1 %}
 {% block bloc1 %}
     {% include "common/song_actions.html" %}
     <hr>
@@ -43,7 +43,7 @@
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url "modify_song" song.song_id %}">
+<form method="post" action="{% url "modify_song" song.song_id %}#new_verse">
     {% csrf_token %}
     {% if moderator %}
         <div>
@@ -69,7 +69,8 @@
     <div>
         <label for="id_artist">{% trans "artist" %}</label><br>
         <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
-    </div>
+    </div><br>
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
 
     <hr>
 
@@ -147,7 +148,7 @@
     <hr>
     <input name="btn_new_verse" value="{% trans "new_verse" %}" type="submit" />
     <hr>
-
+    <a id="new_verse"></a>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
     <input name="btn_cancel" value="{% trans "cancel_info" %}" type="submit" />

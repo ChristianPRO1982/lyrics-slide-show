@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 11:46+0200\n"
+"POT-Creation-Date: 2025-05-27 11:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -512,6 +512,10 @@ msgstr "Annuler"
 #: app_song/templates/app_song/song_metadata.html:5
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
+
+#: app_song/templates/app_song/goto_song.html:16
+msgid "Artist:"
+msgstr "Artiste :"
 
 #: app_song/templates/app_song/moderator_song.html:8
 #: app_song/templates/app_song/songs.html:9
