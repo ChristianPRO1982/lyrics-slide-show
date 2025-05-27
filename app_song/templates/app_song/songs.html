@@ -51,7 +51,7 @@
         filteredSongs.forEach(song => {
             const li = document.createElement('li');
             li.classList.add('L_LI');
-            li.innerHTML = '<a href="/songs/song/' + song.song_id + '">' + song.full_title + '</a><br>';
+            li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a><br>';
             li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
             if (song.status != 0) {
                 li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';
