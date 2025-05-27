@@ -41,7 +41,8 @@
                 <td><input name="txt_link_{{ forloop.counter }}" value="{{ link.0 }}"></td>
                 <td><input value="{{ link.1 }}" readonly="readonly"></td>
                 <td>
-                    <input name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
+                    <input onclick="return confirm('{% trans "Delete this link?" %}');"
+                    name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
                 </td>
             </tr>
             {% endfor %}
