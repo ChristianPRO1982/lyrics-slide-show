@@ -3,8 +3,10 @@
 {% load i18n %}
 
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
+{% block title_h1 %}{{ song.full_title }}{% endblock title_h1 %}
 {% block bloc1 %}
+    {% include "common/song_actions.html" %}
+    <hr>
     {% if moderator %}
         <button type="button" onclick="toggleVisibility('new_messages')">{% trans "New messages" %} 👀</button><br>
         <div id="new_messages" style="display: none;">
@@ -34,11 +36,14 @@
     {% for link in song.links %}
         <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}
+    {% if song.status != 0 and not moderator %}
+        <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
+    {% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url "modify_song" song.song_id %}">
+<form method="post" action="{% url "modify_song" song.song_id %}#new_verse">
     {% csrf_token %}
     {% if moderator %}
         <div>
@@ -64,12 +69,14 @@
     <div>
         <label for="id_artist">{% trans "artist" %}</label><br>
         <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
-    </div>
+    </div><br>
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
 
     <hr>
 
     {% for verse in verses %}
         <div class="mt-1 px-1 border L_DIV_BORDER">
+            {% if forloop.last and new_verse %}<a id="new_verse"></a>{% endif %}
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 40%;">
                     <input style="width: 10%;" type="checkbox" name="box_verse_chorus_{{ verse.verse_id }}"
@@ -77,16 +84,22 @@
                     <label for="box_verse_chorus_{{ verse.verse_id }}">{% trans "chorus" %}</label>
                     
                     {% if verse.chorus != 1 %}
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_notcontinuenumbering_{{ verse.verse_id }}"
+                        id="box_verse_notcontinuenumbering_{{ verse.verse_id }}" {% if verse.notcontinuenumbering %}checked{% endif %} />
+                        <label for="box_verse_notcontinuenumbering_{{ verse.verse_id }}" title="{% trans "Not continue numbering" %}">{% trans "Not C. num ⓘ" %}</label>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
                         id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
                         <label for="box_verse_followed_{{ verse.verse_id }}">{% trans "followed" %}</label>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
-                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus %}checked{% endif %} />
+                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus != 0 %}checked{% endif %} />
                         <label for="box_verse_like_chorus_{{ verse.verse_id }}">{% trans "like_a_chorus" %}</label>
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_notdisplaychorusnext_{{ verse.verse_id }}"
+                        id="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" {% if verse.notdisplaychorusnext %}checked{% endif %} />
+                        <label for="box_verse_notdisplaychorusnext_{{ verse.verse_id }}">{% trans "Do not display the chorus after" %}</label>
                     {% endif %}
                 </div>
                 <div style="text-align: center; width: 25%;">
-                    {% if not verse.chorus %}
+                    {% if not verse.chorus and not verse.notcontinuenumbering %}
                         <b>{% trans "verse_num" %}{{ verse.num_verse }}</b>
                     {% endif %}
                 </div>
@@ -97,11 +110,12 @@
                             {% for lis_move_to_verse in verses %}
                                 {% if lis_move_to_verse.num < verse.num %}
                                     <option value="{{ lis_move_to_verse.num|add:"-1" }}">
-                                        {% if lis_move_to_verse.chorus %}
+                                        {% if lis_move_to_verse.chorus == 1 %}
                                         {% trans "chorus" %}
                                         {% else %}
                                         {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
                                         {% endif %}
+                                        - {{ lis_move_to_verse.text|slice:":45" }} [...]
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -111,11 +125,12 @@
                             {% for lis_move_to_verse in verses %}
                                 {% if lis_move_to_verse.num > verse.num %}
                                     <option value="{{ lis_move_to_verse.num|add:"+1" }}">
-                                        {% if lis_move_to_verse.chorus %}
+                                        {% if lis_move_to_verse.chorus == 1 %}
                                         {% trans "chorus" %}
                                         {% else %}
                                         {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
                                         {% endif %}
+                                        - {{ lis_move_to_verse.text|slice:":45" }} [...]
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -136,7 +151,7 @@
     <hr>
     <input name="btn_new_verse" value="{% trans "new_verse" %}" type="submit" />
     <hr>
-
+    
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
     <input name="btn_cancel" value="{% trans "cancel_info" %}" type="submit" />

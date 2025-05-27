@@ -7,11 +7,11 @@
 {% block bloc1 %}
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
-{% trans "actions" %}<br>
-<a href="{% url "lyrics_slide_show" animation.animation_id %}">{% trans "Slide show" %}</a>
+{% include "common/animation_actions.html" %}
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
+<a id="lyrics"></a>
 <div id="song-lyrics">
     {% trans "Select a song to view the lyrics" %}
 </div>
@@ -119,7 +119,7 @@
             <hr>
             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
                 <div style="text-align: left;">
-                    <a href="#" onclick="updateDiv({{ song.song_id }})">👁️ {% trans "See the song" %}</a>
+                    <a href="#lyrics" onclick="updateDiv({{ song.song_id }})">👁️ {% trans "See the song" %}</a>
                 </div>
                 <div style="text-align: right;">
                     <a href="#" onclick="if(confirm('{% trans "Changes will be lost, do you really want to leave this page?" %}'))
@@ -172,7 +172,7 @@
   
         const link = document.createElement('a');
         link.href = 'javascript:void(0);';
-        link.textContent = 'Add';
+        link.textContent = txt_Add;
         link.addEventListener('click', () => {
           addSong(song.id, song.name);
         });

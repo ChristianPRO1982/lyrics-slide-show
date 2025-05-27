@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
+{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
+{% block bloc1 %}
+    {% include "common/song_actions.html" %}
+    <hr>
+    {% for link in song.links %}
+        <a href="{{ link|first }}">{{ link|last }}</a><br>
+    {% endfor %}
+    {% if song.status != 0 and not moderator %}
+        <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
+    {% endif %}
+{% endblock bloc1 %}
+{% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
+
+{% block content %}
+<h2 class="L_H2">{{ song.sub_title }}</h2>
+<h3 class="L_H3">{% trans "Metadata" %}</h3>
+<form method="post" action="{% url "song_metadata" song.song_id %}">
+    {% csrf_token %}
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
+
+    <hr>
+
+    <h4 class="L_H4">Lien web</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40%;">{% trans "Link" %}</th>
+                <th style="width: 40%;">{% trans "Auto-text" %}</th>
+                <th style="width: 20%;">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in song.links %}
+            <tr>
+                <td><input name="txt_link_{{ forloop.counter }}" value="{{ link.0 }}"></td>
+                <td><input value="{{ link.1 }}" readonly="readonly"></td>
+                <td>
+                    <input onclick="return confirm('{% trans "Delete this link?" %}');"
+                    name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" rowspan="1">{% trans "New link" %}</td>
+            </tr>
+            <tr>
+                <td colspan="3" rowspan="1"><input name="txt_new_link"></td>
+            </tr>
+            <tr>
+                <th>{% trans "Link" %}</th>
+                <th>{% trans "Auto-text" %}</th>
+                <th>{% trans "Actions" %}</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <hr>
+
+    <h4 class="L_H4">Genre</h4>
+
+    <hr>
+
+    <input name="btn_save" value="{% trans "save" %}" type="submit" />
+</form>
+{% endblock content %}

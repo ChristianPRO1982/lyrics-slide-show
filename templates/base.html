@@ -16,7 +16,7 @@
 </head>
 <body class="L_TEXT L_BG">
     {% if not no_loader %}
-    <div id="loader" class="hover:underline text-l fixed inset-0 z-50 flex items-center justify-center">
+    <div id="loader" class="text-l fixed inset-0 z-50 flex items-center justify-center">
         <a href="{% url "kill_loader" %}"><div>
             <div class="fixed inset-0 z-50 flex items-center justify-center">
                 <img src="{% static 'images/loading.gif' %}" alt="🔄" title="{% trans 'Loading...' %}" class="w-96 h-48">
@@ -44,7 +44,7 @@
                         <!-- §§§§§ MAIN BLOC §§§§§ -->
                         <!-- §§§§§§§§§§§§§§§§§§§§§ -->
                         {% if error != '' %}
-                            <span class="float-left">⚠️</span>
+                            <span class="float-left">⚠️&nbsp;</span>
                             {% if error == '[ERR1]' %}
                                 <p class="L_ERROR">{% trans "ERR1" %}</p>
                             {% elif error == '[ERR2]' %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
-from app_main.utils import is_moderator, is_no_loader
+from app_main.utils import is_moderator, is_no_loader, strip_html
 
 
 
@@ -9,6 +9,7 @@ def songs(request):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+    new_song_title = '';
 
     try:
         if request.session['error']:
@@ -30,6 +31,8 @@ def songs(request):
                            )
             if not new_song.save():
                 error = '[ERR12]'
+            else:
+                new_song_title = new_song.title
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
             request.POST['txt_new_description'] = ''
@@ -42,6 +45,7 @@ def songs(request):
         'title': request.POST.get('txt_new_title', ''),
         'description': request.POST.get('txt_new_description', ''),
         'moderator': moderator,
+        'new_song_title': new_song_title,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -52,6 +56,7 @@ def modify_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+    new_verse = False
 
     song = Song.get_song_by_id(song_id)
     if not song:
@@ -68,16 +73,17 @@ def modify_song(request, song_id):
             if not song.title:
                 error = "Le titre est obligatoire."
             else:
-                song.title = request.POST.get('txt_title')
-                song.sub_title = request.POST.get('txt_sub_title')
-                song.description = request.POST.get('txt_description')
-                song.artist = request.POST.get('txt_artist')
+                song.title = request.POST.get('txt_title').strip()
+                song.sub_title = request.POST.get('txt_sub_title').strip()
+                song.description = request.POST.get('txt_description').strip()
+                song.artist = request.POST.get('txt_artist').strip()
                 
                 status = song.save(moderator) # ✔️⁉️✖️
 
                 if status:
                     if 'btn_new_verse' in request.POST:
                         song.new_verse()
+                        new_verse = True
                     
                     for verse in song.verses:
                         if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
@@ -85,10 +91,12 @@ def modify_song(request, song_id):
                         else:
                             verse.chorus = request.POST.get(f'box_verse_chorus_{verse.verse_id}', 'off') == 'on'
                             verse.followed = request.POST.get(f'box_verse_followed_{verse.verse_id}', 'off') == 'on'
+                            verse.notcontinuenumbering = request.POST.get(f'box_verse_notcontinuenumbering_{verse.verse_id}', 'off') == 'on'
                             verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
+                            verse.notdisplaychorusnext = request.POST.get(f'box_verse_notdisplaychorusnext_{verse.verse_id}', 'off') == 'on'
                             verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
-                            verse.text = request.POST.get(f'txt_verse_text_{verse.verse_id}')
-                            if verse.text is None:
+                            verse.text = strip_html(str(request.POST.get(f'txt_verse_text_{verse.verse_id}'))).strip()
+                            if verse.text == "None":
                                 verse.text = ''
                         
                         verse.save()
@@ -115,12 +123,12 @@ def modify_song(request, song_id):
             return redirect('songs')
 
         # Recalculate 'num' and 'num_verse' the for all choruses/verses
-        num_verse = 1
+        num_verse = 0
         for index, verse in enumerate(song.verses):
             verse.num = (index + 1) * 2
-            verse.num_verse = num_verse
-            if not verse.chorus and not verse.like_chorus:
+            if not verse.chorus and not verse.like_chorus and not verse.notcontinuenumbering:
                 num_verse = num_verse + 1
+            verse.num_verse = num_verse
             verse.save()
 
     song_lyrics = song.get_lyrics()
@@ -137,6 +145,7 @@ def modify_song(request, song_id):
         'moderator': moderator,
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
+        'new_verse': new_verse,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -149,6 +158,10 @@ def delete_song(request, song_id):
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
+    moderator = is_moderator(request)
+    if song.status == 1 and not moderator:
+        request.session['error'] = '[ERR18]'
+        return redirect('songs')
 
     if request.method == 'POST':
         if 'btn_delete' in request.POST:
@@ -158,6 +171,7 @@ def delete_song(request, song_id):
     return render(request, 'app_song/delete_song.html', {
         'song': song,
         'error': error,
+        'css': css,
         'no_loader': no_loader,
     })
 
@@ -214,4 +228,60 @@ def moderator_song(request, song_id):
         'error': error,
         'css': css,
         'no_loader': no_loader,
+    })
+
+
+def song_metadata(request, song_id):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    moderator = is_moderator(request)
+
+    if request.method == 'POST':
+        # if 'btn_save' in request.POST:
+        new_link = request.POST.get('txt_new_link')
+        new_link = new_link.strip()
+        if new_link:
+            returned = str(song.add_link(new_link))
+            if "Duplicate entry" in returned:
+                error = '[ERR19]'
+            elif returned != '':
+                error = '[ERR20]'
+
+        if error == '':
+            for index, link in enumerate(song.links):
+                returned = str(song.update_link(link[0], request.POST.get(f'txt_link_{index + 1}')))
+                if "Duplicate entry" in returned:
+                    error = '[ERR19]'
+                elif returned != '':
+                    error = '[ERR22]'
+                if error != '':
+                    break
+
+        if error == '':
+            for index, link in enumerate(song.links):
+                if f'btn_delete_link_{index + 1}' in request.POST:
+                    error = song.delete_link(link[0])
+                if error != '':
+                    break
+
+        # refresh
+        song.get_links()
+
+    song.get_verses()
+    song_lyrics = song.get_lyrics()
+
+    return render(request, 'app_song/song_metadata.html', {
+        'song': song,
+        'error': error,
+        'css': css,
+        'moderator': moderator,
+        'no_loader': no_loader,
+        'song_lyrics': song_lyrics,
     })

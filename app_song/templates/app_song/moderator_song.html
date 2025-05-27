@@ -5,6 +5,8 @@
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
+    {% trans "contact_moderators_info_gen" %}
+    <hr>
     {% for link in song.links %}
         <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}

@@ -80,25 +80,80 @@
 </script>
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 <hr>
-{% trans "actions" %}<br>
-<a href="{% url "modify_animation" animation.animation_id %}">{% trans "modify" %}</a>
+{% include "common/animation_actions.html" %}
 <hr>
+{% trans "Shortcuts:" %}
+( <a id="a_shortcuts" style="cursor:pointer;"
+onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', '{% trans "hide" %}')">{% trans "show" %}</a> )
+<div id="div_shortcuts" class="hidden">
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k1-esc.png' %}" title="Esc" class="w-6 h-6">
+        <img src="{% static 'images/k2-B.png' %}" title="B" class="w-6 h-6">
+        <img src="{% static 'images/k1-arrowUp.png' %}" title="⬆️" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "BLACK MODE" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k1-space-2.png' %}" title="{% trans "Space bar" %}" class="w-6 h-6">
+        <img src="{% static 'images/k2-S.png' %}" title="S" class="w-6 h-6">
+        <img src="{% static 'images/k2-V.png' %}" title="V" class="w-6 h-6">
+        <img src="{% static 'images/k1-arrowDown.png' %}" title="⬇️" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Next slide" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-R.png' %}" title="R" class="w-6 h-6">
+        <img src="{% static 'images/k2-C.png' %}" title="C" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Chorus" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-P.png' %}" title="P" class="w-6 h-6">
+        <img src="{% static 'images/k1-arrowLeft.png' %}" title="⬅️" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Previous song" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k1-enter.png' %}" title="⏎" class="w-6 h-6">
+        <img src="{% static 'images/k2-N.png' %}" title="N" class="w-6 h-6">
+        <img src="{% static 'images/k1-arrowRight.png' %}" title="➡️" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Next song" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-A.png' %}" title="A" class="w-6 h-6">
+        <img src="{% static 'images/k2-D.png' %}" title="D" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Display/hide choruses" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-L.png' %}" title="L" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Scroll on ↕️ or not 🧱" %}
+    </div>
+    {% trans "in upper or lower case" %}
+</div>
+<hr>
+<div class="sticky top-0 p-2">
+    {% for slide in slides %}
+        {% if slide.new_animation_song == 1 %}
+            <a href="#song_{{ slide.animation_song_id }}">{{ slide.full_title }}</a><br>
+        {% endif %}
+    {% endfor %}
+</div>
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="controls">
     <button id="openDisplayWindow" onClick="document.getElementById('showOpenDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Open a second screen" %}</button>
     <button id="showOpenDisplayWindow" style="display:none;" onClick="document.getElementById('openDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Reopen second screen" %}</button>
 </div>
+<script>
+    color_rgba = "{{ animation.color_rgba }}";
+    bg_rgba = "{{ animation.bg_rgba }}";
+</script>
 <script src="{% static 'js/remote.js' %}"></script>
 <hr>
 <div class="sticky top-0 p-2">
     <div id="blackMode"
         onClick="blackMode();"
-        class="slide flex h-36 p-2 text-center items-center justify-center border rounded-lg">
+        class="slide flex h-28 p-2 text-center items-center justify-center border rounded-lg">
         <span class="text-4xl">🖥️</span>
     </div>
     <div onClick="blackMode();"
-        class="slide text-center">
+        class="text-center">
         {% trans "BLACK MODE" %}
     </div>
     <br>
@@ -107,20 +162,25 @@
         <div id="nav_next_slide" onClick="navNextSlide();" class="flex w-1/2"></div>
         <div id="nav_chorus" onClick="navChorus();" class="flex w-1/2"></div>
     </div>
+    <div id="nav_slide" class="flex">
+        <div onClick="navNextSlide();" class="flex w-1/2">{% trans "Next slide" %}</div>
+        <div onClick="navChorus();" class="flex w-1/2">{% trans "Chorus" %}</div>
+    </div>
     <br>
-    <p>{% trans "Songs" %}</p>
+    <p>{% trans "Songs" %}<br><span class="italic" id="current_song_title">coco</span></p>
     <div class="flex">
         <div id="nav_previous_song" onClick="navPreviousSong();" class="flex w-1/2"></div>
         <div id="nav_next_song" onClick="navNextSong();" class="flex w-1/2"></div>
     </div>
     <div class="flex">
         <div id="nav_previous_song_full_title" onClick="navPreviousSong();" class="flex w-1/2"></div>
-        <div id="nav_next_full_title" class="flex w-1/2"></div>
+        <div id="nav_next_full_title" onClick="navNextSong();" class="flex w-1/2"></div>
     </div>
     <br>
     <p>{% trans "Options" %}</p>
     <div class="flex">
         <div id="dis_choruses" onClick="disChoruses(true);" class="flex w-1/2"></div>
+        <div id="scrollable" onClick="scrollable();" class="flex w-1/2"></div>
     </div>
 </div>
 <script>
@@ -128,6 +188,7 @@
     navSongs(songIdToIndex(0));
     display_choruses = 0;
     disChoruses(true);
+    scrollable();
 </script>
 {% endblock bloc2 %}
 
@@ -144,8 +205,8 @@
         onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
         navSongs(songIdToIndex({{ slide.animation_song_id }}));
         {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
-        class="slide {% if slide.chorus %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
-        {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:180 }}
+        class="slide {% if slide.chorus == 1 %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
+        {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe|slice:100 }}
     </div>
 {% endfor %}
 </div>

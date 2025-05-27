@@ -3,19 +3,20 @@
 {% load i18n %}
 
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
-{% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
+{% block title_h1 %}{{ song.full_title }}{% endblock title_h1 %}
 {% block bloc1 %}
+    {% include "common/song_actions.html" %}
+    <hr>
     {% for link in song.links %}
         <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}
 {% endblock bloc1 %}
 {% block bloc2 %}
-{% if song.status == 0 or moderator %}
-    <a href="{% url 'modify_song' song.song_id %}">{% trans "update" %}</a> |
-    <a href="{% url 'delete_song' song.song_id %}">{% trans "delete" %}</a>
-{% else %}
-    <a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
+{% if song.artist %}
+{% trans "Artist:" %} {{ song.artist }}
+<hr>
 {% endif %}
+{{ song.description|linebreaksbr|safe }}
 {% endblock bloc2 %}
 
 {% block content %}

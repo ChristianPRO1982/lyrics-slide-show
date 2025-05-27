@@ -1,11 +1,3 @@
-// TRANSLATION
-const pageLanguage = document.documentElement.lang || 'fr';
-if (pageLanguage.toLowerCase() == 'fr-fr') {
-    txt_fullscreen = 'APPUYEZ SUR F11 SUR CETTE ÉCRAN';
-} else {
-    txt_fullscreen = 'PRESS F11 ON THIS SCREEN';
-}
-
 document.getElementById('openDisplayWindow').addEventListener('click', () => {
     displayWindow = window.open('', 'SlideDisplay', 'width=800,height=600');
     displayWindow.document.write(`
@@ -19,7 +11,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
             body {
             margin: 0;
             padding: 0;
-            color: white;
+            color: grey;
             background-color: black;
             display: flex;
             justify-content: center;
@@ -33,7 +25,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         </style>
         </head>
         <body>
-        <div class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
+        <div style="color: ` + color_rgba + `; background-color: ` + bg_rgba + `;" class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
         </body>
         </html>
     `);
@@ -140,7 +132,7 @@ function navNextSlide() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
 }
 
@@ -152,7 +144,7 @@ function navNextSlideInit() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
 }
 
@@ -164,7 +156,7 @@ function navChorus() {
     
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
     }
     
     showSlide(chorus[current_chorus_slide], false);
@@ -181,7 +173,7 @@ function navChorusInit() {
 
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
     }
 }
 
@@ -207,14 +199,17 @@ function navSongs(index) {
     
     if (navPreviousSongDiv) {
         navPreviousSongDiv.innerHTML = '<a href="#song_' + songs[index].previous_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
         navPreviousSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].previous_song_full_title + '</span>';
     }
     if (navNextSongDiv) {
         navNextSongDiv.innerHTML = '<a href="#song_' + songs[index].next_song_id +
-        '" class="w-full"><div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
         navNextSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].next_song_full_title + '</span>';
     }
+
+    let currentSongTitleDiv = document.getElementById('current_song_title');
+    currentSongTitleDiv.textContent = songs[index].song_full_title;
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -230,12 +225,16 @@ function navPreviousSong() {
     if (songs[songIdToIndex(current_song_id)].previous_song_id != '') {
         navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].previous_song_id));
     }
+    targetElement = document.getElementById("song_" + current_song_id);
+    targetElement.scrollIntoView();
 }
 
 function navNextSong() {
     if (songs[songIdToIndex(current_song_id)].next_song_id != '') {
         navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].next_song_id));
     }
+    targetElement = document.getElementById("song_" + current_song_id);
+    targetElement.scrollIntoView();
 }
 
 function songIdToIndex(song_id) {
@@ -264,17 +263,129 @@ function disChoruses(change = false) {
 
     if (display_choruses == 1) {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.add('hidden');
             });
         }
     } else {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-36 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.remove('hidden');
             });
         }
     }
 }
+
+document.addEventListener('keydown', (event) => {
+    // alert(event.key);
+
+    // BLACK MODE \\
+    if (event.key.toLowerCase() === 'escape') {
+        blackMode();
+    }
+    if (event.key.toLowerCase() === 'b') {
+        blackMode();
+    }
+    if (event.key.toLowerCase() === 'arrowup') {
+        blackMode();
+    }
+
+    // NEXT SLIDE \\
+    if (event.key.toLowerCase() === 'arrowdown') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === 's') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === 'v') {
+        navNextSlide();
+    }
+    if (event.key.toLowerCase() === ' ') {
+        navNextSlide();
+    }
+
+    // CHORUS \\
+    if (event.key.toLowerCase() === 'c') {
+        navChorus();
+    }
+    if (event.key.toLowerCase() === 'r') {
+        navChorus();
+    }
+
+    // PREVIOUS SONG \\
+    if (event.key.toLowerCase() === 'arrowleft') {
+        navPreviousSong();
+    }
+    if (event.key.toLowerCase() === 'p') {
+        navPreviousSong();
+    }
+
+    // NEXT SONG \\
+    if (event.key.toLowerCase() === 'arrowright') {
+        navNextSong();
+    }
+    if (event.key.toLowerCase() === 'enter') {
+        navNextSong();
+    }
+    if (event.key.toLowerCase() === 'n') {
+        navNextSong();
+    }
+
+    // OPTIONS \\
+    // display-undisplay choruses
+    if (event.key.toLowerCase() === 'a') {
+        disChoruses(true);
+    }
+    if (event.key.toLowerCase() === 'd') {
+        disChoruses(true);
+    }
+    // scrollable
+    if (event.key.toLowerCase() === 'l') {
+        scrollable();
+    }
+});
+
+let blockScrollKeys = true;
+
+function handleKeydown(event) {
+    const keysToBlock = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
+
+    if (blockScrollKeys && keysToBlock.includes(event.key)) {
+        event.preventDefault();
+    }
+}
+
+function enableScrollKeyBlocking() {
+    blockScrollKeys = true;
+}
+
+function disableScrollKeyBlocking() {
+    blockScrollKeys = false;
+}
+
+function scrollable() {
+    if (blockScrollKeys) {
+        blockScrollKeys = false;
+    } else {
+        blockScrollKeys = true;
+    }
+
+    const scrollableDiv = document.getElementById('scrollable');
+    if (scrollableDiv) {
+        scrollableDiv.innerHTML = '';
+    }
+
+    if (blockScrollKeys == 1) {
+        if (scrollableDiv) {
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🧱</div>';
+        }
+    } else {
+        if (scrollableDiv) {
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">↕️</div>';
+        }
+    }
+}
+
+window.addEventListener('keydown', handleKeydown, { passive: false });

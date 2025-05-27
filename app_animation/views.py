@@ -212,3 +212,37 @@ def lyrics_slide_show(request, animation_id):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+def modify_colors_animation(request, animation_id):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    animation = None
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group_selected = group.name
+    
+    if group_selected:
+        animation = Animation.get_animation_by_id(animation_id, group_id)
+        if not animation:
+            return redirect('animations')
+
+        if request.method == 'POST':
+            if 'btn_save' in request.POST:
+                animation.color_rgba = request.POST.get('text_color')
+                animation.bg_rgba = request.POST.get('bg_color')
+                animation.save()
+                return redirect('animations')
+    
+    return render(request, 'app_animation/modify_colors_animation.html', {
+        'animation': animation,
+        'group_selected': group_selected,
+        'error': error,
+        'css': css,
+        'no_loader': no_loader,
+    })

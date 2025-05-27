@@ -4,7 +4,9 @@
 
 {% block title %}{% trans "confirm_delete_song_title" %}{% endblock title %}
 {% block title_h1 %}{% trans "confirm_delete_song_title" %}{% endblock title_h1 %}
-{% block bloc1 %}{% endblock bloc1 %}
+{% block bloc1 %}
+{% include "common/song_actions.html" %}
+{% endblock bloc1 %}
 {% block bloc2 %}{% endblock bloc2 %}
 
 {% block content %}

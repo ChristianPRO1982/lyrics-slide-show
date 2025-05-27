@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from app_logs.utils import delete_old_logs
-from .utils import is_no_loader
-
+from .utils import is_moderator, is_no_loader, save_user_theme
+from .SQL_main import User, Songs
 
 
 def error_404(request, exception):
@@ -12,14 +12,24 @@ def error_404(request, exception):
 
 def homepage(request):
     error = ''
-    css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+    moderator = is_moderator(request)
+
+    username = request.user.username
+    if username:
+        user = User(username)
+        request.session['css'] = user.theme
+
+    songs = Songs()
 
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
         'css': css,
         'no_loader': no_loader,
+        'moderator': moderator,
+        'songs': songs.songs,
     })
 
 
@@ -34,10 +44,10 @@ def loader(request):
 
 
 def theme_normal(request):
-    request.session['css'] = 'normal.css'
+    save_user_theme(request, 'normal.css')
     return redirect('homepage')
 
 
 def theme_scout(request):
-    request.session['css'] = 'scout.css'
+    save_user_theme(request, 'scout.css')
     return redirect('homepage')

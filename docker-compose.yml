@@ -20,8 +20,11 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./staticfiles:/static:ro
+      - /etc/letsencrypt/live/www.carthographie.fr:/etc/letsencrypt/live/www.carthographie.fr:ro
+      - /etc/letsencrypt/archive/www.carthographie.fr:/etc/letsencrypt/archive/www.carthographie.fr:ro
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - web
 

@@ -33,7 +33,7 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = 1#os.getenv("DEBUG", "False") == '1'
 
 ALLOWED_HOSTS = ['*']
 
@@ -193,6 +193,8 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1  # Allauth en a besoin pour fonctionner
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # LOGIN_URL = '/admin/login/?next=/admin/'
 LOGIN_URL = '/account/login/'

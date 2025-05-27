@@ -34,7 +34,7 @@ def lyrics(slides):
                 if slide['text']:
                     slide['new_animation_song'] = 0
                     lyrics.append(slide)
-                if slide['followed'] == 0 and len(choruses) > 0:
+                if slide['followed'] == 0 and len(choruses) > 0 and slide['chorus'] != 3:
                     lyrics.extend([chorus.copy() for chorus in choruses])
             elif start_by_chorus:
                 lyrics.extend([chorus.copy() for chorus in choruses])

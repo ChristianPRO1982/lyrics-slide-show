@@ -8,14 +8,30 @@
 {% block bloc1 %}
 
 <hr>
-{% trans "Themes" %}<br>
+<h3 class="L_H3">{% trans "Themes" %}</h2>
 <a href="{% url 'theme_normal' %}">Normal (taizé)</a><br>
 <a href="{% url 'theme_scout' %}">Scout</a><br>
 {% endblock bloc1 %}
 {% block bloc2 %}
-<img class="w-72" src="{% static "images/cARThographie.png" %}">
+<img class="w-72" src="{% static "images/cARThographie.png" %}"><br>
+<a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
+    target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+            alt="Latest Release" class="h-6">
+</a>
 {% endblock bloc2 %}
 
 {% block content %}
 <p>{% trans "Welcome" %}</p>
+
+{% if moderator %}
+<hr>
+<h2 class="L_H2">{% trans "Moderator" %}</h2>
+<h3 class="L_H3">{% trans "List of songs to be moderated" %}</h3>
+<ul>
+{% for song in songs %}
+<li><a href="{% url 'modify_song' song.song_id %}">{{ song.full_title }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
 {% endblock content %}

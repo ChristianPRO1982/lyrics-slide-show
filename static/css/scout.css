@@ -7,12 +7,24 @@
 
 a {
     color: #795107;
-    text-decoration: underline !important;
+    text-decoration: underline dotted !important;
 }
 
 a:hover {
     color: #b3780b;
-    text-decoration: overline underline !important;
+    text-decoration: underline !important;
+}
+
+a.NAV {
+    text-decoration: none !important;
+}
+
+a.NAV:hover {
+    text-decoration: underline !important;
+}
+
+.L_LIKE_A {
+    text-decoration: underline dotted !important;
 }
 
 hr {
@@ -24,6 +36,14 @@ hr {
 .L_TABLE_TR {
     background-color: #fff4f0;
     border: 1px solid #54e7db;
+}
+
+.L_LI {
+    background-color: #fff4f0;
+    border: 1px solid #54e7db;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 0;
 }
 
 .L_DIV_BORDER {
@@ -93,6 +113,7 @@ hr {
     /* color: #6b1f1f; */
     /* background-color: #eea78e; */
     border: 0px solid #774205;
+    pointer-events: none;
 }
 
 slide {
@@ -124,6 +145,11 @@ active {
         border-color: solid #3d5a4b !important;
     }
     .L_TABLE_TR, .L_DIV_BORDER, .L_GROUP_SELECTED {
+        background-color: #2d1b1b;
+        border: 1px solid #3d5a4b;
+        color: #3d5a4b;
+    }
+    .L_LI {
         background-color: #2d1b1b;
         border: 1px solid #3d5a4b;
         color: #3d5a4b;
