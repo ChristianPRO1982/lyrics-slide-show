@@ -13,13 +13,14 @@ def error_404(request, exception):
 def homepage(request):
     error = ''
     no_loader = is_no_loader(request)
-    css = request.session.get('css', 'normal.css')
     moderator = is_moderator(request)
 
     username = request.user.username
     if username:
         user = User(username)
         request.session['css'] = user.theme
+        
+    css = request.session.get('css', 'normal.css')
 
     songs = Songs()
 
