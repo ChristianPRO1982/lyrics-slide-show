@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
-from app_main.utils import is_moderator, is_no_loader
+from app_main.utils import is_moderator, is_no_loader, strip_html
 
 
 
@@ -95,7 +95,7 @@ def modify_song(request, song_id):
                             verse.like_chorus = request.POST.get(f'box_verse_like_chorus_{verse.verse_id}', 'off') == 'on'
                             verse.notdisplaychorusnext = request.POST.get(f'box_verse_notdisplaychorusnext_{verse.verse_id}', 'off') == 'on'
                             verse.num = request.POST.get(f'lis_move_to_{verse.verse_id}')
-                            verse.text = str(request.POST.get(f'txt_verse_text_{verse.verse_id}')).strip()
+                            verse.text = strip_html(str(request.POST.get(f'txt_verse_text_{verse.verse_id}'))).strip()
                             if verse.text == "None":
                                 verse.text = ''
                         

@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from .SQL_main import User
 
 
@@ -21,3 +22,6 @@ def save_user_theme(request, css):
         user = User(request.user.username)
         user.theme = css
         user.save()
+
+def strip_html(html_text):
+    return BeautifulSoup(html_text, "html.parser").get_text()
