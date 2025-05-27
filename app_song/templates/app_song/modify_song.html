@@ -76,6 +76,7 @@
 
     {% for verse in verses %}
         <div class="mt-1 px-1 border L_DIV_BORDER">
+            {% if forloop.last and new_verse %}<a id="new_verse"></a>{% endif %}
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 40%;">
                     <input style="width: 10%;" type="checkbox" name="box_verse_chorus_{{ verse.verse_id }}"
@@ -148,7 +149,7 @@
     <hr>
     <input name="btn_new_verse" value="{% trans "new_verse" %}" type="submit" />
     <hr>
-    <a id="new_verse"></a>
+    
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
     <input name="btn_cancel" value="{% trans "cancel_info" %}" type="submit" />

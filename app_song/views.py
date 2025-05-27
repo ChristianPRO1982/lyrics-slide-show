@@ -56,6 +56,7 @@ def modify_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+    new_verse = False
 
     song = Song.get_song_by_id(song_id)
     if not song:
@@ -82,6 +83,7 @@ def modify_song(request, song_id):
                 if status:
                     if 'btn_new_verse' in request.POST:
                         song.new_verse()
+                        new_verse = True
                     
                     for verse in song.verses:
                         if request.POST.get(f'box_delete_{verse.verse_id}', 'off') == 'on':
@@ -143,6 +145,7 @@ def modify_song(request, song_id):
         'moderator': moderator,
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
+        'new_verse': new_verse,
         'error': error,
         'css': css,
         'no_loader': no_loader,
