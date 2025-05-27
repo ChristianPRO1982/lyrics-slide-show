@@ -99,7 +99,7 @@
                     {% endif %}
                 </div>
                 <div style="text-align: center; width: 25%;">
-                    {% if not verse.chorus %}
+                    {% if not verse.chorus and not verse.notcontinuenumbering %}
                         <b>{% trans "verse_num" %}{{ verse.num_verse }}</b>
                     {% endif %}
                 </div>

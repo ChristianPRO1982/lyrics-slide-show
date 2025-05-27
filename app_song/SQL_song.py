@@ -72,7 +72,9 @@ ORDER BY title, sub_title
         for verse in self.verses:
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
-                    lyrics += str(verse.num_verse) + ". " + verse.text.replace("\n", "<br>") + "<br><br>"
+                    if not verse.notcontinuenumbering:
+                        lyrics += str(verse.num_verse) + ". "
+                    lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
