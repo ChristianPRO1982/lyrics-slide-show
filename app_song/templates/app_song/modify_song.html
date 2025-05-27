@@ -110,11 +110,12 @@
                             {% for lis_move_to_verse in verses %}
                                 {% if lis_move_to_verse.num < verse.num %}
                                     <option value="{{ lis_move_to_verse.num|add:"-1" }}">
-                                        {% if lis_move_to_verse.chorus %}
+                                        {% if lis_move_to_verse.chorus == 1 %}
                                         {% trans "chorus" %}
                                         {% else %}
                                         {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
                                         {% endif %}
+                                        - {{ lis_move_to_verse.text|slice:":45" }} [...]
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -124,11 +125,12 @@
                             {% for lis_move_to_verse in verses %}
                                 {% if lis_move_to_verse.num > verse.num %}
                                     <option value="{{ lis_move_to_verse.num|add:"+1" }}">
-                                        {% if lis_move_to_verse.chorus %}
+                                        {% if lis_move_to_verse.chorus == 1 %}
                                         {% trans "chorus" %}
                                         {% else %}
                                         {% trans "verse_num" %}{{ lis_move_to_verse.num_verse }}
                                         {% endif %}
+                                        - {{ lis_move_to_verse.text|slice:":45" }} [...]
                                     </option>
                                 {% endif %}
                             {% endfor %}
