@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 13:20+0200\n"
+"POT-Creation-Date: 2025-05-27 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -359,7 +359,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:25
+#: app_song/templates/app_song/songs.html:32
 msgid "add"
 msgstr "ajouter"
 
@@ -564,7 +564,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:40
 #: app_song/templates/app_song/song_metadata.html:14
-#: app_song/templates/app_song/songs.html:57
+#: app_song/templates/app_song/songs.html:64
 #: app_song/templates/common/song_actions.html:11
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
@@ -588,7 +588,7 @@ msgid "subtitle"
 msgstr "Sous-titre"
 
 #: app_song/templates/app_song/modify_song.html:66
-#: app_song/templates/app_song/songs.html:24
+#: app_song/templates/app_song/songs.html:31
 msgid "description"
 msgstr "Description"
 
@@ -678,7 +678,11 @@ msgstr "✔️⁉️ : Chant validé avec des messages"
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
-#: app_song/templates/app_song/songs.html:23
+#: app_song/templates/app_song/songs.html:20
+msgid "Advanced search"
+msgstr "Recherche avancée"
+
+#: app_song/templates/app_song/songs.html:30
 msgid "new_song"
 msgstr "Nouveau chant"
 
