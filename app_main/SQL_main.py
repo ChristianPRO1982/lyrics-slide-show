@@ -106,3 +106,34 @@ SELECT song_id,
             cursor.execute(request, params)
             rows = cursor.fetchall()
         self.songs = [Song(song_id=row[0], full_title=row[1], description=row[2]) for row in rows] if rows else []
+
+
+##############################################
+##############################################
+#################### SITE ####################
+##############################################
+##############################################
+class Site:
+    def __init__(self):
+        self.get_site_info()
+
+
+    def get_site_info(self):
+        request = """
+SELECT *
+  FROM l_site
+"""
+        params = []
+
+        create_SQL_log(code_file, "Site.get_site_info", "SELECT_3", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+        if row:
+            self.title = row[0]
+            self.title_h1 = row[1]
+            self.home_text = row[2]
+        else:
+            self.title = "Welcome!"
+            self.title_h1 = "Welcome!"
+            self.home_text = ""

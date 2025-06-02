@@ -469,18 +469,9 @@ msgstr "Suppression du token de groupe"
 msgid "cancel"
 msgstr "annuler"
 
-#: app_main/templates/app_main/homepage.html:6
-#: app_main/templates/app_main/homepage.html:7
-msgid "Dashboard"
-msgstr "Tableau de bord"
-
 #: app_main/templates/app_main/homepage.html:11
 msgid "Themes"
 msgstr "Thèmes"
-
-#: app_main/templates/app_main/homepage.html:25
-msgid "Welcome"
-msgstr "Bienvenue !"
 
 #: app_main/templates/app_main/homepage.html:29
 msgid "Moderator"

@@ -3,8 +3,8 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Dashboard" %}{% endblock title %}
-{% block title_h1 %}{% trans "Dashboard" %}{% endblock title_h1 %}
+{% block title %}{{ site.title }}{% endblock title %}
+{% block title_h1 %}{{ site.title_h1 }}{% endblock title_h1 %}
 {% block bloc1 %}
 
 <hr>
@@ -22,7 +22,7 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<p>{% trans "Welcome" %}</p>
+<p>{{ site.home_text }}</p>
 
 {% if moderator %}
 <hr>
