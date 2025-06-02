@@ -413,7 +413,7 @@ msgstr "Erreur lors de la génération du QR code"
 
 #: app_group/templates/app_group/modify_group.html:23
 msgid "private_info2"
-msgstr ""
+msgstr "Un groupe “ouvert” peut être rejoint par n'importe quelle personne connectée. Il n'y a pas de restriction autre que celle d'être connectée.<hr>"
 "(*) Un groupe privé n'est accéssible que par des membres connectés au site "
 "et dont l'affiliation au groupe a été effectué. Même avec le token actif, un "
 "groupe privé n'est accessible qu'aux membres du groupe. Dans le cas où le "
