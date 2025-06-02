@@ -1,4 +1,7 @@
 document.getElementById('openDisplayWindow').addEventListener('click', () => {
+    if (blockScrollKeys == false) {
+        scrollable();
+    }
     displayWindow = window.open('', 'SlideDisplay', 'width=800,height=600');
     displayWindow.document.write(`
         <!DOCTYPE html>
@@ -9,18 +12,18 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         <title>` + txt_fullscreen + `</title>
         <style>
             body {
-            margin: 0;
-            padding: 0;
-            color: grey;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+                margin: 0;
+                padding: 0;
+                color: grey;
+                background-color: black;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
             }
             .full-screen {
-            font-size: 50px;
-            text-align: center;
+                font-size: 50px;
+                text-align: center;
             }
         </style>
         </head>
