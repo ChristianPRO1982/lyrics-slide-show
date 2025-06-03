@@ -130,10 +130,12 @@ SELECT *
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            self.title = row[0]
-            self.title_h1 = row[1]
-            self.home_text = row[2]
+            self.language = row[0]
+            self.title = row[1]
+            self.title_h1 = row[2]
+            self.home_text = row[3]
         else:
+            self.language = "EN"
             self.title = "Welcome!"
             self.title_h1 = "Welcome!"
             self.home_text = ""

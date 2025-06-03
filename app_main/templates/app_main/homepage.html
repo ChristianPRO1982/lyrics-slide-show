@@ -22,7 +22,7 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<p>{{ site.home_text }}</p>
+<p>{{ site.home_text|safe }}</p>
 
 {% if moderator %}
 <hr>
