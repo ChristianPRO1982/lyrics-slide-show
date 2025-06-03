@@ -128,6 +128,7 @@ def modify_group(request, group_id):
     
     url_token = ''
     username = request.user.username
+    delete_member_error = request.session.get('delete_member_error', '')
 
     group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
     group_url = ''
@@ -202,6 +203,8 @@ def modify_group(request, group_id):
 
 
 @login_required
-def modify_group_delete_user(request, group_id, user_id):
-    print(group_id, user_id)
+def modify_group_delete_user(request, group_id, member_username):
+    username = request.user.username
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
+    request.session['delete_member_error'] = group.delete_member(member_username)
     return redirect('modify_group', group_id=group_id)

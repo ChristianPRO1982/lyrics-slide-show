@@ -216,3 +216,20 @@ ORDER BY cgu.admin DESC, full_name
             return [{'admin': row[0], 'username': row[1], 'full_name': row[2]} for row in rows]
         except Exception as e:
             return []
+        
+
+    def delete_member(self, username):
+        request = """
+DELETE FROM c_group_user
+ WHERE group_id = %s
+   AND username = %s
+"""
+        params = [self.group_id, username]
+
+        create_SQL_log(code_file, "Group.delete_member", "DELETE_2", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+            return True
+        except Exception as e:
+            return False
