@@ -6,7 +6,10 @@
         <a class="NAV mx-2 hidden md:block" href="{% url "groups" %}">👥<span class="text-3xl"></span> {% trans "nav_groups_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">🎼<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
-        <a class="NAV mx-2 hidden md:block" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span> {% trans "nav_logout" %}</a>
+        <a class="NAV mx-2 hidden md:block" href="{% url 'account_logout' %}">
+                <span class="text-3xl">⥇</span> {% trans "nav_logout" %}
+                <b>LOGIN : {{ user.username }}</b>
+        </a>
 {% else %}
         <a class="NAV mx-2 hidden md:block" href="{% url "songs" %}">🎼<span class="text-3xl"></span> {% trans "nav_songs_list" %}</a>
         <a class="NAV mx-2 hidden md:block" href="{% url "animations" %}">🗣️<span class="text-3xl"></span> {% trans "nav_animations_list" %}</a>
@@ -22,7 +25,10 @@
         <a class="NAV mx-2 block md:hidden" href="{% url "groups" %}">👥</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">🎼</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "animations" %}">🗣️</a>
-        <a class="NAV mx-2 block md:hidden" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span></a>
+        <a class="NAV mx-2 block md:hidden" href="{% url 'account_logout' %}">
+                <span class="text-3xl">⥇</span>
+                <b>LOGIN : {{ user.username }}</b>
+        </a>
 {% else %}
         <a class="NAV mx-2 block md:hidden" href="{% url "songs" %}">🎼</a>
         <a class="NAV mx-2 block md:hidden" href="{% url "animations" %}">🗣️</a>
