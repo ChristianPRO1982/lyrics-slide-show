@@ -6,7 +6,7 @@ from io import BytesIO
 import base64
 import uuid
 from .SQL_group import Group
-from app_main.utils import is_no_loader
+from app_main.utils import is_no_loader, is_moderator
 
 
 
@@ -28,7 +28,7 @@ def groups(request):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         if group != 0:
             group_selected = group.name
 
@@ -45,9 +45,9 @@ def groups(request):
 def select_group(request, group_id):
     url_token = ''
     username = request.user.username
-
-    group = Group.get_group_by_id(group_id, url_token, username)
-
+    
+    group = Group.get_group_by_id(group_id, url_token, username, is_moderator(request))
+    
     if group is None: group_id = ''
     if group == 0: group_id = ''
         
@@ -60,7 +60,7 @@ def select_group(request, group_id):
 def select_group_by_token(request, group_id, url_token):
     username = request.user.username
 
-    group = Group.get_group_by_id(group_id, url_token, username)
+    group = Group.get_group_by_id(group_id, url_token, username, is_moderator(request))
 
     if group is None or group == 0:
         group_id = ''
@@ -191,28 +191,6 @@ def modify_group(request, group_id):
         'group': group,
         'group_url': group_url,
         'group_url_qr': qr_code_base64,
-        'error': error,
-        'css': css,
-        'no_loader': no_loader,
-        })
-
-
-@login_required
-def delete_group(request):
-    error = ''
-    css = request.session.get('css', 'normal.css')
-    no_loader = is_no_loader(request)
-
-    group = Group.get_group_by_id(request.POST.get('group_id'))
-    if group is None:
-        error = '[ERR1111]'
-    else:
-        if request.method == 'POST':
-            if 'btn_cancel' not in request.POST:
-                pass
-
-    return render(request, 'app_group/modify_group.html', {
-        'group': group,
         'error': error,
         'css': css,
         'no_loader': no_loader,

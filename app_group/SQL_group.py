@@ -114,7 +114,12 @@ INSERT INTO c_group_user
             return "[ERR6]"
         
 
-    def get_group_by_id(group_id, url_token, username):
+    def get_group_by_id(group_id, url_token, username, is_moderator):
+        if is_moderator:
+            moderator = 1
+        else:
+            moderator = 0
+
         request = """
 SELECT *
   FROM c_groups cg
@@ -123,9 +128,10 @@ SELECT *
            cg.private = 0 AND cg.token IS NULL
         OR cg.private = 0 AND cg.token = %s
         OR %s IN (SELECT username FROM c_group_user cgu WHERE cgu.group_id = %s)
+        OR 1 = %s
        )
 """
-        params = [group_id, url_token, username, group_id]
+        params = [group_id, url_token, username, group_id, moderator]
 
         create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_3", request, params)
         try:

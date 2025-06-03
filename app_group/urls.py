@@ -9,5 +9,4 @@ urlpatterns = [
     path('<int:group_id>/<str:url_token>', views.select_group_by_token, name='select_group_by_token'),
     path('add', views.add_group, name='add_group'),
     path('modify/<int:group_id>/', views.modify_group, name='modify_group'),
-    path('delete/<int:group_id>/', views.delete_group, name='delete_group'),
 ]
