@@ -148,7 +148,12 @@ SELECT *
             return None
         
 
-    def get_admin_group_by_id(group_id, username):
+    def get_admin_group_by_id(group_id, username, is_moderator):
+        if is_moderator:
+            moderator = 1
+        else:
+            moderator = 0
+
         request = """
 SELECT *
   FROM c_groups cg
@@ -157,10 +162,11 @@ SELECT *
                 FROM c_group_user cgu
                WHERE cgu.group_id = %s
                  AND cgu.admin = 1)
+       OR 1 = %s
 """
-        params = [group_id, username, group_id]
+        params = [group_id, username, group_id, moderator]
 
-        create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_3", request, params)
+        create_SQL_log(code_file, "Group.get_group_by_id", "SELECT_4", request, params)
         try:
             with connection.cursor() as cursor:
                 cursor.execute(request, params)
@@ -189,3 +195,24 @@ DELETE FROM c_groups
             return True
         except Exception as e:
             return False
+        
+
+    def get_list_of_members(self):
+        request = """
+  SELECT cgu.admin, CONCAT(cgu.username, ' (',au.first_name, ' - ', au.last_name, ')') AS full_name
+    FROM c_groups cg
+    JOIN c_group_user cgu ON cgu.group_id = cg.group_id
+    JOIN auth_user au ON au.username = cgu.username
+   WHERE cg.group_id = %s
+ORDER BY cgu.admin DESC, full_name
+"""
+        params = [self.group_id]
+
+        create_SQL_log(code_file, "Group.get_list_of_members", "SELECT_5", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+            return [{'admin': row[0], 'full_name': row[1]} for row in rows]
+        except Exception as e:
+            return []

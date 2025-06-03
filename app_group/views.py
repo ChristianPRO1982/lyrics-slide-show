@@ -129,9 +129,10 @@ def modify_group(request, group_id):
     url_token = ''
     username = request.user.username
 
-    group = Group.get_admin_group_by_id(group_id, username)
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
     group_url = ''
     qr_code_base64 = ''
+    list_of_members = []
     
     if group is None:
         error = '[ERR11]'
@@ -186,11 +187,14 @@ def modify_group(request, group_id):
             buffer.seek(0)
             qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
             buffer.close()
+        
+        list_of_members = group.get_list_of_members()
 
     return render(request, 'app_group/modify_group.html', {
         'group': group,
         'group_url': group_url,
         'group_url_qr': qr_code_base64,
+        'list_of_members': list_of_members,
         'error': error,
         'css': css,
         'no_loader': no_loader,

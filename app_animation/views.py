@@ -5,7 +5,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader
+from app_main.utils import is_no_loader, is_moderator
 
 
 
@@ -18,7 +18,7 @@ def animations(request):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         if group != 0:
             group_selected = group.name
     
@@ -69,7 +69,7 @@ def modify_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -160,7 +160,7 @@ def delete_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -192,7 +192,7 @@ def lyrics_slide_show(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -251,7 +251,7 @@ def modify_colors_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-03 13:45+0200\n"
+"POT-Creation-Date: 2025-06-03 15:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,8 +59,7 @@ msgstr "Nom"
 #: app_animation/templates/app_animation/animations.html:42
 #: app_animation/templates/app_animation/animations.html:52
 #: app_group/templates/app_group/add_group.html:16
-#: app_group/templates/app_group/delete_group.html:16
-#: app_group/templates/app_group/modify_group.html:30
+#: app_group/templates/app_group/modify_group.html:32
 msgid "Description"
 msgstr ""
 
@@ -98,7 +97,6 @@ msgstr "Nouvelle animation"
 
 #: app_animation/templates/app_animation/animations.html:44
 #: app_group/templates/app_group/add_group.html:21
-#: app_group/templates/app_group/delete_group.html:21
 msgid "Add"
 msgstr "Ajouter"
 
@@ -263,7 +261,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:146
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
-#: app_group/templates/app_group/modify_group.html:66
+#: app_group/templates/app_group/modify_group.html:69
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:155
@@ -309,12 +307,10 @@ msgid "Modify"
 msgstr "Modifier"
 
 #: app_group/templates/app_group/add_group.html:5
-#: app_group/templates/app_group/delete_group.html:5
 msgid "Create a new group"
 msgstr "Création d'un nouveau groupe"
 
 #: app_group/templates/app_group/add_group.html:8
-#: app_group/templates/app_group/delete_group.html:8
 msgid "admin_info_plus"
 msgstr ""
 "Afin de mieux modérer les groupes, un ou plusieurs administrateurs sont "
@@ -325,27 +321,22 @@ msgstr ""
 "groupe est fermé, alors tous ses membres doivent se connecter pour y accéder."
 
 #: app_group/templates/app_group/add_group.html:15
-#: app_group/templates/app_group/delete_group.html:15
 msgid "New group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/add_group.html:18
-#: app_group/templates/app_group/delete_group.html:18
 msgid "admin_info"
 msgstr "ADMIN [obligatoire]"
 
 #: app_group/templates/app_group/add_group.html:19
-#: app_group/templates/app_group/delete_group.html:19
 msgid "Username2dot"
 msgstr "Username&nbsp;:"
 
 #: app_group/templates/app_group/add_group.html:20
-#: app_group/templates/app_group/delete_group.html:20
 msgid "Username"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:26
-#: app_group/templates/app_group/delete_group.html:26
 msgid "Group saved"
 msgstr "Groupe enregistré."
 
@@ -411,17 +402,19 @@ msgstr ""
 msgid "error_group_ar_code"
 msgstr "Erreur lors de la génération du QR code"
 
-#: app_group/templates/app_group/modify_group.html:23
+#: app_group/templates/app_group/modify_group.html:22
+msgid "List of group members"
+msgstr "Liste des membres du groupe"
+
+#: app_group/templates/app_group/modify_group.html:25
 msgid "private_info2"
 msgstr ""
 "Un groupe “ouvert” peut être rejoint par n'importe quelle personne "
 "connectée. Il n'y a pas de restriction autre que celle d'être connectée."
 "<hr>(*) Un groupe privé n'est accéssible que par des membres connectés au "
-"site et dont l'affiliation au groupe a été effectué. Même avec le token "
-"actif, un groupe privé n'est accessible qu'aux membres du groupe. Dans le "
-"cas où le groupe n'est plus privé, alors le token s'il existe prend le relai."
+"site et dont l'affiliation au groupe a été effectué."
 
-#: app_group/templates/app_group/modify_group.html:23
+#: app_group/templates/app_group/modify_group.html:25
 msgid "token_info2"
 msgstr ""
 "(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
@@ -429,53 +422,52 @@ msgstr ""
 "logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
 "sur la case “créer un nouveau token”. Si un token existait déjà, il sera "
 "détruit. Un groupe avec un token ne peut être accéssible que par les membres "
-"du groupe ainsi que ceux qui connaissent ce token&nbsp;; sauf si le groupe "
-"est privé dans quel cas le groupe n'est accessible qu'aux membres du "
-"groupe<br><br>Il est possible aussi de supprimer le token avec la case à "
-"cocher “supprimer le token”. Un groupe sans token est accessible par "
-"n'importe quel visiteur du site qui auront les droits de modification."
+"du groupe ainsi que ceux qui connaissent ce token&nbsp;; si le groupe est "
+"privé le token permet tout de même de s'y connecté.<br><br>Il est possible "
+"aussi de supprimer le token avec la case à cocher “supprimer le token”."
 
-#: app_group/templates/app_group/modify_group.html:29
+#: app_group/templates/app_group/modify_group.html:31
 msgid "MANDATORY"
 msgstr "OBLIGATOIRE"
 
-#: app_group/templates/app_group/modify_group.html:32
+#: app_group/templates/app_group/modify_group.html:34
 msgid "Private group"
 msgstr "Création d'un groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:33
+#: app_group/templates/app_group/modify_group.html:35
 msgid "private_info1"
 msgstr "Seul les membres du groupe peuvent y accéder (*)."
 
-#: app_group/templates/app_group/modify_group.html:35
+#: app_group/templates/app_group/modify_group.html:37
 msgid "Make the group private"
 msgstr "Rendre le groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:37
+#: app_group/templates/app_group/modify_group.html:39
 msgid "Token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:38
+#: app_group/templates/app_group/modify_group.html:40
 msgid "token_info1"
 msgstr "Gestion du token pour accéder au groupe (**)."
 
-#: app_group/templates/app_group/modify_group.html:40
+#: app_group/templates/app_group/modify_group.html:42
 msgid "New group token"
 msgstr "Nouveau token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:44
+#: app_group/templates/app_group/modify_group.html:46
 msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:48
+#: app_group/templates/app_group/modify_group.html:50
 msgid "Delete group"
 msgstr "Suppression du groupe"
 
-#: app_group/templates/app_group/modify_group.html:51
+#: app_group/templates/app_group/modify_group.html:52
+#: app_group/templates/app_group/modify_group.html:54
 msgid "Confirm group deletion"
 msgstr "Confirmer la suppression du groupe "
 
-#: app_group/templates/app_group/modify_group.html:67
+#: app_group/templates/app_group/modify_group.html:70
 msgid "cancel"
 msgstr "annuler"
 
@@ -870,7 +862,9 @@ msgstr "Le chant est déjà enregistré. Impossible de créer un doublon."
 
 #: templates/base.html:95
 msgid "ERR24"
-msgstr "[ERR24] Impossible de supprimer ce groupe. Contacter l'administrateur du site."
+msgstr ""
+"[ERR24] Impossible de supprimer ce groupe. Contacter l'administrateur du "
+"site."
 
 #: templates/base.html:97
 msgid "ERR25"
@@ -900,23 +894,23 @@ msgstr "[ERR30] no message"
 msgid "nav_groups_list"
 msgstr "Liste des groupes"
 
-#: templates/includes/nav.html:9 templates/includes/nav.html:13
+#: templates/includes/nav.html:9 templates/includes/nav.html:17
 msgid "nav_songs_list"
 msgstr "Liste des chants"
 
-#: templates/includes/nav.html:10 templates/includes/nav.html:14
+#: templates/includes/nav.html:10 templates/includes/nav.html:18
 msgid "nav_animations_list"
 msgstr "Liste des animations"
 
-#: templates/includes/nav.html:11
-msgid "nav_logout"
+#: templates/includes/nav.html:12
+msgid "nav_account_logout"
 msgstr "Déconnexion"
 
-#: templates/includes/nav.html:15
+#: templates/includes/nav.html:19
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/nav.html:17
+#: templates/includes/nav.html:21
 msgid "nav_signup"
 msgstr "Créer un compte"
 
@@ -2148,6 +2142,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "nav_logout"
+#~ msgstr "Déconnexion"
 
 #~ msgid "update"
 #~ msgstr "Modifier"
