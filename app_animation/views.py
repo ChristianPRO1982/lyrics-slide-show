@@ -201,6 +201,31 @@ def lyrics_slide_show(request, animation_id):
         
     slides = animation.get_slides()
     slides = all_lyrics(slides)
+    slides_sliced = []
+    for slide in slides:
+        max_length = 100
+        if len(slide['text']) > max_length:
+            text = slide['text'][:max_length]
+            ext = " <i>[...]</i>"
+        else:
+            text = slide['text']
+            ext = ''
+
+        # Remove unwanted HTML tags at the end of text
+        for suffix in ['<br', '<b', '<']:
+            if text.endswith(suffix):
+                text = text[:-len(suffix)]
+
+        slides_sliced.append({
+            'animation_song_id': slide['animation_song_id'],
+            'verse_id': slide['verse_id'],
+            'full_title': slide['full_title'],
+            'chorus': slide['chorus'],
+            'num_verse': slide['num_verse'],
+            'followed': slide['followed'],
+            'text': text + ext,
+            'new_animation_song': slide['new_animation_song'],
+        })
     if not slides:
         error = "[ERR17]"
 
@@ -208,6 +233,7 @@ def lyrics_slide_show(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'slides': slides,
+        'slides_sliced': slides_sliced,
         'error': error,
         'css': css,
         'no_loader': no_loader,
