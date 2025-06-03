@@ -167,3 +167,19 @@ SELECT *
         
         except Exception as e:
             return None
+        
+
+    def delete_group(self):
+        request = """
+DELETE FROM c_groups
+ WHERE group_id = %s
+"""
+        params = [self.group_id]
+
+        create_SQL_log(code_file, "Group.delete_group", "DELETE_1", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+            return True
+        except Exception as e:
+            return False

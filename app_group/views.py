@@ -18,14 +18,10 @@ def groups(request):
     group_selected = ''
 
     if request.method == 'POST':
-
-        if request.method == 'POST':
-            new_group = Group(
-                            name = request.POST.get('txt_new_name')
-                           )
-            new_group.save()
-            request.POST = request.POST.copy()
-            request.POST['txt_new_name'] = ''
+        new_group = Group(name = request.POST.get('txt_new_name'))
+        new_group.save()
+        request.POST = request.POST.copy()
+        request.POST['txt_new_name'] = ''
 
     groups = Group.get_all_groups
 
@@ -33,7 +29,8 @@ def groups(request):
     url_token = request.session.get('url_token', '')
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username)
-        group_selected = group.name
+        if group != 0:
+            group_selected = group.name
 
 
     return render(request, 'app_group/groups.html', {
@@ -143,6 +140,13 @@ def modify_group(request, group_id):
     else:
         if request.method == 'POST':
             if 'btn_cancel' not in request.POST:
+                required_fields = {'box_group_delete', 'box_group_delete_confirm'}
+                if required_fields.issubset(request.POST):
+                    if group.delete_group():
+                        return redirect('groups')
+                    else:
+                        error = '[ERR24]'
+
                 group.name = request.POST.get('txt_group_name')
                 group.info = request.POST.get('txt_group_info')
 

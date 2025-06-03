@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-03 11:39+0200\n"
+"POT-Creation-Date: 2025-06-03 13:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -263,7 +263,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:146
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
-#: app_group/templates/app_group/modify_group.html:49
+#: app_group/templates/app_group/modify_group.html:66
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:155
@@ -451,23 +451,31 @@ msgstr "Seul les membres du groupe peuvent y accéder (*)."
 msgid "Make the group private"
 msgstr "Rendre le groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:38
+#: app_group/templates/app_group/modify_group.html:37
 msgid "Token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:39
+#: app_group/templates/app_group/modify_group.html:38
 msgid "token_info1"
 msgstr "Gestion du token pour accéder au groupe (**)."
 
-#: app_group/templates/app_group/modify_group.html:41
+#: app_group/templates/app_group/modify_group.html:40
 msgid "New group token"
 msgstr "Nouveau token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:45
+#: app_group/templates/app_group/modify_group.html:44
 msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:50
+#: app_group/templates/app_group/modify_group.html:48
+msgid "Delete group"
+msgstr "Suppression du groupe"
+
+#: app_group/templates/app_group/modify_group.html:51
+msgid "Confirm group deletion"
+msgstr "Confirmer la suppression du groupe "
+
+#: app_group/templates/app_group/modify_group.html:67
 msgid "cancel"
 msgstr "annuler"
 
@@ -862,7 +870,7 @@ msgstr "Le chant est déjà enregistré. Impossible de créer un doublon."
 
 #: templates/base.html:95
 msgid "ERR24"
-msgstr "[ERR24] no message"
+msgstr "[ERR24] Impossible de supprimer ce groupe. Contacter l'administrateur du site."
 
 #: templates/base.html:97
 msgid "ERR25"

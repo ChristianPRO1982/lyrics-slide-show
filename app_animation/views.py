@@ -19,7 +19,8 @@ def animations(request):
     url_token = request.session.get('url_token', '')
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username)
-        group_selected = group.name
+        if group != 0:
+            group_selected = group.name
     
     if group_selected:
         if request.method == 'POST':

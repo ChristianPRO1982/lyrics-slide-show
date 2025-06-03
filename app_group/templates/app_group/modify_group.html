@@ -33,18 +33,36 @@
     {% trans "private_info1" %}<br>
     <input class="w-4 h-4" id="box_group_private" type="checkbox" name="box_group_private" maxlength="255"{% if group.private %} checked="checked"{% endif %} />
     <label for="box_group_private">{% trans "Make the group private" %}</label>
-    {% if group.private == 0 %}
-        <hr>
-        <h2 class="L_H2">{% trans "Token" %}</h2>
-        {% trans "token_info1" %}<br>
-        <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" />
-        <label for="box_group_token">{% trans "New group token" %}</label>
-        {% if group.token %}
-        <br><span>{{ group.token }}</span><br>
-        <input class="w-4 h-4" id="box_group_token_delete" type="checkbox" name="box_group_token_delete" maxlength="255" />
-        <label for="box_group_token_delete">{% trans "Delete group token" %}</label>
-        {% endif %}
+    <hr>
+    <h2 class="L_H2">{% trans "Token" %}</h2>
+    {% trans "token_info1" %}<br>
+    <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" />
+    <label for="box_group_token">{% trans "New group token" %}</label>
+    {% if group.token %}
+    <br><span>{{ group.token }}</span><br>
+    <input class="w-4 h-4" id="box_group_token_delete" type="checkbox" name="box_group_token_delete" maxlength="255" />
+    <label for="box_group_token_delete">{% trans "Delete group token" %}</label>
     {% endif %}
+    <hr>
+    <input class="w-4 h-4" id="box_group_delete" type="checkbox" name="box_group_delete" />
+    <label class="text-red-400 dark:text-red-600" for="box_group_delete">{% trans "Delete group" %}</label>
+    <div id="confirm_delete_container" style="display:none; margin-left:2em;">
+        <input onclick="if(this.checked) {return confirm('{% trans "Confirm group deletion" %}?');}"
+        class="w-4 h-4" id="box_group_delete_confirm" type="checkbox" name="box_group_delete_confirm" />
+        <label class="text-red-500 dark:text-red-500" for="box_group_delete_confirm">{% trans "Confirm group deletion" %}</label>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteBox = document.getElementById('box_group_delete');
+            var confirmContainer = document.getElementById('confirm_delete_container');
+            deleteBox.addEventListener('change', function() {
+                confirmContainer.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) {
+                    document.getElementById('box_group_delete_confirm').checked = false;
+                }
+            });
+        });
+    </script>
     <hr>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_cancel" value="{% trans "cancel" %}" type="submit" />
