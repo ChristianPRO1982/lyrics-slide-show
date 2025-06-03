@@ -218,6 +218,23 @@ ORDER BY cgu.admin DESC, full_name
             return []
         
 
+    @staticmethod
+    def ask_to_join(group_id, username):
+        request = """
+INSERT INTO c_group_user_ask_to_join (group_id, username)
+     VALUES (%s, %s)
+"""
+        params = [group_id, username]
+
+        create_SQL_log(code_file, "Group.ask_to_join", "INSERT_3", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+            return True
+        except Exception as e:
+            return False
+        
+
     def delete_member(self, username):
         request = """
 DELETE FROM c_group_user

@@ -208,3 +208,9 @@ def modify_group_delete_user(request, group_id, member_username):
     group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
     request.session['delete_member_error'] = group.delete_member(member_username)
     return redirect('modify_group', group_id=group_id)
+
+
+@login_required
+def join_group(request, group_id):
+    request.session['ask_to_join_error'] = Group.ask_to_join(group_id, request.user.username)
+    return redirect('groups')

@@ -34,7 +34,9 @@
             <span class="w-1/3 p-2" title="{% trans 'This group is open' %}">{{ group.name }} 🌐</span>
         {% endif %}
         <span class="w-1/3" p-2>{{ group.info }}</span>
-        <span class="w-1/3 p-2">- <a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
+        <span class="w-1/3 p-2">- <a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a>
+            - <a href="{% url "join_group" group.group_id %}">{% trans "join" %}</a>
+            - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
     </li>
 {% endfor %}
 </ul>

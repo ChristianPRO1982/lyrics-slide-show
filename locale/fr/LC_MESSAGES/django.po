@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-03 15:33+0200\n"
+"POT-Creation-Date: 2025-06-03 18:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,7 @@ msgstr "Nom"
 #: app_animation/templates/app_animation/animations.html:42
 #: app_animation/templates/app_animation/animations.html:52
 #: app_group/templates/app_group/add_group.html:16
-#: app_group/templates/app_group/modify_group.html:32
+#: app_group/templates/app_group/modify_group.html:40
 msgid "Description"
 msgstr ""
 
@@ -261,7 +261,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:146
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
-#: app_group/templates/app_group/modify_group.html:69
+#: app_group/templates/app_group/modify_group.html:77
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:155
@@ -354,23 +354,28 @@ msgstr "Nouveau groupe"
 msgid "add"
 msgstr "ajouter"
 
-#: app_group/templates/app_group/groups.html:24
+#: app_group/templates/app_group/groups.html:25
 msgid "This group is private"
 msgstr "Ce groupe est privé"
 
-#: app_group/templates/app_group/groups.html:27
+#: app_group/templates/app_group/groups.html:28
+#: app_group/templates/app_group/groups.html:31
 msgid "You need to know the token for use this group"
 msgstr "Vous devez connaitre le QR-code (token) pour utiliser ce groupe"
 
-#: app_group/templates/app_group/groups.html:29
+#: app_group/templates/app_group/groups.html:34
 msgid "This group is open"
 msgstr "Ce groupe est ouvert"
 
-#: app_group/templates/app_group/groups.html:33
+#: app_group/templates/app_group/groups.html:37
 msgid "select"
 msgstr "sélectionner"
 
-#: app_group/templates/app_group/groups.html:33
+#: app_group/templates/app_group/groups.html:38
+msgid "join"
+msgstr "rejoindre"
+
+#: app_group/templates/app_group/groups.html:39
 msgid "modify"
 msgstr "modifier"
 
@@ -402,11 +407,21 @@ msgstr ""
 msgid "error_group_ar_code"
 msgstr "Erreur lors de la génération du QR code"
 
-#: app_group/templates/app_group/modify_group.html:22
+#: app_group/templates/app_group/modify_group.html:23
 msgid "List of group members"
 msgstr "Liste des membres du groupe"
 
-#: app_group/templates/app_group/modify_group.html:25
+#: app_group/templates/app_group/modify_group.html:29
+#, fuzzy
+#| msgid "Are you sure you want to delete this verse?"
+msgid "Are you sure you want to delete this member?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
+
+#: app_group/templates/app_group/modify_group.html:29
+msgid "Delete member"
+msgstr "Supprimer le membre"
+
+#: app_group/templates/app_group/modify_group.html:33
 msgid "private_info2"
 msgstr ""
 "Un groupe “ouvert” peut être rejoint par n'importe quelle personne "
@@ -414,7 +429,7 @@ msgstr ""
 "<hr>(*) Un groupe privé n'est accéssible que par des membres connectés au "
 "site et dont l'affiliation au groupe a été effectué."
 
-#: app_group/templates/app_group/modify_group.html:25
+#: app_group/templates/app_group/modify_group.html:33
 msgid "token_info2"
 msgstr ""
 "(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
@@ -426,48 +441,48 @@ msgstr ""
 "privé le token permet tout de même de s'y connecté.<br><br>Il est possible "
 "aussi de supprimer le token avec la case à cocher “supprimer le token”."
 
-#: app_group/templates/app_group/modify_group.html:31
+#: app_group/templates/app_group/modify_group.html:39
 msgid "MANDATORY"
 msgstr "OBLIGATOIRE"
 
-#: app_group/templates/app_group/modify_group.html:34
+#: app_group/templates/app_group/modify_group.html:42
 msgid "Private group"
 msgstr "Création d'un groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:35
+#: app_group/templates/app_group/modify_group.html:43
 msgid "private_info1"
 msgstr "Seul les membres du groupe peuvent y accéder (*)."
 
-#: app_group/templates/app_group/modify_group.html:37
+#: app_group/templates/app_group/modify_group.html:45
 msgid "Make the group private"
 msgstr "Rendre le groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:39
+#: app_group/templates/app_group/modify_group.html:47
 msgid "Token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:40
+#: app_group/templates/app_group/modify_group.html:48
 msgid "token_info1"
 msgstr "Gestion du token pour accéder au groupe (**)."
 
-#: app_group/templates/app_group/modify_group.html:42
+#: app_group/templates/app_group/modify_group.html:50
 msgid "New group token"
 msgstr "Nouveau token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:46
+#: app_group/templates/app_group/modify_group.html:54
 msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:50
+#: app_group/templates/app_group/modify_group.html:58
 msgid "Delete group"
 msgstr "Suppression du groupe"
 
-#: app_group/templates/app_group/modify_group.html:52
-#: app_group/templates/app_group/modify_group.html:54
+#: app_group/templates/app_group/modify_group.html:60
+#: app_group/templates/app_group/modify_group.html:62
 msgid "Confirm group deletion"
 msgstr "Confirmer la suppression du groupe "
 
-#: app_group/templates/app_group/modify_group.html:70
+#: app_group/templates/app_group/modify_group.html:78
 msgid "cancel"
 msgstr "annuler"
 
@@ -890,15 +905,15 @@ msgstr "[ERR] no message"
 msgid "ERR30"
 msgstr "[ERR30] no message"
 
-#: templates/includes/nav.html:8
+#: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"
 msgstr "Liste des groupes"
 
-#: templates/includes/nav.html:9 templates/includes/nav.html:17
+#: templates/includes/nav.html:9 templates/includes/nav.html:18
 msgid "nav_songs_list"
 msgstr "Liste des chants"
 
-#: templates/includes/nav.html:10 templates/includes/nav.html:18
+#: templates/includes/nav.html:10 templates/includes/nav.html:19
 msgid "nav_animations_list"
 msgstr "Liste des animations"
 
@@ -906,11 +921,11 @@ msgstr "Liste des animations"
 msgid "nav_account_logout"
 msgstr "Déconnexion"
 
-#: templates/includes/nav.html:19
+#: templates/includes/nav.html:20
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/nav.html:21
+#: templates/includes/nav.html:22
 msgid "nav_signup"
 msgstr "Créer un compte"
 
