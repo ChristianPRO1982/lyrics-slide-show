@@ -199,7 +199,7 @@ DELETE FROM c_groups
 
     def get_list_of_members(self):
         request = """
-  SELECT cgu.admin, CONCAT(cgu.username, ' (',au.first_name, ' - ', au.last_name, ')') AS full_name
+  SELECT cgu.admin, cgu.username, CONCAT(cgu.username, ' (',au.first_name, ' - ', au.last_name, ')') AS full_name
     FROM c_groups cg
     JOIN c_group_user cgu ON cgu.group_id = cg.group_id
     JOIN auth_user au ON au.username = cgu.username
@@ -213,6 +213,6 @@ ORDER BY cgu.admin DESC, full_name
             with connection.cursor() as cursor:
                 cursor.execute(request, params)
                 rows = cursor.fetchall()
-            return [{'admin': row[0], 'full_name': row[1]} for row in rows]
+            return [{'admin': row[0], 'username': row[1], 'full_name': row[2]} for row in rows]
         except Exception as e:
             return []

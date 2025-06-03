@@ -199,3 +199,9 @@ def modify_group(request, group_id):
         'css': css,
         'no_loader': no_loader,
         })
+
+
+@login_required
+def modify_group_delete_user(request, group_id, user_id):
+    print(group_id, user_id)
+    return redirect('modify_group', group_id=group_id)
