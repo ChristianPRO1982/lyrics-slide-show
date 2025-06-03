@@ -130,7 +130,6 @@ def modify_group(request, group_id):
     username = request.user.username
 
     group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
-    print("GROUP ID", group_id, group.group_id)
     group_url = ''
     qr_code_base64 = ''
     list_of_members = []
