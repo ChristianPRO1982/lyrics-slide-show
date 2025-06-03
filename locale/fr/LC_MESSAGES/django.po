@@ -858,7 +858,7 @@ msgstr ""
 
 #: templates/base.html:93
 msgid "ERR23"
-msgstr "[ERR23] no message"
+msgstr "Le chant est déjà enregistré. Impossible de créer un doublon."
 
 #: templates/base.html:95
 msgid "ERR24"

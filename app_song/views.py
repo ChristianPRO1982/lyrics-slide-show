@@ -117,9 +117,12 @@ def modify_song(request, song_id):
                                 song.moderator_message_done(message_id)
 
                 else:
-                    error = '[ERR13]'
+                    if Song.song_already_exists(song.title, song.sub_title):
+                        error = '[ERR23]'
+                    else:
+                        error = '[ERR13]'
 
-        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']) and status != False:
+        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']) and status != False and error == '':
             return redirect('songs')
 
         # Recalculate 'num' and 'num_verse' the for all choruses/verses

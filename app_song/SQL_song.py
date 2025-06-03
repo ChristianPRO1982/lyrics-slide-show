@@ -119,6 +119,24 @@ SELECT *, CONCAT(title,
         if row:
             return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4], status=row[5], full_title=row[6])
         return None
+    
+
+    @classmethod
+    def song_already_exists(cls, title, sub_title):
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(1)
+  FROM l_songs
+ WHERE title = %s
+   AND sub_title = %s
+"""
+            params = [title, sub_title]
+            
+            create_SQL_log(code_file, "Song.song_already_exists", "SELECT_7", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+        return row[0] > 0
+    
 
     def save(self, moderator=0):
         with connection.cursor() as cursor:
@@ -135,9 +153,12 @@ UPDATE l_songs
                 params = [self.title, self.sub_title, self.description, self.artist, self.song_id, moderator]
                 
                 create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
-                cursor.execute(request, params)
-                affected_rows = cursor.rowcount
-                return affected_rows > 0
+                try:
+                    cursor.execute(request, params)
+                    affected_rows = cursor.rowcount
+                    return affected_rows > 0
+                except Exception as e:
+                    return False
 
             else:
                 request = """
