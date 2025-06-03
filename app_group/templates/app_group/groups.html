@@ -20,14 +20,18 @@
 {% for group in groups %}
     <li class="flex items-center space-x-2">
         <span>👥</span>
-        {% if group.private %}
-            <span class="w-1/3 p-2" title="{% trans 'This group is private' %}">{{ group.name }} 🔐</span>
-        {% else %}
-            {% if group.token %}
-                <span class="w-1/3 p-2" title="{% trans 'You need to know the token for use this group' %}">{{ group.name }} 📱</span>
-            {% else %}
-                <span class="w-1/3 p-2" title="{% trans 'This group is open' %}">{{ group.name }} 🌐</span>
+        {% if group.private or group.token %}
+            {% if group.private %}
+                <span class="w-1/3 p-2" title="{% trans 'This group is private' %}">{{ group.name }} 🔐</span>
             {% endif %}
+            {% if group.token and not group.private %}
+                <span class="w-1/3 p-2" title="{% trans 'You need to know the token for use this group' %}">{{ group.name }} 📱</span>
+            {% endif %}
+            {% if group.token and group.private %}
+                <span class="w-1/3 p-2" title="{% trans 'You need to know the token for use this group' %}">📱</span>
+            {% endif %}
+        {% else %}
+            <span class="w-1/3 p-2" title="{% trans 'This group is open' %}">{{ group.name }} 🌐</span>
         {% endif %}
         <span class="w-1/3" p-2>{{ group.info }}</span>
         <span class="w-1/3 p-2">- <a href="{% url "select_group" group.group_id %}">{% trans "select" %}</a> - <a href="{% url "modify_group" group.group_id %}">{% trans "modify" %}</a></span>
