@@ -126,7 +126,7 @@ SELECT *
  WHERE cg.group_id = %s
    AND (
            cg.private = 0 AND cg.token IS NULL
-        OR cg.private = 0 AND cg.token = %s
+        OR cg.token = %s
         OR %s IN (SELECT username FROM c_group_user cgu WHERE cgu.group_id = %s)
         OR 1 = %s
        )
