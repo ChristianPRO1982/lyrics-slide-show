@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 18:08+0200\n"
+"POT-Creation-Date: 2025-06-03 11:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -359,7 +359,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:32
+#: app_song/templates/app_song/songs.html:34
 msgid "add"
 msgstr "ajouter"
 
@@ -413,11 +413,13 @@ msgstr "Erreur lors de la génération du QR code"
 
 #: app_group/templates/app_group/modify_group.html:23
 msgid "private_info2"
-msgstr "Un groupe “ouvert” peut être rejoint par n'importe quelle personne connectée. Il n'y a pas de restriction autre que celle d'être connectée.<hr>"
-"(*) Un groupe privé n'est accéssible que par des membres connectés au site "
-"et dont l'affiliation au groupe a été effectué. Même avec le token actif, un "
-"groupe privé n'est accessible qu'aux membres du groupe. Dans le cas où le "
-"groupe n'est plus privé, alors le token s'il existe prend le relai."
+msgstr ""
+"Un groupe “ouvert” peut être rejoint par n'importe quelle personne "
+"connectée. Il n'y a pas de restriction autre que celle d'être connectée."
+"<hr>(*) Un groupe privé n'est accéssible que par des membres connectés au "
+"site et dont l'affiliation au groupe a été effectué. Même avec le token "
+"actif, un groupe privé n'est accessible qu'aux membres du groupe. Dans le "
+"cas où le groupe n'est plus privé, alors le token s'il existe prend le relai."
 
 #: app_group/templates/app_group/modify_group.html:23
 msgid "token_info2"
@@ -555,7 +557,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:40
 #: app_song/templates/app_song/song_metadata.html:14
-#: app_song/templates/app_song/songs.html:64
+#: app_song/templates/app_song/songs.html:66
 #: app_song/templates/common/song_actions.html:11
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
@@ -579,7 +581,7 @@ msgid "subtitle"
 msgstr "Sous-titre"
 
 #: app_song/templates/app_song/modify_song.html:66
-#: app_song/templates/app_song/songs.html:31
+#: app_song/templates/app_song/songs.html:33
 msgid "description"
 msgstr "Description"
 
@@ -673,7 +675,7 @@ msgstr "Minimum 3 caractères"
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:30
+#: app_song/templates/app_song/songs.html:32
 msgid "new_song"
 msgstr "Nouveau chant"
 
@@ -745,8 +747,10 @@ msgid "Loading..."
 msgstr "Chargement..."
 
 #: templates/base.html:30
-msgid "Page not displayed after a few seconds? Click here"
-msgstr "La page ne s'affiche pas au bout de quelque seconde ? Cliquer ici"
+msgid "Page not displayed after a few seconds? Refresh (F5) it or click here."
+msgstr ""
+"La page ne s'affiche pas au bout de quelque seconde ? Recharger là (F5) ou "
+"alors cliquer ici."
 
 #: templates/base.html:49
 msgid "ERR1"
