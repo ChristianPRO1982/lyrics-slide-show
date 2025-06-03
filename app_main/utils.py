@@ -4,12 +4,9 @@ from .SQL_main import User
 
 
 def is_moderator(request)->bool:
-    print(">>>>>", request.user.is_authenticated, request.user.is_superuser, request.user.is_staff)
     if request.user.is_authenticated:
         if request.user.is_superuser or request.user.is_staff:
-            print(">>>>> is_moderator: True")
             return True
-    print(">>>>> is_moderator: False")
     return False
 
 

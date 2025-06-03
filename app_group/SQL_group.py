@@ -158,11 +158,11 @@ SELECT *
 SELECT *
   FROM c_groups cg
  WHERE cg.group_id = %s
-   AND %s IN (SELECT username
+   AND (%s IN (SELECT username
                 FROM c_group_user cgu
                WHERE cgu.group_id = %s
                  AND cgu.admin = 1)
-       OR 1 = %s
+       OR 1 = %s)
 """
         params = [group_id, username, group_id, moderator]
 
