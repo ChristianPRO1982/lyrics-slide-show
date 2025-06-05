@@ -1,3 +1,47 @@
+# [1.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.2.0...v1.3.0) (2025-06-05)
+
+
+### Bug Fixes
+
+*  display member, in progress, etc. ([3210681](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/321068131055e09f4f93356cf72d7c59e87b4364))
+* add user to be membership ([1612d0e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1612d0eab136ed3625c7ddc49f59dbb8024878c3))
+* animation: balise truncate with slice:100 ([53e66b5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/53e66b5d50db90176666582c8dd698fc13ba8d74))
+* auto select group when this group is deleted ([5f51303](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5f51303c8a75189396be877deb874f21ebff8062))
+* base.py  add APPEND_SLASH = True ([7822520](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/78225207f415eb5c7b5046db820b3c5e8eda2648))
+* base.py DEBUG ([354d6c5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/354d6c50f157fc19cf2c9c0841836c34e66db29f))
+* comment for using a group ([f1d258c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f1d258c46209dfd1a43f961b546d5f66d8c0cd69))
+* css auto ([50def50](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/50def50d204f3702f3d02f4cd783711ba07733b5))
+* delete a member of a group ([6ad4027](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6ad4027c63e280f269e72ededdecf91b6fd7e102))
+* dispaly message when the song's title + sub_title is a doublon ([7b769dd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7b769dda44a4bbf9f3d0b81d84140dd03ca81b95))
+* display choruses at start ([b957968](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b957968572d69cd171953b6a3419990e5cc4ef25))
+* display icons group ([03c7eae](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/03c7eae313094e43cfec581068f840a0e41ee27d))
+* display of groups page: link for ask to be a member and tag member ([f3c6e81](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f3c6e81181930f9e85c8d2fbbe9c796191947730))
+* display user name when login ([33be9ea](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/33be9ea3358d791c10d7eb41d8ba105a5b4a2579))
+* docker ([daacb48](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/daacb48434ece47499d8e7460af213c0a57a5f8a))
+* force unscrollable when open second windows for slide show ([25c8232](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/25c8232c31e9536684a15f66b93b337d370a036a))
+* full_title for comment for valided song ([8c0a03c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8c0a03c951af295561fe3410841b005d30d59372))
+* groups: admin ([7075956](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7075956d4deb3ef28597d53c9411fbab67b1e283))
+* home button bigger ([7691ff9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7691ff9ec0cc8f7957c3821bc5a632a231b3d6c9))
+* homepage ([9601808](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9601808260d57710dd72db08536e827b6097bfb3))
+* link songs/song/id without end "/" on songs page ([3a98726](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3a98726ced301fee943efe938a355616529e31e3))
+* managing members ([f0fe25f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f0fe25f93fb6c966f21c68fc5cbcd6ffd77fffde))
+* nav bar ([e7a21b4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e7a21b44667045030b19638070e44e126f32b4bb))
+* requirements: order by alpha ([a0112a2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a0112a2ff98aafa7b1dbb1dded54ba4404b25bfd))
+* select slide with clear mode ([e106e42](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e106e4259eafa51ffb86dee4ffd9fb2b3f762d08))
+* sliced slide with Remove unwanted HTML tags at the end of text ([a4f0620](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a4f06203b139ff57f5bfe8c368eed0d4aab745ff))
+* SQL moderator ([d346fee](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d346feedab30700dc90085d9c4bde952e86ec55b))
+* tables ([0ab8c0c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0ab8c0cf7dbfcb445d6856b5d254993ba553f292))
+* text when loader is KO ([7de6006](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7de60062d776d36b7c040cfa3d273ea1ce6bf09e))
+* token can open group locked ([f330ed0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f330ed02b95c4f8cade1fe3efa8bd17f20d740e3))
+
+
+### Features
+
+* ask to join a group ([b00f2fe](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b00f2fe539918ead43f4e9f0e702079a17e98161))
+* delete member of group ([8350f29](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8350f291d72afea3339bf962bbc3d828b2e54bd0))
+* moderator can connect for every group ([f50db16](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f50db16612aed6fe2bf6620d029a65f440aafaee))
+* welcome! texts ([31892af](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/31892af6deaa4eb71361d6f723c6293fe4e63d81))
+
 # [1.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.1.1...v1.2.0) (2025-05-27)
 
 
