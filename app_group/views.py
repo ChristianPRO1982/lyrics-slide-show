@@ -23,7 +23,7 @@ def groups(request):
         request.POST = request.POST.copy()
         request.POST['txt_new_name'] = ''
 
-    groups = Group.get_all_groups
+    groups = Group.get_all_groups(request.user.username)
 
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')

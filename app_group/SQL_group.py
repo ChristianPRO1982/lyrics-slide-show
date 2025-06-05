@@ -22,19 +22,22 @@ class Group:
 
 
     @staticmethod
-    def get_all_groups():
+    def get_all_groups(username):
         request = """
-  SELECT *
-    FROM c_groups
-ORDER BY name
+   SELECT cg.*, COUNT(cgu.username) AS member
+     FROM c_groups cg
+LEFT JOIN c_group_user cgu ON cgu.group_id = cg.group_id
+                          AND cgu.username = %s
+ GROUP BY cg.group_id, cg.name, cg.info, cg.token, cg.private
+ ORDER BY name
 """
-        params = []
+        params = [username]
 
         create_SQL_log(code_file, "Group.get_all_groups", "SELECT_1", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'token': row[3], 'private': row[4]} for row in rows]
+        return [{'group_id': row[0], 'name': row[1], 'info': row[2], 'token': row[3], 'private': row[4], 'member': row[5]} for row in rows]
     
 
     def save(self):
