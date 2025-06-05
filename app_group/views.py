@@ -190,12 +190,14 @@ def modify_group(request, group_id):
             buffer.close()
         
         list_of_members = group.get_list_of_members()
+        list_ask_to_be_member = group.get_list_ask_to_be_member()
 
     return render(request, 'app_group/modify_group.html', {
         'group': group,
         'group_url': group_url,
         'group_url_qr': qr_code_base64,
         'list_of_members': list_of_members,
+        'list_ask_to_be_member': list_ask_to_be_member,
         'error': error,
         'css': css,
         'no_loader': no_loader,

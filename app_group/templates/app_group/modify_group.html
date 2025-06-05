@@ -29,6 +29,14 @@
 <a href="{% url "modify_group_delete_user" group.group_id member.username %}" onclick="return confirm('{% trans 'Are you sure you want to delete this member?' %}');">{% trans "Delete member" %}</a>
 </p>
 {% endfor %}
+<hr>
+{% trans "List of users requesting membership" %}
+{% for user in list_ask_to_be_member %}
+<p>
+{{ user.username }}
+
+</p>
+{% endfor %}
 {% endblock bloc1 %}
 {% block bloc2 %}{% trans "private_info2" %}<hr>{% trans "token_info2" %}{% endblock bloc2 %}
 

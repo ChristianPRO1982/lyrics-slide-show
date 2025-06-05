@@ -221,6 +221,24 @@ ORDER BY cgu.admin DESC, full_name
             return []
         
 
+    def get_list_ask_to_be_member(self):
+        request = """
+SELECT username
+  FROM c_group_user_ask_to_join cguatj 
+ WHERE group_id = %s
+"""
+        params = [self.group_id]
+
+        create_SQL_log(code_file, "Group.get_list_ask_to_be_member", "SELECT_6", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+            return [{'username': row[0]} for row in rows]
+        except Exception as e:
+            return []
+        
+
     @staticmethod
     def ask_to_join(group_id, username):
         request = """
