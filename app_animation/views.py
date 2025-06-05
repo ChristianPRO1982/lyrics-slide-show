@@ -5,7 +5,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader
+from app_main.utils import is_no_loader, is_moderator
 
 
 
@@ -18,8 +18,9 @@ def animations(request):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
-        group_selected = group.name
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        if group != 0:
+            group_selected = group.name
     
     if group_selected:
         if request.method == 'POST':
@@ -68,7 +69,7 @@ def modify_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -159,7 +160,7 @@ def delete_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -191,7 +192,7 @@ def lyrics_slide_show(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:
@@ -201,6 +202,31 @@ def lyrics_slide_show(request, animation_id):
         
     slides = animation.get_slides()
     slides = all_lyrics(slides)
+    slides_sliced = []
+    for slide in slides:
+        max_length = 100
+        if len(slide['text']) > max_length:
+            text = slide['text'][:max_length]
+            ext = " <i>[...]</i>"
+        else:
+            text = slide['text']
+            ext = ''
+
+        # Remove unwanted HTML tags at the end of text
+        for suffix in ['<br', '<b', '<']:
+            if text.endswith(suffix):
+                text = text[:-len(suffix)]
+
+        slides_sliced.append({
+            'animation_song_id': slide['animation_song_id'],
+            'verse_id': slide['verse_id'],
+            'full_title': slide['full_title'],
+            'chorus': slide['chorus'],
+            'num_verse': slide['num_verse'],
+            'followed': slide['followed'],
+            'text': text + ext,
+            'new_animation_song': slide['new_animation_song'],
+        })
     if not slides:
         error = "[ERR17]"
 
@@ -208,6 +234,7 @@ def lyrics_slide_show(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'slides': slides,
+        'slides_sliced': slides_sliced,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -224,7 +251,7 @@ def modify_colors_animation(request, animation_id):
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
     
     if group_selected:

@@ -92,12 +92,12 @@ hr {
 
 .L_ERROR {
     color: #dd0000;
-    background-color: #f55;
+    background-color: #ff5555;
 }
 
 .L_ERROR_OTHER {
     color: #aa0000;
-    background-color: #f55;
+    background-color: #ff5555;
 }
 
 .L_BOX_TOP {
@@ -118,13 +118,14 @@ hr {
     pointer-events: none;
 }
 
-slide {
+.slide {
     border-color: rgb(240, 23, 88);
 }
 
-active {
-    border-color: rgb(62, 4, 21);
-    border-radius: 0%;
+.active {
+    border-color: rgb(236, 43, 43) !important;
+    border-radius: 0% !important;
+    border-width: 3px !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -163,8 +164,9 @@ active {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(255, 50, 200);
-        border-radius: 0%;
+        border-color: rgb(255, 50, 200) !important;
+        border-radius: 0% !important;
+        border-width: 3px !important;
     }
 
     .L_BOX_TOP {

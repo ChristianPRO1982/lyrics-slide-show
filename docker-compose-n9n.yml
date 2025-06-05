@@ -166,6 +166,43 @@ services:
 #      - traefik.http.routers.n8n.middlewares=n8n@docker
       - traefik.http.services.n8n.loadbalancer.server.port=5678
 
+  n9n:
+    image: n8nio/n8n
+    environment:
+      - N9N_HOST=n9n.carthographie.fr
+      - N9N_PORT=5678
+      - N9N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n9n.carthographie.fr/
+      - WEBHOOK_TUNNEL_URL=host.docker.internal:5678
+      - GENERIC_TIMEZONE=Europe/Berlin
+      - N9N_SECURE_COOKIE=false
+      - N9N_RUNNERS_ENABLED=true
+    volumes:
+      - ./n9n_data:/home/node/.n9n
+      - ./n9n_files:/files
+    networks:
+      - netcartho
+    restart: always
+#    ports:
+#      - "5678:5678"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n9n.rule=Host(`n9n.carthographie.fr`)
+#      - traefik.http.routers.n9n.tls=true
+      - traefik.http.routers.n9n.entrypoints=web,websecure
+      - traefik.http.routers.n9n.tls.certresolver=letsencrypt
+#      - traefik.http.middlewares.n9n.headers.SSLRedirect=true
+#      - traefik.http.middlewares.n9n.headers.STSSeconds=315360000
+#      - traefik.http.middlewares.n9n.headers.browserXSSFilter=true
+#      - traefik.http.middlewares.n9n.headers.contentTypeNosniff=true
+#      - traefik.http.middlewares.n9n.headers.forceSTSHeader=true
+#      - traefik.http.middlewares.n9n.headers.SSLHost=carthographie.fr
+#      - traefik.http.middlewares.n9n.headers.STSIncludeSubdomains=true
+#      - traefik.http.middlewares.n9n.headers.STSPreload=true
+#      - traefik.http.routers.n9n.middlewares=n8n@docker
+      - traefik.http.services.n9n.loadbalancer.server.port=5678
+
 networks:
   netcartho:
     external: true

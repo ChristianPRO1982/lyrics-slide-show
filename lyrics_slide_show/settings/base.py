@@ -33,7 +33,7 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 1#os.getenv("DEBUG", "False") == '1'
+DEBUG = os.getenv("DEBUG", "False") == '1'
 
 ALLOWED_HOSTS = ['*']
 
@@ -195,6 +195,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1  # Allauth en a besoin pour fonctionner
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+APPEND_SLASH = True # If True, Django will append a slash at the end of URLs that do not have one.
 
 # LOGIN_URL = '/admin/login/?next=/admin/'
 LOGIN_URL = '/account/login/'

@@ -6,7 +6,7 @@ from io import BytesIO
 import base64
 import uuid
 from .SQL_group import Group
-from app_main.utils import is_no_loader
+from app_main.utils import is_no_loader, is_moderator
 
 
 
@@ -18,22 +18,19 @@ def groups(request):
     group_selected = ''
 
     if request.method == 'POST':
+        new_group = Group(name = request.POST.get('txt_new_name'))
+        new_group.save()
+        request.POST = request.POST.copy()
+        request.POST['txt_new_name'] = ''
 
-        if request.method == 'POST':
-            new_group = Group(
-                            name = request.POST.get('txt_new_name')
-                           )
-            new_group.save()
-            request.POST = request.POST.copy()
-            request.POST['txt_new_name'] = ''
-
-    groups = Group.get_all_groups
+    groups = Group.get_all_groups(request.user.username)
 
     group_id = request.session.get('group_id', '')
     url_token = request.session.get('url_token', '')
     if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username)
-        group_selected = group.name
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        if group != 0:
+            group_selected = group.name
 
 
     return render(request, 'app_group/groups.html', {
@@ -48,9 +45,9 @@ def groups(request):
 def select_group(request, group_id):
     url_token = ''
     username = request.user.username
-
-    group = Group.get_group_by_id(group_id, url_token, username)
-
+    
+    group = Group.get_group_by_id(group_id, url_token, username, is_moderator(request))
+    
     if group is None: group_id = ''
     if group == 0: group_id = ''
         
@@ -63,7 +60,7 @@ def select_group(request, group_id):
 def select_group_by_token(request, group_id, url_token):
     username = request.user.username
 
-    group = Group.get_group_by_id(group_id, url_token, username)
+    group = Group.get_group_by_id(group_id, url_token, username, is_moderator(request))
 
     if group is None or group == 0:
         group_id = ''
@@ -128,21 +125,32 @@ def modify_group(request, group_id):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
-
+    
     url_token = ''
     username = request.user.username
+    add_member_error = request.session.get('add_member_error', '')
+    delete_member_error = request.session.get('delete_member_error', '')
 
-    group = Group.get_admin_group_by_id(group_id, username)
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
     group_url = ''
     qr_code_base64 = ''
+    list_of_members = []
     
     if group is None:
         error = '[ERR11]'
     elif group == 0:
         error = '[ERR10]'
     else:
+        group.clean_ask_to_join()
         if request.method == 'POST':
             if 'btn_cancel' not in request.POST:
+                required_fields = {'box_group_delete', 'box_group_delete_confirm'}
+                if required_fields.issubset(request.POST):
+                    if group.delete_group():
+                        return redirect('groups')
+                    else:
+                        error = '[ERR24]'
+
                 group.name = request.POST.get('txt_group_name')
                 group.info = request.POST.get('txt_group_info')
 
@@ -182,11 +190,24 @@ def modify_group(request, group_id):
             buffer.seek(0)
             qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
             buffer.close()
+        
+        list_of_members = group.get_list_of_members()
+        list_ask_to_be_member = group.get_list_ask_to_be_member()
+
+        if error == '':
+            if add_member_error == False:
+                error = '[ERR25]'
+            if delete_member_error == False:
+                error = '[ERR26]'
+        request.session['add_member_error'] = ''
+        request.session['delete_member_error'] = ''
 
     return render(request, 'app_group/modify_group.html', {
         'group': group,
         'group_url': group_url,
         'group_url_qr': qr_code_base64,
+        'list_of_members': list_of_members,
+        'list_ask_to_be_member': list_ask_to_be_member,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -194,22 +215,22 @@ def modify_group(request, group_id):
 
 
 @login_required
-def delete_group(request):
-    error = ''
-    css = request.session.get('css', 'normal.css')
-    no_loader = is_no_loader(request)
+def modify_group_add_user(request, group_id, member_username):
+    username = request.user.username
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
+    request.session['add_member_error'] = group.add_member(member_username)
+    return redirect('modify_group', group_id=group_id)
 
-    group = Group.get_group_by_id(request.POST.get('group_id'))
-    if group is None:
-        error = '[ERR1111]'
-    else:
-        if request.method == 'POST':
-            if 'btn_cancel' not in request.POST:
-                pass
 
-    return render(request, 'app_group/modify_group.html', {
-        'group': group,
-        'error': error,
-        'css': css,
-        'no_loader': no_loader,
-        })
+@login_required
+def modify_group_delete_user(request, group_id, member_username):
+    username = request.user.username
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
+    request.session['delete_member_error'] = group.delete_member(member_username)
+    return redirect('modify_group', group_id=group_id)
+
+
+@login_required
+def join_group(request, group_id):
+    request.session['ask_to_join_error'] = Group.ask_to_join(group_id, request.user.username)
+    return redirect('groups')

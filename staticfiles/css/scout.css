@@ -116,13 +116,15 @@ hr {
     pointer-events: none;
 }
 
-slide {
-    border-color: rgb(240, 23, 88);
+.slide {
+    border-color: rgb(16, 68, 38);
 }
 
-active {
-    border-color: rgb(62, 4, 21);
-    border-radius: 0%;
+.active {
+    border-color: rgb(162, 182, 171) !important;
+    border-radius: 0% !important;
+    border-width: 3px !important;
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -164,8 +166,9 @@ active {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(255, 50, 200);
-        border-radius: 0%;
+        border-color: rgb(255, 50, 200) !important;
+        border-radius: 0% !important;
+        border-width: 3px !important;
     }
 
     .L_BOX_TOP {
