@@ -256,6 +256,23 @@ INSERT INTO c_group_user_ask_to_join (group_id, username)
             return False
         
 
+    def add_member(self, username):
+        request = """
+INSERT INTO c_group_user (group_id, username, admin)
+     VALUES (%s, %s, 0)
+"""
+        params = [self.group_id, username]
+
+        create_SQL_log(code_file, "Group.add_member", "INSERT_4", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                self.clean_ask_to_join()
+            return True
+        except Exception as e:
+            return False
+        
+
     def delete_member(self, username):
         request = """
 DELETE FROM c_group_user
@@ -265,6 +282,24 @@ DELETE FROM c_group_user
         params = [self.group_id, username]
 
         create_SQL_log(code_file, "Group.delete_member", "DELETE_2", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+            return True
+        except Exception as e:
+            return False
+        
+
+    def clean_ask_to_join(self):
+        request = """
+DELETE
+  FROM c_group_user_ask_to_join cguatj
+ WHERE (cguatj.group_id, cguatj.username) IN (SELECT cgu.group_id, cgu.username
+                                                FROM c_group_user cgu)
+"""
+        params = []
+
+        create_SQL_log(code_file, "Group.clean_ask_to_join", "DELETE_3", request, params)
         try:
             with connection.cursor() as cursor:
                 cursor.execute(request, params)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-05 09:48+0200\n"
+"POT-Creation-Date: 2025-06-05 12:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,7 @@ msgstr "Nom"
 #: app_animation/templates/app_animation/animations.html:42
 #: app_animation/templates/app_animation/animations.html:52
 #: app_group/templates/app_group/add_group.html:16
-#: app_group/templates/app_group/modify_group.html:50
+#: app_group/templates/app_group/modify_group.html:48
 msgid "Description"
 msgstr ""
 
@@ -261,7 +261,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:146
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
-#: app_group/templates/app_group/modify_group.html:87
+#: app_group/templates/app_group/modify_group.html:85
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:155
@@ -416,14 +416,12 @@ msgid "List of group members"
 msgstr "Liste des membres du groupe"
 
 #: app_group/templates/app_group/modify_group.html:29
-#: app_group/templates/app_group/modify_group.html:39
 #, fuzzy
 #| msgid "Are you sure you want to delete this verse?"
 msgid "Are you sure you want to delete this member?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
 #: app_group/templates/app_group/modify_group.html:29
-#: app_group/templates/app_group/modify_group.html:39
 msgid "Delete member"
 msgstr "Supprimer le membre"
 
@@ -431,7 +429,11 @@ msgstr "Supprimer le membre"
 msgid "List of users requesting membership"
 msgstr "Liste des utilisateurs demandant à rejoindre le groupe"
 
-#: app_group/templates/app_group/modify_group.html:43
+#: app_group/templates/app_group/modify_group.html:37
+msgid "Add this member"
+msgstr "Ajouter ce membre"
+
+#: app_group/templates/app_group/modify_group.html:41
 msgid "private_info2"
 msgstr ""
 "Un groupe “ouvert” peut être rejoint par n'importe quelle personne "
@@ -439,7 +441,7 @@ msgstr ""
 "<hr>(*) Un groupe privé n'est accéssible que par des membres connectés au "
 "site et dont l'affiliation au groupe a été effectué."
 
-#: app_group/templates/app_group/modify_group.html:43
+#: app_group/templates/app_group/modify_group.html:41
 msgid "token_info2"
 msgstr ""
 "(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
@@ -451,48 +453,48 @@ msgstr ""
 "privé le token permet tout de même de s'y connecté.<br><br>Il est possible "
 "aussi de supprimer le token avec la case à cocher “supprimer le token”."
 
-#: app_group/templates/app_group/modify_group.html:49
+#: app_group/templates/app_group/modify_group.html:47
 msgid "MANDATORY"
 msgstr "OBLIGATOIRE"
 
-#: app_group/templates/app_group/modify_group.html:52
+#: app_group/templates/app_group/modify_group.html:50
 msgid "Private group"
 msgstr "Création d'un groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:53
+#: app_group/templates/app_group/modify_group.html:51
 msgid "private_info1"
 msgstr "Seul les membres du groupe peuvent y accéder (*)."
 
-#: app_group/templates/app_group/modify_group.html:55
+#: app_group/templates/app_group/modify_group.html:53
 msgid "Make the group private"
 msgstr "Rendre le groupe privé"
 
-#: app_group/templates/app_group/modify_group.html:57
+#: app_group/templates/app_group/modify_group.html:55
 msgid "Token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:58
+#: app_group/templates/app_group/modify_group.html:56
 msgid "token_info1"
 msgstr "Gestion du token pour accéder au groupe (**)."
 
-#: app_group/templates/app_group/modify_group.html:60
+#: app_group/templates/app_group/modify_group.html:58
 msgid "New group token"
 msgstr "Nouveau token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:64
+#: app_group/templates/app_group/modify_group.html:62
 msgid "Delete group token"
 msgstr "Suppression du token de groupe"
 
-#: app_group/templates/app_group/modify_group.html:68
+#: app_group/templates/app_group/modify_group.html:66
 msgid "Delete group"
 msgstr "Suppression du groupe"
 
+#: app_group/templates/app_group/modify_group.html:68
 #: app_group/templates/app_group/modify_group.html:70
-#: app_group/templates/app_group/modify_group.html:72
 msgid "Confirm group deletion"
 msgstr "Confirmer la suppression du groupe "
 
-#: app_group/templates/app_group/modify_group.html:88
+#: app_group/templates/app_group/modify_group.html:86
 msgid "cancel"
 msgstr "annuler"
 
@@ -893,11 +895,11 @@ msgstr ""
 
 #: templates/base.html:97
 msgid "ERR25"
-msgstr "[ERR25] no message"
+msgstr "[ERR25] Impossible d'ajouter cet utilisateur. Contacter l'administrateur du site."
 
 #: templates/base.html:99
 msgid "ERR26"
-msgstr "[ERR26] no message"
+msgstr "[ERR26] Impossible de supprimer cet utilisateur. Contacter l'administrateur du site."
 
 #: templates/base.html:101
 msgid "ERR27"

@@ -128,6 +128,7 @@ def modify_group(request, group_id):
     
     url_token = ''
     username = request.user.username
+    add_member_error = request.session.get('add_member_error', '')
     delete_member_error = request.session.get('delete_member_error', '')
 
     group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
@@ -140,6 +141,7 @@ def modify_group(request, group_id):
     elif group == 0:
         error = '[ERR10]'
     else:
+        group.clean_ask_to_join()
         if request.method == 'POST':
             if 'btn_cancel' not in request.POST:
                 required_fields = {'box_group_delete', 'box_group_delete_confirm'}
@@ -192,6 +194,14 @@ def modify_group(request, group_id):
         list_of_members = group.get_list_of_members()
         list_ask_to_be_member = group.get_list_ask_to_be_member()
 
+        if error == '':
+            if add_member_error == False:
+                error = '[ERR25]'
+            if delete_member_error == False:
+                error = '[ERR26]'
+        request.session['add_member_error'] = ''
+        request.session['delete_member_error'] = ''
+
     return render(request, 'app_group/modify_group.html', {
         'group': group,
         'group_url': group_url,
@@ -202,6 +212,14 @@ def modify_group(request, group_id):
         'css': css,
         'no_loader': no_loader,
         })
+
+
+@login_required
+def modify_group_add_user(request, group_id, member_username):
+    username = request.user.username
+    group = Group.get_admin_group_by_id(group_id, username, is_moderator(request))
+    request.session['add_member_error'] = group.add_member(member_username)
+    return redirect('modify_group', group_id=group_id)
 
 
 @login_required
