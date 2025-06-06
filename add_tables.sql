@@ -147,6 +147,8 @@ CREATE TABLE `l_site` (
   `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `title_h1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `home_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bloc1_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bloc2_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
