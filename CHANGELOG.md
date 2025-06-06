@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.0...v1.4.0) (2025-06-06)
+
+
+### Bug Fixes
+
+* add_tables.sql ([b2a7563](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b2a7563e51bd6e1d130e430bb10c91b59a6930a2))
+* help for create song ([144edcb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/144edcbf3f6a8b91ad49f4a72813f03704c8ae26))
+* homepage ([ad09943](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ad099434eb0803b1a30773d66d8e2253cce4a3ca))
+
+
+### Features
+
+* font_size GEN ([99f7f69](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/99f7f6918c16e62cbd70ea906e65aaaae751b56f))
+* moderators can modify homepage ([05f80e9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/05f80e90beee3fe2b7c7169a26a21825b089c9cb))
+
 # [1.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.2.0...v1.3.0) (2025-06-05)
 
 
