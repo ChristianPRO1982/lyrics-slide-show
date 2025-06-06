@@ -22,7 +22,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
                 height: 100vh;
             }
             .full-screen {
-                font-size: 50px;
+                font-size: ` + font_size + `px;
                 text-align: center;
             }
         </style>

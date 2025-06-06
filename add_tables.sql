@@ -106,17 +106,19 @@ CREATE TABLE `l_verses` (
 
 CREATE TABLE `l_animations` (
   `animation_id` mediumint NOT NULL AUTO_INCREMENT,
-  `group_id` mediumint NOT NULL,
+  `group_id` mediumint DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date` date NOT NULL,
   `color_rgba` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'rgba(127, 127, 127, 1)',
   `bg_rgba` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'rgba(0, 0, 0, 1)',
+  `font` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `font_size` tinyint NOT NULL DEFAULT '50',
   PRIMARY KEY (`animation_id`),
   KEY `l_animations_date_IDX` (`date`,`name`) USING BTREE,
   KEY `l_animations_c_groups_FK` (`group_id`),
   CONSTRAINT `l_animations_c_groups_FK` FOREIGN KEY (`group_id`) REFERENCES `c_groups` (`group_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_animation_song` (
   `animation_song_id` mediumint NOT NULL AUTO_INCREMENT,

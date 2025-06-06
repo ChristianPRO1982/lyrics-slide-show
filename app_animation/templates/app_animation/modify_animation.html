@@ -43,16 +43,27 @@
 <form method="post" action="{% url "modify_animation" animation.animation_id %}">
     {% csrf_token %}
     <div>
-        <label for="id_name">Nom</label><br>
+        <label for="id_name">{% trans "Name" %}</label><br>
         <input type="text" name="txt_name" id="id_name" maxlength="255" value="{{ animation.name }}" style="width: 100%;" required>
     </div>
     <div>
-        <label for="id_description">Description</label><br>
+        <label for="id_description">{% trans "Description" %}</label><br>
         <textarea name="txt_description" id="id_description" style="width: 100%;">{{ animation.description }}</textarea>
     </div>
     <div>
-        <label for="id_date">Date</label><br>
+        <label for="id_date">{% trans "Date" %}</label><br>
         <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
+    </div>
+    <div>
+        <label for="id_font_size">{% trans "Font size" %}</label><br>
+        <select name="sel_font_size" id="id_font_size" style="width: 100%;">
+            {% for size in font_sizes %}
+                <option value="{{ size }}"
+                    {% if animation.font_size == size %}selected{% endif %}>
+                    {{ size }}px
+                </option>
+            {% endfor %}
+        </select>
     </div>
 
     {% for song in animation.songs %}

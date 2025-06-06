@@ -85,6 +85,7 @@ def modify_animation(request, animation_id):
                     animation.name = request.POST.get('txt_name')
                     animation.description = request.POST.get('txt_description')
                     animation.date = request.POST.get('dt_date')
+                    animation.font_size = request.POST.get('sel_font_size', 60)
                     animation.save()
 
                     # if 'btn_new_song' in request.POST:
@@ -138,12 +139,15 @@ def modify_animation(request, animation_id):
         
         songs_already_in = animation.get_songs_already_in()
 
+        font_sizes = range(30, 101, 5)
+
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
         'all_songs': Song.get_all_songs(),
         'songs_already_in': songs_already_in,
         'list_lyrics': list_lyrics,
         'group_selected': group_selected,
+        'font_sizes': font_sizes,
         'error': error,
         'css': css,
         'no_loader': no_loader,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 11:12+0200\n"
+"POT-Creation-Date: 2025-06-06 11:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,12 +52,14 @@ msgstr "Aucun groupe sélectionné"
 
 #: app_animation/templates/app_animation/animations.html:16
 #: app_animation/templates/app_animation/animations.html:51
+#: app_animation/templates/app_animation/modify_animation.html:46
 msgid "Name"
 msgstr "Nom"
 
 #: app_animation/templates/app_animation/animations.html:17
 #: app_animation/templates/app_animation/animations.html:42
 #: app_animation/templates/app_animation/animations.html:52
+#: app_animation/templates/app_animation/modify_animation.html:50
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/modify_group.html:48
 msgid "Description"
@@ -65,6 +67,7 @@ msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:18
 #: app_animation/templates/app_animation/animations.html:53
+#: app_animation/templates/app_animation/modify_animation.html:54
 msgid "Date"
 msgstr ""
 
