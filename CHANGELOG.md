@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.1...v1.5.0) (2025-06-06)
+
+
+### Bug Fixes
+
+* display  current language ([3796e4d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3796e4dadbdb0bc82f68323051e5baa4e634a173))
+* translate ([b15e372](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b15e372d7f5a7932e3e174f6ecbc52ce67dbd27a))
+
+
+### Features
+
+* font size per song ([32e6a9a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/32e6a9a0e6efa5fa9b30024f45083015734cbd7e))
+
 ## [1.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.0...v1.4.1) (2025-06-06)
 
 
