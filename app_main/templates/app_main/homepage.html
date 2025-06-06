@@ -30,9 +30,42 @@
 <h2 class="L_H2">{% trans "Moderator" %}</h2>
 <h3 class="L_H3">{% trans "List of songs to be moderated" %}</h3>
 <ul>
-{% for song in songs %}
-<li><a href="{% url 'modify_song' song.song_id %}">{{ song.full_title }}</a></li>
-{% endfor %}
+    {% for song in songs %}
+    <li><a href="{% url 'modify_song' song.song_id %}">{{ song.full_title }}</a></li>
+    {% endfor %}
 </ul>
+<h3 class="L_H3">{% trans "Modify homepage" %}</h3>
+{% if modify_homepage %}
+    <form method="post" action="{% url "homepage" %}">
+        {% csrf_token %}
+        <div>
+            <label for="id_title">{% trans "Title &#60;head&#62;" %}</label><br>
+            <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ site.title }}" style="width: 100%;" required>
+        </div>
+        <div>
+            <label for="id_title_h1">{% trans "Title &#60;h1&#62;" %}</label><br>
+            <input type="text" name="txt_title_h1" id="id_title_h1" maxlength="255" value="{{ site.title_h1 }}" style="width: 100%;" required>
+        </div>
+        <div>
+            <label for="id_home_text">{% trans "Home text" %}</label><br>
+            <textarea name="txt_home_text" id="id_home_text" style="width: 100%;">{{ site.home_text }}</textarea>
+        </div>
+        <div>
+            <label for="id_bloc1_text">{% trans "Bloc1 text: on left" %}</label><br>
+            <textarea name="txt_bloc1_text" id="id_bloc1_text" style="width: 100%;">{{ site.bloc1_text }}</textarea>
+        </div>
+        <div>
+            <label for="id_bloc2_text">{% trans "Bloc2 text: on right" %}</label><br>
+            <textarea name="txt_bloc2_text" id="id_bloc2_text" style="width: 100%;">{{ site.bloc2_text }}</textarea>
+        </div>
+
+        <br><hr><br>
+    
+        <input name="btn_save" value="{% trans "save" %}" type="submit" />
+        <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
+    </form>
+{% else %}
+    <a href="{% url 'homepage' %}?modify_homepage">{% trans "Modify homepage" %}</a>
+{% endif %}
 {% endif %}
 {% endblock content %}

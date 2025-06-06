@@ -14,6 +14,7 @@ def homepage(request):
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
+    modify_homepage = False
 
     username = request.user.username
     if username:
@@ -26,6 +27,25 @@ def homepage(request):
 
     songs = Songs()
 
+    if request.method == 'GET':
+        if 'modify_homepage' in request.GET:
+            if moderator:
+                modify_homepage = True
+            else:
+                error = '[ERR27]'
+
+    if request.method == 'POST':
+        if 'btn_save' in request.POST:
+            site.title = request.POST.get('txt_title', '').strip()
+            site.title_h1 = request.POST.get('txt_title_h1', '').strip()
+            site.home_text = request.POST.get('txt_home_text', '').strip()
+            site.bloc1_text = request.POST.get('txt_bloc1_text', '').strip()
+            site.bloc2_text = request.POST.get('txt_bloc2_text', '').strip()
+            if site.title and site.title_h1:
+                site.save()
+            else:
+                error = '[ERR28]'
+
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
@@ -34,6 +54,7 @@ def homepage(request):
         'moderator': moderator,
         'site': site,
         'songs': songs.songs,
+        'modify_homepage': modify_homepage,
     })
 
 
