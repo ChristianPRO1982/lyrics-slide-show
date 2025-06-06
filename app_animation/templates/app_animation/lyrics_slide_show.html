@@ -19,7 +19,8 @@
             "num_verse": {{ slide.num_verse }},
             "followed": {{ slide.followed }},
             "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
-            "new_animation_song": {{ slide.new_animation_song }}
+            "new_animation_song": {{ slide.new_animation_song }},
+            "font_size": {{ slide.font_size }}
         };
         verses_choruses.push(dict);
     {% endfor %}

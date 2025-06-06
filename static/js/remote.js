@@ -28,7 +28,10 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         </style>
         </head>
         <body>
-        <div style="color: ` + color_rgba + `; background-color: ` + bg_rgba + `;" class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
+        <div style="text-align: center;
+        color: ` + color_rgba + `;
+        background-color: ` + bg_rgba + `;"
+        class="" id="slideContent">` + txt_fullscreen + `</div>
         </body>
         </html>
     `);
@@ -38,9 +41,11 @@ let last_text = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
+    fontSize = getFontSize(index);
     
     if (displayWindow) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
+        displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         last_text = text;
     }
     
@@ -73,6 +78,16 @@ function getText(index) {
         if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
             text = verses_choruses[i].text;
             return text;
+        }
+    }
+}
+
+function getFontSize(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            font_size = verses_choruses[i].font_size;
+            return font_size;
         }
     }
 }

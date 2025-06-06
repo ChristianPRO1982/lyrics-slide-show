@@ -100,6 +100,7 @@ def modify_animation(request, animation_id):
                             animation.delete_song(song['animation_song_id'])
                         else:
                             animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
+                            animation.update_song_font_size(song['animation_song_id'], request.POST.get(f'lis_font_size_{song['animation_song_id']}'))
                     
                     # verses selected
                     for verse in animation.verses:
@@ -140,6 +141,8 @@ def modify_animation(request, animation_id):
         songs_already_in = animation.get_songs_already_in()
 
         font_sizes = range(30, 101, 5)
+        font_sizes_decreasing = range(-20, 0, 5)
+        font_sizes_increasing = range(5, 21, 5)
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
@@ -148,6 +151,8 @@ def modify_animation(request, animation_id):
         'list_lyrics': list_lyrics,
         'group_selected': group_selected,
         'font_sizes': font_sizes,
+        'font_sizes_decreasing': font_sizes_decreasing,
+        'font_sizes_increasing': font_sizes_increasing,
         'error': error,
         'css': css,
         'no_loader': no_loader,

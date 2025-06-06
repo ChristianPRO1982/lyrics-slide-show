@@ -99,7 +99,7 @@
                     {% endfor %}
                 </div>
                 <div style="text-align: right; width: 25%;">
-                    {% trans "move2dot" %}
+                    {% trans "move2dots" %}
                     <select name="lis_move_to_{{ song.animation_song_id }}" style="width: 100%;">
                         <optgroup label="{% trans "before" %}">
                             {% for lis_move_to_song in animation.songs %}
@@ -118,6 +118,29 @@
                                         {% trans "song_num" %}{{ lis_move_to_song.numD2 }} : {{ lis_move_to_song.full_title }}
                                     </option>
                                 {% endif %}
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                    <br>
+                    {% trans "Font_size2dots" %}{{song.font_size}}
+                    <select name="lis_font_size_{{ song.animation_song_id }}" style="width: 100%;">
+                        <optgroup label="{% trans "decrease size" %}">
+                            {% for size in font_sizes_decreasing %}
+                                <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                    {{ size }}px
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="{% trans "same size" %}">
+                            <option{% if 0 == song.font_size %} selected="selected"{% endif %}  value="0">
+                                0px
+                            </option>
+                        </optgroup>
+                        <optgroup label="{% trans "increase size" %}">
+                            {% for size in font_sizes_increasing %}
+                                <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                    +{{ size }}px
+                                </option>
                             {% endfor %}
                         </optgroup>
                     </select>
