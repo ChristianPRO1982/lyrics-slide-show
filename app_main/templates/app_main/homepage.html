@@ -6,13 +6,14 @@
 {% block title %}{{ site.title }}{% endblock title %}
 {% block title_h1 %}{{ site.title_h1 }}{% endblock title_h1 %}
 {% block bloc1 %}
-
+<p>{{ site.bloc1_text|safe }}</p>
 <hr>
 <h3 class="L_H3">{% trans "Themes" %}</h2>
 <a href="{% url 'theme_normal' %}">Normal (taizé)</a><br>
 <a href="{% url 'theme_scout' %}">Scout</a><br>
 {% endblock bloc1 %}
 {% block bloc2 %}
+<p>{{ site.bloc2_text|safe }}</p>
 <img class="w-72" src="{% static "images/cARThographie.png" %}"><br>
 <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest" 
     target="_blank" rel="noopener noreferrer">

@@ -134,8 +134,12 @@ SELECT *
             self.title = row[1]
             self.title_h1 = row[2]
             self.home_text = row[3]
+            self.bloc1_text = row[4]
+            self.bloc2_text = row[5]
         else:
             self.language = "EN"
             self.title = "Welcome!"
             self.title_h1 = "Welcome!"
             self.home_text = ""
+            self.bloc1_text = ""
+            self.bloc2_text = ""
