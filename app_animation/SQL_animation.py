@@ -150,8 +150,10 @@ ORDER BY las.num
                         'animation_id': row[1],
                         'song_id': row[2],
                         'num': row[3],
-                        'numD2': row[4],
-                        'full_title': row[5],
+                        'font': row[4],
+                        'font_size': row[5],
+                        'numD2': row[6],
+                        'full_title': row[7],
                     } for row in rows]
 
 
@@ -221,6 +223,19 @@ UPDATE l_animation_song
 
             create_SQL_log(code_file, "Animations.update_song_num", "UPDATE_2", request, params)
             cursor.execute(request, params)
+
+
+    def update_song_font_size(self, animation_song_id, font_size):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_animation_song
+   SET font_size = %s
+ WHERE animation_song_id = %s
+"""
+            params = [font_size, animation_song_id]
+
+            create_SQL_log(code_file, "Animations.update_song_font_size", "UPDATE_4", request, params)
+            cursor.execute(request, params)
     
 
     def get_songs_already_in(self):
@@ -286,7 +301,8 @@ UPDATE l_animation_song_verse
                  OR lag(lasv.animation_song_id) OVER (ORDER BY las.num, lv.num) IS NULL
              THEN TRUE
              ELSE FALSE
-         END AS new_animation_song
+         END AS new_animation_song,
+         %s + las.font_size font_size
     FROM l_animation_song_verse lasv
     JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
     JOIN l_songs ls ON ls.song_id = las.song_id
@@ -295,7 +311,7 @@ UPDATE l_animation_song_verse
      AND lasv.selected IS TRUE
 ORDER BY las.num, lv.num
 """
-            params = [self.animation_id]
+            params = [self.font_size, self.animation_id]
 
             create_SQL_log(code_file, "Animations.get_slides", "SELECT_6", request, params)
 
@@ -311,6 +327,7 @@ ORDER BY las.num, lv.num
                         'followed': row[5],
                         'text': row[6],
                         'new_animation_song': row[7],
+                        'font_size': row[8],
                     } for row in rows]
             
             except Exception as e:
