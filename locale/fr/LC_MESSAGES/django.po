@@ -202,7 +202,7 @@ msgstr "Sélectionnez un chant pour voir les paroles"
 
 #: app_animation/templates/app_animation/modify_animation.html:58
 msgid "Font size"
-msgstr ""
+msgstr "Taille de police d'écriture"
 
 #: app_animation/templates/app_animation/modify_animation.html:80
 #: app_animation/templates/app_animation/modify_animation.html:88
