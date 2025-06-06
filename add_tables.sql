@@ -125,13 +125,15 @@ CREATE TABLE `l_animation_song` (
   `animation_id` mediumint NOT NULL,
   `song_id` mediumint NOT NULL,
   `num` smallint NOT NULL DEFAULT '1000',
+  `font` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `font_size` tinyint NOT NULL DEFAULT '50',
   PRIMARY KEY (`animation_song_id`),
   KEY `l_animation_song_l_animations_FK` (`animation_id`),
   KEY `l_animation_song_num_IDX` (`num`) USING BTREE,
   KEY `l_animation_song_l_songs_FK` (`song_id`),
   CONSTRAINT `l_animation_song_l_animations_FK` FOREIGN KEY (`animation_id`) REFERENCES `l_animations` (`animation_id`) ON DELETE CASCADE,
   CONSTRAINT `l_animation_song_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_animation_song_verse` (
   `animation_song_id` mediumint NOT NULL,
