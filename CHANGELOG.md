@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.0...v1.4.1) (2025-06-06)
+
+
+### Bug Fixes
+
+* translate "font size" ([61cf745](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/61cf7459191543a5898178a7d473a752f4e564fa))
+
 # [1.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.3.0...v1.4.0) (2025-06-06)
 
 
