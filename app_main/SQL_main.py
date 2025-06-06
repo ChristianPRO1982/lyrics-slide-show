@@ -134,8 +134,29 @@ SELECT *
             self.title = row[1]
             self.title_h1 = row[2]
             self.home_text = row[3]
+            self.bloc1_text = row[4]
+            self.bloc2_text = row[5]
         else:
             self.language = "EN"
             self.title = "Welcome!"
             self.title_h1 = "Welcome!"
             self.home_text = ""
+            self.bloc1_text = ""
+            self.bloc2_text = ""
+
+
+    def save(self):
+        request = """
+UPDATE l_site
+   SET language = %s,
+       title = %s,
+       title_h1 = %s,
+       home_text = %s,
+       bloc1_text = %s,
+       bloc2_text = %s
+"""
+        params = [self.language, self.title, self.title_h1, self.home_text, self.bloc1_text, self.bloc2_text]
+
+        create_SQL_log(code_file, "Site.save", "UPDATE_2", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
