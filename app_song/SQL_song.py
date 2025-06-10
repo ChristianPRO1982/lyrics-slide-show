@@ -24,8 +24,6 @@ class Song:
         self.verses = []
         self.genres = []
         self.links = []
-        self.verse_max_lines = 10
-        self.verse_max_characters_for_a_line = 60
 
         self.get_links()
         if self.song_id:

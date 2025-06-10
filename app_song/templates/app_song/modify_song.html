@@ -78,6 +78,7 @@
     <hr>
 
     {% for verse in verses %}
+        coco {{ verse.max_lines }} {{ verse.max_characters_for_a_line }} coco
         {% if verse.max_lines %}
             <span class="text-green-800 bg-green-300 dark:text-green-300 dark:bg-green-800 px-2 py-1 rounded">
                 ⚠️📏 {% trans "Too many lines" %}
