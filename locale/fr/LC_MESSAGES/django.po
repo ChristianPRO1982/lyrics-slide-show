@@ -1021,6 +1021,46 @@ msgstr "[ERR] no message"
 msgid "ERR30"
 msgstr "[ERR30] no message"
 
+#: templates/base.html:107
+msgid "ERR31"
+msgstr "[ERR31] no message"
+
+#: templates/base.html:107
+msgid "ERR32"
+msgstr "[ERR32] no message"
+
+#: templates/base.html:107
+msgid "ERR33"
+msgstr "[ERR33] no message"
+
+#: templates/base.html:107
+msgid "ERR34"
+msgstr "[ERR34] no message"
+
+#: templates/base.html:107
+msgid "ERR35"
+msgstr "[ERR35] no message"
+
+#: templates/base.html:107
+msgid "ERR36"
+msgstr "[ERR36] no message"
+
+#: templates/base.html:107
+msgid "ERR37"
+msgstr "[ERR37] no message"
+
+#: templates/base.html:107
+msgid "ERR38"
+msgstr "[ERR38] no message"
+
+#: templates/base.html:107
+msgid "ERR39"
+msgstr "[ERR39] no message"
+
+#: templates/base.html:107
+msgid "ERR40"
+msgstr "[ERR40] no message"
+
 #: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"
 msgstr "Liste des groupes"

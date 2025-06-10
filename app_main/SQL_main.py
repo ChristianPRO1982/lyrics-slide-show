@@ -162,7 +162,7 @@ SELECT *
             self.verse_max_characters_for_a_line = row[1]
         else:
             self.verse_max_lines = 10
-            self.verse_max_characters_for_a_line = 40
+            self.verse_max_characters_for_a_line = 60
 
 
     def save(self):

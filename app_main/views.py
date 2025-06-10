@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from app_logs.utils import delete_old_logs
-from .utils import is_moderator, is_no_loader, save_user_theme
+from .utils import is_moderator, is_admin, is_no_loader, save_user_theme
 from .SQL_main import User, Site, Songs
 
 
@@ -14,6 +14,7 @@ def homepage(request):
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
+    admin = is_admin(request)
     modify_homepage = False
 
     username = request.user.username
@@ -31,6 +32,12 @@ def homepage(request):
         if 'modify_homepage' in request.GET:
             if moderator:
                 modify_homepage = True
+            else:
+                error = '[ERR27]'
+        
+        if 'modify_site_params' in request.GET:
+            if admin:
+                modify_site_params = True
             else:
                 error = '[ERR27]'
 
@@ -52,9 +59,11 @@ def homepage(request):
         'css': css,
         'no_loader': no_loader,
         'moderator': moderator,
+        'admin': admin,
         'site': site,
         'songs': songs.songs,
         'modify_homepage': modify_homepage,
+        'modify_site_params': modify_site_params,
     })
 
 

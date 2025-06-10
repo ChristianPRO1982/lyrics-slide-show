@@ -8,6 +8,12 @@ def is_moderator(request)->bool:
             return True
     return False
 
+def is_admin(request)->bool:
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return True
+    return False
+
 def is_no_loader(request)->bool:
     if request.session.get('no_loader', False):
         return True
