@@ -24,9 +24,9 @@ def songs(request):
 
         if request.method == 'POST':
             new_song = Song(
-                            title = request.POST.get('txt_new_title'),
-                            sub_title = "",
-                            description = request.POST.get('txt_new_description'),
+                            title = request.POST.get('txt_new_title').strip(),
+                            sub_title = request.POST.get('txt_new_sub_title').strip(),
+                            description = "",
                             artist = "",
                            )
             if not new_song.save():
@@ -43,7 +43,7 @@ def songs(request):
     return render(request, 'app_song/songs.html', {
         'songs': songs,
         'title': request.POST.get('txt_new_title', ''),
-        'description': request.POST.get('txt_new_description', ''),
+        'sub_title': request.POST.get('txt_new_sub_title', ''),
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,

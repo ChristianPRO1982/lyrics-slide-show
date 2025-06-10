@@ -28,8 +28,8 @@
     <br><br><hr><br>
     <form method="post">
         {% csrf_token %}
-        <input type="text" name="txt_new_title" placeholder="{% trans "new_song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /><br>
-        <input type="text" name="txt_new_description" placeholder="{% trans "description" %}" {% if description != '' %}value="{{ description }}"{% endif %} /><br>
+        <input type="text" name="txt_new_title" placeholder="{% trans "New song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /><br>
+        <input type="text" name="txt_new_sub_title" placeholder="{% trans "New sub title" %}" {% if description != '' %}value="{{ sub_title }}"{% endif %} /><br>
         <input name="btn_new_song" value="{% trans "add" %}" type="submit" />
     </form>
 </div>

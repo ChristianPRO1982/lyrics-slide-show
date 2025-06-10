@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 16:21+0200\n"
+"POT-Creation-Date: 2025-06-10 09:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -662,8 +662,7 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:66
-#: app_song/templates/app_song/songs.html:33 chris/songs copy.html:18
+#: app_song/templates/app_song/modify_song.html:66 chris/songs copy.html:18
 #: copy.html:48
 msgid "description"
 msgstr "Description"
@@ -767,8 +766,12 @@ msgid "Advanced search"
 msgstr "Recherche avancée"
 
 #: app_song/templates/app_song/songs.html:32
-msgid "new_song"
+msgid "New song"
 msgstr "Nouveau chant"
+
+#: app_song/templates/app_song/songs.html:33
+msgid "New sub title"
+msgstr "Nouveau sous-titre"
 
 #: app_song/templates/common/song_actions.html:5
 msgid "Display"
@@ -2382,6 +2385,9 @@ msgstr ""
 msgctxt "stick"
 msgid "club"
 msgstr ""
+
+#~ msgid "new_song"
+#~ msgstr "Nouveau chant"
 
 #~ msgid "nav_logout"
 #~ msgstr "Déconnexion"
