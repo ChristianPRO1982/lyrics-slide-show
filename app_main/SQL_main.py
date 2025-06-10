@@ -180,3 +180,14 @@ UPDATE l_site
         create_SQL_log(code_file, "Site.save", "UPDATE_2", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
+
+        request = """
+UPDATE l_site_params
+   SET verse_max_lines = %s,
+       verse_max_characters_for_a_line = %s
+"""
+        params = [self.verse_max_lines, self.verse_max_characters_for_a_line]
+
+        create_SQL_log(code_file, "Site.save", "UPDATE_3", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)

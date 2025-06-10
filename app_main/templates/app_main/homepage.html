@@ -61,7 +61,7 @@
 
             <br><hr><br>
         
-            <input name="btn_save" value="{% trans "save" %}" type="submit" />
+            <input name="btn_save_homepage" value="{% trans "save" %}" type="submit" />
             <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
         </form>
     {% else %}
@@ -76,33 +76,34 @@
         <form method="post" action="{% url "homepage" %}">
             {% csrf_token %}
             <div>
-                <label for="id_title">{% trans "Title &#60;head&#62;" %}</label><br>
-                <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ site.title }}" style="width: 100%;" required>
+                <label for="id_verse_max_lines">{% trans "Max lines" %}</label><br>
+                <select name="sel_verse_max_lines" id="id_verse_max_lines" style="width: 100%;">
+                    {% for value in site_params_max_lines %}
+                        <option value="{{ value }}"{% if site.verse_max_lines == value %} selected{% endif %}>
+                            {{ value }} {% trans "lines" %}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
             <div>
-                <label for="id_title_h1">{% trans "Title &#60;h1&#62;" %}</label><br>
-                <input type="text" name="txt_title_h1" id="id_title_h1" maxlength="255" value="{{ site.title_h1 }}" style="width: 100%;" required>
-            </div>
-            <div>
-                <label for="id_home_text">{% trans "Home text" %}</label><br>
-                <textarea name="txt_home_text" id="id_home_text" style="width: 100%;">{{ site.home_text }}</textarea>
-            </div>
-            <div>
-                <label for="id_bloc1_text">{% trans "Bloc1 text: on left" %}</label><br>
-                <textarea name="txt_bloc1_text" id="id_bloc1_text" style="width: 100%;">{{ site.bloc1_text }}</textarea>
-            </div>
-            <div>
-                <label for="id_bloc2_text">{% trans "Bloc2 text: on right" %}</label><br>
-                <textarea name="txt_bloc2_text" id="id_bloc2_text" style="width: 100%;">{{ site.bloc2_text }}</textarea>
+                <label for="id_site_params_max_characters_for_a_line">{% trans "Max characters for a line" %}</label><br>
+                <select name="sel_site_params_max_characters_for_a_line" id="id_site_params_max_characters_for_a_line"
+                style="width: 100%;">
+                    {% for value in site_params_max_characters_for_a_line %}
+                        <option value="{{ value }}"{% if site.verse_max_characters_for_a_line == value %} selected{% endif %}>
+                            {{ value }} {% trans "characters" %}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <br><hr><br>
         
-            <input name="btn_save" value="{% trans "save" %}" type="submit" />
+            <input name="btn_save_site_params" value="{% trans "save" %}" type="submit" />
             <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
         </form>
     {% else %}
-        <a href="{% url 'homepage' %}?modify_homepage">{% trans "Modify homepage" %}</a>
+        <a href="{% url 'homepage' %}?modify_site_params">{% trans "Modify site params" %}</a>
     {% endif %}
 {% endif %}
 {% endblock content %}
