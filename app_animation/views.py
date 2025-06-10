@@ -5,7 +5,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader, is_moderator
+from app_main.utils import is_no_loader, is_moderator, get_song_params
 
 
 
@@ -129,6 +129,9 @@ def modify_animation(request, animation_id):
         list_lyrics = []
         for song in animation.songs:
             song_lyrics = Song.get_song_by_id(song['song_id'])
+            song_params = get_song_params()
+            song_lyrics.verse_max_lines = song_params['verse_max_lines']
+            song_lyrics.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
             song_lyrics.get_verses()
             
             full_title = song_lyrics.full_title
