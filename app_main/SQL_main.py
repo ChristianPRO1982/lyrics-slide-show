@@ -116,6 +116,7 @@ SELECT song_id,
 class Site:
     def __init__(self):
         self.get_site_info()
+        self.get_site_parameters()
 
 
     def get_site_info(self):
@@ -143,6 +144,25 @@ SELECT *
             self.home_text = ""
             self.bloc1_text = ""
             self.bloc2_text = ""
+
+
+    def get_site_parameters(self):
+        request = """
+SELECT *
+  FROM l_site_params
+"""
+        params = []
+
+        create_SQL_log(code_file, "Site.get_site_parameters", "SELECT_4", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+        if row:
+            self.verse_max_lines = row[0]
+            self.verse_max_characters_for_a_line = row[1]
+        else:
+            self.verse_max_lines = 10
+            self.verse_max_characters_for_a_line = 40
 
 
     def save(self):

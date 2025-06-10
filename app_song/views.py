@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
-from app_main.utils import is_moderator, is_no_loader, strip_html
+from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params
 
 
 
@@ -57,12 +57,15 @@ def modify_song(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
     new_verse = False
+    song_params = get_song_params()
 
     song = Song.get_song_by_id(song_id)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
     song.get_verses()
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     status = -1
     moderator = is_moderator(request)
     mod_new_messages = []
@@ -149,6 +152,8 @@ def modify_song(request, song_id):
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
         'new_verse': new_verse,
+        'verse_max_lines': song_params['verse_max_lines'],
+        'verse_max_characters_for_a_line': song_params['verse_max_characters_for_a_line'],
         'error': error,
         'css': css,
         'no_loader': no_loader,
