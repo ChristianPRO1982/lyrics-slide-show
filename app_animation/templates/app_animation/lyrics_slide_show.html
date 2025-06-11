@@ -169,7 +169,10 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <div onClick="navChorus();" class="flex w-1/2">{% trans "Chorus" %}</div>
     </div>
     <br>
-    <p>{% trans "Songs" %}<br><span class="italic" id="current_song_title">coco</span></p>
+    <p>
+        {% trans "Songs" %}<br>
+        <span class="italic text-blue-800 bg-blue-300 dark:text-blue-300 dark:bg-blue-800 px-2 py-1 rounded" id="current_song_title"></span>
+    </p>
     <div class="flex">
         <div id="nav_previous_song" onClick="navPreviousSong();" class="flex w-1/2"></div>
         <div id="nav_next_song" onClick="navNextSong();" class="flex w-1/2"></div>
