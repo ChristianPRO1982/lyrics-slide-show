@@ -92,14 +92,14 @@
                     <label for="box_verse_chorus_{{ verse.verse_id }}">{% trans "chorus" %}</label>
                     
                     {% if verse.chorus != 1 %}
-                        <br><input style="width: 10%;" type="checkbox" name="box_verse_notcontinuenumbering_{{ verse.verse_id }}"
-                        id="box_verse_notcontinuenumbering_{{ verse.verse_id }}" {% if verse.notcontinuenumbering %}checked{% endif %} />
-                        <label for="box_verse_followed_{{ verse.verse_id }}">{% trans "followed" %}</label>
-                        <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
-                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus != 0 %}checked{% endif %} />
-                        <label for="box_verse_notcontinuenumbering_{{ verse.verse_id }}" title="{% trans "Not continue numbering" %}">{% trans "Not C. num ⓘ" %}</label>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
                         id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
+                        <label for="box_verse_followed_{{ verse.verse_id }}">{% trans "followed" %}</label>
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_notcontinuenumbering_{{ verse.verse_id }}"
+                        id="box_verse_notcontinuenumbering_{{ verse.verse_id }}" {% if verse.notcontinuenumbering %}checked{% endif %} />
+                        <label for="box_verse_notcontinuenumbering_{{ verse.verse_id }}" title="{% trans "Not continue numbering" %}">{% trans "Not C. num ⓘ" %}</label>
+                        <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
+                        id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus != 0 %}checked{% endif %} />
                         <label for="box_verse_like_chorus_{{ verse.verse_id }}">{% trans "like_a_chorus" %}</label>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_notdisplaychorusnext_{{ verse.verse_id }}"
                         id="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" {% if verse.notdisplaychorusnext %}checked{% endif %} />
