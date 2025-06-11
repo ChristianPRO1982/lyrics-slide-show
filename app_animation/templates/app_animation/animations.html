@@ -7,7 +7,29 @@
 {% block bloc1 %}
 {% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
 {% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc2 %}
+<button id="togglePassedBtn" onclick="togglePassedAnimations()">{% trans "Show past animations" %}</button>
+<script>
+function togglePassedAnimations() {
+    const rows = document.querySelectorAll('#animation_passed');
+    const btn = document.getElementById('togglePassedBtn');
+    let anyHidden = false;
+    rows.forEach(row => {
+        if (row.classList.contains('hidden')) {
+            row.classList.remove('hidden');
+            anyHidden = true;
+        } else {
+            row.classList.add('hidden');
+        }
+    });
+    if (anyHidden) {
+        btn.textContent = "{% trans 'Hide past animations' %}";
+    } else {
+        btn.textContent = "{% trans 'Show past animations' %}";
+    }
+}
+</script>
+{% endblock bloc2 %}
 
 {% block content %}
 <table style="width: 100%;">
@@ -21,7 +43,7 @@
     </thead>
     <tbody>
         {% for animation in animations %}
-        <tr>
+        <tr{% if animation.future == 0 %} id="animation_passed" class="hidden"{% endif %}>
             <td><a href="{% url "lyrics_slide_show" animation.animation_id %}">{{ animation.name }}</a></td>
             <td>
                 {{ animation.description|slice:":100" }}

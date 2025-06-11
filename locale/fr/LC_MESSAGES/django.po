@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-11 08:34+0200\n"
+"POT-Creation-Date: 2025-06-11 09:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,29 +50,38 @@ msgstr " ]"
 msgid "No group selected"
 msgstr "Aucun groupe sélectionné"
 
-#: app_animation/templates/app_animation/animations.html:16
-#: app_animation/templates/app_animation/animations.html:51
+#: app_animation/templates/app_animation/animations.html:11
+#: app_animation/templates/app_animation/animations.html:28
+msgid "Show past animations"
+msgstr "Afficher les anciennes animations"
+
+#: app_animation/templates/app_animation/animations.html:26
+msgid "Hide past animations"
+msgstr "Masquer les anciennes animations"
+
+#: app_animation/templates/app_animation/animations.html:38
+#: app_animation/templates/app_animation/animations.html:73
 #: app_animation/templates/app_animation/modify_animation.html:46
 msgid "Name"
 msgstr "Nom"
 
-#: app_animation/templates/app_animation/animations.html:17
-#: app_animation/templates/app_animation/animations.html:42
-#: app_animation/templates/app_animation/animations.html:52
+#: app_animation/templates/app_animation/animations.html:39
+#: app_animation/templates/app_animation/animations.html:64
+#: app_animation/templates/app_animation/animations.html:74
 #: app_animation/templates/app_animation/modify_animation.html:50
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/modify_group.html:48
 msgid "Description"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:18
-#: app_animation/templates/app_animation/animations.html:53
+#: app_animation/templates/app_animation/animations.html:40
+#: app_animation/templates/app_animation/animations.html:75
 #: app_animation/templates/app_animation/modify_animation.html:54
 msgid "Date"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:19
-#: app_animation/templates/app_animation/animations.html:54
+#: app_animation/templates/app_animation/animations.html:41
+#: app_animation/templates/app_animation/animations.html:76
 #: app_song/templates/app_song/song_metadata.html:35
 #: app_song/templates/app_song/song_metadata.html:60
 #, fuzzy
@@ -80,11 +89,11 @@ msgstr ""
 msgid "Actions"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/animations.html:32
+#: app_animation/templates/app_animation/animations.html:54
 msgid "Update"
 msgstr "Modifier"
 
-#: app_animation/templates/app_animation/animations.html:33
+#: app_animation/templates/app_animation/animations.html:55
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:150
 #: app_animation/templates/common/animation_actions.html:8
@@ -94,11 +103,11 @@ msgstr "Modifier"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: app_animation/templates/app_animation/animations.html:41
+#: app_animation/templates/app_animation/animations.html:63
 msgid "new_animation"
 msgstr "Nouvelle animation"
 
-#: app_animation/templates/app_animation/animations.html:44
+#: app_animation/templates/app_animation/animations.html:66
 #: app_group/templates/app_group/add_group.html:21
 msgid "Add"
 msgstr "Ajouter"
@@ -183,17 +192,17 @@ msgstr "Rouvrir le second écran"
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:174
+#: app_animation/templates/app_animation/lyrics_slide_show.html:175
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:184
+#: app_animation/templates/app_animation/lyrics_slide_show.html:187
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:213
+#: app_animation/templates/app_animation/lyrics_slide_show.html:216
 msgid "chorus_prefix"
 msgstr "R- "
 
@@ -207,9 +216,9 @@ msgstr "Taille de police d'écriture"
 
 #: app_animation/templates/app_animation/modify_animation.html:80
 #: app_animation/templates/app_animation/modify_animation.html:88
-#: app_song/templates/app_song/modify_song.html:117
-#: app_song/templates/app_song/modify_song.html:130
-#: app_song/templates/app_song/modify_song.html:145
+#: app_song/templates/app_song/modify_song.html:116
+#: app_song/templates/app_song/modify_song.html:129
+#: app_song/templates/app_song/modify_song.html:144
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -218,7 +227,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:104
-#: app_song/templates/app_song/modify_song.html:123
+#: app_song/templates/app_song/modify_song.html:122
 msgid "before"
 msgstr "Avant"
 
@@ -228,12 +237,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:113
-#: app_song/templates/app_song/modify_song.html:137
+#: app_song/templates/app_song/modify_song.html:136
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:114
-#: app_song/templates/app_song/modify_song.html:138
+#: app_song/templates/app_song/modify_song.html:137
 msgid "after"
 msgstr "Après"
 
@@ -243,15 +252,15 @@ msgstr "Taille police&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:127
 msgid "decrease size"
-msgstr ""
+msgstr "diminuer la taille"
 
 #: app_animation/templates/app_animation/modify_animation.html:134
 msgid "same size"
-msgstr ""
+msgstr "même taille"
 
 #: app_animation/templates/app_animation/modify_animation.html:139
 msgid "increase size"
-msgstr ""
+msgstr "augmenter la taille"
 
 #: app_animation/templates/app_animation/modify_animation.html:149
 msgid "Are you sure you want to delete this song?"
@@ -290,14 +299,14 @@ msgstr "Les chants sélectionnés seront placés ici..."
 #: app_main/templates/app_main/homepage.html:102
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:76
-#: app_song/templates/app_song/modify_song.html:169
+#: app_song/templates/app_song/modify_song.html:168
 #: app_song/templates/app_song/song_metadata.html:24
 #: app_song/templates/app_song/song_metadata.html:71
 msgid "save"
 msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:181
-#: app_song/templates/app_song/modify_song.html:170
+#: app_song/templates/app_song/modify_song.html:169
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -715,61 +724,61 @@ msgstr "Description"
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/modify_song.html:84
+#: app_song/templates/app_song/modify_song.html:83
 msgid "Too many lines"
 msgstr "Trop de lignes"
 
-#: app_song/templates/app_song/modify_song.html:89
+#: app_song/templates/app_song/modify_song.html:88
 msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
-#: app_song/templates/app_song/modify_song.html:98
-#: app_song/templates/app_song/modify_song.html:128
-#: app_song/templates/app_song/modify_song.html:143
+#: app_song/templates/app_song/modify_song.html:97
+#: app_song/templates/app_song/modify_song.html:127
+#: app_song/templates/app_song/modify_song.html:142
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:103
+#: app_song/templates/app_song/modify_song.html:102
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:106
+#: app_song/templates/app_song/modify_song.html:105
 msgid "Not continue numbering"
 msgstr "Ne pas continuer la numérotation"
 
-#: app_song/templates/app_song/modify_song.html:106
+#: app_song/templates/app_song/modify_song.html:105
 msgid "Not C. num ⓘ"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:109
+#: app_song/templates/app_song/modify_song.html:108
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:111
 msgid "This feature only works if “Like a chorus” is ticked"
 msgstr "Cette fonctionnalité ne marche que si “Comme un refrain” est cochée"
 
-#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:111
 msgid "Do not display the chorus after ⓘ"
 msgstr "Ne pas afficher le refrain après ⓘ"
 
-#: app_song/templates/app_song/modify_song.html:121
+#: app_song/templates/app_song/modify_song.html:120
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:156
+#: app_song/templates/app_song/modify_song.html:155
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:157
+#: app_song/templates/app_song/modify_song.html:156
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:166
+#: app_song/templates/app_song/modify_song.html:165
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:171
+#: app_song/templates/app_song/modify_song.html:170
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
