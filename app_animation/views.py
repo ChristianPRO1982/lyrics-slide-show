@@ -215,6 +215,7 @@ def lyrics_slide_show(request, animation_id):
     slides = animation.get_slides()
     slides = all_lyrics(slides)
     slides_sliced = []
+    preview_animation_song_id = -1
     for slide in slides:
         max_length = 100
         if len(slide['text']) > max_length:
@@ -229,6 +230,11 @@ def lyrics_slide_show(request, animation_id):
             if text.endswith(suffix):
                 text = text[:-len(suffix)]
 
+        if preview_animation_song_id != slide['animation_song_id']:
+            current_slide = -1
+        preview_animation_song_id = slide['animation_song_id']
+        current_slide += 1
+
         slides_sliced.append({
             'animation_song_id': slide['animation_song_id'],
             'verse_id': slide['verse_id'],
@@ -238,6 +244,7 @@ def lyrics_slide_show(request, animation_id):
             'followed': slide['followed'],
             'text': text + ext,
             'new_animation_song': slide['new_animation_song'],
+            'current_slide': current_slide,
         })
     if not slides:
         error = "[ERR17]"

@@ -239,6 +239,10 @@ function navSongs(index) {
     navChorusInit();
 }
 
+function updateCurrentSlide(currentSlide) {
+    current_slide = currentSlide;
+}
+
 function navPreviousSong() {
     if (songs[songIdToIndex(current_song_id)].previous_song_id != '') {
         navSongs(songIdToIndex(songs[songIdToIndex(current_song_id)].previous_song_id));

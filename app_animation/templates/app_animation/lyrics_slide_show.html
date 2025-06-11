@@ -208,7 +208,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
         onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
-        navSongs(songIdToIndex({{ slide.animation_song_id }}));
+        navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
         {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
         class="slide {% if slide.chorus == 1 %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe }}
