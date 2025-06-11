@@ -39,7 +39,7 @@
     {% for song in songs %}
         {
             song_id: {{ song.song_id }},
-            full_title: "{{ song.full_title }}",
+            full_title: "{{ song.full_title|escapejs }}",
             description: "{{ song.description|escapejs }}",
             status: {{ song.status }}
         },

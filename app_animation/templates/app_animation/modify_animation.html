@@ -186,7 +186,7 @@
 <script>
     const songs = [
     {% for song in all_songs %}
-        { id: {{ song.song_id }}, name: "{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title }}" },
+        { id: {{ song.song_id }}, name: "{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title|escapejs }}" },
     {% endfor %}
     ];
   
