@@ -1,3 +1,27 @@
+# [1.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.5.0...v1.6.0) (2025-06-11)
+
+
+### Bug Fixes
+
+* add 'escapejs' for search song ([cca5d81](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cca5d819515aeb917fbe73703af29167c700b48e))
+* add save button on top of modify_animation ([c3a5040](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c3a50402af1808f6b73b9e2d485ec8b83c956dd1))
+* add try except in check_max_lines and check_max_characters_for_a_line ([ac95a12](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ac95a12804bd9474c72f4c6df9b68461e3ad4ece))
+* anchor for help why too many characters or lines ([a162d09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a162d094d0219e39f1d5a81a90e68d02fbf6823f))
+* better display of the current song title ([9b1cdf9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9b1cdf92c6904fc9c4af29f9a3e1a2bb8c0d5f0c))
+* error 31 to 40 ([7037152](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/703715296c9d75e2c3f5942cb8a2fe95da957748))
+* good display of simple quot for title song (blue) in SlideShow page ([a6a6650](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a6a6650d2e28643cad314f4e89eab1d89c97da65))
+* site params in all animation pages ([82434f9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/82434f97ed25f6a92fea5d0459d2c4d8f63d3865))
+* site params in all song pages ([d57b146](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d57b146d312f731497c646da8906ac26e1ca1422))
+
+
+### Features
+
+* adminstrator can modify site's params ([cc4d135](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cc4d135caaae5cf04c36bb2e82d7ab742f3385e2))
+* help for writting verses ([2c80571](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2c805711a797a701e0242e822967a4f66189c166))
+* New song: description replaced by sus title ([6b79784](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6b797843acd8c617b3cdc398a463efef9b3a19b7))
+* past animations are hidden and can be displayed using a button ([fb0b5dc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fb0b5dcb9dcddb4107d877647fb401fa5d993249))
+* SlideShow: update current slide on clic a slide: navNextSlide show the good slide ([58baa5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/58baa5ed8a3a6a2d34f7389691f2ca759c5f090f))
+
 # [1.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.4.1...v1.5.0) (2025-06-06)
 
 
