@@ -5,11 +5,7 @@
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.full_title }}{% endblock title_h1 %}
 {% block bloc1 %}
-    {% include "common/song_actions.html" %}
-    <hr>
-    {% for link in song.links %}
-        🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
-    {% endfor %}
+{% include "common/song_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 {% if song.artist %}

@@ -5,14 +5,7 @@
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
-    {% include "common/song_actions.html" %}
-    <hr>
-    {% for link in song.links %}
-        <a href="{{ link|first }}">{{ link|last }}</a><br>
-    {% endfor %}
-    {% if song.status != 0 and not moderator %}
-        <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
-    {% endif %}
+{% include "common/song_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 

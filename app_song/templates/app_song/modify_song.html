@@ -33,12 +33,6 @@
         </div>
         <hr>
     {% endif %}
-    {% for link in song.links %}
-        🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
-    {% endfor %}<br>
-    {% if song.status != 0 and not moderator %}
-        <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
-    {% endif %}
     <a id="help_rules"></a>
     {% trans "verse_rules" %}<br>
     📏 {% trans "verse_rule_1" %} <b>{{ verse_max_lines }}</b><br>
