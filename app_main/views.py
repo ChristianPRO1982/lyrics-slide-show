@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from app_logs.utils import delete_old_logs
-from .utils import is_moderator, is_no_loader, save_user_theme
+from .utils import is_moderator, is_admin, is_no_loader, save_user_theme
 from .SQL_main import User, Site, Songs
 
 
@@ -14,7 +14,9 @@ def homepage(request):
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
+    admin = is_admin(request)
     modify_homepage = False
+    modify_site_params = False
 
     username = request.user.username
     if username:
@@ -33,14 +35,29 @@ def homepage(request):
                 modify_homepage = True
             else:
                 error = '[ERR27]'
+        
+        if 'modify_site_params' in request.GET:
+            if admin:
+                modify_site_params = True
+            else:
+                error = '[ERR29]'
 
     if request.method == 'POST':
-        if 'btn_save' in request.POST:
+        if 'btn_save_homepage' in request.POST:
             site.title = request.POST.get('txt_title', '').strip()
             site.title_h1 = request.POST.get('txt_title_h1', '').strip()
             site.home_text = request.POST.get('txt_home_text', '').strip()
             site.bloc1_text = request.POST.get('txt_bloc1_text', '').strip()
             site.bloc2_text = request.POST.get('txt_bloc2_text', '').strip()
+            if site.title and site.title_h1:
+                site.save()
+            else:
+                error = '[ERR28]'
+
+    if request.method == 'POST':
+        if 'btn_save_site_params' in request.POST:
+            site.verse_max_lines = request.POST.get('sel_verse_max_lines', 10)
+            site.verse_max_characters_for_a_line = request.POST.get('sel_site_params_max_characters_for_a_line', 60)
             if site.title and site.title_h1:
                 site.save()
             else:
@@ -52,9 +69,13 @@ def homepage(request):
         'css': css,
         'no_loader': no_loader,
         'moderator': moderator,
+        'admin': admin,
         'site': site,
         'songs': songs.songs,
         'modify_homepage': modify_homepage,
+        'modify_site_params': modify_site_params,
+        'site_params_max_lines': range(3, 21),
+        'site_params_max_characters_for_a_line': range(20, 101, 5),
     })
 
 

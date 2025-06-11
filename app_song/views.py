@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song
-from app_main.utils import is_moderator, is_no_loader, strip_html
+from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params
 
 
 
@@ -24,9 +24,9 @@ def songs(request):
 
         if request.method == 'POST':
             new_song = Song(
-                            title = request.POST.get('txt_new_title'),
-                            sub_title = "",
-                            description = request.POST.get('txt_new_description'),
+                            title = request.POST.get('txt_new_title').strip(),
+                            sub_title = request.POST.get('txt_new_sub_title').strip(),
+                            description = "",
                             artist = "",
                            )
             if not new_song.save():
@@ -43,7 +43,7 @@ def songs(request):
     return render(request, 'app_song/songs.html', {
         'songs': songs,
         'title': request.POST.get('txt_new_title', ''),
-        'description': request.POST.get('txt_new_description', ''),
+        'sub_title': request.POST.get('txt_new_sub_title', ''),
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
@@ -57,11 +57,14 @@ def modify_song(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
     new_verse = False
+    song_params = get_song_params()
 
     song = Song.get_song_by_id(song_id)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     status = -1
     moderator = is_moderator(request)
@@ -149,6 +152,8 @@ def modify_song(request, song_id):
         'mod_new_messages': mod_new_messages,
         'mod_old_messages': mod_old_messages,
         'new_verse': new_verse,
+        'verse_max_lines': song_params['verse_max_lines'],
+        'verse_max_characters_for_a_line': song_params['verse_max_characters_for_a_line'],
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -186,6 +191,9 @@ def goto_song(request, song_id):
 
     song = Song.get_song_by_id(song_id)
     if song:
+        song_params = get_song_params()
+        song.verse_max_lines = song_params['verse_max_lines']
+        song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song.get_verses()
         song_lyrics = song.get_lyrics()
     else:
@@ -210,6 +218,9 @@ def moderator_song(request, song_id):
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id)
+    song_params = get_song_params()
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     song_lyrics = song.get_lyrics()
     valided = False
@@ -277,6 +288,9 @@ def song_metadata(request, song_id):
         # refresh
         song.get_links()
 
+    song_params = get_song_params()
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     song_lyrics = song.get_lyrics()
 

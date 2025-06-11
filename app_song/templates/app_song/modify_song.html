@@ -39,6 +39,10 @@
     {% if song.status != 0 and not moderator %}
         <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
     {% endif %}
+    <a id="help_rules"></a>
+    {% trans "verse_rules" %}<br>
+    📏 {% trans "verse_rule_1" %} <b>{{ verse_max_lines }}</b><br>
+    📏 {% trans "verse_rule_2" %} <b>{{ verse_max_characters_for_a_line }}</b>
 {% endblock bloc1 %}
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
@@ -75,6 +79,16 @@
     <hr>
 
     {% for verse in verses %}
+        {% if verse.max_lines %}
+            <span class="text-green-800 bg-green-300 dark:text-green-300 dark:bg-green-800 px-2 py-1 rounded">
+                ⚠️📏 <a href="#help_rules">{% trans "Too many lines" %}</a>
+            </span>&nbsp;
+        {% endif %}
+        {% if verse.max_characters_for_a_line %}
+            <span class="text-green-800 bg-green-300 dark:text-green-300 dark:bg-green-800 px-2 py-1 rounded">
+                ⚠️📏 <a href="#help_rules">{% trans "Too many characters for a line" %}</a>
+            </span>
+        {% endif %}
         <div class="mt-1 px-1 border L_DIV_BORDER">
             {% if forloop.last and new_verse %}<a id="new_verse"></a>{% endif %}
             <div style="display: flex; justify-content: space-between;">

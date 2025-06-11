@@ -146,6 +146,12 @@ CREATE TABLE `l_animation_song_verse` (
   CONSTRAINT `l_animation_song_verse_l_verses_FK` FOREIGN KEY (`verse_id`) REFERENCES `l_verses` (`verse_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `c_group_user_ask_to_join` (
+  `group_id` mediumint NOT NULL,
+  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`group_id`,`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `l_site` (
   `language` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -156,8 +162,7 @@ CREATE TABLE `l_site` (
   PRIMARY KEY (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `c_group_user_ask_to_join` (
-  `group_id` mediumint NOT NULL,
-  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`group_id`,`username`)
+CREATE TABLE `l_site_params` (
+  `verse_max_lines` tinyint NOT NULL,
+  `verse_max_characters_for_a_line` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

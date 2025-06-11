@@ -227,7 +227,7 @@ function navSongs(index) {
     }
 
     let currentSongTitleDiv = document.getElementById('current_song_title');
-    currentSongTitleDiv.textContent = songs[index].song_full_title;
+    currentSongTitleDiv.textContent = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -237,6 +237,10 @@ function navSongs(index) {
     current_chorus_slide = 0;
     navNextSlideInit();
     navChorusInit();
+}
+
+function updateCurrentSlide(currentSlide) {
+    current_slide = currentSlide;
 }
 
 function navPreviousSong() {

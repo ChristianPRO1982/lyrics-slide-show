@@ -1,7 +1,7 @@
 from typing import Any
 from django.db import connection
 from app_logs.utils import create_SQL_log
-
+from .utils import check_max_lines, check_max_characters_for_a_line
 
 
 code_file = "SQL_song.py"
@@ -204,7 +204,7 @@ UPDATE l_songs
 
 
     def get_verses(self):
-        self.verses = Verse.get_verses_by_song_id(self.song_id)
+        self.verses = Verse.get_verses_by_song_id(self.song_id, self.verse_max_lines, self.verse_max_characters_for_a_line)
 
 
     def new_verse(self):
@@ -403,7 +403,8 @@ UPDATE l_song_link
 ######################################################
 class Verse:
     def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=0,
-                 followed=0, notcontinuenumbering=1, like_chorus=0, notdisplaychorusnext=0, text=""):
+                 followed=0, notcontinuenumbering=1, like_chorus=0, notdisplaychorusnext=0, text="",
+                 max_lines=False, max_characters_for_a_line=False):
         self.verse_id = verse_id
         self.song_id = song_id
         self.num = num
@@ -414,9 +415,11 @@ class Verse:
         self.like_chorus = like_chorus
         self.notdisplaychorusnext = notdisplaychorusnext
         self.text = text
+        self.max_lines = max_lines
+        self.max_characters_for_a_line = max_characters_for_a_line
 
     @staticmethod
-    def get_verses_by_song_id(song_id):
+    def get_verses_by_song_id(song_id, max_lines, max_characters_for_a_line):
         with connection.cursor() as cursor:
             request = """
 SELECT verse_id,
@@ -447,7 +450,9 @@ ORDER BY num
                       notcontinuenumbering=row[5],
                       like_chorus=row[6],
                       notdisplaychorusnext=row[7],
-                      text=row[8]) for row in rows]
+                      text=row[8],
+                      max_lines=check_max_lines(row[8], max_lines),
+                      max_characters_for_a_line=check_max_characters_for_a_line(row[8], max_characters_for_a_line)) for row in rows]
 
     def save(self):
         if not self.num:

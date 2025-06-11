@@ -191,7 +191,7 @@ hr {
 
 
 /* FORMULAIRE */
-input, textarea {
+input, textarea, select {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #1C4E4A;
@@ -201,19 +201,25 @@ input, textarea {
     color: #1C4E4A;
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     outline: 2px dashed #1C4E4A;
     outline-offset: 1px;
 }
 
 @media (prefers-color-scheme: dark) {
-    input, textarea {
+    input, textarea, select {
         background-color: rgba(0, 0, 0, 0.5);
     }
 
     input:focus, textarea:focus {
         outline: 2px dashed #1C4E4A;
         outline-offset: 1px;
+    }
+
+    select:focus {
+        outline: 2px dashed #1C4E4A;
+        outline-offset: 1px;
+        color: #000;
     }
 }
 /* FIN FORMULAIRE */

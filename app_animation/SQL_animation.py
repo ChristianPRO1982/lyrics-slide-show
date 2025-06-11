@@ -33,7 +33,11 @@ class Animation:
     @staticmethod
     def get_all_animations(group_id):
         request = """
-  SELECT *
+  SELECT animation_id, group_id, name, description, date,
+         CASE
+              WHEN DATEDIFF(date, SYSDATE()) >= 0 THEN TRUE
+              ELSE FALSE
+         END AS future
     FROM l_animations
    WHERE group_id = %s
 ORDER BY date, name
@@ -44,7 +48,7 @@ ORDER BY date, name
         with connection.cursor() as cursor:
             cursor.execute(request, params)
             rows = cursor.fetchall()
-        return [{'animation_id': row[0], 'group_id': row[1], 'name': row[2], 'description': row[3], 'date': row[4]} for row in rows]
+        return [{'animation_id': row[0], 'group_id': row[1], 'name': row[2], 'description': row[3], 'date': row[4], 'future': row[5]} for row in rows]
     
 
     @classmethod
