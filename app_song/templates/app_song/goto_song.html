@@ -8,7 +8,7 @@
     {% include "common/song_actions.html" %}
     <hr>
     {% for link in song.links %}
-        <a href="{{ link|first }}">{{ link|last }}</a><br>
+        🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}
 {% endblock bloc1 %}
 {% block bloc2 %}

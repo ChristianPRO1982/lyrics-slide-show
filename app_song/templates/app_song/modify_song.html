@@ -34,8 +34,8 @@
         <hr>
     {% endif %}
     {% for link in song.links %}
-        <a href="{{ link|first }}">{{ link|last }}</a><br>
-    {% endfor %}
+        🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
+    {% endfor %}<br>
     {% if song.status != 0 and not moderator %}
         <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
     {% endif %}

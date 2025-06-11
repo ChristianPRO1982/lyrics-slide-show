@@ -25,7 +25,7 @@
 
     <hr>
 
-    <h4 class="L_H4">Lien web</h4>
+    <h4 class="L_H4">🔗 {% trans "Web links" %}</h4>
 
     <table>
         <thead>
@@ -42,7 +42,7 @@
                 <td><input value="{{ link.1 }}" readonly="readonly"></td>
                 <td>
                     <input onclick="return confirm('{% trans "Delete this link?" %}');"
-                    name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
+                    name="btn_delete_link_{{ forloop.counter }}" value="⛓️‍💥 {% trans "Delete" %}" type="submit" />
                 </td>
             </tr>
             {% endfor %}
@@ -64,7 +64,8 @@
 
     <hr>
 
-    <h4 class="L_H4">Genre</h4>
+    <h4 class="L_H4">{% trans "Genre" %}</h4>
+    Coming soon
 
     <hr>
 
