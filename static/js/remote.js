@@ -21,17 +21,31 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
                 align-items: center;
                 height: 100vh;
             }
+
             .full-screen {
                 font-size: ` + font_size + `px;
                 text-align: center;
             }
+
+            #slideContent {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center; /* horizontal */
+                align-items: center;     /* vertical */
+                flex-direction: column;  /* au cas où tu as plusieurs lignes */
+            }
         </style>
         </head>
         <body>
-        <div style="text-align: center;
-        color: ` + color_rgba + `;
-        background-color: ` + bg_rgba + `;"
-        class="" id="slideContent">` + txt_fullscreen + `</div>
+        <div
+            id="slideContent"
+            class="full-screen"
+            style="text-align: center;
+                color: ` + color_rgba + `;
+                background-color: ` + bg_rgba + `;">
+            ` + txt_fullscreen + `
+        </div>
         </body>
         </html>
     `);
