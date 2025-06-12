@@ -1,3 +1,21 @@
+# [1.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.6.0...v1.7.0) (2025-06-12)
+
+
+### Bug Fixes
+
+* add link emoji: 🔗 ⛓️‍💥 ([e93fa70](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e93fa704db284418d6a5f67de42ef85be64801ad))
+* drop "FR" text and just put the flag ([86d61f5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/86d61f552298c09f09753f5497e6da34e54d6a8f))
+* links in common file ([1b51d65](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1b51d653e90486592b90d6b237c3115316714dae))
+* verse buttons ([d85121f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d85121fbe194243b48bb9f56737ea2336c563417))
+
+
+### Features
+
+* homepage: powered by cARThographie ([9b083d5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9b083d537a71cd0dad5249eec63790ad9a00bb7f))
+* new Lyrirs's logo ([62bbcd8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/62bbcd8c31720bdd6b27320cd17c5a6d77c7fcca))
+* preview next slide with selector ([e34111d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e34111d5bb042f66e6991a07bc5e3e1cbc7c3fc7))
+* preview window for watch next slide ([fbe2f7c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fbe2f7cf89cd55867dcbe9f76237dbfb196da802))
+
 # [1.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.5.0...v1.6.0) (2025-06-11)
 
 
