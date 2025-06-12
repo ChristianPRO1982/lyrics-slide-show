@@ -206,7 +206,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
-    <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
+    <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}" name="{{slide.current_slide}}"
         onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
         navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
         {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
