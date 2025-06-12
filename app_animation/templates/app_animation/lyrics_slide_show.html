@@ -83,6 +83,10 @@
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>
+<a href="#" id="showDraggableDivLink"
+onclick="document.getElementById('draggableDiv').style.display='block'; this.style.display='none'; return false;" style="display:inline-block; margin-top:20px;">
+{% trans "Display preview window" %}
+</a><br>
 {% trans "Shortcuts:" %}
 ( <a id="a_shortcuts" style="cursor:pointer;"
 onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', '{% trans "hide" %}')">{% trans "show" %}</a> )
@@ -107,6 +111,10 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
     <div class="flex items-center space-x-2">
         <img src="{% static 'images/k2-P.png' %}" title="P" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Display preview window" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-P.png' %}" title="P" class="w-6 h-6">
         <img src="{% static 'images/k1-arrowLeft.png' %}" title="⬅️" class="w-6 h-6">
         &nbsp;&nbsp;: {% trans "Previous song" %}
     </div>
@@ -126,7 +134,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         &nbsp;&nbsp;: {% trans "Scroll on ↕️ or not 🧱" %}
     </div>
     {% trans "in upper or lower case" %}
-</div>
+</div><br><br>
 <hr>
 <div class="sticky top-0 p-2">
     {% for slide in slides %}
@@ -206,13 +214,42 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
-    <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}"
-        onClick="showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
-        navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
-        {% if slide.chorus > 0 %}nav_choruses({{ slide.animation_song_id }});{% else %}nav_verses({{ slide.animation_song_id }});{% endif %}"
+    <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}" name="{{slide.current_slide}}"
+        onClick="updateCurrentSlide({{ slide.current_slide }});showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
+        navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }}); nextActiveSlide();"
         class="slide {% if slide.chorus == 1 %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe }}
     </div>
 {% endfor %}
 </div>
+<div id="draggableDiv" style="display:none; position:fixed; top:100px; left:300px; width:500px; height:300px; background:rgba(30,30,30,0.95); color:white; z-index:9999; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+    <div id="draggableHeader" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
+        <span>{% trans "Preview next slide" %}</span>
+        <a href="#" onclick="document.getElementById('draggableDiv').style.display='none'; document.getElementById('showDraggableDivLink').style.display='inline-block'; return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
+    </div>
+    <div id="draggableDivText" style="padding:16px;"></div>
+</div>
+<script>
+(function() {
+    let dragDiv = document.getElementById('draggableDiv');
+    let dragHeader = document.getElementById('draggableHeader');
+    let offsetX = 0, offsetY = 0, isDown = false;
+
+    dragHeader.onmousedown = function(e) {
+        isDown = true;
+        offsetX = e.clientX - dragDiv.offsetLeft;
+        offsetY = e.clientY - dragDiv.offsetTop;
+        document.body.style.userSelect = 'none';
+    };
+    document.onmouseup = function() {
+        isDown = false;
+        document.body.style.userSelect = '';
+    };
+    document.onmousemove = function(e) {
+        if (!isDown) return;
+        dragDiv.style.left = (e.clientX - offsetX) + 'px';
+        dragDiv.style.top = (e.clientY - offsetY) + 'px';
+    };
+})();
+</script>
 {% endblock content %}

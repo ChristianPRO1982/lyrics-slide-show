@@ -49,12 +49,14 @@ function showSlide(index, updateCurrentSlide = true) {
         last_text = text;
     }
     
-    document.querySelectorAll('.slide').forEach(slide => {
-        slide.classList.remove('active');
-    });
+    cleanSelectedSlides();
     
-    const divs = document.querySelectorAll(`[id="${index}"]`);
-    divs.forEach(div => div.classList.add('active'));
+    if (updateCurrentSlide) {
+        const divs = document.querySelectorAll(`[id="${index}"][name="${current_slide}"]`);
+        divs.forEach(div => div.classList.add('active'));
+    }
+    const chorus_divs = document.querySelectorAll(`[id="${index}"]`);
+    chorus_divs.forEach(div => div.classList.add('chorus_active'));
 
     if (updateCurrentSlide) {nextChorusSlideSelect(index);}
     disChoruses();
@@ -136,11 +138,22 @@ function blackMode() {
     }
 }
 
+function nextActiveSlide() {
+    // select next slide
+    next_slide = current_slide + 1;
+    if (next_slide >= slides.length) {next_slide = 0;}
+    next_index = slides[next_slide];
+    const next_divs = document.querySelectorAll(`[id="${next_index}"][name="${next_slide}"]`);
+    next_divs.forEach(div => div.classList.add('next_active'));
+
+    // display next slide text on preview div
+    next_text = decodeHTMLEntities(getText(slides[next_slide]));
+    document.getElementById('draggableDivText').innerHTML = next_text;
+}
+
 function navNextSlide() {
     current_slide += 1;
-    if (current_slide >= slides.length) {
-        current_slide = 0;
-    }
+    if (current_slide >= slides.length) {current_slide = 0;}
     showSlide(slides[current_slide]);
 
     const navNextSlideDiv = document.getElementById('nav_next_slide');
@@ -152,6 +165,8 @@ function navNextSlide() {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
         '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
+
+    nextActiveSlide();
 }
 
 function navNextSlideInit() {
@@ -237,6 +252,16 @@ function navSongs(index) {
     current_chorus_slide = 0;
     navNextSlideInit();
     navChorusInit();
+    cleanSelectedSlides();
+    nextActiveSlide();
+}
+
+function cleanSelectedSlides() {
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.classList.remove('active');
+        slide.classList.remove('chorus_active');
+        slide.classList.remove('next_active');
+    });
 }
 
 function updateCurrentSlide(currentSlide) {
@@ -366,6 +391,16 @@ document.addEventListener('keydown', (event) => {
     // scrollable
     if (event.key.toLowerCase() === 'l') {
         scrollable();
+    }
+    // display preview window
+    if (event.key.toLowerCase() === 'p') {
+        if (document.getElementById('draggableDiv').style.display=='block') {
+            document.getElementById('draggableDiv').style.display='none';
+            document.getElementById('showDraggableDivLink').style.display='inline-block';
+        } else {
+            document.getElementById('draggableDiv').style.display='block';
+            document.getElementById('showDraggableDivLink').style.display='none';
+        }
     }
 });
 

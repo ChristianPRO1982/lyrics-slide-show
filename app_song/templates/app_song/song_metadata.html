@@ -5,14 +5,7 @@
 {% block title %}{% trans "song2dot" %}{{ song.title }}{% endblock title %}
 {% block title_h1 %}{{ song.title }}{% if song.status >= 1 %} ✔️{% endif %}{% if song.status == 2 %} ⁉️{% endif %}{% endblock title_h1 %}
 {% block bloc1 %}
-    {% include "common/song_actions.html" %}
-    <hr>
-    {% for link in song.links %}
-        <a href="{{ link|first }}">{{ link|last }}</a><br>
-    {% endfor %}
-    {% if song.status != 0 and not moderator %}
-        <hr><a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %}</a>
-    {% endif %}
+{% include "common/song_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
@@ -25,7 +18,7 @@
 
     <hr>
 
-    <h4 class="L_H4">Lien web</h4>
+    <h4 class="L_H4">🔗 {% trans "Web links" %}</h4>
 
     <table>
         <thead>
@@ -42,7 +35,7 @@
                 <td><input value="{{ link.1 }}" readonly="readonly"></td>
                 <td>
                     <input onclick="return confirm('{% trans "Delete this link?" %}');"
-                    name="btn_delete_link_{{ forloop.counter }}" value="{% trans "Delete" %}" type="submit" />
+                    name="btn_delete_link_{{ forloop.counter }}" value="⛓️‍💥 {% trans "Delete" %}" type="submit" />
                 </td>
             </tr>
             {% endfor %}
@@ -64,7 +57,8 @@
 
     <hr>
 
-    <h4 class="L_H4">Genre</h4>
+    <h4 class="L_H4">{% trans "Genre" %}</h4>
+    Coming soon
 
     <hr>
 

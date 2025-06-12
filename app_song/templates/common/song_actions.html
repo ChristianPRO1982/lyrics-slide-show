@@ -10,3 +10,7 @@
 {% else %}
     <a href="{% url 'moderator_song' song.song_id %}" title="{% trans "contact_moderators_info" %}">{% trans "Contact moderators" %} ⓘ</a>
 {% endif %}
+<hr>
+{% for link in song.links %}
+    🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
+{% endfor %}
