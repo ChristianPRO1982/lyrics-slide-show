@@ -393,7 +393,7 @@ document.addEventListener('keydown', (event) => {
         scrollable();
     }
     // display preview window
-    if (event.key.toLowerCase() === 'p') {
+    if (event.key.toLowerCase() === 'w') {
         if (document.getElementById('draggableDiv').style.display=='block') {
             document.getElementById('draggableDiv').style.display='none';
             document.getElementById('showDraggableDivLink').style.display='inline-block';
