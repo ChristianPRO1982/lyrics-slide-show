@@ -215,8 +215,8 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <div class="grid grid-cols-3 gap-4">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}" name="{{slide.current_slide}}"
-        onClick="updateCurrentSlide({{ slide.current_slide }});showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}');
-        navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }}); nextActiveSlide();"
+        onClick="navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
+        showSlide('{{ slide.animation_song_id }}_{{ slide.verse_id }}'); nextActiveSlide();"
         class="slide {% if slide.chorus == 1 %}chorus{% endif %} flex h-36 p-2 items-center justify-center text-xs border rounded-lg{% if slide.chorus > 0 %} font-bold{% endif %}">
         {% if slide.chorus == 1 %}{% trans "chorus_prefix" %}{% endif %}{{ slide.text|safe }}
     </div>
