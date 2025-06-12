@@ -144,7 +144,7 @@ function nextActiveSlide() {
     if (next_slide >= slides.length) {next_slide = 0;}
     next_index = slides[next_slide];
     const next_divs = document.querySelectorAll(`[id="${next_index}"][name="${next_slide}"]`);
-    next_divs.forEach(div => div.classList.add('next_active'));
+    if (slides.length > 1) {next_divs.forEach(div => div.classList.add('next_active'));}
 
     // display next slide text on preview div
     next_text = decodeHTMLEntities(getText(slides[next_slide]));
