@@ -224,8 +224,24 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
 </div>
 <div id="draggableDiv" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(30,30,30,0.95); color:white; z-index:9999; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <div id="draggableHeader" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
-        <span>{% trans "Preview next slide" %}</span>
-        <a href="#" onclick="document.getElementById('draggableDiv').style.display='none'; document.getElementById('showDraggableDivLink').style.display='inline-block'; return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
+        <div>
+            <span>{% trans "Preview next slide" %}</span>
+            -
+            <span id="draggableSpanSongTitle"></span>
+        </div>
+        <div>
+            <a href="#" id="reduceDraggableDivBtn" onclick="document.getElementById('draggableDiv').style.width='500px';
+            document.getElementById('draggableDiv').style.height='300px';this.style.display='none';
+            document.getElementById('enlargeDraggableDivBtn').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            <a href="#" id="enlargeDraggableDivBtn" onclick="document.getElementById('draggableDiv').style.width='700px';
+            document.getElementById('draggableDiv').style.height='500px';this.style.display='none';
+            document.getElementById('reduceDraggableDivBtn').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            <a href="#" onclick="document.getElementById('draggableDiv').style.display='none';
+            document.getElementById('showDraggableDivLink').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
+        </div>
     </div>
     <div id="draggableDivText" style="padding:16px;"></div>
 </div>
