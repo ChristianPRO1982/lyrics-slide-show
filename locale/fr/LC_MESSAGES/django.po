@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:15+0200\n"
+"POT-Creation-Date: 2025-06-12 11:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,82 +129,91 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:88
+#: app_animation/templates/app_animation/lyrics_slide_show.html:90
+#: app_animation/templates/app_animation/lyrics_slide_show.html:116
+msgid "Display preview window"
+msgstr "Afficher la fenêtre de prévisualisation"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:92
 msgid "Shortcuts:"
 msgstr "Raccourcis clavier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:90
+#: app_animation/templates/app_animation/lyrics_slide_show.html:94
 msgid "show"
 msgstr "Afficher"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:90
+#: app_animation/templates/app_animation/lyrics_slide_show.html:94
 msgid "hide"
 msgstr "Masquer"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:96
-#: app_animation/templates/app_animation/lyrics_slide_show.html:161
+#: app_animation/templates/app_animation/lyrics_slide_show.html:100
+#: app_animation/templates/app_animation/lyrics_slide_show.html:169
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:99
+#: app_animation/templates/app_animation/lyrics_slide_show.html:103
 msgid "Space bar"
 msgstr "Barre espace"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:103
-#: app_animation/templates/app_animation/lyrics_slide_show.html:170
+#: app_animation/templates/app_animation/lyrics_slide_show.html:107
+#: app_animation/templates/app_animation/lyrics_slide_show.html:178
 msgid "Next slide"
 msgstr "Slide suivante"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:108
-#: app_animation/templates/app_animation/lyrics_slide_show.html:171
+#: app_animation/templates/app_animation/lyrics_slide_show.html:112
+#: app_animation/templates/app_animation/lyrics_slide_show.html:179
 msgid "Chorus"
 msgstr "Refrain"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:113
+#: app_animation/templates/app_animation/lyrics_slide_show.html:121
 msgid "Previous song"
 msgstr "Chant précédent"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:119
+#: app_animation/templates/app_animation/lyrics_slide_show.html:127
 msgid "Next song"
 msgstr "Chant suivant"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:124
+#: app_animation/templates/app_animation/lyrics_slide_show.html:132
 msgid "Display/hide choruses"
 msgstr "Afficher/masquer les refrains"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:128
+#: app_animation/templates/app_animation/lyrics_slide_show.html:136
 msgid "Scroll on ↕️ or not 🧱"
 msgstr "Scroll activé ↕️ ou bloqué 🧱"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:130
+#: app_animation/templates/app_animation/lyrics_slide_show.html:138
 msgid "in upper or lower case"
 msgstr "en majuscule ou minuscule"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:143
+#: app_animation/templates/app_animation/lyrics_slide_show.html:151
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:144
+#: app_animation/templates/app_animation/lyrics_slide_show.html:152
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:164
+#: app_animation/templates/app_animation/lyrics_slide_show.html:172
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:175
+#: app_animation/templates/app_animation/lyrics_slide_show.html:183
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:187
+#: app_animation/templates/app_animation/lyrics_slide_show.html:195
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:216
+#: app_animation/templates/app_animation/lyrics_slide_show.html:223
 msgid "chorus_prefix"
 msgstr "R- "
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:229
+msgid "Preview next slide"
+msgstr "Slide suivante"
 
 #: app_animation/templates/app_animation/modify_animation.html:16
 msgid "Select a song to view the lyrics"
