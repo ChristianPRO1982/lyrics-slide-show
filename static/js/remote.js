@@ -144,7 +144,7 @@ function nextActiveSlide() {
     if (next_slide >= slides.length) {next_slide = 0;}
     next_index = slides[next_slide];
     const next_divs = document.querySelectorAll(`[id="${next_index}"][name="${next_slide}"]`);
-    next_divs.forEach(div => div.classList.add('next_active'));
+    if (slides.length > 1) {next_divs.forEach(div => div.classList.add('next_active'));}
 
     // display next slide text on preview div
     next_text = decodeHTMLEntities(getText(slides[next_slide]));
@@ -242,7 +242,10 @@ function navSongs(index) {
     }
 
     let currentSongTitleDiv = document.getElementById('current_song_title');
-    currentSongTitleDiv.textContent = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
+    let draggableSpanSongTitle = document.getElementById('draggableSpanSongTitle');
+    let currentSongTitle = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
+    currentSongTitleDiv.textContent = currentSongTitle;
+    draggableSpanSongTitle.textContent = currentSongTitle;
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -393,7 +396,7 @@ document.addEventListener('keydown', (event) => {
         scrollable();
     }
     // display preview window
-    if (event.key.toLowerCase() === 'p') {
+    if (event.key.toLowerCase() === 'w') {
         if (document.getElementById('draggableDiv').style.display=='block') {
             document.getElementById('draggableDiv').style.display='none';
             document.getElementById('showDraggableDivLink').style.display='inline-block';

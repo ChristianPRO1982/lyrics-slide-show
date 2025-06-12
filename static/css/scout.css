@@ -121,18 +121,18 @@ hr {
 }
 
 .active {
-    border-color: rgb(162, 182, 171) !important;
+    border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
     border-width: 5px !important;
 }
 
 .chorus_active {
-    border-color: rgb(162, 182, 171) !important;
+    border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
 }
 
 .next_active {
-    border-color: rgb(36, 122, 18) !important;
+    border-color: rgb(6, 24, 13) !important;
     border-width: 3px !important;
 }
 
@@ -175,16 +175,16 @@ hr {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(255, 50, 200) !important;
+        border-color: rgb(160, 75, 19) !important;
         border-radius: 0% !important;
         border-width: 5px !important;
     }
     .chorus_active {
-        border-color: rgb(162, 182, 171) !important;
+        border-color: rgb(160, 75, 19) !important;
         border-radius: 0% !important;
     }
     .next_active {
-        border-color: rgb(36, 122, 18) !important;
+        border-color: rgb(248, 11, 82) !important;
         border-width: 3px !important;
     }
 
