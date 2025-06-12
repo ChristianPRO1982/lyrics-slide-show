@@ -1,3 +1,19 @@
+# [1.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.0...v1.8.0) (2025-06-12)
+
+
+### Bug Fixes
+
+* change moussseDown 'p' to 'w' for display preview window ([4f91be9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4f91be943ae8d8c92c2b97ea90a008301450d6b7))
+* css for select a slide ([88bc7ef](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/88bc7ef7026e21e6c0cf5c7a620b8308d244b4c0))
+* good selector when mousse down on a slide ([d763d1e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d763d1e0f2c5dd5996e3d6e7e42cf86b4e373004))
+* when 1 slide for a song > good selector ([f53c8a4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f53c8a4088994022e560e67ad39a09a2b6b65969))
+* witdh and height of preview window ([78da4fe](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/78da4fe32e03bbd02d1892a5dcfcad6a4cea892e))
+
+
+### Features
+
+* preview window: 2 witdh/height ([5a91dba](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5a91dba4095319207d17ea78badc20e1331ede9e))
+
 # [1.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.6.0...v1.7.0) (2025-06-12)
 
 
