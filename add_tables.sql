@@ -139,6 +139,8 @@ CREATE TABLE `l_animation_song_verse` (
   `animation_song_id` mediumint NOT NULL,
   `verse_id` mediumint NOT NULL,
   `selected` tinyint(1) NOT NULL DEFAULT '1',
+  `font` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `font_size` tinyint NOT NULL DEFAULT '50',
   PRIMARY KEY (`animation_song_id`,`verse_id`),
   KEY `l_animation_song_verse_l_verses_FK` (`verse_id`),
   KEY `l_animation_song_verse_animation_song_id_IDX` (`animation_song_id`) USING BTREE,
