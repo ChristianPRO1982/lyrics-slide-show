@@ -35,3 +35,32 @@ def get_song_params():
         'verse_max_lines': site.verse_max_lines,
         'verse_max_characters_for_a_line': site.verse_max_characters_for_a_line,
     }
+
+def list_fonts():
+    return [
+        {"name": "Arial", "class": "font-arial"},
+        {"name": "Source Sans Pro", "class": "font-source-sans-pro"},
+        {"name": "Ubuntu", "class": "font-ubuntu"},
+        {"name": "Work Sans", "class": "font-work-sans"},
+        {"name": "Poppins", "class": "font-poppins"},
+        {"name": "Amatic SC", "class": "font-amatic-sc"},
+        {"name": "Anton", "class": "font-anton"},
+        {"name": "Baloo 2", "class": "font-baloo-2"},
+        {"name": "Bangers", "class": "font-bangers"},
+        {"name": "Bree Serif", "class": "font-bree-serif"},
+        {"name": "Caveat", "class": "font-caveat"},
+        {"name": "Chewy", "class": "font-chewy"},
+        {"name": "Concert One", "class": "font-concert-one"},
+        {"name": "Fredoka", "class": "font-fredoka"},
+        {"name": "Fugaz One", "class": "font-fugaz-one"},
+        {"name": "Gloria Hallelujah", "class": "font-gloria-hallelujah"},
+        {"name": "Indie Flower", "class": "font-indie-flower"},
+        {"name": "Lobster", "class": "font-lobster"},
+        {"name": "Patrick Hand", "class": "font-patrick-hand"},
+        {"name": "Quicksand", "class": "font-quicksand"},
+        {"name": "Righteous", "class": "font-righteous"},
+        {"name": "Roboto Slab", "class": "font-roboto-slab"},
+        {"name": "Sacramento", "class": "font-sacramento"},
+        {"name": "Special Elite", "class": "font-special-elite"},
+        {"name": "Staatliches", "class": "font-staatliches"},
+    ]

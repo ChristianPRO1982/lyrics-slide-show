@@ -123,8 +123,18 @@ hr {
 }
 
 .active {
-    border-color: rgb(236, 43, 43) !important;
+    border-color: rgb(240, 23, 23) !important;
     border-radius: 0% !important;
+    border-width: 5px !important;
+}
+
+.chorus_active {
+    border-color: rgb(240, 23, 23) !important;
+    border-radius: 0% !important;
+}
+
+.next_active {
+    border-color: rgb(75, 7, 27) !important;
     border-width: 3px !important;
 }
 
@@ -164,8 +174,16 @@ hr {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(255, 50, 200) !important;
+        border-color: rgb(128, 9, 9) !important;
         border-radius: 0% !important;
+        border-width: 5px !important;
+    }
+    .chorus_active {
+        border-color: rgb(128, 9, 9) !important;
+        border-radius: 0% !important;
+    }
+    .next_active {
+        border-color: rgb(128, 50, 74) !important;
         border-width: 3px !important;
     }
 
@@ -189,7 +207,7 @@ hr {
 
 
 /* FORMULAIRE */
-input, textarea {
+input, textarea, select {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #8b1e1e;
@@ -199,19 +217,25 @@ input, textarea {
     color: #5a2b1f;
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     outline: 2px dashed #8b1e1e;
     outline-offset: 1px;
 }
 
 @media (prefers-color-scheme: dark) {
-    input, textarea {
+    input, textarea, select {
         background-color: rgba(0, 0, 0, 0.5);
     }
 
     input:focus, textarea:focus {
         outline: 2px dashed #8b1e1e;
         outline-offset: 1px;
+    }
+
+    select:focus {
+        outline: 2px dashed #8b1e1e;
+        outline-offset: 1px;
+        color: #000;
     }
 }
 /* FIN FORMULAIRE */

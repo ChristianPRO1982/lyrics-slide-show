@@ -1,4 +1,7 @@
 document.getElementById('openDisplayWindow').addEventListener('click', () => {
+    if (blockScrollKeys == false) {
+        scrollable();
+    }
     displayWindow = window.open('', 'SlideDisplay', 'width=800,height=600');
     displayWindow.document.write(`
         <!DOCTYPE html>
@@ -9,23 +12,40 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         <title>` + txt_fullscreen + `</title>
         <style>
             body {
-            margin: 0;
-            padding: 0;
-            color: grey;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+                margin: 0;
+                padding: 0;
+                color: grey;
+                background-color: black;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
             }
+
             .full-screen {
-            font-size: 50px;
-            text-align: center;
+                font-size: ` + font_size + `px;
+                text-align: center;
+            }
+
+            #slideContent {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center; /* horizontal */
+                align-items: center;     /* vertical */
+                flex-direction: column;  /* au cas où tu as plusieurs lignes */
             }
         </style>
         </head>
         <body>
-        <div style="color: ` + color_rgba + `; background-color: ` + bg_rgba + `;" class="full-screen" id="slideContent">` + txt_fullscreen + `</div>
+        <div
+            id="slideContent"
+            class="full-screen"
+            style="text-align: center;
+                color: ` + color_rgba + `;
+                background-color: ` + bg_rgba + `;">
+            ` + txt_fullscreen + `
+        </div>
         </body>
         </html>
     `);
@@ -35,18 +55,22 @@ let last_text = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
+    fontSize = getFontSize(index);
     
     if (displayWindow) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
+        displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         last_text = text;
     }
     
-    document.querySelectorAll('.slide').forEach(slide => {
-        slide.classList.remove('active');
-    });
+    cleanSelectedSlides();
     
-    const divs = document.querySelectorAll(`[id="${index}"]`);
-    divs.forEach(div => div.classList.add('active'));
+    if (updateCurrentSlide) {
+        const divs = document.querySelectorAll(`[id="${index}"][name="${current_slide}"]`);
+        divs.forEach(div => div.classList.add('active'));
+    }
+    const chorus_divs = document.querySelectorAll(`[id="${index}"]`);
+    chorus_divs.forEach(div => div.classList.add('chorus_active'));
 
     if (updateCurrentSlide) {nextChorusSlideSelect(index);}
     disChoruses();
@@ -70,6 +94,16 @@ function getText(index) {
         if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
             text = verses_choruses[i].text;
             return text;
+        }
+    }
+}
+
+function getFontSize(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            font_size = verses_choruses[i].font_size;
+            return font_size;
         }
     }
 }
@@ -118,11 +152,22 @@ function blackMode() {
     }
 }
 
+function nextActiveSlide() {
+    // select next slide
+    next_slide = current_slide + 1;
+    if (next_slide >= slides.length) {next_slide = 0;}
+    next_index = slides[next_slide];
+    const next_divs = document.querySelectorAll(`[id="${next_index}"][name="${next_slide}"]`);
+    if (slides.length > 1) {next_divs.forEach(div => div.classList.add('next_active'));}
+
+    // display next slide text on preview div
+    next_text = decodeHTMLEntities(getText(slides[next_slide]));
+    document.getElementById('draggableDivText').innerHTML = next_text;
+}
+
 function navNextSlide() {
     current_slide += 1;
-    if (current_slide >= slides.length) {
-        current_slide = 0;
-    }
+    if (current_slide >= slides.length) {current_slide = 0;}
     showSlide(slides[current_slide]);
 
     const navNextSlideDiv = document.getElementById('nav_next_slide');
@@ -134,6 +179,8 @@ function navNextSlide() {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
         '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
     }
+
+    nextActiveSlide();
 }
 
 function navNextSlideInit() {
@@ -209,7 +256,10 @@ function navSongs(index) {
     }
 
     let currentSongTitleDiv = document.getElementById('current_song_title');
-    currentSongTitleDiv.textContent = songs[index].song_full_title;
+    let draggableSpanSongTitle = document.getElementById('draggableSpanSongTitle');
+    let currentSongTitle = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
+    currentSongTitleDiv.textContent = currentSongTitle;
+    draggableSpanSongTitle.textContent = currentSongTitle;
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -219,6 +269,20 @@ function navSongs(index) {
     current_chorus_slide = 0;
     navNextSlideInit();
     navChorusInit();
+    cleanSelectedSlides();
+    nextActiveSlide();
+}
+
+function cleanSelectedSlides() {
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.classList.remove('active');
+        slide.classList.remove('chorus_active');
+        slide.classList.remove('next_active');
+    });
+}
+
+function updateCurrentSlide(currentSlide) {
+    current_slide = currentSlide;
 }
 
 function navPreviousSong() {
@@ -344,6 +408,16 @@ document.addEventListener('keydown', (event) => {
     // scrollable
     if (event.key.toLowerCase() === 'l') {
         scrollable();
+    }
+    // display preview window
+    if (event.key.toLowerCase() === 'w') {
+        if (document.getElementById('draggableDiv').style.display=='block') {
+            document.getElementById('draggableDiv').style.display='none';
+            document.getElementById('showDraggableDivLink').style.display='inline-block';
+        } else {
+            document.getElementById('draggableDiv').style.display='block';
+            document.getElementById('showDraggableDivLink').style.display='none';
+        }
     }
 });
 
