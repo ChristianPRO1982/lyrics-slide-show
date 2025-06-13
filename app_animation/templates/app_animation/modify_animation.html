@@ -68,6 +68,16 @@
                 </option>
             {% endfor %}
         </select>
+    </div>
+    <div>
+        <label for="id_font">{% trans "Font" %}</label><br>
+        <select name="sel_font" id="id_font" style="width: 100%;">
+            {% for font in list_fonts %}
+                <option {% if animation.font == font.name %}selected{% endif %}>
+                    {{ font.name }}
+                </option>
+            {% endfor %}
+        </select>
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
 

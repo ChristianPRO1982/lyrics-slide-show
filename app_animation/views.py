@@ -86,6 +86,7 @@ def modify_animation(request, animation_id):
                     animation.description = request.POST.get('txt_description')
                     animation.date = request.POST.get('dt_date')
                     animation.font_size = request.POST.get('sel_font_size', 60)
+                    animation.font = request.POST.get('sel_font', 'Arial')
                     animation.save()
 
                     # if 'btn_new_song' in request.POST:
