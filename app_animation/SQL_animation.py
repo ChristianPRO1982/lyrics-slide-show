@@ -301,29 +301,35 @@ UPDATE l_animation_song_verse
          CONCAT(
                 ls.title,
                 CASE
-                    WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
-                    ELSE ''
+                     WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                     ELSE ''
                 END) AS full_title,
          lv.chorus,
          lv.num_verse,
          lv.followed,
          REPLACE(REPLACE(REPLACE(lv.text, '\r\n', '<br>'), '\r', '<br>'), '\n', '<br>') text,
          CASE
-             WHEN lag(lasv.animation_song_id) OVER (ORDER BY las.num, lv.num) != lasv.animation_song_id
-                 OR lag(lasv.animation_song_id) OVER (ORDER BY las.num, lv.num) IS NULL
-             THEN TRUE
-             ELSE FALSE
+              WHEN lag(lasv.animation_song_id) OVER (ORDER BY las.num, lv.num) != lasv.animation_song_id
+                OR lag(lasv.animation_song_id) OVER (ORDER BY las.num, lv.num) IS NULL
+              THEN TRUE
+              ELSE FALSE
          END AS new_animation_song,
-         %s + las.font_size font_size
+         CASE 
+              WHEN lasv.font IS NOT NULL AND lasv.font != '' THEN lasv.font
+              WHEN las.font IS NOT NULL AND las.font != '' THEN las.font
+              ELSE la.font
+         END AS final_font,
+         la.font_size + las.font_size + lasv.font_size font_size
     FROM l_animation_song_verse lasv
     JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
     JOIN l_songs ls ON ls.song_id = las.song_id
     JOIN l_verses lv ON lv.verse_id = lasv.verse_id
+    JOIN l_animations la ON la.animation_id = las.animation_id
    WHERE las.animation_id = %s
      AND lasv.selected IS TRUE
 ORDER BY las.num, lv.num
 """
-            params = [self.font_size, self.animation_id]
+            params = [self.animation_id]
 
             create_SQL_log(code_file, "Animations.get_slides", "SELECT_6", request, params)
 
@@ -339,7 +345,8 @@ ORDER BY las.num, lv.num
                         'followed': row[5],
                         'text': row[6],
                         'new_animation_song': row[7],
-                        'font_size': row[8],
+                        'font': row[8],
+                        'font_size': row[9],
                     } for row in rows]
             
             except Exception as e:

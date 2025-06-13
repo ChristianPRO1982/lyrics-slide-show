@@ -9,6 +9,7 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
         <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Anton&family=Baloo+2&family=Bangers&family=Bree+Serif&family=Caveat&family=Chewy&family=Concert+One&family=Fredoka&family=Fugaz+One&family=Gloria+Hallelujah&family=Indie+Flower&family=Lobster&family=Patrick+Hand&family=Poppins&family=Quicksand&family=Righteous&family=Roboto+Slab&family=SACRAMENTO&family=Source+Sans+Pro&family=Special+Elite&family=Staatliches&family=Ubuntu&family=Work+Sans&display=swap" rel="stylesheet">
         <title>` + txt_fullscreen + `</title>
         <style>
             body {
@@ -55,11 +56,13 @@ let last_text = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
+    font = getFont(index);
     fontSize = getFontSize(index);
     
     if (displayWindow) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
         displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
+        displayWindow.document.getElementById('slideContent').style.fontFamily = font;
         last_text = text;
     }
     
@@ -104,6 +107,16 @@ function getFontSize(index) {
         if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
             font_size = verses_choruses[i].font_size;
             return font_size;
+        }
+    }
+}
+
+function getFont(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            font = verses_choruses[i].font;
+            return font;
         }
     }
 }

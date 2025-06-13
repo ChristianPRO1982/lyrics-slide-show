@@ -20,6 +20,7 @@
             "followed": {{ slide.followed }},
             "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
             "new_animation_song": {{ slide.new_animation_song }},
+            "font": "{{ slide.font }}",
             "font_size": {{ slide.font_size }}
         };
         verses_choruses.push(dict);
