@@ -135,12 +135,16 @@
                                 </select>
                                 {% trans "Font_family2dots" %}
                                 <select name="sel_verse_font_{{ verse.animation_song_id }}_{{ verse.verse_id }}" style="width: 15%;">
-                                    <option></option>
-                                    {% for font in list_fonts %}
+                                    <optgroup label="{% trans "Same like song..." %}">
+                                        <option></option>
+                                    </optgroup>
+                                    <optgroup label="{% trans "Fonts family" %}">
+                                        {% for font in list_fonts %}
                                         <option {% if verse.font == font.name %}selected{% endif %}>
                                             {{ font.name }}
                                         </option>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    </optgroup>
                                 </select><br><br>
                             </p>
                         {% endif %}
@@ -208,12 +212,16 @@
                         </select>
                         {% trans "Font_family2dots" %}
                         <select name="sel_font_{{ song.animation_song_id }}" style="width: 100%;">
-                            
-                            {% for font in list_fonts %}
-                                <option {% if song.font == font.name %}selected{% endif %}>
-                                    {{ font.name }}
-                                </option>
-                            {% endfor %}
+                            <optgroup label="{% trans "Same like animation..." %}">
+                                <option></option>
+                            </optgroup>
+                            <optgroup label="{% trans "Fonts family" %}">
+                                {% for font in list_fonts %}
+                                    <option {% if song.font == font.name %}selected{% endif %}>
+                                        {{ font.name }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
                         </select>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 

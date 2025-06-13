@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-13 17:32+0200\n"
+"POT-Creation-Date: 2025-06-13 22:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,7 +95,7 @@ msgstr "Modifier"
 
 #: app_animation/templates/app_animation/animations.html:55
 #: app_animation/templates/app_animation/delete_animation.html:21
-#: app_animation/templates/app_animation/modify_animation.html:189
+#: app_animation/templates/app_animation/modify_animation.html:229
 #: app_animation/templates/common/animation_actions.html:8
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/common/song_actions.html:9
@@ -122,7 +122,7 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:221
+#: app_animation/templates/app_animation/modify_animation.html:261
 #: app_main/templates/app_main/homepage.html:67
 #: app_main/templates/app_main/homepage.html:105
 #: app_song/templates/app_song/moderator_song.html:32
@@ -232,7 +232,7 @@ msgid "Font"
 msgstr "Police d'écriture"
 
 #: app_animation/templates/app_animation/modify_animation.html:82
-#: app_animation/templates/app_animation/modify_animation.html:219
+#: app_animation/templates/app_animation/modify_animation.html:259
 #: app_animation/templates/app_animation/modify_colors_animation.html:36
 #: app_group/templates/app_group/modify_group.html:85
 #: app_main/templates/app_main/homepage.html:66
@@ -253,90 +253,107 @@ msgstr "Enregistrer"
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:121
+#: app_animation/templates/app_animation/modify_animation.html:114
+#: app_animation/templates/app_animation/modify_animation.html:191
+msgid "Font_size2dots"
+msgstr "Taille police&nbsp;:"
+
+#: app_animation/templates/app_animation/modify_animation.html:116
+#: app_animation/templates/app_animation/modify_animation.html:193
+msgid "decrease size"
+msgstr "diminuer la taille"
+
+#: app_animation/templates/app_animation/modify_animation.html:123
+#: app_animation/templates/app_animation/modify_animation.html:200
+msgid "same size"
+msgstr "même taille"
+
+#: app_animation/templates/app_animation/modify_animation.html:128
+#: app_animation/templates/app_animation/modify_animation.html:205
+msgid "increase size"
+msgstr "augmenter la taille"
+
+#: app_animation/templates/app_animation/modify_animation.html:136
+#: app_animation/templates/app_animation/modify_animation.html:213
+msgid "Font_family2dots"
+msgstr "Police d'écriture&nbsp;:"
+
+#: app_animation/templates/app_animation/modify_animation.html:138
+msgid "Same like song..."
+msgstr "Identique à celle du chant..."
+
+#: app_animation/templates/app_animation/modify_animation.html:141
+#: app_animation/templates/app_animation/modify_animation.html:218
+msgid "Fonts family"
+msgstr "Police d'écriture"
+
+#: app_animation/templates/app_animation/modify_animation.html:154
 msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:123
+#: app_animation/templates/app_animation/modify_animation.html:156
 #: app_song/templates/app_song/modify_song.html:117
 msgid "before"
 msgstr "Avant"
 
-#: app_animation/templates/app_animation/modify_animation.html:127
-#: app_animation/templates/app_animation/modify_animation.html:137
+#: app_animation/templates/app_animation/modify_animation.html:160
+#: app_animation/templates/app_animation/modify_animation.html:170
 msgid "song_num"
 msgstr "chant n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:132
+#: app_animation/templates/app_animation/modify_animation.html:165
 #: app_song/templates/app_song/modify_song.html:131
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_animation/templates/app_animation/modify_animation.html:133
+#: app_animation/templates/app_animation/modify_animation.html:166
 #: app_song/templates/app_song/modify_song.html:132
 msgid "after"
 msgstr "Après"
 
-#: app_animation/templates/app_animation/modify_animation.html:147
-#: app_animation/templates/app_animation/modify_animation.html:153
+#: app_animation/templates/app_animation/modify_animation.html:180
+#: app_animation/templates/app_animation/modify_animation.html:188
 msgid "Display options"
 msgstr "Afficher les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:148
+#: app_animation/templates/app_animation/modify_animation.html:181
 msgid "Hide options"
 msgstr "Masquer les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:156
-msgid "Font_size2dots"
-msgstr "Taille police&nbsp;:"
+#: app_animation/templates/app_animation/modify_animation.html:215
+msgid "Same like animation..."
+msgstr "Identique à celle de l'animation..."
 
-#: app_animation/templates/app_animation/modify_animation.html:158
-msgid "decrease size"
-msgstr "diminuer la taille"
-
-#: app_animation/templates/app_animation/modify_animation.html:165
-msgid "same size"
-msgstr "même taille"
-
-#: app_animation/templates/app_animation/modify_animation.html:170
-msgid "increase size"
-msgstr "augmenter la taille"
-
-#: app_animation/templates/app_animation/modify_animation.html:178
-msgid "Font_family2dots"
-msgstr "Police d'écriture&nbsp;:"
-
-#: app_animation/templates/app_animation/modify_animation.html:188
+#: app_animation/templates/app_animation/modify_animation.html:228
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:195
+#: app_animation/templates/app_animation/modify_animation.html:235
 msgid "See the song"
 msgstr "Voir le texte du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:198
+#: app_animation/templates/app_animation/modify_animation.html:238
 msgid "Changes will be lost, do you really want to leave this page?"
-msgstr ""
-"Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
+msgstr "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:199
+#: app_animation/templates/app_animation/modify_animation.html:239
 msgid "Go to the song"
 msgstr "Aller vers le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:208
+#: app_animation/templates/app_animation/modify_animation.html:248
 #: app_song/templates/app_song/songs.html:18
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:209
+#: app_animation/templates/app_animation/modify_animation.html:249
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:213
+#: app_animation/templates/app_animation/modify_animation.html:253
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:220
+#: app_animation/templates/app_animation/modify_animation.html:260
 #: app_song/templates/app_song/modify_song.html:164
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
