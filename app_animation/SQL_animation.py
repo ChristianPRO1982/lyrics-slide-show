@@ -218,7 +218,7 @@ LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_3", request, params)
             cursor.execute(request, params)
-            
+
 
     def update_song_num(self, animation_song_id, num):
         with connection.cursor() as cursor:
@@ -231,18 +231,20 @@ UPDATE l_animation_song
 
             create_SQL_log(code_file, "Animations.update_song_num", "UPDATE_2", request, params)
             cursor.execute(request, params)
+            
 
-
-    def update_song_font_size(self, animation_song_id, font_size):
+    def update_animation_song(self, animation_song_id, num, font, font_size):
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song
-   SET font_size = %s
+   SET num = %s,
+       font = %s,
+       font_size = %s
  WHERE animation_song_id = %s
 """
-            params = [font_size, animation_song_id]
+            params = [num, font, font_size, animation_song_id]
 
-            create_SQL_log(code_file, "Animations.update_song_font_size", "UPDATE_4", request, params)
+            create_SQL_log(code_file, "Animations.update_animation_song", "UPDATE_4", request, params)
             cursor.execute(request, params)
     
 
@@ -275,17 +277,19 @@ DELETE FROM l_animation_song
             return [row[0] for row in rows]
         
 
-    def update_verse_selected(self, animation_song_id, verse_id, selected):
+    def update_verse(self, animation_song_id, verse_id, selected, font, font_size):
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song_verse
-   SET selected = %s
+   SET selected = %s,
+       font = %s,
+       font_size = %s
  WHERE animation_song_id = %s
    AND verse_id = %s
 """
-            params = [selected, animation_song_id, verse_id]
+            params = [selected, font, font_size, animation_song_id, verse_id]
 
-            create_SQL_log(code_file, "Animations.update_verse_selected", "UPDATE_3", request, params)
+            create_SQL_log(code_file, "Animations.update_verse", "UPDATE_3", request, params)
             cursor.execute(request, params)
 
 
