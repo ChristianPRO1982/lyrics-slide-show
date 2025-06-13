@@ -285,7 +285,6 @@ def modify_colors_animation(request, animation_id):
                 animation.color_rgba = request.POST.get('text_color')
                 animation.bg_rgba = request.POST.get('bg_color')
                 animation.save()
-                return redirect('animations')
     
     return render(request, 'app_animation/modify_colors_animation.html', {
         'animation': animation,
