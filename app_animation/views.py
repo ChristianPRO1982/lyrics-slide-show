@@ -5,7 +5,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts
+from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name
 
 
 
@@ -158,6 +158,7 @@ def modify_animation(request, animation_id):
         'font_sizes_decreasing': font_sizes_decreasing,
         'font_sizes_increasing': font_sizes_increasing,
         'list_fonts': list_fonts(),
+        'animation_font_class': font_class_by_name(animation.font),
         'error': error,
         'css': css,
         'no_loader': no_loader,

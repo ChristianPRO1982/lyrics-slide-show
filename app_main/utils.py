@@ -64,3 +64,10 @@ def list_fonts():
         {"name": "Special Elite", "class": "font-special-elite"},
         {"name": "Staatliches", "class": "font-staatliches"},
     ]
+
+def font_class_by_name(font_name):
+    fonts = list_fonts()
+    for font in fonts:
+        if font['name'] == font_name:
+            return font['class']
+    return "font-arial"
