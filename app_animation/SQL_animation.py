@@ -154,10 +154,12 @@ ORDER BY las.num
                         'animation_id': row[1],
                         'song_id': row[2],
                         'num': row[3],
-                        'font': row[4],
-                        'font_size': row[5],
-                        'numD2': row[6],
-                        'full_title': row[7],
+                        'color_rgba': row[4],
+                        'bg_rgba': row[5],
+                        'font': row[6],
+                        'font_size': row[7],
+                        'numD2': row[8],
+                        'full_title': row[9],
                     } for row in rows]
 
 
@@ -182,8 +184,10 @@ ORDER BY lv.num
                         'animation_song_id': row[0],
                         'verse_id': row[1],
                         'selected': row[2],
-                        'num_verse': row[3],
-                        'text': row[4],
+                        'font': row[3],
+                        'font_size': row[4],
+                        'num_verse': row[5],
+                        'text': row[6],
                     } for row in rows]
     
 

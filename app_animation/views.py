@@ -101,7 +101,7 @@ def modify_animation(request, animation_id):
                             animation.delete_song(song['animation_song_id'])
                         else:
                             animation.update_song_num(song['animation_song_id'], request.POST.get(f'lis_move_to_{song['animation_song_id']}'))
-                            animation.update_song_font_size(song['animation_song_id'], request.POST.get(f'lis_font_size_{song['animation_song_id']}'))
+                            animation.update_song_font_size(song['animation_song_id'], request.POST.get(f'sel_font_size_{song['animation_song_id']}'))
                     
                     # verses selected
                     for verse in animation.verses:

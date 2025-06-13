@@ -80,9 +80,9 @@
         </select>
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
+    <br><br><hr><br>
 
     {% for song in animation.songs %}
-        <hr>
         <div class="mt-1 px-1 border L_DIV_BORDER">
             <div style="display: flex; justify-content: space-between;">
                 <div style="text-align: left; width: 75%;">
@@ -109,6 +109,38 @@
                                 <label for="box_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}">
                                     {{ verse.text|slice:":45" }}
                                 </label>
+                            </p>
+                            <p id="p_{{ verse.animation_song_id }}_{{ verse.verse_id }}" style="display: none">
+                                {% trans "Font_size2dots" %}
+                                <select name="sel_font_size_{{ verse.animation_song_id }}_{{ verse.verse_id }}" style="width: 15%;">
+                                    <optgroup label="{% trans "decrease size" %}">
+                                        {% for size in font_sizes_decreasing %}
+                                            <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                                {{ size }}px
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                    <optgroup label="{% trans "same size" %}">
+                                        <option{% if 0 == song.font_size %} selected="selected"{% endif %}  value="0">
+                                            0px
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="{% trans "increase size" %}">
+                                        {% for size in font_sizes_increasing %}
+                                            <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                                +{{ size }}px
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                </select>
+                                {% trans "Font_family2dots" %}
+                                <select name="sel_font_{{ verse.animation_song_id }}_{{ verse.verse_id }}" style="width: 15%;">
+                                    {% for font in list_fonts %}
+                                        <option {% if animation.font == font.name %}selected{% endif %}>
+                                            {{ font.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select><br><br>
                             </p>
                         {% endif %}
                     {% endfor %}
@@ -137,29 +169,49 @@
                         </optgroup>
                     </select>
                     <br>
-                    {% trans "Font_size2dots" %}{{song.font_size}}
-                    <select name="lis_font_size_{{ song.animation_song_id }}" style="width: 100%;">
-                        <optgroup label="{% trans "decrease size" %}">
-                            {% for size in font_sizes_decreasing %}
-                                <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
-                                    {{ size }}px
+                    <a id="a_verse_options_{{ song.animation_song_id }}" href="#"
+                    onclick="toggleDivDisplay('div_verse_options_{{ song.animation_song_id }}',
+                    'a_verse_options_{{ song.animation_song_id }}',
+                    '{% trans 'Display options' %}',
+                    '{% trans 'Hide options' %}');
+                    {% for verse in animation.verses %}
+                        toggleVisibility('p_{{ verse.animation_song_id }}_{{ verse.verse_id }}');
+                    {% endfor %}
+                    ">
+                        {% trans 'Display options' %}
+                    </a><br>
+                    <div id="div_verse_options_{{ song.animation_song_id }}" class="hidden">
+                        {% trans "Font_size2dots" %}
+                        <select name="sel_font_size_{{ song.animation_song_id }}" style="width: 100%;">
+                            <optgroup label="{% trans "decrease size" %}">
+                                {% for size in font_sizes_decreasing %}
+                                    <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                        {{ size }}px
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="{% trans "same size" %}">
+                                <option{% if 0 == song.font_size %} selected="selected"{% endif %}  value="0">
+                                    0px
+                                </option>
+                            </optgroup>
+                            <optgroup label="{% trans "increase size" %}">
+                                {% for size in font_sizes_increasing %}
+                                    <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
+                                        +{{ size }}px
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                        {% trans "Font_family2dots" %}
+                        <select name="sel_font_{{ song.animation_song_id }}" style="width: 100%;">
+                            {% for font in list_fonts %}
+                                <option {% if animation.font == font.name %}selected{% endif %}>
+                                    {{ font.name }}
                                 </option>
                             {% endfor %}
-                        </optgroup>
-                        <optgroup label="{% trans "same size" %}">
-                            <option{% if 0 == song.font_size %} selected="selected"{% endif %}  value="0">
-                                0px
-                            </option>
-                        </optgroup>
-                        <optgroup label="{% trans "increase size" %}">
-                            {% for size in font_sizes_increasing %}
-                                <option{% if size == song.font_size %} selected="selected"{% endif %} value="{{ size }}">
-                                    +{{ size }}px
-                                </option>
-                            {% endfor %}
-                        </optgroup>
-                    </select>
-                    <br>
+                        </select>
+                    </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
                     <label for="box_delete_song_{{ song.animation_song_id }}">{% trans "Delete" %}</label>
