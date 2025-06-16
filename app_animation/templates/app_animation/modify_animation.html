@@ -78,6 +78,9 @@
                 </option>
             {% endfor %}
         </select>
+    </div>
+    <div style="background: {{ animation.bg_rgba }}; color: {{ animation.color_rgba }};" class="slide text-center">
+        <br>{% trans "Colors of animation" %}<br><br>{{ animation.font }}<br>
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <br><br><hr><br>
