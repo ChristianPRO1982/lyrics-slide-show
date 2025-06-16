@@ -236,7 +236,7 @@ input:focus, textarea:focus, select:focus {
     select:focus {
         outline: 2px dashed #1C4E4A;
         outline-offset: 1px;
-        color: #000;
+        color: #444;
     }
 }
 /* FIN FORMULAIRE */

@@ -83,7 +83,7 @@
     class="text-center {% for font in list_fonts %}{% if animation.font == font.name %}{{ font.class }}{% endif %}{% endfor %}">
         <br>{% trans "Animation's colors" %}<br><br>
     </div>
-    <a href="{% url "modify_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
+    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <br><br><hr><br>
 
@@ -150,7 +150,14 @@
                                         </option>
                                         {% endfor %}
                                     </optgroup>
-                                </select><br><br>
+                                </select><br>
+                                <span style="background: {{ verse.bg_rgba }}; color: {{ verse.color_rgba }};"
+                                class="{% for font in list_fonts %}
+                                {% if animation.font == font.name and song.font == '' and verse.font == '' or song.font == font.name and verse.font == '' or animation.font == font.name %}
+                                {{ font.class }}
+                                {% endif %}
+                                {% endfor %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans "Verse's colors" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+                                <a href="{% url "modify_colors_verse" verse.verse_id %}">{% trans "Modifiy verse's colors" %}</a><br><br>
                             </p>
                         {% endif %}
                     {% endfor %}
@@ -229,10 +236,14 @@
                             </optgroup>
                         </select>
                         <div style="background: {{ song.bg_rgba }}; color: {{ song.color_rgba }};"
-                        class="text-center {% for font in list_fonts %}{% if animation.font == font.name and song.font == '' or song.font == font.name %}{{ font.class }}{% endif %}{% endfor %}">
+                        class="text-center {% for font in list_fonts %}
+                        {% if animation.font == font.name and song.font == '' or song.font == font.name %}
+                        {{ font.class }}
+                         {% endif %}
+                         {% endfor %}">
                             <br>{% trans "Song's colors" %}<br><br>
                         </div>
-                        <a href="{% url "modify_animation" animation.animation_id %}">{% trans "Modifiy song's colors" %}</a>
+                        <a href="{% url "modify_colors_song" song.song_id %}">{% trans "Modifiy song's colors" %}</a>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>

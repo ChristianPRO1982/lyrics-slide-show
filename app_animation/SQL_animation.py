@@ -178,12 +178,29 @@ ORDER BY las.num
         if self.animation_id:
             with connection.cursor() as cursor:
                 request = """
-  SELECT lasv.*, lv.num_verse, lv.text
+  SELECT lasv.animation_song_id,
+         lasv.verse_id,
+         lasv.selected,
+         CASE 
+              WHEN lasv.color_rgba IS NOT NULL AND lasv.color_rgba != '' THEN lasv.color_rgba
+              WHEN las.color_rgba IS NOT NULL AND las.color_rgba != '' THEN las.color_rgba
+              ELSE la.color_rgba
+         END AS final_color_rgba,
+         CASE 
+              WHEN lasv.bg_rgba IS NOT NULL AND lasv.bg_rgba != '' THEN lasv.bg_rgba
+              WHEN las.bg_rgba IS NOT NULL AND las.bg_rgba != '' THEN las.bg_rgba
+              ELSE la.bg_rgba
+         END final_bg_rgba,
+         lasv.font,
+         lasv.font_size,
+         lv.num_verse,
+         lv.text
     FROM l_animation_song_verse lasv
     JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+    JOIN l_animations la ON la.animation_id = las.animation_id
     JOIN l_verses lv ON lv.verse_id = lasv.verse_id
    WHERE lv.chorus <> 1
-     AND las.animation_id = %s
+     AND la.animation_id = %s
 ORDER BY lv.num
 """
                 params = [self.animation_id]
@@ -195,10 +212,12 @@ ORDER BY lv.num
                         'animation_song_id': row[0],
                         'verse_id': row[1],
                         'selected': row[2],
-                        'font': row[3],
-                        'font_size': row[4],
-                        'num_verse': row[5],
-                        'text': row[6],
+                        'color_rgba': row[3],
+                        'bg_rgba': row[4],
+                        'font': row[5],
+                        'font_size': row[6],
+                        'num_verse': row[7],
+                        'text': row[8],
                     } for row in rows]
     
 
@@ -326,6 +345,16 @@ UPDATE l_animation_song_verse
               ELSE FALSE
          END AS new_animation_song,
          CASE 
+              WHEN lasv.color_rgba IS NOT NULL AND lasv.color_rgba != '' THEN lasv.color_rgba
+              WHEN las.color_rgba IS NOT NULL AND las.color_rgba != '' THEN las.color_rgba
+              ELSE la.color_rgba
+         END AS final_color_rgba,
+         CASE 
+              WHEN lasv.final_bg_rgba IS NOT NULL AND lasv.final_bg_rgba != '' THEN lasv.final_bg_rgba
+              WHEN las.final_bg_rgba IS NOT NULL AND las.final_bg_rgba != '' THEN las.final_bg_rgba
+              ELSE la.final_bg_rgba
+         END final_bg_rgba,
+         CASE 
               WHEN lasv.font IS NOT NULL AND lasv.font != '' THEN lasv.font
               WHEN las.font IS NOT NULL AND las.font != '' THEN las.font
               ELSE la.font
@@ -356,8 +385,10 @@ ORDER BY las.num, lv.num
                         'followed': row[5],
                         'text': row[6],
                         'new_animation_song': row[7],
-                        'font': row[8],
-                        'font_size': row[9],
+                        'color_rgba': row[8],
+                        'bg_rgba': row[9],
+                        'font': row[10],
+                        'font_size': row[11],
                     } for row in rows]
             
             except Exception as e:

@@ -306,3 +306,13 @@ def modify_colors_animation(request, animation_id):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+def modify_colors(request, xxx_id=None):
+    if "modify_colors_animation" in request.resolver_match.url_name:
+        print(">>> modify_colors_animation")
+    elif "modify_colors_song" in request.resolver_match.url_name:
+        print(">>> modify_colors_song")
+    elif "modify_colors_verse" in request.resolver_match.url_name:
+        print(">>> modify_colors_verse")
+    return redirect('animations')
