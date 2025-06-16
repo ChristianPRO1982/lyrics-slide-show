@@ -129,7 +129,17 @@ DELETE FROM l_animations
         if self.animation_id:
             with connection.cursor() as cursor:
                 request = """
-  SELECT las.*, ROUND(las.num / 2, 0) as numD2,
+    SELECT las.animation_song_id, las.animation_id, las.song_id, las.num,
+  		 CASE 
+              WHEN las.color_rgba IS NOT NULL AND las.color_rgba != '' THEN las.color_rgba
+              ELSE la.color_rgba
+         END AS final_color_rgba,
+  		 CASE 
+              WHEN las.bg_rgba IS NOT NULL AND las.bg_rgba != '' THEN las.bg_rgba
+              ELSE la.bg_rgba
+         END AS final_bg_rgba,
+  		 las.font, las.font_size,
+         ROUND(las.num / 2, 0) as numD2,
          CONCAT(
                 CASE
                     WHEN s.artist != '' THEN CONCAT('[', s.artist, '] - ', s.title)
@@ -140,6 +150,7 @@ DELETE FROM l_animations
                     ELSE ''
                 END) AS full_title
     FROM l_animation_song las
+    JOIN l_animations la ON la.animation_id = las.animation_id
     JOIN l_songs s ON las.song_id = s.song_id
    WHERE las.animation_id = %s
 ORDER BY las.num
