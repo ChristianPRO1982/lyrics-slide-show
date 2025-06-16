@@ -350,9 +350,9 @@ UPDATE l_animation_song_verse
               ELSE la.color_rgba
          END AS final_color_rgba,
          CASE 
-              WHEN lasv.final_bg_rgba IS NOT NULL AND lasv.final_bg_rgba != '' THEN lasv.final_bg_rgba
-              WHEN las.final_bg_rgba IS NOT NULL AND las.final_bg_rgba != '' THEN las.final_bg_rgba
-              ELSE la.final_bg_rgba
+              WHEN lasv.bg_rgba IS NOT NULL AND lasv.bg_rgba != '' THEN lasv.bg_rgba
+              WHEN las.bg_rgba IS NOT NULL AND las.bg_rgba != '' THEN las.bg_rgba
+              ELSE la.bg_rgba
          END final_bg_rgba,
          CASE 
               WHEN lasv.font IS NOT NULL AND lasv.font != '' THEN lasv.font
@@ -393,3 +393,39 @@ ORDER BY las.num, lv.num
             
             except Exception as e:
                 return None
+            
+
+    @staticmethod
+    def get_animation_id_by_song_id(song_id):
+        with connection.cursor() as cursor:
+            request = """
+SELECT animation_id
+  FROM l_animation_song
+ WHERE animation_song_id = %s
+"""
+            params = [song_id]
+
+            create_SQL_log(code_file, "Animations.get_animation_id_by_song_id", "SELECT_7", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+
+            return row[0] if row else 0
+        
+
+    @staticmethod
+    def get_animation_id_by_verse_id(song_id, verse_id):
+        with connection.cursor() as cursor:
+            request = """
+SELECT las.animation_id
+  FROM l_animation_song_verse lasv
+  JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+ WHERE las.animation_song_id = %s
+   AND lasv.verse_id = %s
+"""
+            params = [song_id, verse_id]
+
+            create_SQL_log(code_file, "Animations.get_animation_id_by_verse_id", "SELECT_8", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+
+            return row[0] if row else 0

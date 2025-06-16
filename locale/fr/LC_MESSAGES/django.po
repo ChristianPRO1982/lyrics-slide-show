@@ -385,7 +385,7 @@ msgstr "Enregistrer + revenir à la liste des chants"
 
 #: app_animation/templates/app_animation/modify_colors_animation.html:15
 msgid "text_test"
-msgstr "Voici un texte pour tester l'affichage<br><br>Est-ce beau ?"
+msgstr "Voici un texte pour tester l'affichage<br><br><b>Est-ce beau ?</b>"
 
 #: app_animation/templates/app_animation/modify_colors_animation.html:21
 msgid "Modify colors"

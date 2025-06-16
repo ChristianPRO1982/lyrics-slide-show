@@ -275,10 +275,20 @@ def lyrics_slide_show(request, animation_id):
     })
 
 
-def modify_colors_animation(request, animation_id):
+def modify_colors(request, xxx_id=None):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+
+    if "modify_colors_animation" in request.resolver_match.url_name:
+        type_id = 'animation'
+        animation_id = xxx_id
+    elif "modify_colors_song" in request.resolver_match.url_name:
+        type_id = 'song'
+        animation_id = Animation.get_animation_id_by_song_id(xxx_id)
+    elif "modify_colors_verse" in request.resolver_match.url_name:
+        type_id = 'verse'
+        animation_id = Animation.get_animation_id_by_verse_id(xxx_id, int(request.GET.get('verse_id', 0)))
 
     animation = None
     group_selected = ''
@@ -299,20 +309,11 @@ def modify_colors_animation(request, animation_id):
                 animation.bg_rgba = request.POST.get('bg_color')
                 animation.save()
     
-    return render(request, 'app_animation/modify_colors_animation.html', {
+    return render(request, 'app_animation/modify_colors.html', {
         'animation': animation,
+        'type_id': type_id,
         'group_selected': group_selected,
         'error': error,
         'css': css,
         'no_loader': no_loader,
     })
-
-
-def modify_colors(request, xxx_id=None):
-    if "modify_colors_animation" in request.resolver_match.url_name:
-        print(">>> modify_colors_animation")
-    elif "modify_colors_song" in request.resolver_match.url_name:
-        print(">>> modify_colors_song")
-    elif "modify_colors_verse" in request.resolver_match.url_name:
-        print(">>> modify_colors_verse")
-    return redirect('animations')

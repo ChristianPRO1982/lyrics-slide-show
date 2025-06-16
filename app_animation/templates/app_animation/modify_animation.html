@@ -157,7 +157,7 @@
                                 {{ font.class }}
                                 {% endif %}
                                 {% endfor %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans "Verse's colors" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
-                                <a href="{% url "modify_colors_verse" verse.verse_id %}">{% trans "Modifiy verse's colors" %}</a><br><br>
+                                <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br><br>
                             </p>
                         {% endif %}
                     {% endfor %}
@@ -243,7 +243,7 @@
                          {% endfor %}">
                             <br>{% trans "Song's colors" %}<br><br>
                         </div>
-                        <a href="{% url "modify_colors_song" song.song_id %}">{% trans "Modifiy song's colors" %}</a>
+                        <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
