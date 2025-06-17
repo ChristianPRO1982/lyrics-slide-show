@@ -1,3 +1,12 @@
+## [1.8.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.1...v1.8.2) (2025-06-17)
+
+
+### Bug Fixes
+
+* animation: add param padding ([d79fc00](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d79fc00b063b6d0b2f34a2e0fa7a977a7904df02))
+* remote.js: id of link wrong : showDraggableDivCurrentSlideLink & showDraggableDivNextSlideLink ([4459d86](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4459d86c36fa08045c3c241817a4806652c7281c))
+* translate ([be1730d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/be1730d7c6e2a4becc2e78f52e65aff0b9b08026))
+
 ## [1.8.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.0...v1.8.1) (2025-06-17)
 
 
