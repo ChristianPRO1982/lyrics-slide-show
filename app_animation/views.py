@@ -85,6 +85,7 @@ def modify_animation(request, animation_id):
                     animation.name = request.POST.get('txt_name')
                     animation.description = request.POST.get('txt_description')
                     animation.date = request.POST.get('dt_date')
+                    animation.padding = int(request.POST.get('sel_padding', 50))
                     animation.font_size = request.POST.get('sel_font_size', 60)
                     animation.font = request.POST.get('sel_font', 'Arial')
                     animation.save()
@@ -169,6 +170,7 @@ def modify_animation(request, animation_id):
         'font_sizes_decreasing': font_sizes_decreasing,
         'font_sizes_increasing': font_sizes_increasing,
         'list_fonts': list_fonts(),
+        'list_padding': range(10, 121, 5),
         'animation_font_class': font_class_by_name(animation.font),
         'error': error,
         'css': css,

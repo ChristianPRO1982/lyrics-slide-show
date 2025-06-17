@@ -59,6 +59,16 @@
         <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
     </div>
     <div>
+        <label for="id_padding">{% trans "Padding" %}</label><br>
+        <select name="sel_padding" id="id_padding" style="width: 100%;">
+            {% for padding in list_padding %}
+                <option value="{{ padding }}" {% if animation.padding == padding %}selected{% endif %}>
+                    {{ padding }}px
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
         <label for="id_font_size">{% trans "Font size" %}</label><br>
         <select name="sel_font_size" id="id_font_size" style="width: 100%;">
             {% for size in font_sizes %}
