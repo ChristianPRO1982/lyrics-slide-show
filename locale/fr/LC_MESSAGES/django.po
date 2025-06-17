@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 13:31+0200\n"
+"POT-Creation-Date: 2025-06-17 13:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -151,7 +151,7 @@ msgid "hide"
 msgstr "Masquer"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:110
-#: app_animation/templates/app_animation/lyrics_slide_show.html:183
+#: app_animation/templates/app_animation/lyrics_slide_show.html:184
 msgid "BLACK MODE"
 msgstr ""
 
@@ -160,12 +160,12 @@ msgid "Space bar"
 msgstr "Barre espace"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:117
-#: app_animation/templates/app_animation/lyrics_slide_show.html:192
+#: app_animation/templates/app_animation/lyrics_slide_show.html:193
 msgid "Next slide"
 msgstr "Diapo suivante"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:122
-#: app_animation/templates/app_animation/lyrics_slide_show.html:193
+#: app_animation/templates/app_animation/lyrics_slide_show.html:194
 msgid "Chorus"
 msgstr "Refrain"
 
@@ -201,29 +201,29 @@ msgstr "Ouvrir le second écran"
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:186
+#: app_animation/templates/app_animation/lyrics_slide_show.html:187
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:197
+#: app_animation/templates/app_animation/lyrics_slide_show.html:198
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:209
+#: app_animation/templates/app_animation/lyrics_slide_show.html:210
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:237
+#: app_animation/templates/app_animation/lyrics_slide_show.html:238
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:244
+#: app_animation/templates/app_animation/lyrics_slide_show.html:245
 msgid "Current slide"
 msgstr "Diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:267
+#: app_animation/templates/app_animation/lyrics_slide_show.html:268
 msgid "Preview next slide"
 msgstr "Diapo suivante"
 
