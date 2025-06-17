@@ -31,6 +31,8 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
             #slideContent {
                 width: 100vw;
                 height: 100vh;
+                padding-left: ${padding}px;
+                padding-right: ${padding}px;
                 display: flex;
                 justify-content: center; /* horizontal */
                 align-items: center;     /* vertical */

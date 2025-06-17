@@ -114,6 +114,7 @@ CREATE TABLE `l_animations` (
   `bg_rgba` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'rgba(0, 0, 0, 1)',
   `font` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `font_size` tinyint NOT NULL DEFAULT '50',
+  `padding` tinyint NOT NULL DEFAULT '50',
   PRIMARY KEY (`animation_id`),
   KEY `l_animations_date_IDX` (`date`,`name`) USING BTREE,
   KEY `l_animations_c_groups_FK` (`group_id`),
