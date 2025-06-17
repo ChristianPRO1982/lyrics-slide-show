@@ -153,8 +153,8 @@
                                 </select><br>
                                 <span style="background: {{ verse.bg_rgba }}; color: {{ verse.color_rgba }};"
                                 class="{% for font in list_fonts %}
-                                {% if animation.font == font.name and song.font == '' and verse.font == '' or song.font == font.name and verse.font == '' or animation.font == font.name %}
-                                {{ font.class }}
+                                {% if verse.final_font == font.name %}
+                                    {{ font.class }}
                                 {% endif %}
                                 {% endfor %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans "Verse's colors" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
                                 <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br><br>
@@ -237,10 +237,10 @@
                         </select>
                         <div style="background: {{ song.bg_rgba }}; color: {{ song.color_rgba }};"
                         class="text-center {% for font in list_fonts %}
-                        {% if animation.font == font.name and song.font == '' or song.font == font.name %}
-                        {{ font.class }}
-                         {% endif %}
-                         {% endfor %}">
+                        {% if song.final_font == font.name %}
+                            {{ font.class }}
+                        {% endif %}
+                        {% endfor %}">
                             <br>{% trans "Song's colors" %}<br><br>
                         </div>
                         <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a>

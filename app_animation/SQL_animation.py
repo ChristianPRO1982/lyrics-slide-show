@@ -138,7 +138,12 @@ DELETE FROM l_animations
               WHEN las.bg_rgba IS NOT NULL AND las.bg_rgba != '' THEN las.bg_rgba
               ELSE la.bg_rgba
          END AS final_bg_rgba,
-  		 las.font, las.font_size,
+  		 CASE 
+              WHEN las.font IS NOT NULL AND las.font != '' THEN las.font
+              ELSE la.font
+         END AS final_font,
+         las.font,
+         las.font_size,
          ROUND(las.num / 2, 0) as numD2,
          CONCAT(
                 CASE
@@ -167,10 +172,11 @@ ORDER BY las.num
                         'num': row[3],
                         'color_rgba': row[4],
                         'bg_rgba': row[5],
-                        'font': row[6],
-                        'font_size': row[7],
-                        'numD2': row[8],
-                        'full_title': row[9],
+                        'final_font': row[6],
+                        'font': row[7],
+                        'font_size': row[8],
+                        'numD2': row[9],
+                        'full_title': row[10],
                     } for row in rows]
 
 
@@ -191,6 +197,11 @@ ORDER BY las.num
               WHEN las.bg_rgba IS NOT NULL AND las.bg_rgba != '' THEN las.bg_rgba
               ELSE la.bg_rgba
          END final_bg_rgba,
+         CASE 
+              WHEN lasv.font IS NOT NULL AND lasv.font != '' THEN lasv.font
+              WHEN las.font IS NOT NULL AND las.font != '' THEN las.font
+              ELSE la.font
+         END final_font,
          lasv.font,
          lasv.font_size,
          lv.num_verse,
@@ -214,10 +225,11 @@ ORDER BY lv.num
                         'selected': row[2],
                         'color_rgba': row[3],
                         'bg_rgba': row[4],
-                        'font': row[5],
-                        'font_size': row[6],
-                        'num_verse': row[7],
-                        'text': row[8],
+                        'final_font': row[5],
+                        'font': row[6],
+                        'font_size': row[7],
+                        'num_verse': row[8],
+                        'text': row[9],
                     } for row in rows]
     
 
