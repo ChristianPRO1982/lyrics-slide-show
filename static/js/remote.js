@@ -56,6 +56,8 @@ let last_text = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
+    color_rgba = getColorRgba(index);
+    bg_rgba = getBgRgba(index);
     font = getFont(index);
     fontSize = getFontSize(index);
     
@@ -63,6 +65,8 @@ function showSlide(index, updateCurrentSlide = true) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
         displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         displayWindow.document.getElementById('slideContent').style.fontFamily = font;
+        displayWindow.document.getElementById('slideContent').style.color = color_rgba;
+        displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
         last_text = text;
     }
     
@@ -97,6 +101,26 @@ function getText(index) {
         if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
             text = verses_choruses[i].text;
             return text;
+        }
+    }
+}
+
+function getColorRgba(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            color_rgba = verses_choruses[i].color_rgba;
+            return color_rgba;
+        }
+    }
+}
+
+function getBgRgba(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            bg_rgba = verses_choruses[i].bg_rgba;
+            return bg_rgba;
         }
     }
 }
