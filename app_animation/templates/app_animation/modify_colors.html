@@ -11,7 +11,7 @@
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
-<div id="preview" style="color: {{ animation.color_rgba }}; Background: {{ animation.bg_rgba }}" class="p-10">
+<div id="preview" style="color: {{ color_rgba }}; Background: {{ bg_rgba }}" class="p-10">
   {% trans "text_test" %}
 </div>
 {% endblock bloc2 %}
@@ -19,21 +19,32 @@
 {% block content %}
 {% load static %}
     <h2 class="L_H2">{% trans "Modify colors" %}</h2>
+    {% if target != "animation" %}{% trans "Song:" %} {{ song_full_title }}{% endif %}
+    {% if target == "verse" %}<br>{% trans "Verse:" %} {{ verse_preview }} [...]{% endif %}
     <form method="post">
         {% csrf_token %}
         <div class="picker-container">
             <label><h3 class="L_H3">{% trans "Text color:" %}</h3></label>
             <div id="text-color-picker"></div>
-            <input type="text" name="text_color" id="text-color-input" value="{{ animation.color_rgba }}" readonly>
+            <input type="text" name="text_color" id="text-color-input" value="{{ color_rgba }}" readonly>
         </div>
 
         <div class="picker-container">
             <label><h3 class="L_H3">{% trans "Background color:" %}</h3></label>
             <div id="bg-color-picker"></div>
-            <input type="text" name="bg_color" id="bg-color-input" value="{{ animation.bg_rgba }}" readonly>
+            <input type="text" name="bg_color" id="bg-color-input" value="{{ bg_rgba }}" readonly>
         </div>
 
         <input name="btn_save" value="{% trans "save" %}" type="submit" />
+        {% if target == "song" %}
+            <input onclick="return confirm('{% trans "Are you sure you want to delete this song’s colors?" %}')" 
+            name="btn_del_song_colors" value="{% trans "Delete song's colors" %}" type="submit" />
+        {% endif %}
+        {% if target == "verse" %}
+            <input onclick="return confirm('{% trans "Are you sure you want to delete this verse’s colors?" %}')" 
+            name="btn_del_verse_colors" value="{% trans "Delete verse's colors" %}" type="submit" />
+        {% endif %}
+        <input name="btn_return" value="{% trans "Return" %}" type="submit" />
     </form>
 
     <link rel="stylesheet" href="{% static 'css/classic.min.css' %}">
@@ -76,12 +87,12 @@
                 });
             };
 
-            createColorPicker('#text-color-picker', '{{ animation.color_rgba }}', (rgba) => {
+            createColorPicker('#text-color-picker', '{{ color_rgba }}', (rgba) => {
                 preview.style.color = rgba;
                 textInput.value = rgba;
             });
 
-            createColorPicker('#bg-color-picker', '{{ animation.bg_rgba }}', (rgba) => {
+            createColorPicker('#bg-color-picker', '{{ bg_rgba }}', (rgba) => {
                 preview.style.backgroundColor = rgba;
                 bgInput.value = rgba;
             });

@@ -117,8 +117,7 @@ def modify_animation(request, animation_id):
                             selected = True
                         else:
                             selected = False
-                        print(">>>>>", request.POST.get(f"sel_verse_font_{animation_song_id}_{verse_id}"))
-                        animation.update_verse(
+                        animation.update_animation_verse(
                             animation_song_id,
                             verse_id,
                             selected,
@@ -281,14 +280,15 @@ def modify_colors(request, xxx_id=None):
     no_loader = is_no_loader(request)
 
     if "modify_colors_animation" in request.resolver_match.url_name:
-        type_id = 'animation'
+        target = 'animation'
         animation_id = xxx_id
     elif "modify_colors_song" in request.resolver_match.url_name:
-        type_id = 'song'
+        target = 'song'
         animation_id = Animation.get_animation_id_by_song_id(xxx_id)
     elif "modify_colors_verse" in request.resolver_match.url_name:
-        type_id = 'verse'
-        animation_id = Animation.get_animation_id_by_verse_id(xxx_id, int(request.GET.get('verse_id', 0)))
+        target = 'verse'
+        verse_id = int(request.GET.get('verse_id', 0))
+        animation_id = Animation.get_animation_id_by_verse_id(xxx_id, verse_id)
 
     animation = None
     group_selected = ''
@@ -304,14 +304,59 @@ def modify_colors(request, xxx_id=None):
             return redirect('animations')
 
         if request.method == 'POST':
-            if 'btn_save' in request.POST:
-                animation.color_rgba = request.POST.get('text_color')
-                animation.bg_rgba = request.POST.get('bg_color')
-                animation.save()
+            if 'btn_return' in request.POST:
+                return redirect('modify_animation', animation_id=animation_id)
+            elif 'btn_del_song_colors' in request.POST:
+                animation.update_animation_song_colors(xxx_id, None, None)
+                return redirect('modify_animation', animation_id=animation_id)
+            elif 'btn_del_verse_colors' in request.POST:
+                animation.update_animation_verse_colors(xxx_id, verse_id, None, None)
+                return redirect('modify_animation', animation_id=animation_id)
+            elif 'btn_save' in request.POST:
+                if target == 'animation':
+                    animation.color_rgba = request.POST.get('text_color')
+                    animation.bg_rgba = request.POST.get('bg_color')
+                    animation.save()
+                elif target == 'song':
+                    animation.update_animation_song_colors(xxx_id, request.POST.get('text_color'), request.POST.get('bg_color'))
+                elif target == 'verse':
+                    animation.update_animation_verse_colors(xxx_id,
+                                                            verse_id,
+                                                            request.POST.get('text_color'),
+                                                            request.POST.get('bg_color'))
+            animation = Animation.get_animation_by_id(animation_id, group_id)
     
+    song_full_title = ''
+    verse_preview = ''
+    if target == 'animation':
+        color_rgba = animation.color_rgba
+        bg_rbga = animation.bg_rgba
+    elif target == 'song':
+        for song in animation.songs:
+            if song['animation_song_id'] == xxx_id:
+                song_full_title = song['full_title']
+                color_rgba = song['color_rgba']
+                bg_rbga = song['bg_rgba']
+                break
+    elif target == 'verse':
+        for song in animation.songs:
+            if song['animation_song_id'] == xxx_id:
+                song_full_title = song['full_title']
+                break
+        for verse in animation.verses:
+            if verse['animation_song_id'] == xxx_id and verse['verse_id'] == verse_id:
+                color_rgba = verse['color_rgba']
+                bg_rbga = verse['bg_rgba']
+                verse_preview = verse['text']
+                break
+
     return render(request, 'app_animation/modify_colors.html', {
         'animation': animation,
-        'type_id': type_id,
+        'target': target,
+        'song_full_title': song_full_title,
+        'verse_preview': verse_preview,
+        'color_rgba': color_rgba,
+        'bg_rgba': bg_rbga,
         'group_selected': group_selected,
         'error': error,
         'css': css,

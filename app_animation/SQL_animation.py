@@ -276,6 +276,20 @@ UPDATE l_animation_song
 
             create_SQL_log(code_file, "Animations.update_animation_song", "UPDATE_4", request, params)
             cursor.execute(request, params)
+            
+
+    def update_animation_song_colors(self, animation_song_id, color_rgba, bg_rgba):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_animation_song
+   SET color_rgba = %s,
+       bg_rgba = %s
+ WHERE animation_song_id = %s
+"""
+            params = [color_rgba, bg_rgba, animation_song_id]
+
+            create_SQL_log(code_file, "Animations.update_animation_song", "UPDATE_5", request, params)
+            cursor.execute(request, params)
     
 
     def get_songs_already_in(self):
@@ -307,7 +321,7 @@ DELETE FROM l_animation_song
             return [row[0] for row in rows]
         
 
-    def update_verse(self, animation_song_id, verse_id, selected, font, font_size):
+    def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size):
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song_verse
@@ -318,6 +332,21 @@ UPDATE l_animation_song_verse
    AND verse_id = %s
 """
             params = [selected, font, font_size, animation_song_id, verse_id]
+
+            create_SQL_log(code_file, "Animations.update_verse", "UPDATE_3", request, params)
+            cursor.execute(request, params)
+        
+
+    def update_animation_verse_colors(self, animation_song_id, verse_id, color_rgba, bg_rgba):
+        with connection.cursor() as cursor:
+            request = """
+UPDATE l_animation_song_verse
+   SET color_rgba = %s,
+       bg_rgba = %s
+ WHERE animation_song_id = %s
+   AND verse_id = %s
+"""
+            params = [color_rgba, bg_rgba, animation_song_id, verse_id]
 
             create_SQL_log(code_file, "Animations.update_verse", "UPDATE_3", request, params)
             cursor.execute(request, params)
