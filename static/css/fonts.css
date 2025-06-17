@@ -1,0 +1,104 @@
+/* fonts.css - Only font-family declarations */
+
+/* Fun & readable fonts for slides */
+
+.font-amatic-sc {
+    font-family: 'Amatic SC', cursive;
+}
+
+.font-anton {
+    font-family: 'Anton', sans-serif;
+}
+
+.font-baloo-2 {
+    font-family: 'Baloo 2', cursive;
+}
+
+.font-bangers {
+    font-family: 'Bangers', cursive;
+}
+
+.font-bree-serif {
+    font-family: 'Bree Serif', serif;
+}
+
+.font-caveat {
+    font-family: 'Caveat', cursive;
+}
+
+.font-chewy {
+    font-family: 'Chewy', cursive;
+}
+
+.font-concert-one {
+    font-family: 'Concert One', cursive;
+}
+
+.font-fredoka {
+    font-family: 'Fredoka', sans-serif;
+}
+
+.font-fugaz-one {
+    font-family: 'Fugaz One', cursive;
+}
+
+.font-gloria-hallelujah {
+    font-family: 'Gloria Hallelujah', cursive;
+}
+
+.font-indie-flower {
+    font-family: 'Indie Flower', cursive;
+}
+
+.font-lobster {
+    font-family: 'Lobster', cursive;
+}
+
+.font-patrick-hand {
+    font-family: 'Patrick Hand', cursive;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.font-quicksand {
+    font-family: 'Quicksand', sans-serif;
+}
+
+.font-righteous {
+    font-family: 'Righteous', cursive;
+}
+
+.font-roboto-slab {
+    font-family: 'Roboto Slab', serif;
+}
+
+.font-sacramento {
+    font-family: 'Sacramento', cursive;
+}
+
+.font-source-sans-pro {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.font-special-elite {
+    font-family: 'Special Elite', cursive;
+}
+
+.font-staatliches {
+    font-family: 'Staatliches', cursive;
+}
+
+.font-ubuntu {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.font-work-sans {
+    font-family: 'Work Sans', sans-serif;
+}
+
+/* Arial is system-installed, no need to declare */
+.font-arial {
+    font-family: Arial, sans-serif;
+}
