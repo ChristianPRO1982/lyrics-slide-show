@@ -53,6 +53,8 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
     });
 
 let last_text = '';
+let last_color_rgba = '';
+let last_bg_rgba = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
@@ -68,6 +70,8 @@ function showSlide(index, updateCurrentSlide = true) {
         displayWindow.document.getElementById('slideContent').style.color = color_rgba;
         displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
         last_text = text;
+        last_color_rgba = color_rgba;
+        last_bg_rgba = bg_rgba;
     }
     
     cleanSelectedSlides();
@@ -179,11 +183,15 @@ function blackMode() {
     if (!div.classList.contains('active')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = '';
+            displayWindow.document.getElementById('slideContent').style.color = 'black';
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
         div.classList.add('active');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
+            displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
         div.classList.remove('active');
     }
