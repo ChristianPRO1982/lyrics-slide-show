@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 11:22+0200\n"
+"POT-Creation-Date: 2025-06-17 12:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,91 +129,103 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:93
-#: app_animation/templates/app_animation/lyrics_slide_show.html:119
-msgid "Display preview window"
-msgstr "Afficher la fenêtre de prévisualisation"
+#: app_animation/templates/app_animation/lyrics_slide_show.html:94
+#: app_animation/templates/app_animation/lyrics_slide_show.html:126
+msgid "Display current slide window"
+msgstr "Fenêtre : diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:95
+#: app_animation/templates/app_animation/lyrics_slide_show.html:99
+msgid "Display preview next slide window"
+msgstr "Fenêtre : prévisualisation"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:102
 msgid "Shortcuts:"
 msgstr "Raccourcis clavier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:97
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
 msgid "show"
 msgstr "Afficher"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:97
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
 msgid "hide"
 msgstr "Masquer"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:103
-#: app_animation/templates/app_animation/lyrics_slide_show.html:172
+#: app_animation/templates/app_animation/lyrics_slide_show.html:110
+#: app_animation/templates/app_animation/lyrics_slide_show.html:183
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:106
+#: app_animation/templates/app_animation/lyrics_slide_show.html:113
 msgid "Space bar"
 msgstr "Barre espace"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:110
-#: app_animation/templates/app_animation/lyrics_slide_show.html:181
+#: app_animation/templates/app_animation/lyrics_slide_show.html:117
+#: app_animation/templates/app_animation/lyrics_slide_show.html:192
 msgid "Next slide"
-msgstr "Slide suivante"
+msgstr "Diapo suivante"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:115
-#: app_animation/templates/app_animation/lyrics_slide_show.html:182
+#: app_animation/templates/app_animation/lyrics_slide_show.html:122
+#: app_animation/templates/app_animation/lyrics_slide_show.html:193
 msgid "Chorus"
 msgstr "Refrain"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:124
+#: app_animation/templates/app_animation/lyrics_slide_show.html:130
+msgid "Display preview slide window"
+msgstr "Fenêtre : prévisualisation"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:135
 msgid "Previous song"
 msgstr "Chant précédent"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:130
+#: app_animation/templates/app_animation/lyrics_slide_show.html:141
 msgid "Next song"
 msgstr "Chant suivant"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:135
+#: app_animation/templates/app_animation/lyrics_slide_show.html:146
 msgid "Display/hide choruses"
 msgstr "Afficher/masquer les refrains"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:139
+#: app_animation/templates/app_animation/lyrics_slide_show.html:150
 msgid "Scroll on ↕️ or not 🧱"
 msgstr "Scroll activé ↕️ ou bloqué 🧱"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:141
+#: app_animation/templates/app_animation/lyrics_slide_show.html:152
 msgid "in upper or lower case"
 msgstr "en majuscule ou minuscule"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:154
+#: app_animation/templates/app_animation/lyrics_slide_show.html:165
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:155
+#: app_animation/templates/app_animation/lyrics_slide_show.html:166
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:175
+#: app_animation/templates/app_animation/lyrics_slide_show.html:186
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:186
+#: app_animation/templates/app_animation/lyrics_slide_show.html:197
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:198
+#: app_animation/templates/app_animation/lyrics_slide_show.html:209
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:226
+#: app_animation/templates/app_animation/lyrics_slide_show.html:237
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:233
+#: app_animation/templates/app_animation/lyrics_slide_show.html:244
+msgid "Current slide"
+msgstr "Diapo active"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:267
 msgid "Preview next slide"
-msgstr "Slide suivante"
+msgstr "Diapo suivante"
 
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "List of available fonts"
@@ -392,14 +404,12 @@ msgid "Modify colors"
 msgstr "Modifier les couleurs"
 
 #: app_animation/templates/app_animation/modify_colors.html:22
-#, fuzzy
-#| msgid "Songs"
 msgid "Song:"
-msgstr "Chants"
+msgstr "Chant&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_colors.html:23
 msgid "Verse:"
-msgstr ""
+msgstr "Couplet&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_colors.html:27
 msgid "Text color:"
@@ -776,7 +786,7 @@ msgstr "Anciens messages"
 msgid "verse_rules"
 msgstr ""
 "Il est conseillé de suivre les règles suivantes pour créer un couplet ou un "
-"refrain afin que le texte ne déborde pas des slides ni que les slides soient "
+"refrain afin que le texte ne déborde pas des diapos ni que les diapos soient "
 "trop lourdes ou que le texte soit trop petit :"
 
 #: app_song/templates/app_song/modify_song.html:38
@@ -1096,7 +1106,7 @@ msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 #: templates/base.html:83
 msgid "ERR17"
 msgstr ""
-"[ERR17] Impossible de générer les slides. Contacter l'administrateur du site."
+"[ERR17] Impossible de générer les diapos. Contacter l'administrateur du site."
 
 #: templates/base.html:85
 msgid "ERR18"
@@ -2452,6 +2462,9 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
+#~ msgid "Display preview window"
+#~ msgstr "Afficher la fenêtre de prévisualisation"
+
 #~ msgid "Colors of animation"
 #~ msgstr "Couleurs de l'animation"
 
@@ -2486,7 +2499,7 @@ msgstr ""
 
 #~ msgid "help_buttons"
 #~ msgstr ""
-#~ "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Slide suivante : "
+#~ "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Diapo suivante : "
 #~ "Espace / S / V / ⬆️<br>Refrain : R / C<br>Chant précédent : P / ⬅️<br>Chant "
 #~ "suivant : Entrée / N / ➡️<br>Afficher-masquer les refrains : A / "
 #~ "D<br>Scroll ↕️ ou 🧱: L<br><br>en majuscule ou minuscule"

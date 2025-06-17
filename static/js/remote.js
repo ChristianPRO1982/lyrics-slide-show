@@ -206,8 +206,14 @@ function nextActiveSlide() {
     if (slides.length > 1) {next_divs.forEach(div => div.classList.add('next_active'));}
 
     // display next slide text on preview div
+    if (current_slide >= 0) {
+        current_text = decodeHTMLEntities(getText(slides[current_slide]));
+    } else {
+        current_text = '';
+    }
     next_text = decodeHTMLEntities(getText(slides[next_slide]));
-    document.getElementById('draggableDivText').innerHTML = next_text;
+    document.getElementById('draggableDivCurrentSlideText').innerHTML = current_text;
+    document.getElementById('draggableDivNextSlideText').innerHTML = next_text;
 }
 
 function navNextSlide() {
@@ -301,10 +307,12 @@ function navSongs(index) {
     }
 
     let currentSongTitleDiv = document.getElementById('current_song_title');
-    let draggableSpanSongTitle = document.getElementById('draggableSpanSongTitle');
+    let draggableSpanCurrentSlideSongTitle = document.getElementById('draggableSpanCurrentSlideSongTitle');
+    let draggableSpanNextSlideSongTitle = document.getElementById('draggableSpanNextSlideSongTitle');
     let currentSongTitle = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
     currentSongTitleDiv.textContent = currentSongTitle;
-    draggableSpanSongTitle.textContent = currentSongTitle;
+    draggableSpanCurrentSlideSongTitle.textContent = currentSongTitle;
+    draggableSpanNextSlideSongTitle.textContent = currentSongTitle;
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -427,7 +435,7 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'arrowleft') {
         navPreviousSong();
     }
-    if (event.key.toLowerCase() === 'p') {
+    if (event.key.toLowerCase() === 'f') {
         navPreviousSong();
     }
 
@@ -454,14 +462,24 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'l') {
         scrollable();
     }
-    // display preview window
-    if (event.key.toLowerCase() === 'w') {
-        if (document.getElementById('draggableDiv').style.display=='block') {
-            document.getElementById('draggableDiv').style.display='none';
-            document.getElementById('showDraggableDivLink').style.display='inline-block';
+    // display current slide window
+    if (event.key.toLowerCase() === 'o') {
+        if (document.getElementById('draggableDivCurrentSlide').style.display=='block') {
+            document.getElementById('draggableDivCurrentSlide').style.display='none';
+            document.getElementById('showdraggableDivCurrentSlideLink').style.display='inline-block';
         } else {
-            document.getElementById('draggableDiv').style.display='block';
-            document.getElementById('showDraggableDivLink').style.display='none';
+            document.getElementById('draggableDivCurrentSlide').style.display='block';
+            document.getElementById('showdraggableDivCurrentSlideLink').style.display='none';
+        }
+    }
+    // display preview slide window
+    if (event.key.toLowerCase() === 'p') {
+        if (document.getElementById('draggableDivNextSlide').style.display=='block') {
+            document.getElementById('draggableDivNextSlide').style.display='none';
+            document.getElementById('showdraggableDivNextSlideLink').style.display='inline-block';
+        } else {
+            document.getElementById('draggableDivNextSlide').style.display='block';
+            document.getElementById('showdraggableDivNextSlideLink').style.display='none';
         }
     }
 });
