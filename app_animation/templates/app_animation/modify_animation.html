@@ -59,7 +59,7 @@
         <input type="date" name="dt_date" id="id_date" maxlength="255" value="{{ animation.date|date:"Y-m-d" }}" style="width: 100%;" required>
     </div>
     <div>
-        <label for="id_padding">{% trans "Padding" %}</label><br>
+        <label for="id_padding">{% trans "Left/right margins" %}</label><br>
         <select name="sel_padding" id="id_padding" style="width: 100%;">
             {% for padding in list_padding %}
                 <option value="{{ padding }}" {% if animation.padding == padding %}selected{% endif %}>

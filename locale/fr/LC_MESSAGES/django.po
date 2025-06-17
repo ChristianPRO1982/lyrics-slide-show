@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 13:51+0200\n"
+"POT-Creation-Date: 2025-06-17 14:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -236,8 +236,8 @@ msgid "Select a song to view the lyrics"
 msgstr "Sélectionnez un chant pour voir les paroles"
 
 #: app_animation/templates/app_animation/modify_animation.html:62
-msgid "Padding"
-msgstr ""
+msgid "Left/right margins"
+msgstr "Marges gauche/droite"
 
 #: app_animation/templates/app_animation/modify_animation.html:72
 msgid "Font size"
