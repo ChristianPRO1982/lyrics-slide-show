@@ -1,3 +1,32 @@
+## [1.8.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.0...v1.8.1) (2025-06-17)
+
+
+### Bug Fixes
+
+* add fonts ([148192f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/148192f4802e048e2548eeae176bda3ed294ff80))
+* add function for list fonts ([df6cc18](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/df6cc189d91b0310efdefa3681f11ee9c9188d45))
+* animation: black mode always black on black ([3b20210](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3b20210e7d2fbeb4abad355130d0f162663e1d05))
+* animation: colors: add div for exemple of animation's colors ([457888d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/457888d36ec89e74d2413bd1da6b77a00569d26d))
+* animation: colors: add link for change colors (animation + song) ([6f87c9b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6f87c9b040a6e7111bdf8a48b994f265067e2d33))
+* animation: colors: add links to modify colors ([3535dfe](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3535dfe52cdb31c19bb56eff4e2be5a632ceec61))
+* animation: colors: add view and modify template ([a7ea5ad](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a7ea5ad37a2f70452436a108865660d1be96dcc8))
+* animation: colors: del modify colors from common page ([bfeddf2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bfeddf2ef33f5d1e8db1a564e9fae195e8e51cc6))
+* animation: colors: display good colors ([c309602](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c309602b8164f09e53066d8da181092253f7a20d))
+* animation: colors: translate some labels ([fdd4fae](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fdd4fae2abf734a3f3005ac6c4a118ea068960ef))
+* animation: colors: update ans delete colors for song and verse ([c2c6a0c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c2c6a0cd8b29b2f520e5355fc704221bee794d06))
+* animation: colors: update OK ([0697239](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0697239c2f3cd02243d90ce23c5328b62a708960))
+* animation: windows preview and current slide ([2d13a34](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2d13a3491517537fc8c3636d288297a3e691448b))
+* font: all options running ? ([00d1903](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/00d1903614aa6644b13ef2076731ee5310d9721b))
+* font: display lyrics wtih font family ([b39a4c2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b39a4c23669b99d13826afaeaa22395335c24243))
+* font: font and font_size for all verse ([355b18d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/355b18d51570a4b3ce47ec149c98d8330cfa5e19))
+* font: l_animation_song_verse add features ([04b15e1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/04b15e134807461d7834dd5f24396a6eec45ad72))
+* font: options of display + same like animation or song ([77740e5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/77740e57ef5b7b7b81b55f06f0d62fc90f912e50))
+* font: pointer for displau options of verse ([c271df8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c271df8e1cbd7116846587543fd80ca75526632f))
+* font: save in DB for a song ([243c156](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/243c156d3c6701128df32b910779c62aa946e203))
+* font: slide show with font family ([3abef20](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3abef2034e7ac2c3c826edce07b243e917d5e1b2))
+* help update + background on full screen ([a792297](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a792297f7c9d8f906b2656b24aa74c882dece23c))
+* no redirection after change color of animation ([9ca1823](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9ca182370ef763ee3bd72a3237a5fbd227b7c1df))
+
 # [1.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.7.0...v1.8.0) (2025-06-12)
 
 
