@@ -468,20 +468,20 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'o') {
         if (document.getElementById('draggableDivCurrentSlide').style.display=='block') {
             document.getElementById('draggableDivCurrentSlide').style.display='none';
-            document.getElementById('showdraggableDivCurrentSlideLink').style.display='inline-block';
+            document.getElementById('showDraggableDivCurrentSlideLink').style.display='inline-block';
         } else {
             document.getElementById('draggableDivCurrentSlide').style.display='block';
-            document.getElementById('showdraggableDivCurrentSlideLink').style.display='none';
+            document.getElementById('showDraggableDivCurrentSlideLink').style.display='none';
         }
     }
     // display preview slide window
     if (event.key.toLowerCase() === 'p') {
         if (document.getElementById('draggableDivNextSlide').style.display=='block') {
             document.getElementById('draggableDivNextSlide').style.display='none';
-            document.getElementById('showdraggableDivNextSlideLink').style.display='inline-block';
+            document.getElementById('showDraggableDivNextSlideLink').style.display='inline-block';
         } else {
             document.getElementById('draggableDivNextSlide').style.display='block';
-            document.getElementById('showdraggableDivNextSlideLink').style.display='none';
+            document.getElementById('showDraggableDivNextSlideLink').style.display='none';
         }
     }
 });
