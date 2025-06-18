@@ -130,7 +130,9 @@ services:
 
 
   n8n:
-    image: n8nio/n8n
+    build:
+      context: .
+      dockerfile: Dockerfile.n8n
     environment:
       - N8N_HOST=n8n.carthographie.fr
       - N8N_PORT=5678

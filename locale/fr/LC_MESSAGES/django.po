@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-13 23:48+0200\n"
+"POT-Creation-Date: 2025-06-17 14:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,27 +25,27 @@ msgstr "Liste des animations"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:85
+#: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors_animation.html:8
+#: app_animation/templates/app_animation/modify_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected1"
 msgstr "[ "
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:85
+#: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors_animation.html:8
+#: app_animation/templates/app_animation/modify_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "groupe_selected2"
 msgstr " ]"
 
 #: app_animation/templates/app_animation/animations.html:8
 #: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:85
+#: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors_animation.html:8
+#: app_animation/templates/app_animation/modify_colors.html:8
 #: app_group/templates/app_group/groups.html:8
 msgid "No group selected"
 msgstr "Aucun groupe sélectionné"
@@ -95,8 +95,8 @@ msgstr "Modifier"
 
 #: app_animation/templates/app_animation/animations.html:55
 #: app_animation/templates/app_animation/delete_animation.html:21
-#: app_animation/templates/app_animation/modify_animation.html:229
-#: app_animation/templates/common/animation_actions.html:8
+#: app_animation/templates/app_animation/modify_animation.html:260
+#: app_animation/templates/common/animation_actions.html:7
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/common/song_actions.html:9
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
@@ -122,98 +122,110 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:261
+#: app_animation/templates/app_animation/modify_animation.html:292
 #: app_main/templates/app_main/homepage.html:67
 #: app_main/templates/app_main/homepage.html:105
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr "Annuler"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:91
-#: app_animation/templates/app_animation/lyrics_slide_show.html:117
-msgid "Display preview window"
-msgstr "Afficher la fenêtre de prévisualisation"
+#: app_animation/templates/app_animation/lyrics_slide_show.html:94
+#: app_animation/templates/app_animation/lyrics_slide_show.html:126
+msgid "Display current slide window"
+msgstr "Fenêtre : diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:93
+#: app_animation/templates/app_animation/lyrics_slide_show.html:99
+msgid "Display preview next slide window"
+msgstr "Fenêtre : prévisualisation"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:102
 msgid "Shortcuts:"
 msgstr "Raccourcis clavier"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:95
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
 msgid "show"
 msgstr "Afficher"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:95
+#: app_animation/templates/app_animation/lyrics_slide_show.html:104
 msgid "hide"
 msgstr "Masquer"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:101
-#: app_animation/templates/app_animation/lyrics_slide_show.html:170
+#: app_animation/templates/app_animation/lyrics_slide_show.html:110
+#: app_animation/templates/app_animation/lyrics_slide_show.html:184
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:104
+#: app_animation/templates/app_animation/lyrics_slide_show.html:113
 msgid "Space bar"
 msgstr "Barre espace"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:108
-#: app_animation/templates/app_animation/lyrics_slide_show.html:179
+#: app_animation/templates/app_animation/lyrics_slide_show.html:117
+#: app_animation/templates/app_animation/lyrics_slide_show.html:193
 msgid "Next slide"
-msgstr "Slide suivante"
+msgstr "Diapo suivante"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:113
-#: app_animation/templates/app_animation/lyrics_slide_show.html:180
+#: app_animation/templates/app_animation/lyrics_slide_show.html:122
+#: app_animation/templates/app_animation/lyrics_slide_show.html:194
 msgid "Chorus"
 msgstr "Refrain"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:122
+#: app_animation/templates/app_animation/lyrics_slide_show.html:130
+msgid "Display preview slide window"
+msgstr "Fenêtre : prévisualisation"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:135
 msgid "Previous song"
 msgstr "Chant précédent"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:128
+#: app_animation/templates/app_animation/lyrics_slide_show.html:141
 msgid "Next song"
 msgstr "Chant suivant"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:133
+#: app_animation/templates/app_animation/lyrics_slide_show.html:146
 msgid "Display/hide choruses"
 msgstr "Afficher/masquer les refrains"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:137
+#: app_animation/templates/app_animation/lyrics_slide_show.html:150
 msgid "Scroll on ↕️ or not 🧱"
 msgstr "Scroll activé ↕️ ou bloqué 🧱"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:139
+#: app_animation/templates/app_animation/lyrics_slide_show.html:152
 msgid "in upper or lower case"
 msgstr "en majuscule ou minuscule"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:152
+#: app_animation/templates/app_animation/lyrics_slide_show.html:165
 msgid "Open a second screen"
 msgstr "Ouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:153
+#: app_animation/templates/app_animation/lyrics_slide_show.html:166
 msgid "Reopen second screen"
 msgstr "Rouvrir le second écran"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:173
+#: app_animation/templates/app_animation/lyrics_slide_show.html:187
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:184
+#: app_animation/templates/app_animation/lyrics_slide_show.html:198
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:196
+#: app_animation/templates/app_animation/lyrics_slide_show.html:210
 #, fuzzy
 #| msgid "actions"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:224
+#: app_animation/templates/app_animation/lyrics_slide_show.html:238
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:231
+#: app_animation/templates/app_animation/lyrics_slide_show.html:245
+msgid "Current slide"
+msgstr "Diapo active"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:268
 msgid "Preview next slide"
-msgstr "Slide suivante"
+msgstr "Diapo suivante"
 
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "List of available fonts"
@@ -224,16 +236,28 @@ msgid "Select a song to view the lyrics"
 msgstr "Sélectionnez un chant pour voir les paroles"
 
 #: app_animation/templates/app_animation/modify_animation.html:62
+msgid "Left/right margins"
+msgstr "Marges gauche/droite"
+
+#: app_animation/templates/app_animation/modify_animation.html:72
 msgid "Font size"
 msgstr "Taille de police d'écriture"
 
-#: app_animation/templates/app_animation/modify_animation.html:73
+#: app_animation/templates/app_animation/modify_animation.html:83
 msgid "Font"
 msgstr "Police d'écriture"
 
-#: app_animation/templates/app_animation/modify_animation.html:82
-#: app_animation/templates/app_animation/modify_animation.html:259
-#: app_animation/templates/app_animation/modify_colors_animation.html:36
+#: app_animation/templates/app_animation/modify_animation.html:94
+msgid "Animation's colors"
+msgstr "Couleurs de l'animation"
+
+#: app_animation/templates/app_animation/modify_animation.html:96
+msgid "Modifiy animation's colors"
+msgstr "Modifier les couleurs de l'animation"
+
+#: app_animation/templates/app_animation/modify_animation.html:97
+#: app_animation/templates/app_animation/modify_animation.html:290
+#: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:85
 #: app_main/templates/app_main/homepage.html:66
 #: app_main/templates/app_main/homepage.html:104
@@ -245,140 +269,182 @@ msgstr "Police d'écriture"
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_animation.html:95
-#: app_animation/templates/app_animation/modify_animation.html:103
+#: app_animation/templates/app_animation/modify_animation.html:110
+#: app_animation/templates/app_animation/modify_animation.html:118
 #: app_song/templates/app_song/modify_song.html:111
 #: app_song/templates/app_song/modify_song.html:124
 #: app_song/templates/app_song/modify_song.html:139
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:114
-#: app_animation/templates/app_animation/modify_animation.html:191
+#: app_animation/templates/app_animation/modify_animation.html:129
+#: app_animation/templates/app_animation/modify_animation.html:213
 msgid "Font_size2dots"
 msgstr "Taille police&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:116
-#: app_animation/templates/app_animation/modify_animation.html:193
+#: app_animation/templates/app_animation/modify_animation.html:131
+#: app_animation/templates/app_animation/modify_animation.html:215
 msgid "decrease size"
 msgstr "diminuer la taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:123
-#: app_animation/templates/app_animation/modify_animation.html:200
+#: app_animation/templates/app_animation/modify_animation.html:138
+#: app_animation/templates/app_animation/modify_animation.html:222
 msgid "same size"
 msgstr "même taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:128
-#: app_animation/templates/app_animation/modify_animation.html:205
+#: app_animation/templates/app_animation/modify_animation.html:143
+#: app_animation/templates/app_animation/modify_animation.html:227
 msgid "increase size"
 msgstr "augmenter la taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:136
-#: app_animation/templates/app_animation/modify_animation.html:213
+#: app_animation/templates/app_animation/modify_animation.html:151
+#: app_animation/templates/app_animation/modify_animation.html:235
 msgid "Font_family2dots"
 msgstr "Police d'écriture&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:138
+#: app_animation/templates/app_animation/modify_animation.html:153
 msgid "Same like song..."
 msgstr "Identique à celle du chant..."
 
-#: app_animation/templates/app_animation/modify_animation.html:141
-#: app_animation/templates/app_animation/modify_animation.html:218
+#: app_animation/templates/app_animation/modify_animation.html:156
+#: app_animation/templates/app_animation/modify_animation.html:240
 msgid "Fonts family"
 msgstr "Police d'écriture"
 
-#: app_animation/templates/app_animation/modify_animation.html:154
+#: app_animation/templates/app_animation/modify_animation.html:169
+msgid "Verse's colors"
+msgstr "Couleurs du couplet"
+
+#: app_animation/templates/app_animation/modify_animation.html:170
+msgid "Modifiy verse's colors"
+msgstr "Modifier les couleurs du couplet"
+
+#: app_animation/templates/app_animation/modify_animation.html:176
 msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:156
+#: app_animation/templates/app_animation/modify_animation.html:178
 #: app_song/templates/app_song/modify_song.html:117
 msgid "before"
 msgstr "Avant"
 
-#: app_animation/templates/app_animation/modify_animation.html:160
-#: app_animation/templates/app_animation/modify_animation.html:170
+#: app_animation/templates/app_animation/modify_animation.html:182
+#: app_animation/templates/app_animation/modify_animation.html:192
 msgid "song_num"
 msgstr "chant n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:165
+#: app_animation/templates/app_animation/modify_animation.html:187
 #: app_song/templates/app_song/modify_song.html:131
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_animation/templates/app_animation/modify_animation.html:166
+#: app_animation/templates/app_animation/modify_animation.html:188
 #: app_song/templates/app_song/modify_song.html:132
 msgid "after"
 msgstr "Après"
 
-#: app_animation/templates/app_animation/modify_animation.html:180
-#: app_animation/templates/app_animation/modify_animation.html:188
+#: app_animation/templates/app_animation/modify_animation.html:202
+#: app_animation/templates/app_animation/modify_animation.html:210
 msgid "Display options"
 msgstr "Afficher les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:181
+#: app_animation/templates/app_animation/modify_animation.html:203
 msgid "Hide options"
 msgstr "Masquer les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:215
+#: app_animation/templates/app_animation/modify_animation.html:237
 msgid "Same like animation..."
 msgstr "Identique à celle de l'animation..."
 
-#: app_animation/templates/app_animation/modify_animation.html:228
+#: app_animation/templates/app_animation/modify_animation.html:254
+msgid "Song's colors"
+msgstr "Couleurs du chant"
+
+#: app_animation/templates/app_animation/modify_animation.html:256
+msgid "Modifiy song's colors"
+msgstr "Modifier les couleurs du chant"
+
+#: app_animation/templates/app_animation/modify_animation.html:259
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:235
+#: app_animation/templates/app_animation/modify_animation.html:266
 msgid "See the song"
 msgstr "Voir le texte du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:238
+#: app_animation/templates/app_animation/modify_animation.html:269
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:239
+#: app_animation/templates/app_animation/modify_animation.html:270
 msgid "Go to the song"
 msgstr "Aller vers le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:248
+#: app_animation/templates/app_animation/modify_animation.html:279
 #: app_song/templates/app_song/songs.html:18
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:249
+#: app_animation/templates/app_animation/modify_animation.html:280
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:253
+#: app_animation/templates/app_animation/modify_animation.html:284
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:260
+#: app_animation/templates/app_animation/modify_animation.html:291
 #: app_song/templates/app_song/modify_song.html:164
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
-#: app_animation/templates/app_animation/modify_colors_animation.html:15
+#: app_animation/templates/app_animation/modify_colors.html:15
 msgid "text_test"
-msgstr "Voici un texte pour tester l'affichage<br><br>Est-ce beau ?"
+msgstr "Voici un texte pour tester l'affichage<br><br><b>Est-ce beau ?</b>"
 
-#: app_animation/templates/app_animation/modify_colors_animation.html:21
-#: app_animation/templates/common/animation_actions.html:7
+#: app_animation/templates/app_animation/modify_colors.html:21
 msgid "Modify colors"
 msgstr "Modifier les couleurs"
 
-#: app_animation/templates/app_animation/modify_colors_animation.html:25
+#: app_animation/templates/app_animation/modify_colors.html:22
+msgid "Song:"
+msgstr "Chant&nbsp;:"
+
+#: app_animation/templates/app_animation/modify_colors.html:23
+msgid "Verse:"
+msgstr "Couplet&nbsp;:"
+
+#: app_animation/templates/app_animation/modify_colors.html:27
 msgid "Text color:"
 msgstr "Couleur du texte :"
 
-#: app_animation/templates/app_animation/modify_colors_animation.html:31
+#: app_animation/templates/app_animation/modify_colors.html:33
 msgid "Background color:"
 msgstr "Couleur du fond :"
 
+#: app_animation/templates/app_animation/modify_colors.html:40
+msgid "Are you sure you want to delete this song’s colors?"
+msgstr "Êtes-vous sûr de vouloir supprimer les courleurs de ce chant ?"
+
+#: app_animation/templates/app_animation/modify_colors.html:41
+msgid "Delete song's colors"
+msgstr "Supprimer les couleurs de ce chant"
+
+#: app_animation/templates/app_animation/modify_colors.html:44
+msgid "Are you sure you want to delete this verse’s colors?"
+msgstr "Êtes-vous sûr de vouloir supprimer les couleurs de ce couplet ?"
+
+#: app_animation/templates/app_animation/modify_colors.html:45
+msgid "Delete verse's colors"
+msgstr "Supprimer les couleurs de ce couplet"
+
+#: app_animation/templates/app_animation/modify_colors.html:47
+msgid "Return"
+msgstr "Retour"
+
 #: app_animation/templates/common/animation_actions.html:3
-#: app_song/templates/common/song_actions.html:3 chris/songs copy.html:19
-#: copy.html:49
+#: app_song/templates/common/song_actions.html:3
 msgid "actions"
 msgstr "Actions"
 
@@ -724,7 +790,7 @@ msgstr "Anciens messages"
 msgid "verse_rules"
 msgstr ""
 "Il est conseillé de suivre les règles suivantes pour créer un couplet ou un "
-"refrain afin que le texte ne déborde pas des slides ni que les slides soient "
+"refrain afin que le texte ne déborde pas des diapos ni que les diapos soient "
 "trop lourdes ou que le texte soit trop petit :"
 
 #: app_song/templates/app_song/modify_song.html:38
@@ -747,8 +813,7 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chanson validée"
 
-#: app_song/templates/app_song/modify_song.html:56 chris/songs copy.html:17
-#: copy.html:47
+#: app_song/templates/app_song/modify_song.html:56
 msgid "title"
 msgstr "Titre"
 
@@ -756,8 +821,7 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:64 chris/songs copy.html:18
-#: copy.html:48
+#: app_song/templates/app_song/modify_song.html:64
 msgid "description"
 msgstr "Description"
 
@@ -811,7 +875,7 @@ msgstr "Déplacer&nbsp;:"
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:151 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:151
 msgid "delete"
 msgstr "Supprimer"
 
@@ -855,7 +919,7 @@ msgid "Genre"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
+#: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
@@ -884,7 +948,7 @@ msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
 #: app_song/templates/app_song/songs.html:66
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:11
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -892,19 +956,11 @@ msgstr "Contacter les modérateurs"
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:11
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
 "chant"
-
-#: chris/songs copy.html:32
-msgid "update"
-msgstr "Modifier"
-
-#: chris/songs copy.html:35
-msgid "Go to"
-msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35
@@ -1054,7 +1110,7 @@ msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 #: templates/base.html:83
 msgid "ERR17"
 msgstr ""
-"[ERR17] Impossible de générer les slides. Contacter l'administrateur du site."
+"[ERR17] Impossible de générer les diapos. Contacter l'administrateur du site."
 
 #: templates/base.html:85
 msgid "ERR18"
@@ -1908,37 +1964,30 @@ msgid "noon"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:7
-#: venv/lib/python3.12/site-packages/tornado/locale.py:295
 msgid "Monday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:8
-#: venv/lib/python3.12/site-packages/tornado/locale.py:296
 msgid "Tuesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:9
-#: venv/lib/python3.12/site-packages/tornado/locale.py:297
 msgid "Wednesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:10
-#: venv/lib/python3.12/site-packages/tornado/locale.py:298
 msgid "Thursday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:11
-#: venv/lib/python3.12/site-packages/tornado/locale.py:299
 msgid "Friday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:12
-#: venv/lib/python3.12/site-packages/tornado/locale.py:300
 msgid "Saturday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:13
-#: venv/lib/python3.12/site-packages/tornado/locale.py:301
 msgid "Sunday"
 msgstr ""
 
@@ -1971,62 +2020,50 @@ msgid "Sun"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:25
-#: venv/lib/python3.12/site-packages/tornado/locale.py:281
 msgid "January"
 msgstr "Janvier"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:26
-#: venv/lib/python3.12/site-packages/tornado/locale.py:282
 msgid "February"
 msgstr "Février"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:27
-#: venv/lib/python3.12/site-packages/tornado/locale.py:283
 msgid "March"
 msgstr "Mars"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:28
-#: venv/lib/python3.12/site-packages/tornado/locale.py:284
 msgid "April"
 msgstr "Avril"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:29
-#: venv/lib/python3.12/site-packages/tornado/locale.py:285
 msgid "May"
 msgstr "Mai"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:30
-#: venv/lib/python3.12/site-packages/tornado/locale.py:286
 msgid "June"
 msgstr "Juin"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:31
-#: venv/lib/python3.12/site-packages/tornado/locale.py:287
 msgid "July"
 msgstr "Juillet"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:32
-#: venv/lib/python3.12/site-packages/tornado/locale.py:288
 msgid "August"
 msgstr "Août"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:33
-#: venv/lib/python3.12/site-packages/tornado/locale.py:289
 msgid "September"
 msgstr "Septembre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:34
-#: venv/lib/python3.12/site-packages/tornado/locale.py:290
 msgid "October"
 msgstr "Octobre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:35
-#: venv/lib/python3.12/site-packages/tornado/locale.py:291
 msgid "November"
 msgstr "Novembre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:36
-#: venv/lib/python3.12/site-packages/tornado/locale.py:292
 msgid "December"
 msgstr "Décembre"
 
@@ -2429,123 +2466,28 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:408
-#, python-format
-msgid "Content purported to be compressed with %s but failed to decompress."
-msgstr ""
+#~ msgid "Display preview window"
+#~ msgstr "Afficher la fenêtre de prévisualisation"
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:572
-#, python-format
-msgid "Unsupported value for qop: %s."
-msgstr ""
+#~ msgid "Colors of animation"
+#~ msgstr "Couleurs de l'animation"
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:576
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:654
-#, python-format
-msgid "Unsupported value for algorithm: %s."
-msgstr ""
+#, fuzzy
+#~| msgid "Colors of animation"
+#~ msgid "Modifiy colors of animation"
+#~ msgstr "Couleurs de l'animation"
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:649
-msgid "The challenge doesn't contain a server nonce, or this one is empty."
-msgstr ""
+#~ msgid "Colors of song"
+#~ msgstr "Couleurs du chant"
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:659
-#, python-format
-msgid "Unsupported value for pw-algorithm: %s."
-msgstr ""
+#~ msgid "Modifiy colors of song"
+#~ msgstr "Modifier les couleurs du chant"
 
-#: venv/lib/python3.12/site-packages/httplib2/__init__.py:1468
-msgid "Redirected but the response is missing a Location: header."
-msgstr ""
+#~ msgid "update"
+#~ msgstr "Modifier"
 
-#: venv/lib/python3.12/site-packages/tornado/locale.py:377
-msgid "1 second ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:383
-msgid "1 minute ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:388
-msgid "1 hour ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:391
-#, python-format
-msgid "%(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:393
-msgid "yesterday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:393
-#, python-format
-msgid "yesterday at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:395
-#, python-format
-msgid "%(weekday)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:395
-#, python-format
-msgid "%(weekday)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:398
-#: venv/lib/python3.12/site-packages/tornado/locale.py:451
-#, python-format
-msgid "%(month_name)s %(day)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:400
-#, python-format
-msgid "%(month_name)s %(day)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:405
-#, python-format
-msgid "%(month_name)s %(day)s, %(year)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:407
-#, python-format
-msgid "%(month_name)s %(day)s, %(year)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:445
-#, python-format
-msgid "%(weekday)s, %(month_name)s %(day)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:468
-#, python-format
-msgid "%(commas)s and %(last)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:68
-msgctxt "law"
-msgid "right"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:69
-msgctxt "good"
-msgid "right"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:70
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:72
-msgctxt "organization"
-msgid "club"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:74
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:75
-msgctxt "stick"
-msgid "club"
-msgstr ""
+#~ msgid "Go to"
+#~ msgstr "Voir"
 
 #~ msgid "new_song"
 #~ msgstr "Nouveau chant"
@@ -2561,7 +2503,7 @@ msgstr ""
 
 #~ msgid "help_buttons"
 #~ msgstr ""
-#~ "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Slide suivante : "
+#~ "Racourcis claviers :<br>BLACK MODE : Echap / B / ⬇️<br>Diapo suivante : "
 #~ "Espace / S / V / ⬆️<br>Refrain : R / C<br>Chant précédent : P / ⬅️<br>Chant "
 #~ "suivant : Entrée / N / ➡️<br>Afficher-masquer les refrains : A / "
 #~ "D<br>Scroll ↕️ ou 🧱: L<br><br>en majuscule ou minuscule"

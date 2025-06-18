@@ -20,6 +20,8 @@
             "followed": {{ slide.followed }},
             "text": "{% if slide.chorus > 0 %}<b>{% endif %}{{ slide.text }}{% if slide.chorus > 0 %}</b>{% endif %}",
             "new_animation_song": {{ slide.new_animation_song }},
+            "color_rgba": "{{ slide.color_rgba }}",
+            "bg_rgba": "{{ slide.bg_rgba }}",
             "font": "{{ slide.font }}",
             "font_size": {{ slide.font_size }}
         };
@@ -84,10 +86,17 @@
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>
-<a href="#" id="showDraggableDivLink"
-onclick="document.getElementById('draggableDiv').style.display='block'; this.style.display='none'; return false;" style="display:inline-block; margin-top:20px;">
-{% trans "Display preview window" %}
+<a href="#" id="showDraggableDivCurrentSlideLink"
+onclick="document.getElementById('draggableDivCurrentSlide').style.display='block'; this.style.display='none'; return false;"
+style="display:inline-block; margin-top:20px;">
+{% trans "Display current slide window" %}
 </a><br>
+<a href="#" id="showDraggableDivNextSlideLink"
+onclick="document.getElementById('draggableDivNextSlide').style.display='block'; this.style.display='none'; return false;"
+style="display:inline-block; margin-top:20px;">
+{% trans "Display preview next slide window" %}
+</a><br><br>
+
 {% trans "Shortcuts:" %}
 ( <a id="a_shortcuts" style="cursor:pointer;"
 onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', '{% trans "hide" %}')">{% trans "show" %}</a> )
@@ -111,11 +120,15 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         &nbsp;&nbsp;: {% trans "Chorus" %}
     </div>
     <div class="flex items-center space-x-2">
-        <img src="{% static 'images/k2-W.png' %}" title="W" class="w-6 h-6">
-        &nbsp;&nbsp;: {% trans "Display preview window" %}
+        <img src="{% static 'images/k2-O.png' %}" title="O" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Display current slide window" %}
     </div>
     <div class="flex items-center space-x-2">
         <img src="{% static 'images/k2-P.png' %}" title="P" class="w-6 h-6">
+        &nbsp;&nbsp;: {% trans "Display preview slide window" %}
+    </div>
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-F.png' %}" title="F" class="w-6 h-6">
         <img src="{% static 'images/k1-arrowLeft.png' %}" title="⬅️" class="w-6 h-6">
         &nbsp;&nbsp;: {% trans "Previous song" %}
     </div>
@@ -151,6 +164,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     <button id="showOpenDisplayWindow" style="display:none;" onClick="document.getElementById('openDisplayWindow').style.display='block'; this.style.display='none';">{% trans "Reopen second screen" %}</button>
 </div>
 <script>
+    padding = "{{ animation.padding }}";
     font_size = "{{ animation.font_size }}";
     color_rgba = "{{ animation.color_rgba }}";
     bg_rgba = "{{ animation.bg_rgba }}";
@@ -224,50 +238,80 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
 {% endfor %}
 </div>
-<div id="draggableDiv" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(30,30,30,0.95); color:white; z-index:9999; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
-    <div id="draggableHeader" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
+<div id="draggableDivCurrentSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(60,60,60,0.95); color:white; z-index:9999; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+    <div id="draggableHeaderCurrentSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <span>{% trans "Preview next slide" %}</span>
+            <span>{% trans "Current slide" %}</span>
             -
-            <span id="draggableSpanSongTitle"></span>
+            <span id="draggableSpanCurrentSlideSongTitle"></span>
         </div>
         <div>
-            <a href="#" id="reduceDraggableDivBtn" onclick="document.getElementById('draggableDiv').style.width='500px';
-            document.getElementById('draggableDiv').style.height='300px';this.style.display='none';
-            document.getElementById('enlargeDraggableDivBtn').style.display='inline-block';
+            <a href="#" id="reduceDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='500px';
+            document.getElementById('draggableDivCurrentSlide').style.height='300px';this.style.display='none';
+            document.getElementById('enlargeDraggableDivCurrentSlideBtn').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
-            <a href="#" id="enlargeDraggableDivBtn" onclick="document.getElementById('draggableDiv').style.width='700px';
-            document.getElementById('draggableDiv').style.height='500px';this.style.display='none';
-            document.getElementById('reduceDraggableDivBtn').style.display='inline-block';
+            <a href="#" id="enlargeDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='700px';
+            document.getElementById('draggableDivCurrentSlide').style.height='500px';this.style.display='none';
+            document.getElementById('reduceDraggableDivCurrentSlideBtn').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
-            <a href="#" onclick="document.getElementById('draggableDiv').style.display='none';
-            document.getElementById('showDraggableDivLink').style.display='inline-block';
+            <a href="#" onclick="document.getElementById('draggableDivCurrentSlide').style.display='none';
+            document.getElementById('showDraggableDivCurrentSlideLink').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
         </div>
     </div>
-    <div id="draggableDivText" style="padding:16px;"></div>
+    <div id="draggableDivCurrentSlideText" style="padding:16px;"></div>
+</div>
+<div id="draggableDivNextSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(30,30,30,0.95); color:white; z-index:9999; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+    <div id="draggableHeaderNextSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <span>{% trans "Preview next slide" %}</span>
+            -
+            <span id="draggableSpanNextSlideSongTitle"></span>
+        </div>
+        <div>
+            <a href="#" id="reduceDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='500px';
+            document.getElementById('draggableDivNextSlide').style.height='300px';this.style.display='none';
+            document.getElementById('enlargeDraggableDivNextSlideBtn').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            <a href="#" id="enlargeDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='700px';
+            document.getElementById('draggableDivNextSlide').style.height='500px';this.style.display='none';
+            document.getElementById('reduceDraggableDivNextSlideBtn').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            <a href="#" onclick="document.getElementById('draggableDivNextSlide').style.display='none';
+            document.getElementById('showDraggableDivNextSlideLink').style.display='inline-block';
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
+        </div>
+    </div>
+    <div id="draggableDivNextSlideText" style="padding:16px;"></div>
 </div>
 <script>
-(function() {
-    let dragDiv = document.getElementById('draggableDiv');
-    let dragHeader = document.getElementById('draggableHeader');
+// Enables dragging of a div by its header
+function enableDrag(dragDivId, dragHeaderId) {
+    const dragDiv = document.getElementById(dragDivId);
+    const dragHeader = document.getElementById(dragHeaderId);
     let offsetX = 0, offsetY = 0, isDown = false;
 
-    dragHeader.onmousedown = function(e) {
+    dragHeader.addEventListener('mousedown', function(e) {
         isDown = true;
         offsetX = e.clientX - dragDiv.offsetLeft;
         offsetY = e.clientY - dragDiv.offsetTop;
         document.body.style.userSelect = 'none';
-    };
-    document.onmouseup = function() {
+    });
+
+    document.addEventListener('mouseup', function() {
         isDown = false;
         document.body.style.userSelect = '';
-    };
-    document.onmousemove = function(e) {
+    });
+
+    document.addEventListener('mousemove', function(e) {
         if (!isDown) return;
         dragDiv.style.left = (e.clientX - offsetX) + 'px';
         dragDiv.style.top = (e.clientY - offsetY) + 'px';
-    };
-})();
+    });
+}
+
+// Usage for both draggable sections
+enableDrag('draggableDivCurrentSlide', 'draggableHeaderCurrentSlide');
+enableDrag('draggableDivNextSlide', 'draggableHeaderNextSlide');
 </script>
 {% endblock content %}

@@ -31,6 +31,8 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
             #slideContent {
                 width: 100vw;
                 height: 100vh;
+                padding-left: ${padding}px;
+                padding-right: ${padding}px;
                 display: flex;
                 justify-content: center; /* horizontal */
                 align-items: center;     /* vertical */
@@ -53,9 +55,13 @@ document.getElementById('openDisplayWindow').addEventListener('click', () => {
     });
 
 let last_text = '';
+let last_color_rgba = '';
+let last_bg_rgba = '';
 
 function showSlide(index, updateCurrentSlide = true) {
     text = decodeHTMLEntities(getText(index));
+    color_rgba = getColorRgba(index);
+    bg_rgba = getBgRgba(index);
     font = getFont(index);
     fontSize = getFontSize(index);
     
@@ -63,7 +69,11 @@ function showSlide(index, updateCurrentSlide = true) {
         displayWindow.document.getElementById('slideContent').innerHTML = text;
         displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         displayWindow.document.getElementById('slideContent').style.fontFamily = font;
+        displayWindow.document.getElementById('slideContent').style.color = color_rgba;
+        displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
         last_text = text;
+        last_color_rgba = color_rgba;
+        last_bg_rgba = bg_rgba;
     }
     
     cleanSelectedSlides();
@@ -104,6 +114,26 @@ function getText(index) {
         if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
             text = verses_choruses[i].text;
             return text;
+        }
+    }
+}
+
+function getColorRgba(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            color_rgba = verses_choruses[i].color_rgba;
+            return color_rgba;
+        }
+    }
+}
+
+function getBgRgba(index) {
+    let [animation_song_id, verse_id] = index.split('_');
+    for (i = 0; i < verses_choruses.length; i++) {
+        if (verses_choruses[i].animation_song_id == animation_song_id && verses_choruses[i].verse_id == verse_id) {
+            bg_rgba = verses_choruses[i].bg_rgba;
+            return bg_rgba;
         }
     }
 }
@@ -162,11 +192,15 @@ function blackMode() {
     if (!div.classList.contains('active')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = '';
+            displayWindow.document.getElementById('slideContent').style.color = 'black';
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
         div.classList.add('active');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
+            displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
         div.classList.remove('active');
     }
@@ -181,8 +215,14 @@ function nextActiveSlide() {
     if (slides.length > 1) {next_divs.forEach(div => div.classList.add('next_active'));}
 
     // display next slide text on preview div
+    if (current_slide >= 0) {
+        current_text = decodeHTMLEntities(getText(slides[current_slide]));
+    } else {
+        current_text = '';
+    }
     next_text = decodeHTMLEntities(getText(slides[next_slide]));
-    document.getElementById('draggableDivText').innerHTML = next_text;
+    document.getElementById('draggableDivCurrentSlideText').innerHTML = current_text;
+    document.getElementById('draggableDivNextSlideText').innerHTML = next_text;
 }
 
 function navNextSlide() {
@@ -276,10 +316,12 @@ function navSongs(index) {
     }
 
     let currentSongTitleDiv = document.getElementById('current_song_title');
-    let draggableSpanSongTitle = document.getElementById('draggableSpanSongTitle');
+    let draggableSpanCurrentSlideSongTitle = document.getElementById('draggableSpanCurrentSlideSongTitle');
+    let draggableSpanNextSlideSongTitle = document.getElementById('draggableSpanNextSlideSongTitle');
     let currentSongTitle = songs[index].song_full_title.replace('&#x27;', "'").replace('&quot;', '"').replace('&amp;', '&');
     currentSongTitleDiv.textContent = currentSongTitle;
-    draggableSpanSongTitle.textContent = currentSongTitle;
+    draggableSpanCurrentSlideSongTitle.textContent = currentSongTitle;
+    draggableSpanNextSlideSongTitle.textContent = currentSongTitle;
 
     current_song_id = songs[index].song_id;
     slides = getSongSlides();
@@ -405,7 +447,7 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'arrowleft') {
         navPreviousSong();
     }
-    if (event.key.toLowerCase() === 'p') {
+    if (event.key.toLowerCase() === 'f') {
         navPreviousSong();
     }
 
@@ -432,14 +474,24 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'l') {
         scrollable();
     }
-    // display preview window
-    if (event.key.toLowerCase() === 'w') {
-        if (document.getElementById('draggableDiv').style.display=='block') {
-            document.getElementById('draggableDiv').style.display='none';
-            document.getElementById('showDraggableDivLink').style.display='inline-block';
+    // display current slide window
+    if (event.key.toLowerCase() === 'o') {
+        if (document.getElementById('draggableDivCurrentSlide').style.display=='block') {
+            document.getElementById('draggableDivCurrentSlide').style.display='none';
+            document.getElementById('showDraggableDivCurrentSlideLink').style.display='inline-block';
         } else {
-            document.getElementById('draggableDiv').style.display='block';
-            document.getElementById('showDraggableDivLink').style.display='none';
+            document.getElementById('draggableDivCurrentSlide').style.display='block';
+            document.getElementById('showDraggableDivCurrentSlideLink').style.display='none';
+        }
+    }
+    // display preview slide window
+    if (event.key.toLowerCase() === 'p') {
+        if (document.getElementById('draggableDivNextSlide').style.display=='block') {
+            document.getElementById('draggableDivNextSlide').style.display='none';
+            document.getElementById('showDraggableDivNextSlideLink').style.display='inline-block';
+        } else {
+            document.getElementById('draggableDivNextSlide').style.display='block';
+            document.getElementById('showDraggableDivNextSlideLink').style.display='none';
         }
     }
 });
