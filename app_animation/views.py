@@ -263,7 +263,10 @@ def lyrics_slide_show(request, animation_id):
             'current_slide': current_slide,
         })
     if not slides:
-        error = "[ERR17]"
+        if animation.count_verses() == 0:
+            error = "[ERR30]"
+        else:
+            error = "[ERR17]"
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,

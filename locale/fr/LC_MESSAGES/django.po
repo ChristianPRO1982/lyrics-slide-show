@@ -1171,7 +1171,7 @@ msgstr "Seul les administrateurs peuvent modifier les paramètres du site."
 
 #: templates/base.html:109
 msgid "ERR30"
-msgstr "[ERR30] no message"
+msgstr "Aucune slide à afficher ! Ajouter des chansons avec du texte..."
 
 #: templates/base.html:111
 msgid "ERR31"

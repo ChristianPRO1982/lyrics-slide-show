@@ -474,3 +474,7 @@ SELECT las.animation_id
             row = cursor.fetchone()
 
             return row[0] if row else 0
+        
+
+    def count_verses(self):
+        return len(self.verses)
