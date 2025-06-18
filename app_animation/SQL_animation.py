@@ -29,6 +29,8 @@ class Animation:
         self.all_songs()
         self.verses = []
         self.all_verses()
+        self.colors = []
+        self.all_colors()
 
 
     @staticmethod
@@ -478,3 +480,30 @@ SELECT las.animation_id
 
     def count_verses(self):
         return len(self.verses)
+    
+
+    def all_colors(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT la.color_rgba, la.bg_rgba
+  FROM l_animations la 
+ WHERE la.animation_id = %s
+ UNION
+SELECT las.color_rgba, las.bg_rgba
+  FROM l_animation_song las
+ WHERE las.animation_id = %s
+ UNION
+SELECT lasv.color_rgba, lasv.bg_rgba
+  FROM l_animation_song_verse lasv
+  JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+ WHERE las.animation_id = %s
+"""
+            params = [self.animation_id, self.animation_id, self.animation_id]
+
+            create_SQL_log(code_file, "Animations.all_colors", "SELECT_9", request, params)
+            try:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                self.colors = [{'color_rgba': row[0], 'bg_rgba': row[1]} for row in rows]
+            except Exception as e:
+                self.colors = []
