@@ -309,14 +309,10 @@ def modify_colors(request, xxx_id=None):
             return redirect('animations')
 
         if request.method == 'POST':
-            if 'btn_return' in request.POST:
-                return redirect('modify_animation', animation_id=animation_id)
-            elif 'btn_del_song_colors' in request.POST:
+            if 'btn_del_song_colors' in request.POST:
                 animation.update_animation_song_colors(xxx_id, None, None)
-                return redirect('modify_animation', animation_id=animation_id)
             elif 'btn_del_verse_colors' in request.POST:
                 animation.update_animation_verse_colors(xxx_id, verse_id, None, None)
-                return redirect('modify_animation', animation_id=animation_id)
             elif 'btn_save' in request.POST:
                 if target == 'animation':
                     animation.color_rgba = request.POST.get('text_color')
@@ -330,6 +326,7 @@ def modify_colors(request, xxx_id=None):
                                                             request.POST.get('text_color'),
                                                             request.POST.get('bg_color'))
             animation = Animation.get_animation_by_id(animation_id, group_id)
+            return redirect('modify_animation', animation_id=animation_id)
     
     song_full_title = ''
     verse_preview = ''

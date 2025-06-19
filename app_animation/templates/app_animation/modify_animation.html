@@ -91,25 +91,25 @@
     </div>
     <div style="background: {{ animation.bg_rgba }}; color: {{ animation.color_rgba }};"
     class="text-center {% for font in list_fonts %}{% if animation.font == font.name %}{{ font.class }}{% endif %}{% endfor %}">
-        <br>{% trans "Animation's colors" %}<br><br>
-    </div>
+        <br>{% trans "Animation's colors" %}
+    
     <input type="radio" name="rad_animation_colors" value="no_change" id="no_change_animation" style="width: 5%;" checked="checked">
-    <label for="no_change_animation">{% trans "No change" %}</label>
+    <label for="no_change_animation"><small>{% trans "No change" %}</small></label>
     {% for color in animation.colors %}
         {% if color.color_rgba != None %}
             <label for="animation_{{ forloop.counter }}"
-            style="display: inline-block; width: 3vw; height: 3vw; text-align: center; line-height: 3vw; font-weight: bold;
+            style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
             border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
             background-color: {{ color.bg_rgba }};
-            color: {{ color.color_rgba }};">
-                {% trans "Sel" %}
+            color: {{ color.color_rgba }};" class="slide border">
+                <small><small>{% trans "Sel" %}</small></small>
                 <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}"
                 id="animation_{{ forloop.counter }}" style="width: 25%;">
             </label>
         {% endif %}
-    {% endfor %}
-    <br>
-    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
+    {% endfor %}<br><br>
+    </div>
+    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <br><br><hr><br>
 
@@ -183,6 +183,21 @@
                                     {{ font.class }}
                                 {% endif %}
                                 {% endfor %}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans "Verse's colors" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+                                <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}" value="no_change" id="no_change_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}" style="width: 5%;" checked="checked">
+                                <label for="no_change_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"><small>{% trans "No change" %}</small></label>
+                                {% for color in animation.colors %}
+                                    {% if color.color_rgba != None %}
+                                        <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
+                                        style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
+                                        border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                        background-color: {{ color.bg_rgba }};
+                                        color: {{ color.color_rgba }};" class="slide border">
+                                            <small><small>{% trans "Sel" %}</small></small>
+                                            <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
+                                            value="{{ color.color_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                        </label>
+                                    {% endif %}
+                                {% endfor %}<br>
                                 <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br><br>
                             </p>
                         {% endif %}
@@ -267,24 +282,24 @@
                             {{ font.class }}
                         {% endif %}
                         {% endfor %}">
-                            <br>{% trans "Song's colors" %}<br><br>
+                            <br>{% trans "Song's colors" %}<br>
+                            <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}" value="no_change" id="no_change_song_{{ song.animation_song_id }}" style="width: 5%;" checked="checked">
+                            <label for="no_change_song_{{ song.animation_song_id }}"><small>{% trans "No change" %}</small></label><br>
+                            {% for color in animation.colors %}
+                                {% if color.color_rgba != None %}
+                                    <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
+                                    style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
+                                    border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                    background-color: {{ color.bg_rgba }};
+                                    color: {{ color.color_rgba }};" class="slide border">
+                                        <small><small>{% trans "Sel" %}</small></small>
+                                        <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
+                                        value="{{ color.color_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                    </label>
+                                {% endif %}
+                            {% endfor %}<br><br>
                         </div>
-                        <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}" value="no_change" id="no_change_song_{{ song.animation_song_id }}" style="width: 5%;" checked="checked">
-                        <label for="no_change_song_{{ song.animation_song_id }}">{% trans "No change" %}</label>
-                        {% for color in animation.colors %}
-                            {% if color.color_rgba != None %}
-                                <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
-                                style="display: inline-block; width: 3vw; height: 3vw; text-align: center; line-height: 3vw; font-weight: bold; 
-                                border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
-                                background-color: {{ color.bg_rgba }};
-                                color: {{ color.color_rgba }};">{% trans "Sel" %}
-                                    <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
-                                    value="{{ color.color_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
-                                </label>
-                            {% endif %}
-                        {% endfor %}
-                        <br>
-                        <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a>
+                        <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a><br><br>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
