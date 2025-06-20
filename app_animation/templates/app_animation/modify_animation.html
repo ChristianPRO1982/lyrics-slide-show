@@ -103,7 +103,7 @@
             background-color: {{ color.bg_rgba }};
             color: {{ color.color_rgba }};" class="slide border">
                 <small><small>{% trans "Sel" %}</small></small>
-                <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}"
+                <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
                 id="animation_{{ forloop.counter }}" style="width: 25%;">
             </label>
         {% endif %}
@@ -194,7 +194,7 @@
                                         color: {{ color.color_rgba }};" class="slide border">
                                             <small><small>{% trans "Sel" %}</small></small>
                                             <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
-                                            value="{{ color.color_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                            value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
                                         </label>
                                     {% endif %}
                                 {% endfor %}<br>
@@ -294,7 +294,7 @@
                                     color: {{ color.color_rgba }};" class="slide border">
                                         <small><small>{% trans "Sel" %}</small></small>
                                         <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
-                                        value="{{ color.color_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                        value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
                                     </label>
                                 {% endif %}
                             {% endfor %}<br><br>

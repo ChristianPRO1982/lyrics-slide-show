@@ -88,6 +88,10 @@ def modify_animation(request, animation_id):
                     animation.padding = int(request.POST.get('sel_padding', 50))
                     animation.font_size = request.POST.get('sel_font_size', 60)
                     animation.font = request.POST.get('sel_font', 'Arial')
+                    change_colors = request.POST.get('rad_animation_colors', 'no_change').split('|')
+                    if len(change_colors) == 2:
+                        animation.color_rgba = change_colors[0]
+                        animation.bg_rgba = change_colors[1]
                     animation.save()
 
                     # if 'btn_new_song' in request.POST:
@@ -105,7 +109,8 @@ def modify_animation(request, animation_id):
                                 song['animation_song_id'],
                                 request.POST.get(f'lis_move_to_{song['animation_song_id']}'),
                                 request.POST.get(f'sel_font_{song['animation_song_id']}'),
-                                request.POST.get(f'sel_font_size_{song['animation_song_id']}')
+                                request.POST.get(f'sel_font_size_{song['animation_song_id']}'),
+                                request.POST.get(f'rad_song_colors_{song['animation_song_id']}',  'no_change').split('|'),
                                 )
                     
                     # update verses
@@ -123,7 +128,8 @@ def modify_animation(request, animation_id):
                             verse_id,
                             selected,
                             request.POST.get(f"sel_verse_font_{animation_song_id}_{verse_id}"),
-                            request.POST.get(f"sel_verse_font_size_{animation_song_id}_{verse_id}")
+                            request.POST.get(f"sel_verse_font_size_{animation_song_id}_{verse_id}"),
+                            request.POST.get(f"rad_verse_colors_{animation_song_id}_{verse_id}", 'no_change').split('|'),
                             )
                 
                 # reload animation

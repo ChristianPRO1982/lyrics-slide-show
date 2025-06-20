@@ -281,7 +281,9 @@ UPDATE l_animation_song
             cursor.execute(request, params)
             
 
-    def update_animation_song(self, animation_song_id, num, font, font_size):
+    def update_animation_song(self, animation_song_id, num, font, font_size, change_colors):
+        if len(change_colors) == 2:
+            self.update_animation_song_colors(animation_song_id, change_colors[0], change_colors[1])
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song
@@ -339,7 +341,9 @@ DELETE FROM l_animation_song
             return [row[0] for row in rows]
         
 
-    def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size):
+    def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size, change_colors):
+        if len(change_colors) == 2:
+            self.update_animation_verse_colors(animation_song_id, verse_id, change_colors[0], change_colors[1])
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song_verse
