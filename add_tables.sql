@@ -37,13 +37,12 @@ CREATE TABLE `c_group_user` (
 -- LYRICS SLIDE SHOW --
 -----------------------
 
-CREATE TABLE `l_genre` (
+CREATE TABLE `l_genres` (
   `genre_id` mediumint NOT NULL AUTO_INCREMENT,
-  `order` mediumint NOT NULL DEFAULT '1000',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`genre_id`),
-  UNIQUE KEY `l_song_genre_unique` (`name`),
-  KEY `l_song_genre_order_IDX` (`order`) USING BTREE
+  UNIQUE KEY `l_genres_unique` (`group`,`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_songs` (
@@ -63,7 +62,7 @@ CREATE TABLE `l_song_genre` (
   `genre_id` mediumint NOT NULL,
   PRIMARY KEY (`song_id`,`genre_id`),
   KEY `l_song_genre_l_genre_FK` (`genre_id`),
-  CONSTRAINT `l_song_genre_l_genre_FK` FOREIGN KEY (`genre_id`) REFERENCES `l_genre` (`genre_id`) ON DELETE CASCADE,
+  CONSTRAINT `l_song_genre_l_genre_FK` FOREIGN KEY (`genre_id`) REFERENCES `l_genres` (`genre_id`) ON DELETE CASCADE,
   CONSTRAINT `l_song_genre_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

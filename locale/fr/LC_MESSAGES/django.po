@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-20 11:52+0200\n"
+"POT-Creation-Date: 2025-06-20 15:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,6 +62,8 @@ msgstr "Masquer les anciennes animations"
 #: app_animation/templates/app_animation/animations.html:38
 #: app_animation/templates/app_animation/animations.html:73
 #: app_animation/templates/app_animation/modify_animation.html:50
+#: app_song/templates/app_song/song_metadata.html:69
+#: app_song/templates/app_song/song_metadata.html:90
 msgid "Name"
 msgstr "Nom"
 
@@ -84,6 +86,8 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:76
 #: app_song/templates/app_song/song_metadata.html:28
 #: app_song/templates/app_song/song_metadata.html:53
+#: app_song/templates/app_song/song_metadata.html:70
+#: app_song/templates/app_song/song_metadata.html:91
 #, fuzzy
 #| msgid "actions"
 msgid "Actions"
@@ -277,7 +281,7 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_song/templates/app_song/modify_song.html:71
 #: app_song/templates/app_song/modify_song.html:163
 #: app_song/templates/app_song/song_metadata.html:17
-#: app_song/templates/app_song/song_metadata.html:65
+#: app_song/templates/app_song/song_metadata.html:99
 msgid "save"
 msgstr "Enregistrer"
 
@@ -673,6 +677,7 @@ msgid "powered by"
 msgstr "propulsé par"
 
 #: app_main/templates/app_main/homepage.html:32
+#: app_song/templates/app_song/song_metadata.html:63
 msgid "Moderator"
 msgstr "Modérateur"
 
@@ -925,11 +930,29 @@ msgstr "Supprimer ce lien ?"
 
 #: app_song/templates/app_song/song_metadata.html:45
 msgid "New link"
-msgstr ""
+msgstr "Nouveau lien"
 
 #: app_song/templates/app_song/song_metadata.html:60
+#: app_song/templates/app_song/song_metadata.html:64
 msgid "Genre"
 msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:68
+#: app_song/templates/app_song/song_metadata.html:89
+msgid "Group"
+msgstr "Groupe"
+
+#: app_song/templates/app_song/song_metadata.html:84
+msgid "Group name"
+msgstr "Nom du groupe"
+
+#: app_song/templates/app_song/song_metadata.html:85
+msgid "Genre name"
+msgstr "Nom du genre"
+
+#: app_song/templates/app_song/song_metadata.html:86
+msgid "New genre"
+msgstr "Nouveau genre"
 
 #: app_song/templates/app_song/songs.html:5
 #: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
@@ -1203,7 +1226,7 @@ msgstr ""
 
 #: templates/base.html:113
 msgid "ERR32"
-msgstr "[ERR32] no message"
+msgstr "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur "
 
 #: templates/base.html:115
 msgid "ERR33"
