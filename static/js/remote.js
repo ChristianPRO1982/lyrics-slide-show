@@ -417,9 +417,6 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'b') {
         blackMode();
     }
-    if (event.key.toLowerCase() === 'arrowup') {
-        blackMode();
-    }
 
     // NEXT SLIDE \\
     if (event.key.toLowerCase() === 'arrowdown') {
@@ -440,6 +437,9 @@ document.addEventListener('keydown', (event) => {
         navChorus();
     }
     if (event.key.toLowerCase() === 'r') {
+        navChorus();
+    }
+    if (event.key.toLowerCase() === 'arrowup') {
         navChorus();
     }
 
