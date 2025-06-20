@@ -85,6 +85,13 @@ function showSlide(index, updateCurrentSlide = true) {
     const chorus_divs = document.querySelectorAll(`[id="${index}"]`);
     chorus_divs.forEach(div => div.classList.add('chorus_active'));
 
+    // select chorus button
+    let [animation_song_id, verse_id] = index.split('_');
+    if (isChorus(animation_song_id, verse_id)) {
+        const chorus_divs = document.getElementById("nav_chorus");
+        chorus_divs.classList.add('active');
+    }
+
     if (updateCurrentSlide) {nextChorusSlideSelect(index);}
     disChoruses();
 }
@@ -334,6 +341,9 @@ function cleanSelectedSlides() {
         slide.classList.remove('chorus_active');
         slide.classList.remove('next_active');
     });
+
+    const chorus_divs = document.getElementById("nav_chorus");
+    chorus_divs.classList.remove('active');
 }
 
 function updateCurrentSlide(currentSlide) {
@@ -407,9 +417,6 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'b') {
         blackMode();
     }
-    if (event.key.toLowerCase() === 'arrowup') {
-        blackMode();
-    }
 
     // NEXT SLIDE \\
     if (event.key.toLowerCase() === 'arrowdown') {
@@ -430,6 +437,9 @@ document.addEventListener('keydown', (event) => {
         navChorus();
     }
     if (event.key.toLowerCase() === 'r') {
+        navChorus();
+    }
+    if (event.key.toLowerCase() === 'arrowup') {
         navChorus();
     }
 

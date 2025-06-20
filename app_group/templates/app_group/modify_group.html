@@ -26,7 +26,9 @@
 {% if member.admin %}<b>{% endif %}
 {{ member.full_name }}
 {% if member.admin %} [ADMIN]</b>{% endif %}
+{% if nb_admins > 1 or not member.admin %}
 - <a href="{% url "modify_group_delete_user" group.group_id member.username %}" onclick="return confirm('{% trans 'Are you sure you want to delete this member?' %}');">{% trans "Delete member" %}</a>
+{% endif %}
 </p>
 {% endfor %}
 <hr>

@@ -223,6 +223,24 @@ ORDER BY cgu.admin DESC, full_name
             return []
         
 
+    def nb_admins(self):
+        request = """
+SELECT COUNT(*)
+  FROM c_group_user
+ WHERE group_id = %s
+   AND admin = 1
+"""
+        params = [self.group_id]
+        create_SQL_log(code_file, "Group.nb_admin_members", "SELECT_7", request, params)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(request, params)
+                count = cursor.fetchone()[0]
+            return count
+        except Exception as e:
+            return 0
+        
+
     def get_list_ask_to_be_member(self):
         request = """
 SELECT username

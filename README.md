@@ -116,3 +116,11 @@ python manage.py migrate
 ```sql
 mysqldump -u root -p --no-data carthographie > schema.sql
 ```
+
+## docker
+```bash
+docker compose down && docker compose up -d --remove-orphans
+```
+```bash
+docker compose pull && docker compose up -d && docker image prune -f
+```

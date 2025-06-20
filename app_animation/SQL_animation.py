@@ -29,6 +29,8 @@ class Animation:
         self.all_songs()
         self.verses = []
         self.all_verses()
+        self.colors = []
+        self.all_colors()
 
 
     @staticmethod
@@ -252,7 +254,11 @@ INSERT INTO l_animation_song (animation_id, song_id)
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
             cursor.execute(request, params)
+        
+        self.new_song_verses_all()
 
+
+    def new_song_verses_all(self):
         with connection.cursor() as cursor:
             request = """
 INSERT IGNORE INTO l_animation_song_verse (animation_song_id, verse_id)
@@ -279,7 +285,9 @@ UPDATE l_animation_song
             cursor.execute(request, params)
             
 
-    def update_animation_song(self, animation_song_id, num, font, font_size):
+    def update_animation_song(self, animation_song_id, num, font, font_size, change_colors):
+        if len(change_colors) == 2:
+            self.update_animation_song_colors(animation_song_id, change_colors[0], change_colors[1])
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song
@@ -337,7 +345,9 @@ DELETE FROM l_animation_song
             return [row[0] for row in rows]
         
 
-    def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size):
+    def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size, change_colors):
+        if len(change_colors) == 2:
+            self.update_animation_verse_colors(animation_song_id, verse_id, change_colors[0], change_colors[1])
         with connection.cursor() as cursor:
             request = """
 UPDATE l_animation_song_verse
@@ -350,7 +360,11 @@ UPDATE l_animation_song_verse
             params = [selected, font, font_size, animation_song_id, verse_id]
 
             create_SQL_log(code_file, "Animations.update_verse", "UPDATE_3", request, params)
-            cursor.execute(request, params)
+            try:
+                cursor.execute(request, params)
+                return True
+            except Exception as e:
+                return False
         
 
     def update_animation_verse_colors(self, animation_song_id, verse_id, color_rgba, bg_rgba):
@@ -474,3 +488,34 @@ SELECT las.animation_id
             row = cursor.fetchone()
 
             return row[0] if row else 0
+        
+
+    def count_verses(self):
+        return len(self.verses)
+    
+
+    def all_colors(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT la.color_rgba, la.bg_rgba
+  FROM l_animations la 
+ WHERE la.animation_id = %s
+ UNION
+SELECT las.color_rgba, las.bg_rgba
+  FROM l_animation_song las
+ WHERE las.animation_id = %s
+ UNION
+SELECT lasv.color_rgba, lasv.bg_rgba
+  FROM l_animation_song_verse lasv
+  JOIN l_animation_song las ON las.animation_song_id = lasv.animation_song_id
+ WHERE las.animation_id = %s
+"""
+            params = [self.animation_id, self.animation_id, self.animation_id]
+
+            create_SQL_log(code_file, "Animations.all_colors", "SELECT_9", request, params)
+            try:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                self.colors = [{'color_rgba': row[0], 'bg_rgba': row[1]} for row in rows]
+            except Exception as e:
+                self.colors = []

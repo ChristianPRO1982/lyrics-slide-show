@@ -88,6 +88,10 @@ def modify_animation(request, animation_id):
                     animation.padding = int(request.POST.get('sel_padding', 50))
                     animation.font_size = request.POST.get('sel_font_size', 60)
                     animation.font = request.POST.get('sel_font', 'Arial')
+                    change_colors = request.POST.get('rad_animation_colors', 'no_change').split('|')
+                    if len(change_colors) == 2:
+                        animation.color_rgba = change_colors[0]
+                        animation.bg_rgba = change_colors[1]
                     animation.save()
 
                     # if 'btn_new_song' in request.POST:
@@ -105,7 +109,8 @@ def modify_animation(request, animation_id):
                                 song['animation_song_id'],
                                 request.POST.get(f'lis_move_to_{song['animation_song_id']}'),
                                 request.POST.get(f'sel_font_{song['animation_song_id']}'),
-                                request.POST.get(f'sel_font_size_{song['animation_song_id']}')
+                                request.POST.get(f'sel_font_size_{song['animation_song_id']}'),
+                                request.POST.get(f'rad_song_colors_{song['animation_song_id']}',  'no_change').split('|'),
                                 )
                     
                     # update verses
@@ -118,15 +123,18 @@ def modify_animation(request, animation_id):
                             selected = True
                         else:
                             selected = False
-                        animation.update_animation_verse(
+                        if not animation.update_animation_verse(
                             animation_song_id,
                             verse_id,
                             selected,
                             request.POST.get(f"sel_verse_font_{animation_song_id}_{verse_id}"),
-                            request.POST.get(f"sel_verse_font_size_{animation_song_id}_{verse_id}")
-                            )
+                            request.POST.get(f"sel_verse_font_size_{animation_song_id}_{verse_id}"),
+                            request.POST.get(f"rad_verse_colors_{animation_song_id}_{verse_id}", 'no_change').split('|'),
+                            ):
+                            error = "[ERR31]"
                 
                 # reload animation
+                animation.new_song_verses_all()
                 animation = Animation.get_animation_by_id(animation_id, group_id)
 
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
@@ -263,7 +271,10 @@ def lyrics_slide_show(request, animation_id):
             'current_slide': current_slide,
         })
     if not slides:
-        error = "[ERR17]"
+        if animation.count_verses() == 0:
+            error = "[ERR30]"
+        else:
+            error = "[ERR17]"
 
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
@@ -306,14 +317,10 @@ def modify_colors(request, xxx_id=None):
             return redirect('animations')
 
         if request.method == 'POST':
-            if 'btn_return' in request.POST:
-                return redirect('modify_animation', animation_id=animation_id)
-            elif 'btn_del_song_colors' in request.POST:
+            if 'btn_del_song_colors' in request.POST:
                 animation.update_animation_song_colors(xxx_id, None, None)
-                return redirect('modify_animation', animation_id=animation_id)
             elif 'btn_del_verse_colors' in request.POST:
                 animation.update_animation_verse_colors(xxx_id, verse_id, None, None)
-                return redirect('modify_animation', animation_id=animation_id)
             elif 'btn_save' in request.POST:
                 if target == 'animation':
                     animation.color_rgba = request.POST.get('text_color')
@@ -327,6 +334,7 @@ def modify_colors(request, xxx_id=None):
                                                             request.POST.get('text_color'),
                                                             request.POST.get('bg_color'))
             animation = Animation.get_animation_by_id(animation_id, group_id)
+            return redirect('modify_animation', animation_id=animation_id)
     
     song_full_title = ''
     verse_preview = ''
