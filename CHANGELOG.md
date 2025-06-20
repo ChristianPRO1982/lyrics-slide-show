@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.1...v1.9.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* SQL order between upadte and create genre ([07d0d5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/07d0d5e7756709b0e70fbda10b6013de34e33812))
+
 ## [1.9.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.0...v1.9.1) (2025-06-20)
 
 
