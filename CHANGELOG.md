@@ -1,3 +1,26 @@
+# [1.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.2...v1.9.0) (2025-06-20)
+
+
+### Bug Fixes
+
+* add animation.count_verses() to display ERR30: no slide to display ([5ccf12b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5ccf12bceaaf7f0225b8aef446aacb91c6ec15d7))
+* animation songs are auto update when animation is updated ([060ea74](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/060ea74e960237f3e8e6a097d4621b92ea916a4c))
+* animation: easy colors run ([c11761e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c11761e3df4e10f60e46a12fccf77de1fd653269))
+* animation: modify colors: all options displayed on template > need code in "view" ([911282a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/911282acab664796c390813cb9fe090a3a1f6bee))
+* animation: slide show: windows more transparent ([1ebb50c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1ebb50c0e3d5207bbd41b26036eff43380152a12))
+* button for nav in slide show > arrowup for chorus not black mode ([95de87d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/95de87d2fb11e95444265b834e1d73ee2efa91fa))
+* css: dark mode: <select> focus at [#444](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/444) ([480fc3f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/480fc3fbedf9c76c364045ba5e3a4e178dfac4a4))
+* easy colors choice ([55fcb63](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/55fcb63eb0d392bf561109fadc228deb8b6d82d3))
+* fonts ([a5c81cf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a5c81cfb1d226d883e42a173331e3f3b149b2c7f))
+* impossible to delete the last admin of a group ([26b5342](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/26b5342aa1ff67ee43d601ee4e3527f6c29b2950))
+* n8n ([143f63b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/143f63b53fd2efb0961775445b8850aa1a28c7b1))
+* translate ([07f871c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/07f871c5ac73ac0dc8e838232777442a0252723a))
+
+
+### Features
+
+* animation: when chorus is selected the button chorus is displayed with selector ([cf6112f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cf6112fd93bfc6b3922871240ae4be172d99c5a6))
+
 ## [1.8.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.1...v1.8.2) (2025-06-17)
 
 
