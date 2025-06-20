@@ -1,3 +1,12 @@
+## [1.9.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.0...v1.9.1) (2025-06-20)
+
+
+### Bug Fixes
+
+* box_verse_notdisplaychorusnext_ ([dea031b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dea031bdd7bd124e09a2f8d3dd47d829ca7b2d7f))
+* genres for song ([2cf2481](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2cf2481d40054c8e84c7a61bbaa971390766a6c9))
+* translate ([60d6c35](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/60d6c350642609d762685e7d8eccb89de60f303e))
+
 # [1.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.8.2...v1.9.0) (2025-06-20)
 
 
