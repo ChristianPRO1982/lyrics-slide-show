@@ -296,11 +296,6 @@ def song_metadata(request, song_id):
         song.get_genres() # Refresh
 
         # GENRES MODERATOR
-        new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
-        new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
-        if new_genre_group and new_genre_name:
-            genre = Genre(group=new_genre_group, name=new_genre_name)
-            genre.save()
         genres = Genre.get_all_genres()
         for genre in genres:
             genre_to_update = Genre(genre_id=genre.genre_id)
@@ -310,6 +305,11 @@ def song_metadata(request, song_id):
                 genre_to_update.group = request.POST.get(f'txt_genre_group_{genre.genre_id}', '').strip()
                 genre_to_update.name = request.POST.get(f'txt_genre_name_{genre.genre_id}', '').strip()
                 genre_to_update.save()
+        new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
+        new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
+        if new_genre_group and new_genre_name:
+            genre = Genre(group=new_genre_group, name=new_genre_name)
+            genre.save()
 
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
