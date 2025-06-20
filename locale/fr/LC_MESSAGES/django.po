@@ -584,8 +584,6 @@ msgid "List of group members"
 msgstr "Liste des membres du groupe"
 
 #: app_group/templates/app_group/modify_group.html:29
-#, fuzzy
-#| msgid "Are you sure you want to delete this verse?"
 msgid "Are you sure you want to delete this member?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
