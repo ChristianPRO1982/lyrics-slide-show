@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 14:15+0200\n"
+"POT-Creation-Date: 2025-06-20 10:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,7 +95,7 @@ msgstr "Modifier"
 
 #: app_animation/templates/app_animation/animations.html:55
 #: app_animation/templates/app_animation/delete_animation.html:21
-#: app_animation/templates/app_animation/modify_animation.html:260
+#: app_animation/templates/app_animation/modify_animation.html:306
 #: app_animation/templates/common/animation_actions.html:7
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/common/song_actions.html:9
@@ -122,7 +122,7 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:292
+#: app_animation/templates/app_animation/modify_animation.html:338
 #: app_main/templates/app_main/homepage.html:67
 #: app_main/templates/app_main/homepage.html:105
 #: app_song/templates/app_song/moderator_song.html:32
@@ -215,15 +215,15 @@ msgstr "Chants"
 msgid "Options"
 msgstr "Actions"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:238
+#: app_animation/templates/app_animation/lyrics_slide_show.html:239
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:245
+#: app_animation/templates/app_animation/lyrics_slide_show.html:246
 msgid "Current slide"
 msgstr "Diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:268
+#: app_animation/templates/app_animation/lyrics_slide_show.html:269
 msgid "Preview next slide"
 msgstr "Diapo suivante"
 
@@ -251,12 +251,24 @@ msgstr "Police d'écriture"
 msgid "Animation's colors"
 msgstr "Couleurs de l'animation"
 
-#: app_animation/templates/app_animation/modify_animation.html:96
+#: app_animation/templates/app_animation/modify_animation.html:97
+#: app_animation/templates/app_animation/modify_animation.html:187
+#: app_animation/templates/app_animation/modify_animation.html:287
+msgid "No change"
+msgstr ""
+
+#: app_animation/templates/app_animation/modify_animation.html:105
+#: app_animation/templates/app_animation/modify_animation.html:195
+#: app_animation/templates/app_animation/modify_animation.html:295
+msgid "Sel"
+msgstr ""
+
+#: app_animation/templates/app_animation/modify_animation.html:112
 msgid "Modifiy animation's colors"
 msgstr "Modifier les couleurs de l'animation"
 
-#: app_animation/templates/app_animation/modify_animation.html:97
-#: app_animation/templates/app_animation/modify_animation.html:290
+#: app_animation/templates/app_animation/modify_animation.html:113
+#: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:85
 #: app_main/templates/app_main/homepage.html:66
@@ -269,132 +281,132 @@ msgstr "Modifier les couleurs de l'animation"
 msgid "save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_animation.html:110
-#: app_animation/templates/app_animation/modify_animation.html:118
+#: app_animation/templates/app_animation/modify_animation.html:126
+#: app_animation/templates/app_animation/modify_animation.html:134
 #: app_song/templates/app_song/modify_song.html:111
 #: app_song/templates/app_song/modify_song.html:124
 #: app_song/templates/app_song/modify_song.html:139
 msgid "verse_num"
 msgstr "Couplet n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:129
-#: app_animation/templates/app_animation/modify_animation.html:213
+#: app_animation/templates/app_animation/modify_animation.html:145
+#: app_animation/templates/app_animation/modify_animation.html:244
 msgid "Font_size2dots"
 msgstr "Taille police&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:131
-#: app_animation/templates/app_animation/modify_animation.html:215
+#: app_animation/templates/app_animation/modify_animation.html:147
+#: app_animation/templates/app_animation/modify_animation.html:246
 msgid "decrease size"
 msgstr "diminuer la taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:138
-#: app_animation/templates/app_animation/modify_animation.html:222
+#: app_animation/templates/app_animation/modify_animation.html:154
+#: app_animation/templates/app_animation/modify_animation.html:253
 msgid "same size"
 msgstr "même taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:143
-#: app_animation/templates/app_animation/modify_animation.html:227
+#: app_animation/templates/app_animation/modify_animation.html:159
+#: app_animation/templates/app_animation/modify_animation.html:258
 msgid "increase size"
 msgstr "augmenter la taille"
 
-#: app_animation/templates/app_animation/modify_animation.html:151
-#: app_animation/templates/app_animation/modify_animation.html:235
+#: app_animation/templates/app_animation/modify_animation.html:167
+#: app_animation/templates/app_animation/modify_animation.html:266
 msgid "Font_family2dots"
 msgstr "Police d'écriture&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:153
+#: app_animation/templates/app_animation/modify_animation.html:169
 msgid "Same like song..."
 msgstr "Identique à celle du chant..."
 
-#: app_animation/templates/app_animation/modify_animation.html:156
-#: app_animation/templates/app_animation/modify_animation.html:240
+#: app_animation/templates/app_animation/modify_animation.html:172
+#: app_animation/templates/app_animation/modify_animation.html:271
 msgid "Fonts family"
 msgstr "Police d'écriture"
 
-#: app_animation/templates/app_animation/modify_animation.html:169
+#: app_animation/templates/app_animation/modify_animation.html:185
 msgid "Verse's colors"
 msgstr "Couleurs du couplet"
 
-#: app_animation/templates/app_animation/modify_animation.html:170
+#: app_animation/templates/app_animation/modify_animation.html:201
 msgid "Modifiy verse's colors"
 msgstr "Modifier les couleurs du couplet"
 
-#: app_animation/templates/app_animation/modify_animation.html:176
+#: app_animation/templates/app_animation/modify_animation.html:207
 msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
-#: app_animation/templates/app_animation/modify_animation.html:178
+#: app_animation/templates/app_animation/modify_animation.html:209
 #: app_song/templates/app_song/modify_song.html:117
 msgid "before"
 msgstr "Avant"
 
-#: app_animation/templates/app_animation/modify_animation.html:182
-#: app_animation/templates/app_animation/modify_animation.html:192
+#: app_animation/templates/app_animation/modify_animation.html:213
+#: app_animation/templates/app_animation/modify_animation.html:223
 msgid "song_num"
 msgstr "chant n°"
 
-#: app_animation/templates/app_animation/modify_animation.html:187
+#: app_animation/templates/app_animation/modify_animation.html:218
 #: app_song/templates/app_song/modify_song.html:131
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
-#: app_animation/templates/app_animation/modify_animation.html:188
+#: app_animation/templates/app_animation/modify_animation.html:219
 #: app_song/templates/app_song/modify_song.html:132
 msgid "after"
 msgstr "Après"
 
-#: app_animation/templates/app_animation/modify_animation.html:202
-#: app_animation/templates/app_animation/modify_animation.html:210
+#: app_animation/templates/app_animation/modify_animation.html:233
+#: app_animation/templates/app_animation/modify_animation.html:241
 msgid "Display options"
 msgstr "Afficher les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:203
+#: app_animation/templates/app_animation/modify_animation.html:234
 msgid "Hide options"
 msgstr "Masquer les options"
 
-#: app_animation/templates/app_animation/modify_animation.html:237
+#: app_animation/templates/app_animation/modify_animation.html:268
 msgid "Same like animation..."
 msgstr "Identique à celle de l'animation..."
 
-#: app_animation/templates/app_animation/modify_animation.html:254
+#: app_animation/templates/app_animation/modify_animation.html:285
 msgid "Song's colors"
 msgstr "Couleurs du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:256
+#: app_animation/templates/app_animation/modify_animation.html:302
 msgid "Modifiy song's colors"
 msgstr "Modifier les couleurs du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:259
+#: app_animation/templates/app_animation/modify_animation.html:305
 msgid "Are you sure you want to delete this song?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce chant ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:266
+#: app_animation/templates/app_animation/modify_animation.html:312
 msgid "See the song"
 msgstr "Voir le texte du chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:269
+#: app_animation/templates/app_animation/modify_animation.html:315
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 "Les changements vont être perdus, voulez-vous vraiment quitter cette page ?"
 
-#: app_animation/templates/app_animation/modify_animation.html:270
+#: app_animation/templates/app_animation/modify_animation.html:316
 msgid "Go to the song"
 msgstr "Aller vers le chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:279
+#: app_animation/templates/app_animation/modify_animation.html:325
 #: app_song/templates/app_song/songs.html:18
 msgid "Song research"
 msgstr "Recherche de chant"
 
-#: app_animation/templates/app_animation/modify_animation.html:280
+#: app_animation/templates/app_animation/modify_animation.html:326
 msgid "Type the name of a song..."
 msgstr "Nom du chant rechercher (au moins 3 caractères)"
 
-#: app_animation/templates/app_animation/modify_animation.html:284
+#: app_animation/templates/app_animation/modify_animation.html:330
 msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
-#: app_animation/templates/app_animation/modify_animation.html:291
+#: app_animation/templates/app_animation/modify_animation.html:337
 #: app_song/templates/app_song/modify_song.html:164
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
@@ -444,7 +456,8 @@ msgid "Return"
 msgstr "Retour"
 
 #: app_animation/templates/common/animation_actions.html:3
-#: app_song/templates/common/song_actions.html:3
+#: app_song/templates/common/song_actions.html:3 chris/songs copy.html:19
+#: copy.html:49
 msgid "actions"
 msgstr "Actions"
 
@@ -813,7 +826,8 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chanson validée"
 
-#: app_song/templates/app_song/modify_song.html:56
+#: app_song/templates/app_song/modify_song.html:56 chris/songs copy.html:17
+#: copy.html:47
 msgid "title"
 msgstr "Titre"
 
@@ -821,7 +835,8 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:64
+#: app_song/templates/app_song/modify_song.html:64 chris/songs copy.html:18
+#: copy.html:48
 msgid "description"
 msgstr "Description"
 
@@ -875,7 +890,7 @@ msgstr "Déplacer&nbsp;:"
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:151
+#: app_song/templates/app_song/modify_song.html:151 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
@@ -919,7 +934,7 @@ msgid "Genre"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6
+#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
@@ -948,7 +963,7 @@ msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
 #: app_song/templates/app_song/songs.html:66
-#: app_song/templates/common/song_actions.html:11
+#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -956,11 +971,19 @@ msgstr "Contacter les modérateurs"
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:11
+#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
 "chant"
+
+#: chris/songs copy.html:32
+msgid "update"
+msgstr "Modifier"
+
+#: chris/songs copy.html:35
+msgid "Go to"
+msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35
@@ -1175,7 +1198,7 @@ msgstr "Aucune slide à afficher ! Ajouter des chansons avec du texte..."
 
 #: templates/base.html:111
 msgid "ERR31"
-msgstr "[ERR31] no message"
+msgstr "[ERR31] Une erreur est survenue lors de la mise à jour d'un couplet. Une modification du chant à peut être eue lieu en même temps. Si l'erreur persiste, contacter l'administrateur du site."
 
 #: templates/base.html:113
 msgid "ERR32"
@@ -2466,6 +2489,16 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
+#~ msgid "Update songs"
+#~ msgstr "Mettre à jour les chants"
+
+#~ msgid ""
+#~ "This button saves changes and updates the choruses and verses of the "
+#~ "songs."
+#~ msgstr ""
+#~ "Ce bouton sauvegarder les modifications et met à jour les refrains et "
+#~ "couplets des chants."
+
 #~ msgid "Display preview window"
 #~ msgstr "Afficher la fenêtre de prévisualisation"
 
@@ -2482,12 +2515,6 @@ msgstr ""
 
 #~ msgid "Modifiy colors of song"
 #~ msgstr "Modifier les couleurs du chant"
-
-#~ msgid "update"
-#~ msgstr "Modifier"
-
-#~ msgid "Go to"
-#~ msgstr "Voir"
 
 #~ msgid "new_song"
 #~ msgstr "Nouveau chant"

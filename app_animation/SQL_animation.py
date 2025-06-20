@@ -254,7 +254,11 @@ INSERT INTO l_animation_song (animation_id, song_id)
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
             cursor.execute(request, params)
+        
+        self.new_song_verses_all()
 
+
+    def new_song_verses_all(self):
         with connection.cursor() as cursor:
             request = """
 INSERT IGNORE INTO l_animation_song_verse (animation_song_id, verse_id)
@@ -356,7 +360,11 @@ UPDATE l_animation_song_verse
             params = [selected, font, font_size, animation_song_id, verse_id]
 
             create_SQL_log(code_file, "Animations.update_verse", "UPDATE_3", request, params)
-            cursor.execute(request, params)
+            try:
+                cursor.execute(request, params)
+                return True
+            except Exception as e:
+                return False
         
 
     def update_animation_verse_colors(self, animation_song_id, verse_id, color_rgba, bg_rgba):

@@ -123,16 +123,18 @@ def modify_animation(request, animation_id):
                             selected = True
                         else:
                             selected = False
-                        animation.update_animation_verse(
+                        if not animation.update_animation_verse(
                             animation_song_id,
                             verse_id,
                             selected,
                             request.POST.get(f"sel_verse_font_{animation_song_id}_{verse_id}"),
                             request.POST.get(f"sel_verse_font_size_{animation_song_id}_{verse_id}"),
                             request.POST.get(f"rad_verse_colors_{animation_song_id}_{verse_id}", 'no_change').split('|'),
-                            )
+                            ):
+                            error = "[ERR31]"
                 
                 # reload animation
+                animation.new_song_verses_all()
                 animation = Animation.get_animation_by_id(animation_id, group_id)
 
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
