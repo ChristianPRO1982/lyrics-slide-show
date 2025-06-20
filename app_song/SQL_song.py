@@ -26,6 +26,7 @@ class Song:
         self.links = []
 
         self.get_links()
+        self.get_genres()
         if self.song_id:
             self.moderator_songs_with_all_message_done()
 
@@ -231,6 +232,59 @@ ORDER BY link
 
             for row in rows:
                 self.links.append((row[0], row[0].split('/')[2] if '//' in row[0] else 'LINK'))
+
+
+    def get_genres(self):
+        self.genres = []
+
+        with connection.cursor() as cursor:
+            request = """
+  SELECT lg.*
+    FROM l_song_genre lsg
+    JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+   WHERE song_id = %s
+ORDER BY lg.group, lg.name
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.get_genres", "SELECT_9", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            for row in rows:
+                self.genres.append({
+                    'genre_id': row[0],
+                    'group': row[1],
+                    'name': row[2]
+                })
+
+
+    def clear_genres(self):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_genre
+      WHERE song_id = %s
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.clear_genres", "DELETE_5", request, params)
+            cursor.execute(request, params)
+
+
+    def add_genre(self, genre_id: int):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_genre (song_id, genre_id)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, genre_id]
+
+            create_SQL_log(code_file, "Song.add_genre", "INSERT_6", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR32]'
+
 
     def moderator_new_message(self, message: str)->int:
         with connection.cursor() as cursor:
@@ -501,4 +555,69 @@ DELETE FROM l_verses
             params = [self.verse_id]
             
             create_SQL_log(code_file, "Verse.delete", "DELETE_2", request, params)
+            cursor.execute(request, params)
+
+
+
+###############################################
+###############################################
+#################### GENRE ####################
+###############################################
+###############################################
+class Genre:
+    def __init__(self, genre_id=None, group=None, name=None):
+        self.genre_id = genre_id
+        self.group = group
+        self.name = name
+
+    @staticmethod
+    def get_all_genres():
+        with connection.cursor() as cursor:
+            request = """
+  SELECT *
+    FROM l_genres
+ORDER BY `group`, name
+"""
+            create_SQL_log(code_file, "Genre.get_all_genres", "SELECT_8", request, [])
+            cursor.execute(request)
+            rows = cursor.fetchall()
+        return [Genre(genre_id=row[0], group=row[1], name=row[2]) for row in rows]
+    
+
+    def save(self):
+        with connection.cursor() as cursor:
+            if self.genre_id:
+                request = """
+UPDATE l_genres
+   SET `group` = %s,
+       name = %s
+ WHERE genre_id = %s
+"""
+                params = [self.group, self.name, self.genre_id]
+
+                create_SQL_log(code_file, "Genre.save", "UPDATE_9", request, params)
+                cursor.execute(request, params)
+            else:
+                request = """
+INSERT INTO l_genres (`group`, name)
+     VALUES (%s, %s)
+"""
+                params = [self.group, self.name]
+
+                create_SQL_log(code_file, "Genre.save", "INSERT_5", request, params)
+                cursor.execute(request, params)
+                self.genre_id = cursor.lastrowid
+
+
+    def delete(self):
+        if not self.genre_id:
+            raise ValueError("L'ID du genre est requis pour le supprimer.")
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_genres
+      WHERE genre_id = %s
+"""
+            params = [self.genre_id]
+
+            create_SQL_log(code_file, "Genre.delete", "DELETE_4", request, params)
             cursor.execute(request, params)

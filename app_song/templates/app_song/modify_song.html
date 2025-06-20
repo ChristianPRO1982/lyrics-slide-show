@@ -101,9 +101,9 @@
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
                         id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus != 0 %}checked{% endif %} />
                         <label for="box_verse_like_chorus_{{ verse.verse_id }}">{% trans "like_a_chorus" %}</label>
-                        <br><input style="width: 10%;" type="checkbox" name="box_verse_notdisplaychorusnext_{{ verse.verse_id }}"
-                        id="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" {% if verse.notdisplaychorusnext %}checked{% endif %} />
-                        <label for="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" title="{% trans "This feature only works if “Like a chorus” is ticked" %}">{% trans "Do not display the chorus after ⓘ" %}</label>
+                        {% comment %} <br><input style="width: 10%;" type="checkbox" name="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" {% endcomment %}
+                        {% comment %} id="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" {% if verse.notdisplaychorusnext %}checked{% endif %} /> {% endcomment %}
+                        {% comment %} <label for="box_verse_notdisplaychorusnext_{{ verse.verse_id }}" title="{% trans "This feature only works if “Like a chorus” is ticked" %}">{% trans "Do not display the chorus after ⓘ" %}</label> {% endcomment %}
                     {% endif %}
                 </div>
                 <div style="text-align: center; width: 25%;">

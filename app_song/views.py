@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .SQL_song import Song
+from .SQL_song import Song, Genre
 from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params
 
 
@@ -288,14 +288,49 @@ def song_metadata(request, song_id):
         # refresh
         song.get_links()
 
+        # genres
+        genre_ids = request.POST.getlist('genre_ids')
+        song.clear_genres() # Remove all current associations
+        for genre_id in genre_ids:
+            error = song.add_genre(genre_id) # Add new associations
+        song.get_genres() # Refresh
+
+        # GENRES MODERATOR
+        new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
+        new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
+        if new_genre_group and new_genre_name:
+            genre = Genre(group=new_genre_group, name=new_genre_name)
+            genre.save()
+        genres = Genre.get_all_genres()
+        for genre in genres:
+            genre_to_update = Genre(genre_id=genre.genre_id)
+            if request.POST.get(f'chk_delete_genre_{genre.genre_id}', 'off') == 'on':
+                genre_to_update.delete()
+            else:
+                genre_to_update.group = request.POST.get(f'txt_genre_group_{genre.genre_id}', '').strip()
+                genre_to_update.name = request.POST.get(f'txt_genre_name_{genre.genre_id}', '').strip()
+                genre_to_update.save()
+
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     song_lyrics = song.get_lyrics()
 
+    genres = Genre.get_all_genres()
+    genres_associated = []
+    genres_not_associated = genres.copy()
+    for genre in genres:
+        if isinstance(song.genres, list) and len(song.genres) > 0 and isinstance(song.genres[0], dict):
+            if genre.genre_id in [g['genre_id'] for g in song.genres]:
+                genres_associated.append(genre)
+                genres_not_associated.remove(genre)
+
     return render(request, 'app_song/song_metadata.html', {
         'song': song,
+        'genres': genres,
+        'genres_associated': genres_associated,
+        'genres_not_associated': genres_not_associated,
         'error': error,
         'css': css,
         'moderator': moderator,

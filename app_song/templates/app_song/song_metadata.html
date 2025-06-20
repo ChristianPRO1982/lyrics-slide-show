@@ -58,7 +58,123 @@
     <hr>
 
     <h4 class="L_H4">{% trans "Genre" %}</h4>
-    Coming soon
+    <div class="genre-selection-container" style="display: flex; gap: 2em;">
+        <div style="flex: 1;">
+            <h5>{% trans "Associated genres" %}</h5>
+            <ul id="associated-genres" class="genre-list" style="min-height: 120px; border: 1px solid #ccc; padding: 8px;">
+                {% for genre in genres_associated %}
+                <li class="genre-item" 
+                    data-genre-id="{{ genre.genre_id }}" 
+                    draggable="true"
+                    ondblclick="moveGenre(this, 'not-associated-genres')">
+                    <input type="hidden" name="genre_ids" value="{{ genre.genre_id }}">
+                    <strong>{{ genre.group }}</strong> – {{ genre.name }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="flex: 1;">
+            <h5>{% trans "Available genres" %}</h5>
+            <ul id="not-associated-genres" class="genre-list" style="min-height: 120px; border: 1px solid #ccc; padding: 8px;">
+                {% for genre in genres_not_associated %}
+                <li class="genre-item" 
+                    data-genre-id="{{ genre.genre_id }}" 
+                    draggable="true"
+                    ondblclick="moveGenre(this, 'associated-genres')">
+                    <strong>{{ genre.group }}</strong> – {{ genre.name }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+    function moveGenre(item, targetId) {
+        document.getElementById(targetId).appendChild(item);
+        updateGenreInputs();
+    }
+
+    document.querySelectorAll('.genre-list').forEach(list => {
+        list.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        list.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const genreId = e.dataTransfer.getData('text/plain');
+            const item = document.querySelector('.genre-item[data-genre-id="' + genreId + '"]');
+            if (item && item.parentNode !== this) {
+                this.appendChild(item);
+                updateGenreInputs();
+            }
+        });
+    });
+
+    document.querySelectorAll('.genre-item').forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', this.dataset.genreId);
+        });
+    });
+
+    function updateGenreInputs() {
+        // Remove all hidden inputs from all genre items
+        document.querySelectorAll('.genre-item input[type="hidden"]').forEach(e => e.remove());
+
+        // Add hidden inputs only to associated genres
+        document.querySelectorAll('#associated-genres .genre-item').forEach(item => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'genre_ids';
+            input.value = item.dataset.genreId;
+            item.appendChild(input);
+        });
+    }
+    </script>
+    <style>
+    .genre-list { list-style: none; margin: 0; padding: 0; min-height: 2em; }
+    .genre-item { background: #f8f8f8; margin: 2px 0; padding: 4px 8px; border-radius: 4px; cursor: grab; }
+    .genre-item:active { background: #e0e0e0; }
+    </style>
+
+    {% if moderator %}
+    <hr>
+    <h3 class="L_H3">{% trans "Moderator" %}</h3>
+    <h4 class="L_H4">{% trans "Genre" %}</h4>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40%;">{% trans "Group" %}</th>
+                <th style="width: 40%;">{% trans "Name" %}</th>
+                <th style="width: 20%;">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for genre in genres %}
+            <tr>
+                <td><input name="txt_genre_group_{{ genre.genre_id }}" value="{{ genre.group }}"></td>
+                <td><input name="txt_genre_name_{{ genre.genre_id }}" value="{{ genre.name }}"></td>
+                <td>
+                    <input type="checkbox" name="chk_delete_genre_{{ genre.genre_id }}" id="chk_delete_genre_{{ genre.genre_id }}" style="width: 10%">
+                    <label for="chk_delete_genre_{{ genre.genre_id }}">
+                        <span class="icon">🗑️</span>
+                        {% trans "Delete" %}
+                    </label>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td><input name="txt_genre_group_NEW" placeholder="{% trans "Group name" %}"></td>
+                <td><input name="txt_genre_name_NEW" placeholder="{% trans "Genre name" %}"></td>
+                <td>{% trans "New genre" %}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Group" %}</th>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Actions" %}</th>
+            </tr>
+        </tfoot>
+    </table>
+    {% endif %}
 
     <hr>
 
