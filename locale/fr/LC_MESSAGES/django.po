@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-20 16:25+0200\n"
+"POT-Creation-Date: 2025-06-21 13:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -280,7 +280,7 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_main/templates/app_main/homepage.html:104
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:71
-#: app_song/templates/app_song/modify_song.html:163
+#: app_song/templates/app_song/modify_song.html:166
 #: app_song/templates/app_song/song_metadata.html:17
 #: app_song/templates/app_song/song_metadata.html:181
 msgid "save"
@@ -288,9 +288,9 @@ msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
-#: app_song/templates/app_song/modify_song.html:111
-#: app_song/templates/app_song/modify_song.html:124
-#: app_song/templates/app_song/modify_song.html:139
+#: app_song/templates/app_song/modify_song.html:114
+#: app_song/templates/app_song/modify_song.html:127
+#: app_song/templates/app_song/modify_song.html:142
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -341,7 +341,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:117
+#: app_song/templates/app_song/modify_song.html:120
 msgid "before"
 msgstr "Avant"
 
@@ -351,12 +351,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:131
+#: app_song/templates/app_song/modify_song.html:134
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:132
+#: app_song/templates/app_song/modify_song.html:135
 msgid "after"
 msgstr "Après"
 
@@ -412,7 +412,7 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:164
+#: app_song/templates/app_song/modify_song.html:167
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -857,10 +857,14 @@ msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
 #: app_song/templates/app_song/modify_song.html:92
-#: app_song/templates/app_song/modify_song.html:122
-#: app_song/templates/app_song/modify_song.html:137
+#: app_song/templates/app_song/modify_song.html:125
+#: app_song/templates/app_song/modify_song.html:140
 msgid "chorus"
 msgstr "Refrain"
+
+#: app_song/templates/app_song/modify_song.html:97
+msgid "Use this option for not display chorus after"
+msgstr "Ne pas afficher le refrain après"
 
 #: app_song/templates/app_song/modify_song.html:97
 msgid "followed"
@@ -878,31 +882,23 @@ msgstr ""
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:106
-msgid "This feature only works if “Like a chorus” is ticked"
-msgstr "Cette fonctionnalité ne marche que si “Comme un refrain” est cochée"
-
-#: app_song/templates/app_song/modify_song.html:106
-msgid "Do not display the chorus after ⓘ"
-msgstr "Ne pas afficher le refrain après ⓘ"
-
-#: app_song/templates/app_song/modify_song.html:115
+#: app_song/templates/app_song/modify_song.html:118
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:150
+#: app_song/templates/app_song/modify_song.html:153
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:151 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:154 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:160
+#: app_song/templates/app_song/modify_song.html:163
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:165
+#: app_song/templates/app_song/modify_song.html:168
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -2521,6 +2517,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "This feature only works if “Like a chorus” is ticked"
+#~ msgstr "Cette fonctionnalité ne marche que si “Comme un refrain” est cochée"
 
 #~ msgid "Update songs"
 #~ msgstr "Mettre à jour les chants"
