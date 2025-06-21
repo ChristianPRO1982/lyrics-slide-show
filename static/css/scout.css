@@ -54,14 +54,6 @@ hr {
     margin: 1.5rem 0;
 }
 
-.L_GROUP_SELECTED {
-    background-color: #fff4f0;
-    border: 1px solid #54e7db;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin: 1.5rem 0;
-}
-
 .L_GENRE_BADGE {
     display: inline-flex;
     align-items: center;
@@ -173,7 +165,7 @@ hr {
     hr {
         border-color: solid #3d5a4b !important;
     }
-    .L_TABLE_TR, .L_DIV_BORDER, .L_GROUP_SELECTED {
+    .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
         border: 1px solid #3d5a4b;
         color: #3d5a4b;
