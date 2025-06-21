@@ -20,6 +20,7 @@
         {% csrf_token %}
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
+        {% if user.is_authenticated %}
         <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
@@ -44,6 +45,7 @@
             {% endfor %}
         </div>
         <input name="btn_search" value="{% trans "search" %}" type="submit" />
+        {% endif %}
     </form>
     {% comment %} 
         

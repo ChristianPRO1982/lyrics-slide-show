@@ -49,9 +49,12 @@ def songs(request):
                 request.POST.get('sel_search_genres', '')
             )
             
-    songs = Song.get_all_songs()
-    genres = Genre.get_all_genres()
     search_params = get_search_params(request)
+    songs = Song.get_all_songs(search_params['search_txt'],
+                               search_params['search_everywhere'],
+                               search_params['search_logic'],
+                               search_params['search_genres'])
+    genres = Genre.get_all_genres()
 
     return render(request, 'app_song/songs.html', {
         'songs': songs,
