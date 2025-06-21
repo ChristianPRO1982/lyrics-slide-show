@@ -13,6 +13,11 @@
 <hr>
 {% endif %}
 {{ song.description|linebreaksbr|safe }}
+{% for genre in song.genres %}
+<hr>
+
+{{ genre.name }}
+{% endfor %}
 {% endblock bloc2 %}
 
 {% block content %}
