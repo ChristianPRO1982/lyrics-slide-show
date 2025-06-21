@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-21 13:48+0200\n"
+"POT-Creation-Date: 2025-06-21 14:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr "Liste des animations"
 #: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:8
+#: app_group/templates/app_group/groups.html:9
 msgid "groupe_selected1"
 msgstr "[ "
 
@@ -37,7 +37,7 @@ msgstr "[ "
 #: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:8
+#: app_group/templates/app_group/groups.html:9
 msgid "groupe_selected2"
 msgstr " ]"
 
@@ -46,7 +46,7 @@ msgstr " ]"
 #: app_animation/templates/app_animation/lyrics_slide_show.html:87
 #: app_animation/templates/app_animation/modify_animation.html:8
 #: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:8
+#: app_group/templates/app_group/groups.html:9
 msgid "No group selected"
 msgstr "Aucun groupe sélectionné"
 
@@ -514,45 +514,45 @@ msgstr "Groupe enregistré."
 msgid "groups_list"
 msgstr "Liste des groupes"
 
-#: app_group/templates/app_group/groups.html:13
+#: app_group/templates/app_group/groups.html:15
 msgid "new_group"
 msgstr "Nouveau groupe"
 
-#: app_group/templates/app_group/groups.html:14
-#: app_song/templates/app_song/songs.html:34
+#: app_group/templates/app_group/groups.html:16
+#: app_song/templates/app_song/songs.html:56
 msgid "add"
 msgstr "ajouter"
 
-#: app_group/templates/app_group/groups.html:25
+#: app_group/templates/app_group/groups.html:27
 msgid "This group is private"
 msgstr "Ce groupe est privé"
 
-#: app_group/templates/app_group/groups.html:28
-#: app_group/templates/app_group/groups.html:31
+#: app_group/templates/app_group/groups.html:30
+#: app_group/templates/app_group/groups.html:33
 msgid "You need to know the token for use this group"
 msgstr "Vous devez connaitre le QR-code (token) pour utiliser ce groupe"
 
-#: app_group/templates/app_group/groups.html:34
+#: app_group/templates/app_group/groups.html:36
 msgid "This group is open"
 msgstr "Ce groupe est ouvert"
 
-#: app_group/templates/app_group/groups.html:38
+#: app_group/templates/app_group/groups.html:40
 msgid "select"
 msgstr "sélectionner"
 
-#: app_group/templates/app_group/groups.html:40
+#: app_group/templates/app_group/groups.html:42
 msgid "member"
 msgstr "membre"
 
-#: app_group/templates/app_group/groups.html:42
+#: app_group/templates/app_group/groups.html:44
 msgid "in progress"
 msgstr "encours"
 
-#: app_group/templates/app_group/groups.html:44
+#: app_group/templates/app_group/groups.html:46
 msgid "join"
 msgstr "rejoindre"
 
-#: app_group/templates/app_group/groups.html:46
+#: app_group/templates/app_group/groups.html:48
 msgid "modify"
 msgstr "modifier"
 
@@ -972,23 +972,43 @@ msgstr "✔️ : Chant validé"
 msgid "✔️⁉️: Song valided with messages"
 msgstr "✔️⁉️ : Chant validé avec des messages"
 
-#: app_song/templates/app_song/songs.html:19
+#: app_song/templates/app_song/songs.html:20
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
-#: app_song/templates/app_song/songs.html:20
+#: app_song/templates/app_song/songs.html:23
+msgid "Search in description and lyrics"
+msgstr "Recherche dans les descriptions et le texte des chants"
+
+#: app_song/templates/app_song/songs.html:25
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:32
+#: app_song/templates/app_song/songs.html:27
+msgid "Logic by:"
+msgstr "Logique par :"
+
+#: app_song/templates/app_song/songs.html:30
+msgid "AND"
+msgstr "ET"
+
+#: app_song/templates/app_song/songs.html:34
+msgid "OR"
+msgstr "OU"
+
+#: app_song/templates/app_song/songs.html:44
+msgid "search"
+msgstr "recherche"
+
+#: app_song/templates/app_song/songs.html:54
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:33
+#: app_song/templates/app_song/songs.html:55
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:66
+#: app_song/templates/app_song/songs.html:88
 #: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"

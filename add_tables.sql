@@ -17,6 +17,10 @@ CREATE TABLE `c_groups` (
 CREATE TABLE `c_users` (
   `username` varchar(150) COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `theme` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'normal.css',
+  `search_txt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `search_everywhere` tinyint(1) NOT NULL DEFAULT '0',
+  `search_logic` tinyint(1) NOT NULL DEFAULT '0',
+  `search_genres` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

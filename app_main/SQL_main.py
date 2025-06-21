@@ -16,6 +16,10 @@ class User:
     def __init__(self, username):
         self.username = username
         self.theme = None
+        self.search_txt = None
+        self.search_everywhere = None
+        self.search_logic = None
+        self.search_genres = None
         self.first_name = None
         self.last_name = None
         self.is_superuser = None
@@ -28,7 +32,8 @@ class User:
 
     def get_user_by_username(self):
         request = """
-    SELECT cu.theme, au.first_name, au.last_name, au.is_superuser, au.is_staff
+    SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic, cu.search_genres,
+           au.first_name, au.last_name, au.is_superuser, au.is_staff
       FROM c_users cu
 RIGHT JOIN auth_user au ON au.username = cu.username
      WHERE au.username = %s
@@ -42,10 +47,14 @@ RIGHT JOIN auth_user au ON au.username = cu.username
             row = cursor.fetchone()
         if row:
             self.theme = row[0]
-            self.first_name = row[1]
-            self.last_name = row[2]
-            self.is_superuser = row[3]
-            self.is_staff = row[4]
+            self.search_txt = row[1]
+            self.search_everywhere = row[2]
+            self.search_logic = row[3]
+            self.search_genres = row[4]
+            self.first_name = row[5]
+            self.last_name = row[6]
+            self.is_superuser = row[7]
+            self.is_staff = row[8]
 
 
     def init_c_user(self):
@@ -63,10 +72,14 @@ INSERT INTO c_users (username)
     def save(self):
         request = """
 UPDATE c_users
-   SET theme = %s
+   SET theme = %s,
+       search_txt = %s,
+       search_everywhere = %s,
+       search_logic = %s,
+       search_genres = %s
  WHERE username = %s
 """
-        params = [self.theme, self.username]
+        params = [self.theme, self.search_txt, self.search_everywhere, self.search_logic, self.search_genres, self.username]
 
         create_SQL_log(code_file, "User.save", "UPDATE_1", request, params)
         with connection.cursor() as cursor:
