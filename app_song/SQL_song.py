@@ -1,10 +1,36 @@
-from typing import Any
 from django.db import connection
+from typing import Any
+import random
 from app_logs.utils import create_SQL_log
 from .utils import check_max_lines, check_max_characters_for_a_line
 
 
 code_file = "SQL_song.py"
+
+MUSIC_EMOJIS = [
+    '🎶',  # multiple musical notes
+    '🎵',  # single musical note
+    '🎼',  # musical score
+    '𝄞',   # G clef (Unicode symbol, pas emoji mais fonctionne visuellement)
+    '𝄢',   # F clef
+    # '𝄫',   # double flat
+    # '𝄪',   # double sharp
+    '♩',   # quarter note
+    '♪',   # eighth note
+    '♫',   # beamed eighth notes
+    '♬',   # beamed sixteenth notes
+    '𝄐',   # fermata
+    '𝄑',   # fermata below
+    # '𝄒',   # breath mark
+    # '𝄓',   # caesura
+    '𝄆',   # begin repeat
+    '𝄇',   # end repeat
+    '𝄋',   # up bow
+    # '𝄌',   # down bow
+    '𝅘𝅥',   # musical symbol quarter note
+    '𝅘𝅥𝅮',   # musical symbol eighth note
+    '𝅘𝅥𝅯',   # musical symbol sixteenth note
+]
 
 
 ##############################################
@@ -254,7 +280,8 @@ ORDER BY lg.group, lg.name
                 self.genres.append({
                     'genre_id': row[0],
                     'group': row[1],
-                    'name': row[2]
+                    'name': row[2],
+                    'emoji_random': random.choice(MUSIC_EMOJIS)
                 })
 
 

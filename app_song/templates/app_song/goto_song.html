@@ -13,11 +13,14 @@
 <hr>
 {% endif %}
 {{ song.description|linebreaksbr|safe }}
-{% for genre in song.genres %}
-<hr>
-
-{{ genre.name }}
-{% endfor %}
+<br><br>
+<ul>
+    {% for genre in song.genres %}
+    <span class="L_GENRE_BADGE">
+        {{ genre.emoji_random }} {{ genre.name }}
+    </span>
+    {% endfor %}
+</ul>
 {% endblock bloc2 %}
 
 {% block content %}
