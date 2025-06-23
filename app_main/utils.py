@@ -47,6 +47,7 @@ def get_search_params(request):
     else:
         return {
             'search_txt': '',
+            'search_everywhere': 0,
             'search_logic': 0,
             'search_genres': '',
         }
