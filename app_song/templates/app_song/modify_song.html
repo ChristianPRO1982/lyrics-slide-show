@@ -75,12 +75,12 @@
     {% for verse in verses %}
         {% if verse.max_lines %}
             <span class="text-green-800 bg-green-300 dark:text-green-300 dark:bg-green-800 px-2 py-1 rounded">
-                ⚠️📏 <a href="#help_rules">{% trans "Too many lines" %}</a>
+                📏 <a href="#help_rules">{% trans "Too many lines" %}</a>
             </span>&nbsp;
         {% endif %}
         {% if verse.max_characters_for_a_line %}
             <span class="text-green-800 bg-green-300 dark:text-green-300 dark:bg-green-800 px-2 py-1 rounded">
-                ⚠️📏 <a href="#help_rules">{% trans "Too many characters for a line" %}</a>
+                📏 <a href="#help_rules">{% trans "Too many characters for a line" %}</a>
             </span>
         {% endif %}
         <div class="mt-1 px-1 border L_DIV_BORDER">
