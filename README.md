@@ -124,3 +124,46 @@ docker compose down && docker compose up -d --remove-orphans
 ```bash
 docker compose pull && docker compose up -d && docker image prune -f
 ```
+
+## Tailwind
+
+### NPM
+
+Add this files :
+* ./frontend/tailwind.config.js
+```bash
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './templates/**/*.html',
+    './static/js/**/*.js',
+    './static/**/*.html',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+* ./frontend/postcss.config.js
+```bash
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+```
+
+### NPM
+```bash
+rm -rf node_modules package-lock.json
+npm install --save-dev tailwindcss@3.3.2 postcss autoprefixer
+ls -l node_modules/.bin/tailwindcss
+```
+
+### manual build
+```bash
+npx tailwindcss -c frontend/tailwind.config.js -i static/css/tailwind.css -o static/css/tailwind.lyrics_slide_show.css --minify
+```
