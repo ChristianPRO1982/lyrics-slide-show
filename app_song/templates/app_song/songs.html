@@ -25,8 +25,8 @@
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
         </label><br>
-        <a href="#" onclick="toggleVisibility('advancedSearch');">{% trans "Advanced search" %}</a>
-        <div id="advancedSearch" style="display: none; max-height: 12em; overflow: auto;">
+        <button type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
+        <div id="advancedSearch" style="display: none; max-height: 15em; overflow: auto;">
             {% trans "Logic by:" %}
             <label>
                 <input type="radio" name="rad_search_logic" value="or" style="width: 10%;" {% if not search_logic %}checked{% endif %}>
