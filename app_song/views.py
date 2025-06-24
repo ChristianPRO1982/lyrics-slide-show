@@ -20,6 +20,8 @@ def songs(request):
 
     moderator = is_moderator(request)
 
+    genres = Genre.get_all_genres()
+
     if request.method == 'POST':
         if 'btn_new_song' in request.POST:
             new_song = Song(
@@ -41,12 +43,18 @@ def songs(request):
                 search_logic = 0
             else:
                 search_logic = 1
+            search_genres = ''
+            for genre in genres:
+                if request.POST.get(f'chk_genre_{genre.genre_id}', 'off') == 'on':
+                    if search_genres:
+                        search_genres += ','
+                    search_genres += str(genre.genre_id)
             add_search_params(
                 request,
                 request.POST.get('txt_search', '').strip(),
                 request.POST.get('chk_search_everywhere', 'off') == 'on',
                 search_logic,
-                request.POST.get('sel_search_genres', '')
+                search_genres
             )
 
         if 'btn_reset_search' in request.POST:
@@ -57,7 +65,11 @@ def songs(request):
                                search_params['search_everywhere'],
                                search_params['search_logic'],
                                search_params['search_genres'])
-    genres = Genre.get_all_genres()
+
+    # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
+    search_genres_list = []
+    if search_params['search_genres']:
+        search_genres_list = [int(g) for g in search_params['search_genres'].split(',') if g.isdigit()]
 
     return render(request, 'app_song/songs.html', {
         'songs': songs,
@@ -67,13 +79,13 @@ def songs(request):
         'search_txt': search_params['search_txt'],
         'search_everywhere': search_params['search_everywhere'],
         'search_logic': search_params['search_logic'],
-        'search_genres': search_params['search_genres'],
+        'search_genres': search_genres_list,
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
         'css': css,
         'no_loader': no_loader,
-        })
+    })
 
 
 def modify_song(request, song_id):

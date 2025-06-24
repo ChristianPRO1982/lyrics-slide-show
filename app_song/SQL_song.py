@@ -109,49 +109,49 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
         else:
             if search_logic == 0:
                 request = f"""
-   SELECT ls.*,
-          CONCAT(ls.title,
+   SELECT ls1.*,
+          CONCAT(ls1.title,
                  CASE
-                     WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                     WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
                      ELSE ''
                  END,
                  CASE
-                     WHEN ls.artist != '' THEN CONCAT(' [', ls.artist, ']')
+                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
                      ELSE ''
                  END,
                  CASE
-                     WHEN ls.status = 1 THEN ' ✔️'
-                     WHEN ls.status = 2 THEN ' ✔️⁉️'
+                     WHEN ls1.status = 1 THEN ' ✔️'
+                     WHEN ls1.status = 2 THEN ' ✔️⁉️'
                      ELSE ''
                  END) AS full_title,
           CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres
-     FROM l_songs ls
-LEFT JOIN l_song_genre lsg ON lsg.song_id = ls.song_id
+     FROM l_songs ls1
+LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
-    WHERE ls.title LIKE '%{search_txt}%'
-       OR ls.sub_title LIKE '%{search_txt}%'
-       OR ls.artist LIKE '%{search_txt}%'
-       OR ls.description LIKE '%{search_txt}%'
+    WHERE ls1.title LIKE '%{search_txt}%'
+       OR ls1.sub_title LIKE '%{search_txt}%'
+       OR ls1.artist LIKE '%{search_txt}%'
+       OR ls1.description LIKE '%{search_txt}%'
        OR EXISTS (SELECT 1
                     FROM l_songs ls2
                     JOIN l_verses lv ON lv.song_id = ls2.song_id
                    WHERE ls2.song_id= ls1.song_id
                      AND lv.text LIKE '%{search_txt}%')
- GROUP BY ls.song_id, ls.title, ls.sub_title, ls.description, ls.artist, ls.status, CONCAT(ls.title,
+ GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status, CONCAT(ls1.title,
                    CASE
-                       WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                       WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
                        ELSE ''
                    END,
                    CASE
-                       WHEN ls.artist != '' THEN CONCAT(' [', ls.artist, ']')
+                       WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
                        ELSE ''
                    END,
                    CASE
-                       WHEN ls.status = 1 THEN ' ✔️'
-                       WHEN ls.status = 2 THEN ' ✔️⁉️'
+                       WHEN ls1.status = 1 THEN ' ✔️'
+                       WHEN ls1.status = 2 THEN ' ✔️⁉️'
                        ELSE ''
                    END)
- ORDER BY ls.title, ls.sub_title
+ ORDER BY ls1.title, ls1.sub_title
 """
             params = []
 

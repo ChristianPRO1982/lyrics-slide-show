@@ -39,7 +39,7 @@
             <br>
             {% for genre in genres %}
             <label class="L_GENRE_BADGE">
-                <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 10%;" {% if search_in_description %}checked{% endif %}>
+                <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
                 {{ genre.emoji_random }} {{ genre.group }} - {{ genre.name }}
             </label><br>
             {% endfor %}
