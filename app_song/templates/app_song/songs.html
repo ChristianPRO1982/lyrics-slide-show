@@ -26,7 +26,7 @@
             {% trans "Search in description and lyrics" %}
         </label><br>
         <a href="#" onclick="toggleVisibility('advancedSearch');">{% trans "Advanced search" %}</a>
-        <div id="advancedSearch" style="display: none;">
+        <div id="advancedSearch" style="display: none; max-height: 12em; overflow: auto;">
             {% trans "Logic by:" %}
             <label>
                 <input type="radio" name="rad_search_logic" value="or" style="width: 10%;" {% if not search_logic %}checked{% endif %}>
@@ -38,9 +38,9 @@
             </label>
             <br>
             {% for genre in genres %}
-            <label>
+            <label class="L_GENRE_BADGE">
                 <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
-                <small>{{ genre.emoji_random }}<small> {{ genre.group }} - </small>{{ genre.name }}</small>
+                {{ genre.emoji_random }} {{ genre.group }} - {{ genre.name }}
             </label><br>
             {% endfor %}
         </div>
