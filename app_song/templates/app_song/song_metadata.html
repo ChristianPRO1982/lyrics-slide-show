@@ -61,7 +61,7 @@
     <div class="genre-selection-container" style="display: flex; gap: 2em;">
         <div style="flex: 1;">
             <h5>{% trans "Associated genres" %}</h5>
-            <ul id="associated-genres" class="genre-list" style="min-height: 120px; border: 1px solid #ccc; padding: 8px;">
+            <ul id="associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
                 {% for genre in genres_associated %}
                 <li class="genre-item" 
                     data-genre-id="{{ genre.genre_id }}" 
@@ -75,7 +75,7 @@
         </div>
         <div style="flex: 1;">
             <h5>{% trans "Available genres" %}</h5>
-            <ul id="not-associated-genres" class="genre-list" style="min-height: 120px; border: 1px solid #ccc; padding: 8px;">
+            <ul id="not-associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
                 {% for genre in genres_not_associated %}
                 <li class="genre-item" 
                     data-genre-id="{{ genre.genre_id }}" 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song, Genre
-from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params
+from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params, delete_genre_in_search_params
 
 
 
@@ -241,6 +241,7 @@ def goto_song(request, song_id):
     return render(request, 'app_song/goto_song.html', {
         'song': song,
         'song_lyrics': song_lyrics,
+        'song_messages': song.get_moderator_new_messages(),
         'moderator': moderator,
         'error': error,
         'css': css,
@@ -345,7 +346,7 @@ def song_metadata(request, song_id):
         new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
         if new_genre_group and new_genre_name:
             genre = Genre(group=new_genre_group, name=new_genre_name)
-            genre.save()
+            error = genre.save()
 
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
@@ -373,3 +374,8 @@ def song_metadata(request, song_id):
         'no_loader': no_loader,
         'song_lyrics': song_lyrics,
     })
+
+
+def delete_genre(request, genre_id):
+    delete_genre_in_search_params(request, genre_id)
+    return redirect('songs')

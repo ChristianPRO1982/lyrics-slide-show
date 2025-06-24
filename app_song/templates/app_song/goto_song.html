@@ -19,6 +19,14 @@
     {{ genre.emoji_random }} {{ genre.name }}
 </span>
 {% endfor %}
+{% if song_messages %}
+<hr>
+<h3 class="L_H3">⁉️ {% trans "Messages:" %}</h3>
+{% for message in song_messages %}
+<p><strong>{{ message.date|date:"d/m/Y H:i" }}</strong></p>
+<p>{{ message.message }}</p>
+{% endfor %}
+{% endif %}
 {% endblock bloc2 %}
 
 {% block content %}

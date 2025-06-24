@@ -694,8 +694,14 @@ INSERT INTO l_genres (`group`, name)
                 params = [self.group, self.name]
 
                 create_SQL_log(code_file, "Genre.save", "INSERT_5", request, params)
-                cursor.execute(request, params)
-                self.genre_id = cursor.lastrowid
+                try:
+                    cursor.execute(request, params)
+                    self.genre_id = cursor.lastrowid
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR33]'
+                    return '[ERR34]'
 
 
     def delete(self):

@@ -35,6 +35,13 @@ def add_search_params(request, search_txt, search_everywhere, search_logic, sear
         user.search_genres = search_genres
         user.save()
 
+def delete_genre_in_search_params(request, genre_id):
+    if request.user.is_authenticated:
+        user = User(request.user.username)
+        genres = [g for g in user.search_genres.split(',') if g and int(g) != genre_id]
+        user.search_genres = ','.join(genres)
+        user.save()
+
 def get_search_params(request):
     if request.user.is_authenticated:
         user = User(request.user.username)

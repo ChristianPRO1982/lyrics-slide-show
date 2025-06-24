@@ -72,6 +72,16 @@ hr {
     background-color: #fff4f0;
 }
 
+.L_BUTTON_LIKE_A_LINK {
+    color: #5a2b1f;
+    text-decoration: underline dotted !important;
+}
+
+.L_BUTTON_LIKE_A_LINK:hover {
+    color: #b3780b;
+    text-decoration: underline !important;
+}
+
 .L_H1 {
     font-size: 2.25rem;
     font-weight: bold;
@@ -177,6 +187,12 @@ hr {
 
     .L_GENRE_BADGE:hover {
         background-color: #3b2323;
+    }
+    .L_BUTTON_LIKE_A_LINK {
+        color: #776b66;
+    }
+    .L_BUTTON_LIKE_A_LINK:hover {
+        color: #fd9153;
     }
     .L_LI {
         background-color: #2d1b1b;

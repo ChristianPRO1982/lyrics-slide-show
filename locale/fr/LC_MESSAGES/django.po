@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 08:29+0200\n"
+"POT-Creation-Date: 2025-06-24 14:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -518,7 +518,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:16
-#: app_song/templates/app_song/songs.html:61
+#: app_song/templates/app_song/songs.html:58
 msgid "add"
 msgstr "ajouter"
 
@@ -766,6 +766,10 @@ msgstr "Chant&nbsp;: "
 msgid "Artist:"
 msgstr "Artiste :"
 
+#: app_song/templates/app_song/goto_song.html:24
+msgid "Messages:"
+msgstr "Messages&nbsp;:"
+
 #: app_song/templates/app_song/moderator_song.html:8
 #: app_song/templates/app_song/songs.html:9
 msgid "contact_moderators_info_gen"
@@ -969,7 +973,8 @@ msgstr "✔️ : Chant validé"
 msgid "✔️⁉️: Song valided with messages"
 msgstr "✔️⁉️ : Chant validé avec des messages"
 
-#: app_song/templates/app_song/songs.html:21
+#: app_song/templates/app_song/songs.html:22
+#: app_song/templates/app_song/songs.html:51
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
@@ -1007,15 +1012,15 @@ msgstr ""
 msgid "reset"
 msgstr "réinitialiser"
 
-#: app_song/templates/app_song/songs.html:59
+#: app_song/templates/app_song/songs.html:56
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:60
+#: app_song/templates/app_song/songs.html:57
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:93
+#: app_song/templates/app_song/songs.html:105
 #: app_song/templates/common/song_actions.html:11
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
@@ -1250,15 +1255,15 @@ msgstr ""
 
 #: templates/base.html:113
 msgid "ERR32"
-msgstr "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur "
+msgstr "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:115
 msgid "ERR33"
-msgstr "[ERR33] no message"
+msgstr "Ce genre existe déjà ! Veuillez créer un couplet 'groupe/nom' unique."
 
 #: templates/base.html:117
 msgid "ERR34"
-msgstr "[ERR34] no message"
+msgstr "[ERR34] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:119
 msgid "ERR35"
