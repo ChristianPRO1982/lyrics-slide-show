@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song, Genre
-from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params
+from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params
 
 
 
@@ -20,9 +20,10 @@ def songs(request):
 
     moderator = is_moderator(request)
 
-    if request.method == 'POST':
+    genres = Genre.get_all_genres()
 
-        if request.method == 'POST':
+    if request.method == 'POST':
+        if 'btn_new_song' in request.POST:
             new_song = Song(
                             title = request.POST.get('txt_new_title').strip(),
                             sub_title = request.POST.get('txt_new_sub_title').strip(),
@@ -36,20 +37,55 @@ def songs(request):
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
             request.POST['txt_new_description'] = ''
-            
-    songs = Song.get_all_songs()
 
+        if 'btn_search' in request.POST:
+            if request.POST.get('rad_search_logic') == 'or':
+                search_logic = 0
+            else:
+                search_logic = 1
+            search_genres = ''
+            for genre in genres:
+                if request.POST.get(f'chk_genre_{genre.genre_id}', 'off') == 'on':
+                    if search_genres:
+                        search_genres += ','
+                    search_genres += str(genre.genre_id)
+            add_search_params(
+                request,
+                request.POST.get('txt_search', '').strip(),
+                request.POST.get('chk_search_everywhere', 'off') == 'on',
+                search_logic,
+                search_genres
+            )
+
+        if 'btn_reset_search' in request.POST:
+            add_search_params(request, '', 0, 0, '')
+            
+    search_params = get_search_params(request)
+    songs = Song.get_all_songs(search_params['search_txt'],
+                               search_params['search_everywhere'],
+                               search_params['search_logic'],
+                               search_params['search_genres'])
+
+    # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
+    search_genres_list = []
+    if search_params['search_genres']:
+        search_genres_list = [int(g) for g in search_params['search_genres'].split(',') if g.isdigit()]
 
     return render(request, 'app_song/songs.html', {
         'songs': songs,
         'title': request.POST.get('txt_new_title', ''),
         'sub_title': request.POST.get('txt_new_sub_title', ''),
+        'genres': genres,
+        'search_txt': search_params['search_txt'],
+        'search_everywhere': search_params['search_everywhere'],
+        'search_logic': search_params['search_logic'],
+        'search_genres': search_genres_list,
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
         'css': css,
         'no_loader': no_loader,
-        })
+    })
 
 
 def modify_song(request, song_id):

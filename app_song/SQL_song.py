@@ -1,10 +1,36 @@
-from typing import Any
 from django.db import connection
+from typing import Any
+import random
 from app_logs.utils import create_SQL_log
 from .utils import check_max_lines, check_max_characters_for_a_line
 
 
 code_file = "SQL_song.py"
+
+MUSIC_EMOJIS = [
+    '🎶',  # multiple musical notes
+    '🎵',  # single musical note
+    '🎼',  # musical score
+    '𝄞',   # G clef (Unicode symbol, pas emoji mais fonctionne visuellement)
+    '𝄢',   # F clef
+    # '𝄫',   # double flat
+    # '𝄪',   # double sharp
+    '♩',   # quarter note
+    '♪',   # eighth note
+    '♫',   # beamed eighth notes
+    '♬',   # beamed sixteenth notes
+    '𝄐',   # fermata
+    '𝄑',   # fermata below
+    # '𝄒',   # breath mark
+    # '𝄓',   # caesura
+    '𝄆',   # begin repeat
+    '𝄇',   # end repeat
+    '𝄋',   # up bow
+    # '𝄌',   # down bow
+    '𝅘𝅥',   # musical symbol quarter note
+    '𝅘𝅥𝅮',   # musical symbol eighth note
+    '𝅘𝅥𝅯',   # musical symbol sixteenth note
+]
 
 
 ##############################################
@@ -32,32 +58,94 @@ class Song:
 
 
     @staticmethod
-    def get_all_songs():
-        request = """
-  SELECT *, CONCAT(title,
-                   CASE
-                       WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN status = 1 THEN ' ✔️'
-                       WHEN status = 2 THEN ' ✔️⁉️'
-                       ELSE ''
-                   END) AS full_title
-    FROM l_songs
-ORDER BY title, sub_title
+    def get_all_songs(search_txt: str = '',
+                      search_everywhere: bool = False,
+                      search_logic: int = 0,
+                      search_genres: str = '') -> list[dict[str, Any]]:
+        
+        search_genres_is_null = '0'
+        if not search_genres:
+            search_genres = '0'
+            search_genres_is_null = '1'
+
+        search_logic_SQL = ''
+        if search_logic:
+            for genre in search_genres.split(','):
+                search_logic_SQL += f"""
+      AND EXISTS (SELECT 1 FROM l_song_genre lsg WHERE lsg.song_id = ls1.song_id AND lsg.genre_id = {genre})"""
+
+
+        request = f"""
+   SELECT ls1.*,
+          CONCAT(ls1.title,
+                 CASE
+                     WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.status = 1 THEN ' ✔️'
+                     WHEN ls1.status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END) AS full_title,
+          CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres
+     FROM l_songs ls1
+LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
+LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+    WHERE ({search_everywhere} IS FALSE
+           AND (ls1.title LIKE '%{search_txt}%'
+                OR ls1.sub_title LIKE '%{search_txt}%'
+                OR ls1.artist LIKE '%{search_txt}%')
+            OR {search_everywhere} IS TRUE
+           AND (ls1.title LIKE '%{search_txt}%'
+                OR ls1.sub_title LIKE '%{search_txt}%'
+                OR ls1.artist LIKE '%{search_txt}%'
+                OR ls1.description LIKE '%{search_txt}%'
+                OR EXISTS (SELECT 1
+                             FROM l_songs ls2
+                             JOIN l_verses lv ON lv.song_id = ls2.song_id
+                            WHERE ls2.song_id= ls1.song_id
+                              AND lv.text LIKE '%{search_txt}%'
+                          )
+               )
+          )
+      AND (lg.genre_id IN ({search_genres})
+           OR {search_genres_is_null} = 1){search_logic_SQL}
+ GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
+          CONCAT(ls1.title,
+                 CASE
+                     WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.status = 1 THEN ' ✔️'
+                     WHEN ls1.status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END)
+ ORDER BY ls1.title, ls1.sub_title
 """
         params = []
 
         create_SQL_log(code_file, "Song.get_all_songs", "SELECT_1", request, params)
         with connection.cursor() as cursor:
-            cursor.execute(request, params)
+            cursor.execute(request)
             rows = cursor.fetchall()
-        return [{'song_id': row[0], 'title': row[1], 'sub_title': row[2], 'description': row[3], 'artist': row[4], 'status': row[5], 'full_title': row[6]} for row in rows]
+        return [{'song_id': row[0],
+                 'title': row[1],
+                 'sub_title': row[2],
+                 'description': row[3],
+                 'artist': row[4],
+                 'status': row[5],
+                 'full_title': row[6],
+                 'genres': row[7]
+                 } for row in rows]
     
 
     def get_lyrics(self):
@@ -254,7 +342,8 @@ ORDER BY lg.group, lg.name
                 self.genres.append({
                     'genre_id': row[0],
                     'group': row[1],
-                    'name': row[2]
+                    'name': row[2],
+                    'emoji_random': random.choice(MUSIC_EMOJIS)
                 })
 
 

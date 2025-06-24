@@ -119,6 +119,8 @@ services:
     restart: always
     env_file:
       - .env
+    volumes:
+      - ./n8n_files/contrat:/files
     networks:
       - netcartho
     labels:

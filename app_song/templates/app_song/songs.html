@@ -16,15 +16,40 @@
 <div class="sticky top-0 p-2">
     <a name="search"></a>
     <h3 class="L_H3">{% trans "Song research" %}</h3>
-    <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ new_song_title }}" /><br>
-    <a href="#" onclick="toggleVisibility('advancedSearch');">{% trans "Advanced search" %}</a>
-    comming soon...
-    {% comment %} <div id="advancedSearch" style="display: none;">
-        <form method="get" action="{% url 'songs' %}">
-            <input type="text" name="txt_search_text" placeholder="" value="sdf" />
-            <input name="btn_search" value="{% trans "search" %}" type="submit" />
-        </form>
-    </div> {% endcomment %}
+    {% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
+        value="{{ search_txt }}" /><br>
+        <label>
+            <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
+            {% trans "Search in description and lyrics" %}
+        </label><br>
+        <a href="#" onclick="toggleVisibility('advancedSearch');">{% trans "Advanced search" %}</a>
+        <div id="advancedSearch" style="display: none;">
+            {% trans "Logic by:" %}
+            <label>
+                <input type="radio" name="rad_search_logic" value="or" style="width: 10%;" {% if not search_logic %}checked{% endif %}>
+                {% trans "OR" %}
+            </label>
+            <label>
+                <input type="radio" name="rad_search_logic" value="and" style="width: 10%;" {% if search_logic %}checked{% endif %}>
+                {% trans "AND" %}
+            </label>
+            <br>
+            {% for genre in genres %}
+            <label class="L_GENRE_BADGE">
+                <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
+                {{ genre.emoji_random }} {{ genre.group }} - {{ genre.name }}
+            </label><br>
+            {% endfor %}
+        </div>
+        <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
+        <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
+    </form>
+    {% else %}
+    <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ search_txt }}" /><br>
+    {% endif %}
     <br><br><hr><br>
     <form method="post">
         {% csrf_token %}
@@ -41,7 +66,8 @@
             song_id: {{ song.song_id }},
             full_title: "{{ song.full_title|escapejs }}",
             description: "{{ song.description|escapejs }}",
-            status: {{ song.status }}
+            status: {{ song.status }},
+            genres: "{{ song.genres }}",
         },
     {% endfor %}
     ];
@@ -60,6 +86,18 @@
             const li = document.createElement('li');
             li.classList.add('L_LI');
             li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a><br>';
+            if (song.genres) {
+                br = '';
+                const genresArr = song.genres.replace(/^\[|\]$/g, '').split(',');
+                genresArr.forEach(function(genre) {
+                    const parts = genre.trim().split('|');
+                    if (parts.length === 2) {
+                        li.innerHTML += '<span class="L_GENRE_BADGE">' + parts[1] + '</span>';
+                        br = '<br>';
+                    }
+                });
+                li.innerHTML += br;
+            }
             li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
             if (song.status != 0) {
                 li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';

@@ -26,6 +26,32 @@ def save_user_theme(request, css):
         user.theme = css
         user.save()
 
+def add_search_params(request, search_txt, search_everywhere, search_logic, search_genres):
+    if request.user.is_authenticated:
+        user = User(request.user.username)
+        user.search_txt = search_txt
+        user.search_everywhere = search_everywhere
+        user.search_logic = search_logic
+        user.search_genres = search_genres
+        user.save()
+
+def get_search_params(request):
+    if request.user.is_authenticated:
+        user = User(request.user.username)
+        return {
+            'search_txt': user.search_txt,
+            'search_everywhere': user.search_everywhere,
+            'search_logic': user.search_logic,
+            'search_genres': user.search_genres,
+        }
+    else:
+        return {
+            'search_txt': '',
+            'search_everywhere': 0,
+            'search_logic': 0,
+            'search_genres': '',
+        }
+
 def strip_html(html_text):
     return BeautifulSoup(html_text, "html.parser").get_text()
 
