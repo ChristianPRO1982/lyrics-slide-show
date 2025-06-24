@@ -1255,15 +1255,15 @@ msgstr ""
 
 #: templates/base.html:113
 msgid "ERR32"
-msgstr "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur "
+msgstr "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:115
 msgid "ERR33"
-msgstr "[ERR33] no message"
+msgstr "Ce genre existe déjà ! Veuillez créer un couplet 'groupe/nom' unique."
 
 #: templates/base.html:117
 msgid "ERR34"
-msgstr "[ERR34] no message"
+msgstr "[ERR34] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:119
 msgid "ERR35"

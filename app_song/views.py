@@ -346,7 +346,7 @@ def song_metadata(request, song_id):
         new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
         if new_genre_group and new_genre_name:
             genre = Genre(group=new_genre_group, name=new_genre_name)
-            genre.save()
+            error = genre.save()
 
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
