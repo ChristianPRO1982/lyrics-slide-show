@@ -1,3 +1,17 @@
+# [1.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.4...v1.10.0) (2025-06-24)
+
+
+### Bug Fixes
+
+* all CSS and tailwind work correctly now ([4b04d31](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4b04d31bc5bd9533cb27c81f57ab20b1d0dcf1dd))
+* README ([0696ae2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0696ae25cd5cc32b326e21afd31ae395f6601fcf))
+* songs: best display genres ([3090810](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3090810b5cc78509a6e544d1118d06433da586cf))
+
+
+### Features
+
+* Onboard CSS ([e424bc3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e424bc374a9e2d55027f6418612218808dc3e685))
+
 ## [1.9.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.3...v1.9.4) (2025-06-24)
 
 
