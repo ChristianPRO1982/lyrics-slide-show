@@ -227,7 +227,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         </div>
         <a id="song_{{ slide.animation_song_id }}"></a>
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-3 gap-2">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}" name="{{slide.current_slide}}"
         onClick="navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
