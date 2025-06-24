@@ -40,7 +40,7 @@
             {% for genre in genres %}
             <label class="L_GENRE_BADGE">
                 <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
-                {{ genre.emoji_random }} {{ genre.group }} - {{ genre.name }}
+                {{ genre.group }} - {{ genre.name }}
             </label><br>
             {% endfor %}
         </div>
@@ -98,7 +98,9 @@
                 });
                 li.innerHTML += br;
             }
-            li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
+            if (song.description) {
+                li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
+            }
             if (song.status != 0) {
                 li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';
             } else {
