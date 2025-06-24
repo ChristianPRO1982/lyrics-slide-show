@@ -1,3 +1,11 @@
+## [1.10.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.0...v1.10.1) (2025-06-24)
+
+
+### Bug Fixes
+
+* README ([232b850](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/232b8503cb00fc298c7770f84d2f54589335fc81))
+* scout.css ([16c4ebc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/16c4ebcb34b44d01724f560f60df65c0ec9dee13))
+
 # [1.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.4...v1.10.0) (2025-06-24)
 
 
