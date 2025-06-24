@@ -19,7 +19,7 @@
     {% for search_genre in search_genres %}
     {% for genre in genres %}
     {% if genre.genre_id == search_genre %}
-    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ {{ genre.group }} - {{ genre.name }}</a>
+    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ {{ genre.name }}</a>
     {% endif %}
     {% endfor %}
     {% endfor %}

@@ -15,6 +15,9 @@
 {{ song.description|linebreaksbr|safe }}
 <br><br>
 {% for genre in song.genres %}
+{% if genre.is_new_group %}
+<h4 class="L_H4">{{ genre.group }}</h4>
+{% endif %}
 <span class="L_GENRE_BADGE">
     {{ genre.emoji_random }} {{ genre.name }}
 </span>

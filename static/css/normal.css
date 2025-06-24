@@ -6,7 +6,7 @@
 }
 
 a {
-    color: #795107;
+    color: #5a2b1f;
     text-decoration: underline dotted !important;
 }
 
@@ -126,9 +126,12 @@ hr {
 }
 
 .L_BOX_HEADER {
-    color: #fff;
     background-color: #B7410E;
     border: 3px solid #8b1e1e;
+}
+
+.L_LINK_HEADER {
+    color: #fff;
 }
 
 .L_BOX_FOOTER {
@@ -166,7 +169,7 @@ hr {
         background-color: #1C0F0A;
     }
     a {
-        color: #aa6339;
+        color: #776b66;
     }
     a:hover {
         color: #fd9153;
@@ -228,9 +231,12 @@ hr {
     }
     
     .L_BOX_HEADER {
-        color: #776b66;
         background-color: #5C1210;
         border: 0px solid #8b1e1e;
+    }
+
+    .L_LINK_HEADER {
+        color: #776b66;
     }
     
     .L_BOX_FOOTER {
@@ -244,10 +250,10 @@ hr {
 /* FORMULAIRE */
 input, textarea, select {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0px;
     border: 1px solid #8b1e1e;
     border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    margin: 0px;
     background-color: rgba(255, 255, 255, 0.5);
     color: #5a2b1f;
 }

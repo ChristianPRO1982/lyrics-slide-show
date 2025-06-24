@@ -6,7 +6,7 @@
 }
 
 a {
-    color: #795107;
+    color: #1C4E4A;
     text-decoration: underline dotted !important;
 }
 
@@ -124,9 +124,12 @@ hr {
 }
 
 .L_BOX_HEADER {
-    color: #54e7db;
     background-color: #1C4E4A;
     border: 4px solid #774205;
+}
+
+.L_LINK_HEADER {
+    color: #54e7db;
 }
 
 .L_BOX_FOOTER {
@@ -167,7 +170,7 @@ hr {
         background-color: #0B1F26;
     }
     a {
-        color: #aa6339;
+        color: #3d5a4b;
     }
     a:hover {
         color: #fd9153;
@@ -230,9 +233,12 @@ hr {
     }
     
     .L_BOX_HEADER {
-        color: #2f7c76;
         background-color: #02141D;
         border: 4px solid #3a2003;
+    }
+
+    .L_LINK_HEADER {
+        color: #2f7c76;
     }
     
     .L_BOX_FOOTER {

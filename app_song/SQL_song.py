@@ -327,11 +327,18 @@ ORDER BY link
 
         with connection.cursor() as cursor:
             request = """
-  SELECT lg.*
-    FROM l_song_genre lsg
-    JOIN l_genres lg ON lg.genre_id = lsg.genre_id
-   WHERE song_id = %s
-ORDER BY lg.group, lg.name
+SELECT lg.genre_id,
+       lg.`group`,
+       lg.name,
+       CASE
+           WHEN @prev_group IS NULL OR lg.`group` != @prev_group THEN 1
+           ELSE 0
+       END AS is_new_group,
+       @prev_group := lg.`group`
+  FROM (SELECT * FROM l_song_genre WHERE song_id = %s) lsg
+  JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+ CROSS JOIN (SELECT @prev_group := NULL) vars
+ORDER BY lg.`group`, lg.name
 """
             params = [self.song_id]
 
@@ -343,6 +350,7 @@ ORDER BY lg.group, lg.name
                     'genre_id': row[0],
                     'group': row[1],
                     'name': row[2],
+                    'is_new_group': row[3],
                     'emoji_random': random.choice(MUSIC_EMOJIS)
                 })
 
