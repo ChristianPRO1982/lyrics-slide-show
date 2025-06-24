@@ -241,6 +241,7 @@ def goto_song(request, song_id):
     return render(request, 'app_song/goto_song.html', {
         'song': song,
         'song_lyrics': song_lyrics,
+        'song_messages': song.get_moderator_new_messages(),
         'moderator': moderator,
         'error': error,
         'css': css,
