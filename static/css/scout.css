@@ -252,10 +252,10 @@ hr {
 /* FORMULAIRE */
 input, textarea, select {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0px;
     border: 1px solid #1C4E4A;
     border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    margin: 0px;
     background-color: rgba(255, 255, 255, 0.5);
     color: #1C4E4A;
 }

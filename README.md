@@ -130,39 +130,38 @@ docker compose pull && docker compose up -d && docker image prune -f
 ### NPM
 
 Add this files :
-* ./frontend/tailwind.config.js
-```bash
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './templates/**/*.html',
-    './static/js/**/*.js',
-    './static/**/*.html',
-  ],
-  safelist: [
-    'w-1/2',
-    'w-1/3',
-    'w-1/4',
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-  corePlugins: {
-    preflight: true, // normalement c’est true par défaut, mais mets-le pour être sûr
-  },
-};
-```
-* ./frontend/postcss.config.js
-```bash
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-
-```
+* `./frontend/tailwind.config.js`
+    ```bash
+    /** @type {import('tailwindcss').Config} */
+    module.exports = {
+      content: [
+        './templates/**/*.html',
+        './static/js/**/*.js',
+        './static/**/*.html',
+      ],
+      safelist: [
+        'w-1/2',
+        'w-1/3',
+        'w-1/4',
+      ],
+      theme: {
+        extend: {},
+      },
+      plugins: [],
+      corePlugins: {
+        preflight: true, // normalement c’est true par défaut, mais mets-le pour être sûr
+      },
+    };
+    ```
+* `./frontend/postcss.config.js`
+    ```bash
+    module.exports = {
+      plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
+      },
+    };
+    ```
 
 ### NPM
 ```bash
