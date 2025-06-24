@@ -1,3 +1,18 @@
+## [1.9.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.3...v1.9.4) (2025-06-24)
+
+
+### Bug Fixes
+
+* goto song: display new messages ([4622635](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/462263535fea95e675b397f48c00e7c528a3a43b))
+* song metadata: best display for div of genres ([8054d09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8054d09e0fa66184aecd1040ea0a6c5ce0fdd1e4))
+* song metadata: error message when duplcate entry for genre ([72c0a25](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/72c0a2540a1a78e26ec61175b81b2ced84e9f907))
+* songs: advanced search more beautiful ([cc719a6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cc719a6d57c15557c21fba4df816e8daa91af9d6))
+* songs: best display of buttons like a link ([efb107a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/efb107a5514953a9c03b9169378bd0b4e01b1b58))
+* songs: best gen display ([b7d4c2a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b7d4c2a28cb6c598565c8599b65452392ab44abf))
+* songs: can delete quickly one genre ([ad26c9c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ad26c9cf2c56d1140a884ef7712e343d390f4297))
+* songs: change display of genres in advanced search ([1ca02b7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1ca02b793129ab649a937a807c486001efec9358))
+* songs: rechange display of genres in advanced search, div with scrollbar ([42429d8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/42429d8bf05c42a72bd3b6dde4ca17b65ecaeb9d))
+
 ## [1.9.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.2...v1.9.3) (2025-06-24)
 
 
