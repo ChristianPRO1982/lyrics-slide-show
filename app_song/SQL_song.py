@@ -62,6 +62,22 @@ class Song:
                       search_everywhere: bool = False,
                       search_logic: int = 0,
                       search_genres: str = '') -> list[dict[str, Any]]:
+        
+        search_genres_is_null = '0'
+        if not search_genres:
+            search_genres = '0'
+            search_genres_is_null = '1'
+
+        search_logic_SQL1 = ''
+        search_logic_SQL2 = ''
+        if search_logic:
+            for genre in search_genres.split(','):
+                search_logic_SQL1 += f"""
+      AND EXISTS (SELECT 1 FROM l_song_genre lsg WHERE lsg.song_id = ls.song_id AND lsg.genre_id = {genre})"""
+                search_logic_SQL2 += f"""
+      AND EXISTS (SELECT 1 FROM l_song_genre lsg WHERE lsg.song_id = ls1.song_id AND lsg.genre_id = {genre})"""
+
+
         if not search_everywhere:
             request = f"""
    SELECT ls.*,
@@ -83,23 +99,26 @@ class Song:
      FROM l_songs ls
 LEFT JOIN l_song_genre lsg ON lsg.song_id = ls.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
-    WHERE ls.title LIKE '%{search_txt}%'
-       OR ls.sub_title LIKE '%{search_txt}%'
-       OR ls.artist LIKE '%{search_txt}%'
- GROUP BY ls.song_id, ls.title, ls.sub_title, ls.description, ls.artist, ls.status, CONCAT(ls.title,
-                   CASE
-                       WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN ls.artist != '' THEN CONCAT(' [', ls.artist, ']')
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN ls.status = 1 THEN ' ✔️'
-                       WHEN ls.status = 2 THEN ' ✔️⁉️'
-                       ELSE ''
-                   END)
+    WHERE (ls.title LIKE '%{search_txt}%'
+           OR ls.sub_title LIKE '%{search_txt}%'
+           OR ls.artist LIKE '%{search_txt}%')
+      AND (lg.genre_id IN ({search_genres})
+           OR {search_genres_is_null} = 1){search_logic_SQL1}
+ GROUP BY ls.song_id, ls.title, ls.sub_title, ls.description, ls.artist, ls.status,
+          CONCAT(ls.title,
+                 CASE
+                     WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls.artist != '' THEN CONCAT(' [', ls.artist, ']')
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls.status = 1 THEN ' ✔️'
+                     WHEN ls.status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END)
  ORDER BY ls.title, ls.sub_title
 """
             params = []
@@ -107,8 +126,7 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
             create_SQL_log(code_file, "Song.get_all_songs", "SELECT_1.1", request, params)
 
         else:
-            if search_logic == 0:
-                request = f"""
+            request = f"""
    SELECT ls1.*,
           CONCAT(ls1.title,
                  CASE
@@ -137,25 +155,29 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                     JOIN l_verses lv ON lv.song_id = ls2.song_id
                    WHERE ls2.song_id= ls1.song_id
                      AND lv.text LIKE '%{search_txt}%')
- GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status, CONCAT(ls1.title,
-                   CASE
-                       WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
-                       ELSE ''
-                   END,
-                   CASE
-                       WHEN ls1.status = 1 THEN ' ✔️'
-                       WHEN ls1.status = 2 THEN ' ✔️⁉️'
-                       ELSE ''
-                   END)
+      AND (lg.genre_id IN ({search_genres})
+           OR {search_genres_is_null} = 1){search_logic_SQL2}
+ GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
+          CONCAT(ls1.title,
+                 CASE
+                     WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.status = 1 THEN ' ✔️'
+                     WHEN ls1.status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END)
  ORDER BY ls1.title, ls1.sub_title
 """
             params = []
 
             create_SQL_log(code_file, "Song.get_all_songs", "SELECT_1.2", request, params)
+
         with connection.cursor() as cursor:
             cursor.execute(request)
             rows = cursor.fetchall()
