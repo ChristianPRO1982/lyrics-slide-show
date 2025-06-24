@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song, Genre
-from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params
+from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params, delete_genre_in_search_params
 
 
 
@@ -374,3 +374,8 @@ def song_metadata(request, song_id):
         'no_loader': no_loader,
         'song_lyrics': song_lyrics,
     })
+
+
+def delete_genre(request, genre_id):
+    delete_genre_in_search_params(request, genre_id)
+    return redirect('songs')

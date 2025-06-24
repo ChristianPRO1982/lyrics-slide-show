@@ -15,6 +15,15 @@
 {% block bloc2 %}
 <div class="sticky top-0 p-2">
     <a name="search"></a>
+    {% if search_genres %}
+    {% for search_genre in search_genres %}
+    {% for genre in genres %}
+    {% if genre.genre_id == search_genre %}
+    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ {{ genre.group }} - {{ genre.name }}</a>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
     <h3 class="L_H3">{% trans "Song research" %}</h3>
     {% if user.is_authenticated %}
     <form method="post">
