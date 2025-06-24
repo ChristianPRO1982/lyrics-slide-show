@@ -1,3 +1,25 @@
+## [1.9.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.2...v1.9.3) (2025-06-24)
+
+
+### Bug Fixes
+
+* CSS: delete .L_GROUP_SELECTED > not used ([aab1241](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/aab12414fde0dbf306011f0529ba943e44e7abdc))
+* goto song: add genres ([2933e14](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2933e1476f2370f7de0007c081e90023ce61a5ad))
+* goto song: genres ([988f246](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/988f246c5f574dd68ae7a232a76d52d388bec7b0))
+* groups: delete bloc <span class="L_GROUP_SELECTED"> ([866ca5a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/866ca5aff8679b3d22bc88be616325daae868a2d))
+* modify song: drop ⚠️ when the rule are not cheked, just display 📏 is less aggressive ([906910e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/906910e936cc6119f651a42d767a49963ac77356))
+* modify song: help for follewed button ([df1b9b1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/df1b9b1ac71ef8843b5ab3c471b29b29e9f65d9a))
+* n9n: add same volume for both services API and N8N ([43e2337](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/43e2337bcec9fcec21d5e9701b7da708d098d5c9))
+* search ([fb34cc0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fb34cc0fb15d7186f2921b4093f2dd41524b8996))
+* song metadata: text color ([6c38b96](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6c38b9610ee477312fb278eb792adadfad4f2163))
+* song search can be save in DB ([3530202](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/35302026a3a32218567faef220801d6605ee2c49))
+* songs: add genres for all songs displayed ([971784d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/971784d91ec4667d7589157570c3c0704791e035))
+* songs: init search without connection ([af70a16](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/af70a163f83327fb47dc2fa0e58792c444dca689))
+* songs: juste one request "Song.get_all_songs", "SELECT_1" ([7464098](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7464098a9e89410d25ce773f67f0015c2c095969))
+* songs: save and search ([b989c26](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b989c269a995457d1e384d2fdf4cf0416be9dd33))
+* songs: save search params with genres > next, use this params in SELECT ([c276f84](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c276f8496e6425d922a35a197f759e13ece40fb6))
+* songs: search is done ([b306b81](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b306b813efb8866bf4f6aeea69d7fef9b4b23b9a))
+
 ## [1.9.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.9.1...v1.9.2) (2025-06-20)
 
 
