@@ -139,10 +139,18 @@ module.exports = {
     './static/js/**/*.js',
     './static/**/*.html',
   ],
+  safelist: [
+    'w-1/2',
+    'w-1/3',
+    'w-1/4',
+  ],
   theme: {
     extend: {},
   },
   plugins: [],
+  corePlugins: {
+    preflight: true, // normalement c’est true par défaut, mais mets-le pour être sûr
+  },
 };
 ```
 * ./frontend/postcss.config.js
@@ -159,7 +167,7 @@ module.exports = {
 ### NPM
 ```bash
 rm -rf node_modules package-lock.json
-npm install --save-dev tailwindcss@3.3.2 postcss autoprefixer
+npm install --save-dev tailwindcss@3.4.17 postcss autoprefixer
 ls -l node_modules/.bin/tailwindcss
 ```
 
