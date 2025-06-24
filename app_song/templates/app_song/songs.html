@@ -25,7 +25,7 @@
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
         </label><br>
-        <button type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
+        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
         <div id="advancedSearch" style="display: none; max-height: 15em; overflow: auto;">
             {% trans "Logic by:" %}
             <label>
@@ -38,10 +38,10 @@
             </label>
             <br>
             {% for genre in genres %}
-            <label class="L_GENRE_BADGE">
+            <label class="L_GENRE_BADGE text-xs w-full block">
                 <input type="checkbox" name="chk_genre_{{ genre.genre_id }}" style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
                 {{ genre.group }} - {{ genre.name }}
-            </label><br>
+            </label>
             {% endfor %}
         </div>
         <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
