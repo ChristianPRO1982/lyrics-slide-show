@@ -16,11 +16,11 @@
 <div class="sticky top-0 p-2">
     <a name="search"></a>
     <h3 class="L_H3">{% trans "Song research" %}</h3>
+    {% if user.is_authenticated %}
     <form method="post">
         {% csrf_token %}
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
-        {% if user.is_authenticated %}
         <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
@@ -44,9 +44,12 @@
             </label><br>
             {% endfor %}
         </div>
-        <input name="btn_search" value="{% trans "search" %}" type="submit" />
-        {% endif %}
+        <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
+        <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
     </form>
+    {% else %}
+    <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ search_txt }}" /><br>
+    {% endif %}
     {% comment %} 
         
             <input type="text" name="txt_search_text" placeholder="" value="sdf" />

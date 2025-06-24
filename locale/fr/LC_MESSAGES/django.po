@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-21 14:48+0200\n"
+"POT-Creation-Date: 2025-06-24 08:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -461,8 +461,7 @@ msgid "Return"
 msgstr "Retour"
 
 #: app_animation/templates/common/animation_actions.html:3
-#: app_song/templates/common/song_actions.html:3 chris/songs copy.html:19
-#: copy.html:49
+#: app_song/templates/common/song_actions.html:3
 msgid "actions"
 msgstr "Actions"
 
@@ -519,7 +518,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:16
-#: app_song/templates/app_song/songs.html:56
+#: app_song/templates/app_song/songs.html:61
 msgid "add"
 msgstr "ajouter"
 
@@ -830,8 +829,7 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chanson validée"
 
-#: app_song/templates/app_song/modify_song.html:56 chris/songs copy.html:17
-#: copy.html:47
+#: app_song/templates/app_song/modify_song.html:56
 msgid "title"
 msgstr "Titre"
 
@@ -839,8 +837,7 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:64 chris/songs copy.html:18
-#: copy.html:48
+#: app_song/templates/app_song/modify_song.html:64
 msgid "description"
 msgstr "Description"
 
@@ -890,7 +887,7 @@ msgstr "Déplacer&nbsp;:"
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:154 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:154
 msgid "delete"
 msgstr "Supprimer"
 
@@ -960,7 +957,7 @@ msgid "New genre"
 msgstr "Nouveau genre"
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
+#: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
@@ -972,44 +969,54 @@ msgstr "✔️ : Chant validé"
 msgid "✔️⁉️: Song valided with messages"
 msgstr "✔️⁉️ : Chant validé avec des messages"
 
-#: app_song/templates/app_song/songs.html:20
+#: app_song/templates/app_song/songs.html:21
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
-#: app_song/templates/app_song/songs.html:23
+#: app_song/templates/app_song/songs.html:26
 msgid "Search in description and lyrics"
 msgstr "Recherche dans les descriptions et le texte des chants"
 
-#: app_song/templates/app_song/songs.html:25
+#: app_song/templates/app_song/songs.html:28
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:27
+#: app_song/templates/app_song/songs.html:30
 msgid "Logic by:"
 msgstr "Logique par :"
 
-#: app_song/templates/app_song/songs.html:30
-msgid "AND"
-msgstr "ET"
-
-#: app_song/templates/app_song/songs.html:34
+#: app_song/templates/app_song/songs.html:33
 msgid "OR"
 msgstr "OU"
 
-#: app_song/templates/app_song/songs.html:44
-msgid "search"
-msgstr "recherche"
+#: app_song/templates/app_song/songs.html:37
+msgid "AND"
+msgstr "ET"
 
-#: app_song/templates/app_song/songs.html:54
+#: app_song/templates/app_song/songs.html:47
+msgid "save and search"
+msgstr "sauvegarder et rechercher"
+
+#: app_song/templates/app_song/songs.html:47
+msgid "help_save_search"
+msgstr ""
+"Ce bouton permet de sauvegarder votre recherche. Cliquer sur “réinitialiser” "
+"pour affiche tout les chants."
+
+#: app_song/templates/app_song/songs.html:48
+msgid "reset"
+msgstr "réinitialiser"
+
+#: app_song/templates/app_song/songs.html:59
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:55
+#: app_song/templates/app_song/songs.html:60
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:88
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/app_song/songs.html:93
+#: app_song/templates/common/song_actions.html:11
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -1017,19 +1024,11 @@ msgstr "Contacter les modérateurs"
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:11
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
 "chant"
-
-#: chris/songs copy.html:32
-msgid "update"
-msgstr "Modifier"
-
-#: chris/songs copy.html:35
-msgid "Go to"
-msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35
@@ -2537,6 +2536,15 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "search"
+#~ msgstr "recherche"
+
+#~ msgid "update"
+#~ msgstr "Modifier"
+
+#~ msgid "Go to"
+#~ msgstr "Voir"
 
 #~ msgid "This feature only works if “Like a chorus” is ticked"
 #~ msgstr "Cette fonctionnalité ne marche que si “Comme un refrain” est cochée"

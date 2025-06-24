@@ -48,6 +48,9 @@ def songs(request):
                 search_logic,
                 request.POST.get('sel_search_genres', '')
             )
+
+        if 'btn_reset_search' in request.POST:
+            add_search_params(request, '', 0, 0, '')
             
     search_params = get_search_params(request)
     songs = Song.get_all_songs(search_params['search_txt'],
