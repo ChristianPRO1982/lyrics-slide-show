@@ -121,6 +121,32 @@ SELECT song_id,
         self.songs = [Song(song_id=row[0], full_title=row[1], description=row[2]) for row in rows] if rows else []
 
 
+    def get_approved_songs_stats(self):
+        request = """
+SELECT SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS active_count,
+       COUNT(*) AS total_count,
+       ROUND(CASE WHEN COUNT(*) = 0 THEN 0
+                  ELSE SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) / COUNT(*) * 100.0
+             END, 2) AS active_percent
+  FROM l_songs
+"""
+        params = []
+
+        create_SQL_log(code_file, "Songs.get_approved_songs_stats", "SELECT_5", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+        self.songs_stats = {
+            'approved_songs': int(row[0]) if row[0] is not None else 0,
+            'total_songs': int(row[1]) if row[1] is not None else 0,
+            'approved_percent': float(row[2]) if row[2] is not None else 0.0
+        } if row else {
+            'approved_songs': 0,
+            'total_songs': 0,
+            'approved_percent': 0.0
+        }
+
+
 ##############################################
 ##############################################
 #################### SITE ####################
