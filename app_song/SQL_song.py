@@ -327,18 +327,22 @@ ORDER BY link
 
         with connection.cursor() as cursor:
             request = """
-SELECT lg.genre_id,
-       lg.`group`,
-       lg.name,
-       CASE
-           WHEN @prev_group IS NULL OR lg.`group` != @prev_group THEN 1
-           ELSE 0
-       END AS is_new_group,
-       @prev_group := lg.`group`
-  FROM (SELECT * FROM l_song_genre WHERE song_id = %s) lsg
-  JOIN l_genres lg ON lg.genre_id = lsg.genre_id
- CROSS JOIN (SELECT @prev_group := NULL) vars
-ORDER BY lg.`group`, lg.name
+    SELECT tt.genre_id,
+           tt.`group`,
+           tt.name,
+           CASE
+               WHEN @prev_group IS NULL OR tt.`group` != @prev_group THEN 1
+               ELSE 0
+           END AS is_new_group,
+           @prev_group := tt.`group`
+      FROM (  SELECT lg.genre_id,
+                     lg.`group`,
+                     lg.name
+                FROM l_song_genre lsg
+                JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+               WHERE lsg.song_id = %s
+            ORDER BY lg.`group`, lg.name) AS tt
+CROSS JOIN (SELECT @prev_group := NULL) vars
 """
             params = [self.song_id]
 
