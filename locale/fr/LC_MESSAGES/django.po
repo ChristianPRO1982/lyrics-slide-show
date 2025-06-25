@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-25 10:43+0200\n"
+"POT-Creation-Date: 2025-06-25 11:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,8 +128,8 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
-#: app_main/templates/app_main/homepage.html:68
-#: app_main/templates/app_main/homepage.html:106
+#: app_main/templates/app_main/homepage.html:70
+#: app_main/templates/app_main/homepage.html:108
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr "Annuler"
@@ -276,8 +276,8 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
-#: app_main/templates/app_main/homepage.html:67
-#: app_main/templates/app_main/homepage.html:105
+#: app_main/templates/app_main/homepage.html:69
+#: app_main/templates/app_main/homepage.html:107
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:71
 #: app_song/templates/app_song/modify_song.html:166
@@ -691,55 +691,59 @@ msgid "Song statistics"
 msgstr "Statistiques des chants"
 
 #: app_main/templates/app_main/homepage.html:40
-#: app_main/templates/app_main/homepage.html:71
+msgid "songs approved"
+msgstr "chants approuvés"
+
+#: app_main/templates/app_main/homepage.html:42
+#: app_main/templates/app_main/homepage.html:73
 msgid "Modify homepage"
 msgstr "Modifier la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:45
+#: app_main/templates/app_main/homepage.html:47
 msgid "Title &#60;head&#62;"
 msgstr "Titre &#60;head&#62;"
 
-#: app_main/templates/app_main/homepage.html:49
+#: app_main/templates/app_main/homepage.html:51
 msgid "Title &#60;h1&#62;"
 msgstr "Titre &#60;h1&#62;"
 
-#: app_main/templates/app_main/homepage.html:53
+#: app_main/templates/app_main/homepage.html:55
 msgid "Home text"
 msgstr "Texte de la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:57
+#: app_main/templates/app_main/homepage.html:59
 msgid "Bloc1 text: on left"
 msgstr "Texte du bloc 1 : à gauche"
 
-#: app_main/templates/app_main/homepage.html:61
+#: app_main/templates/app_main/homepage.html:63
 msgid "Bloc2 text: on right"
 msgstr "Texte du bloc 2 : à droite"
 
-#: app_main/templates/app_main/homepage.html:76
+#: app_main/templates/app_main/homepage.html:78
 msgid "Administrator"
 msgstr "Administrateur"
 
-#: app_main/templates/app_main/homepage.html:77
+#: app_main/templates/app_main/homepage.html:79
 msgid "Site params"
 msgstr "Paramètres du site"
 
-#: app_main/templates/app_main/homepage.html:82
+#: app_main/templates/app_main/homepage.html:84
 msgid "Max lines"
 msgstr "Nombre de lignes maximum"
 
-#: app_main/templates/app_main/homepage.html:86
+#: app_main/templates/app_main/homepage.html:88
 msgid "lines"
 msgstr "lignes"
 
-#: app_main/templates/app_main/homepage.html:92
+#: app_main/templates/app_main/homepage.html:94
 msgid "Max characters for a line"
 msgstr "Nombre maximum de caractères pour une ligne"
 
-#: app_main/templates/app_main/homepage.html:97
+#: app_main/templates/app_main/homepage.html:99
 msgid "characters"
 msgstr "caractères"
 
-#: app_main/templates/app_main/homepage.html:109
+#: app_main/templates/app_main/homepage.html:111
 msgid "Modify site params"
 msgstr "Modifier les paramètres du site"
 
