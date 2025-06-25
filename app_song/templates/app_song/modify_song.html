@@ -45,7 +45,7 @@
     {% csrf_token %}
     {% if moderator %}
         <div>
-            <input class="w-4 h-4" type="checkbox" name="box_song_approved"
+            <input class="w-4 h-4" style="width: 5%;" type="checkbox" name="box_song_approved"
             id="box_song_approved"{% if song.status >= 1 %} checked="checked"{% endif %} />
             <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
         </div>
