@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-25 11:39+0200\n"
+"POT-Creation-Date: 2025-06-25 17:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,10 +88,9 @@ msgstr ""
 #: app_song/templates/app_song/song_metadata.html:53
 #: app_song/templates/app_song/song_metadata.html:146
 #: app_song/templates/app_song/song_metadata.html:173
-#, fuzzy
-#| msgid "actions"
+#: app_song/templates/common/song_actions.html:3
 msgid "Actions"
-msgstr "Actions"
+msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:54
 msgid "Update"
@@ -103,7 +102,7 @@ msgstr "Modifier"
 #: app_animation/templates/common/animation_actions.html:7
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/app_song/song_metadata.html:158
-#: app_song/templates/common/song_actions.html:9
+#: app_song/templates/common/song_actions.html:8
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr "Supprimer"
@@ -215,10 +214,8 @@ msgid "Songs"
 msgstr "Chants"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:210
-#, fuzzy
-#| msgid "actions"
 msgid "Options"
-msgstr "Actions"
+msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:239
 msgid "chorus_prefix"
@@ -460,18 +457,17 @@ msgstr "Supprimer les couleurs de ce couplet"
 msgid "Return"
 msgstr "Retour"
 
-#: app_animation/templates/common/animation_actions.html:3
-#: app_song/templates/common/song_actions.html:3 chris/songs copy.html:19
-#: copy.html:49
+#: app_animation/templates/common/animation_actions.html:3 chris/songs
+#: copy.html:19 copy.html:49
 msgid "actions"
-msgstr "Actions"
+msgstr ""
 
 #: app_animation/templates/common/animation_actions.html:5
 msgid "Slide show"
 msgstr "Diaporama"
 
 #: app_animation/templates/common/animation_actions.html:6
-#: app_song/templates/common/song_actions.html:7
+#: app_song/templates/common/song_actions.html:6
 msgid "Modify"
 msgstr "Modifier"
 
@@ -915,7 +911,7 @@ msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
 #: app_song/templates/app_song/song_metadata.html:14
-#: app_song/templates/common/song_actions.html:8
+#: app_song/templates/common/song_actions.html:7
 msgid "Metadata"
 msgstr "Métadonnées"
 
@@ -1032,19 +1028,31 @@ msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
 #: app_song/templates/app_song/songs.html:114
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
-#: app_song/templates/common/song_actions.html:5
+#: app_song/templates/common/song_actions.html:4
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:11 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
 "chant"
+
+#: app_song/templates/common/song_actions.html:15
+msgid "Print"
+msgstr ""
+
+#: app_song/templates/common/song_actions.html:16
+msgid "Print song lyric"
+msgstr "Imprimer les paroles du chant"
+
+#: app_song/templates/common/song_actions.html:17
+msgid "Print song lyric - one chorus"
+msgstr "Imprimer les paroles du chant - un seul refrain"
 
 #: chris/songs copy.html:32
 msgid "update"

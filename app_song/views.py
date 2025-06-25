@@ -379,3 +379,45 @@ def song_metadata(request, song_id):
 def delete_genre(request, genre_id):
     delete_genre_in_search_params(request, genre_id)
     return redirect('songs')
+
+
+def print_lyrics(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics()
+
+    return render(request, 'app_song/print_lyrics.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
+    })
+
+
+def print_lyrics_one_chorus(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics()
+
+    return render(request, 'app_song/print_lyrics_one_chorus.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
+    })
