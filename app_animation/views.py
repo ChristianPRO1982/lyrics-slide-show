@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+import qrcode
+import io, base64
 from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
@@ -276,11 +278,25 @@ def lyrics_slide_show(request, animation_id):
         else:
             error = "[ERR17]"
 
+    # QR-CODE
+    img_qr_code = ''
+    try:
+        qr = qrcode.QRCode(box_size=10, border=4)
+        qr.add_data('http://127.0.0.1:8000/animations/lyrics_slide_show/qr-code/' + str(animation_id))
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    except Exception as e:
+        error = "[ERR35]"
+
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
         'group_selected': group_selected,
         'slides': slides,
         'slides_sliced': slides_sliced,
+        'img_qr_code': img_qr_code,
         'error': error,
         'css': css,
         'no_loader': no_loader,

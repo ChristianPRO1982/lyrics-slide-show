@@ -33,7 +33,17 @@ module.exports = {
     'h-4',
     'sticky',
     'top-0',
-    'h-36'
+    'h-36',
+    'h-24',
+    'w-24',
+    'h-full',
+    'w-full',
+    'h-screen',
+    'w-screen',
+    'max-w-screen',
+    'h-96',
+    'max-h-screen',
+    'object-contain',
   ],
   theme: {
     extend: {},

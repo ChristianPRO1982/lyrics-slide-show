@@ -81,6 +81,8 @@
     }
 
     {% comment %} alert(all_slides) {% endcomment %}
+
+    img_qr_code = '{{ img_qr_code }}';
 </script>
 {% include "common/group_selected.html" %}
 <hr>
@@ -210,6 +212,9 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <div id="dis_choruses" onClick="disChoruses(true);" class="flex w-1/2"></div>
         <div id="scrollable" onClick="scrollable();" class="flex w-1/2"></div>
     </div>
+    <div class="flex">
+        <div id="qr_code" onClick="qr_code();" class="flex w-1/2"></div>
+    </div>
 </div>
 <script>
     let current_song_id = "{{ slides.0.animation_song_id }}";
@@ -217,6 +222,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     display_choruses = 0;
     disChoruses(false);
     scrollable();
+    qr_code();
 </script>
 {% endblock bloc2 %}
 

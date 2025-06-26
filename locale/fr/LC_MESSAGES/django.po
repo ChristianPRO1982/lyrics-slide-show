@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 10:48+0200\n"
+"POT-Creation-Date: 2025-06-26 13:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -190,15 +190,15 @@ msgstr "Chants"
 msgid "Options"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:239
+#: app_animation/templates/app_animation/lyrics_slide_show.html:243
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:246
+#: app_animation/templates/app_animation/lyrics_slide_show.html:250
 msgid "Current slide"
 msgstr "Diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:269
+#: app_animation/templates/app_animation/lyrics_slide_show.html:273
 msgid "Preview next slide"
 msgstr "Diapo suivante"
 
@@ -555,7 +555,7 @@ msgid "Failed to copy URL."
 msgstr ""
 
 #: app_group/templates/app_group/modify_group.html:20
-msgid "error_group_ar_code"
+msgid "error_group_qr_code"
 msgstr "Erreur lors de la génération du QR code"
 
 #: app_group/templates/app_group/modify_group.html:23
@@ -1274,7 +1274,8 @@ msgstr ""
 
 #: templates/base.html:121
 msgid "ERR35"
-msgstr "[ERR35] no message"
+msgstr ""
+"[ERR35] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
 
 #: templates/base.html:123
 msgid "ERR36"
