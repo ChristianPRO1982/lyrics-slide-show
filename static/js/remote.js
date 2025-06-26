@@ -484,6 +484,10 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'l') {
         scrollable();
     }
+    // QR-Code
+    if (event.key.toLowerCase() === 'q') {
+        qr_code();
+    }
     // display current slide window
     if (event.key.toLowerCase() === 'o') {
         if (document.getElementById('draggableDivCurrentSlide').style.display=='block') {
@@ -557,10 +561,11 @@ function qr_code() {
 
     if (!div.classList.contains('active')) {
         if (displayWindow) {
-            displayWindow.document.getElementById('slideContent').innerHTML = '<img src="data:image/png;base64,'
+            displayWindow.document.getElementById('slideContent').innerHTML = txt_qr_code_for_lyrics
+                + '<img src="data:image/png;base64,'
                 + img_qr_code + '" alt="📱 '
-                + err_qr_code + '" style="height: 100%;" class="object-contain"></div>';
-            displayWindow.document.getElementById('slideContent').style.color = 'black';
+                + err_qr_code + '" style="height: 100%;" class="object-contain">';
+            displayWindow.document.getElementById('slideContent').style.color = 'white';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
         div.classList.add('active');
