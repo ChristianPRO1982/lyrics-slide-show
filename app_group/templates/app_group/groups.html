@@ -6,7 +6,9 @@
 {% block title_h1 %}{% trans "groups_list" %}{% endblock title_h1 %}
 {% block bloc1 %}
 {% if group_selected %}
-{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}
+<div class=group-badge>{{ group_selected }}</div>
+{% else %}
+<div>{% trans "No group selected" %}</div>
 {% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}

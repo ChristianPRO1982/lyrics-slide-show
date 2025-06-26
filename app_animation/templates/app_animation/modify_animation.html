@@ -5,7 +5,7 @@
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
 {% block bloc1 %}
-{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% include "common/group_selected.html" %}
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>

@@ -82,7 +82,7 @@
 
     {% comment %} alert(all_slides) {% endcomment %}
 </script>
-{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% include "common/group_selected.html" %}
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-25 17:03+0200\n"
+"POT-Creation-Date: 2025-06-26 10:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,33 +22,6 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:6
 msgid "animations_title"
 msgstr "Liste des animations"
-
-#: app_animation/templates/app_animation/animations.html:8
-#: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:87
-#: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:9
-msgid "groupe_selected1"
-msgstr "[ "
-
-#: app_animation/templates/app_animation/animations.html:8
-#: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:87
-#: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:9
-msgid "groupe_selected2"
-msgstr " ]"
-
-#: app_animation/templates/app_animation/animations.html:8
-#: app_animation/templates/app_animation/delete_animation.html:8
-#: app_animation/templates/app_animation/lyrics_slide_show.html:87
-#: app_animation/templates/app_animation/modify_animation.html:8
-#: app_animation/templates/app_animation/modify_colors.html:8
-#: app_group/templates/app_group/groups.html:9
-msgid "No group selected"
-msgstr "Aucun groupe sélectionné"
 
 #: app_animation/templates/app_animation/animations.html:11
 #: app_animation/templates/app_animation/animations.html:28
@@ -471,6 +444,11 @@ msgstr "Diaporama"
 msgid "Modify"
 msgstr "Modifier"
 
+#: app_animation/templates/common/group_selected.html:6
+#: app_group/templates/app_group/groups.html:11
+msgid "No group selected"
+msgstr "Aucun groupe sélectionné"
+
 #: app_group/templates/app_group/add_group.html:5
 msgid "Create a new group"
 msgstr "Création d'un nouveau groupe"
@@ -510,45 +488,45 @@ msgstr "Groupe enregistré."
 msgid "groups_list"
 msgstr "Liste des groupes"
 
-#: app_group/templates/app_group/groups.html:15
+#: app_group/templates/app_group/groups.html:17
 msgid "new_group"
 msgstr "Nouveau groupe"
 
-#: app_group/templates/app_group/groups.html:16
+#: app_group/templates/app_group/groups.html:18
 #: app_song/templates/app_song/songs.html:67
 msgid "add"
 msgstr "ajouter"
 
-#: app_group/templates/app_group/groups.html:27
+#: app_group/templates/app_group/groups.html:29
 msgid "This group is private"
 msgstr "Ce groupe est privé"
 
-#: app_group/templates/app_group/groups.html:30
-#: app_group/templates/app_group/groups.html:33
+#: app_group/templates/app_group/groups.html:32
+#: app_group/templates/app_group/groups.html:35
 msgid "You need to know the token for use this group"
 msgstr "Vous devez connaitre le QR-code (token) pour utiliser ce groupe"
 
-#: app_group/templates/app_group/groups.html:36
+#: app_group/templates/app_group/groups.html:38
 msgid "This group is open"
 msgstr "Ce groupe est ouvert"
 
-#: app_group/templates/app_group/groups.html:40
+#: app_group/templates/app_group/groups.html:42
 msgid "select"
 msgstr "sélectionner"
 
-#: app_group/templates/app_group/groups.html:42
+#: app_group/templates/app_group/groups.html:44
 msgid "member"
 msgstr "membre"
 
-#: app_group/templates/app_group/groups.html:44
+#: app_group/templates/app_group/groups.html:46
 msgid "in progress"
 msgstr "encours"
 
-#: app_group/templates/app_group/groups.html:46
+#: app_group/templates/app_group/groups.html:48
 msgid "join"
 msgstr "rejoindre"
 
-#: app_group/templates/app_group/groups.html:48
+#: app_group/templates/app_group/groups.html:50
 msgid "modify"
 msgstr "modifier"
 
@@ -767,11 +745,11 @@ msgstr "Annuler"
 msgid "song2dot"
 msgstr "Chant&nbsp;: "
 
-#: app_song/templates/app_song/goto_song.html:12
+#: app_song/templates/app_song/goto_song.html:15
 msgid "Artist:"
 msgstr "Artiste :"
 
-#: app_song/templates/app_song/goto_song.html:27
+#: app_song/templates/app_song/goto_song.html:25
 msgid "Messages:"
 msgstr "Messages&nbsp;:"
 

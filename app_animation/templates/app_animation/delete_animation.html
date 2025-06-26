@@ -5,7 +5,7 @@
 {% block title %}{% trans "confirm_delete_animation_title" %}{% endblock title %}
 {% block title_h1 %}{% trans "confirm_delete_animation_title" %}{% endblock title_h1 %}
 {% block bloc1 %}
-{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% include "common/group_selected.html" %}
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>

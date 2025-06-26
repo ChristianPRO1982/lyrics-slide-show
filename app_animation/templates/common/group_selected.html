@@ -1,0 +1,7 @@
+{% load i18n %}
+
+{% if group_selected %}
+<div class=group-badge>{{ group_selected }}</div>
+{% else %}
+<div>{% trans "No group selected" %}</div>
+{% endif %}
