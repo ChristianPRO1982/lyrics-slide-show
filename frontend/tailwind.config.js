@@ -27,6 +27,10 @@ module.exports = {
     'gap-6',
     'gap-8',
     'gap-10',
+    'mt-1',
+    'px-1',
+    'w-4',
+    'h-4',
   ],
   theme: {
     extend: {},

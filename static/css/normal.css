@@ -120,6 +120,13 @@ hr {
     background-color: #ff5555;
 }
 
+.L_HIGHLIGHT_GREEN {
+    color: #D2F5E3;
+    background-color: #18bb67;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
 .L_BOX_TOP {
     color: #6b1f1f;
     background-color: #eea78e;
@@ -207,6 +214,10 @@ hr {
     }
     .L_ERROR_OTHER {
         color: #ee0000;
+    }
+    .L_HIGHLIGHT_GREEN {
+        color: #3d5a4b;
+        background-color: #18bb67;
     }
     .slide {
         border-color: rgb(128, 9, 45);
