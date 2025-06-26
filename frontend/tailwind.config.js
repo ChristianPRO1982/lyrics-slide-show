@@ -33,6 +33,7 @@ module.exports = {
     'h-4',
     'sticky',
     'top-0',
+    'h-36'
   ],
   theme: {
     extend: {},
