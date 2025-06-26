@@ -69,7 +69,7 @@ hr {
 }
 
 .L_GENRE_BADGE:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
     background-color: rgb(206, 197, 194);
 }
 
