@@ -238,7 +238,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
 {% endfor %}
 </div>
-<div id="draggableDivCurrentSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(60,60,60,0.75); color:white; z-index:99; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+<div id="draggableDivCurrentSlide" style="display:none; position:fixed; top:100px; left:200px; width:500px; height:300px; background:rgba(60,60,60,0.75); color:white; z-index:99; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <div id="draggableHeaderCurrentSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
             <span><b>{% trans "Current slide" %}</b></span>
@@ -249,11 +249,11 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
             <a href="#" id="reduceDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='500px';
             document.getElementById('draggableDivCurrentSlide').style.height='300px';this.style.display='none';
             document.getElementById('enlargeDraggableDivCurrentSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➖</a>
             <a href="#" id="enlargeDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='700px';
             document.getElementById('draggableDivCurrentSlide').style.height='500px';this.style.display='none';
             document.getElementById('reduceDraggableDivCurrentSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➕</a>
             <a href="#" onclick="document.getElementById('draggableDivCurrentSlide').style.display='none';
             document.getElementById('showDraggableDivCurrentSlideLink').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
@@ -261,7 +261,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
     <div id="draggableDivCurrentSlideText" style="padding:16px;"></div>
 </div>
-<div id="draggableDivNextSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(30,30,30,0.75); color:white; z-index:100; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+<div id="draggableDivNextSlide" style="display:none; position:fixed; top:450px; left:200px; width:500px; height:300px; background:rgba(30,30,30,0.75); color:white; z-index:100; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <div id="draggableHeaderNextSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
             <span><b>{% trans "Preview next slide" %}</b></span>
@@ -272,11 +272,11 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
             <a href="#" id="reduceDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='500px';
             document.getElementById('draggableDivNextSlide').style.height='300px';this.style.display='none';
             document.getElementById('enlargeDraggableDivNextSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➖</a>
             <a href="#" id="enlargeDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='700px';
             document.getElementById('draggableDivNextSlide').style.height='500px';this.style.display='none';
             document.getElementById('reduceDraggableDivNextSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➕</a>
             <a href="#" onclick="document.getElementById('draggableDivNextSlide').style.display='none';
             document.getElementById('showDraggableDivNextSlideLink').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>

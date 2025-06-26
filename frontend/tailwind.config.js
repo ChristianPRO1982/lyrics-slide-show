@@ -32,6 +32,7 @@ module.exports = {
     'w-4',
     'h-4',
     'sticky',
+    'top-0',
   ],
   theme: {
     extend: {},
