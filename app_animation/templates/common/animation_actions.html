@@ -5,3 +5,4 @@
 {% if not "lyrics_slide_show" in request.path %}<a href="{% url "lyrics_slide_show" animation.animation_id %}">{% trans "Slide show" %}</a><br>{% endif %}
 {% if not "modify_animation" in request.path %}<a href="{% url "modify_animation" animation.animation_id %}">{% trans "Modify" %}</a><br>{% endif %}
 {% if not "delete_animation" in request.path %}<a href="{% url "delete_animation" animation.animation_id %}">{% trans "Delete" %}</a><br>{% endif %}
+<a href="{% url "all_songs_all_lyrics" animation.animation_id %}">{% trans "All lyrics" %}</a><br>

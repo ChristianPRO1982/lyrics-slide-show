@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 17:24+0200\n"
+"POT-Creation-Date: 2025-06-26 17:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -447,6 +447,10 @@ msgstr "Diaporama"
 #: app_song/templates/common/song_actions.html:6
 msgid "Modify"
 msgstr "Modifier"
+
+#: app_animation/templates/common/animation_actions.html:8
+msgid "All lyrics"
+msgstr "Toutes les paroles des chants"
 
 #: app_animation/templates/common/group_selected.html:6
 #: app_group/templates/app_group/groups.html:11

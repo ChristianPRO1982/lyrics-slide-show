@@ -282,7 +282,7 @@ def lyrics_slide_show(request, animation_id):
     img_qr_code = ''
     try:
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data('http://127.0.0.1:8000/animations/lyrics_slide_show/qr-code/' + str(animation_id))
+        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id))
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
@@ -387,4 +387,16 @@ def modify_colors(request, xxx_id=None):
         'error': error,
         'css': css,
         'no_loader': no_loader,
+    })
+
+
+def all_songs_all_lyrics(request, animation_id):
+    animation = Animation.get_animation_by_id(int(animation_id))
+
+    full_title = ''
+    lyrics = ''
+    
+    return render(request, 'app_animation/all_lyrics.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
     })

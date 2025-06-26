@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ full_title }}</title>
+    <meta content="author" name="Chris">
+    <meta content="description" name="cARThographie - des outils gratuits pour vos projets">
+    <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
+    <style>
+        body {
+            background: #000;
+            color: #ddd;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #001;
+                color: #229;
+            }
+        }
+    </style>
+</head>
+<body>
+    {{ lyrics|safe }}
+</body>
+</html>
