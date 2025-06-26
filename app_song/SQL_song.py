@@ -179,7 +179,7 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
         return lyrics
     
 
-    def get_lyrics_one_chorus(self):
+    def get_lyrics_to_display(self, display_the_chorus_once):
         choruses = []
         choruses_printed = False
         lyrics = ""
@@ -199,11 +199,11 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                 if verse.text and verse.like_chorus:
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
-                    if not choruses_printed:
+                    if not choruses_printed or not display_the_chorus_once:
                         lyrics += "<br><br>".join(choruses) + "<br><br>"
                         choruses_printed = True
             elif start_by_chorus:
-                if not choruses_printed:
+                if not choruses_printed or not display_the_chorus_once:
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
                     choruses_printed = True
             start_by_chorus = False

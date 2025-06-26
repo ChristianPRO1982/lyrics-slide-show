@@ -394,7 +394,7 @@ def print_lyrics(request, song_id):
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False)
 
     return render(request, 'app_song/print_lyrics.html', {
         'full_title': full_title,
@@ -415,7 +415,7 @@ def print_lyrics_one_chorus(request, song_id):
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_one_chorus()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True)
 
     return render(request, 'app_song/print_lyrics_one_chorus.html', {
         'full_title': full_title,
