@@ -31,6 +31,7 @@ module.exports = {
     'px-1',
     'w-4',
     'h-4',
+    'sticky',
   ],
   theme: {
     extend: {},
