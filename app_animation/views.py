@@ -391,10 +391,19 @@ def modify_colors(request, xxx_id=None):
 
 
 def all_songs_all_lyrics(request, animation_id):
-    animation = Animation.get_animation_by_id(int(animation_id))
+    animation = Animation.get_animation_by_id_without_group_id(int(animation_id))
 
-    full_title = ''
-    lyrics = ''
+    if not animation:
+        return redirect('animations')
+    
+    animation.all_songs()
+    summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
+
+    for song in animation.songs:
+        summary += f'<a class="" href="#{song['num']}">{song['full_title']}</a><br>'
+
+    full_title = animation.name
+    lyrics = summary
     
     return render(request, 'app_animation/all_lyrics.html', {
         'full_title': full_title,

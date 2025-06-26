@@ -80,6 +80,25 @@ SELECT *
                        font_size=row[8],
                        padding=row[9])
         return None
+    
+
+    @classmethod
+    def get_animation_by_id_without_group_id(cls, animation_id):
+        with connection.cursor() as cursor:
+            request = """
+SELECT animation_id, name
+  FROM l_animations
+ WHERE animation_id = %s
+"""
+            params = [animation_id]
+            
+            create_SQL_log(code_file, "Animations.get_animation_by_id", "SELECT_10", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+        if row:
+            return cls(animation_id=row[0],
+                       name=row[1])
+        return None
 
 
     def save(self):
