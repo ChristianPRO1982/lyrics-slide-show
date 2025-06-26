@@ -65,11 +65,12 @@ hr {
     font-size: 0.875rem;
     font-weight: 500;
     border: 1px solid #8b1e1e;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .L_GENRE_BADGE:hover {
-    background-color: #fff4f0;
+    transform: scale(1.15);
+    background-color: rgb(206, 197, 194);
 }
 
 .L_BUTTON_LIKE_A_LINK {
@@ -214,7 +215,7 @@ hr {
     }
 
     .L_GENRE_BADGE:hover {
-        background-color: #3b2323;
+        background-color: #502f2f;
     }
     .L_BUTTON_LIKE_A_LINK {
         color: #776b66;
