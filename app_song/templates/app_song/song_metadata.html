@@ -7,7 +7,7 @@
 {% block bloc1 %}
 {% include "common/song_actions.html" %}
 {% endblock bloc1 %}
-{% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}{% include "common/song_genres.html" %}<hr>{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 <h2 class="L_H2">{{ song.sub_title }}</h2>

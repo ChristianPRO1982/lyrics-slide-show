@@ -11,7 +11,7 @@
         <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}
 {% endblock bloc1 %}
-{% block bloc2 %}{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}{% include "common/song_genres.html" %}<hr>{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 {% if valided %}

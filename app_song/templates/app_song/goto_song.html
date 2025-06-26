@@ -8,20 +8,18 @@
 {% include "common/song_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
+{% include "common/song_genres.html" %}
+
 {% if song.artist %}
-{% trans "Artist:" %} {{ song.artist }}
 <hr>
+{% trans "Artist:" %} {{ song.artist }}
 {% endif %}
+
+{% if song.description %}
+<hr>
 {{ song.description|linebreaksbr|safe }}
-<br><br>
-{% for genre in song.genres %}
-{% if genre.is_new_group %}
-<h4 class="L_H4">{{ genre.group }}</h4>
 {% endif %}
-<span class="L_GENRE_BADGE">
-    {{ genre.emoji_random }} {{ genre.name }}
-</span>
-{% endfor %}
+
 {% if song_messages %}
 <hr>
 <h3 class="L_H3">⁉️ {% trans "Messages:" %}</h3>
