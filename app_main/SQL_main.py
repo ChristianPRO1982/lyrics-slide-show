@@ -134,7 +134,7 @@ SELECT song_id,
 
     def get_approved_songs_stats(self):
         request = """
-SELECT SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS active_count,
+SELECT SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) AS active_count,
        COUNT(*) AS total_count,
        ROUND(CASE WHEN COUNT(*) = 0 THEN 0
                   ELSE SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) / COUNT(*) * 100.0
