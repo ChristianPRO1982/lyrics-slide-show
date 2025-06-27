@@ -63,7 +63,7 @@ class Song:
                       search_everywhere: bool = False,
                       search_logic: int = 0,
                       search_genres: str = '',
-                      search_song_approved: bool = False) -> list[dict[str, Any]]:
+                      search_song_approved: int = 0) -> list[dict[str, Any]]:
         
         search_genres_is_null = '0'
         if not search_genres:
@@ -116,8 +116,9 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
           )
       AND (lg.genre_id IN ({search_genres})
            OR {search_genres_is_null} = 1){search_logic_SQL}
-      AND ({search_song_approved} IS FALSE
-           OR ls1.status > 0)
+      AND ({search_song_approved} = 0
+           OR {search_song_approved} = 1 AND ls1.status > 0
+           OR {search_song_approved} = 2 AND ls1.status = 0)
  GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
           CONCAT(ls1.title,
                  CASE
@@ -150,6 +151,17 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                  'full_title': row[6],
                  'genres': row[7]
                  } for row in rows]
+    
+
+    @staticmethod
+    def get_total_songs():
+        with connection.cursor() as cursor:
+            request = "SELECT COUNT(1) FROM l_songs"
+
+            create_SQL_log(code_file, "Song.get_total_songs", "SELECT_10", request, [])
+            cursor.execute(request)
+            row = cursor.fetchone()
+        return row[0] if row else 0
     
 
     def get_lyrics(self):

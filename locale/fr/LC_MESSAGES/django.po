@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 17:40+0200\n"
+"POT-Creation-Date: 2025-06-27 12:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -373,7 +373,7 @@ msgid "Go to the song"
 msgstr "Aller vers le chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:325
-#: app_song/templates/app_song/songs.html:27
+#: app_song/templates/app_song/songs.html:36
 msgid "Song research"
 msgstr "Recherche de chant"
 
@@ -501,7 +501,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:67
+#: app_song/templates/app_song/songs.html:92
 msgid "add"
 msgstr "ajouter"
 
@@ -821,6 +821,7 @@ msgstr ""
 "administrateurs peuvent valider un chant."
 
 #: app_song/templates/app_song/modify_song.html:50
+#: app_song/templates/app_song/songs.html:53
 msgid "Song approved"
 msgstr "Chant validé"
 
@@ -958,62 +959,86 @@ msgstr "Nouveau genre"
 msgid "songs_list"
 msgstr "Liste des chants"
 
-#: app_song/templates/app_song/songs.html:12
+#: app_song/templates/app_song/songs.html:13
+msgid "Songs:"
+msgstr "Chants&nbsp;:"
+
+#: app_song/templates/app_song/songs.html:14
+msgid "Total songs in DB"
+msgstr "Nombre total de chants en base de données"
+
+#: app_song/templates/app_song/songs.html:14
+msgid "Total ⓘ:"
+msgstr "Total ⓘ&nbsp;:"
+
+#: app_song/templates/app_song/songs.html:16
+msgid "Total songs in save search"
+msgstr "Nombre de chants retournés par la recherche sauvegardée"
+
+#: app_song/templates/app_song/songs.html:16
+msgid "Search ⓘ:"
+msgstr "Recherche ⓘ&nbsp;:"
+
+#: app_song/templates/app_song/songs.html:21
 msgid "✔️: Song valided"
 msgstr "✔️ : Chant validé"
 
-#: app_song/templates/app_song/songs.html:13
+#: app_song/templates/app_song/songs.html:22
 msgid "✔️⁉️: Song valided with messages"
 msgstr "✔️⁉️ : Chant validé avec des messages"
 
-#: app_song/templates/app_song/songs.html:31
-#: app_song/templates/app_song/songs.html:60
+#: app_song/templates/app_song/songs.html:40
+#: app_song/templates/app_song/songs.html:85
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
-#: app_song/templates/app_song/songs.html:35
+#: app_song/templates/app_song/songs.html:44
 msgid "Search in description and lyrics"
 msgstr "Recherche dans les descriptions et le texte des chants"
 
-#: app_song/templates/app_song/songs.html:37
+#: app_song/templates/app_song/songs.html:46
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:39
+#: app_song/templates/app_song/songs.html:60
+msgid "Song not approved"
+msgstr "Chant non validé"
+
+#: app_song/templates/app_song/songs.html:63
 msgid "Logic by:"
 msgstr "Logique par :"
 
-#: app_song/templates/app_song/songs.html:42
+#: app_song/templates/app_song/songs.html:66
 msgid "OR"
 msgstr "OU"
 
-#: app_song/templates/app_song/songs.html:46
+#: app_song/templates/app_song/songs.html:70
 msgid "AND"
 msgstr "ET"
 
-#: app_song/templates/app_song/songs.html:56
+#: app_song/templates/app_song/songs.html:81
 msgid "save and search"
 msgstr "sauvegarder et rechercher"
 
-#: app_song/templates/app_song/songs.html:56
+#: app_song/templates/app_song/songs.html:81
 msgid "help_save_search"
 msgstr ""
 "Ce bouton permet de sauvegarder votre recherche. Cliquer sur “réinitialiser” "
 "pour affiche tout les chants."
 
-#: app_song/templates/app_song/songs.html:57
+#: app_song/templates/app_song/songs.html:82
 msgid "reset"
 msgstr "réinitialiser"
 
-#: app_song/templates/app_song/songs.html:65
+#: app_song/templates/app_song/songs.html:90
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:66
+#: app_song/templates/app_song/songs.html:91
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:114
+#: app_song/templates/app_song/songs.html:141
 #: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"

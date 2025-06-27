@@ -9,6 +9,15 @@
         {% trans "contact_moderators_info_gen" %}
         <br><br><hr><br>
     {% endif %}
+
+    <span>{% trans "Songs:" %}</span> <span id="nb_song"></span><br>
+    <span title="{% trans "Total songs in DB" %}">{% trans "Total ⓘ:" %}</span> <span>{{ total_songs }}</span>
+    {% if user.is_authenticated %}
+    <br><span title="{% trans "Total songs in save search" %}">{% trans "Search ⓘ:" %}</span> <span>{{ total_search_songs }}</span>
+    {% endif %}
+    
+    <br><br>
+
     {% trans "✔️: Song valided" %}<br>
     {% trans "✔️⁉️: Song valided with messages" %}
 {% endblock bloc1 %}
@@ -36,11 +45,21 @@
         </label><br>
         <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
         <div id="advancedSearch" style="display: none; max-height: 15em; overflow: auto;">
+            <br>
             <label>
-                <input type="checkbox" name="chk_search_song_approved"
-                style="width: 15%;" {% if search_song_approved %}checked{% endif %}>
+                <input type="checkbox" id="chk_search_song_approved" name="chk_search_song_approved"
+                onclick="if(this.checked){document.getElementById('chk_search_song_not_approved').checked=false;}"
+                style="width: 10%;" {% if search_song_approved == 1 %}checked{% endif %}>
                 {% trans "Song approved" %}
-            </label><br>
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="chk_search_song_not_approved" name="chk_search_song_not_approved"
+                onclick="if(this.checked){document.getElementById('chk_search_song_approved').checked=false;}"
+                style="width: 10%;" {% if search_song_approved == 2 %}checked{% endif %}>
+                {% trans "Song not approved" %}
+            </label>
+            <br><br>
             {% trans "Logic by:" %}
             <label>
                 <input type="radio" name="rad_search_logic" value="or" style="width: 10%;" {% if not search_logic %}checked{% endif %}>
@@ -96,6 +115,8 @@
         const filteredSongs = query.length >= 3
             ? songs.filter(song => song.full_title.toLowerCase().includes(query.toLowerCase()))
             : songs;
+
+        document.getElementById('nb_song').textContent = filteredSongs.length;
         
         filteredSongs.forEach(song => {
             const li = document.createElement('li');

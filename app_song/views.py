@@ -49,13 +49,18 @@ def songs(request):
                     if search_genres:
                         search_genres += ','
                     search_genres += str(genre.genre_id)
+            search_song_approved = 0
+            if request.POST.get('chk_search_song_approved', 'off') == 'on':
+                search_song_approved = 1
+            if request.POST.get('chk_search_song_not_approved', 'off') == 'on':
+                search_song_approved = 2
             add_search_params(
                 request,
                 request.POST.get('txt_search', '').strip(),
                 request.POST.get('chk_search_everywhere', 'off') == 'on',
                 search_logic,
                 search_genres,
-                request.POST.get('chk_search_song_approved', 'off') == 'on'
+                search_song_approved
             )
 
         if 'btn_reset_search' in request.POST:
@@ -83,6 +88,8 @@ def songs(request):
         'search_logic': search_params['search_logic'],
         'search_genres': search_genres_list,
         'search_song_approved': search_params['search_song_approved'],
+        'total_search_songs': len(songs),
+        'total_songs': Song.get_total_songs(),
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
