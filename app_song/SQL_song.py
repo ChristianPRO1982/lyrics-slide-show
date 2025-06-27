@@ -62,7 +62,8 @@ class Song:
     def get_all_songs(search_txt: str = '',
                       search_everywhere: bool = False,
                       search_logic: int = 0,
-                      search_genres: str = '') -> list[dict[str, Any]]:
+                      search_genres: str = '',
+                      search_song_approved: bool = False) -> list[dict[str, Any]]:
         
         search_genres_is_null = '0'
         if not search_genres:
@@ -115,6 +116,8 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
           )
       AND (lg.genre_id IN ({search_genres})
            OR {search_genres_is_null} = 1){search_logic_SQL}
+      AND ({search_song_approved} IS FALSE
+           OR ls1.status > 0)
  GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
           CONCAT(ls1.title,
                  CASE

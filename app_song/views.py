@@ -54,17 +54,19 @@ def songs(request):
                 request.POST.get('txt_search', '').strip(),
                 request.POST.get('chk_search_everywhere', 'off') == 'on',
                 search_logic,
-                search_genres
+                search_genres,
+                request.POST.get('chk_search_song_approved', 'off') == 'on'
             )
 
         if 'btn_reset_search' in request.POST:
-            add_search_params(request, '', 0, 0, '')
+            add_search_params(request, '', 0, 0, '', 0)
             
     search_params = get_search_params(request)
     songs = Song.get_all_songs(search_params['search_txt'],
                                search_params['search_everywhere'],
                                search_params['search_logic'],
-                               search_params['search_genres'])
+                               search_params['search_genres'],
+                               search_params['search_song_approved'])
 
     # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
     search_genres_list = []
@@ -80,6 +82,7 @@ def songs(request):
         'search_everywhere': search_params['search_everywhere'],
         'search_logic': search_params['search_logic'],
         'search_genres': search_genres_list,
+        'search_song_approved': search_params['search_song_approved'],
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,

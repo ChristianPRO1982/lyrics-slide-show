@@ -817,12 +817,12 @@ msgstr ""
 #: app_song/templates/app_song/modify_song.html:50
 msgid "song_approved_info"
 msgstr ""
-"Une chanson validée ne peut plus être modifée. Seul les modérateurs et les "
-"administrateurs peuvent valider une chanson."
+"Un chant validé ne peut plus être modifé. Seul les modérateurs et les "
+"administrateurs peuvent valider un chant."
 
 #: app_song/templates/app_song/modify_song.html:50
 msgid "Song approved"
-msgstr "Chanson validée"
+msgstr "Chant validé"
 
 #: app_song/templates/app_song/modify_song.html:56 chris/songs copy.html:17
 #: copy.html:47
@@ -1257,7 +1257,7 @@ msgstr "Seul les administrateurs peuvent modifier les paramètres du site."
 
 #: templates/base.html:111
 msgid "ERR30"
-msgstr "Aucune slide à afficher ! Ajouter des chansons avec du texte..."
+msgstr "Aucune slide à afficher ! Ajouter des chants avec du texte..."
 
 #: templates/base.html:113
 msgid "ERR31"

@@ -20,6 +20,7 @@ class User:
         self.search_everywhere = None
         self.search_logic = None
         self.search_genres = None
+        self.search_song_approved = None
         self.first_name = None
         self.last_name = None
         self.is_superuser = None
@@ -32,7 +33,7 @@ class User:
 
     def get_user_by_username(self):
         request = """
-    SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic, cu.search_genres,
+    SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic, cu.search_genres, cu.search_song_approved,
            au.first_name, au.last_name, au.is_superuser, au.is_staff
       FROM c_users cu
 RIGHT JOIN auth_user au ON au.username = cu.username
@@ -51,10 +52,11 @@ RIGHT JOIN auth_user au ON au.username = cu.username
             self.search_everywhere = row[2]
             self.search_logic = row[3]
             self.search_genres = row[4]
-            self.first_name = row[5]
-            self.last_name = row[6]
-            self.is_superuser = row[7]
-            self.is_staff = row[8]
+            self.search_song_approved = row[5]
+            self.first_name = row[6]
+            self.last_name = row[7]
+            self.is_superuser = row[8]
+            self.is_staff = row[9]
 
 
     def init_c_user(self):
@@ -76,10 +78,19 @@ UPDATE c_users
        search_txt = %s,
        search_everywhere = %s,
        search_logic = %s,
-       search_genres = %s
+       search_genres = %s,
+       search_song_approved = %s
  WHERE username = %s
 """
-        params = [self.theme, self.search_txt, self.search_everywhere, self.search_logic, self.search_genres, self.username]
+        params = [
+            self.theme,
+            self.search_txt,
+            self.search_everywhere,
+            self.search_logic,
+            self.search_genres,
+            self.search_song_approved,
+            self.username
+            ]
 
         create_SQL_log(code_file, "User.save", "UPDATE_1", request, params)
         with connection.cursor() as cursor:

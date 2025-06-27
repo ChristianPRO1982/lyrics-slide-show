@@ -26,13 +26,14 @@ def save_user_theme(request, css):
         user.theme = css
         user.save()
 
-def add_search_params(request, search_txt, search_everywhere, search_logic, search_genres):
+def add_search_params(request, search_txt, search_everywhere, search_logic, search_genres, search_song_approved):
     if request.user.is_authenticated:
         user = User(request.user.username)
         user.search_txt = search_txt
         user.search_everywhere = search_everywhere
         user.search_logic = search_logic
         user.search_genres = search_genres
+        user.search_song_approved = search_song_approved
         user.save()
 
 def delete_genre_in_search_params(request, genre_id):
@@ -50,6 +51,7 @@ def get_search_params(request):
             'search_everywhere': user.search_everywhere,
             'search_logic': user.search_logic,
             'search_genres': user.search_genres,
+            'search_song_approved': user.search_song_approved,
         }
     else:
         return {
@@ -57,6 +59,7 @@ def get_search_params(request):
             'search_everywhere': 0,
             'search_logic': 0,
             'search_genres': '',
+            'search_song_approved': 0,
         }
 
 def strip_html(html_text):
