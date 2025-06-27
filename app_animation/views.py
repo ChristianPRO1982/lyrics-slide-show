@@ -282,7 +282,7 @@ def lyrics_slide_show(request, animation_id):
     img_qr_code = ''
     try:
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id))
+        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id)) + '/'
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
