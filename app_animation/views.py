@@ -398,12 +398,23 @@ def all_songs_all_lyrics(request, animation_id):
     
     animation.all_songs()
     summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
-
+    full_title = animation.name
+    lyrics = ''
+    song_params = get_song_params()
+    
     for song in animation.songs:
         summary += f'<a class="" href="#{song['num']}">{song['full_title']}</a><br>'
 
-    full_title = animation.name
-    lyrics = summary
+    for song in animation.songs:
+        song_info = Song(song['song_id'])
+        song_info.verse_max_lines = song_params['verse_max_lines']
+        song_info.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+        song_info.get_verses()
+        lyrics += summary + '<br><hr><br>'
+        lyrics += f'<a id="{song['num']}"></a>'
+        lyrics += f'<h2>{song['full_title']}</h2>'
+        lyrics += song_info.get_lyrics_to_display(False)
+
     
     return render(request, 'app_animation/all_lyrics.html', {
         'full_title': full_title,
