@@ -282,7 +282,7 @@ def lyrics_slide_show(request, animation_id):
     img_qr_code = ''
     try:
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id)) + '/'
+        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
@@ -402,18 +402,20 @@ def all_songs_all_lyrics(request, animation_id):
     lyrics = ''
     song_params = get_song_params()
     
+    summary += "<ol>"
     for song in animation.songs:
-        summary += f'<a class="" href="#{song['num']}">{song['full_title']}</a><br>'
+        summary += f'<li><a class="" href="#{song['num']}">{song['full_title']}</a></li>'
+    summary += "</ol>"
 
     for song in animation.songs:
         song_info = Song(song['song_id'])
         song_info.verse_max_lines = song_params['verse_max_lines']
         song_info.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song_info.get_verses()
-        lyrics += summary + '<br><hr><br>'
+        lyrics += '<hr>' + summary + '<hr>'
         lyrics += f'<a id="{song['num']}"></a>'
-        lyrics += f'<h2>{song['full_title']}</h2>'
-        lyrics += song_info.get_lyrics_to_display(False)
+        lyrics += f'<h2><i>{song['full_title']}</i></h2>'
+        lyrics += '<p>' + song_info.get_lyrics_to_display(False) + '</p>'
 
     
     return render(request, 'app_animation/all_lyrics.html', {
