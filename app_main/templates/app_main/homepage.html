@@ -36,6 +36,9 @@
         <li><a href="{% url 'modify_song' song.song_id %}">{{ song.full_title }}</a></li>
         {% endfor %}
     </ul>
+    <h4 class="L_H4">{% trans "Song statistics" %}</h4>
+    <p>{{ approved_songs_stats.approved_percent|floatformat:1 }}&#8239;% {% trans "songs approved" %}
+    ({{ approved_songs_stats.approved_songs }} / {{ approved_songs_stats.total_songs }})</p><br>
     <h3 class="L_H3">{% trans "Modify homepage" %}</h3>
     {% if modify_homepage %}
         <form method="post" action="{% url "homepage" %}">

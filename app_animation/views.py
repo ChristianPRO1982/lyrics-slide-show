@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+import qrcode
+import io, base64
 from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
@@ -276,11 +278,25 @@ def lyrics_slide_show(request, animation_id):
         else:
             error = "[ERR17]"
 
+    # QR-CODE
+    img_qr_code = ''
+    try:
+        qr = qrcode.QRCode(box_size=10, border=4)
+        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    except Exception as e:
+        error = "[ERR35]"
+
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
         'group_selected': group_selected,
         'slides': slides,
         'slides_sliced': slides_sliced,
+        'img_qr_code': img_qr_code,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -371,4 +387,38 @@ def modify_colors(request, xxx_id=None):
         'error': error,
         'css': css,
         'no_loader': no_loader,
+    })
+
+
+def all_songs_all_lyrics(request, animation_id):
+    animation = Animation.get_animation_by_id_without_group_id(int(animation_id))
+
+    if not animation:
+        return redirect('animations')
+    
+    animation.all_songs()
+    summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
+    full_title = animation.name
+    lyrics = ''
+    song_params = get_song_params()
+    
+    summary += "<ol>"
+    for song in animation.songs:
+        summary += f'<li><a class="" href="#{song['num']}">{song['full_title']}</a></li>'
+    summary += "</ol>"
+
+    for song in animation.songs:
+        song_info = Song(song['song_id'])
+        song_info.verse_max_lines = song_params['verse_max_lines']
+        song_info.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+        song_info.get_verses()
+        lyrics += '<hr>' + summary + '<hr>'
+        lyrics += f'<a id="{song['num']}"></a>'
+        lyrics += f'<h2><i>{song['full_title']}</i></h2>'
+        lyrics += '<p>' + song_info.get_lyrics_to_display(False) + '</p>'
+
+    
+    return render(request, 'app_animation/all_lyrics.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
     })

@@ -49,22 +49,29 @@ def songs(request):
                     if search_genres:
                         search_genres += ','
                     search_genres += str(genre.genre_id)
+            search_song_approved = 0
+            if request.POST.get('chk_search_song_approved', 'off') == 'on':
+                search_song_approved = 1
+            if request.POST.get('chk_search_song_not_approved', 'off') == 'on':
+                search_song_approved = 2
             add_search_params(
                 request,
                 request.POST.get('txt_search', '').strip(),
                 request.POST.get('chk_search_everywhere', 'off') == 'on',
                 search_logic,
-                search_genres
+                search_genres,
+                search_song_approved
             )
 
         if 'btn_reset_search' in request.POST:
-            add_search_params(request, '', 0, 0, '')
+            add_search_params(request, '', 0, 0, '', 0)
             
     search_params = get_search_params(request)
     songs = Song.get_all_songs(search_params['search_txt'],
                                search_params['search_everywhere'],
                                search_params['search_logic'],
-                               search_params['search_genres'])
+                               search_params['search_genres'],
+                               search_params['search_song_approved'])
 
     # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
     search_genres_list = []
@@ -80,6 +87,9 @@ def songs(request):
         'search_everywhere': search_params['search_everywhere'],
         'search_logic': search_params['search_logic'],
         'search_genres': search_genres_list,
+        'search_song_approved': search_params['search_song_approved'],
+        'total_search_songs': len(songs),
+        'total_songs': Song.get_total_songs(),
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
@@ -379,3 +389,45 @@ def song_metadata(request, song_id):
 def delete_genre(request, genre_id):
     delete_genre_in_search_params(request, genre_id)
     return redirect('songs')
+
+
+def print_lyrics(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False)
+
+    return render(request, 'app_song/print_lyrics.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
+    })
+
+
+def print_lyrics_one_chorus(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True)
+
+    return render(request, 'app_song/print_lyrics_one_chorus.html', {
+        'full_title': full_title,
+        'lyrics': lyrics,
+    })

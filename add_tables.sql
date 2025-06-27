@@ -15,16 +15,18 @@ CREATE TABLE `c_groups` (
 ) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `c_users` (
-  `username` varchar(150) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `theme` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'normal.css',
+  `id` mediumint NOT NULL AUTO_INCREMENT,
+  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `theme` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'normal.css',
   `search_txt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_everywhere` tinyint(1) NOT NULL DEFAULT '0',
   `search_logic` tinyint(1) NOT NULL DEFAULT '0',
   `search_genres` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-ALTER TABLE carthographie.c_users ADD CONSTRAINT c_users_auth_user_FK FOREIGN KEY (username) REFERENCES carthographie.auth_user(username) ON DELETE CASCADE ON UPDATE CASCADE;
+  `search_song_approved` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `c_users_auth_user_FK` (`username`),
+  CONSTRAINT `c_users_auth_user_FK` FOREIGN KEY (`username`) REFERENCES `auth_user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `c_group_user` (
   `group_id` mediumint NOT NULL,

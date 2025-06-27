@@ -1,4 +1,5 @@
 from django.db import connection
+from django.utils import translation
 from typing import Any
 import random
 from app_logs.utils import create_SQL_log
@@ -61,7 +62,8 @@ class Song:
     def get_all_songs(search_txt: str = '',
                       search_everywhere: bool = False,
                       search_logic: int = 0,
-                      search_genres: str = '') -> list[dict[str, Any]]:
+                      search_genres: str = '',
+                      search_song_approved: int = 0) -> list[dict[str, Any]]:
         
         search_genres_is_null = '0'
         if not search_genres:
@@ -114,6 +116,9 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
           )
       AND (lg.genre_id IN ({search_genres})
            OR {search_genres_is_null} = 1){search_logic_SQL}
+      AND ({search_song_approved} = 0
+           OR {search_song_approved} = 1 AND ls1.status > 0
+           OR {search_song_approved} = 2 AND ls1.status = 0)
  GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
           CONCAT(ls1.title,
                  CASE
@@ -148,6 +153,17 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                  } for row in rows]
     
 
+    @staticmethod
+    def get_total_songs():
+        with connection.cursor() as cursor:
+            request = "SELECT COUNT(1) FROM l_songs"
+
+            create_SQL_log(code_file, "Song.get_total_songs", "SELECT_10", request, [])
+            cursor.execute(request)
+            row = cursor.fetchone()
+        return row[0] if row else 0
+    
+
     def get_lyrics(self):
         choruses = []
         lyrics = ""
@@ -170,6 +186,47 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                     lyrics += "<br><br>".join(choruses) + "<br><br>"
             elif start_by_chorus:
                 lyrics += "<br><br>".join(choruses) + "<br><br>"
+            start_by_chorus = False
+        
+        if not lyrics:
+            lyrics = "<br><br>".join(choruses)
+
+        
+        return lyrics
+    
+
+    def get_lyrics_to_display(self, display_the_chorus_once):
+        choruses = []
+        choruses_printed = False
+        if translation.get_language() == 'fr':
+            chorus_marker = "R. "
+        else:
+            chorus_marker = "C "
+        lyrics = ""
+
+        # Get all choruses
+        for verse in self.verses:
+            if verse.chorus == 1:
+                choruses.append("<b>" + chorus_marker + verse.text.replace("\n", "<br>") + "</b>")
+                chorus_marker = ''
+
+        start_by_chorus = True
+        for verse in self.verses:
+            if verse.chorus != 1:
+                if verse.text and not verse.like_chorus:
+                    if not verse.notcontinuenumbering:
+                        lyrics += str(verse.num_verse) + ". "
+                    lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
+                if verse.text and verse.like_chorus:
+                    lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
+                if not verse.followed and not verse.notdisplaychorusnext and choruses:
+                    if not choruses_printed or not display_the_chorus_once:
+                        lyrics += "<br><br>".join(choruses) + "<br><br>"
+                        choruses_printed = True
+            elif start_by_chorus:
+                if not choruses_printed or not display_the_chorus_once:
+                    lyrics += "<br><br>".join(choruses) + "<br><br>"
+                    choruses_printed = True
             start_by_chorus = False
         
         if not lyrics:
@@ -327,18 +384,22 @@ ORDER BY link
 
         with connection.cursor() as cursor:
             request = """
-SELECT lg.genre_id,
-       lg.`group`,
-       lg.name,
-       CASE
-           WHEN @prev_group IS NULL OR lg.`group` != @prev_group THEN 1
-           ELSE 0
-       END AS is_new_group,
-       @prev_group := lg.`group`
-  FROM (SELECT * FROM l_song_genre WHERE song_id = %s) lsg
-  JOIN l_genres lg ON lg.genre_id = lsg.genre_id
- CROSS JOIN (SELECT @prev_group := NULL) vars
-ORDER BY lg.`group`, lg.name
+    SELECT tt.genre_id,
+           tt.`group`,
+           tt.name,
+           CASE
+               WHEN @prev_group IS NULL OR tt.`group` != @prev_group THEN 1
+               ELSE 0
+           END AS is_new_group,
+           @prev_group := tt.`group`
+      FROM (  SELECT lg.genre_id,
+                     lg.`group`,
+                     lg.name
+                FROM l_song_genre lsg
+                JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+               WHERE lsg.song_id = %s
+            ORDER BY lg.`group`, lg.name) AS tt
+CROSS JOIN (SELECT @prev_group := NULL) vars
 """
             params = [self.song_id]
 

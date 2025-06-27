@@ -63,6 +63,8 @@ def homepage(request):
             else:
                 error = '[ERR28]'
 
+    songs.get_approved_songs_stats()
+
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
@@ -72,6 +74,7 @@ def homepage(request):
         'admin': admin,
         'site': site,
         'songs': songs.songs,
+        'approved_songs_stats': songs.songs_stats,
         'modify_homepage': modify_homepage,
         'modify_site_params': modify_site_params,
         'site_params_max_lines': range(3, 21),

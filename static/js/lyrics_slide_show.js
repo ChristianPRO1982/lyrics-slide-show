@@ -6,12 +6,16 @@ if (pageLanguage.toLowerCase() == 'fr-fr') {
     txt_Add = "Ajouter";
     txt_Modify = "Modifier";
     txt_Delete = "Supprimer";
+    err_qr_code = "Erreur lors de la génération du QR code";
+    txt_qr_code_for_lyrics = "QR code pour les paroles des chants";
 } else {
     txt_fullscreen = 'PRESS F11 ON THIS SCREEN';
     txt_Description = "Description";
     txt_Add = "Add";
     txt_Modify = "Modify";
     txt_Delete = "Delete";
+    err_qr_code = "Error generating QR code";
+    txt_qr_code_for_lyrics = "QR code for lyrics";
 }
 
 function toggleVisibility(id) {

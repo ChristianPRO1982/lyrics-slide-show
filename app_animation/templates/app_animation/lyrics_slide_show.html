@@ -81,8 +81,10 @@
     }
 
     {% comment %} alert(all_slides) {% endcomment %}
+
+    img_qr_code = '{{ img_qr_code }}';
 </script>
-{% if group_selected %}{% trans "groupe_selected1" %}{{ group_selected }}{% trans "groupe_selected2" %}{% else %}{% trans "No group selected" %}{% endif %}
+{% include "common/group_selected.html" %}
 <hr>
 {% include "common/animation_actions.html" %}
 <hr>
@@ -147,7 +149,12 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <img src="{% static 'images/k2-L.png' %}" title="L" class="w-6 h-6">
         &nbsp;&nbsp;: {% trans "Scroll on ↕️ or not 🧱" %}
     </div>
-    {% trans "in upper or lower case" %}
+    <div class="flex items-center space-x-2">
+        <img src="{% static 'images/k2-Q.png' %}" title="Q" class="w-6 h-6">
+        &nbsp;&nbsp;: 📱 {% trans "QR code for lyrics" %}
+    </div>
+    <br>
+    ⌨️👈 {% trans "in upper or lower case" %}
 </div><br><br>
 <hr>
 <div class="sticky top-0 p-2">
@@ -210,6 +217,9 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         <div id="dis_choruses" onClick="disChoruses(true);" class="flex w-1/2"></div>
         <div id="scrollable" onClick="scrollable();" class="flex w-1/2"></div>
     </div>
+    <div class="flex">
+        <div id="qr_code" onClick="qr_code();" class="flex w-1/2"></div>
+    </div>
 </div>
 <script>
     let current_song_id = "{{ slides.0.animation_song_id }}";
@@ -217,6 +227,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     display_choruses = 0;
     disChoruses(false);
     scrollable();
+    qr_code();
 </script>
 {% endblock bloc2 %}
 
@@ -227,7 +238,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
         </div>
         <a id="song_{{ slide.animation_song_id }}"></a>
         <h2 class="font-bold text-xl p-4">{{ slide.full_title }}</h2>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-3 gap-2">
     {% endif %}
     <div id="{{ slide.animation_song_id }}_{{ slide.verse_id }}" name="{{slide.current_slide}}"
         onClick="navSongs(songIdToIndex({{ slide.animation_song_id }})); updateCurrentSlide({{ slide.current_slide }});
@@ -238,7 +249,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
 {% endfor %}
 </div>
-<div id="draggableDivCurrentSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(60,60,60,0.75); color:white; z-index:99; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+<div id="draggableDivCurrentSlide" style="display:none; position:fixed; top:100px; left:200px; width:500px; height:300px; background:rgba(60,60,60,0.75); color:white; z-index:99; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <div id="draggableHeaderCurrentSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
             <span><b>{% trans "Current slide" %}</b></span>
@@ -249,11 +260,11 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
             <a href="#" id="reduceDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='500px';
             document.getElementById('draggableDivCurrentSlide').style.height='300px';this.style.display='none';
             document.getElementById('enlargeDraggableDivCurrentSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➖</a>
             <a href="#" id="enlargeDraggableDivCurrentSlideBtn" onclick="document.getElementById('draggableDivCurrentSlide').style.width='700px';
             document.getElementById('draggableDivCurrentSlide').style.height='500px';this.style.display='none';
             document.getElementById('reduceDraggableDivCurrentSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➕</a>
             <a href="#" onclick="document.getElementById('draggableDivCurrentSlide').style.display='none';
             document.getElementById('showDraggableDivCurrentSlideLink').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>
@@ -261,7 +272,7 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
     </div>
     <div id="draggableDivCurrentSlideText" style="padding:16px;"></div>
 </div>
-<div id="draggableDivNextSlide" style="display:none; position:fixed; top:100px; left:300px; width:700px; height:500px; background:rgba(30,30,30,0.75); color:white; z-index:100; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+<div id="draggableDivNextSlide" style="display:none; position:fixed; top:450px; left:200px; width:500px; height:300px; background:rgba(30,30,30,0.75); color:white; z-index:100; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <div id="draggableHeaderNextSlide" style="cursor:move; background:#222; padding:8px 12px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
         <div>
             <span><b>{% trans "Preview next slide" %}</b></span>
@@ -272,11 +283,11 @@ onClick="toggleDivDisplay('div_shortcuts', 'a_shortcuts', '{% trans "show" %}', 
             <a href="#" id="reduceDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='500px';
             document.getElementById('draggableDivNextSlide').style.height='300px';this.style.display='none';
             document.getElementById('enlargeDraggableDivNextSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➖</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➖</a>
             <a href="#" id="enlargeDraggableDivNextSlideBtn" onclick="document.getElementById('draggableDivNextSlide').style.width='700px';
             document.getElementById('draggableDivNextSlide').style.height='500px';this.style.display='none';
             document.getElementById('reduceDraggableDivNextSlideBtn').style.display='inline-block';
-            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px; display:none;">➕</a>
+            return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px; margin-right:10px;">➕</a>
             <a href="#" onclick="document.getElementById('draggableDivNextSlide').style.display='none';
             document.getElementById('showDraggableDivNextSlideLink').style.display='inline-block';
             return false;" style="color:white; font-weight:bold; text-decoration:none !important; font-size:18px;">✖️</a>

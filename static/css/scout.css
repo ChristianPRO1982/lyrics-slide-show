@@ -65,11 +65,12 @@ hr {
     font-size: 0.875rem;
     font-weight: 500;
     border: 1px solid #54e7db;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .L_GENRE_BADGE:hover {
-    background-color: #d2e6e2;
+    transform: scale(1.1);
+    background-color: #b5c7c3;
 }
 
 .L_BUTTON_LIKE_A_LINK {
@@ -116,6 +117,31 @@ hr {
 
 .L_ERROR_OTHER {
     color: #aa0000;
+}
+
+.L_HIGHLIGHT_GREEN {
+    color: #D2F5E3;
+    background-color: #18bb67;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.group-badge {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  font-size: 1em;
+  font-weight: 600;
+  border-radius: 2em;
+  border: 2px solid var(--badge-border);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  box-shadow: 0 1px 5px #143835;
+  transition: all 0.2s ease-in-out;
+}
+
+.group-badge:hover {
+  transform: scale(1.05);
+  background-color: var(--badge-bg-hover);
 }
 
 .L_BOX_TOP {
@@ -209,6 +235,10 @@ hr {
     }
     .L_ERROR_OTHER {
         color: #ee0000;
+    }
+    .L_HIGHLIGHT_GREEN {
+        color: #3d5a4b;
+        background-color: #18bb67;
     }
     .slide {
         border-color: rgb(128, 9, 45);
