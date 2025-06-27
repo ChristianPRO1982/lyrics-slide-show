@@ -1,3 +1,41 @@
+# [1.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.1...v1.11.0) (2025-06-27)
+
+
+### Bug Fixes
+
+* add % songs approved on moderator dashboard ([5ce825e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5ce825e1f554c98dc92d48310c558a641f00b4c1))
+* add chorus_marker ([e7e74da](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e7e74da8ae4598d0cc07eddbbcb65e7c5e02d4cb))
+* add slash at the end of  the link in animation's qr-code ([229d507](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/229d5073f6d6ffc84a5a56ed8f77a3ad40d95f2e))
+* all_songs_all_lyrics ([6a9e424](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6a9e424227117693333f7aba416a659c657598a5))
+* all_songs_all_lyrics by qr-code ([1676503](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1676503eb4f55dd949b45cbd54af9f402c1613a8))
+* badge over ([9c4f7f5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9c4f7f5fbb8b4ae930b313e5d781e68ee2a68650))
+* beautiful summary for qr-code page ([3a04435](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3a044357a2d99efb536c755dc998cb11c617486f))
+* best display of genres ([46bcda3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/46bcda346aa1f4ea57e398906a54b869fa7997d3))
+* common genres ([95c3a28](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/95c3a2839a400af2dc25d3026c75a2a67fd80b63))
+* display windows and sticky ([28465b1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/28465b106c439d08739f5c0364f727c78ecda529))
+* for moderator: conut active_count with status > 0 ([475bb95](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/475bb9583d89f1dbe49bbe9b82efd15668058cb9))
+* gap-2 in slide show ([e0eb32c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e0eb32c16eb64b667d4b64481900010aa7619145))
+* good display of all songs and all lyrics ([721ff6d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/721ff6d28a5a2ad31668fbdbc84a5c64394be58b))
+* group selected display ([763368f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/763368fd6887bc12e6970de00d2ca2448e488eea))
+* help for QR-code ([1cba3f5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1cba3f5aa1f66aeaa61b90145516c17112cfbd6c))
+* modify song: width of box_song_approved ([cdd890b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cdd890bbcad1fcce502778684b8bb539ae94e912))
+* one chorus ([f979644](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f979644dc20db86b60f66f29175dd16befed70ca))
+* one function for display lyrics ([34ef481](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/34ef481ee5427a307ec5c3d3912fe1c844b24060))
+* SQL_song: SELECT_9 > fix ORDER BY ([c181257](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c181257950e97984e3816dbe2b88f75658050057))
+* tailwind forced ([255a924](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/255a924faa5f1d13d0cfc88e6b4d3a5309b56515))
+* tailwind onboard for slide show page ([5d48c19](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5d48c19d0a8a032c8378fad20f1b487603c3b9d7))
+* tailwind onboard forced: sticky ([e0cb015](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e0cb015747b2fc26da124befabd7c82f7f67dc7b))
+* themes ([4c90047](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4c90047504b916db4174f9aefc8458845d9a21e8))
+* translate ([574f572](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/574f572d1f09d8706b134883882844d9f2cae19f))
+
+
+### Features
+
+* add search option: song approved ([7ddf207](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7ddf207926c89c6cbe954364d1dcadae076dc468))
+* number of songs in DB and reseaches ([b372900](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b372900196544b8e460efc2f459de1da7dc97099))
+* print lyrics with full chorus or one chorus ([9820b0b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9820b0bac5742ecdef86d9f73dff130870eef651))
+* qr_code for watch lyrics of the animation ([13d7f99](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/13d7f9937a1b830e1e083ad53b053d3386766522))
+
 ## [1.10.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.0...v1.10.1) (2025-06-24)
 
 
