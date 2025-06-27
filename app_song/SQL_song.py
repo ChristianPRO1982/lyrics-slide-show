@@ -1,4 +1,5 @@
 from django.db import connection
+from django.utils import translation
 from typing import Any
 import random
 from app_logs.utils import create_SQL_log
@@ -182,12 +183,17 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
     def get_lyrics_to_display(self, display_the_chorus_once):
         choruses = []
         choruses_printed = False
+        if translation.get_language() == 'fr':
+            chorus_marker = "R. "
+        else:
+            chorus_marker = "C "
         lyrics = ""
 
         # Get all choruses
         for verse in self.verses:
             if verse.chorus == 1:
-                choruses.append("<b>" + verse.text.replace("\n", "<br>") + "</b>")
+                choruses.append("<b>" + chorus_marker + verse.text.replace("\n", "<br>") + "</b>")
+                chorus_marker = ''
 
         start_by_chorus = True
         for verse in self.verses:
