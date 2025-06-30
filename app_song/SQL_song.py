@@ -200,8 +200,10 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
         choruses_printed = False
         if translation.get_language() == 'fr':
             chorus_marker = "R. "
+            verse_marker = "C"
         else:
             chorus_marker = "C "
+            verse_marker = "V"
         lyrics = ""
 
         # Get all choruses
@@ -215,9 +217,11 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += str(verse.num_verse) + ". "
+                        lyrics += verse_marker + str(verse.num_verse) + ". "
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
+                    if verse.prefix:
+                        lyrics += "<b>" + verse.prefix + " - </b>"
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     if not choruses_printed or not display_the_chorus_once:
@@ -604,7 +608,63 @@ UPDATE l_song_link
                 cursor.execute(request, params)
                 return ''
             except Exception as e:
-                return "co"
+                return e
+            
+
+    @staticmethod
+    def get_verse_prefixes():
+        with connection.cursor() as cursor:
+            request = """
+SELECT prefix_id, prefix, comment
+  FROM l_verse_prefixes
+ORDER BY prefix
+"""
+            params = []
+
+            create_SQL_log(code_file, "Song.get_verse_prefixes", "SELECT_11", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+        return [{
+            'prefix_id': row[0],
+            'prefix': row[1],
+            'comment': row[2]
+            } for row in rows]
+    
+
+    @staticmethod
+    def add_prefix(prefix: str, comment: str):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_verse_prefixes (prefix, comment)
+     VALUES (%s, %s)
+"""
+            params = [prefix, comment]
+
+            create_SQL_log(code_file, "Song.add_prefix", "INSERT_7", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                if 'Duplicate entry' in str(e):
+                    return '[ERR36]'
+                return '[ERR37]'
+            
+
+    @staticmethod
+    def delete_prefix(prefix_id: int):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_verse_prefixes
+      WHERE prefix_id = %s
+"""
+            params = [prefix_id]
+
+            create_SQL_log(code_file, "Song.delete_prefix", "DELETE_6", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR38]'
 
 
 
@@ -615,7 +675,7 @@ UPDATE l_song_link
 ######################################################
 class Verse:
     def __init__(self, verse_id=None, song_id=None, num=1000, num_verse=None, chorus=0,
-                 followed=0, notcontinuenumbering=1, like_chorus=0, notdisplaychorusnext=0, text="",
+                 followed=0, notcontinuenumbering=1, like_chorus=0, notdisplaychorusnext=0, text="", prefix="",
                  max_lines=False, max_characters_for_a_line=False):
         self.verse_id = verse_id
         self.song_id = song_id
@@ -627,6 +687,7 @@ class Verse:
         self.like_chorus = like_chorus
         self.notdisplaychorusnext = notdisplaychorusnext
         self.text = text
+        self.prefix = prefix
         self.max_lines = max_lines
         self.max_characters_for_a_line = max_characters_for_a_line
 
@@ -642,7 +703,8 @@ SELECT verse_id,
        notcontinuenumbering,
        CASE WHEN chorus > 1 THEN 1 ELSE 0 END AS like_chorus,
        CASE WHEN chorus = 3 THEN 1 ELSE 0 END AS notdisplaychorusnext,
-       text
+       text,
+       prefix
     FROM l_verses
    WHERE song_id = %s
 ORDER BY num
@@ -663,6 +725,7 @@ ORDER BY num
                       like_chorus=row[6],
                       notdisplaychorusnext=row[7],
                       text=row[8],
+                      prefix=row[9],
                       max_lines=check_max_lines(row[8], max_lines),
                       max_characters_for_a_line=check_max_characters_for_a_line(row[8], max_characters_for_a_line)) for row in rows]
 
@@ -682,10 +745,20 @@ UPDATE l_verses
        chorus = %s,
        followed = %s,
        notcontinuenumbering = %s,
-       text = %s
+       text = %s,
+       prefix = %s
  WHERE verse_id = %s
  """
-                params = [self.num, self.num_verse, self.chorus, self.followed, self.notcontinuenumbering, self.text, self.verse_id]
+                params = [
+                    self.num,
+                    self.num_verse,
+                    self.chorus,
+                    self.followed,
+                    self.notcontinuenumbering,
+                    self.text,
+                    self.prefix,
+                    self.verse_id
+                ]
 
                 create_SQL_log(code_file, "Verse.save", "UPDATE_2", request, params)
                 cursor.execute(request, params)

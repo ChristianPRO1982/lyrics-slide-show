@@ -107,8 +107,21 @@
                     {% endif %}
                 </div>
                 <div style="text-align: center; width: 25%;">
-                    {% if not verse.chorus and not verse.notcontinuenumbering %}
+                    {% if verse.chorus != 1 %}
                         <b>{% trans "verse_num" %}{{ verse.num_verse }}</b>
+                    {% endif %}
+                    {% if verse.like_chorus == 1 %}
+                    <br>
+                    <label>
+                        {% trans "Prefix" %}
+                        <input type="text" id="txt_prefix_{{ verse.verse_id }}" name="txt_prefix_{{ verse.verse_id }}"
+                        maxlength="15" value="{{ verse.prefix }}" style="width: 50%;">
+                    </label>
+                    {% for prefix in prefixes %}
+                    <br>
+                    <a href="#" onclick="document.getElementById('txt_prefix_{{ verse.verse_id }}').value = '{{ prefix.prefix }}';
+                    return false;">{{ prefix.prefix }}{% if prefix.comment %} <small><small><b>({{ prefix.comment }})</b></small></small>{% endif %}</a>
+                    {% endfor %}
                     {% endif %}
                 </div>
                 <div style="text-align: right; width: 35%;">
@@ -160,8 +173,95 @@
     <input name="btn_new_verse" value="{% trans "new_verse" %}" type="submit" />
     <hr>
     
+    {% if moderator %}
+    <a href="#" onclick="toggleVisibility('div_verse_prefixes'); return false;">{% trans "Verse prefixes" %}</a>
+    <div id="div_verse_prefixes" style="display: none;">
+        <br>
+        {% for prefix in prefixes %}
+        🏷️ : {{ prefix.prefix }}{% if prefix.comment %} <b>({{ prefix.comment }})</b>{% endif %}<i> - <label>{% trans "delete" %}
+            <input style="width: 5%;" type="checkbox" name="box_verse_prefix_{{ prefix.prefix_id }}" /></label></i><br>
+        {% endfor %}
+        <br>
+        <input class="w-1/3" type="text" id="txt_new_prefix" name="txt_new_prefix" maxlength="15" placeholder="{% trans "new prefix" %}">
+        <input class="w-1/3" type="text" name="txt_new_prefix_comment" maxlength="100" placeholder="{% trans "comment" %}">
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '🎼'); return false;">🎼</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄋'); return false;">𝄋</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄌'); return false;">𝄌</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄐'); return false;">𝄐</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄴'); return false;">𝄴</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄆'); return false;">𝄆</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄇'); return false;">𝄇</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '℣'); return false;">℣</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '℟'); return false;">℟</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄞'); return false;">𝄞</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄢'); return false;">𝄢</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '𝄡'); return false;">𝄡</a>
+        <a href="#" onclick="addTextToInput('txt_new_prefix', '🎶'); return false;">🎶</a>
+        <br>
+        <br>
+    </div>
+    {% endif %}
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "save_exit" %}" type="submit" />
     <input name="btn_cancel" value="{% trans "cancel_info" %}" type="submit" />
 </form>
 {% endblock content %}
+
+{% comment %}
+
+🎼 Symboles de navigation musicale (reprises, coda, segno...)
+Symbole	Nom	Unicode	Code
+𝄆	Début de reprise	U+1D106	𝄆
+𝄇	Fin de reprise	U+1D107	𝄇
+𝄋	Coda	U+1D10B	𝄋
+𝄌	Segno	U+1D10C	𝄌
+Ces symboles sont parfaits pour indiquer des répétitions, D.S. (Dal Segno), D.C. (Da Capo), et Coda.
+
+🎶 Notes et silences
+Symbole	Nom	Unicode
+♪	Croche	U+266A
+♫	Double croche	U+266B
+𝅝	Ronde	U+1D15D
+𝅗𝅥	Blanche	U+1D15E
+𝅘𝅥	Noire	U+1D15F
+𝅘𝅥𝅮	Croche	U+1D160
+𝅘𝅥𝅯	Double croche	U+1D161
+𝄽	Silence de ronde	U+1D13D
+𝄾	Silence de blanche	U+1D13E
+𝄿	Silence de noire	U+1D13F
+
+🎵 Altérations
+Symbole	Nom	Unicode
+♯	Dièse	U+266F
+♭	Bémol	U+266D
+♮	Bécarre	U+266E
+𝄪	Double dièse	U+1D12A
+𝄫	Double bémol	U+1D12B
+
+⏹️ Indications diverses
+Symbole	Nom / Usage	Unicode
+𝄞	Clef de sol	U+1D11E
+𝄢	Clef de fa	U+1D122
+𝄡	Clef d'ut	U+1D121
+𝄐	Point d'orgue	U+1D110
+𝄴	Respiration / Souffle	U+1D134
+‖	Double barre	U+2016
+:	Barre de début de répétition
+:		Barre de fin de répétition
+
+ℹ️ Texte courant d'une partition
+En complément, pour les textes comme :
+D.S. al Coda
+D.C. al Fine
+Fine
+To Coda
+Bridge
+Verse / Chorus / Intro / Outro
+Tu peux les laisser en texte brut dans ta partition (avec une police stylisée si nécessaire), en les combinant avec les symboles ci-dessus pour plus de clarté.
+Si tu affiches ça dans une interface graphique, pense à utiliser une police Unicode compatible musique, comme :
+Bravura
+Musica
+Maestro
+Emmentaler
+Symbola (très complète en Unicode)
+{% endcomment %}

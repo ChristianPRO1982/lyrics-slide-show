@@ -39,3 +39,20 @@ function toggleDivDisplay(id_div, id_a, txt_show, txt_hide) {
         a.textContent = txt_show;
     }
 }
+
+function addTextToInput(inputId, textToAdd, maxLength = 0) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var current = input.value || '';
+    if (maxLength <= 0) {
+        maxLength = input.maxLength || 0;
+    }
+    var available = maxLength - current.length;
+    if (available <= 0) {
+        input.focus();
+        return;
+    }
+    var toInsert = textToAdd.substring(0, available);
+    input.value = current + toInsert;
+    input.focus();
+}

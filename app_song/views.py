@@ -147,6 +147,7 @@ def modify_song(request, song_id):
                             verse.text = strip_html(str(request.POST.get(f'txt_verse_text_{verse.verse_id}'))).strip()
                             if verse.text == "None":
                                 verse.text = ''
+                            verse.prefix = request.POST.get(f'txt_prefix_{verse.verse_id}', '').strip()
                         
                         verse.save()
                         song.get_verses()
@@ -183,6 +184,18 @@ def modify_song(request, song_id):
             verse.num_verse = num_verse
             verse.save()
 
+        # prefixes
+        if error == '' and request.POST.get('txt_new_prefix') != '':
+            error = song.add_prefix(
+                request.POST.get('txt_new_prefix').strip(),
+                request.POST.get('txt_new_prefix_comment').strip()
+            )
+
+        if error == '':
+            for prefix in song.get_verse_prefixes():
+                if request.POST.get(f'box_verse_prefix_{prefix['prefix_id']}', 'off') == 'on':
+                    error = song.delete_prefix(prefix['prefix_id'])
+
     song_lyrics = song.get_lyrics()
 
     if moderator:
@@ -200,6 +213,7 @@ def modify_song(request, song_id):
         'new_verse': new_verse,
         'verse_max_lines': song_params['verse_max_lines'],
         'verse_max_characters_for_a_line': song_params['verse_max_characters_for_a_line'],
+        'prefixes': Song.get_verse_prefixes(),
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -336,27 +350,29 @@ def song_metadata(request, song_id):
         song.get_links()
 
         # genres
-        genre_ids = request.POST.getlist('genre_ids')
-        song.clear_genres() # Remove all current associations
-        for genre_id in genre_ids:
-            error = song.add_genre(genre_id) # Add new associations
-        song.get_genres() # Refresh
+        if error == '':
+            genre_ids = request.POST.getlist('genre_ids')
+            song.clear_genres() # Remove all current associations
+            for genre_id in genre_ids:
+                error = song.add_genre(genre_id) # Add new associations
+            song.get_genres() # Refresh
 
         # GENRES MODERATOR
-        genres = Genre.get_all_genres()
-        for genre in genres:
-            genre_to_update = Genre(genre_id=genre.genre_id)
-            if request.POST.get(f'chk_delete_genre_{genre.genre_id}', 'off') == 'on':
-                genre_to_update.delete()
-            else:
-                genre_to_update.group = request.POST.get(f'txt_genre_group_{genre.genre_id}', '').strip()
-                genre_to_update.name = request.POST.get(f'txt_genre_name_{genre.genre_id}', '').strip()
-                genre_to_update.save()
-        new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
-        new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
-        if new_genre_group and new_genre_name:
-            genre = Genre(group=new_genre_group, name=new_genre_name)
-            error = genre.save()
+        if error:
+            genres = Genre.get_all_genres()
+            for genre in genres:
+                genre_to_update = Genre(genre_id=genre.genre_id)
+                if request.POST.get(f'chk_delete_genre_{genre.genre_id}', 'off') == 'on':
+                    genre_to_update.delete()
+                else:
+                    genre_to_update.group = request.POST.get(f'txt_genre_group_{genre.genre_id}', '').strip()
+                    genre_to_update.name = request.POST.get(f'txt_genre_name_{genre.genre_id}', '').strip()
+                    genre_to_update.save()
+            new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
+            new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
+            if new_genre_group and new_genre_name:
+                genre = Genre(group=new_genre_group, name=new_genre_name)
+                error = genre.save()
 
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
