@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-27 12:27+0200\n"
+"POT-Creation-Date: 2025-06-30 10:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -254,7 +254,7 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_main/templates/app_main/homepage.html:107
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:71
-#: app_song/templates/app_song/modify_song.html:166
+#: app_song/templates/app_song/modify_song.html:190
 #: app_song/templates/app_song/song_metadata.html:17
 #: app_song/templates/app_song/song_metadata.html:181
 msgid "save"
@@ -263,8 +263,8 @@ msgstr "Enregistrer"
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
 #: app_song/templates/app_song/modify_song.html:114
-#: app_song/templates/app_song/modify_song.html:127
-#: app_song/templates/app_song/modify_song.html:142
+#: app_song/templates/app_song/modify_song.html:137
+#: app_song/templates/app_song/modify_song.html:152
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -315,7 +315,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:120
+#: app_song/templates/app_song/modify_song.html:130
 msgid "before"
 msgstr "Avant"
 
@@ -325,12 +325,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:134
+#: app_song/templates/app_song/modify_song.html:144
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:135
+#: app_song/templates/app_song/modify_song.html:145
 msgid "after"
 msgstr "Après"
 
@@ -386,7 +386,7 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:167
+#: app_song/templates/app_song/modify_song.html:191
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -852,8 +852,8 @@ msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
 #: app_song/templates/app_song/modify_song.html:92
-#: app_song/templates/app_song/modify_song.html:125
-#: app_song/templates/app_song/modify_song.html:140
+#: app_song/templates/app_song/modify_song.html:135
+#: app_song/templates/app_song/modify_song.html:150
 msgid "chorus"
 msgstr "Refrain"
 
@@ -877,23 +877,36 @@ msgstr ""
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:118
+#: app_song/templates/app_song/modify_song.html:119
+msgid "Prefix"
+msgstr "Préfixe"
+
+#: app_song/templates/app_song/modify_song.html:128
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:153
+#: app_song/templates/app_song/modify_song.html:163
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:154 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:164
+#: app_song/templates/app_song/modify_song.html:181 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:163
+#: app_song/templates/app_song/modify_song.html:173
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:168
+#: app_song/templates/app_song/modify_song.html:177
+msgid "Verse prefixes"
+msgstr "Préfixe de couplet"
+
+#: app_song/templates/app_song/modify_song.html:185
+msgid "new prefix"
+msgstr "Nouveau préfixe"
+
+#: app_song/templates/app_song/modify_song.html:192
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -1312,15 +1325,18 @@ msgstr ""
 
 #: templates/base.html:123
 msgid "ERR36"
-msgstr "[ERR36] no message"
+msgstr "Ce préfixe existe déjà."
 
 #: templates/base.html:125
 msgid "ERR37"
-msgstr "[ERR37] no message"
+msgstr ""
+"[ERR37] Impossible d'ajouter ce préfixe. Contacter l'administrateur du site."
 
 #: templates/base.html:127
 msgid "ERR38"
-msgstr "[ERR38] no message"
+msgstr ""
+"[ERR38] Impossible de supprimer ce préfixe. Contacter l'administrateur du "
+"site."
 
 #: templates/base.html:129
 msgid "ERR39"
