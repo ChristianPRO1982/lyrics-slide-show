@@ -221,7 +221,7 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     if verse.prefix:
-                        lyrics += "<b>" + verse.prefix + " - </b>"
+                        lyrics += verse.prefix + " "
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     if not choruses_printed or not display_the_chorus_once:
