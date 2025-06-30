@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.11.0...v1.12.0) (2025-06-30)
+
+
+### Bug Fixes
+
+* modify song: display verse number always if not a real chorus ([ce16a5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ce16a5e0cb0aa4aa3c32ce8e5dff287495f577ea))
+
+
+### Features
+
+* prefix for verses ([9713145](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9713145e8d923f4cea0e2e53dae6d7ebf4caa64e))
+
 # [1.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.10.1...v1.11.0) (2025-06-27)
 
 
