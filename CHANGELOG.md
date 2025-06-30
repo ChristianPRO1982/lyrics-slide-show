@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.12.0...v1.12.1) (2025-06-30)
+
+
+### Bug Fixes
+
+* display of all_lyrics for smartphone ([5251711](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5251711d5d06be0026e7d1e70eab2a64c09e247d))
+
 # [1.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.11.0...v1.12.0) (2025-06-30)
 
 
