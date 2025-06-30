@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.utils import translation
 import qrcode
 import io, base64
 from .SQL_animation import Animation
@@ -397,14 +398,17 @@ def all_songs_all_lyrics(request, animation_id):
         return redirect('animations')
     
     animation.all_songs()
-    summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
+    if translation.get_language() == 'fr':
+        summary = f"<h1>Toutes les paroles de <i>{animation.name}</i></h1>"
+    else:
+        summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
     full_title = animation.name
     lyrics = ''
     song_params = get_song_params()
     
     summary += "<ol>"
     for song in animation.songs:
-        summary += f'<li><a class="" href="#{song['num']}">{song['full_title']}</a></li>'
+        summary += f'<li><a href="#{song['num']}">{song['full_title']}</a></li>'
     summary += "</ol>"
 
     for song in animation.songs:

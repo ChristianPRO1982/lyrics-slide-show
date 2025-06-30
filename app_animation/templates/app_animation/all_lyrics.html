@@ -7,19 +7,54 @@
     <meta content="description" name="cARThographie - des outils gratuits pour vos projets">
     <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
     <style>
-        body {
-            background: #000;
-            color: #ddd;
+        .black_on_grey {
+            color: #000;
+            background: #ccc;
         }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #001;
-                color: #229;
-            }
+        .grey_on_black {
+            color: #ccc;
+            background: #000;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            max-width: 640px;
+            padding: 1em;
+            font-size: 1.25em;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%; /* évite le zoom automatique sous iOS */
+        }
+
+        h1, h2 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #888;
+            margin: 2em 0;
+        }
+
+        p {
+            margin-bottom: 1.25em;
+        }
+
+        a {
+            color: #888;
         }
     </style>
 </head>
-<body>
+<body id="main-body" class="black_on_grey">
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.getElementById('main-body').className = 'grey_on_black';
+        }
+    </script>
+    <a href="#" onclick="document.getElementById('main-body').className='black_on_grey'; return false;">Thème clair</a> |
+    <a href="#" onclick="document.getElementById('main-body').className='grey_on_black'; return false;">Thème sombre</a>
+    <br><br>
     {{ lyrics|safe }}
 </body>
 </html>
