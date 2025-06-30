@@ -827,7 +827,13 @@ UPDATE l_genres
                 params = [self.group, self.name, self.genre_id]
 
                 create_SQL_log(code_file, "Genre.save", "UPDATE_9", request, params)
-                cursor.execute(request, params)
+                try:
+                    cursor.execute(request, params)
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR33]'
+                    return '[ERR39]'
             else:
                 request = """
 INSERT INTO l_genres (`group`, name)

@@ -1340,11 +1340,51 @@ msgstr ""
 
 #: templates/base.html:129
 msgid "ERR39"
-msgstr "[ERR39] no message"
+msgstr "[ERR39] Impossible de modifier un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:131
 msgid "ERR40"
 msgstr "[ERR40] no message"
+
+#: templates/base.html:131
+msgid "ERR41"
+msgstr "[ERR41] no message"
+
+#: templates/base.html:131
+msgid "ERR42"
+msgstr "[ERR42] no message"
+
+#: templates/base.html:131
+msgid "ERR43"
+msgstr "[ERR43] no message"
+
+#: templates/base.html:131
+msgid "ERR44"
+msgstr "[ERR44] no message"
+
+#: templates/base.html:131
+msgid "ERR45"
+msgstr "[ERR45] no message"
+
+#: templates/base.html:131
+msgid "ERR46"
+msgstr "[ERR46] no message"
+
+#: templates/base.html:131
+msgid "ERR47"
+msgstr "[ERR47] no message"
+
+#: templates/base.html:131
+msgid "ERR48"
+msgstr "[ERR48] no message"
+
+#: templates/base.html:131
+msgid "ERR49"
+msgstr "[ERR49] no message"
+
+#: templates/base.html:131
+msgid "ERR50"
+msgstr "[ERR50] no message"
 
 #: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"
