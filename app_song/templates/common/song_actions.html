@@ -19,5 +19,5 @@
 <hr>
 
 {% for link in song.links %}
-    🔗 <a href="{{ link|first }}">{{ link|last }}</a><br>
+    🔗 <a href="{{ link|first }}" title="{{ link|first }}">{{ link|last }}</a><br>
 {% endfor %}
