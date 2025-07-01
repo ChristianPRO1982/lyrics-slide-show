@@ -365,7 +365,7 @@ def song_metadata(request, song_id):
             song.get_genres() # Refresh
 
         # GENRES MODERATOR
-        if error:
+        if error == '':
             genres = Genre.get_all_genres()
             for genre in genres:
                 genre_to_update = Genre(genre_id=genre.genre_id)

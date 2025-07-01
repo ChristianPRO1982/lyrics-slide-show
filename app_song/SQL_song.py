@@ -397,8 +397,8 @@ ORDER BY link
            END AS is_new_group,
            @prev_group := tt.`group`
       FROM (  SELECT lg.genre_id,
-                     lg.`group`,
-                     lg.name
+                     CASE WHEN REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') = '' THEN lg.`group` ELSE REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') END AS `group`,
+                     CASE WHEN REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') = '' THEN lg.name ELSE REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') END AS name
                 FROM l_song_genre lsg
                 JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                WHERE lsg.song_id = %s
@@ -796,23 +796,40 @@ DELETE FROM l_verses
 ###############################################
 ###############################################
 class Genre:
-    def __init__(self, genre_id=None, group=None, name=None):
+    def __init__(self, genre_id=None, group=None, name=None, full_group=None, full_name=None):
         self.genre_id = genre_id
         self.group = group
         self.name = name
+        self.full_group = full_group
+        self.full_name = full_name
 
     @staticmethod
     def get_all_genres():
         with connection.cursor() as cursor:
             request = """
-  SELECT *
-    FROM l_genres
-ORDER BY `group`, name
+  SELECT genre_id,
+         CASE WHEN cleaned_group = '' THEN full_group ELSE cleaned_group END AS `group`,
+         CASE WHEN cleaned_name = '' THEN full_name ELSE cleaned_name END AS name,
+         full_group,
+         full_name
+    FROM (SELECT genre_id,
+               REGEXP_REPLACE(`group`, '^[0-9 _\\-]+', '') AS cleaned_group,
+               REGEXP_REPLACE(name, '^[0-9 _\\-]+', '') AS cleaned_name,
+               `group` AS full_group,
+               name AS full_name
+          FROM l_genres) AS sub
+ORDER BY full_group, full_name
 """
             create_SQL_log(code_file, "Genre.get_all_genres", "SELECT_8", request, [])
             cursor.execute(request)
             rows = cursor.fetchall()
-        return [Genre(genre_id=row[0], group=row[1], name=row[2]) for row in rows]
+        return [Genre(
+                genre_id=row[0],
+                group=row[1],
+                name=row[2],
+                full_group=row[3],
+                full_name=row[4]
+            ) for row in rows]
     
 
     def save(self):

@@ -149,8 +149,8 @@
         <tbody>
             {% for genre in genres %}
             <tr>
-                <td><input name="txt_genre_group_{{ genre.genre_id }}" value="{{ genre.group }}"></td>
-                <td><input name="txt_genre_name_{{ genre.genre_id }}" value="{{ genre.name }}"></td>
+                <td><input name="txt_genre_group_{{ genre.genre_id }}" value="{{ genre.full_group }}"></td>
+                <td><input name="txt_genre_name_{{ genre.genre_id }}" value="{{ genre.full_name }}"></td>
                 <td>
                     <input type="checkbox" name="chk_delete_genre_{{ genre.genre_id }}" id="chk_delete_genre_{{ genre.genre_id }}" style="width: 10%">
                     <label for="chk_delete_genre_{{ genre.genre_id }}">
