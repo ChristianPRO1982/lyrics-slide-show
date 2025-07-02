@@ -28,9 +28,13 @@ a.NAV:hover {
 }
 
 hr {
-    margin: 0.5rem auto !important;
-    border: 1 !important;
-    border-color: solid #54e7db !important;
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, #54e7db, #fd9153, #54e7db);
+    margin: 0.5em auto;
+    width: 80%;
+    border-radius: 1px;
+    opacity: 0.8;
 }
 
 .L_TABLE_TR {
@@ -202,7 +206,7 @@ hr {
         color: #fd9153;
     }
     hr {
-        border-color: solid #3d5a4b !important;
+        background: linear-gradient(to right, #fd9153, #54e7db, #fd9153);
     }
     .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
