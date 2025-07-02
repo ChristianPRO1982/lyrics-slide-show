@@ -45,9 +45,15 @@
     {% csrf_token %}
     {% if moderator %}
         <div>
+            {% if song.status == 2 %}
+            <input class="w-4 h-4" style="width: 5%;" type="checkbox" checked="checked" disabled="disabled" />
+            <input class="hidden" style="width: 5%;" type="checkbox" name="box_song_approved" id="box_song_approved" checked="checked" />
+            <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+            {% else %}
             <input class="w-4 h-4" style="width: 5%;" type="checkbox" name="box_song_approved"
             id="box_song_approved"{% if song.status >= 1 %} checked="checked"{% endif %} />
             <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+            {% endif %}
         </div>
         <input class="hidden" type="text" id="txt_message_id_list" name="txt_message_id_list" readonly="readonly">
         <hr>
