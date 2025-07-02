@@ -236,8 +236,15 @@ def delete_song(request, song_id):
             song.delete()
         return redirect('songs')
 
+
+    song_params = get_song_params()
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+
     return render(request, 'app_song/delete_song.html', {
         'song': song,
+        'song_lyrics': song.get_lyrics(),
         'error': error,
         'css': css,
         'no_loader': no_loader,

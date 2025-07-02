@@ -1068,7 +1068,7 @@ msgstr ""
 
 #: app_song/templates/common/song_actions.html:15
 msgid "Print"
-msgstr ""
+msgstr "Impression"
 
 #: app_song/templates/common/song_actions.html:16
 msgid "Print song lyric"
