@@ -57,10 +57,10 @@
 
     <hr>
 
-    <h4 class="L_H4">{% trans "Genre" %}</h4>
+    <h3 class="L_H3">{% trans "Genre" %}</h3>
     <div class="genre-selection-container" style="display: flex; gap: 2em;">
         <div style="flex: 1;">
-            <h5>{% trans "Associated genres" %}</h5>
+            <h4 class="L_H4">{% trans "Associated genres" %}</h4>
             <ul id="associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
                 {% for genre in genres_associated %}
                 <li class="genre-item" 
@@ -74,7 +74,7 @@
             </ul>
         </div>
         <div style="flex: 1;">
-            <h5>{% trans "Available genres" %}</h5>
+            <h4 class="L_H4">{% trans "Available genres" %}</h4>
             <ul id="not-associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
                 {% for genre in genres_not_associated %}
                 <li class="genre-item" 
@@ -134,8 +134,32 @@
     .genre-item:active { color: #000000; background: #aaaaaa; }
     </style>
 
+    <br><hr>
+    <h3 class="L_H3">{% trans "Bands ans artists" %}</h3>
+    <div style="display: flex; gap: 1em;">
+        <h4 class="L_H4" style="flex: 1;">{% trans "Bands" %}</h4>
+        <h4 class="L_H4" style="flex: 1;">{% trans "Artists" %}</h4>
+    </div>
+    <div style="display: flex; gap: 1em; height: 15em;">
+        <div style="flex: 1; height: 15em;">
+            <ul>
+                {% for band in bands %}
+                <li>
+                    <label>
+                        <input style="width: 10%;" type="checkbox" name="band_ids" value="{{ band.band_id }}"
+                        {% if band.song_id >= 1 %}checked="checked"{% endif %}>
+                        {{ band.name }}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="flex: 1; height: 15em;">
+        </div>
+    </div>
+
     {% if moderator %}
-    <hr>
+    <br><hr>
     <h3 class="L_H3">{% trans "Moderator" %}</h3>
     <h4 class="L_H4">{% trans "Genre" %}</h4>
     <table>

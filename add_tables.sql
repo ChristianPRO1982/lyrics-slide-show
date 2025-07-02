@@ -214,3 +214,21 @@ CREATE TABLE `c_artist_links` (
   PRIMARY KEY (`artist_id`,`link`),
   CONSTRAINT `c_artist_links_c_artists_FK` FOREIGN KEY (`artist_id`) REFERENCES `c_artists` (`artist_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_bands` (
+  `song_id` mediumint NOT NULL,
+  `band_id` mediumint NOT NULL,
+  PRIMARY KEY (`song_id`,`band_id`),
+  KEY `l_song_bands_c_bands_FK` (`band_id`),
+  CONSTRAINT `l_song_bands_c_bands_FK` FOREIGN KEY (`band_id`) REFERENCES `c_bands` (`band_id`) ON DELETE CASCADE,
+  CONSTRAINT `l_song_bands_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_artist` (
+  `song_id` mediumint NOT NULL,
+  `artist_id` mediumint NOT NULL,
+  PRIMARY KEY (`song_id`,`artist_id`),
+  KEY `l_song_artist_c_artists_FK` (`artist_id`),
+  CONSTRAINT `l_song_artist_c_artists_FK` FOREIGN KEY (`artist_id`) REFERENCES `c_artists` (`artist_id`) ON DELETE CASCADE,
+  CONSTRAINT `l_song_artist_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

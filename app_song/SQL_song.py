@@ -51,6 +51,8 @@ class Song:
         self.verses = []
         self.genres = []
         self.links = []
+        self.bands = []
+        self.artists = []
 
         self.get_links()
         self.get_genres()
@@ -665,7 +667,35 @@ DELETE FROM l_verse_prefixes
                 return ''
             except Exception as e:
                 return '[ERR38]'
+            
 
+    def get_bands_and_artists(self):
+        self.bands = []
+        self.artists = []
+
+        with connection.cursor() as cursor:
+            request = """
+   SELECT "band" type, cb.band_id id, cb.name, lsb.song_id
+     FROM c_bands cb
+LEFT JOIN l_song_bands lsb ON lsb.band_id = cb.band_id
+                          AND lsb.song_id = %s
+UNION ALL
+   SELECT "artist" type, ca.artist_id id, ca.name, lsa.song_id
+     FROM c_artists ca
+LEFT JOIN l_song_artist lsa ON lsa.artist_id = ca.artist_id
+                           AND lsa.song_id = %s
+ ORDER BY name
+"""
+            params = [self.song_id, self.song_id]
+
+            create_SQL_log(code_file, "Song.get_bands_and_artists", "SELECT_12", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] == 'band':
+                    self.bands.append({'band_id': row[1], 'name': row[2]})
+                else:
+                    self.artists.append({'artist_id': row[1], 'name': row[2]})
 
 
 ######################################################

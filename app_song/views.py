@@ -396,11 +396,15 @@ def song_metadata(request, song_id):
                 genres_associated.append(genre)
                 genres_not_associated.remove(genre)
 
+    song.get_bands_and_artists()
+
     return render(request, 'app_song/song_metadata.html', {
         'song': song,
         'genres': genres,
         'genres_associated': genres_associated,
         'genres_not_associated': genres_not_associated,
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'moderator': moderator,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-02 14:14+0200\n"
+"POT-Creation-Date: 2025-07-02 17:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,6 +73,8 @@ msgstr "Modifier"
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:306
 #: app_animation/templates/common/animation_actions.html:7
+#: app_main/templates/app_main/artists.html:24
+#: app_main/templates/app_main/bands.html:24
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/app_song/song_metadata.html:158
 #: app_song/templates/common/song_actions.html:8
@@ -100,8 +102,8 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
-#: app_main/templates/app_main/homepage.html:70
-#: app_main/templates/app_main/homepage.html:108
+#: app_main/templates/app_main/homepage.html:77
+#: app_main/templates/app_main/homepage.html:115
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr "Annuler"
@@ -250,8 +252,8 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
-#: app_main/templates/app_main/homepage.html:69
-#: app_main/templates/app_main/homepage.html:107
+#: app_main/templates/app_main/homepage.html:76
+#: app_main/templates/app_main/homepage.html:114
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:77
 #: app_song/templates/app_song/modify_song.html:213
@@ -651,81 +653,119 @@ msgstr "Confirmer la suppression du groupe "
 msgid "cancel"
 msgstr "annuler"
 
+#: app_main/templates/app_main/artists.html:6
+#: app_main/templates/app_main/artists.html:7
+msgid "Artists"
+msgstr "Artistes"
+
+#: app_main/templates/app_main/artists.html:11
+msgid "New artist"
+msgstr "Nouvel artiste"
+
+#: app_main/templates/app_main/artists.html:19
+#: app_main/templates/app_main/artists.html:27
+#: app_main/templates/app_main/bands.html:19
+#: app_main/templates/app_main/bands.html:27
+msgid "Save"
+msgstr "Enregistrer"
+
+#: app_main/templates/app_main/artists.html:22
+#: app_main/templates/app_main/bands.html:22
+msgid "mandatory"
+msgstr "obligatoire"
+
+#: app_main/templates/app_main/bands.html:6
+#: app_main/templates/app_main/bands.html:7
+msgid "Bands"
+msgstr "Groupes de musique"
+
+#: app_main/templates/app_main/bands.html:11
+msgid "New band"
+msgstr "Nouveau group de musique"
+
 #: app_main/templates/app_main/homepage.html:11
 msgid "Themes"
 msgstr "Thèmes"
 
-#: app_main/templates/app_main/homepage.html:18
+#: app_main/templates/app_main/homepage.html:16
+msgid "Modify bands"
+msgstr "Modifier les groupes de musique"
+
+#: app_main/templates/app_main/homepage.html:17
+msgid "Modify artists"
+msgstr "Modifier les artistes"
+
+#: app_main/templates/app_main/homepage.html:25
 msgid "powered by"
 msgstr "propulsé par"
 
-#: app_main/templates/app_main/homepage.html:32
+#: app_main/templates/app_main/homepage.html:39
 #: app_song/templates/app_song/song_metadata.html:139
 msgid "Moderator"
 msgstr "Modérateur"
 
-#: app_main/templates/app_main/homepage.html:33
+#: app_main/templates/app_main/homepage.html:40
 msgid "List of songs to be moderated"
 msgstr "Liste des chants à modérer"
 
-#: app_main/templates/app_main/homepage.html:39
+#: app_main/templates/app_main/homepage.html:46
 msgid "Song statistics"
 msgstr "Statistiques des chants"
 
-#: app_main/templates/app_main/homepage.html:40
+#: app_main/templates/app_main/homepage.html:47
 msgid "songs approved"
 msgstr "chants approuvés"
 
-#: app_main/templates/app_main/homepage.html:42
-#: app_main/templates/app_main/homepage.html:73
+#: app_main/templates/app_main/homepage.html:49
+#: app_main/templates/app_main/homepage.html:80
 msgid "Modify homepage"
 msgstr "Modifier la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:47
+#: app_main/templates/app_main/homepage.html:54
 msgid "Title &#60;head&#62;"
 msgstr "Titre &#60;head&#62;"
 
-#: app_main/templates/app_main/homepage.html:51
+#: app_main/templates/app_main/homepage.html:58
 msgid "Title &#60;h1&#62;"
 msgstr "Titre &#60;h1&#62;"
 
-#: app_main/templates/app_main/homepage.html:55
+#: app_main/templates/app_main/homepage.html:62
 msgid "Home text"
 msgstr "Texte de la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:59
+#: app_main/templates/app_main/homepage.html:66
 msgid "Bloc1 text: on left"
 msgstr "Texte du bloc 1 : à gauche"
 
-#: app_main/templates/app_main/homepage.html:63
+#: app_main/templates/app_main/homepage.html:70
 msgid "Bloc2 text: on right"
 msgstr "Texte du bloc 2 : à droite"
 
-#: app_main/templates/app_main/homepage.html:78
+#: app_main/templates/app_main/homepage.html:85
 msgid "Administrator"
 msgstr "Administrateur"
 
-#: app_main/templates/app_main/homepage.html:79
+#: app_main/templates/app_main/homepage.html:86
 msgid "Site params"
 msgstr "Paramètres du site"
 
-#: app_main/templates/app_main/homepage.html:84
+#: app_main/templates/app_main/homepage.html:91
 msgid "Max lines"
 msgstr "Nombre de lignes maximum"
 
-#: app_main/templates/app_main/homepage.html:88
+#: app_main/templates/app_main/homepage.html:95
 msgid "lines"
 msgstr "lignes"
 
-#: app_main/templates/app_main/homepage.html:94
+#: app_main/templates/app_main/homepage.html:101
 msgid "Max characters for a line"
 msgstr "Nombre maximum de caractères pour une ligne"
 
-#: app_main/templates/app_main/homepage.html:99
+#: app_main/templates/app_main/homepage.html:106
 msgid "characters"
 msgstr "caractères"
 
-#: app_main/templates/app_main/homepage.html:111
+#: app_main/templates/app_main/homepage.html:118
 msgid "Modify site params"
 msgstr "Modifier les paramètres du site"
 
@@ -1351,37 +1391,59 @@ msgstr ""
 
 #: templates/base.html:131
 msgid "ERR40"
-msgstr "[ERR40] no message"
+msgstr ""
+"[ERR40] Impossible de supprimer ce groupe de musique. Contacter "
+"l'administrateur du site."
 
-#~ msgid "ERR41"
-#~ msgstr "[ERR41] no message"
+#: templates/base.html:133
+msgid "ERR41"
+msgstr ""
+"Ce nom existe déjà ! Veuillez créer un nom de groupe de musique unique."
 
-#~ msgid "ERR42"
-#~ msgstr "[ERR42] no message"
+#: templates/base.html:135
+msgid "ERR42"
+msgstr ""
+"[ERR42] Impossible de créer ce groupe de musique. Contacter l'administrateur "
+"du site."
 
-#~ msgid "ERR43"
-#~ msgstr "[ERR43] no message"
+#: templates/base.html:137
+msgid "ERR43"
+msgstr ""
+"[ERR43] Impossible de modifier ce groupe de musique. Contacter "
+"l'administrateur du site."
 
-#~ msgid "ERR44"
-#~ msgstr "[ERR44] no message"
+#: templates/base.html:139
+msgid "ERR44"
+msgstr "Cet artiste existe déjà ! Veuillez créer un nom unique."
 
-#~ msgid "ERR45"
-#~ msgstr "[ERR45] no message"
+#: templates/base.html:141
+msgid "ERR45"
+msgstr ""
+"[ERR45] Impossible de créer cet artist. Contacter l'administrateur du site."
 
-#~ msgid "ERR46"
-#~ msgstr "[ERR46] no message"
+#: templates/base.html:143
+msgid "ERR46"
+msgstr ""
+"[ERR46] Impossible de modifier cet artist. Contacter l'administrateur du "
+"site."
 
-#~ msgid "ERR47"
-#~ msgstr "[ERR47] no message"
+#: templates/base.html:145
+msgid "ERR47"
+msgstr ""
+"[ERR47] Impossible de supprimer ce groupe de musique. Contacter "
+"l'administrateur du site."
 
-#~ msgid "ERR48"
-#~ msgstr "[ERR48] no message"
+#: templates/base.html:147
+msgid "ERR48"
+msgstr "[ERR48] no message"
 
-#~ msgid "ERR49"
-#~ msgstr "[ERR49] no message"
+#: templates/base.html:149
+msgid "ERR49"
+msgstr "[ERR49] no message"
 
-#~ msgid "ERR50"
-#~ msgstr "[ERR50] no message"
+#: templates/base.html:151
+msgid "ERR50"
+msgstr "[ERR50] no message"
 
 #: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"
@@ -2677,9 +2739,6 @@ msgstr ""
 
 #~ msgid "nav_home"
 #~ msgstr "Accueil"
-
-#~ msgid "Save"
-#~ msgstr "Enregistrer"
 
 #~ msgid "help_buttons"
 #~ msgstr ""
