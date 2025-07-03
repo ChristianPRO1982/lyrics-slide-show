@@ -165,7 +165,6 @@ def modify_song(request, song_id):
                 song.title = request.POST.get('txt_title').strip()
                 song.sub_title = request.POST.get('txt_sub_title').strip()
                 song.description = request.POST.get('txt_description').strip()
-                song.artist = request.POST.get('txt_artist').strip()
                 
                 status = song.save(moderator) # ✔️⁉️✖️
 
