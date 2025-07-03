@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-02 17:11+0200\n"
+"POT-Creation-Date: 2025-07-03 11:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,8 +35,8 @@ msgstr "Masquer les anciennes animations"
 #: app_animation/templates/app_animation/animations.html:38
 #: app_animation/templates/app_animation/animations.html:73
 #: app_animation/templates/app_animation/modify_animation.html:50
-#: app_song/templates/app_song/song_metadata.html:145
-#: app_song/templates/app_song/song_metadata.html:172
+#: app_song/templates/app_song/song_metadata.html:160
+#: app_song/templates/app_song/song_metadata.html:187
 msgid "Name"
 msgstr "Nom"
 
@@ -59,8 +59,8 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:76
 #: app_song/templates/app_song/song_metadata.html:28
 #: app_song/templates/app_song/song_metadata.html:53
-#: app_song/templates/app_song/song_metadata.html:146
-#: app_song/templates/app_song/song_metadata.html:173
+#: app_song/templates/app_song/song_metadata.html:161
+#: app_song/templates/app_song/song_metadata.html:188
 #: app_song/templates/common/song_actions.html:3
 msgid "Actions"
 msgstr ""
@@ -76,7 +76,7 @@ msgstr "Modifier"
 #: app_main/templates/app_main/artists.html:24
 #: app_main/templates/app_main/bands.html:24
 #: app_song/templates/app_song/song_metadata.html:38
-#: app_song/templates/app_song/song_metadata.html:158
+#: app_song/templates/app_song/song_metadata.html:173
 #: app_song/templates/common/song_actions.html:8
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
@@ -258,7 +258,7 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_song/templates/app_song/modify_song.html:77
 #: app_song/templates/app_song/modify_song.html:213
 #: app_song/templates/app_song/song_metadata.html:17
-#: app_song/templates/app_song/song_metadata.html:181
+#: app_song/templates/app_song/song_metadata.html:196
 msgid "save"
 msgstr "Enregistrer"
 
@@ -655,6 +655,7 @@ msgstr "annuler"
 
 #: app_main/templates/app_main/artists.html:6
 #: app_main/templates/app_main/artists.html:7
+#: app_song/templates/app_song/song_metadata.html:120
 msgid "Artists"
 msgstr "Artistes"
 
@@ -676,6 +677,7 @@ msgstr "obligatoire"
 
 #: app_main/templates/app_main/bands.html:6
 #: app_main/templates/app_main/bands.html:7
+#: app_song/templates/app_song/song_metadata.html:89
 msgid "Bands"
 msgstr "Groupes de musique"
 
@@ -700,7 +702,7 @@ msgid "powered by"
 msgstr "propulsé par"
 
 #: app_main/templates/app_main/homepage.html:39
-#: app_song/templates/app_song/song_metadata.html:139
+#: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr "Modérateur"
 
@@ -984,32 +986,45 @@ msgid "New link"
 msgstr "Nouveau lien"
 
 #: app_song/templates/app_song/song_metadata.html:60
-#: app_song/templates/app_song/song_metadata.html:140
+msgid "Genres"
+msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:62
+#: app_song/templates/app_song/song_metadata.html:91
+#: app_song/templates/app_song/song_metadata.html:122
+msgid "display / undisplay"
+msgstr "Afficher / masquer"
+
+#: app_song/templates/app_song/song_metadata.html:66
+#: app_song/templates/app_song/song_metadata.html:95
+#: app_song/templates/app_song/song_metadata.html:126
+msgid "Selected"
+msgstr "Sélectionnés"
+
+#: app_song/templates/app_song/song_metadata.html:67
+#: app_song/templates/app_song/song_metadata.html:96
+#: app_song/templates/app_song/song_metadata.html:127
+msgid "Available"
+msgstr "Disponibles"
+
+#: app_song/templates/app_song/song_metadata.html:155
 msgid "Genre"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:63
-msgid "Associated genres"
-msgstr "Genres associés"
-
-#: app_song/templates/app_song/song_metadata.html:77
-msgid "Available genres"
-msgstr "Genres disponibles"
-
-#: app_song/templates/app_song/song_metadata.html:144
-#: app_song/templates/app_song/song_metadata.html:171
+#: app_song/templates/app_song/song_metadata.html:159
+#: app_song/templates/app_song/song_metadata.html:186
 msgid "Group"
 msgstr "Groupe"
 
-#: app_song/templates/app_song/song_metadata.html:166
+#: app_song/templates/app_song/song_metadata.html:181
 msgid "Group name"
 msgstr "Nom du groupe"
 
-#: app_song/templates/app_song/song_metadata.html:167
+#: app_song/templates/app_song/song_metadata.html:182
 msgid "Genre name"
 msgstr "Nom du genre"
 
-#: app_song/templates/app_song/song_metadata.html:168
+#: app_song/templates/app_song/song_metadata.html:183
 msgid "New genre"
 msgstr "Nouveau genre"
 
@@ -1435,11 +1450,14 @@ msgstr ""
 
 #: templates/base.html:147
 msgid "ERR48"
-msgstr "[ERR48] no message"
+msgstr ""
+"[ERR48] Impossible d'ajouter ce groupe de musique. Contacter "
+"l'administrateur du site."
 
 #: templates/base.html:149
 msgid "ERR49"
-msgstr "[ERR49] no message"
+msgstr ""
+"[ERR49] Impossible d'ajouter cet artiste. Contacter l'administrateur du site."
 
 #: templates/base.html:151
 msgid "ERR50"
@@ -2697,6 +2715,12 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Bands and artists"
+#~ msgstr "Groupes de musique et artistes"
+
+#~ msgid "Associated genres"
+#~ msgstr "Genres associés"
 
 #~ msgid "search"
 #~ msgstr "recherche"

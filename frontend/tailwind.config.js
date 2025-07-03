@@ -49,6 +49,7 @@ module.exports = {
     'h-96',
     'max-h-screen',
     'object-contain',
+    'cursor-pointer',
   ],
   theme: {
     extend: {},

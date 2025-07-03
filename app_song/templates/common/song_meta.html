@@ -1,0 +1,30 @@
+{% load i18n %}
+
+{% for band in song.bands %}
+{% if band.song_id %}
+<span class="L_GENRE_BADGE">
+    {{ band.name }}
+</span>
+{% endif %}
+{% endfor %}
+
+{% for artist in song.artists %}
+{% if artist.song_id %}
+<span class="L_GENRE_BADGE">
+    {{ artist.name }}
+</span>
+{% endif %}
+{% endfor %}
+
+<hr>
+
+{% for genre in song.genres %}
+{% if genre.is_new_group %}
+<h4 class="L_H4">{{ genre.group }}</h4>
+{% endif %}
+<span class="L_GENRE_BADGE">
+    {{ genre.emoji_random }} {{ genre.name }}
+</span>
+{% endfor %}
+
+{% if song.genres|length >= 1 %}<hr>{% endif %}

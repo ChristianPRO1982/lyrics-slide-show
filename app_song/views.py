@@ -197,6 +197,7 @@ def modify_song(request, song_id):
                     error = song.delete_prefix(prefix['prefix_id'])
 
     song_lyrics = song.get_lyrics()
+    song.get_bands_and_artists()
 
     if moderator:
         mod_new_messages = song.get_moderator_new_messages()
@@ -214,6 +215,8 @@ def modify_song(request, song_id):
         'verse_max_lines': song_params['verse_max_lines'],
         'verse_max_characters_for_a_line': song_params['verse_max_characters_for_a_line'],
         'prefixes': Song.get_verse_prefixes(),
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -241,10 +244,13 @@ def delete_song(request, song_id):
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
+    song.get_bands_and_artists()
 
     return render(request, 'app_song/delete_song.html', {
         'song': song,
         'song_lyrics': song.get_lyrics(),
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -263,6 +269,7 @@ def goto_song(request, song_id):
         song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song.get_verses()
         song_lyrics = song.get_lyrics()
+        song.get_bands_and_artists()
     else:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -274,6 +281,8 @@ def goto_song(request, song_id):
         'song_lyrics': song_lyrics,
         'song_messages': song.get_moderator_new_messages(),
         'moderator': moderator,
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -322,6 +331,7 @@ def song_metadata(request, song_id):
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
+    song.get_bands_and_artists()
     
     moderator = is_moderator(request)
 
@@ -363,6 +373,22 @@ def song_metadata(request, song_id):
             for genre_id in genre_ids:
                 error = song.add_genre(genre_id) # Add new associations
             song.get_genres() # Refresh
+        
+        # bands
+        if error == '':
+            band_ids = request.POST.getlist('band_ids')
+            song.clear_bands()
+            for band_id in band_ids:
+                error = song.add_band(band_id)
+            song.get_bands_and_artists()  # Refresh
+        
+        # artists
+        if error == '':
+            artist_ids = request.POST.getlist('artist_ids')
+            song.clear_artists()
+            for artist_id in artist_ids:
+                error = song.add_artist(artist_id)
+            song.get_bands_and_artists()
 
         # GENRES MODERATOR
         if error == '':
@@ -395,8 +421,6 @@ def song_metadata(request, song_id):
             if genre.genre_id in [g['genre_id'] for g in song.genres]:
                 genres_associated.append(genre)
                 genres_not_associated.remove(genre)
-
-    song.get_bands_and_artists()
 
     return render(request, 'app_song/song_metadata.html', {
         'song': song,

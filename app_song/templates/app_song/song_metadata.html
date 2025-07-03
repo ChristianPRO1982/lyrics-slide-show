@@ -7,7 +7,7 @@
 {% block bloc1 %}
 {% include "common/song_actions.html" %}
 {% endblock bloc1 %}
-{% block bloc2 %}{% include "common/song_genres.html" %}<hr>{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}{% include "common/song_meta.html" %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 <h2 class="L_H2">{{ song.sub_title }}</h2>
@@ -57,104 +57,95 @@
 
     <hr>
 
-    <h3 class="L_H3">{% trans "Genre" %}</h3>
-    <div class="genre-selection-container" style="display: flex; gap: 2em;">
-        <div style="flex: 1;">
-            <h4 class="L_H4">{% trans "Associated genres" %}</h4>
-            <ul id="associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
+    <h3 class="L_H3">{% trans "Genres" %}</h3>
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('div_genres')">
+        {% trans "display / undisplay" %}
+    </button>
+    <div id="div_genres" class="transfer-container" style="display: none;" data-group="genres">
+        <div class="flex gap-6">
+            <h4 class="L_H4 w-1/2">{% trans "Selected" %}</h4>
+            <h4 class="L_H4 w-1/2">{% trans "Available" %}</h4>
+        </div>
+        <div class="flex gap-6">
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="source">
                 {% for genre in genres_associated %}
-                <li class="genre-item" 
-                    data-genre-id="{{ genre.genre_id }}" 
-                    draggable="true"
-                    ondblclick="moveGenre(this, 'not-associated-genres')">
+                <li data-id="{{ genre.genre_id }}" class="cursor-pointer L_GENRE_BADGE">
                     <input type="hidden" name="genre_ids" value="{{ genre.genre_id }}">
                     <strong>{{ genre.group }}</strong> – {{ genre.name }}
                 </li>
                 {% endfor %}
             </ul>
-        </div>
-        <div style="flex: 1;">
-            <h4 class="L_H4">{% trans "Available genres" %}</h4>
-            <ul id="not-associated-genres" class="genre-list" style="height: 15em; overflow: auto; border: 1px solid #ccc; padding: 8px;">
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="target">
                 {% for genre in genres_not_associated %}
-                <li class="genre-item" 
-                    data-genre-id="{{ genre.genre_id }}" 
-                    draggable="true"
-                    ondblclick="moveGenre(this, 'associated-genres')">
+                <li data-id="{{ genre.genre_id }}"  class="cursor-pointer L_GENRE_BADGE">
                     <strong>{{ genre.group }}</strong> – {{ genre.name }}
                 </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
-    <script>
-    function moveGenre(item, targetId) {
-        document.getElementById(targetId).appendChild(item);
-        updateGenreInputs();
-    }
-
-    document.querySelectorAll('.genre-list').forEach(list => {
-        list.addEventListener('dragover', function(e) {
-            e.preventDefault();
-        });
-        list.addEventListener('drop', function(e) {
-            e.preventDefault();
-            const genreId = e.dataTransfer.getData('text/plain');
-            const item = document.querySelector('.genre-item[data-genre-id="' + genreId + '"]');
-            if (item && item.parentNode !== this) {
-                this.appendChild(item);
-                updateGenreInputs();
-            }
-        });
-    });
-
-    document.querySelectorAll('.genre-item').forEach(item => {
-        item.addEventListener('dragstart', function(e) {
-            e.dataTransfer.setData('text/plain', this.dataset.genreId);
-        });
-    });
-
-    function updateGenreInputs() {
-        // Remove all hidden inputs from all genre items
-        document.querySelectorAll('.genre-item input[type="hidden"]').forEach(e => e.remove());
-
-        // Add hidden inputs only to associated genres
-        document.querySelectorAll('#associated-genres .genre-item').forEach(item => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'genre_ids';
-            input.value = item.dataset.genreId;
-            item.appendChild(input);
-        });
-    }
-    </script>
-    <style>
-    .genre-list { list-style: none; margin: 0; padding: 0; min-height: 2em; }
-    .genre-item { color: #000000; background: #777777; margin: 2px 0; padding: 4px 8px; border-radius: 4px; cursor: grab; }
-    .genre-item:active { color: #000000; background: #aaaaaa; }
-    </style>
 
     <br><hr>
-    <h3 class="L_H3">{% trans "Bands ans artists" %}</h3>
-    <div style="display: flex; gap: 1em;">
-        <h4 class="L_H4" style="flex: 1;">{% trans "Bands" %}</h4>
-        <h4 class="L_H4" style="flex: 1;">{% trans "Artists" %}</h4>
-    </div>
-    <div style="display: flex; gap: 1em; height: 15em;">
-        <div style="flex: 1; height: 15em;">
-            <ul>
+    <h3 class="L_H3">{% trans "Bands" %}</h3>
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('div_bands')">
+        {% trans "display / undisplay" %}
+    </button>
+    <div id="div_bands" class="transfer-container" style="display: none;" data-group="bands">
+        <div class="flex gap-6">
+            <h4 class="L_H4 w-1/2">{% trans "Selected" %}</h4>
+            <h4 class="L_H4 w-1/2">{% trans "Available" %}</h4>
+        </div>
+        <div class="flex gap-6">
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="source">
                 {% for band in bands %}
-                <li>
-                    <label>
-                        <input style="width: 10%;" type="checkbox" name="band_ids" value="{{ band.band_id }}"
-                        {% if band.song_id >= 1 %}checked="checked"{% endif %}>
-                        {{ band.name }}
-                    </label>
+                {% if band.song_id %}
+                <li data-id="{{ band.band_id }}" class="cursor-pointer L_GENRE_BADGE">
+                    <input type="hidden" name="band_ids" value="{{ band.band_id }}">
+                    {{ band.name }}
                 </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="target">
+                {% for band in bands %}
+                {% if not band.song_id %}
+                <li data-id="{{ band.band_id }}" class="cursor-pointer L_GENRE_BADGE">
+                    {{ band.name }}
+                </li>
+                {% endif %}
                 {% endfor %}
             </ul>
         </div>
-        <div style="flex: 1; height: 15em;">
+    </div>
+    <h3 class="L_H3">{% trans "Artists" %}</h3>
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('div_artists')">
+        {% trans "display / undisplay" %}
+    </button>
+    <div id="div_artists" class="transfer-container" style="display: none;" data-group="artists">
+        <div class="flex gap-6">
+            <h4 class="L_H4 w-1/2">{% trans "Selected" %}</h4>
+            <h4 class="L_H4 w-1/2">{% trans "Available" %}</h4>
+        </div>
+        <div class="flex gap-6">
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="source">
+                {% for artist in artists %}
+                {% if artist.song_id %}
+                <li data-id="{{ artist.artist_id }}" class="cursor-pointer L_GENRE_BADGE">
+                    <input type="hidden" name="artist_ids" value="{{ artist.artist_id }}">
+                    {{ artist.name }}
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            <ul class="zone w-1/2 L_LI" style="min-height: 5em; max-height: 15em; overflow-y: auto;" data-role="target">
+                {% for artist in artists %}
+                {% if not artist.song_id %}
+                <li data-id="{{ artist.artist_id }}" class="cursor-pointer L_GENRE_BADGE">
+                    {{ artist.name }}
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
         </div>
     </div>
 

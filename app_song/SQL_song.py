@@ -682,7 +682,7 @@ LEFT JOIN l_song_bands lsb ON lsb.band_id = cb.band_id
 UNION ALL
    SELECT "artist" type, ca.artist_id id, ca.name, lsa.song_id
      FROM c_artists ca
-LEFT JOIN l_song_artist lsa ON lsa.artist_id = ca.artist_id
+LEFT JOIN l_song_artists lsa ON lsa.artist_id = ca.artist_id
                            AND lsa.song_id = %s
  ORDER BY name
 """
@@ -693,9 +693,73 @@ LEFT JOIN l_song_artist lsa ON lsa.artist_id = ca.artist_id
             rows = cursor.fetchall()
             for row in rows:
                 if row[0] == 'band':
-                    self.bands.append({'band_id': row[1], 'name': row[2]})
+                    self.bands.append({'band_id': row[1], 'name': row[2], 'song_id': row[3]})
                 else:
-                    self.artists.append({'artist_id': row[1], 'name': row[2]})
+                    self.artists.append({'artist_id': row[1], 'name': row[2], 'song_id': row[3]})
+
+
+    def clear_bands(self):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_bands
+      WHERE song_id = %s
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.clear_bands", "DELETE_8", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR] DELETE_8'
+            
+
+    def add_band(self, band_id: int):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_bands (song_id, band_id)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, band_id]
+
+            create_SQL_log(code_file, "Song.add_band", "INSERT_8", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR48]'
+            
+
+    def clear_artists(self):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_artists
+      WHERE song_id = %s
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.clear_artists", "DELETE_9", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR] DELETE_9'
+            
+
+    def add_artist(self, artist_id: int):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_artists (song_id, artist_id)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, artist_id]
+
+            create_SQL_log(code_file, "Song.add_artist", "INSERT_9", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR49]'
 
 
 ######################################################
