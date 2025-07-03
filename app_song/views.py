@@ -1,7 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .SQL_song import Song, Genre
-from app_main.utils import is_moderator, is_no_loader, strip_html, get_song_params, add_search_params, get_search_params, delete_genre_in_search_params
+from app_main.utils import (
+    is_moderator,
+    is_no_loader,
+    strip_html,
+    get_song_params,
+    add_search_params,
+    get_search_params,
+    delete_genre_in_search_params,
+    delete_band_in_search_params,
+    delete_artist_in_search_params,
+)
 
 
 
@@ -21,6 +31,7 @@ def songs(request):
     moderator = is_moderator(request)
 
     genres = Genre.get_all_genres()
+    bands, artists = Song.get_all_bands_and_artists()
 
     if request.method == 'POST':
         if 'btn_new_song' in request.POST:
@@ -42,50 +53,80 @@ def songs(request):
                 search_logic = 0
             else:
                 search_logic = 1
+
             search_genres = ''
             for genre in genres:
                 if request.POST.get(f'chk_genre_{genre.genre_id}', 'off') == 'on':
                     if search_genres:
                         search_genres += ','
                     search_genres += str(genre.genre_id)
+            
+            search_bands = ''
+            for band in bands:
+                if request.POST.get(f'chk_band_{band['band_id']}', 'off') == 'on':
+                    if search_bands:
+                        search_bands += ','
+                    search_bands += str(band['band_id'])
+            search_artists = ''
+            for artist in artists:
+                if request.POST.get(f'chk_artist_{artist['artist_id']}', 'off') == 'on':
+                    if search_artists:
+                        search_artists += ','
+                    search_artists += str(artist['artist_id'])
+
             search_song_approved = 0
             if request.POST.get('chk_search_song_approved', 'off') == 'on':
                 search_song_approved = 1
             if request.POST.get('chk_search_song_not_approved', 'off') == 'on':
                 search_song_approved = 2
+
             add_search_params(
                 request,
                 request.POST.get('txt_search', '').strip(),
                 request.POST.get('chk_search_everywhere', 'off') == 'on',
                 search_logic,
                 search_genres,
+                search_bands,
+                search_artists,
                 search_song_approved
             )
 
         if 'btn_reset_search' in request.POST:
-            add_search_params(request, '', 0, 0, '', 0)
+            add_search_params(request, '', 0, 0, '', '', '', 0)
             
     search_params = get_search_params(request)
     songs = Song.get_all_songs(search_params['search_txt'],
                                search_params['search_everywhere'],
                                search_params['search_logic'],
                                search_params['search_genres'],
+                               search_params['search_bands'],
+                               search_params['search_artists'],
                                search_params['search_song_approved'])
-
+    
     # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
     search_genres_list = []
     if search_params['search_genres']:
         search_genres_list = [int(g) for g in search_params['search_genres'].split(',') if g.isdigit()]
+    search_bands_list = []
+    if search_params['search_bands']:
+        search_bands_list = [int(b) for b in search_params['search_bands'].split(',') if b.isdigit()]
+    search_artists_list = []
+    if search_params['search_artists']:
+        search_artists_list = [int(a) for a in search_params['search_artists'].split(',') if a.isdigit()]
 
     return render(request, 'app_song/songs.html', {
         'songs': songs,
         'title': request.POST.get('txt_new_title', ''),
         'sub_title': request.POST.get('txt_new_sub_title', ''),
         'genres': genres,
+        'bands': bands,
+        'artists': artists,
         'search_txt': search_params['search_txt'],
         'search_everywhere': search_params['search_everywhere'],
         'search_logic': search_params['search_logic'],
         'search_genres': search_genres_list,
+        'search_bands': search_bands_list,
+        'search_artists': search_artists_list,
         'search_song_approved': search_params['search_song_approved'],
         'total_search_songs': len(songs),
         'total_songs': Song.get_total_songs(),
@@ -438,6 +479,16 @@ def song_metadata(request, song_id):
 
 def delete_genre(request, genre_id):
     delete_genre_in_search_params(request, genre_id)
+    return redirect('songs')
+
+
+def delete_band(request, band_id):
+    delete_band_in_search_params(request, band_id)
+    return redirect('songs')
+
+
+def delete_artist(request, artist_id):
+    delete_artist_in_search_params(request, artist_id)
     return redirect('songs')
 
 

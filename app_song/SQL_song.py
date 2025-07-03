@@ -33,6 +33,21 @@ MUSIC_EMOJIS = [
     '𝅘𝅥𝅯',   # musical symbol sixteenth note
 ]
 
+BAND_EMOJIS = [
+    '🎸',
+    '🥁',
+    '🎷',
+    '🎺',
+    '🎻',
+    '🎹',
+]
+
+ARTIST_EMOJIS = [
+    '🎤',  # microphone
+    '🎙️',  # microphone
+    '🧑‍🎤',  # artist palette
+]
+
 
 ##############################################
 ##############################################
@@ -64,6 +79,8 @@ class Song:
                       search_everywhere: bool = False,
                       search_logic: int = 0,
                       search_genres: str = '',
+                      search_bands: str = '',
+                      search_artists: str = '',
                       search_song_approved: int = 0) -> list[dict[str, Any]]:
         
         search_genres_is_null = '0'
@@ -71,11 +88,30 @@ class Song:
             search_genres = '0'
             search_genres_is_null = '1'
 
+        search_bands_is_null = '0'
+        if not search_bands:
+            search_bands = '0'
+            search_bands_is_null = '1'
+
+        search_artists_is_null = '0'
+        if not search_artists:
+            search_artists = '0'
+            search_artists_is_null = '1'
+
         search_logic_SQL = ''
         if search_logic:
             for genre in search_genres.split(','):
-                search_logic_SQL += f"""
+                if genre != '0':
+                    search_logic_SQL += f"""
       AND EXISTS (SELECT 1 FROM l_song_genre lsg WHERE lsg.song_id = ls1.song_id AND lsg.genre_id = {genre})"""
+            for band in search_bands.split(','):
+                if band != '0':
+                    search_logic_SQL += f"""
+      AND EXISTS (SELECT 1 FROM l_song_bands lsb WHERE lsb.song_id = ls1.song_id AND lsb.band_id = {band})"""
+            for artist in search_artists.split(','):
+                if artist != '0':
+                    search_logic_SQL += f"""
+      AND EXISTS (SELECT 1 FROM l_song_artists lsa WHERE lsa.song_id = ls1.song_id AND lsa.artist_id = {artist})"""
 
 
         request = f"""
@@ -90,10 +126,16 @@ class Song:
                      WHEN ls1.status = 2 THEN ' ✔️⁉️'
                      ELSE ''
                  END) AS full_title,
-          CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres
+          CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres,
+          CONCAT('[', GROUP_CONCAT(CONCAT(cb.name)), ']') AS bands,
+          CONCAT('[', GROUP_CONCAT(CONCAT(ca.name)), ']') AS artists
      FROM l_songs ls1
 LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
+LEFT JOIN l_song_bands lsb ON lsb.song_id = ls1.song_id
+LEFT JOIN c_bands cb ON cb.band_id = lsb.band_id
+LEFT JOIN l_song_artists lsa ON lsa.song_id = ls1.song_id
+LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
     WHERE ({search_everywhere} IS FALSE
            AND (ls1.title LIKE '%{search_txt}%'
                 OR ls1.sub_title LIKE '%{search_txt}%')
@@ -104,13 +146,17 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                 OR EXISTS (SELECT 1
                              FROM l_songs ls2
                              JOIN l_verses lv ON lv.song_id = ls2.song_id
-                            WHERE ls2.song_id= ls1.song_id
+                            WHERE ls2.song_id = ls1.song_id
                               AND lv.text LIKE '%{search_txt}%'
                           )
                )
           )
       AND (lg.genre_id IN ({search_genres})
-           OR {search_genres_is_null} = 1){search_logic_SQL}
+           OR {search_genres_is_null} = 1)
+      AND (cb.band_id IN ({search_bands})
+           OR {search_bands_is_null} = 1)
+      AND (ca.artist_id IN ({search_artists})
+           OR {search_artists_is_null} = 1){search_logic_SQL}
       AND ({search_song_approved} = 0
            OR {search_song_approved} = 1 AND ls1.status > 0
            OR {search_song_approved} = 2 AND ls1.status = 0)
@@ -139,7 +185,9 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                  'description': row[3],
                  'status': row[4],
                  'full_title': row[5],
-                 'genres': row[6]
+                 'genres': row[6],
+                 'bands': row[7],
+                 'artists': row[8]
                  } for row in rows]
     
 
@@ -658,6 +706,34 @@ DELETE FROM l_verse_prefixes
                 return '[ERR38]'
             
 
+    @staticmethod
+    def get_all_bands_and_artists():
+        bands = []
+        artists = []
+
+        with connection.cursor() as cursor:
+            request = """
+   SELECT "band" type, cb.band_id id, cb.name
+     FROM c_bands cb
+UNION ALL
+   SELECT "artist" type, ca.artist_id id, ca.name
+     FROM c_artists ca
+ ORDER BY name
+"""
+            params = []
+
+            create_SQL_log(code_file, "Song.get_all_bands_and_artists", "SELECT_12", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] == 'band':
+                    bands.append({'band_id': row[1], 'name': row[2]})
+                else:
+                    artists.append({'artist_id': row[1], 'name': row[2]})
+
+        return bands, artists
+            
+
     def get_bands_and_artists(self):
         self.bands = []
         self.artists = []
@@ -682,9 +758,19 @@ LEFT JOIN l_song_artists lsa ON lsa.artist_id = ca.artist_id
             rows = cursor.fetchall()
             for row in rows:
                 if row[0] == 'band':
-                    self.bands.append({'band_id': row[1], 'name': row[2], 'song_id': row[3]})
+                    self.bands.append({
+                        'band_id': row[1],
+                        'name': row[2],
+                        'song_id': row[3],
+                        'emoji_random': random.choice(BAND_EMOJIS)
+                    })
                 else:
-                    self.artists.append({'artist_id': row[1], 'name': row[2], 'song_id': row[3]})
+                    self.artists.append({
+                        'artist_id': row[1],
+                        'name': row[2],
+                        'song_id': row[3],
+                        'emoji_random': random.choice(ARTIST_EMOJIS)
+                    })
 
 
     def clear_bands(self):

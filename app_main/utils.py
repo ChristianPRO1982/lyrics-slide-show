@@ -26,13 +26,24 @@ def save_user_theme(request, css):
         user.theme = css
         user.save()
 
-def add_search_params(request, search_txt, search_everywhere, search_logic, search_genres, search_song_approved):
+def add_search_params(
+        request,
+        search_txt,
+        search_everywhere,
+        search_logic,
+        search_genres,
+        search_bands,
+        search_artists,
+        search_song_approved
+        ):
     if request.user.is_authenticated:
         user = User(request.user.username)
         user.search_txt = search_txt
         user.search_everywhere = search_everywhere
         user.search_logic = search_logic
         user.search_genres = search_genres
+        user.search_bands = search_bands
+        user.search_artists = search_artists
         user.search_song_approved = search_song_approved
         user.save()
 
@@ -43,6 +54,20 @@ def delete_genre_in_search_params(request, genre_id):
         user.search_genres = ','.join(genres)
         user.save()
 
+def delete_band_in_search_params(request, band_id):
+    if request.user.is_authenticated:
+        user = User(request.user.username)
+        bands = [b for b in user.search_bands.split(',') if b and int(b) != band_id]
+        user.search_bands = ','.join(bands)
+        user.save()
+
+def delete_artist_in_search_params(request, artist_id):
+    if request.user.is_authenticated:
+        user = User(request.user.username)
+        artists = [a for a in user.search_artists.split(',') if a and int(a) != artist_id]
+        user.search_artists = ','.join(artists)
+        user.save()
+
 def get_search_params(request):
     if request.user.is_authenticated:
         user = User(request.user.username)
@@ -51,6 +76,8 @@ def get_search_params(request):
             'search_everywhere': user.search_everywhere,
             'search_logic': user.search_logic,
             'search_genres': user.search_genres,
+            'search_bands': user.search_bands,
+            'search_artists': user.search_artists,
             'search_song_approved': user.search_song_approved,
         }
     else:

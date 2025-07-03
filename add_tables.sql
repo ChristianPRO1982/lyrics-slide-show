@@ -22,6 +22,8 @@ CREATE TABLE `c_users` (
   `search_everywhere` tinyint(1) NOT NULL DEFAULT '0',
   `search_logic` tinyint(1) NOT NULL DEFAULT '0',
   `search_genres` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `search_bands` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `search_artists` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_song_approved` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `c_users_auth_user_FK` (`username`),
