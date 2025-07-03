@@ -1,3 +1,28 @@
+# [1.13.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.12.1...v1.13.0) (2025-07-03)
+
+
+### Bug Fixes
+
+* <hr> colors ([18ccfee](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/18ccfeec346c46a43c2a61f535933c7bc371eba5))
+* add_tables.sql ([256db2f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/256db2fe6eb196665c3685649808d62662335f25))
+* add_tables.sql ([c994d27](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c994d2757d1503a642ffd0bfa74676fbd36d9a18))
+* bands ans artists ([c116f09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c116f095b45368d8828a96eabfbeaadeb2cd1253))
+* common songs actions: add title for outer links ([0f56e27](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0f56e27e3668952ce717df108f705e4cc77d9d95))
+* delete artist from l_songs in songs app ([9717c9f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9717c9f086f5506b6d27afff45da189bd881c692))
+* delete artist from l_songs in songs app ([abc8342](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/abc834212920bfca1b34c64c7a9ab7d0cb741e66))
+* delete song: best display ([f253908](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f25390832403c64ec221e918743d8543c97f1b2f))
+* display checkbox for song approved with comments ([2ee9ec7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2ee9ec709661b5e6c7eb7a62b2b54bcd7236e93a))
+* duplicate genre ([197daaa](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/197daaa1d020d982cca22fc8e60f946150faee8f))
+* genres: undisplay prefixes ([f995ec2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f995ec221e4b8930eef781e1ec5014d93a69220d))
+* modify song: <textarea  rows="4"> ([85220ee](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/85220eeefefc658b93c2093055a46ca69c1876ae))
+* songs: max-height ([bd59e39](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bd59e396ae358ca51d829e6704e300d3c4608261))
+* translate "print" on song pages ([6e70473](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6e70473fd4bebfa99b52f77c9f685cf7df8d80b1))
+
+
+### Features
+
+* bands and artists metadata ([1e61ede](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1e61ede0f7e542f3f8223086b18eef5b0d3b7e33))
+
 ## [1.12.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.12.0...v1.12.1) (2025-06-30)
 
 
