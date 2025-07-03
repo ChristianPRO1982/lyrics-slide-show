@@ -7,7 +7,7 @@
 {% block bloc1 %}
 {% include "common/song_actions.html" %}
 {% endblock bloc1 %}
-{% block bloc2 %}{% endblock bloc2 %}
+{% block bloc2 %}{% include "common/song_meta.html" %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 <p>{% trans "confirm_delete_song_2dot" %}<b><i>{{ song.title }}{% if song.sub_title %} - {{ song.sub_title }}{% endif %}</i></b></p>

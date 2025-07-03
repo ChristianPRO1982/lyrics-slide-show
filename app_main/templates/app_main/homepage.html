@@ -11,6 +11,13 @@
 <h3 class="L_H3">{% trans "Themes" %}</h2>
 <a href="{% url 'theme_normal' %}">Normal (taizé)</a><br>
 <a href="{% url 'theme_scout' %}">Scout</a><br>
+{% if moderator %}
+<hr>
+<a href={% url 'bands' %}>{% trans "Modify bands" %}</a><br>
+<a href={% url 'artists' %}>{% trans "Modify artists" %}</a><br>
+{% endif %}
+{% if admin %}
+{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <p>{{ site.bloc2_text|safe }}</p>

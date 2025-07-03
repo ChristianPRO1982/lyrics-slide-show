@@ -114,10 +114,6 @@ SELECT song_id,
               CASE
                   WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
                   ELSE ''
-              END,
-              CASE
-                  WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                  ELSE ''
               END) AS full_title,
        description
   FROM l_songs
@@ -241,3 +237,213 @@ UPDATE l_site_params
         create_SQL_log(code_file, "Site.save", "UPDATE_3", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
+
+
+
+##############################################
+##############################################
+#################### BAND ####################
+##############################################
+##############################################
+class Band:
+    def __init__(self, band_id=None, name=None, description=None):
+        self.band_id = band_id
+        self.name = name
+
+        if band_id is not None and name is None:
+            self.get_band_by_id()
+
+
+    def get_band_by_id(self):
+        request = """
+SELECT band_id, name
+  FROM c_bands
+ WHERE band_id = %s
+"""
+        params = [self.band_id]
+
+        create_SQL_log(code_file, "Band.get_band_by_id", "SELECT_6", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                row = cursor.fetchone()
+            except Exception as e:
+                row = None
+        if row:
+            self.band_id = row[0]
+            self.name = row[1]
+
+
+    @staticmethod
+    def get_all_bands():
+        request = """
+SELECT band_id, name
+  FROM c_bands
+ ORDER BY name
+"""
+        params = []
+
+        create_SQL_log(code_file, "Band.get_all_bands", "SELECT_7", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+        return [Band(band_id=row[0], name=row[1]) for row in rows] if rows else []
+    
+
+    def save(self):
+        if self.band_id is None:
+            request = """
+INSERT INTO c_bands (name)
+     VALUES (%s)
+"""
+            params = [self.name]
+
+            create_SQL_log(code_file, "Band.save", "INSERT_2", request, params)
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute(request, params)
+                    self.band_id = cursor.lastrowid  # Get the last inserted ID
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR41]'
+                    return '[ERR42]'
+                
+        else:
+            request = """
+UPDATE c_bands
+   SET name = %s
+ WHERE band_id = %s
+"""
+            params = [self.name, self.band_id]
+
+            create_SQL_log(code_file, "Band.save", "UPDATE_4", request, params)
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute(request, params)
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR41]'
+                    return '[ERR43]'
+    
+
+    def delete_band(self):
+        request = """
+DELETE FROM c_bands
+ WHERE band_id = %s
+"""
+        params = [self.band_id]
+
+        create_SQL_log(code_file, "Band.delete_band", "DELETE_1", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR40]'
+            
+
+
+################################################
+################################################
+#################### ARTIST ####################
+################################################
+################################################
+class Artist:
+    def __init__(self, artist_id=None, name=None):
+        self.artist_id = artist_id
+        self.name = name
+
+        if artist_id is not None and name is None:
+            self.get_artist_by_id()
+
+
+    def get_artist_by_id(self):
+        request = """
+SELECT artist_id, name
+  FROM c_artists
+ WHERE artist_id = %s
+"""
+        params = [self.artist_id]
+
+        create_SQL_log(code_file, "Artist.get_artist_by_id", "SELECT_8", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                row = cursor.fetchone()
+            except Exception as e:
+                row = None
+        if row:
+            self.artist_id = row[0]
+            self.name = row[1]
+        
+
+    @staticmethod
+    def get_all_artists():
+        request = """
+SELECT artist_id, name
+  FROM c_artists
+ ORDER BY name
+"""
+        params = []
+
+        create_SQL_log(code_file, "Artist.get_all_artists", "SELECT_9", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+        return [Artist(artist_id=row[0], name=row[1]) for row in rows] if rows else []
+    
+
+    def save(self):
+        if self.artist_id is None:
+            request = """
+INSERT INTO c_artists (name)
+     VALUES (%s)
+"""
+            params = [self.name]
+
+            create_SQL_log(code_file, "Artist.save", "INSERT_3", request, params)
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute(request, params)
+                    self.artist_id = cursor.lastrowid  # Get the last inserted ID
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR44]'
+                    return '[ERR45]'
+
+        else:
+            request = """
+UPDATE c_artists
+   SET name = %s
+ WHERE artist_id = %s
+"""
+            params = [self.name, self.artist_id]
+
+            create_SQL_log(code_file, "Artist.save", "UPDATE_5", request, params)
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute(request, params)
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR44]'
+                    return '[ERR46]'
+                
+
+    def delete_artist(self):
+        request = """
+DELETE FROM c_artists
+ WHERE artist_id = %s
+"""
+        params = [self.artist_id]
+
+        create_SQL_log(code_file, "Artist.delete_artist", "DELETE_2", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR47]'

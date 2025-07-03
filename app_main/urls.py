@@ -5,6 +5,8 @@ from app_main import views
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
+    path('bands', views.bands, name='bands'),
+    path('artists', views.artists, name='artists'),
     path('kill_loader', views.kill_loader, name='kill_loader'),
     path('loader', views.loader, name='loader'),
     path('theme_normal', views.theme_normal, name='theme_normal'),

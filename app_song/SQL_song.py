@@ -40,17 +40,18 @@ MUSIC_EMOJIS = [
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, artist=None, status=None, full_title=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, full_title=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
         self.description = description
-        self.artist = artist
         self.status = status
         self.full_title = full_title
         self.verses = []
         self.genres = []
         self.links = []
+        self.bands = []
+        self.artists = []
 
         self.get_links()
         self.get_genres()
@@ -85,10 +86,6 @@ class Song:
                      ELSE ''
                  END,
                  CASE
-                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
-                     ELSE ''
-                 END,
-                 CASE
                      WHEN ls1.status = 1 THEN ' ✔️'
                      WHEN ls1.status = 2 THEN ' ✔️⁉️'
                      ELSE ''
@@ -99,12 +96,10 @@ LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
     WHERE ({search_everywhere} IS FALSE
            AND (ls1.title LIKE '%{search_txt}%'
-                OR ls1.sub_title LIKE '%{search_txt}%'
-                OR ls1.artist LIKE '%{search_txt}%')
+                OR ls1.sub_title LIKE '%{search_txt}%')
             OR {search_everywhere} IS TRUE
            AND (ls1.title LIKE '%{search_txt}%'
                 OR ls1.sub_title LIKE '%{search_txt}%'
-                OR ls1.artist LIKE '%{search_txt}%'
                 OR ls1.description LIKE '%{search_txt}%'
                 OR EXISTS (SELECT 1
                              FROM l_songs ls2
@@ -119,14 +114,10 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
       AND ({search_song_approved} = 0
            OR {search_song_approved} = 1 AND ls1.status > 0
            OR {search_song_approved} = 2 AND ls1.status = 0)
- GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.artist, ls1.status,
+ GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.status,
           CONCAT(ls1.title,
                  CASE
                      WHEN ls1.sub_title != '' THEN CONCAT(' - ', ls1.sub_title)
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN ls1.artist != '' THEN CONCAT(' [', ls1.artist, ']')
                      ELSE ''
                  END,
                  CASE
@@ -146,10 +137,9 @@ LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                  'title': row[1],
                  'sub_title': row[2],
                  'description': row[3],
-                 'artist': row[4],
-                 'status': row[5],
-                 'full_title': row[6],
-                 'genres': row[7]
+                 'status': row[4],
+                 'full_title': row[5],
+                 'genres': row[6]
                  } for row in rows]
     
 
@@ -250,10 +240,6 @@ SELECT *, CONCAT(title,
                      ELSE ''
                  END,
                  CASE
-                     WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                     ELSE ''
-                 END,
-                 CASE
                      WHEN status = 1 THEN ' ✔️'
                      WHEN status = 2 THEN ' ✔️⁉️'
                      ELSE ''
@@ -267,7 +253,13 @@ SELECT *, CONCAT(title,
             cursor.execute(request, params)
             row = cursor.fetchone()
         if row:
-            return cls(song_id=row[0], title=row[1], sub_title=row[2], description=row[3], artist=row[4], status=row[5], full_title=row[6])
+            return cls(
+                song_id=row[0],
+                title=row[1],
+                sub_title=row[2],
+                description=row[3],
+                status=row[4],
+                full_title=row[5])
         return None
     
 
@@ -295,12 +287,11 @@ SELECT COUNT(1)
 UPDATE l_songs
    SET title = %s,
        sub_title = %s,
-       description = %s,
-       artist = %s
+       description = %s
  WHERE song_id = %s
    AND (status = 0 OR 1 = %s)
 """
-                params = [self.title, self.sub_title, self.description, self.artist, self.song_id, moderator]
+                params = [self.title, self.sub_title, self.description, self.song_id, moderator]
                 
                 create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
                 try:
@@ -312,10 +303,10 @@ UPDATE l_songs
 
             else:
                 request = """
-INSERT INTO l_songs (title, sub_title, description, artist)
-     VALUES (%s, %s, %s, %s)
+INSERT INTO l_songs (title, sub_title, description)
+     VALUES (%s, %s, %s)
 """
-                params = [self.title, self.sub_title, self.description, self.artist]
+                params = [self.title, self.sub_title, self.description]
                 
                 create_SQL_log(code_file, "Song.save", "INSERT_1", request, params)
                 try:
@@ -397,8 +388,8 @@ ORDER BY link
            END AS is_new_group,
            @prev_group := tt.`group`
       FROM (  SELECT lg.genre_id,
-                     lg.`group`,
-                     lg.name
+                     CASE WHEN REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') = '' THEN lg.`group` ELSE REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') END AS `group`,
+                     CASE WHEN REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') = '' THEN lg.name ELSE REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') END AS name
                 FROM l_song_genre lsg
                 JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                WHERE lsg.song_id = %s
@@ -665,7 +656,99 @@ DELETE FROM l_verse_prefixes
                 return ''
             except Exception as e:
                 return '[ERR38]'
+            
 
+    def get_bands_and_artists(self):
+        self.bands = []
+        self.artists = []
+
+        with connection.cursor() as cursor:
+            request = """
+   SELECT "band" type, cb.band_id id, cb.name, lsb.song_id
+     FROM c_bands cb
+LEFT JOIN l_song_bands lsb ON lsb.band_id = cb.band_id
+                          AND lsb.song_id = %s
+UNION ALL
+   SELECT "artist" type, ca.artist_id id, ca.name, lsa.song_id
+     FROM c_artists ca
+LEFT JOIN l_song_artists lsa ON lsa.artist_id = ca.artist_id
+                           AND lsa.song_id = %s
+ ORDER BY name
+"""
+            params = [self.song_id, self.song_id]
+
+            create_SQL_log(code_file, "Song.get_bands_and_artists", "SELECT_12", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            for row in rows:
+                if row[0] == 'band':
+                    self.bands.append({'band_id': row[1], 'name': row[2], 'song_id': row[3]})
+                else:
+                    self.artists.append({'artist_id': row[1], 'name': row[2], 'song_id': row[3]})
+
+
+    def clear_bands(self):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_bands
+      WHERE song_id = %s
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.clear_bands", "DELETE_8", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR] DELETE_8'
+            
+
+    def add_band(self, band_id: int):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_bands (song_id, band_id)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, band_id]
+
+            create_SQL_log(code_file, "Song.add_band", "INSERT_8", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR48]'
+            
+
+    def clear_artists(self):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_artists
+      WHERE song_id = %s
+"""
+            params = [self.song_id]
+
+            create_SQL_log(code_file, "Song.clear_artists", "DELETE_9", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR] DELETE_9'
+            
+
+    def add_artist(self, artist_id: int):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_artists (song_id, artist_id)
+     VALUES (%s, %s)
+"""
+            params = [self.song_id, artist_id]
+
+            create_SQL_log(code_file, "Song.add_artist", "INSERT_9", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR49]'
 
 
 ######################################################
@@ -796,23 +879,40 @@ DELETE FROM l_verses
 ###############################################
 ###############################################
 class Genre:
-    def __init__(self, genre_id=None, group=None, name=None):
+    def __init__(self, genre_id=None, group=None, name=None, full_group=None, full_name=None):
         self.genre_id = genre_id
         self.group = group
         self.name = name
+        self.full_group = full_group
+        self.full_name = full_name
 
     @staticmethod
     def get_all_genres():
         with connection.cursor() as cursor:
             request = """
-  SELECT *
-    FROM l_genres
-ORDER BY `group`, name
+  SELECT genre_id,
+         CASE WHEN cleaned_group = '' THEN full_group ELSE cleaned_group END AS `group`,
+         CASE WHEN cleaned_name = '' THEN full_name ELSE cleaned_name END AS name,
+         full_group,
+         full_name
+    FROM (SELECT genre_id,
+               REGEXP_REPLACE(`group`, '^[0-9 _\\-]+', '') AS cleaned_group,
+               REGEXP_REPLACE(name, '^[0-9 _\\-]+', '') AS cleaned_name,
+               `group` AS full_group,
+               name AS full_name
+          FROM l_genres) AS sub
+ORDER BY full_group, full_name
 """
             create_SQL_log(code_file, "Genre.get_all_genres", "SELECT_8", request, [])
             cursor.execute(request)
             rows = cursor.fetchall()
-        return [Genre(genre_id=row[0], group=row[1], name=row[2]) for row in rows]
+        return [Genre(
+                genre_id=row[0],
+                group=row[1],
+                name=row[2],
+                full_group=row[3],
+                full_name=row[4]
+            ) for row in rows]
     
 
     def save(self):
@@ -827,7 +927,13 @@ UPDATE l_genres
                 params = [self.group, self.name, self.genre_id]
 
                 create_SQL_log(code_file, "Genre.save", "UPDATE_9", request, params)
-                cursor.execute(request, params)
+                try:
+                    cursor.execute(request, params)
+                    return ''
+                except Exception as e:
+                    if 'Duplicate entry' in str(e):
+                        return '[ERR33]'
+                    return '[ERR39]'
             else:
                 request = """
 INSERT INTO l_genres (`group`, name)

@@ -102,7 +102,7 @@ CREATE TABLE `l_verses` (
   `followed` tinyint(1) NOT NULL DEFAULT '0',
   `notcontinuenumbering` tinyint(1) NOT NULL DEFAULT '0',
   `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `prefix` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prefix` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`verse_id`),
   KEY `l_verses_song_id_IDX` (`song_id`) USING BTREE,
   KEY `l_verses_num_IDX` (`num`) USING BTREE,
@@ -182,7 +182,53 @@ CREATE TABLE `l_site_params` (
 
 CREATE TABLE `l_verse_prefixes` (
   `prefix_id` mediumint NOT NULL AUTO_INCREMENT,
-  `prefix` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prefix` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`prefix_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `c_bands` (
+  `band_id` mediumint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`band_id`),
+  UNIQUE KEY `c_bands_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `c_band_links` (
+  `band_id` mediumint NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`band_id`,`link`),
+  CONSTRAINT `c_band_links_c_bands_FK` FOREIGN KEY (`band_id`) REFERENCES `c_bands` (`band_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `c_artists` (
+  `artist_id` mediumint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`artist_id`),
+  UNIQUE KEY `c_artist_unique` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `c_artist_links` (
+  `artist_id` mediumint NOT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`artist_id`,`link`),
+  CONSTRAINT `c_artist_links_c_artists_FK` FOREIGN KEY (`artist_id`) REFERENCES `c_artists` (`artist_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_bands` (
+  `song_id` mediumint NOT NULL,
+  `band_id` mediumint NOT NULL,
+  PRIMARY KEY (`song_id`,`band_id`),
+  KEY `l_song_bands_c_bands_FK` (`band_id`),
+  CONSTRAINT `l_song_bands_c_bands_FK` FOREIGN KEY (`band_id`) REFERENCES `c_bands` (`band_id`) ON DELETE CASCADE,
+  CONSTRAINT `l_song_bands_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_artists` (
+  `song_id` mediumint NOT NULL,
+  `artist_id` mediumint NOT NULL,
+  PRIMARY KEY (`song_id`,`artist_id`),
+  KEY `l_song_artists_c_artists_FK` (`artist_id`),
+  CONSTRAINT `l_song_artists_c_artists_FK` FOREIGN KEY (`artist_id`) REFERENCES `c_artists` (`artist_id`) ON DELETE CASCADE,
+  CONSTRAINT `l_song_artists_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme
-from .SQL_main import User, Site, Songs
+from .SQL_main import User, Site, Songs, Band, Artist
 
 
 def error_404(request, exception):
@@ -100,3 +100,61 @@ def theme_normal(request):
 def theme_scout(request):
     save_user_theme(request, 'scout.css')
     return redirect('homepage')
+
+
+def bands(request):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    bands = Band.get_all_bands()
+
+    if request.method == 'POST':
+        for band in bands:
+            if f'btn_delete_band_{band.band_id}' in request.POST:
+                error = band.delete_band()
+            if error == '' and request.POST[f'txt_name_{band.band_id}'].strip() != '':
+                band.name = request.POST[f'txt_name_{band.band_id}'].strip()
+                error = band.save()
+
+        if error == '' and request.POST['txt_new_name'].strip() != '':
+            new_band = Band(name=request.POST['txt_new_name'].strip())
+            error = new_band.save()
+    
+        bands = Band.get_all_bands()
+
+    return render(request, 'app_main/bands.html', {
+        'bands': bands,
+        'error': error,
+        'css': css,
+        'no_loader': no_loader,
+    })
+
+
+def artists(request):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    artists = Artist.get_all_artists()
+
+    if request.method == 'POST':
+        for artist in artists:
+            if f'btn_delete_artist_{artist.artist_id}' in request.POST:
+                error = artist.delete_artist()
+            if error == '' and request.POST[f'txt_name_{artist.artist_id}'].strip() != '':
+                artist.name = request.POST[f'txt_name_{artist.artist_id}'].strip()
+                error = artist.save()
+
+        if error == '' and request.POST['txt_new_name'].strip() != '':
+            new_artist = Artist(name=request.POST['txt_new_name'].strip())
+            error = new_artist.save()
+    
+        artists = Artist.get_all_artists()
+
+    return render(request, 'app_main/artists.html', {
+        'artists': artists,
+        'error': error,
+        'css': css,
+        'no_loader': no_loader,
+    })

@@ -38,16 +38,22 @@
     📏 {% trans "verse_rule_1" %} <b>{{ verse_max_lines }}</b><br>
     📏 {% trans "verse_rule_2" %} <b>{{ verse_max_characters_for_a_line }}</b>
 {% endblock bloc1 %}
-{% block bloc2 %}{% include "common/song_genres.html" %}<hr>{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}{% include "common/song_meta.html" %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
 <form method="post" action="{% url "modify_song" song.song_id %}#new_verse">
     {% csrf_token %}
     {% if moderator %}
         <div>
+            {% if song.status == 2 %}
+            <input class="w-4 h-4" style="width: 5%;" type="checkbox" checked="checked" disabled="disabled" />
+            <input class="hidden" style="width: 5%;" type="checkbox" name="box_song_approved" id="box_song_approved" checked="checked" />
+            <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+            {% else %}
             <input class="w-4 h-4" style="width: 5%;" type="checkbox" name="box_song_approved"
             id="box_song_approved"{% if song.status >= 1 %} checked="checked"{% endif %} />
             <label for="box_song_approved" title="{% trans "song_approved_info" %}">{% trans "Song approved" %}</label>
+            {% endif %}
         </div>
         <input class="hidden" type="text" id="txt_message_id_list" name="txt_message_id_list" readonly="readonly">
         <hr>
@@ -63,10 +69,6 @@
     <div>
         <label for="id_description">{% trans "description" %}</label><br>
         <textarea name="txt_description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
-    </div>
-    <div>
-        <label for="id_artist">{% trans "artist" %}</label><br>
-        <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
 
@@ -165,7 +167,7 @@
                 </div>
             </div>
             
-            <textarea name="txt_verse_text_{{ verse.verse_id }}" rows="3">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
+            <textarea name="txt_verse_text_{{ verse.verse_id }}" rows="4">{% if verse.text %}{{ verse.text }}{% endif %}</textarea>
         </div>
     {% endfor %}
 

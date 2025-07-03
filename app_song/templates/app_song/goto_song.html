@@ -8,15 +8,9 @@
 {% include "common/song_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
-{% include "common/song_genres.html" %}
-
-{% if song.artist %}
-<hr>
-{% trans "Artist:" %} {{ song.artist }}
-{% endif %}
+{% include "common/song_meta.html" %}
 
 {% if song.description %}
-<hr>
 {{ song.description|linebreaksbr|safe }}
 {% endif %}
 

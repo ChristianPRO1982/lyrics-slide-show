@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-30 10:32+0200\n"
+"POT-Creation-Date: 2025-07-03 11:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,8 +35,8 @@ msgstr "Masquer les anciennes animations"
 #: app_animation/templates/app_animation/animations.html:38
 #: app_animation/templates/app_animation/animations.html:73
 #: app_animation/templates/app_animation/modify_animation.html:50
-#: app_song/templates/app_song/song_metadata.html:145
-#: app_song/templates/app_song/song_metadata.html:172
+#: app_song/templates/app_song/song_metadata.html:160
+#: app_song/templates/app_song/song_metadata.html:187
 msgid "Name"
 msgstr "Nom"
 
@@ -59,8 +59,8 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:76
 #: app_song/templates/app_song/song_metadata.html:28
 #: app_song/templates/app_song/song_metadata.html:53
-#: app_song/templates/app_song/song_metadata.html:146
-#: app_song/templates/app_song/song_metadata.html:173
+#: app_song/templates/app_song/song_metadata.html:161
+#: app_song/templates/app_song/song_metadata.html:188
 #: app_song/templates/common/song_actions.html:3
 msgid "Actions"
 msgstr ""
@@ -73,8 +73,10 @@ msgstr "Modifier"
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:306
 #: app_animation/templates/common/animation_actions.html:7
+#: app_main/templates/app_main/artists.html:24
+#: app_main/templates/app_main/bands.html:24
 #: app_song/templates/app_song/song_metadata.html:38
-#: app_song/templates/app_song/song_metadata.html:158
+#: app_song/templates/app_song/song_metadata.html:173
 #: app_song/templates/common/song_actions.html:8
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
@@ -100,8 +102,8 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
-#: app_main/templates/app_main/homepage.html:70
-#: app_main/templates/app_main/homepage.html:108
+#: app_main/templates/app_main/homepage.html:77
+#: app_main/templates/app_main/homepage.html:115
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr "Annuler"
@@ -250,21 +252,21 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
-#: app_main/templates/app_main/homepage.html:69
-#: app_main/templates/app_main/homepage.html:107
+#: app_main/templates/app_main/homepage.html:76
+#: app_main/templates/app_main/homepage.html:114
 #: app_song/templates/app_song/moderator_song.html:28
-#: app_song/templates/app_song/modify_song.html:71
-#: app_song/templates/app_song/modify_song.html:190
+#: app_song/templates/app_song/modify_song.html:77
+#: app_song/templates/app_song/modify_song.html:213
 #: app_song/templates/app_song/song_metadata.html:17
-#: app_song/templates/app_song/song_metadata.html:181
+#: app_song/templates/app_song/song_metadata.html:196
 msgid "save"
 msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
-#: app_song/templates/app_song/modify_song.html:114
-#: app_song/templates/app_song/modify_song.html:137
-#: app_song/templates/app_song/modify_song.html:152
+#: app_song/templates/app_song/modify_song.html:120
+#: app_song/templates/app_song/modify_song.html:146
+#: app_song/templates/app_song/modify_song.html:161
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -315,7 +317,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:130
+#: app_song/templates/app_song/modify_song.html:139
 msgid "before"
 msgstr "Avant"
 
@@ -325,12 +327,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:144
+#: app_song/templates/app_song/modify_song.html:153
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:145
+#: app_song/templates/app_song/modify_song.html:154
 msgid "after"
 msgstr "Après"
 
@@ -386,7 +388,7 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:191
+#: app_song/templates/app_song/modify_song.html:214
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -651,81 +653,121 @@ msgstr "Confirmer la suppression du groupe "
 msgid "cancel"
 msgstr "annuler"
 
+#: app_main/templates/app_main/artists.html:6
+#: app_main/templates/app_main/artists.html:7
+#: app_song/templates/app_song/song_metadata.html:120
+msgid "Artists"
+msgstr "Artistes"
+
+#: app_main/templates/app_main/artists.html:11
+msgid "New artist"
+msgstr "Nouvel artiste"
+
+#: app_main/templates/app_main/artists.html:19
+#: app_main/templates/app_main/artists.html:27
+#: app_main/templates/app_main/bands.html:19
+#: app_main/templates/app_main/bands.html:27
+msgid "Save"
+msgstr "Enregistrer"
+
+#: app_main/templates/app_main/artists.html:22
+#: app_main/templates/app_main/bands.html:22
+msgid "mandatory"
+msgstr "obligatoire"
+
+#: app_main/templates/app_main/bands.html:6
+#: app_main/templates/app_main/bands.html:7
+#: app_song/templates/app_song/song_metadata.html:89
+msgid "Bands"
+msgstr "Groupes de musique"
+
+#: app_main/templates/app_main/bands.html:11
+msgid "New band"
+msgstr "Nouveau group de musique"
+
 #: app_main/templates/app_main/homepage.html:11
 msgid "Themes"
 msgstr "Thèmes"
 
-#: app_main/templates/app_main/homepage.html:18
+#: app_main/templates/app_main/homepage.html:16
+msgid "Modify bands"
+msgstr "Modifier les groupes de musique"
+
+#: app_main/templates/app_main/homepage.html:17
+msgid "Modify artists"
+msgstr "Modifier les artistes"
+
+#: app_main/templates/app_main/homepage.html:25
 msgid "powered by"
 msgstr "propulsé par"
 
-#: app_main/templates/app_main/homepage.html:32
-#: app_song/templates/app_song/song_metadata.html:139
+#: app_main/templates/app_main/homepage.html:39
+#: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr "Modérateur"
 
-#: app_main/templates/app_main/homepage.html:33
+#: app_main/templates/app_main/homepage.html:40
 msgid "List of songs to be moderated"
 msgstr "Liste des chants à modérer"
 
-#: app_main/templates/app_main/homepage.html:39
+#: app_main/templates/app_main/homepage.html:46
 msgid "Song statistics"
 msgstr "Statistiques des chants"
 
-#: app_main/templates/app_main/homepage.html:40
+#: app_main/templates/app_main/homepage.html:47
 msgid "songs approved"
 msgstr "chants approuvés"
 
-#: app_main/templates/app_main/homepage.html:42
-#: app_main/templates/app_main/homepage.html:73
+#: app_main/templates/app_main/homepage.html:49
+#: app_main/templates/app_main/homepage.html:80
 msgid "Modify homepage"
 msgstr "Modifier la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:47
+#: app_main/templates/app_main/homepage.html:54
 msgid "Title &#60;head&#62;"
 msgstr "Titre &#60;head&#62;"
 
-#: app_main/templates/app_main/homepage.html:51
+#: app_main/templates/app_main/homepage.html:58
 msgid "Title &#60;h1&#62;"
 msgstr "Titre &#60;h1&#62;"
 
-#: app_main/templates/app_main/homepage.html:55
+#: app_main/templates/app_main/homepage.html:62
 msgid "Home text"
 msgstr "Texte de la page d'accueil"
 
-#: app_main/templates/app_main/homepage.html:59
+#: app_main/templates/app_main/homepage.html:66
 msgid "Bloc1 text: on left"
 msgstr "Texte du bloc 1 : à gauche"
 
-#: app_main/templates/app_main/homepage.html:63
+#: app_main/templates/app_main/homepage.html:70
 msgid "Bloc2 text: on right"
 msgstr "Texte du bloc 2 : à droite"
 
-#: app_main/templates/app_main/homepage.html:78
+#: app_main/templates/app_main/homepage.html:85
 msgid "Administrator"
 msgstr "Administrateur"
 
-#: app_main/templates/app_main/homepage.html:79
+#: app_main/templates/app_main/homepage.html:86
 msgid "Site params"
 msgstr "Paramètres du site"
 
-#: app_main/templates/app_main/homepage.html:84
+#: app_main/templates/app_main/homepage.html:91
 msgid "Max lines"
 msgstr "Nombre de lignes maximum"
 
-#: app_main/templates/app_main/homepage.html:88
+#: app_main/templates/app_main/homepage.html:95
 msgid "lines"
 msgstr "lignes"
 
-#: app_main/templates/app_main/homepage.html:94
+#: app_main/templates/app_main/homepage.html:101
 msgid "Max characters for a line"
 msgstr "Nombre maximum de caractères pour une ligne"
 
-#: app_main/templates/app_main/homepage.html:99
+#: app_main/templates/app_main/homepage.html:106
 msgid "characters"
 msgstr "caractères"
 
-#: app_main/templates/app_main/homepage.html:111
+#: app_main/templates/app_main/homepage.html:118
 msgid "Modify site params"
 msgstr "Modifier les paramètres du site"
 
@@ -814,99 +856,105 @@ msgstr ""
 "Nombre de caractères maximum pour une ligne (espaces et ponctuations "
 "compris) :"
 
-#: app_song/templates/app_song/modify_song.html:50
+#: app_song/templates/app_song/modify_song.html:51
+#: app_song/templates/app_song/modify_song.html:55
 msgid "song_approved_info"
 msgstr ""
 "Un chant validé ne peut plus être modifé. Seul les modérateurs et les "
 "administrateurs peuvent valider un chant."
 
-#: app_song/templates/app_song/modify_song.html:50
+#: app_song/templates/app_song/modify_song.html:51
+#: app_song/templates/app_song/modify_song.html:55
 #: app_song/templates/app_song/songs.html:53
 msgid "Song approved"
 msgstr "Chant validé"
 
-#: app_song/templates/app_song/modify_song.html:56 chris/songs copy.html:17
+#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
 #: copy.html:47
 msgid "title"
 msgstr "Titre"
 
-#: app_song/templates/app_song/modify_song.html:60
+#: app_song/templates/app_song/modify_song.html:66
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:64 chris/songs copy.html:18
+#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
 #: copy.html:48
 msgid "description"
 msgstr "Description"
 
-#: app_song/templates/app_song/modify_song.html:68
+#: app_song/templates/app_song/modify_song.html:74
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/modify_song.html:78
+#: app_song/templates/app_song/modify_song.html:84
 msgid "Too many lines"
 msgstr "Trop de lignes"
 
-#: app_song/templates/app_song/modify_song.html:83
+#: app_song/templates/app_song/modify_song.html:89
 msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
-#: app_song/templates/app_song/modify_song.html:92
-#: app_song/templates/app_song/modify_song.html:135
-#: app_song/templates/app_song/modify_song.html:150
+#: app_song/templates/app_song/modify_song.html:98
+#: app_song/templates/app_song/modify_song.html:144
+#: app_song/templates/app_song/modify_song.html:159
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:97
+#: app_song/templates/app_song/modify_song.html:103
 msgid "Use this option for not display chorus after"
 msgstr "Ne pas afficher le refrain après"
 
-#: app_song/templates/app_song/modify_song.html:97
+#: app_song/templates/app_song/modify_song.html:103
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:100
+#: app_song/templates/app_song/modify_song.html:106
 msgid "Not continue numbering"
 msgstr "Ne pas continuer la numérotation"
 
-#: app_song/templates/app_song/modify_song.html:100
+#: app_song/templates/app_song/modify_song.html:106
 msgid "Not C. num ⓘ"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:103
+#: app_song/templates/app_song/modify_song.html:109
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:119
+#: app_song/templates/app_song/modify_song.html:125
 msgid "Prefix"
 msgstr "Préfixe"
 
-#: app_song/templates/app_song/modify_song.html:128
+#: app_song/templates/app_song/modify_song.html:137
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:163
+#: app_song/templates/app_song/modify_song.html:172
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
-#: app_song/templates/app_song/modify_song.html:164
-#: app_song/templates/app_song/modify_song.html:181 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:173
+#: app_song/templates/app_song/modify_song.html:190 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:173
+#: app_song/templates/app_song/modify_song.html:182
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:177
+#: app_song/templates/app_song/modify_song.html:186
 msgid "Verse prefixes"
 msgstr "Préfixe de couplet"
 
-#: app_song/templates/app_song/modify_song.html:185
+#: app_song/templates/app_song/modify_song.html:194
 msgid "new prefix"
 msgstr "Nouveau préfixe"
 
-#: app_song/templates/app_song/modify_song.html:192
+#: app_song/templates/app_song/modify_song.html:195
+msgid "comment"
+msgstr ""
+
+#: app_song/templates/app_song/modify_song.html:215
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -938,32 +986,45 @@ msgid "New link"
 msgstr "Nouveau lien"
 
 #: app_song/templates/app_song/song_metadata.html:60
-#: app_song/templates/app_song/song_metadata.html:140
+msgid "Genres"
+msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:62
+#: app_song/templates/app_song/song_metadata.html:91
+#: app_song/templates/app_song/song_metadata.html:122
+msgid "display / undisplay"
+msgstr "Afficher / masquer"
+
+#: app_song/templates/app_song/song_metadata.html:66
+#: app_song/templates/app_song/song_metadata.html:95
+#: app_song/templates/app_song/song_metadata.html:126
+msgid "Selected"
+msgstr "Sélectionnés"
+
+#: app_song/templates/app_song/song_metadata.html:67
+#: app_song/templates/app_song/song_metadata.html:96
+#: app_song/templates/app_song/song_metadata.html:127
+msgid "Available"
+msgstr "Disponibles"
+
+#: app_song/templates/app_song/song_metadata.html:155
 msgid "Genre"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:63
-msgid "Associated genres"
-msgstr "Genres associés"
-
-#: app_song/templates/app_song/song_metadata.html:77
-msgid "Available genres"
-msgstr "Genres disponibles"
-
-#: app_song/templates/app_song/song_metadata.html:144
-#: app_song/templates/app_song/song_metadata.html:171
+#: app_song/templates/app_song/song_metadata.html:159
+#: app_song/templates/app_song/song_metadata.html:186
 msgid "Group"
 msgstr "Groupe"
 
-#: app_song/templates/app_song/song_metadata.html:166
+#: app_song/templates/app_song/song_metadata.html:181
 msgid "Group name"
 msgstr "Nom du groupe"
 
-#: app_song/templates/app_song/song_metadata.html:167
+#: app_song/templates/app_song/song_metadata.html:182
 msgid "Genre name"
 msgstr "Nom du genre"
 
-#: app_song/templates/app_song/song_metadata.html:168
+#: app_song/templates/app_song/song_metadata.html:183
 msgid "New genre"
 msgstr "Nouveau genre"
 
@@ -1068,7 +1129,7 @@ msgstr ""
 
 #: app_song/templates/common/song_actions.html:15
 msgid "Print"
-msgstr ""
+msgstr "Impression"
 
 #: app_song/templates/common/song_actions.html:16
 msgid "Print song lyric"
@@ -1340,11 +1401,67 @@ msgstr ""
 
 #: templates/base.html:129
 msgid "ERR39"
-msgstr "[ERR39] no message"
+msgstr ""
+"[ERR39] Impossible de modifier un genre. Contacter l'administrateur du site."
 
 #: templates/base.html:131
 msgid "ERR40"
-msgstr "[ERR40] no message"
+msgstr ""
+"[ERR40] Impossible de supprimer ce groupe de musique. Contacter "
+"l'administrateur du site."
+
+#: templates/base.html:133
+msgid "ERR41"
+msgstr ""
+"Ce nom existe déjà ! Veuillez créer un nom de groupe de musique unique."
+
+#: templates/base.html:135
+msgid "ERR42"
+msgstr ""
+"[ERR42] Impossible de créer ce groupe de musique. Contacter l'administrateur "
+"du site."
+
+#: templates/base.html:137
+msgid "ERR43"
+msgstr ""
+"[ERR43] Impossible de modifier ce groupe de musique. Contacter "
+"l'administrateur du site."
+
+#: templates/base.html:139
+msgid "ERR44"
+msgstr "Cet artiste existe déjà ! Veuillez créer un nom unique."
+
+#: templates/base.html:141
+msgid "ERR45"
+msgstr ""
+"[ERR45] Impossible de créer cet artist. Contacter l'administrateur du site."
+
+#: templates/base.html:143
+msgid "ERR46"
+msgstr ""
+"[ERR46] Impossible de modifier cet artist. Contacter l'administrateur du "
+"site."
+
+#: templates/base.html:145
+msgid "ERR47"
+msgstr ""
+"[ERR47] Impossible de supprimer ce groupe de musique. Contacter "
+"l'administrateur du site."
+
+#: templates/base.html:147
+msgid "ERR48"
+msgstr ""
+"[ERR48] Impossible d'ajouter ce groupe de musique. Contacter "
+"l'administrateur du site."
+
+#: templates/base.html:149
+msgid "ERR49"
+msgstr ""
+"[ERR49] Impossible d'ajouter cet artiste. Contacter l'administrateur du site."
+
+#: templates/base.html:151
+msgid "ERR50"
+msgstr "[ERR50] no message"
 
 #: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"
@@ -2599,6 +2716,12 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
+#~ msgid "Bands and artists"
+#~ msgstr "Groupes de musique et artistes"
+
+#~ msgid "Associated genres"
+#~ msgstr "Genres associés"
+
 #~ msgid "search"
 #~ msgstr "recherche"
 
@@ -2640,9 +2763,6 @@ msgstr ""
 
 #~ msgid "nav_home"
 #~ msgstr "Accueil"
-
-#~ msgid "Save"
-#~ msgstr "Enregistrer"
 
 #~ msgid "help_buttons"
 #~ msgstr ""

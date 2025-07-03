@@ -27,8 +27,7 @@ def songs(request):
             new_song = Song(
                             title = request.POST.get('txt_new_title').strip(),
                             sub_title = request.POST.get('txt_new_sub_title').strip(),
-                            description = "",
-                            artist = "",
+                            description = ""
                            )
             if not new_song.save():
                 error = '[ERR12]'
@@ -197,6 +196,7 @@ def modify_song(request, song_id):
                     error = song.delete_prefix(prefix['prefix_id'])
 
     song_lyrics = song.get_lyrics()
+    song.get_bands_and_artists()
 
     if moderator:
         mod_new_messages = song.get_moderator_new_messages()
@@ -214,6 +214,8 @@ def modify_song(request, song_id):
         'verse_max_lines': song_params['verse_max_lines'],
         'verse_max_characters_for_a_line': song_params['verse_max_characters_for_a_line'],
         'prefixes': Song.get_verse_prefixes(),
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -236,8 +238,18 @@ def delete_song(request, song_id):
             song.delete()
         return redirect('songs')
 
+
+    song_params = get_song_params()
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    song.get_bands_and_artists()
+
     return render(request, 'app_song/delete_song.html', {
         'song': song,
+        'song_lyrics': song.get_lyrics(),
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -256,6 +268,7 @@ def goto_song(request, song_id):
         song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song.get_verses()
         song_lyrics = song.get_lyrics()
+        song.get_bands_and_artists()
     else:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -267,6 +280,8 @@ def goto_song(request, song_id):
         'song_lyrics': song_lyrics,
         'song_messages': song.get_moderator_new_messages(),
         'moderator': moderator,
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'no_loader': no_loader,
@@ -315,6 +330,7 @@ def song_metadata(request, song_id):
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
+    song.get_bands_and_artists()
     
     moderator = is_moderator(request)
 
@@ -356,9 +372,25 @@ def song_metadata(request, song_id):
             for genre_id in genre_ids:
                 error = song.add_genre(genre_id) # Add new associations
             song.get_genres() # Refresh
+        
+        # bands
+        if error == '':
+            band_ids = request.POST.getlist('band_ids')
+            song.clear_bands()
+            for band_id in band_ids:
+                error = song.add_band(band_id)
+            song.get_bands_and_artists()  # Refresh
+        
+        # artists
+        if error == '':
+            artist_ids = request.POST.getlist('artist_ids')
+            song.clear_artists()
+            for artist_id in artist_ids:
+                error = song.add_artist(artist_id)
+            song.get_bands_and_artists()
 
         # GENRES MODERATOR
-        if error:
+        if error == '':
             genres = Genre.get_all_genres()
             for genre in genres:
                 genre_to_update = Genre(genre_id=genre.genre_id)
@@ -367,7 +399,7 @@ def song_metadata(request, song_id):
                 else:
                     genre_to_update.group = request.POST.get(f'txt_genre_group_{genre.genre_id}', '').strip()
                     genre_to_update.name = request.POST.get(f'txt_genre_name_{genre.genre_id}', '').strip()
-                    genre_to_update.save()
+                    error = genre_to_update.save()
             new_genre_group = request.POST.get('txt_genre_group_NEW', '').strip()
             new_genre_name = request.POST.get('txt_genre_name_NEW', '').strip()
             if new_genre_group and new_genre_name:
@@ -394,6 +426,8 @@ def song_metadata(request, song_id):
         'genres': genres,
         'genres_associated': genres_associated,
         'genres_not_associated': genres_not_associated,
+        'bands': song.bands,
+        'artists': song.artists,
         'error': error,
         'css': css,
         'moderator': moderator,

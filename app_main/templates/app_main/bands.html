@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Bands" %}{% endblock title %}
+{% block title_h1 %}{% trans "Bands" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+    <input class="" type="text" name="txt_new_name" placeholder="{% trans "New band" %}"
+    maxlength="255" />
+</form>
+{% endblock bloc2 %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <input class="w-full" name="btn_save" value="{% trans "Save" %}" type="submit" />
+    <br><br>
+    {% for band in bands %}
+    <input class="w-2/3" type="text" name="txt_name_{{ band.band_id }}" placeholder="{% trans "mandatory" %}"
+    maxlength="255" value="{{ band.name }}" required />
+    <input class="w-1/4" name="btn_delete_band_{{ band.band_id }}" value="{% trans "Delete" %}" type="submit" /><br>
+    {% endfor %}
+    <br>
+    <input class="w-full" name="btn_save" value="{% trans "Save" %}" type="submit" />
+{% endblock content %}
