@@ -114,10 +114,6 @@ SELECT song_id,
               CASE
                   WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
                   ELSE ''
-              END,
-              CASE
-                  WHEN artist != '' THEN CONCAT(' [', artist, ']')
-                  ELSE ''
               END) AS full_title,
        description
   FROM l_songs
