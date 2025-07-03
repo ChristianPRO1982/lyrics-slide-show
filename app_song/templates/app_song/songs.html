@@ -28,7 +28,25 @@
     {% for search_genre in search_genres %}
     {% for genre in genres %}
     {% if genre.genre_id == search_genre %}
-    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ {{ genre.name }}</a>
+    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ 🎼 {{ genre.name }}</a>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+    {% if search_bands %}
+    {% for search_band in search_bands %}
+    {% for band in bands %}
+    {% if band.band_id == search_band %}
+    <a href="{% url 'delete_band' band.band_id %}" class="L_GENRE_BADGE">❌ 👥 {{ band.name }}</a>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+    {% if search_artists %}
+    {% for search_artist in search_artists %}
+    {% for artist in artists %}
+    {% if artist.artist_id == search_artist %}
+    <a href="{% url 'delete_artist' artist.artist_id %}" class="L_GENRE_BADGE">❌ 👤 {{ artist.name }}</a>
     {% endif %}
     {% endfor %}
     {% endfor %}
@@ -44,7 +62,7 @@
             {% trans "Search in description and lyrics" %}
         </label><br>
         <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
-        <div id="advancedSearch" style="display: none; max-height: 90%; overflow: auto;">
+        <div id="advancedSearch" style="display: none; max-height: 20em; overflow-y: auto;">
             <br>
             <label>
                 <input type="checkbox" id="chk_search_song_approved" name="chk_search_song_approved"
@@ -70,13 +88,32 @@
                 {% trans "AND" %}
             </label>
             <br>
+            <input type="text" class="w-3/4" placeholder="{% trans "find genre or band or artist" %}">
             {% for genre in genres %}
             <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
                 <input type="checkbox" name="chk_genre_{{ genre.genre_id }}"
                 style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
-                {{ genre.group }} - {{ genre.name }}
+                🎼 {{ genre.group }} - {{ genre.name }}
             </label>
             {% endfor %}
+            {% for band in bands %}
+            <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
+                <input type="checkbox" name="chk_band_{{ band.band_id }}"
+                style="width: 15%;" {% if band.band_id in search_bands %}checked{% endif %}>
+                👥 {{ band.name }}
+            </label>
+            {% endfor %}
+            {% for artist in artists %}
+            <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
+                <input type="checkbox" name="chk_artist_{{ artist.artist_id }}"
+                style="width: 15%;" {% if artist.artist_id in search_artists %}checked{% endif %}>
+                👤 {{ artist.name }}
+            </label>
+            {% endfor %}
+            <br>
+            🎼 : {% trans "genre" %}<br>
+            👥 : {% trans "band" %}<br>
+            👤 : {% trans "artist" %}
         </div>
         <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
         <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
@@ -102,6 +139,8 @@
             description: "{{ song.description|escapejs }}",
             status: {{ song.status }},
             genres: "{{ song.genres }}",
+            bands: "{{ song.bands }}",
+            artists: "{{ song.artists }}",
         },
     {% endfor %}
     ];
@@ -122,18 +161,47 @@
             const li = document.createElement('li');
             li.classList.add('L_LI');
             li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a><br>';
+            br = '';
+            
             if (song.genres) {
-                br = '';
                 const genresArr = song.genres.replace(/^\[|\]$/g, '').split(',');
+                const uniqueGenres = new Set();
                 genresArr.forEach(function(genre) {
                     const parts = genre.trim().split('|');
-                    if (parts.length === 2) {
-                        li.innerHTML += '<span class="L_GENRE_BADGE">' + parts[1] + '</span>';
+                    if (parts.length === 2 && !uniqueGenres.has(parts[1])) {
+                        li.innerHTML += '<span class="L_GENRE_BADGE">🎼 ' + parts[1] + '</span>';
+                        uniqueGenres.add(parts[1]);
                         br = '<br>';
                     }
                 });
-                li.innerHTML += br;
             }
+            
+            if (song.bands) {
+                const bandsArr = song.bands.replace(/^\[|\]$/g, '').split(',');
+                const uniqueBands = new Set();
+                bandsArr.forEach(function(band) {
+                    if (!uniqueBands.has(band)) {
+                        li.innerHTML += '<span class="L_GENRE_BADGE">👥 ' + band + '</span>';
+                        uniqueBands.add(band);
+                        br = '<br>';
+                    }
+                });
+            }
+            
+            if (song.artists) {
+                const artistsArr = song.artists.replace(/^\[|\]$/g, '').split(',');
+                const uniqueArtists = new Set();
+                artistsArr.forEach(function(artist) {
+                    if (!uniqueArtists.has(artist)) {
+                        li.innerHTML += '<span class="L_GENRE_BADGE">👤 ' + artist + '</span>';
+                        uniqueArtists.add(artist);
+                        br = '<br>';
+                    }
+                });
+            }
+            
+            li.innerHTML += br;
+
             if (song.description) {
                 li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
             }

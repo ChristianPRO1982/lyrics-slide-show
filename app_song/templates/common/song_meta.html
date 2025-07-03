@@ -3,7 +3,7 @@
 {% for band in song.bands %}
 {% if band.song_id %}
 <span class="L_GENRE_BADGE">
-    {{ band.name }}
+    {{ band.emoji_random }} {{ band.name }}
 </span>
 {% endif %}
 {% endfor %}
@@ -11,7 +11,7 @@
 {% for artist in song.artists %}
 {% if artist.song_id %}
 <span class="L_GENRE_BADGE">
-    {{ artist.name }}
+    {{ artist.emoji_random }} {{ artist.name }}
 </span>
 {% endif %}
 {% endfor %}

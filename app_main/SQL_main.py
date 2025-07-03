@@ -20,6 +20,8 @@ class User:
         self.search_everywhere = None
         self.search_logic = None
         self.search_genres = None
+        self.search_bands = None
+        self.search_artists = None
         self.search_song_approved = None
         self.first_name = None
         self.last_name = None
@@ -33,7 +35,9 @@ class User:
 
     def get_user_by_username(self):
         request = """
-    SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic, cu.search_genres, cu.search_song_approved,
+    SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic,
+           cu.search_genres, cu.search_bands, cu.search_artists,
+           cu.search_song_approved,
            au.first_name, au.last_name, au.is_superuser, au.is_staff
       FROM c_users cu
 RIGHT JOIN auth_user au ON au.username = cu.username
@@ -52,11 +56,13 @@ RIGHT JOIN auth_user au ON au.username = cu.username
             self.search_everywhere = row[2]
             self.search_logic = row[3]
             self.search_genres = row[4]
-            self.search_song_approved = row[5]
-            self.first_name = row[6]
-            self.last_name = row[7]
-            self.is_superuser = row[8]
-            self.is_staff = row[9]
+            self.search_bands = row[5]
+            self.search_artists = row[6]
+            self.search_song_approved = row[7]
+            self.first_name = row[8]
+            self.last_name = row[9]
+            self.is_superuser = row[10]
+            self.is_staff = row[11]
 
 
     def init_c_user(self):
@@ -79,6 +85,8 @@ UPDATE c_users
        search_everywhere = %s,
        search_logic = %s,
        search_genres = %s,
+       search_bands = %s,
+       search_artists = %s,
        search_song_approved = %s
  WHERE username = %s
 """
@@ -88,6 +96,8 @@ UPDATE c_users
             self.search_everywhere,
             self.search_logic,
             self.search_genres,
+            self.search_bands,
+            self.search_artists,
             self.search_song_approved,
             self.username
             ]
