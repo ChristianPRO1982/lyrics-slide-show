@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.13.0...v1.13.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* search with genres, bands and artists ([8f6905b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8f6905b89c6efb4f5986070440eac5461df3a2de))
+
 # [1.13.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.12.1...v1.13.0) (2025-07-03)
 
 
