@@ -69,10 +69,6 @@
     <div>
         <label for="id_description">{% trans "description" %}</label><br>
         <textarea name="txt_description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
-    </div>
-    <div>
-        <label for="id_artist">{% trans "artist" %}</label><br>
-        <input type="text" name="txt_artist" id="id_artist" maxlength="255" value="{{ song.artist }}" style="width: 100%;">
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
 

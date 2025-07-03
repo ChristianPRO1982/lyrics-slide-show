@@ -171,17 +171,14 @@ DELETE FROM l_animations
          las.font_size,
          ROUND(las.num / 2, 0) as numD2,
          CONCAT(
+                ls.title,
                 CASE
-                    WHEN s.artist != '' THEN CONCAT('[', s.artist, '] - ', s.title)
-                    ELSE title
-                END,
-                CASE
-                    WHEN s.sub_title != '' THEN CONCAT(' - ', s.sub_title)
+                    WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
                     ELSE ''
                 END) AS full_title
     FROM l_animation_song las
     JOIN l_animations la ON la.animation_id = las.animation_id
-    JOIN l_songs s ON las.song_id = s.song_id
+    JOIN l_songs ls ON las.song_id = ls.song_id
    WHERE las.animation_id = %s
 ORDER BY las.num
 """

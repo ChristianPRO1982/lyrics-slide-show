@@ -27,8 +27,7 @@ def songs(request):
             new_song = Song(
                             title = request.POST.get('txt_new_title').strip(),
                             sub_title = request.POST.get('txt_new_sub_title').strip(),
-                            description = "",
-                            artist = "",
+                            description = ""
                            )
             if not new_song.save():
                 error = '[ERR12]'

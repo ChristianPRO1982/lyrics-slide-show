@@ -96,7 +96,7 @@ LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
     WHERE ({search_everywhere} IS FALSE
            AND (ls1.title LIKE '%{search_txt}%'
-                OR ls1.sub_title LIKE '%{search_txt}%'
+                OR ls1.sub_title LIKE '%{search_txt}%')
             OR {search_everywhere} IS TRUE
            AND (ls1.title LIKE '%{search_txt}%'
                 OR ls1.sub_title LIKE '%{search_txt}%'
@@ -303,10 +303,10 @@ UPDATE l_songs
 
             else:
                 request = """
-INSERT INTO l_songs (title, sub_title, description, artist)
-     VALUES (%s, %s, %s, %s)
+INSERT INTO l_songs (title, sub_title, description)
+     VALUES (%s, %s, %s)
 """
-                params = [self.title, self.sub_title, self.description, self.artist]
+                params = [self.title, self.sub_title, self.description]
                 
                 create_SQL_log(code_file, "Song.save", "INSERT_1", request, params)
                 try:
