@@ -158,3 +158,14 @@ def artists(request):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+def privacy_policy(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+
+    return render(request, 'app_main/privacy_policy.html', {
+        'error': '',
+        'no_loader': no_loader,
+        'css': css,
+    })
