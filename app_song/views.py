@@ -225,10 +225,14 @@ def modify_song(request, song_id):
 
         # prefixes
         if error == '' and request.POST.get('txt_new_prefix') != '':
-            error = song.add_prefix(
-                request.POST.get('txt_new_prefix').strip(),
-                request.POST.get('txt_new_prefix_comment').strip()
-            )
+            try:
+                error = song.add_prefix(
+                    request.POST.get('txt_new_prefix').strip(),
+                    request.POST.get('txt_new_prefix_comment').strip()
+                )
+            except Exception as e:
+                # print(f"Error adding prefix: {e}"
+                pass
 
         if error == '':
             for prefix in song.get_verse_prefixes():
@@ -430,7 +434,7 @@ def song_metadata(request, song_id):
             song.get_bands_and_artists()
 
         # GENRES MODERATOR
-        if error == '':
+        if error == '' and moderator:
             genres = Genre.get_all_genres()
             for genre in genres:
                 genre_to_update = Genre(genre_id=genre.genre_id)
