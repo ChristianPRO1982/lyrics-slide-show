@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-04 15:45+0200\n"
+"POT-Creation-Date: 2025-07-07 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -773,17 +773,22 @@ msgstr "Modifier les paramètres du site"
 
 #: app_main/templates/app_main/privacy_policy.html:6
 #: app_main/templates/app_main/privacy_policy.html:7
-#: templates/includes/footer.html:20
+#: templates/includes/footer.html:11 templates/includes/footer.html:21
 msgid "Privacy policy"
 msgstr "Politique de confidentialité"
 
 #: app_main/templates/app_main/privacy_policy.html:16
 msgid "privacy_policy_intro_title"
-msgstr "Dernière mise à jour&nbsp;: 4 juillet 2025"
+msgstr "Dernière mise à jour&nbsp;: 4 juillet 2025 - en cours de rédaction"
 
 #: app_main/templates/app_main/privacy_policy.html:17
 msgid "privacy_policy_intro_content"
-msgstr "Bienvenue sur ce site dédié à la création et à la projection de chants en diaporama.<br>Nous avons à cœur de respecter votre vie privée et de ne collecter que les données strictement nécessaires au fonctionnement du service.<br>Ce document vise à vous expliquer clairement quelles données sont collectées, dans quel but, et comment elles sont traitées."
+msgstr ""
+"Bienvenue sur ce site dédié à la création et à la projection de chants en "
+"diaporama “Lyrics Slide Show”.<br>Nous avons à cœur de respecter votre vie privée et de ne "
+"collecter que les données strictement nécessaires au fonctionnement du "
+"service.<br>Ce document vise à vous expliquer clairement quelles données "
+"sont collectées, dans quel but, et comment elles sont traitées."
 
 #: app_main/templates/app_main/privacy_policy.html:18
 msgid "privacy_policy_article_1_title"
@@ -791,7 +796,17 @@ msgstr "1. Données collectées"
 
 #: app_main/templates/app_main/privacy_policy.html:19
 msgid "privacy_policy_article_1_content"
-msgstr "Lors de la création d’un compte, nous collectons les données suivantes&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Adresse e-mail&nbsp;: nécessaire pour la création du compte, la connexion et les relances en cas d’inactivité.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Mot de passe&nbsp;: stocké de manière cryptée (hachée et salée), jamais en clair.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Nom et prénom&nbsp;: affichés uniquement dans les groupes auxquels vous participez.</li></ul>Aucune autre donnée personnelle n’est demandée ni enregistrée."
+msgstr ""
+"Lors de la création d’un compte, nous collectons les données suivantes&nbsp;:"
+"<ul><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Adresse e-"
+"mail&nbsp;:</b> nécessaire pour la création du compte, la connexion et les "
+"relances en cas d’inactivité.</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\"><b>Mot de passe&nbsp;:</b> stocké de manière cryptée (hachée et "
+"salée), jamais en clair.</li><li style=\"list-style-type: disc; margin-left: "
+"2em;\"><b>Nom et prénom&nbsp;:</b> affichés uniquement dans les groupes auxquels "
+"vous participez.</li><li style=\"list-style-type: disc; margin-left: "
+"2em;\"><b>Dernière connexion&nbsp;:</b> pour gérer la suppression automatique des comptes (voir section 5).</li></ul><br>Aucune autre donnée personnelle n’est demandée ni "
+"enregistrée."
 
 #: app_main/templates/app_main/privacy_policy.html:20
 msgid "privacy_policy_article_2_title"
@@ -799,7 +814,14 @@ msgstr "2. Finalité du traitement"
 
 #: app_main/templates/app_main/privacy_policy.html:21
 msgid "privacy_policy_article_2_content"
-msgstr "Ces données sont utilisées uniquement pour&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Vous permettre d’accéder au service.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein de vos groupes de chants.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Vous envoyer deux e-mails de rappel avant la suppression de votre compte (voir section 5).</li></ul>Aucune donnée n’est utilisée à des fins commerciales, publicitaires, statistiques ou analytiques."
+msgstr ""
+"Ces données sont utilisées uniquement pour&nbsp;:<ul><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">Vous permettre de vous connecter.</li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein "
+"de vos groupes.</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">Vous envoyer deux e-mails de rappel avant la suppression de "
+"votre compte (voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des "
+"fins commerciales, publicitaires, statistiques ou analytiques."
 
 #: app_main/templates/app_main/privacy_policy.html:22
 msgid "privacy_policy_article_3_title"
@@ -807,7 +829,14 @@ msgstr "3. Cookies"
 
 #: app_main/templates/app_main/privacy_policy.html:23
 msgid "privacy_policy_article_3_content"
-msgstr "Le site utilise uniquement des cookies strictement nécessaires au bon fonctionnement du service&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Connexion sécurisée.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Session utilisateur.</li>Aucun cookie tiers, cookie de suivi, cookie publicitaire ni analyse de fréquentation n’est mis en place. En conformité avec la réglementation en vigueur (CNIL / RGPD), aucun bandeau de consentement n’est requis."
+msgstr ""
+"Le site utilise uniquement des cookies strictement nécessaires au bon "
+"fonctionnement du service&nbsp;:<ul><li style=\"list-style-type: disc; "
+"margin-left: 2em;\">Connexion sécurisée.</li><li style=\"list-style-type: "
+"disc; margin-left: 2em;\">Session utilisateur.</li><ul><br>Aucun cookie tiers, "
+"cookie de suivi, cookie publicitaire ni analyse de fréquentation n’est mis "
+"en place. En conformité avec la réglementation en vigueur (CNIL / RGPD), "
+"aucun bandeau de consentement n’est requis."
 
 #: app_main/templates/app_main/privacy_policy.html:24
 msgid "privacy_policy_article_4_title"
@@ -815,7 +844,10 @@ msgstr "4. Partage des données"
 
 #: app_main/templates/app_main/privacy_policy.html:25
 msgid "privacy_policy_article_4_content"
-msgstr "Vos données ne sont transmises à aucun tiers.<br>Elles sont hébergées sur un serveur sécurisé et ne sont utilisées que dans le cadre du fonctionnement technique du site."
+msgstr ""
+"Vos données ne sont transmises à aucun tiers.<br>Elles sont hébergées sur un "
+"serveur sécurisé et ne sont utilisées que dans le cadre du fonctionnement "
+"technique du site."
 
 #: app_main/templates/app_main/privacy_policy.html:26
 msgid "privacy_policy_article_5_title"
@@ -823,7 +855,15 @@ msgstr "5. Durée de conservation et suppression automatique"
 
 #: app_main/templates/app_main/privacy_policy.html:27
 msgid "privacy_policy_article_5_content"
-msgstr "Votre compte et ses données associées (email, nom, prénom, mot de passe crypté) sont supprimés automatiquement après 14 mois d’inactivité.<br>Un e-mail de rappel est envoyé&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">à 12 mois d’inactivité.</li><li style=\"list-style-type: disc; margin-left: 2em;\">à 13 mois d’inactivité.</li><li style=\"list-style-type: disc; margin-left: 2em;\">à 14 mois d’inactivité avec indication de suppression du compte.</li></ul>Si aucune action n’est effectuée suite à ces relances, le compte est définitivement supprimé.<br>Les groupes et chants associés à ce compte peuvent également être supprimés s’ils ne sont plus liés à aucun utilisateur actif."
+msgstr ""
+"Votre compte et ses données associées (email, nom, prénom, mot de passe "
+"crypté, date de la dernière connexion) sont supprimés automatiquement après 14 mois d’inactivité.<br>Un e-"
+"mail de rappel est envoyé&nbsp;:<ul><li style=\"list-style-type: disc; "
+"margin-left: 2em;\">à 12 mois d’inactivité.</li><li style=\"list-style-type: "
+"disc; margin-left: 2em;\">à 13 mois d’inactivité.</li></ul><br>Si aucune action n’est effectuée suite à ces "
+"relances, le compte est définitivement supprimé et un email est envoyé pour confirmer cette action.<br>Les groupes et animations "
+"associés à ce compte peuvent également être archivés s’ils ne sont plus "
+"liés à aucun utilisateur actif."
 
 #: app_main/templates/app_main/privacy_policy.html:28
 msgid "privacy_policy_article_6_title"
@@ -831,7 +871,14 @@ msgstr "6. Droit d’accès, de rectification et de suppression"
 
 #: app_main/templates/app_main/privacy_policy.html:29
 msgid "privacy_policy_article_6_content"
-msgstr "Conformément au Règlement Général sur la Protection des Données (RGPD), vous avez le droit&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">D’accéder à vos données.</li><li style=\"list-style-type: disc; margin-left: 2em;\">De les corriger.</li><li style=\"list-style-type: disc; margin-left: 2em;\">De demander leur suppression à tout moment.</li></ul>Vous pouvez exercer ces droits en nous contactant à l’adresse suivante&nbsp;: 📧&nbsp;<i>carthographie@outlook.fr</i>"
+msgstr ""
+"Conformément au Règlement Général sur la Protection des Données (RGPD), vous "
+"avez le droit&nbsp;:<ul><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">D’accéder à vos données.</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">De les corriger.</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">De demander leur suppression à tout moment.</li></ul><br>Vous "
+"pouvez exercer ces droits en vous connectant ou en nous contactant à l’adresse suivante&nbsp;: 📧"
+"&nbsp;<i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/app_main/privacy_policy.html:30
 msgid "privacy_policy_article_7_title"
@@ -839,7 +886,12 @@ msgstr "7. Analyse des données collectives (sans suivi individuel)"
 
 #: app_main/templates/app_main/privacy_policy.html:31
 msgid "privacy_policy_article_7_content"
-msgstr "Le site peut procéder à une analyse ponctuelle des chants et des groupes créés (par exemple pour archiver les contenus anciens ou inutilisés), sans jamais analyser l’activité des utilisateurs individuellement.<br>Ces opérations sont réalisées uniquement à des fins d’amélioration du service, sans impact sur votre vie privée."
+msgstr ""
+"Le site peut procéder à une analyse ponctuelle des chants et des groupes "
+"créés (par exemple pour archiver les contenus anciens ou inutilisés), sans "
+"jamais analyser l’activité des utilisateurs individuellement.<br>Ces "
+"opérations sont réalisées uniquement à des fins d’amélioration du service, "
+"sans impact sur votre vie privée."
 
 #: app_main/templates/app_main/privacy_policy.html:32
 msgid "privacy_policy_article_8_title"
@@ -847,7 +899,9 @@ msgstr "8. Contact"
 
 #: app_main/templates/app_main/privacy_policy.html:33
 msgid "privacy_policy_article_8_content"
-msgstr "Pour toute question concernant la protection de vos données personnelles, vous pouvez écrire à&nbsp;: 📧&nbsp;<i>carthographie@outlook.fr</i>"
+msgstr ""
+"Pour toute question concernant la protection de vos données personnelles, "
+"vous pouvez écrire à&nbsp;: 📧&nbsp;<i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/app_main/privacy_policy.html:34
 msgid "privacy_policy_article_9_title"
@@ -855,7 +909,13 @@ msgstr "9. Modification de la politique de confidentialité"
 
 #: app_main/templates/app_main/privacy_policy.html:35
 msgid "privacy_policy_article_9_content"
-msgstr "En cas de modification significative de la présente politique de confidentialité (par exemple&nbsp;: changement de la durée de conservation, ajout de nouvelles données collectées, etc.), vous recevrez un e-mail d’information à l’adresse associée à votre compte.<br>Vous pourrez alors, si vous le souhaitez, supprimer votre compte avant l’entrée en vigueur des modifications."
+msgstr ""
+"En cas de modification significative de la présente politique de "
+"confidentialité (par exemple&nbsp;: changement de la durée de conservation, "
+"ajout de nouvelles données collectées, etc.), vous recevrez un e-mail "
+"d’information à l’adresse associée à votre compte.<br>Vous pourrez alors, si "
+"vous le souhaitez, supprimer votre compte avant l’entrée en vigueur des "
+"modifications."
 
 #: app_main/templates/app_main/privacy_policy.html:36
 msgid "privacy_policy_article_10_title"
@@ -863,7 +923,25 @@ msgstr "10. Politique d’envoi des e-mails"
 
 #: app_main/templates/app_main/privacy_policy.html:37
 msgid "privacy_policy_article_10_content"
-msgstr "Le site applique une politique stricte de non-nuisance par e-mail. Les messages envoyés sont limités aux cas strictement nécessaires au bon fonctionnement du service&nbsp;:<br>✅ <b>E-mails que vous pouvez recevoir&nbsp;:</b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Lors de la création de votre compte.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Pour récupérer votre mot de passe.</li><li style=\"list-style-type: disc; margin-left: 2em;\">En cas de longue période d’inactivité (rappels à 12 mois et 17 mois).</li><li style=\"list-style-type: disc; margin-left: 2em;\">Si la politique de confidentialité évolue de manière significative.</li></lu>❌ <b>Aucun e-mail n’est envoyé pour&nbsp;:</b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Annoncer de nouvelles fonctionnalités</li><li style=\"list-style-type: disc; margin-left: 2em;\">Proposer des publicités</li><li style=\"list-style-type: disc; margin-left: 2em;\">Envoyer des newsletters, invitations, ou communications commerciales</li></ul>Vous ne recevrez donc aucun e-mail inutile ou non sollicité, conformément à notre engagement de simplicité, de respect et de discrétion."
+msgstr ""
+"Le site applique une politique stricte de non-nuisance par e-mail. Les "
+"messages envoyés sont limités aux cas strictement nécessaires au bon "
+"fonctionnement du service&nbsp;:<br>✅ <b>E-mails que vous pouvez "
+"recevoir&nbsp;:</b><ul><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Lors de la création de votre compte.</li><li style=\"list-style-type: "
+"disc; margin-left: 2em;\">Pour récupérer votre mot de passe.</li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">En cas de longue période "
+"d’inactivité (rappels à 12 mois et 13 mois, voir section 5).</li><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">Lors de suppression automatique de votre compte (voir section 5).</li><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">Si la politique de confidentialité évolue de "
+"manière significative.</li></lu>❌ <b>Aucun e-mail n’est envoyé pour&nbsp;:</"
+"b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Annoncer de "
+"nouvelles fonctionnalités</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">Proposer des publicités</li><li style=\"list-style-type: disc; "
+"margin-left: 2em;\">Envoyer des newsletters, invitations, ou communications "
+"commerciales</li></ul><br>Vous ne recevrez donc aucun e-mail inutile ou non "
+"sollicité, conformément à notre engagement de simplicité, de respect et de "
+"discrétion."
 
 #: app_song/templates/app_song/delete_song.html:5
 #: app_song/templates/app_song/delete_song.html:6
@@ -1454,7 +1532,8 @@ msgstr "Seul les modérateurs peuvent modifier la page d'accueil."
 
 #: templates/base.html:107
 msgid "ERR28"
-msgstr "Les titres sont obligatoires&nbsp;: Titre &#60;head&#62 / Titre &#60;h1&#62"
+msgstr ""
+"Les titres sont obligatoires&nbsp;: Titre &#60;head&#62 / Titre &#60;h1&#62"
 
 #: templates/base.html:109
 msgid "ERR29"
@@ -2875,10 +2954,11 @@ msgstr ""
 
 #~ msgid "help_buttons"
 #~ msgstr ""
-#~ "Racourcis claviers&nbsp;:<br>BLACK MODE&nbsp;: Echap / B / ⬇️<br>Diapo suivante&nbsp;: "
-#~ "Espace / S / V / ⬆️<br>Refrain&nbsp;: R / C<br>Chant précédent&nbsp;: P / ⬅️<br>Chant "
-#~ "suivant&nbsp;: Entrée / N / ➡️<br>Afficher-masquer les refrains&nbsp;: A / "
-#~ "D<br>Scroll ↕️ ou 🧱: L<br><br>en majuscule ou minuscule"
+#~ "Racourcis claviers&nbsp;:<br>BLACK MODE&nbsp;: Echap / B / ⬇️<br>Diapo "
+#~ "suivante&nbsp;: Espace / S / V / ⬆️<br>Refrain&nbsp;: R / C<br>Chant "
+#~ "précédent&nbsp;: P / ⬅️<br>Chant suivant&nbsp;: Entrée / N / ➡️<br>Afficher-"
+#~ "masquer les refrains&nbsp;: A / D<br>Scroll ↕️ ou 🧱: L<br><br>en "
+#~ "majuscule ou minuscule"
 
 #~ msgid "Add a song"
 #~ msgstr "Ajouter un chant"
