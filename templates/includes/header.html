@@ -1,8 +1,29 @@
 {% load static %}
+{% load i18n %}
 
 <header class="L_BOX_HEADER py-4">
     <nav class="pl-5 container mx-auto flex items-center h-full">
-        <a href="{% url "homepage" %}"><img src="{% static "images/Lyrics.png" %}" alt="✞" style="width:40px;height:40px;"></a>
-        {% include "includes/nav.html" %}
+        <div class="flex ">
+            <a href="{% url "homepage" %}"><img src="{% static "images/Lyrics.png" %}" alt="✞" style="width:40px;height:40px;"></a>
+            {% include "includes/nav.html" %}
+        </div>
+
+        <!-- Right side (push with ml-auto) -->
+        <div class="ml-auto">
+            << {{ LANGUAGE_CODE }} / {{ language_code }} / Langue session : {{ request.session.django_language }} >>
+            <a id="a_languages" href="#"
+            onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;">
+                {% trans "language_flag" %}
+            </a>
+            <div id="div_languages" style="display : none;">
+                <a href="{% url 'set_language' %}?language=fr" class="block px-4 py-2 hover:bg-gray-100">🇫🇷 Français</a>
+                <a href="{% url 'set_language' %}?language=en" class="block px-4 py-2 hover:bg-gray-100">🇬🇧 English</a>
+                <a href="#"
+                onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;">
+                    {% trans "close" %}
+                </a>
+            </div>
+            {% comment %} 🇫🇷🇬🇧 {% endcomment %}
+        </div>
     </nav>
 </header>

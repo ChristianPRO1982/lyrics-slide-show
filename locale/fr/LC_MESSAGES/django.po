@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-07 09:53+0200\n"
+"POT-Creation-Date: 2025-07-07 15:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,6 +57,7 @@ msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:41
 #: app_animation/templates/app_animation/animations.html:76
+#: app_animation/templates/common/animation_actions.html:3
 #: app_song/templates/app_song/song_metadata.html:28
 #: app_song/templates/app_song/song_metadata.html:53
 #: app_song/templates/app_song/song_metadata.html:161
@@ -436,11 +437,6 @@ msgstr "Supprimer les couleurs de ce couplet"
 msgid "Return"
 msgstr "Retour"
 
-#: app_animation/templates/common/animation_actions.html:3 chris/songs
-#: copy.html:19 copy.html:49
-msgid "actions"
-msgstr ""
-
 #: app_animation/templates/common/animation_actions.html:5
 msgid "Slide show"
 msgstr "Diaporama"
@@ -785,10 +781,11 @@ msgstr "Dernière mise à jour&nbsp;: 4 juillet 2025 - en cours de rédaction"
 msgid "privacy_policy_intro_content"
 msgstr ""
 "Bienvenue sur ce site dédié à la création et à la projection de chants en "
-"diaporama “Lyrics Slide Show”.<br>Nous avons à cœur de respecter votre vie privée et de ne "
-"collecter que les données strictement nécessaires au fonctionnement du "
-"service.<br>Ce document vise à vous expliquer clairement quelles données "
-"sont collectées, dans quel but, et comment elles sont traitées."
+"diaporama “Lyrics Slide Show”.<br>Nous avons à cœur de respecter votre vie "
+"privée et de ne collecter que les données strictement nécessaires au "
+"fonctionnement du service.<br>Ce document vise à vous expliquer clairement "
+"quelles données sont collectées, dans quel but, et comment elles sont "
+"traitées."
 
 #: app_main/templates/app_main/privacy_policy.html:18
 msgid "privacy_policy_article_1_title"
@@ -803,10 +800,11 @@ msgstr ""
 "relances en cas d’inactivité.</li><li style=\"list-style-type: disc; margin-"
 "left: 2em;\"><b>Mot de passe&nbsp;:</b> stocké de manière cryptée (hachée et "
 "salée), jamais en clair.</li><li style=\"list-style-type: disc; margin-left: "
-"2em;\"><b>Nom et prénom&nbsp;:</b> affichés uniquement dans les groupes auxquels "
-"vous participez.</li><li style=\"list-style-type: disc; margin-left: "
-"2em;\"><b>Dernière connexion&nbsp;:</b> pour gérer la suppression automatique des comptes (voir section 5).</li></ul><br>Aucune autre donnée personnelle n’est demandée ni "
-"enregistrée."
+"2em;\"><b>Nom et prénom&nbsp;:</b> affichés uniquement dans les groupes "
+"auxquels vous participez.</li><li style=\"list-style-type: disc; margin-"
+"left: 2em;\"><b>Dernière connexion&nbsp;:</b> pour gérer la suppression "
+"automatique des comptes (voir section 5).</li></ul><br>Aucune autre donnée "
+"personnelle n’est demandée ni enregistrée."
 
 #: app_main/templates/app_main/privacy_policy.html:20
 msgid "privacy_policy_article_2_title"
@@ -818,10 +816,10 @@ msgstr ""
 "Ces données sont utilisées uniquement pour&nbsp;:<ul><li style=\"list-style-"
 "type: disc; margin-left: 2em;\">Vous permettre de vous connecter.</li><li "
 "style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein "
-"de vos groupes.</li><li style=\"list-style-type: disc; margin-"
-"left: 2em;\">Vous envoyer deux e-mails de rappel avant la suppression de "
-"votre compte (voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des "
-"fins commerciales, publicitaires, statistiques ou analytiques."
+"de vos groupes.</li><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Vous envoyer deux e-mails de rappel avant la suppression de votre compte "
+"(voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des fins "
+"commerciales, publicitaires, statistiques ou analytiques."
 
 #: app_main/templates/app_main/privacy_policy.html:22
 msgid "privacy_policy_article_3_title"
@@ -833,10 +831,10 @@ msgstr ""
 "Le site utilise uniquement des cookies strictement nécessaires au bon "
 "fonctionnement du service&nbsp;:<ul><li style=\"list-style-type: disc; "
 "margin-left: 2em;\">Connexion sécurisée.</li><li style=\"list-style-type: "
-"disc; margin-left: 2em;\">Session utilisateur.</li><ul><br>Aucun cookie tiers, "
-"cookie de suivi, cookie publicitaire ni analyse de fréquentation n’est mis "
-"en place. En conformité avec la réglementation en vigueur (CNIL / RGPD), "
-"aucun bandeau de consentement n’est requis."
+"disc; margin-left: 2em;\">Session utilisateur.</li><ul><br>Aucun cookie "
+"tiers, cookie de suivi, cookie publicitaire ni analyse de fréquentation "
+"n’est mis en place. En conformité avec la réglementation en vigueur (CNIL / "
+"RGPD), aucun bandeau de consentement n’est requis."
 
 #: app_main/templates/app_main/privacy_policy.html:24
 msgid "privacy_policy_article_4_title"
@@ -857,13 +855,15 @@ msgstr "5. Durée de conservation et suppression automatique"
 msgid "privacy_policy_article_5_content"
 msgstr ""
 "Votre compte et ses données associées (email, nom, prénom, mot de passe "
-"crypté, date de la dernière connexion) sont supprimés automatiquement après 14 mois d’inactivité.<br>Un e-"
-"mail de rappel est envoyé&nbsp;:<ul><li style=\"list-style-type: disc; "
-"margin-left: 2em;\">à 12 mois d’inactivité.</li><li style=\"list-style-type: "
-"disc; margin-left: 2em;\">à 13 mois d’inactivité.</li></ul><br>Si aucune action n’est effectuée suite à ces "
-"relances, le compte est définitivement supprimé et un email est envoyé pour confirmer cette action.<br>Les groupes et animations "
-"associés à ce compte peuvent également être archivés s’ils ne sont plus "
-"liés à aucun utilisateur actif."
+"crypté, date de la dernière connexion) sont supprimés automatiquement après "
+"14 mois d’inactivité.<br>Un e-mail de rappel est envoyé&nbsp;:<ul><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">à 12 mois d’inactivité.</"
+"li><li style=\"list-style-type: disc; margin-left: 2em;\">à 13 mois "
+"d’inactivité.</li></ul><br>Si aucune action n’est effectuée suite à ces "
+"relances, le compte est définitivement supprimé et un email est envoyé pour "
+"confirmer cette action.<br>Les groupes et animations associés à ce compte "
+"peuvent également être archivés s’ils ne sont plus liés à aucun utilisateur "
+"actif."
 
 #: app_main/templates/app_main/privacy_policy.html:28
 msgid "privacy_policy_article_6_title"
@@ -877,8 +877,8 @@ msgstr ""
 "\">D’accéder à vos données.</li><li style=\"list-style-type: disc; margin-"
 "left: 2em;\">De les corriger.</li><li style=\"list-style-type: disc; margin-"
 "left: 2em;\">De demander leur suppression à tout moment.</li></ul><br>Vous "
-"pouvez exercer ces droits en vous connectant ou en nous contactant à l’adresse suivante&nbsp;: 📧"
-"&nbsp;<i>carthographie@outlook.fr</i>"
+"pouvez exercer ces droits en vous connectant ou en nous contactant à "
+"l’adresse suivante&nbsp;: 📧&nbsp;<i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/app_main/privacy_policy.html:30
 msgid "privacy_policy_article_7_title"
@@ -931,8 +931,9 @@ msgstr ""
 "\">Lors de la création de votre compte.</li><li style=\"list-style-type: "
 "disc; margin-left: 2em;\">Pour récupérer votre mot de passe.</li><li "
 "style=\"list-style-type: disc; margin-left: 2em;\">En cas de longue période "
-"d’inactivité (rappels à 12 mois et 13 mois, voir section 5).</li><li style=\"list-style-"
-"type: disc; margin-left: 2em;\">Lors de suppression automatique de votre compte (voir section 5).</li><li style=\"list-style-"
+"d’inactivité (rappels à 12 mois et 13 mois, voir section 5).</li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">Lors de suppression "
+"automatique de votre compte (voir section 5).</li><li style=\"list-style-"
 "type: disc; margin-left: 2em;\">Si la politique de confidentialité évolue de "
 "manière significative.</li></lu>❌ <b>Aucun e-mail n’est envoyé pour&nbsp;:</"
 "b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Annoncer de "
@@ -1323,6 +1324,10 @@ msgstr "Imprimer les paroles du chant"
 msgid "Print song lyric - one chorus"
 msgstr "Imprimer les paroles du chant - un seul refrain"
 
+#: chris/songs copy.html:19 copy.html:49
+msgid "actions"
+msgstr ""
+
 #: chris/songs copy.html:32
 msgid "update"
 msgstr "Modifier"
@@ -1647,6 +1652,14 @@ msgstr ""
 #: templates/base.html:151
 msgid "ERR50"
 msgstr "[ERR50] no message"
+
+#: templates/includes/header.html:13 templates/includes/header.html:19
+msgid "language_flag"
+msgstr "🇫🇷"
+
+#: templates/includes/header.html:20
+msgid "close"
+msgstr "fermer"
 
 #: templates/includes/nav.html:8 templates/includes/nav.html:17
 msgid "nav_groups_list"

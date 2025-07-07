@@ -1,6 +1,6 @@
 // TRANSLATION
 const pageLanguage = document.documentElement.lang || 'fr';
-if (pageLanguage.toLowerCase() == 'fr-fr') {
+if (pageLanguage.toLowerCase() == 'fr') {
     txt_fullscreen = 'APPUYEZ SUR F11 SUR CETTE ÉCRAN';
     txt_Description = "Description";
     txt_Add = "Ajouter";
@@ -20,10 +20,26 @@ if (pageLanguage.toLowerCase() == 'fr-fr') {
 
 function toggleVisibility(id) {
     const element = document.getElementById(id);
-    if (element.style.display === "none") {
+    if (!element) return;
+
+    // Set up transition only once
+    if (!element.style.transition) {
+        element.style.transition = "opacity 0.5s ease";
+        element.style.opacity = element.style.display === "none" || element.style.display === "" ? "0" : "1";
+    }
+
+    if (element.style.display === "none" || element.style.opacity === "0") {
         element.style.display = "block";
+        // Force reflow to enable transition
+        void element.offsetWidth;
+        element.style.opacity = "1";
     } else {
-        element.style.display = "none";
+        element.style.opacity = "0";
+        setTimeout(() => {
+            if (element.style.opacity === "0") {
+                element.style.display = "none";
+            }
+        }, 500);
     }
 }
 
@@ -31,12 +47,38 @@ function toggleDivDisplay(id_div, id_a, txt_show, txt_hide) {
     const div = document.getElementById(id_div);
     const a = document.getElementById(id_a);
     if (!div || !a) return;
-    if (div.style.display === "none" || div.style.display === "") {
+
+    // Ensure transition is set only once
+    if (!div.style.transition) {
+        div.style.transition = "max-height 0.5s ease, opacity 0.5s ease";
+        div.style.overflow = "hidden";
+        if (div.style.display === "" || div.style.display === "none") {
+            div.style.maxHeight = "0";
+            div.style.opacity = "0";
+            div.style.display = "none";
+        } else {
+            div.style.maxHeight = div.scrollHeight + "px";
+            div.style.opacity = "1";
+        }
+    }
+
+    if (div.style.display === "none" || div.style.maxHeight === "0px" || div.style.opacity === "0") {
         div.style.display = "block";
+        // Force reflow to enable transition
+        void div.offsetWidth;
+        div.style.maxHeight = div.scrollHeight + "px";
+        div.style.opacity = "1";
         a.textContent = txt_hide;
     } else {
-        div.style.display = "none";
+        div.style.maxHeight = "0";
+        div.style.opacity = "0";
         a.textContent = txt_show;
+        // After transition, hide the element
+        setTimeout(() => {
+            if (div.style.maxHeight === "0px") {
+                div.style.display = "none";
+            }
+        }, 500);
     }
 }
 
