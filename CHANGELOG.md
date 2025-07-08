@@ -1,3 +1,22 @@
+# [1.14.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.13.1...v1.14.0) (2025-07-08)
+
+
+### Bug Fixes
+
+* bug from deleted old artist feature ([74005f8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/74005f803bd933513f5e4b1a669ee2afc6aec2d1))
+* english translate ([438673a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/438673acd73bc1ab980994accfec207066f1536e))
+* english translate ([a65557f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a65557fce63ade1e377f7fabff851cbb2fe4ca7c))
+* footer ([d84a2c8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d84a2c8824f172669c45dcc45c0e23c02b38d6d5))
+* nav without connection ([8cb8073](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8cb8073fe207546b9cd653eb3dcffc34ff4b2792))
+* privace policy ([d368196](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d368196b189c11347fadaf8953d8a9beadec2a65))
+* private policy ([e1c6d57](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e1c6d574cf3c74c3f9bbf599a6f46487ced7ca32))
+* undisplay None ([d236d5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d236d5ee8715398e69c88fede345a9f133ef0738))
+
+
+### Features
+
+* multilanguage ([f16b4f2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f16b4f2c5ec6e41e8341604e5b5f5f1acc9eec56))
+
 ## [1.13.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.13.0...v1.13.1) (2025-07-03)
 
 
