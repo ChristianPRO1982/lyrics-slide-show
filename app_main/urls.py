@@ -13,4 +13,5 @@ urlpatterns = [
     path('theme_normal', views.theme_normal, name='theme_normal'),
     path('theme_scout', views.theme_scout, name='theme_scout'),
     path('change_language', views.change_language, name='set_language'),
+    path('profile', views.profile, name='profile'),
 ]

@@ -186,3 +186,25 @@ def change_language(request):
         return response
 
     return redirect('homepage')
+
+
+def profile(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+    error = ''
+    
+    if request.method == 'POST':
+        if 'btn_save_profile' in request.POST:
+            user = User(request.user.username)
+            user.theme = request.POST.get('sel_theme', 'normal.css')
+            user.save()
+            save_user_theme(request, user.theme)
+    
+    this_user = User(request.user.username)
+
+    return render(request, 'app_main/profile.html', {
+        'this_user': this_user,
+        'error': error,
+        'no_loader': no_loader,
+        'css': css,
+    })
