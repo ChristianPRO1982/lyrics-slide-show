@@ -259,7 +259,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     if verse.prefix:
-                        lyrics += verse.prefix + " "
+                        lyrics += verse.prefix + "<br>"
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     if not choruses_printed or not display_the_chorus_once:
