@@ -50,6 +50,7 @@ module.exports = {
     'max-h-screen',
     'object-contain',
     'cursor-pointer',
+    'text-justify',
   ],
   theme: {
     extend: {},

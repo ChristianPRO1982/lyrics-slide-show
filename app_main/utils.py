@@ -86,6 +86,8 @@ def get_search_params(request):
             'search_everywhere': 0,
             'search_logic': 0,
             'search_genres': '',
+            'search_bands': '',
+            'search_artists': '',
             'search_song_approved': 0,
         }
 

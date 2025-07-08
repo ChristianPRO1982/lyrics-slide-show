@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
+from django.utils import translation
+from django.http import HttpResponseRedirect
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme
 from .SQL_main import User, Site, Songs, Band, Artist
@@ -11,6 +14,7 @@ def error_404(request, exception):
 
 
 def homepage(request):
+    print("LANG SESSION:", request.session.get('django_language'))
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
@@ -158,3 +162,27 @@ def artists(request):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+def privacy_policy(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+    
+    return render(request, 'app_main/privacy_policy.html', {
+        'error': '',
+        'no_loader': no_loader,
+        'css': css,
+    })
+
+
+def change_language(request):
+    lang = request.GET.get('language')
+
+    if lang in dict(settings.LANGUAGES):
+        translation.activate(lang)
+        response = HttpResponseRedirect(request.META.get('HTTP_REFERER', 'homepage'))
+        request.session[settings.LANGUAGE_COOKIE_NAME] = lang
+        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+        return response
+
+    return redirect('homepage')

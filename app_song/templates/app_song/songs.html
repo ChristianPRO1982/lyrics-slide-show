@@ -180,7 +180,7 @@
                 const bandsArr = song.bands.replace(/^\[|\]$/g, '').split(',');
                 const uniqueBands = new Set();
                 bandsArr.forEach(function(band) {
-                    if (!uniqueBands.has(band)) {
+                    if (!uniqueBands.has(band) && band != 'None') {
                         li.innerHTML += '<span class="L_GENRE_BADGE">👥 ' + band + '</span>';
                         uniqueBands.add(band);
                         br = '<br>';
@@ -192,7 +192,7 @@
                 const artistsArr = song.artists.replace(/^\[|\]$/g, '').split(',');
                 const uniqueArtists = new Set();
                 artistsArr.forEach(function(artist) {
-                    if (!uniqueArtists.has(artist)) {
+                    if (!uniqueArtists.has(artist) && artist != 'None') {
                         li.innerHTML += '<span class="L_GENRE_BADGE">👤 ' + artist + '</span>';
                         uniqueArtists.add(artist);
                         br = '<br>';

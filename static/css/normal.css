@@ -168,7 +168,7 @@ hr {
     /* color: #6b1f1f; */
     /* background-color: #eea78e; */
     border: 0px solid #8b1e1e;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 .slide {

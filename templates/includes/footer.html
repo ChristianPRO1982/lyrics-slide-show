@@ -1,14 +1,24 @@
+{% load i18n %}
+
 <footer style="height: 33px; margin-top: 0px; padding-top: 0px;" class="L_BOX_FOOTER py-4 w-full relative bottom-auto md:fixed md:bottom-1">
     <div class="pl-5 flex items-center space-x-2 lg:hidden">
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md" 
+            target="_blank" rel="noopener noreferrer" title="Github CHANGELOG.md">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+            alt="Latest Release" class="h-5">
+        </a>
         <span>{{ company_name_small }}</span>
-        <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
-                alt="Latest Release" class="h-5">
-    </div>    
+        <small><a href="{% url 'privacy_policy' %}">{% trans "Privacy policy" %}</a></small>
+    </div>
     
-    <div class="pl-5 hidden lg:flex lg:items-center space-x-2">
-        <span>{{ company_name }}</span>
-        <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
-                alt="Latest Release" class="h-6">
+    <div class="pl-5 hidden lg:flex lg:items-center space-x-2 w-1/3">
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md" 
+            target="_blank" rel="noopener noreferrer" title="Github CHANGELOG.md" style="min-width: 5em;">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+            alt="Latest Release" class="h-6">
+        </a>
+        <span style="letter-spacing: 0.15em;" class="font-lobster">{{ company_name }}</span>
+        <small><a href="{% url 'privacy_policy' %}">{% trans "Privacy policy" %}</a></small>
     </div>
 </footer>
 
