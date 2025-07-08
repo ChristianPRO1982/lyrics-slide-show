@@ -21,7 +21,7 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:5
 #: app_animation/templates/app_animation/animations.html:6
 msgid "animations_title"
-msgstr ""
+msgstr "Animations"
 
 #: app_animation/templates/app_animation/animations.html:11
 #: app_animation/templates/app_animation/animations.html:28
@@ -485,11 +485,11 @@ msgstr ""
 #: app_group/templates/app_group/groups.html:5
 #: app_group/templates/app_group/groups.html:6
 msgid "groups_list"
-msgstr ""
+msgstr "Groups list"
 
 #: app_group/templates/app_group/groups.html:17
 msgid "new_group"
-msgstr ""
+msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
 #: app_song/templates/app_song/songs.html:129
@@ -1083,7 +1083,7 @@ msgstr ""
 #: app_song/templates/app_song/songs.html:5
 #: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
-msgstr ""
+msgstr "Songs list"
 
 #: app_song/templates/app_song/songs.html:13
 msgid "Songs:"
