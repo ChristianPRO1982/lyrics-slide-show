@@ -10,9 +10,10 @@
 
         <!-- Right side (push with ml-auto) -->
         <div class="ml-auto">
-            << {{ LANGUAGE_CODE }} / {{ language_code }} / Langue session : {{ request.session.django_language }} >>
+            {% comment %} << {{ LANGUAGE_CODE }} / {{ language_code }} / Langue session : {{ request.session.django_language }} >> {% endcomment %}
             <a id="a_languages" href="#"
-            onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;">
+            onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;"
+            class="NAV">
                 {% trans "language_flag" %}
             </a>
             <div id="div_languages" style="display : none;">

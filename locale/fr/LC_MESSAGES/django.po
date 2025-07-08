@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-07 15:45+0200\n"
+"POT-Creation-Date: 2025-07-08 09:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -775,13 +775,13 @@ msgstr "Politique de confidentialité"
 
 #: app_main/templates/app_main/privacy_policy.html:16
 msgid "privacy_policy_intro_title"
-msgstr "Dernière mise à jour&nbsp;: 4 juillet 2025 - en cours de rédaction"
+msgstr "Dernière mise à jour&nbsp;: 8 juillet 2025"
 
 #: app_main/templates/app_main/privacy_policy.html:17
 msgid "privacy_policy_intro_content"
 msgstr ""
 "Bienvenue sur ce site dédié à la création et à la projection de chants en "
-"diaporama “Lyrics Slide Show”.<br>Nous avons à cœur de respecter votre vie "
+"diaporama <b>“Lyrics Slide Show”</b>.<br>Nous avons à cœur de respecter votre vie "
 "privée et de ne collecter que les données strictement nécessaires au "
 "fonctionnement du service.<br>Ce document vise à vous expliquer clairement "
 "quelles données sont collectées, dans quel but, et comment elles sont "
@@ -1038,8 +1038,7 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chant validé"
 
-#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
-#: copy.html:47
+#: app_song/templates/app_song/modify_song.html:62
 msgid "title"
 msgstr "Titre"
 
@@ -1047,8 +1046,7 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
-#: copy.html:48
+#: app_song/templates/app_song/modify_song.html:70
 msgid "description"
 msgstr "Description"
 
@@ -1099,7 +1097,7 @@ msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet ?"
 
 #: app_song/templates/app_song/modify_song.html:169
-#: app_song/templates/app_song/modify_song.html:186 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:186
 msgid "delete"
 msgstr "Supprimer"
 
@@ -1194,7 +1192,7 @@ msgid "New genre"
 msgstr "Nouveau genre"
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
+#: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
@@ -1298,7 +1296,7 @@ msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
 #: app_song/templates/app_song/songs.html:209
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -1306,7 +1304,7 @@ msgstr "Contacter les modérateurs"
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
@@ -1323,18 +1321,6 @@ msgstr "Imprimer les paroles du chant"
 #: app_song/templates/common/song_actions.html:17
 msgid "Print song lyric - one chorus"
 msgstr "Imprimer les paroles du chant - un seul refrain"
-
-#: chris/songs copy.html:19 copy.html:49
-msgid "actions"
-msgstr ""
-
-#: chris/songs copy.html:32
-msgid "update"
-msgstr "Modifier"
-
-#: chris/songs copy.html:35
-msgid "Go to"
-msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35
@@ -1653,11 +1639,12 @@ msgstr ""
 msgid "ERR50"
 msgstr "[ERR50] no message"
 
-#: templates/includes/header.html:13 templates/includes/header.html:19
+#: templates/includes/header.html:15 templates/includes/header.html:16
+#: templates/includes/header.html:22
 msgid "language_flag"
 msgstr "🇫🇷"
 
-#: templates/includes/header.html:20
+#: templates/includes/header.html:23
 msgid "close"
 msgstr "fermer"
 
@@ -2913,6 +2900,12 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "update"
+#~ msgstr "Modifier"
+
+#~ msgid "Go to"
+#~ msgstr "Voir"
 
 #~ msgid "Artist:"
 #~ msgstr "Artiste&nbsp;:"
