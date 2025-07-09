@@ -41,6 +41,14 @@ CREATE TABLE `c_group_user` (
   CONSTRAINT `c_group_user_c_groups_FK` FOREIGN KEY (`group_id`) REFERENCES `c_groups` (`group_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `c_user_change_email` (
+  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `create_time` datetime NOT NULL,
+  `last_email` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `new_email` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -----------------------
 -- LYRICS SLIDE SHOW --
 -----------------------

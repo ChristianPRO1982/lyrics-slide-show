@@ -6,6 +6,11 @@
 {% block title %}{% trans "Profile" %}{% endblock title %}
 {% block title_h1 %}{% trans "Profile" %}{% endblock title_h1 %}
 {% block bloc1 %}
+<button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('delete-account');">{% trans "Delete account" %}</button>
+<div id="delete-account" style="display: none; margin-top: 1em;">
+    <p class="L_ERROR_OTHER">{% trans "Warning: This action is irreversible. Are you sure you want to delete your account?" %}</p>
+    <input name="btn_delete_account_1" class="w-full" type="submit" value="{% trans 'Delete account' %}" style="background: #f87171; color: white;" />
+</div>
 {% endblock bloc1 %}
 {% block bloc2 %}
     <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('pwd'); document.getElementById('txt_password').value=''; document.getElementById('txt_password_confirm').value='';">{% trans "Password" %}</button>
@@ -76,6 +81,31 @@
     <input class="w-1/2" type="text" name="txt_first_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.first_name }}" required />
     <h3 class="L_H3">{% trans "Last name" %}</h3>
     <input class="w-1/2" type="text" name="txt_last_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.last_name }}" required />
+    <h3 class="L_H3">📧 {% trans "Email" %}</h3>
+    <input class="w-1/2" type="email" name="txt_email" placeholder="{% trans "mandatory" %}" maxlength="254" value="{{ this_user.email }}" required />
+    <p id="email-confirm-msg" class="L_HIGHLIGHT_GREEN" style="display: none;">
+        ⚙️ {% trans "An email will be sent to confirm your new email address." %}
+    </p>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.querySelector('input[name="txt_email"]');
+        const confirmMsg = document.getElementById('email-confirm-msg');
+        const originalEmail = "{{ this_user.email|escapejs }}";
+
+        emailInput.addEventListener('input', function() {
+            if (emailInput.value && emailInput.value !== originalEmail) {
+                confirmMsg.style.display = 'block';
+            } else {
+                confirmMsg.style.display = 'none';
+            }
+        });
+    });
+    </script>
     <hr>
+    {% if user.is_staff %}
+    <h2 class="L_H2">⚖️ {% trans "Moderator" %}</h2>
+    {% trans "Contact the administrator to change your role." %}
+    <hr>
+    {% endif %}
     <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
 {% endblock content %}

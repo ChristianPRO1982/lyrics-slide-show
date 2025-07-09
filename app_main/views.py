@@ -3,8 +3,10 @@ from django.conf import settings
 from django.utils import translation
 from django.http import HttpResponseRedirect
 from app_logs.utils import delete_old_logs
-from .utils import is_moderator, is_admin, is_no_loader, save_user_theme
+from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
 from .SQL_main import User, Site, Songs, Band, Artist
+import hashlib
+import secrets
 
 
 def error_404(request, exception):
@@ -199,12 +201,69 @@ def profile(request):
             user.first_name = request.POST.get('txt_first_name', '').strip()
             user.last_name = request.POST.get('txt_last_name', '').strip()
             user.save_profil()
-            # user.save()
+
+            if user.email != request.POST.get('txt_email', '').strip():
+                token = secrets.token_urlsafe(16)
+                error = user.change_email(request.POST.get('txt_email', '').strip(), token)
+            if error == '':
+                if translation.get_language() == 'fr':
+                    title = "cARThographie - Changement d'email"
+                    message1 = "Votre email a été modifié avec succès.<br>Cliquez sur le lien suivant pour confirmer votre nouvelle adresse email&nbsp;:"
+                    link_text = "Cliquez ici pour confirmer votre nouvelle adresse email"
+                    message2 = "Ce lien est valable 2 heures."
+                    thanks = "Merci de votre confiance.<br>Chris de cARThographie"
+                else:
+                    title = "cARThographie - Email Change"
+                    message1 = "Your email has been successfully changed.<br>Click the following link to confirm your new email address&nbsp;:"
+                    link_text = "Click here to confirm your new email address"
+                    message2 = "This link is valid for 2 hour."
+                    thanks = "Thank you for your trust.<br>Chris from cARThographie"
+                
+                new_email = request.POST.get('txt_email', '').strip()
+                md5_new_email = hashlib.md5(new_email.encode('utf-8')).hexdigest()
+                md5_last_email = hashlib.md5(user.email.encode('utf-8')).hexdigest()
+                link = f"http://127.0.0.1:8000/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                # link = f"https://www.carthographie.fr/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                message = message1 + f'<br><a href="{link}">{link_text}</a>' + f'<br><br>{message2}'
+
+                message += f'<br><br>{thanks}'
+
+                send_email_via_n8n(
+                    title,
+                    message,
+                    request.POST.get('txt_email', '').strip()
+                )
+        
+        if 'btn_delete_account_1' in request.POST:
+            print("Deleting account for user:", request.user.username)
     
     this_user = User(request.user.username)
 
     return render(request, 'app_main/profile.html', {
         'this_user': this_user,
+        'error': error,
+        'no_loader': no_loader,
+        'css': css,
+    })
+
+
+def email_check(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+    error = ''
+    success = False
+
+    if request.method == 'GET':
+        if User.checking_email(
+            request.GET.get('v1', ''),
+            request.GET.get('v2', ''),
+            request.GET.get('v3', '')
+        ):
+            
+            success = True
+
+    return render(request, 'app_main/email_check.html', {
+        'success': success,
         'error': error,
         'no_loader': no_loader,
         'css': css,

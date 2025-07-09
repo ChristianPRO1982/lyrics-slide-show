@@ -25,6 +25,7 @@ class User:
         self.search_song_approved = None
         self.first_name = None
         self.last_name = None
+        self.email = None
         self.is_superuser = None
         self.is_staff = None
 
@@ -38,7 +39,7 @@ class User:
     SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic,
            cu.search_genres, cu.search_bands, cu.search_artists,
            cu.search_song_approved,
-           au.first_name, au.last_name, au.is_superuser, au.is_staff
+           au.first_name, au.last_name, au.email, au.is_superuser, au.is_staff
       FROM c_users cu
 RIGHT JOIN auth_user au ON au.username = cu.username
      WHERE au.username = %s
@@ -61,8 +62,9 @@ RIGHT JOIN auth_user au ON au.username = cu.username
             self.search_song_approved = row[7]
             self.first_name = row[8]
             self.last_name = row[9]
-            self.is_superuser = row[10]
-            self.is_staff = row[11]
+            self.email = row[10]
+            self.is_superuser = row[11]
+            self.is_staff = row[12]
 
 
     def init_c_user(self):
@@ -119,6 +121,65 @@ UPDATE auth_user
         create_SQL_log(code_file, "User.save_profil", "UPDATE_2", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
+
+
+    def change_email(self, new_email, token):
+        request = """
+INSERT INTO c_user_change_email (username, token, create_time, last_email, new_email)
+     VALUES (%s, %s, NOW(), %s, %s)
+"""
+        params = [self.username, token, self.email, new_email]
+
+        create_SQL_log(code_file, "User.change_email", "INSERT_4", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR50]'
+            
+
+    @staticmethod
+    def save_new_email(username: str, new_email: str):
+        request = """
+UPDATE auth_user
+   SET email = %s
+ WHERE username = %s
+"""
+        params = [new_email, username]
+
+        create_SQL_log(code_file, "User.save_new_email", "UPDATE_7", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                return True
+            except Exception as e:
+                return False
+            
+
+    @staticmethod
+    def checking_email(md5_last_email, md5_new_email, token):
+        request = """
+SELECT username, new_email
+  FROM c_user_change_email
+ WHERE md5(last_email) = %s
+   AND md5(new_email) = %s
+   AND token = %s
+   AND create_time > NOW() - INTERVAL 2 HOUR
+"""
+        params = [md5_last_email, md5_new_email, token]
+
+        create_SQL_log(code_file, "User.checking_email", "SELECT_10", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                row = cursor.fetchone()
+                if row:
+                    return User.save_new_email(row[0], row[1])
+                else:
+                    return None
+            except Exception as e:
+                return None
 
 
 ##############################################

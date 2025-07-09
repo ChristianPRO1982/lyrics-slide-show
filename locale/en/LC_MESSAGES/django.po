@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 09:19+0200\n"
+"POT-Creation-Date: 2025-07-09 09:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -475,7 +475,7 @@ msgid "Username2dot"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:20
-#: app_main/templates/app_main/profile.html:73
+#: app_main/templates/app_main/profile.html:78
 msgid "Username"
 msgstr ""
 
@@ -657,15 +657,15 @@ msgstr ""
 #: app_main/templates/app_main/artists.html:27
 #: app_main/templates/app_main/bands.html:19
 #: app_main/templates/app_main/bands.html:27
-#: app_main/templates/app_main/profile.html:70
-#: app_main/templates/app_main/profile.html:81
+#: app_main/templates/app_main/profile.html:75
+#: app_main/templates/app_main/profile.html:90
 msgid "Save"
 msgstr ""
 
 #: app_main/templates/app_main/artists.html:22
 #: app_main/templates/app_main/bands.html:22
-#: app_main/templates/app_main/profile.html:77
-#: app_main/templates/app_main/profile.html:79
+#: app_main/templates/app_main/profile.html:81
+#: app_main/templates/app_main/profile.html:83
 msgid "mandatory"
 msgstr ""
 
@@ -696,6 +696,7 @@ msgid "powered by"
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:34
+#: app_main/templates/app_main/profile.html:86
 #: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr ""
@@ -939,48 +940,63 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
+#: app_main/templates/app_main/profile.html:9
+#: app_main/templates/app_main/profile.html:12
+msgid "Delete account"
+msgstr ""
+
 #: app_main/templates/app_main/profile.html:11
+msgid ""
+"Warning: This action is irreversible. Are you sure you want to delete your "
+"account?"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:16
 msgid "Password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:13
+#: app_main/templates/app_main/profile.html:18
 msgid "new password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:15
+#: app_main/templates/app_main/profile.html:20
 msgid "confirm password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:17
+#: app_main/templates/app_main/profile.html:22
 msgid "Passwords do not match"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:45
+#: app_main/templates/app_main/profile.html:50
 msgid "Password must be at least 8 characters."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:48
+#: app_main/templates/app_main/profile.html:53
 msgid "Password must contain a letter."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:51
+#: app_main/templates/app_main/profile.html:56
 msgid "Password must contain a number."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:72
+#: app_main/templates/app_main/profile.html:77
 msgid "User"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:75
+#: app_main/templates/app_main/profile.html:79
 msgid "Used for login, cannot be changed"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:76
+#: app_main/templates/app_main/profile.html:80
 msgid "First name"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:78
+#: app_main/templates/app_main/profile.html:82
 msgid "Last name"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:87
+msgid "Contact the administrator to change your role."
 msgstr ""
 
 #: app_song/templates/app_song/delete_song.html:5
