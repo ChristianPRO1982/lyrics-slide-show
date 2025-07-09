@@ -107,6 +107,20 @@ UPDATE c_users
             cursor.execute(request, params)
 
 
+    def save_profil(self):
+        request = """
+UPDATE auth_user
+   SET first_name = %s,
+       last_name = %s
+ WHERE username = %s
+"""
+        params = [self.first_name, self.last_name, self.username]
+
+        create_SQL_log(code_file, "User.save_profil", "UPDATE_2", request, params)
+        with connection.cursor() as cursor:
+            cursor.execute(request, params)
+
+
 ##############################################
 ##############################################
 #################### SONG ####################
@@ -233,7 +247,7 @@ UPDATE l_site
 """
         params = [self.language, self.title, self.title_h1, self.home_text, self.bloc1_text, self.bloc2_text]
 
-        create_SQL_log(code_file, "Site.save", "UPDATE_2", request, params)
+        create_SQL_log(code_file, "Site.save", "UPDATE_3", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
 
@@ -244,7 +258,7 @@ UPDATE l_site_params
 """
         params = [self.verse_max_lines, self.verse_max_characters_for_a_line]
 
-        create_SQL_log(code_file, "Site.save", "UPDATE_3", request, params)
+        create_SQL_log(code_file, "Site.save", "UPDATE_4", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
 
@@ -327,7 +341,7 @@ UPDATE c_bands
 """
             params = [self.name, self.band_id]
 
-            create_SQL_log(code_file, "Band.save", "UPDATE_4", request, params)
+            create_SQL_log(code_file, "Band.save", "UPDATE_5", request, params)
             with connection.cursor() as cursor:
                 try:
                     cursor.execute(request, params)
@@ -432,7 +446,7 @@ UPDATE c_artists
 """
             params = [self.name, self.artist_id]
 
-            create_SQL_log(code_file, "Artist.save", "UPDATE_5", request, params)
+            create_SQL_log(code_file, "Artist.save", "UPDATE_6", request, params)
             with connection.cursor() as cursor:
                 try:
                     cursor.execute(request, params)

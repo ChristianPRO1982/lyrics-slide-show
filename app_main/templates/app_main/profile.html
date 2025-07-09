@@ -67,13 +67,15 @@
 <form method="post">
     {% csrf_token %}
     {{ this_user.first_name }}
-    <input class="w-full" name="btn_save" value="{% trans "Save" %}" type="submit" />
+    <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
     <hr>
     <h2 class="L_H2">{% trans "User" %}</h2>
+    <h3 class="L_H3">{% trans "Username" %}</h3>
+    <i>{{ this_user.username }}</i> ({% trans "Used for login, cannot be changed" %})<br><br>
     <h3 class="L_H3">{% trans "First name" %}</h3>
     <input class="w-1/2" type="text" name="txt_first_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.first_name }}" required />
     <h3 class="L_H3">{% trans "Last name" %}</h3>
     <input class="w-1/2" type="text" name="txt_last_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.last_name }}" required />
     <hr>
-    <input class="w-full" name="btn_save" value="{% trans "Save" %}" type="submit" />
+    <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
 {% endblock content %}

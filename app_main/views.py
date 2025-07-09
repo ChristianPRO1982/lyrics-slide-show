@@ -196,9 +196,10 @@ def profile(request):
     if request.method == 'POST':
         if 'btn_save_profile' in request.POST:
             user = User(request.user.username)
-            user.theme = request.POST.get('sel_theme', 'normal.css')
-            user.save()
-            save_user_theme(request, user.theme)
+            user.first_name = request.POST.get('txt_first_name', '').strip()
+            user.last_name = request.POST.get('txt_last_name', '').strip()
+            user.save_profil()
+            # user.save()
     
     this_user = User(request.user.username)
 
