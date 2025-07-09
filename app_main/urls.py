@@ -15,4 +15,5 @@ urlpatterns = [
     path('change_language', views.change_language, name='set_language'),
     path('profile', views.profile, name='profile'),
     path('email_check', views.email_check, name='email_check'),
+    path('delete_profile', views.delete_profile, name='delete_profile'),
 ]

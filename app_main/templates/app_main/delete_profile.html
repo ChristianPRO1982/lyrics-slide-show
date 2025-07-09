@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete profile" %}{% endblock title %}
+{% block title_h1 %}{% trans "Delete profile" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+{% endblock bloc2 %}
+
+{% block content %}
+{% if status == 1 %}
+{% trans "For deleting your profile, please copy and paste your username in the field below then click on the button." %}
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="txt_username" placeholder="{% trans "your username" %}">
+    <input type="submit" name="btn_delete_account" value="{% trans "Delete account" %}" style="background: #f87171; color: white;">
+</form>
+{% elif status == 2 %}
+<span class="L_HIGHLIGHT_GREEN">{% trans "Your profile is deleted." %}</span>
+{% elif status == 3 %}
+<span class="L_ERROR">{% trans "Impossible to delete your profile. Contact the administrator." %}</span>
+{% endif %}
+{% endblock content %}

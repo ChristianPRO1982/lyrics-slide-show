@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 09:44+0200\n"
+"POT-Creation-Date: 2025-07-09 15:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -369,7 +369,8 @@ msgstr "Voir le texte du chant"
 #: app_animation/templates/app_animation/modify_animation.html:315
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
-"Les changements vont être perdus, voulez-vous vraiment quitter cette page&nbsp;?"
+"Les changements vont être perdus, voulez-vous vraiment quitter cette "
+"page&nbsp;?"
 
 #: app_animation/templates/app_animation/modify_animation.html:316
 msgid "Go to the song"
@@ -395,7 +396,8 @@ msgstr "Enregistrer + revenir à la liste des chants"
 
 #: app_animation/templates/app_animation/modify_colors.html:15
 msgid "text_test"
-msgstr "Voici un texte pour tester l'affichage<br><br><b>Est-ce beau&nbsp;?</b>"
+msgstr ""
+"Voici un texte pour tester l'affichage<br><br><b>Est-ce beau&nbsp;?</b>"
 
 #: app_animation/templates/app_animation/modify_colors.html:21
 msgid "Modify colors"
@@ -482,7 +484,7 @@ msgid "Username2dot"
 msgstr "Username&nbsp;:"
 
 #: app_group/templates/app_group/add_group.html:20
-#: app_main/templates/app_main/profile.html:78
+#: app_main/templates/app_main/profile.html:77
 msgid "Username"
 msgstr ""
 
@@ -664,15 +666,16 @@ msgstr "Nouvel artiste"
 #: app_main/templates/app_main/artists.html:27
 #: app_main/templates/app_main/bands.html:19
 #: app_main/templates/app_main/bands.html:27
-#: app_main/templates/app_main/profile.html:75
-#: app_main/templates/app_main/profile.html:90
+#: app_main/templates/app_main/profile.html:74
+#: app_main/templates/app_main/profile.html:109
 msgid "Save"
 msgstr "Enregistrer"
 
 #: app_main/templates/app_main/artists.html:22
 #: app_main/templates/app_main/bands.html:22
-#: app_main/templates/app_main/profile.html:81
-#: app_main/templates/app_main/profile.html:83
+#: app_main/templates/app_main/profile.html:80
+#: app_main/templates/app_main/profile.html:82
+#: app_main/templates/app_main/profile.html:84
 msgid "mandatory"
 msgstr "obligatoire"
 
@@ -685,6 +688,48 @@ msgstr "Groupes de musique"
 #: app_main/templates/app_main/bands.html:11
 msgid "New band"
 msgstr "Nouveau group de musique"
+
+#: app_main/templates/app_main/delete_profile.html:6
+#: app_main/templates/app_main/delete_profile.html:7
+msgid "Delete profile"
+msgstr "Suppression du compte"
+
+#: app_main/templates/app_main/delete_profile.html:15
+msgid ""
+"For deleting your profile, please copy and paste your username in the field "
+"below then click on the button."
+msgstr "Pour supprimer votre profil, veuillez copier-coller votre nom d'utilisateur dans le champ ci-dessous puis cliquer sur le bouton."
+
+#: app_main/templates/app_main/delete_profile.html:18
+msgid "your username"
+msgstr "Ton nom d'utilisateur"
+
+#: app_main/templates/app_main/delete_profile.html:19
+#: app_main/templates/app_main/profile.html:9
+#: app_main/templates/app_main/profile.html:12
+msgid "Delete account"
+msgstr "Supprimer le compte"
+
+#: app_main/templates/app_main/delete_profile.html:22
+msgid "Your profile is deleted."
+msgstr "Votre compte a été supprimé."
+
+#: app_main/templates/app_main/delete_profile.html:24
+msgid "Impossible to delete your profile. Contact the administrator."
+msgstr "Impossible de supprimer votre profil. Contactez l'administrateur."
+
+#: app_main/templates/app_main/email_check.html:6
+#: app_main/templates/app_main/email_check.html:7
+msgid "Email check"
+msgstr "Vérification d'email"
+
+#: app_main/templates/app_main/email_check.html:15
+msgid "Your email is checked."
+msgstr "Votre email a été vérifié."
+
+#: app_main/templates/app_main/email_check.html:17
+msgid "Impossible to check your email."
+msgstr "Impossible de vérifier votre email."
 
 #: app_main/templates/app_main/homepage.html:11
 msgid "Themes"
@@ -703,7 +748,7 @@ msgid "powered by"
 msgstr "propulsé par"
 
 #: app_main/templates/app_main/homepage.html:34
-#: app_main/templates/app_main/profile.html:86
+#: app_main/templates/app_main/profile.html:105
 #: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr "Modérateur"
@@ -953,18 +998,15 @@ msgstr ""
 #: app_main/templates/app_main/profile.html:6
 #: app_main/templates/app_main/profile.html:7 templates/includes/header.html:14
 msgid "Profile"
-msgstr ""
-
-#: app_main/templates/app_main/profile.html:9
-#: app_main/templates/app_main/profile.html:12
-msgid "Delete account"
-msgstr "Supprimer le compte"
+msgstr "Compte"
 
 #: app_main/templates/app_main/profile.html:11
 msgid ""
 "Warning: This action is irreversible. Are you sure you want to delete your "
 "account?"
-msgstr "Attention&nbsp;: cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte&nbsp;?"
+msgstr ""
+"Attention&nbsp;: cette action est irréversible. Êtes-vous sûr de vouloir "
+"supprimer votre compte&nbsp;?"
 
 #: app_main/templates/app_main/profile.html:16
 #, fuzzy
@@ -998,23 +1040,31 @@ msgstr ""
 msgid "Password must contain a number."
 msgstr "Ne pas continuer la numérotation"
 
-#: app_main/templates/app_main/profile.html:77
+#: app_main/templates/app_main/profile.html:76
 msgid "User"
 msgstr "Utilisateur"
 
-#: app_main/templates/app_main/profile.html:79
+#: app_main/templates/app_main/profile.html:78
 msgid "Used for login, cannot be changed"
 msgstr "Utiliser pour se connecter, ne peut pas être modifié."
 
-#: app_main/templates/app_main/profile.html:80
+#: app_main/templates/app_main/profile.html:79
 msgid "First name"
 msgstr "Prénom"
 
-#: app_main/templates/app_main/profile.html:82
+#: app_main/templates/app_main/profile.html:81
 msgid "Last name"
 msgstr "Nom"
 
-#: app_main/templates/app_main/profile.html:87
+#: app_main/templates/app_main/profile.html:83
+msgid "Email"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:86
+msgid "An email will be sent to confirm your new email address."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:106
 msgid "Contact the administrator to change your role."
 msgstr "Contacter l'administrateur pour changer votre rôle."
 
@@ -1408,10 +1458,11 @@ msgstr "Créer un nouveau compte"
 #: templates/account/login.html:11 templates/account/signup.html:11
 msgid "info_signup"
 msgstr ""
-"<b>Bienvenue&nbsp;!</b><br><br>La création d'un compte est obligatoire pour gérer "
-"un groupe.<br>Vous pouvez vous connecter avec votre compte Google.<br><i>La "
-"plus part des fonctionnalités sont accessibles sans compte</i>.<br><br>La "
-"création d'un compte est <b>sans engagement</b> et <b>100% gratuite</b>."
+"<b>Bienvenue&nbsp;!</b><br><br>La création d'un compte est obligatoire pour "
+"gérer un groupe.<br>Vous pouvez vous connecter avec votre compte Google."
+"<br><i>La plus part des fonctionnalités sont accessibles sans compte</i>."
+"<br><br>La création d'un compte est <b>sans engagement</b> et <b>100% "
+"gratuite</b>."
 
 #: templates/account/login.html:23
 #, python-format
@@ -1462,8 +1513,8 @@ msgstr "Chargement..."
 #: templates/base.html:34
 msgid "Page not displayed after a few seconds? Refresh (F5) it or click here."
 msgstr ""
-"La page ne s'affiche pas au bout de quelque seconde&nbsp;? Recharger là (F5) ou "
-"alors cliquer ici."
+"La page ne s'affiche pas au bout de quelque seconde&nbsp;? Recharger là (F5) "
+"ou alors cliquer ici."
 
 #: templates/base.html:53
 msgid "ERR1"
@@ -1622,7 +1673,8 @@ msgstr ""
 
 #: templates/base.html:117
 msgid "ERR33"
-msgstr "Ce genre existe déjà&nbsp;! Veuillez créer un couplet 'groupe/nom' unique."
+msgstr ""
+"Ce genre existe déjà&nbsp;! Veuillez créer un couplet 'groupe/nom' unique."
 
 #: templates/base.html:119
 msgid "ERR34"
@@ -1711,7 +1763,9 @@ msgstr ""
 
 #: templates/base.html:151
 msgid "ERR50"
-msgstr "[ERR50] "Un problème a eu lieu lors de la modification de votre email. Contacter l'administrateur du site."
+msgstr ""
+"[ERR50] Un problème a eu lieu lors de la modification de votre email. "
+"Contacter l'administrateur du site."
 
 #: templates/includes/header.html:19 templates/includes/header.html:21
 #: templates/includes/header.html:27

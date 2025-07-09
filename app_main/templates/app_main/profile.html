@@ -9,7 +9,7 @@
 <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('delete-account');">{% trans "Delete account" %}</button>
 <div id="delete-account" style="display: none; margin-top: 1em;">
     <p class="L_ERROR_OTHER">{% trans "Warning: This action is irreversible. Are you sure you want to delete your account?" %}</p>
-    <input name="btn_delete_account_1" class="w-full" type="submit" value="{% trans 'Delete account' %}" style="background: #f87171; color: white;" />
+    <input name="btn_delete_account" class="w-full" type="submit" value="{% trans 'Delete account' %}" style="background: #f87171; color: white;" />
 </div>
 {% endblock bloc1 %}
 {% block bloc2 %}
@@ -71,7 +71,6 @@
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    {{ this_user.first_name }}
     <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
     <hr>
     <h2 class="L_H2">{% trans "User" %}</h2>

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.utils import translation
 from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User as AuthUser
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
 from .SQL_main import User, Site, Songs, Band, Artist
@@ -222,8 +223,8 @@ def profile(request):
                 new_email = request.POST.get('txt_email', '').strip()
                 md5_new_email = hashlib.md5(new_email.encode('utf-8')).hexdigest()
                 md5_last_email = hashlib.md5(user.email.encode('utf-8')).hexdigest()
-                link = f"http://127.0.0.1:8000/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
-                # link = f"https://www.carthographie.fr/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                # link = f"http://127.0.0.1:8000/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                link = f"https://www.carthographie.fr/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
                 message = message1 + f'<br><a href="{link}">{link_text}</a>' + f'<br><br>{message2}'
 
                 message += f'<br><br>{thanks}'
@@ -234,8 +235,8 @@ def profile(request):
                     request.POST.get('txt_email', '').strip()
                 )
         
-        if 'btn_delete_account_1' in request.POST:
-            print("Deleting account for user:", request.user.username)
+        if 'btn_delete_account' in request.POST:
+            return redirect('delete_profile')
     
     this_user = User(request.user.username)
 
@@ -264,6 +265,32 @@ def email_check(request):
 
     return render(request, 'app_main/email_check.html', {
         'success': success,
+        'error': error,
+        'no_loader': no_loader,
+        'css': css,
+    })
+
+
+def delete_profile(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+    error = ''
+    this_user = User(request.user.username)
+    status = 1
+
+    if request.method == 'POST':
+        if 'btn_delete_account' in request.POST:
+            if this_user.username == request.POST.get('txt_username', '').strip():
+                    try:
+                        user = AuthUser.objects.get(username=this_user.username)
+                        user.delete()
+                        status = 2
+                    except AuthUser.DoesNotExist:
+                        status = 3
+
+    return render(request, 'app_main/delete_profile.html', {
+        'this_user': this_user,
+        'status': status,
         'error': error,
         'no_loader': no_loader,
         'css': css,

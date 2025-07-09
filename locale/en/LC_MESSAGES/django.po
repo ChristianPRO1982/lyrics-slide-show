@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 09:44+0200\n"
+"POT-Creation-Date: 2025-07-09 15:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -475,7 +475,7 @@ msgid "Username2dot"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:20
-#: app_main/templates/app_main/profile.html:78
+#: app_main/templates/app_main/profile.html:77
 msgid "Username"
 msgstr ""
 
@@ -657,15 +657,16 @@ msgstr ""
 #: app_main/templates/app_main/artists.html:27
 #: app_main/templates/app_main/bands.html:19
 #: app_main/templates/app_main/bands.html:27
-#: app_main/templates/app_main/profile.html:75
-#: app_main/templates/app_main/profile.html:90
+#: app_main/templates/app_main/profile.html:74
+#: app_main/templates/app_main/profile.html:109
 msgid "Save"
 msgstr ""
 
 #: app_main/templates/app_main/artists.html:22
 #: app_main/templates/app_main/bands.html:22
-#: app_main/templates/app_main/profile.html:81
-#: app_main/templates/app_main/profile.html:83
+#: app_main/templates/app_main/profile.html:80
+#: app_main/templates/app_main/profile.html:82
+#: app_main/templates/app_main/profile.html:84
 msgid "mandatory"
 msgstr ""
 
@@ -677,6 +678,48 @@ msgstr ""
 
 #: app_main/templates/app_main/bands.html:11
 msgid "New band"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:6
+#: app_main/templates/app_main/delete_profile.html:7
+msgid "Delete profile"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:15
+msgid ""
+"For deleting your profile, please copy and paste your username in the field "
+"below then click on the button."
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:18
+msgid "your username"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:19
+#: app_main/templates/app_main/profile.html:9
+#: app_main/templates/app_main/profile.html:12
+msgid "Delete account"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:22
+msgid "Your profile is deleted."
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:24
+msgid "Impossible to delete your profile. Contact the administrator."
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:6
+#: app_main/templates/app_main/email_check.html:7
+msgid "Email check"
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:15
+msgid "Your email is checked."
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:17
+msgid "Impossible to check your email."
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:11
@@ -696,7 +739,7 @@ msgid "powered by"
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:34
-#: app_main/templates/app_main/profile.html:86
+#: app_main/templates/app_main/profile.html:105
 #: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr ""
@@ -940,11 +983,6 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:9
-#: app_main/templates/app_main/profile.html:12
-msgid "Delete account"
-msgstr ""
-
 #: app_main/templates/app_main/profile.html:11
 msgid ""
 "Warning: This action is irreversible. Are you sure you want to delete your "
@@ -979,23 +1017,31 @@ msgstr ""
 msgid "Password must contain a number."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:77
+#: app_main/templates/app_main/profile.html:76
 msgid "User"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:79
+#: app_main/templates/app_main/profile.html:78
 msgid "Used for login, cannot be changed"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:80
+#: app_main/templates/app_main/profile.html:79
 msgid "First name"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:82
+#: app_main/templates/app_main/profile.html:81
 msgid "Last name"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:87
+#: app_main/templates/app_main/profile.html:83
+msgid "Email"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:86
+msgid "An email will be sent to confirm your new email address."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:106
 msgid "Contact the administrator to change your role."
 msgstr ""
 

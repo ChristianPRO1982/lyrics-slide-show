@@ -180,6 +180,7 @@ SELECT username, new_email
                     return None
             except Exception as e:
                 return None
+            
 
 
 ##############################################
