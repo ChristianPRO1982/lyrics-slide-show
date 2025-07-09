@@ -533,3 +533,27 @@ DELETE FROM c_artists
                 return ''
             except Exception as e:
                 return '[ERR47]'
+            
+
+
+############################################
+############################################
+#################### DB ####################
+############################################
+############################################
+class DB:
+    @staticmethod
+    def c_user_change_email():
+        request = """
+DELETE FROM c_user_change_email
+      WHERE create_time < NOW() - INTERVAL 2 HOUR
+"""
+        params = []
+
+        create_SQL_log(code_file, "DB.c_user_change_email", "DELETE_3", request, params)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR51]'

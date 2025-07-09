@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 15:03+0200\n"
+"POT-Creation-Date: 2025-07-09 15:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -689,16 +689,24 @@ msgstr "Groupes de musique"
 msgid "New band"
 msgstr "Nouveau group de musique"
 
+#: app_main/templates/app_main/clean_db.html:6
+#: app_main/templates/app_main/clean_db.html:7
 #: app_main/templates/app_main/delete_profile.html:6
 #: app_main/templates/app_main/delete_profile.html:7
 msgid "Delete profile"
 msgstr "Suppression du compte"
 
+#: app_main/templates/app_main/clean_db.html:14
+msgid "DB IS CLEANED"
+msgstr ""
+
 #: app_main/templates/app_main/delete_profile.html:15
 msgid ""
 "For deleting your profile, please copy and paste your username in the field "
 "below then click on the button."
-msgstr "Pour supprimer votre profil, veuillez copier-coller votre nom d'utilisateur dans le champ ci-dessous puis cliquer sur le bouton."
+msgstr ""
+"Pour supprimer votre profil, veuillez copier-coller votre nom d'utilisateur "
+"dans le champ ci-dessous puis cliquer sur le bouton."
 
 #: app_main/templates/app_main/delete_profile.html:18
 msgid "your username"
@@ -1766,6 +1774,55 @@ msgid "ERR50"
 msgstr ""
 "[ERR50] Un problème a eu lieu lors de la modification de votre email. "
 "Contacter l'administrateur du site."
+
+#: templates/base.html:153
+msgid "ERR51"
+msgstr ""
+"[ERR51] Impossible de faire le clean_db de : c_user_change_email"
+
+#: templates/base.html:155
+msgid "ERR52"
+msgstr ""
+"[ERR52] no message"
+
+#: templates/base.html:157
+msgid "ERR53"
+msgstr ""
+"[ERR51] no message."
+
+#: templates/base.html:159
+msgid "ERR54"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:161
+msgid "ERR55"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:163
+msgid "ERR56"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:165
+msgid "ERR57"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:167
+msgid "ERR58"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:169
+msgid "ERR59"
+msgstr ""
+"[ERR51] no message"
+
+#: templates/base.html:171
+msgid "ERR60"
+msgstr "[ERR60] no message"
 
 #: templates/includes/header.html:19 templates/includes/header.html:21
 #: templates/includes/header.html:27
@@ -3096,9 +3153,6 @@ msgstr ""
 
 #~ msgid "Add a song"
 #~ msgstr "Ajouter un chant"
-
-#~ msgid "ERR6"
-#~ msgstr "[ERR6] Erreur dans 'Group.add_admin'"
 
 #~ msgid "placeholder_email_group"
 #~ msgstr "Email (si vide > pas d'administration et le groupe est libre)"

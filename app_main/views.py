@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User as AuthUser
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
-from .SQL_main import User, Site, Songs, Band, Artist
+from .SQL_main import User, Site, Songs, Band, Artist, DB
 import hashlib
 import secrets
 
@@ -291,6 +291,19 @@ def delete_profile(request):
     return render(request, 'app_main/delete_profile.html', {
         'this_user': this_user,
         'status': status,
+        'error': error,
+        'no_loader': no_loader,
+        'css': css,
+    })
+
+
+def clean_db(request):
+    no_loader = is_no_loader(request)
+    css = request.session.get('css', 'normal.css')
+
+    error = DB.c_user_change_email()
+
+    return render(request, 'app_main/clean_db.html', {
         'error': error,
         'no_loader': no_loader,
         'css': css,

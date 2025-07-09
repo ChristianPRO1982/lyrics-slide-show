@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 15:03+0200\n"
+"POT-Creation-Date: 2025-07-09 15:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -680,9 +680,15 @@ msgstr ""
 msgid "New band"
 msgstr ""
 
+#: app_main/templates/app_main/clean_db.html:6
+#: app_main/templates/app_main/clean_db.html:7
 #: app_main/templates/app_main/delete_profile.html:6
 #: app_main/templates/app_main/delete_profile.html:7
 msgid "Delete profile"
+msgstr ""
+
+#: app_main/templates/app_main/clean_db.html:14
+msgid "DB IS CLEANED"
 msgstr ""
 
 #: app_main/templates/app_main/delete_profile.html:15
@@ -1663,6 +1669,46 @@ msgstr ""
 
 #: templates/base.html:151
 msgid "ERR50"
+msgstr ""
+
+#: templates/base.html:153
+msgid "ERR51"
+msgstr ""
+
+#: templates/base.html:155
+msgid "ERR52"
+msgstr ""
+
+#: templates/base.html:157
+msgid "ERR53"
+msgstr ""
+
+#: templates/base.html:159
+msgid "ERR54"
+msgstr ""
+
+#: templates/base.html:161
+msgid "ERR55"
+msgstr ""
+
+#: templates/base.html:163
+msgid "ERR56"
+msgstr ""
+
+#: templates/base.html:165
+msgid "ERR57"
+msgstr ""
+
+#: templates/base.html:167
+msgid "ERR58"
+msgstr ""
+
+#: templates/base.html:169
+msgid "ERR59"
+msgstr ""
+
+#: templates/base.html:171
+msgid "ERR60"
 msgstr ""
 
 #: templates/includes/header.html:19 templates/includes/header.html:21
