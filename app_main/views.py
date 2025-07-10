@@ -206,34 +206,34 @@ def profile(request):
             if user.email != request.POST.get('txt_email', '').strip():
                 token = secrets.token_urlsafe(16)
                 error = user.change_email(request.POST.get('txt_email', '').strip(), token)
-            if error == '':
-                if translation.get_language() == 'fr':
-                    title = "cARThographie - Changement d'email"
-                    message1 = "Votre email a été modifié avec succès.<br>Cliquez sur le lien suivant pour confirmer votre nouvelle adresse email&nbsp;:"
-                    link_text = "Cliquez ici pour confirmer votre nouvelle adresse email"
-                    message2 = "Ce lien est valable 2 heures."
-                    thanks = "Merci de votre confiance.<br>Chris de cARThographie"
-                else:
-                    title = "cARThographie - Email Change"
-                    message1 = "Your email has been successfully changed.<br>Click the following link to confirm your new email address&nbsp;:"
-                    link_text = "Click here to confirm your new email address"
-                    message2 = "This link is valid for 2 hour."
-                    thanks = "Thank you for your trust.<br>Chris from cARThographie"
-                
-                new_email = request.POST.get('txt_email', '').strip()
-                md5_new_email = hashlib.md5(new_email.encode('utf-8')).hexdigest()
-                md5_last_email = hashlib.md5(user.email.encode('utf-8')).hexdigest()
-                # link = f"http://127.0.0.1:8000/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
-                link = f"https://www.carthographie.fr/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
-                message = message1 + f'<br><a href="{link}">{link_text}</a>' + f'<br><br>{message2}'
+                if error == '':
+                    if translation.get_language() == 'fr':
+                        title = "cARThographie - Changement d'email"
+                        message1 = "Votre email a été modifié avec succès.<br>Cliquez sur le lien suivant pour confirmer votre nouvelle adresse email&nbsp;:"
+                        link_text = "Cliquez ici pour confirmer votre nouvelle adresse email"
+                        message2 = "Ce lien est valable 2 heures."
+                        thanks = "Merci de votre confiance.<br>Chris de cARThographie"
+                    else:
+                        title = "cARThographie - Email Change"
+                        message1 = "Your email has been successfully changed.<br>Click the following link to confirm your new email address&nbsp;:"
+                        link_text = "Click here to confirm your new email address"
+                        message2 = "This link is valid for 2 hour."
+                        thanks = "Thank you for your trust.<br>Chris from cARThographie"
+                    
+                    new_email = request.POST.get('txt_email', '').strip()
+                    md5_new_email = hashlib.md5(new_email.encode('utf-8')).hexdigest()
+                    md5_last_email = hashlib.md5(user.email.encode('utf-8')).hexdigest()
+                    # link = f"http://127.0.0.1:8000/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                    link = f"https://www.carthographie.fr/email_check?v1={md5_last_email}&v2={md5_new_email}&v3={token}"
+                    message = message1 + f'<br><a href="{link}">{link_text}</a>' + f'<br><br>{message2}'
 
-                message += f'<br><br>{thanks}'
+                    message += f'<br><br>{thanks}'
 
-                send_email_via_n8n(
-                    title,
-                    message,
-                    request.POST.get('txt_email', '').strip()
-                )
+                    send_email_via_n8n(
+                        title,
+                        message,
+                        request.POST.get('txt_email', '').strip()
+                    )
         
         if 'btn_delete_account' in request.POST:
             return redirect('delete_profile')
