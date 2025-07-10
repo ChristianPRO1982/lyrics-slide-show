@@ -14,7 +14,7 @@ from app_main.utils import (
 )
 
 
-
+@login_required
 def songs(request):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -138,6 +138,7 @@ def songs(request):
     })
 
 
+@login_required
 def modify_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -299,6 +300,7 @@ def delete_song(request, song_id):
         'no_loader': no_loader,
     })
 
+
 @login_required
 def goto_song(request, song_id):
     error = ''
@@ -332,6 +334,7 @@ def goto_song(request, song_id):
     })
 
 
+@login_required
 def moderator_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -365,6 +368,7 @@ def moderator_song(request, song_id):
     })
 
 
+@login_required
 def song_metadata(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -480,21 +484,25 @@ def song_metadata(request, song_id):
     })
 
 
+@login_required
 def delete_genre(request, genre_id):
     delete_genre_in_search_params(request, genre_id)
     return redirect('songs')
 
 
+@login_required
 def delete_band(request, band_id):
     delete_band_in_search_params(request, band_id)
     return redirect('songs')
 
 
+@login_required
 def delete_artist(request, artist_id):
     delete_artist_in_search_params(request, artist_id)
     return redirect('songs')
 
 
+@login_required
 def print_lyrics(request, song_id):
     song = Song.get_song_by_id(song_id)
     if not song:
@@ -516,6 +524,7 @@ def print_lyrics(request, song_id):
     })
 
 
+@login_required
 def print_lyrics_one_chorus(request, song_id):
     song = Song.get_song_by_id(song_id)
     if not song:

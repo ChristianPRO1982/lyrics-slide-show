@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import translation
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User as AuthUser
+from django.contrib.auth.decorators import login_required
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
 from .SQL_main import User, Site, Songs, Band, Artist, DB
@@ -109,6 +110,7 @@ def theme_scout(request):
     return redirect('homepage')
 
 
+@login_required
 def bands(request):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -138,6 +140,7 @@ def bands(request):
     })
 
 
+@login_required
 def artists(request):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -178,6 +181,7 @@ def privacy_policy(request):
     })
 
 
+@login_required
 def change_language(request):
     lang = request.GET.get('language')
 
@@ -191,6 +195,7 @@ def change_language(request):
     return redirect('homepage')
 
 
+@login_required
 def profile(request):
     no_loader = is_no_loader(request)
     css = request.session.get('css', 'normal.css')
@@ -271,6 +276,7 @@ def email_check(request):
     })
 
 
+@login_required
 def delete_profile(request):
     no_loader = is_no_loader(request)
     css = request.session.get('css', 'normal.css')
