@@ -181,6 +181,10 @@ hr {
     border-width: 5px !important;
 }
 
+.active_background {
+    background-color: rgb(180, 94, 13) !important;
+}
+
 .chorus_active {
     border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
