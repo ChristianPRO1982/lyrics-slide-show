@@ -235,16 +235,6 @@ function navNextSlide() {
     if (current_slide >= slides.length) {current_slide = 0;}
     showSlide(slides[current_slide]);
 
-    const navNextSlideDiv = document.getElementById('nav_next_slide');
-    if (navNextSlideDiv) {
-        navNextSlideDiv.innerHTML = '';
-    }
-
-    if (navNextSlideDiv) {
-        navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
-    }
-
     nextActiveSlide();
 }
 
@@ -261,16 +251,6 @@ function navNextSlideInit() {
 }
 
 function navChorus() {
-    const navChorusDiv = document.getElementById('nav_chorus');
-    if (navChorusDiv) {
-        navChorusDiv.innerHTML = '';
-    }
-    
-    if (navChorusDiv) {
-        navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
-    }
-    
     showSlide(chorus[current_chorus_slide], false);
     
     current_chorus_slide += 1;
