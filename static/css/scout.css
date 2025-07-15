@@ -176,17 +176,16 @@ hr {
 }
 
 .active {
-    border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
     border-width: 5px !important;
 }
 
 .active_background {
-    background-color: rgb(180, 94, 13) !important;
+    background-color: #18bb67 !important;
 }
 
 .chorus_active {
-    border-color: rgb(180, 94, 13) !important;
+    border-color: #2f7c76 !important;
     border-radius: 0% !important;
 }
 
@@ -254,12 +253,14 @@ hr {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(160, 75, 19) !important;
         border-radius: 0% !important;
         border-width: 5px !important;
     }
+    .active_background {
+        background-color: #14403D !important;
+    }
     .chorus_active {
-        border-color: rgb(160, 75, 19) !important;
+        border-color: #14403D !important;
         border-radius: 0% !important;
     }
     .next_active {
