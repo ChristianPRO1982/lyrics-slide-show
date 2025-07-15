@@ -89,7 +89,7 @@ function showSlide(index, updateCurrentSlide = true) {
     let [animation_song_id, verse_id] = index.split('_');
     if (isChorus(animation_song_id, verse_id)) {
         const chorus_divs = document.getElementById("nav_chorus");
-        chorus_divs.classList.add('active');
+        chorus_divs.classList.add('active_background');
     }
 
     if (updateCurrentSlide) {nextChorusSlideSelect(index);}
@@ -189,25 +189,25 @@ function isChorus(id1, id2) {
 
 function blackMode() {
     const div = document.getElementById('blackMode');
-    if (!div.classList.contains('active')) {
+    if (!div.classList.contains('active_background')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = '';
             displayWindow.document.getElementById('slideContent').style.color = 'black';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
-        div.classList.add('active');
+        div.classList.add('active_background');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
             displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
-        div.classList.remove('active');
+        div.classList.remove('active_background');
     }
 
     const div_qr_code = document.getElementById('qr_code');
     if (div_qr_code) {
-        div_qr_code.classList.remove('active');
+        div_qr_code.classList.remove('active_background');
     }
 }
 
@@ -343,16 +343,17 @@ function navSongs(index) {
 function cleanSelectedSlides() {
     document.querySelectorAll('.slide').forEach(slide => {
         slide.classList.remove('active');
+        slide.classList.remove('active_background');
         slide.classList.remove('chorus_active');
         slide.classList.remove('next_active');
     });
 
     const chorus_divs = document.getElementById("nav_chorus");
-    chorus_divs.classList.remove('active');
+    chorus_divs.classList.remove('active_background');
 
     const div_qr_code = document.getElementById("qr_code");
     if (div_qr_code) {
-        div_qr_code.classList.remove('active');
+        div_qr_code.classList.remove('active_background');
     }
 }
 
@@ -559,7 +560,7 @@ function qr_code() {
             + err_qr_code + '" class="w-24 h-24 object-contain"></div>';
     }
 
-    if (!div.classList.contains('active')) {
+    if (!div.classList.contains('active_background')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = txt_qr_code_for_lyrics
                 + '<img src="data:image/png;base64,'
@@ -568,19 +569,19 @@ function qr_code() {
             displayWindow.document.getElementById('slideContent').style.color = 'white';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
-        div.classList.add('active');
+        div.classList.add('active_background');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
             displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
-        div.classList.remove('active');
+        div.classList.remove('active_background');
     }
 
     const div_black_mode = document.getElementById('blackMode');
     if (div_black_mode) {
-        div_black_mode.classList.remove('active');
+        div_black_mode.classList.remove('active_background');
     }
 }
 
