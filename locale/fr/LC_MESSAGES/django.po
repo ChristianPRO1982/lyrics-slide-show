@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 15:37+0200\n"
+"POT-Creation-Date: 2025-07-15 17:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,12 +140,12 @@ msgid "Space bar"
 msgstr "Barre espace"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:118
-#: app_animation/templates/app_animation/lyrics_slide_show.html:200
+#: app_animation/templates/app_animation/lyrics_slide_show.html:203
 msgid "Next slide"
 msgstr "Diapo suivante"
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:124
-#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+#: app_animation/templates/app_animation/lyrics_slide_show.html:202
 msgid "Chorus"
 msgstr "Refrain"
 
@@ -189,23 +189,27 @@ msgstr "Rouvrir le second écran"
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:205
+#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+msgid "Previous slide"
+msgstr "Diapo précédente"
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:207
 msgid "Songs"
 msgstr "Chants"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:217
+#: app_animation/templates/app_animation/lyrics_slide_show.html:219
 msgid "Options"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:250
+#: app_animation/templates/app_animation/lyrics_slide_show.html:252
 msgid "chorus_prefix"
 msgstr "R- "
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:257
+#: app_animation/templates/app_animation/lyrics_slide_show.html:259
 msgid "Current slide"
 msgstr "Diapo active"
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:280
+#: app_animation/templates/app_animation/lyrics_slide_show.html:282
 msgid "Preview next slide"
 msgstr "Diapo suivante"
 
@@ -1387,7 +1391,7 @@ msgstr "ET"
 
 #: app_song/templates/app_song/songs.html:91
 msgid "find genre or band or artist"
-msgstr ""
+msgstr "Trouver le genre ou le groupe ou l'artiste"
 
 #: app_song/templates/app_song/songs.html:114
 #, fuzzy
@@ -1777,48 +1781,39 @@ msgstr ""
 
 #: templates/base.html:153
 msgid "ERR51"
-msgstr ""
-"[ERR51] Impossible de faire le clean_db de : c_user_change_email"
+msgstr "[ERR51] Impossible de faire le clean_db de : c_user_change_email"
 
 #: templates/base.html:155
 msgid "ERR52"
-msgstr ""
-"[ERR52] no message"
+msgstr "[ERR52] no message"
 
 #: templates/base.html:157
 msgid "ERR53"
-msgstr ""
-"[ERR51] no message."
+msgstr "[ERR51] no message."
 
 #: templates/base.html:159
 msgid "ERR54"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:161
 msgid "ERR55"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:163
 msgid "ERR56"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:165
 msgid "ERR57"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:167
 msgid "ERR58"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:169
 msgid "ERR59"
-msgstr ""
-"[ERR51] no message"
+msgstr "[ERR51] no message"
 
 #: templates/base.html:171
 msgid "ERR60"

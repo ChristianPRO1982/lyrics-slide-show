@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-09 15:37+0200\n"
+"POT-Creation-Date: 2025-07-15 17:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,12 +140,12 @@ msgid "Space bar"
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:118
-#: app_animation/templates/app_animation/lyrics_slide_show.html:200
+#: app_animation/templates/app_animation/lyrics_slide_show.html:203
 msgid "Next slide"
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:124
-#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+#: app_animation/templates/app_animation/lyrics_slide_show.html:202
 msgid "Chorus"
 msgstr ""
 
@@ -189,23 +189,27 @@ msgstr ""
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:205
+#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+msgid "Previous slide"
+msgstr ""
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:207
 msgid "Songs"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:217
+#: app_animation/templates/app_animation/lyrics_slide_show.html:219
 msgid "Options"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:250
+#: app_animation/templates/app_animation/lyrics_slide_show.html:252
 msgid "chorus_prefix"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:257
+#: app_animation/templates/app_animation/lyrics_slide_show.html:259
 msgid "Current slide"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:280
+#: app_animation/templates/app_animation/lyrics_slide_show.html:282
 msgid "Preview next slide"
 msgstr ""
 
