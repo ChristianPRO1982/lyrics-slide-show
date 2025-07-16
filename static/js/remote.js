@@ -89,7 +89,7 @@ function showSlide(index, updateCurrentSlide = true) {
     let [animation_song_id, verse_id] = index.split('_');
     if (isChorus(animation_song_id, verse_id)) {
         const chorus_divs = document.getElementById("nav_chorus");
-        chorus_divs.classList.add('active');
+        chorus_divs.classList.add('active_background');
     }
 
     if (updateCurrentSlide) {nextChorusSlideSelect(index);}
@@ -189,25 +189,25 @@ function isChorus(id1, id2) {
 
 function blackMode() {
     const div = document.getElementById('blackMode');
-    if (!div.classList.contains('active')) {
+    if (!div.classList.contains('active_background')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = '';
             displayWindow.document.getElementById('slideContent').style.color = 'black';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
-        div.classList.add('active');
+        div.classList.add('active_background');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
             displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
-        div.classList.remove('active');
+        div.classList.remove('active_background');
     }
 
     const div_qr_code = document.getElementById('qr_code');
     if (div_qr_code) {
-        div_qr_code.classList.remove('active');
+        div_qr_code.classList.remove('active_background');
     }
 }
 
@@ -230,22 +230,32 @@ function nextActiveSlide() {
     document.getElementById('draggableDivNextSlideText').innerHTML = next_text;
 }
 
+function navPreviousSlide() {
+    current_slide -= 1;
+    if (current_slide < 0) {current_slide = slides.length - 1;}
+    showSlide(slides[current_slide]);
+
+    nextActiveSlide();
+}
+
 function navNextSlide() {
     current_slide += 1;
     if (current_slide >= slides.length) {current_slide = 0;}
     showSlide(slides[current_slide]);
 
-    const navNextSlideDiv = document.getElementById('nav_next_slide');
-    if (navNextSlideDiv) {
-        navNextSlideDiv.innerHTML = '';
-    }
-
-    if (navNextSlideDiv) {
-        navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
-    }
-
     nextActiveSlide();
+}
+
+function navPreviousSlideInit() {
+    const navPreviousSlideDiv = document.getElementById('nav_previous_slide');
+    if (navPreviousSlideDiv) {
+        navPreviousSlideDiv.innerHTML = '';
+    }
+
+    if (navPreviousSlideDiv) {
+        navPreviousSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🔙📜</div></a>';
+    }
 }
 
 function navNextSlideInit() {
@@ -256,21 +266,11 @@ function navNextSlideInit() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎶📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">📜🔜</div></a>';
     }
 }
 
 function navChorus() {
-    const navChorusDiv = document.getElementById('nav_chorus');
-    if (navChorusDiv) {
-        navChorusDiv.innerHTML = '';
-    }
-    
-    if (navChorusDiv) {
-        navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
-    }
-    
     showSlide(chorus[current_chorus_slide], false);
     
     current_chorus_slide += 1;
@@ -285,7 +285,7 @@ function navChorusInit() {
 
     if (navChorusDiv) {
         navChorusDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🌟</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🎼</div></a>';
     }
 }
 
@@ -311,12 +311,12 @@ function navSongs(index) {
     
     if (navPreviousSongDiv) {
         navPreviousSongDiv.innerHTML = '<a href="#song_' + songs[index].previous_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">⏮️</div></a>';
         navPreviousSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].previous_song_full_title + '</span>';
     }
     if (navNextSongDiv) {
         navNextSongDiv.innerHTML = '<a href="#song_' + songs[index].next_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">⏭️</div></a>';
         navNextSongFullTitleDiv.innerHTML = '<span class="text-xs">' + songs[index].next_song_full_title + '</span>';
     }
 
@@ -334,6 +334,7 @@ function navSongs(index) {
     previous_song_id = 0;
     next_song_id = 0;
     current_chorus_slide = 0;
+    navPreviousSlideInit();
     navNextSlideInit();
     navChorusInit();
     cleanSelectedSlides();
@@ -343,16 +344,17 @@ function navSongs(index) {
 function cleanSelectedSlides() {
     document.querySelectorAll('.slide').forEach(slide => {
         slide.classList.remove('active');
+        slide.classList.remove('active_background');
         slide.classList.remove('chorus_active');
         slide.classList.remove('next_active');
     });
 
     const chorus_divs = document.getElementById("nav_chorus");
-    chorus_divs.classList.remove('active');
+    chorus_divs.classList.remove('active_background');
 
     const div_qr_code = document.getElementById("qr_code");
     if (div_qr_code) {
-        div_qr_code.classList.remove('active');
+        div_qr_code.classList.remove('active_background');
     }
 }
 
@@ -402,14 +404,14 @@ function disChoruses(change = false) {
 
     if (display_choruses == 1) {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔽</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.add('hidden');
             });
         }
     } else {
         if (disChorusesDiv) {
-            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div>';
+            disChorusesDiv.innerHTML = '<div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🎼🔼</div>';
             document.querySelectorAll('.chorus').forEach(chorus => {
                 chorus.classList.remove('hidden');
             });
@@ -424,9 +426,18 @@ document.addEventListener('keydown', (event) => {
     if (event.key.toLowerCase() === 'escape') {
         blackMode();
     }
-    if (event.key.toLowerCase() === 'b') {
+    if (event.key.toLowerCase() === 'm') {
         blackMode();
     }
+
+    // PREVIOUS SLIDE \\
+    if (event.key.toLowerCase() === 'arrowup') {
+        navPreviousSlide();
+    }
+    if (event.key.toLowerCase() === 'b') {
+        navPreviousSlide();
+    }
+
 
     // NEXT SLIDE \\
     if (event.key.toLowerCase() === 'arrowdown') {
@@ -447,9 +458,6 @@ document.addEventListener('keydown', (event) => {
         navChorus();
     }
     if (event.key.toLowerCase() === 'r') {
-        navChorus();
-    }
-    if (event.key.toLowerCase() === 'arrowup') {
         navChorus();
     }
 
@@ -542,11 +550,11 @@ function scrollable() {
 
     if (blockScrollKeys == 1) {
         if (scrollableDiv) {
-            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">🧱</div>';
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🧱</div>';
         }
     } else {
         if (scrollableDiv) {
-            scrollableDiv.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg text-4xl">↕️</div>';
+            scrollableDiv.innerHTML = '<div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">↕️</div>';
         }
     }
 }
@@ -554,12 +562,12 @@ function scrollable() {
 function qr_code() {
     const div = document.getElementById('qr_code');
     if (div) {
-        div.innerHTML = '<div class="slide flex w-full h-28 p-2 items-center justify-center border rounded-lg">'
+        div.innerHTML = '<div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg">'
             + '<img src="data:image/png;base64,' + img_qr_code + '" alt="📱 '
-            + err_qr_code + '" class="w-24 h-24 object-contain"></div>';
+            + err_qr_code + '" class="w-16 h-16 object-contain"></div>';
     }
 
-    if (!div.classList.contains('active')) {
+    if (!div.classList.contains('active_background')) {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = txt_qr_code_for_lyrics
                 + '<img src="data:image/png;base64,'
@@ -568,19 +576,19 @@ function qr_code() {
             displayWindow.document.getElementById('slideContent').style.color = 'white';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
-        div.classList.add('active');
+        div.classList.add('active_background');
     } else {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
             displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
         }
-        div.classList.remove('active');
+        div.classList.remove('active_background');
     }
 
     const div_black_mode = document.getElementById('blackMode');
     if (div_black_mode) {
-        div_black_mode.classList.remove('active');
+        div_black_mode.classList.remove('active_background');
     }
 }
 

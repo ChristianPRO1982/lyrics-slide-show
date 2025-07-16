@@ -1,60 +1,139 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ full_title }}</title>
-    <meta content="author" name="Chris">
-    <meta content="description" name="cARThographie - des outils gratuits pour vos projets">
-    <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
-    <style>
-        .black_on_grey {
-            color: #000;
-            background: #ccc;
-        }
-        .grey_on_black {
-            color: #ccc;
-            background: #000;
-        }
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Chants de veillée</title>
+  <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
+  <style>
+    :root {
+      --bg-light:#fdb; --fg-light:#421;
+      --bg-dark:#111;  --fg-dark:#aaa;
+      --font-size:1.5rem;
+    }
+    [data-theme="light"]{background:var(--bg-light);color:var(--fg-light);}
+    [data-theme="dark"] {background:var(--bg-dark); color:var(--fg-dark);}
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0 auto;
-            max-width: 640px;
-            padding: 1em;
-            font-size: 1.25em;
-            line-height: 1.5;
-            -webkit-text-size-adjust: 100%; /* évite le zoom automatique sous iOS */
-        }
+    body{
+      margin:0;padding:1rem;font-size:var(--font-size);line-height:1.4;
+      overflow-wrap:anywhere;
+      -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+    }
 
-        h1, h2 {
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-        }
+    select, button {
+        height: 2.5rem;
+    }
+    [data-theme="light"] select,
+    [data-theme="light"] button {
+    background-color: #fdb;
+    color: #220;
+    border: 1px solid #ccc;
+    }
 
-        hr {
-            border: none;
-            border-top: 1px solid #888;
-            margin: 2em 0;
-        }
+    [data-theme="dark"] select,
+    [data-theme="dark"] button {
+    background-color: #222;
+    color: #ffd;
+    border: 1px solid #444;
+    }
 
-        p {
-            margin-bottom: 1.25em;
-        }
+    /* Hamburger button */
+    #menuToggle{
+      position:sticky;top:0;right:0;margin-left:auto;
+      background: rgba(128,128,128,0.5);border:none;font-size:2rem;line-height:1;
+      width: 2.5rem;height:2.5rem;;
+      z-index:10;
+    }
+    /* Sliding panel */
+    #controlPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      max-width: 80vw;
+      width: 400px;
+      height: 100vh;
+      padding: 1rem;
 
-        a {
-            color: #888;
-        }
-    </style>
+      background-color: rgba(0, 0, 0, 0.6);
+
+      border-left: 1px solid currentColor;
+      transform: translateX(100%);
+      transition: transform .3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    [data-theme="light"] #controlPanel {
+      background-color: rgba(222, 222, 222, 0.8);
+    }
+    [data-theme="dark"] #controlPanel {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    #controlPanel.open{transform:translateX(0);}
+    select,button{font-size:1rem;width:100%;}
+    main>section{margin:2rem 0;}
+  </style>
 </head>
-<body id="main-body" class="black_on_grey">
-    <script>
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.getElementById('main-body').className = 'grey_on_black';
-        }
-    </script>
-    <a href="#" onclick="document.getElementById('main-body').className='black_on_grey'; return false;">Thème clair</a> |
-    <a href="#" onclick="document.getElementById('main-body').className='grey_on_black'; return false;">Thème sombre</a>
-    <br><br>
+<body>
+<button id="menuToggle" aria-label="Ouvrir le menu" style="color:#888">☰</button>
+
+<aside id="controlPanel" aria-label="Menu des commandes">
+  <br>
+  <select id="songSelect" aria-label="Choisir un chant"></select>
+
+  <div style="display:flex;gap:.5rem;">
+    <button id="decreaseFont" aria-label="Texte plus petit">➖</button>
+    <button id="increaseFont" aria-label="Texte plus grand">➕</button>
+  </div>
+
+  <button id="themeToggle" aria-label="Changer de thème">🌙/☀️</button>
+</aside>
+
+<h1 style="margin-left:2.5rem; margin-right:2rem;">{{ full_title }}</h1>
+<main id="lyrics" style="margin-left:2.5rem; margin-right:2rem;">
     {{ lyrics|safe }}
+</main>
+
+<script>
+/* Controls: hamburger, navigation, theme, font size (no storage) */
+(() => {
+  const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+
+  const menuToggle   = document.getElementById('menuToggle');
+  const controlPanel = document.getElementById('controlPanel');
+  const songSelect   = document.getElementById('songSelect');
+  const themeToggle  = document.getElementById('themeToggle');
+  const incFont      = document.getElementById('increaseFont');
+  const decFont      = document.getElementById('decreaseFont');
+  const sections     = [...document.querySelectorAll('main > section')];
+
+  sections.forEach((s,i)=>{
+    const o=document.createElement('option');
+    o.value=s.id;o.textContent=s.querySelector('h2')?.textContent||`Chant ${i+1}`;
+    songSelect.appendChild(o);
+  });
+
+  menuToggle.addEventListener('click',()=>controlPanel.classList.toggle('open'));
+
+  songSelect.addEventListener('change',e=>{
+    document.getElementById(e.target.value)?.scrollIntoView({behavior:'smooth'});
+    controlPanel.classList.remove('open');
+  });
+
+  themeToggle.addEventListener('click',()=>{
+    const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+  });
+
+  let size=1.5;
+  const apply=()=>document.documentElement.style.setProperty('--font-size',`${size}rem`);
+  incFont.addEventListener('click',()=>{if(size<3){size=Math.round((size+0.1)*10)/10;apply();}});
+  decFont.addEventListener('click',()=>{if(size>0.8){size=Math.round((size-0.1)*10)/10;apply();}});
+  apply();
+})();
+</script>
 </body>
 </html>

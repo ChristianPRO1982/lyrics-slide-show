@@ -13,4 +13,8 @@ urlpatterns = [
     path('theme_normal', views.theme_normal, name='theme_normal'),
     path('theme_scout', views.theme_scout, name='theme_scout'),
     path('change_language', views.change_language, name='set_language'),
+    path('profile', views.profile, name='profile'),
+    path('email_check', views.email_check, name='email_check'),
+    path('delete_profile', views.delete_profile, name='delete_profile'),
+    path('clean_db', views.clean_db, name='clean_db'),
 ]

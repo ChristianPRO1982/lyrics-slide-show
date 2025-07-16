@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from .SQL_main import User, Site
+import requests
 
 
 def is_moderator(request)->bool:
@@ -136,3 +137,19 @@ def font_class_by_name(font_name):
         if font['name'] == font_name:
             return font['class']
     return "font-arial"
+
+def send_email_via_n8n(title, message, email):
+    url = 'https://n8n.carthographie.fr/webhook/c9735b3e-ce79-4551-86c6-cef77cd83625'
+    payload = {
+        'title': title,
+        'message': message,
+        'email': email
+    }
+    headers = {
+        'Content-Type': 'application/json',
+        # 'Authorization': 'Bearer VOTRE_TOKEN' si tu as activé l’auth
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()

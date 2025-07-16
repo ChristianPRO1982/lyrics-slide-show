@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-08 09:45+0200\n"
+"POT-Creation-Date: 2025-07-15 17:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,12 +140,12 @@ msgid "Space bar"
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:118
-#: app_animation/templates/app_animation/lyrics_slide_show.html:200
+#: app_animation/templates/app_animation/lyrics_slide_show.html:203
 msgid "Next slide"
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:124
-#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+#: app_animation/templates/app_animation/lyrics_slide_show.html:202
 msgid "Chorus"
 msgstr ""
 
@@ -189,23 +189,27 @@ msgstr ""
 msgid "Smart nav"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:205
+#: app_animation/templates/app_animation/lyrics_slide_show.html:201
+msgid "Previous slide"
+msgstr ""
+
+#: app_animation/templates/app_animation/lyrics_slide_show.html:207
 msgid "Songs"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:217
+#: app_animation/templates/app_animation/lyrics_slide_show.html:219
 msgid "Options"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:250
+#: app_animation/templates/app_animation/lyrics_slide_show.html:252
 msgid "chorus_prefix"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:257
+#: app_animation/templates/app_animation/lyrics_slide_show.html:259
 msgid "Current slide"
 msgstr ""
 
-#: app_animation/templates/app_animation/lyrics_slide_show.html:280
+#: app_animation/templates/app_animation/lyrics_slide_show.html:282
 msgid "Preview next slide"
 msgstr ""
 
@@ -475,6 +479,7 @@ msgid "Username2dot"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:20
+#: app_main/templates/app_main/profile.html:77
 msgid "Username"
 msgstr ""
 
@@ -492,7 +497,7 @@ msgid "new_group"
 msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:129
+#: app_song/templates/app_song/songs.html:128
 msgid "add"
 msgstr ""
 
@@ -579,11 +584,23 @@ msgstr ""
 
 #: app_group/templates/app_group/modify_group.html:43
 msgid "private_info2"
-msgstr "An “open” group can be joined by anyone connected. There are no restrictions other than being logged in.<hr>(*) A private group can only be accessed by members connected to the site and whose affiliation to the group has been completed."
+msgstr ""
+"An “open” group can be joined by anyone connected. There are no restrictions "
+"other than being logged in.<hr>(*) A private group can only be accessed by "
+"members connected to the site and whose affiliation to the group has been "
+"completed."
 
 #: app_group/templates/app_group/modify_group.html:43
 msgid "token_info2"
-msgstr "(**) The token is permanent and allows those who have received it to connect to the group. They do not need to have an account on the site and be logged in.<br><br>To create a token or to generate a new one, click on the box “create a new token”. If a token already exists, it will be deleted. A group with a token can only be accessed by members of the group as well as those who know this token  if the group is private the token still allows you to connect to it.<br><br>It is also possible to delete the token with the “delete token” checkbox."
+msgstr ""
+"(**) The token is permanent and allows those who have received it to connect "
+"to the group. They do not need to have an account on the site and be logged "
+"in.<br><br>To create a token or to generate a new one, click on the box "
+"“create a new token”. If a token already exists, it will be deleted. A group "
+"with a token can only be accessed by members of the group as well as those "
+"who know this token  if the group is private the token still allows you to "
+"connect to it.<br><br>It is also possible to delete the token with the "
+"“delete token” checkbox."
 
 #: app_group/templates/app_group/modify_group.html:49
 msgid "MANDATORY"
@@ -644,11 +661,16 @@ msgstr ""
 #: app_main/templates/app_main/artists.html:27
 #: app_main/templates/app_main/bands.html:19
 #: app_main/templates/app_main/bands.html:27
+#: app_main/templates/app_main/profile.html:74
+#: app_main/templates/app_main/profile.html:109
 msgid "Save"
 msgstr ""
 
 #: app_main/templates/app_main/artists.html:22
 #: app_main/templates/app_main/bands.html:22
+#: app_main/templates/app_main/profile.html:80
+#: app_main/templates/app_main/profile.html:82
+#: app_main/templates/app_main/profile.html:84
 msgid "mandatory"
 msgstr ""
 
@@ -660,6 +682,54 @@ msgstr ""
 
 #: app_main/templates/app_main/bands.html:11
 msgid "New band"
+msgstr ""
+
+#: app_main/templates/app_main/clean_db.html:6
+#: app_main/templates/app_main/clean_db.html:7
+#: app_main/templates/app_main/delete_profile.html:6
+#: app_main/templates/app_main/delete_profile.html:7
+msgid "Delete profile"
+msgstr ""
+
+#: app_main/templates/app_main/clean_db.html:14
+msgid "DB IS CLEANED"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:15
+msgid ""
+"For deleting your profile, please copy and paste your username in the field "
+"below then click on the button."
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:18
+msgid "your username"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:19
+#: app_main/templates/app_main/profile.html:9
+#: app_main/templates/app_main/profile.html:12
+msgid "Delete account"
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:22
+msgid "Your profile is deleted."
+msgstr ""
+
+#: app_main/templates/app_main/delete_profile.html:24
+msgid "Impossible to delete your profile. Contact the administrator."
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:6
+#: app_main/templates/app_main/email_check.html:7
+msgid "Email check"
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:15
+msgid "Your email is checked."
+msgstr ""
+
+#: app_main/templates/app_main/email_check.html:17
+msgid "Impossible to check your email."
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:11
@@ -679,6 +749,7 @@ msgid "powered by"
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:34
+#: app_main/templates/app_main/profile.html:105
 #: app_song/templates/app_song/song_metadata.html:154
 msgid "Moderator"
 msgstr ""
@@ -760,7 +831,12 @@ msgstr "Last update: july 8, 2025"
 
 #: app_main/templates/app_main/privacy_policy.html:17
 msgid "privacy_policy_intro_content"
-msgstr "Welcome to this site dedicated to the creation and projection of <b>“Lyrics Slide Show”</b> songs.<br>We are committed to respecting your privacy and collecting only the data strictly necessary for the operation of the service.<br>This document aims to clearly explain what data is collected, for what purpose, and how it is processed."
+msgstr ""
+"Welcome to this site dedicated to the creation and projection of <b>“Lyrics "
+"Slide Show”</b> songs.<br>We are committed to respecting your privacy and "
+"collecting only the data strictly necessary for the operation of the service."
+"<br>This document aims to clearly explain what data is collected, for what "
+"purpose, and how it is processed."
 
 #: app_main/templates/app_main/privacy_policy.html:18
 msgid "privacy_policy_article_1_title"
@@ -768,7 +844,17 @@ msgstr "1. Data collected"
 
 #: app_main/templates/app_main/privacy_policy.html:19
 msgid "privacy_policy_article_1_content"
-msgstr "When an account is created, we collect the following data:<ul><li style=\"list-style-type: disc; margin-left: 2em;\"><b>E-mail address:</b> required for account creation, login and reminders in the event of inactivity.</li><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Password:</b> stored encrypted (hashed and salted), never in clear text.</li><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Last name and first name:</b> displayed only in groups in which you participate.</li><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Last login:</b> to manage automatic account deletion (see section 5).</li></ul><br>No other personal data is requested or stored."
+msgstr ""
+"When an account is created, we collect the following data:<ul><li "
+"style=\"list-style-type: disc; margin-left: 2em;\"><b>E-mail address:</b> "
+"required for account creation, login and reminders in the event of "
+"inactivity.</li><li style=\"list-style-type: disc; margin-left: 2em;"
+"\"><b>Password:</b> stored encrypted (hashed and salted), never in clear "
+"text.</li><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Last "
+"name and first name:</b> displayed only in groups in which you participate.</"
+"li><li style=\"list-style-type: disc; margin-left: 2em;\"><b>Last login:</b> "
+"to manage automatic account deletion (see section 5).</li></ul><br>No other "
+"personal data is requested or stored."
 
 #: app_main/templates/app_main/privacy_policy.html:20
 msgid "privacy_policy_article_2_title"
@@ -776,7 +862,14 @@ msgstr "2. Finalité du traitement"
 
 #: app_main/templates/app_main/privacy_policy.html:21
 msgid "privacy_policy_article_2_content"
-msgstr "Ces données sont utilisées uniquement pour :<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Vous permettre de vous connecter.<li><li style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein de vos groupes.<li><li style=\"list-style-type: disc; margin-left: 2em;\">Vous envoyer deux e-mails de rappel avant la suppression de votre compte (voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des fins commerciales, publicitaires, statistiques ou analytiques."
+msgstr ""
+"Ces données sont utilisées uniquement pour :<ul><li style=\"list-style-type: "
+"disc; margin-left: 2em;\">Vous permettre de vous connecter.<li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein "
+"de vos groupes.<li><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Vous envoyer deux e-mails de rappel avant la suppression de votre compte "
+"(voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des fins "
+"commerciales, publicitaires, statistiques ou analytiques."
 
 #: app_main/templates/app_main/privacy_policy.html:22
 msgid "privacy_policy_article_3_title"
@@ -784,7 +877,14 @@ msgstr "3. Cookies"
 
 #: app_main/templates/app_main/privacy_policy.html:23
 msgid "privacy_policy_article_3_content"
-msgstr "The site only uses cookies that are strictly necessary for the proper functioning of the service:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Secure connection.</li><li style=\"list-style-type: disc; margin-left: 2em;\">User session.</li></ul><br>No third-party cookies, tracking cookies, advertising cookies or traffic analyses are used. In compliance with current regulations (CNIL / RGPD), no consent banner is required."
+msgstr ""
+"The site only uses cookies that are strictly necessary for the proper "
+"functioning of the service:<ul><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">Secure connection.</li><li style=\"list-style-type: disc; "
+"margin-left: 2em;\">User session.</li></ul><br>No third-party cookies, "
+"tracking cookies, advertising cookies or traffic analyses are used. In "
+"compliance with current regulations (CNIL / RGPD), no consent banner is "
+"required."
 
 #: app_main/templates/app_main/privacy_policy.html:24
 msgid "privacy_policy_article_4_title"
@@ -792,7 +892,9 @@ msgstr "4. Data sharing"
 
 #: app_main/templates/app_main/privacy_policy.html:25
 msgid "privacy_policy_article_4_content"
-msgstr "Your data will not be transmitted to any third party.<br>They are hosted on a secure server and are only used for the technical operation of the site."
+msgstr ""
+"Your data will not be transmitted to any third party.<br>They are hosted on "
+"a secure server and are only used for the technical operation of the site."
 
 #: app_main/templates/app_main/privacy_policy.html:26
 msgid "privacy_policy_article_5_title"
@@ -800,7 +902,16 @@ msgstr "5. Retention period and automatic deletion"
 
 #: app_main/templates/app_main/privacy_policy.html:27
 msgid "privacy_policy_article_5_content"
-msgstr "Your account and its associated data (email, surname, first name, encrypted password, date of last connection) are automatically deleted after 14 months of inactivity.<br>A reminder e-mail is sent :<ul><li style=\"list-style-type: disc; margin-left: 2em;\">after 12 months of inactivity.</li><li style=\"list-style-type: disc; margin-left: 2em;\">after 13 months of inactivity.</li></ul><br>If no action is taken following these reminders, the account is permanently deleted and an e-mail is sent to confirm this action.<br>Groups and animations associated with this account may also be archived if they are no longer linked to any active user."
+msgstr ""
+"Your account and its associated data (email, surname, first name, encrypted "
+"password, date of last connection) are automatically deleted after 14 months "
+"of inactivity.<br>A reminder e-mail is sent :<ul><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">after 12 months of inactivity.</li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">after 13 months of "
+"inactivity.</li></ul><br>If no action is taken following these reminders, "
+"the account is permanently deleted and an e-mail is sent to confirm this "
+"action.<br>Groups and animations associated with this account may also be "
+"archived if they are no longer linked to any active user."
 
 #: app_main/templates/app_main/privacy_policy.html:28
 msgid "privacy_policy_article_6_title"
@@ -808,7 +919,14 @@ msgstr "6. Right of access, rectification and deletion"
 
 #: app_main/templates/app_main/privacy_policy.html:29
 msgid "privacy_policy_article_6_content"
-msgstr "In accordance with the General Data Protection Regulation (GDPR), you have the right:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Access your data.</li><li style=\"list-style-type: disc; margin-left: 2em;\">Correct it.</li><li style=\"list-style-type: disc; margin-left: 2em;\">To request their deletion at any time.</li></ul><br>You can exercise these rights by logging in or contacting us at the following address: 📧&nbsp;<i>carthographie@outlook.fr</i>"
+msgstr ""
+"In accordance with the General Data Protection Regulation (GDPR), you have "
+"the right:<ul><li style=\"list-style-type: disc; margin-left: 2em;\">Access "
+"your data.</li><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Correct it.</li><li style=\"list-style-type: disc; margin-left: 2em;\">To "
+"request their deletion at any time.</li></ul><br>You can exercise these "
+"rights by logging in or contacting us at the following address: 📧&nbsp;"
+"<i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/app_main/privacy_policy.html:30
 msgid "privacy_policy_article_7_title"
@@ -816,7 +934,11 @@ msgstr "7. Analysis of collective data (without individual tracking)"
 
 #: app_main/templates/app_main/privacy_policy.html:31
 msgid "privacy_policy_article_7_content"
-msgstr "The site may carry out occasional analysis of songs and groups created (e.g. to archive old or unused content), without ever analyzing the activity of individual users.<br>These operations are carried out solely for the purpose of improving the service, without any impact on your privacy."
+msgstr ""
+"The site may carry out occasional analysis of songs and groups created (e.g. "
+"to archive old or unused content), without ever analyzing the activity of "
+"individual users.<br>These operations are carried out solely for the purpose "
+"of improving the service, without any impact on your privacy."
 
 #: app_main/templates/app_main/privacy_policy.html:32
 msgid "privacy_policy_article_8_title"
@@ -824,7 +946,9 @@ msgstr "8. Contact"
 
 #: app_main/templates/app_main/privacy_policy.html:33
 msgid "privacy_policy_article_8_content"
-msgstr "If you have any questions about the protection of your personal data, you can write to: 📧&nbsp;<i>carthographie@outlook.fr</i>"
+msgstr ""
+"If you have any questions about the protection of your personal data, you "
+"can write to: 📧&nbsp;<i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/app_main/privacy_policy.html:34
 msgid "privacy_policy_article_9_title"
@@ -832,7 +956,12 @@ msgstr "9. Modification of the privacy policy"
 
 #: app_main/templates/app_main/privacy_policy.html:35
 msgid "privacy_policy_article_9_content"
-msgstr "In the event of significant modification of the present privacy policy (for example: change of the retention period, addition of new data collected, etc.), you will receive an information e-mail at the address associated with your account.<br>You may then, if you wish, delete your account before the changes take effect."
+msgstr ""
+"In the event of significant modification of the present privacy policy (for "
+"example: change of the retention period, addition of new data collected, "
+"etc.), you will receive an information e-mail at the address associated with "
+"your account.<br>You may then, if you wish, delete your account before the "
+"changes take effect."
 
 #: app_main/templates/app_main/privacy_policy.html:36
 msgid "privacy_policy_article_10_title"
@@ -840,7 +969,91 @@ msgstr "10. E-mail policy"
 
 #: app_main/templates/app_main/privacy_policy.html:37
 msgid "privacy_policy_article_10_content"
-msgstr "The site applies a strict policy of non-nuisance by e-mail. Messages sent are limited to cases strictly necessary for the proper functioning of the service:<br>✅ <b>E-mails you may receive:</b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">When creating your account.</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">To retrieve your password.</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">In the event of a long period of inactivity (reminders at 12 months and 13 months, see section 5).</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">When your account is automatically deleted (see section 5).</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">If the privacy policy changes significantly.</li><b>❌ No e-mail is sent to :</b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Announcing new features</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Offering advertising</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Sending newsletters, invitations, or commercial communications.</li></ul><br>You will therefore receive no unnecessary or unsolicited e-mail, in line with our commitment to simplicity, respect and discretion."
+msgstr ""
+"The site applies a strict policy of non-nuisance by e-mail. Messages sent "
+"are limited to cases strictly necessary for the proper functioning of the "
+"service:<br>✅ <b>E-mails you may receive:</b><ul><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">When creating your account.</li><ul><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">To retrieve your password."
+"</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">In the event "
+"of a long period of inactivity (reminders at 12 months and 13 months, see "
+"section 5).</li><ul><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">When your account is automatically deleted (see section 5).</li><ul><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">If the privacy policy "
+"changes significantly.</li><b>❌ No e-mail is sent to :</b><ul><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">Announcing new features</"
+"li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Offering "
+"advertising</li><ul><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Sending newsletters, invitations, or commercial communications.</li></"
+"ul><br>You will therefore receive no unnecessary or unsolicited e-mail, in "
+"line with our commitment to simplicity, respect and discretion."
+
+#: app_main/templates/app_main/profile.html:6
+#: app_main/templates/app_main/profile.html:7 templates/includes/header.html:14
+msgid "Profile"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:11
+msgid ""
+"Warning: This action is irreversible. Are you sure you want to delete your "
+"account?"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:16
+msgid "Password"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:18
+msgid "new password"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:20
+msgid "confirm password"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:22
+msgid "Passwords do not match"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:50
+msgid "Password must be at least 8 characters."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:53
+msgid "Password must contain a letter."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:56
+msgid "Password must contain a number."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:76
+msgid "User"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:78
+msgid "Used for login, cannot be changed"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:79
+msgid "First name"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:81
+msgid "Last name"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:83
+msgid "Email"
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:86
+msgid "An email will be sent to confirm your new email address."
+msgstr ""
+
+#: app_main/templates/app_main/profile.html:106
+msgid "Contact the administrator to change your role."
+msgstr ""
 
 #: app_song/templates/app_song/delete_song.html:5
 #: app_song/templates/app_song/delete_song.html:6
@@ -1114,7 +1327,7 @@ msgid "✔️⁉️: Song valided with messages"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:58
-#: app_song/templates/app_song/songs.html:122
+#: app_song/templates/app_song/songs.html:121
 msgid "Minimum 3 characters"
 msgstr ""
 
@@ -1150,35 +1363,35 @@ msgstr ""
 msgid "genre"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:115
+#: app_song/templates/app_song/songs.html:114
 msgid "band"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:116
+#: app_song/templates/app_song/songs.html:114
 msgid "artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:118
+#: app_song/templates/app_song/songs.html:117
 msgid "save and search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:118
+#: app_song/templates/app_song/songs.html:117
 msgid "help_save_search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:119
+#: app_song/templates/app_song/songs.html:118
 msgid "reset"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:126
 msgid "New song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:128
+#: app_song/templates/app_song/songs.html:127
 msgid "New sub title"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:209
+#: app_song/templates/app_song/songs.html:208
 #: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr ""
@@ -1462,12 +1675,52 @@ msgstr ""
 msgid "ERR50"
 msgstr ""
 
-#: templates/includes/header.html:16 templates/includes/header.html:18
-#: templates/includes/header.html:24
+#: templates/base.html:153
+msgid "ERR51"
+msgstr ""
+
+#: templates/base.html:155
+msgid "ERR52"
+msgstr ""
+
+#: templates/base.html:157
+msgid "ERR53"
+msgstr ""
+
+#: templates/base.html:159
+msgid "ERR54"
+msgstr ""
+
+#: templates/base.html:161
+msgid "ERR55"
+msgstr ""
+
+#: templates/base.html:163
+msgid "ERR56"
+msgstr ""
+
+#: templates/base.html:165
+msgid "ERR57"
+msgstr ""
+
+#: templates/base.html:167
+msgid "ERR58"
+msgstr ""
+
+#: templates/base.html:169
+msgid "ERR59"
+msgstr ""
+
+#: templates/base.html:171
+msgid "ERR60"
+msgstr ""
+
+#: templates/includes/header.html:19 templates/includes/header.html:21
+#: templates/includes/header.html:27
 msgid "language_flag"
 msgstr "🇬🇧"
 
-#: templates/includes/header.html:25
+#: templates/includes/header.html:28
 msgid "close"
 msgstr ""
 

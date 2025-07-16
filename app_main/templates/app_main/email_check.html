@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Email check" %}{% endblock title %}
+{% block title_h1 %}{% trans "Email check" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+{% endblock bloc2 %}
+
+{% block content %}
+{% if success %}
+{% trans "Your email is checked." %}
+{% else %}
+{% trans "Impossible to check your email." %}
+{% endif %}
+{% endblock content %}

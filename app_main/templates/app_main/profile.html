@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile" %}{% endblock title %}
+{% block title_h1 %}{% trans "Profile" %}{% endblock title_h1 %}
+{% block bloc1 %}
+<button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('delete-account');">{% trans "Delete account" %}</button>
+<div id="delete-account" style="display: none; margin-top: 1em;">
+    <p class="L_ERROR_OTHER">{% trans "Warning: This action is irreversible. Are you sure you want to delete your account?" %}</p>
+    <input name="btn_delete_account" class="w-full" type="submit" value="{% trans 'Delete account' %}" style="background: #f87171; color: white;" />
+</div>
+{% endblock bloc1 %}
+{% block bloc2 %}
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('pwd'); document.getElementById('txt_password').value=''; document.getElementById('txt_password_confirm').value='';">{% trans "Password" %}</button>
+    <div id="pwd" style="display: none;">
+        <h3 class="L_H3">{% trans "new password" %}</h3>
+        <input class="w-1/2" type="password" id="txt_password" name="txt_password">
+        <h3 class="L_H3">{% trans "confirm password" %}</h3>
+        <input class="w-1/2" type="password" id="txt_password_confirm" name="txt_password_confirm">
+        <p id="pwd-error" style="color: red; display: none;">{% trans "Passwords do not match" %}</p>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pwd1 = document.querySelector('input[name="txt_password"]');
+            const pwd2 = document.querySelector('input[name="txt_password_confirm"]');
+            const errorMsg = document.getElementById('pwd-error');
+
+            // Password strength message
+            let strengthMsg = document.getElementById('pwd-strength');
+            if (!strengthMsg) {
+            strengthMsg = document.createElement('p');
+            strengthMsg.id = 'pwd-strength';
+            strengthMsg.style.color = 'orange';
+            pwd1.parentNode.insertBefore(strengthMsg, pwd2);
+            }
+
+            function checkPasswords() {
+            // Passwords match check
+            if (pwd2.value && pwd1.value !== pwd2.value) {
+                errorMsg.style.display = 'block';
+            } else {
+                errorMsg.style.display = 'none';
+            }
+            // Password strength check
+            const val = pwd1.value;
+            let msg = '';
+            let strong = true;
+            if (val.length < 8) {
+                msg = '{% trans "Password must be at least 8 characters." %}';
+                strong = false;
+            } else if (!/[A-Za-z]/.test(val)) {
+                msg = '{% trans "Password must contain a letter." %}';
+                strong = false;
+            } else if (!/\d/.test(val)) {
+                msg = '{% trans "Password must contain a number." %}';
+                strong = false;
+            }
+            strengthMsg.textContent = msg;
+            strengthMsg.style.display = strong ? 'none' : 'block';
+            }
+
+            pwd2.addEventListener('input', checkPasswords);
+            pwd1.addEventListener('input', checkPasswords);
+        });
+        </script>
+    </div>
+</form>
+{% endblock bloc2 %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
+    <hr>
+    <h2 class="L_H2">{% trans "User" %}</h2>
+    <h3 class="L_H3">{% trans "Username" %}</h3>
+    <i>{{ this_user.username }}</i> ({% trans "Used for login, cannot be changed" %})<br><br>
+    <h3 class="L_H3">{% trans "First name" %}</h3>
+    <input class="w-1/2" type="text" name="txt_first_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.first_name }}" required />
+    <h3 class="L_H3">{% trans "Last name" %}</h3>
+    <input class="w-1/2" type="text" name="txt_last_name" placeholder="{% trans "mandatory" %}" maxlength="150" value="{{ this_user.last_name }}" required />
+    <h3 class="L_H3">📧 {% trans "Email" %}</h3>
+    <input class="w-1/2" type="email" name="txt_email" placeholder="{% trans "mandatory" %}" maxlength="254" value="{{ this_user.email }}" required />
+    <p id="email-confirm-msg" class="L_HIGHLIGHT_GREEN" style="display: none;">
+        ⚙️ {% trans "An email will be sent to confirm your new email address." %}
+    </p>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.querySelector('input[name="txt_email"]');
+        const confirmMsg = document.getElementById('email-confirm-msg');
+        const originalEmail = "{{ this_user.email|escapejs }}";
+
+        emailInput.addEventListener('input', function() {
+            if (emailInput.value && emailInput.value !== originalEmail) {
+                confirmMsg.style.display = 'block';
+            } else {
+                confirmMsg.style.display = 'none';
+            }
+        });
+    });
+    </script>
+    <hr>
+    {% if user.is_staff %}
+    <h2 class="L_H2">⚖️ {% trans "Moderator" %}</h2>
+    {% trans "Contact the administrator to change your role." %}
+    <hr>
+    {% endif %}
+    <input class="w-full" name="btn_save_profile" value="{% trans "Save" %}" type="submit" />
+{% endblock content %}

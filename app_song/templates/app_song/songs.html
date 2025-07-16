@@ -110,10 +110,9 @@
                 👤 {{ artist.name }}
             </label>
             {% endfor %}
-            <br>
-            🎼 : {% trans "genre" %}<br>
-            👥 : {% trans "band" %}<br>
-            👤 : {% trans "artist" %}
+            <hr>
+            🎼 : {% trans "genre" %} / 👥 : {% trans "band" %} / 👤 : {% trans "artist" %}
+            <hr>
         </div>
         <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
         <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
@@ -121,7 +120,7 @@
     {% else %}
     <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ search_txt }}" /><br>
     {% endif %}
-    <br><br><hr><br>
+    <br><hr><br>
     <form method="post">
         {% csrf_token %}
         <input type="text" name="txt_new_title" placeholder="{% trans "New song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /><br>
