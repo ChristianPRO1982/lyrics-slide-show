@@ -21,7 +21,8 @@
     {% for artist in artists %}
     <input class="w-2/3" type="text" name="txt_name_{{ artist.artist_id }}" placeholder="{% trans "mandatory" %}"
     maxlength="255" value="{{ artist.name }}" required />
-    <input class="w-1/4" name="btn_delete_artist_{{ artist.artist_id }}" value="{% trans "Delete" %}" type="submit" /><br>
+    <input class="w-1/4" name="btn_delete_artist_{{ artist.artist_id }}" value="{% trans "Delete" %}" type="submit" 
+    onclick="return confirm('{% trans "Are you sure you want to delete this artist?" %}');" /><br>
     {% endfor %}
     <br>
     <input class="w-full" name="btn_save" value="{% trans "Save" %}" type="submit" />
