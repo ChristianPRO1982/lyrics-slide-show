@@ -1,3 +1,29 @@
+# [1.15.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.14.0...v1.15.0) (2025-07-16)
+
+
+### Bug Fixes
+
+*  🎼 : {% trans "genre" %} / 👥 : {% trans "band" %} / 👤 : {% trans "artist" %} ([d71b4a7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d71b4a75746b98024ddd6685d7fdfcfd4593396e))
+* [@login](https://github.com/login)_required for songs ([77b1754](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/77b17546c53d7869a3e184cbc266a3acb9a4059b))
+* active_background for nav buttons in slide show remote ([3c0e313](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3c0e3136327f3e54921b850bd376d97f8306ee48))
+* css ([c3febe7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c3febe73f699ac257f813a4e891922ea668c344b))
+* delete code unused in remote.js ([afafaeb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/afafaeb516bbededddbb11a4da0fb2f5794fb631))
+* passwords ([ddfcafd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ddfcafdbb31764ed8c09c31ae45a14d5b0a1f9e3))
+* scout.css ([d6cf961](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d6cf96102f531f722282cf307d404caee08f1266))
+* send email for change email ([9a9f45f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9a9f45fdb22f22f2772db535db890fe698e4f79d))
+* smartphone page ([7643a09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7643a0982a21334cb9afac3fcd95c8e87e39ac98))
+* smartphone text ([8076739](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8076739285ef1abeba5017b7a34f29b56ed7015a))
+* songs display: "<br>" for prefix ([718f411](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/718f4110e8e2e42bbf51d228705382b7d7ad6ee1))
+
+
+### Features
+
+* clean DB ([4ee10e9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4ee10e982c5981e91fd7319a1ff2118fc0b2d03e))
+* delete account ([29a83e0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/29a83e0f7a53be744665e10160fc151053074549))
+* modifiy user's email ([01de431](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/01de4319baefb6d2d0b22a16137481aa5cbf30e8))
+* modify user ([d3571a3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d3571a3b312ba94521389b28c5126090bc1d3181))
+* navbar: previous slide ([0680a20](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0680a200253846a6df703ce6fd1a3df80572d00f))
+
 # [1.14.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.13.1...v1.14.0) (2025-07-08)
 
 
