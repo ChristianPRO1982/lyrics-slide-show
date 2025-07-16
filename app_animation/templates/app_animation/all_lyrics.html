@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>{{ full_title }}</title>
-
+  <title>Chants de veillée</title>
+  <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
   <style>
     :root {
-      --bg-light:#ddb; --fg-light:#220;
-      --bg-dark:#110;  --fg-dark:#ffd;
+      --bg-light:#fdb; --fg-light:#421;
+      --bg-dark:#111;  --fg-dark:#aaa;
       --font-size:1.5rem;
     }
     [data-theme="light"]{background:var(--bg-light);color:var(--fg-light);}
@@ -20,20 +20,57 @@
       overflow-wrap:anywhere;
       -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
     }
+
+    select, button {
+        height: 2.5rem;
+    }
+    [data-theme="light"] select,
+    [data-theme="light"] button {
+    background-color: #fdb;
+    color: #220;
+    border: 1px solid #ccc;
+    }
+
+    [data-theme="dark"] select,
+    [data-theme="dark"] button {
+    background-color: #222;
+    color: #ffd;
+    border: 1px solid #444;
+    }
+
     /* Hamburger button */
     #menuToggle{
       position:sticky;top:0;right:0;margin-left:auto;
-      background:transparent;border:none;font-size:2rem;line-height:1;
+      background: rgba(128,128,128,0.5);border:none;font-size:2rem;line-height:1;
       width: 2.5rem;height:2.5rem;;
       z-index:10;
     }
     /* Sliding panel */
-    #controlPanel{
-      position:fixed;top:0;right:0;max-width:80vw;width:400px;
-      height:100vh;padding:1rem;background:inherit;border-left:1px solid currentColor;
-      transform:translateX(100%);transition:transform .3s ease;
-      display:flex;flex-direction:column;gap:1rem;
+    #controlPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      max-width: 80vw;
+      width: 400px;
+      height: 100vh;
+      padding: 1rem;
+
+      background-color: rgba(0, 0, 0, 0.6);
+
+      border-left: 1px solid currentColor;
+      transform: translateX(100%);
+      transition: transform .3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
+    [data-theme="light"] #controlPanel {
+      background-color: rgba(222, 222, 222, 0.8);
+    }
+    [data-theme="dark"] #controlPanel {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
     #controlPanel.open{transform:translateX(0);}
     select,button{font-size:1rem;width:100%;}
     main>section{margin:2rem 0;}
@@ -54,6 +91,7 @@
   <button id="themeToggle" aria-label="Changer de thème">🌙/☀️</button>
 </aside>
 
+<h1 style="margin-left:2.5rem; margin-right:2rem;">{{ full_title }}</h1>
 <main id="lyrics" style="margin-left:2.5rem; margin-right:2rem;">
     {{ lyrics|safe }}
 </main>

@@ -408,6 +408,7 @@ def all_songs_all_lyrics(request, animation_id):
         song_info.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song_info.get_verses()
         lyrics += f'''
+    <hr>
     <section id="song-{idx}">
         <h2>{song['full_title']}</h2>
         <p>{song_info.get_lyrics_to_display(False)}</p>
