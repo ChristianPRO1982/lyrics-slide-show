@@ -65,10 +65,10 @@
       gap: 1rem;
     }
     [data-theme="light"] #controlPanel {
-      background-color: rgba(222, 222, 222, 0.8);
+      background-color: rgba(222, 222, 222, 0.6);
     }
     [data-theme="dark"] #controlPanel {
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0, 0.6);
     }
 
     #controlPanel.open{transform:translateX(0);}
@@ -89,6 +89,10 @@
   </div>
 
   <button id="themeToggle" aria-label="Changer de thème">🌙/☀️</button>
+
+  <hr>
+
+  <button id="closePanel" aria-label="Fermer le menu">❌</button>
 </aside>
 
 <h1 style="margin-left:2.5rem; margin-right:2rem;">{{ full_title }}</h1>
@@ -103,6 +107,7 @@
   document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
 
   const menuToggle   = document.getElementById('menuToggle');
+  const closePanel   = document.getElementById('closePanel');
   const controlPanel = document.getElementById('controlPanel');
   const songSelect   = document.getElementById('songSelect');
   const themeToggle  = document.getElementById('themeToggle');
@@ -117,6 +122,7 @@
   });
 
   menuToggle.addEventListener('click',()=>controlPanel.classList.toggle('open'));
+  closePanel.addEventListener('click',()=>controlPanel.classList.remove('open'));
 
   songSelect.addEventListener('change',e=>{
     document.getElementById(e.target.value)?.scrollIntoView({behavior:'smooth'});
