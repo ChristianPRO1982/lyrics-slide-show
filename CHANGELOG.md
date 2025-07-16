@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.15.0...v1.15.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* button for close panel ([597a14a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/597a14afc607c21eed00ef7244e38e0138d884b5))
+
 # [1.15.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.14.0...v1.15.0) (2025-07-16)
 
 
