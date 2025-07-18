@@ -178,6 +178,7 @@ hr {
 .active {
     border-radius: 0% !important;
     border-width: 5px !important;
+    border-color: #18bb67 !important;
 }
 
 .active_background {
@@ -185,8 +186,9 @@ hr {
 }
 
 .chorus_active {
-    border-color: #2f7c76 !important;
     border-radius: 0% !important;
+    border-color: #2f7c76 !important;
+    background-color: rgba(24, 187, 103, 0.25) !important;
 }
 
 .next_active {
@@ -255,13 +257,15 @@ hr {
     .active {
         border-radius: 0% !important;
         border-width: 5px !important;
+        border-color: #14403D !important;
     }
     .active_background {
         background-color: #14403D !important;
     }
     .chorus_active {
-        border-color: #14403D !important;
         border-radius: 0% !important;
+        border-color: #14403D !important;
+        background-color: rgba(20, 64, 61, 0.3) !important;
     }
     .next_active {
         border-color: rgb(248, 11, 82) !important;

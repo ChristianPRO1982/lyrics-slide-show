@@ -178,6 +178,7 @@ hr {
 .active {
     border-radius: 0% !important;
     border-width: 5px !important;
+    border-color: rgb(240, 23, 23) !important;
 }
 
 .active_background {
@@ -185,8 +186,9 @@ hr {
 }
 
 .chorus_active {
-    border-color: rgb(240, 23, 23) !important;
     border-radius: 0% !important;
+    border-color: rgb(240, 23, 23) !important;
+    background-color: rgba(240, 23, 23, 0.12) !important;;
 }
 
 .next_active {
@@ -249,16 +251,17 @@ hr {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(128, 9, 9) !important;
         border-radius: 0% !important;
         border-width: 5px !important;
+        border-color: rgb(128, 9, 9) !important;
     }
     .active_background {
         background-color: rgb(128, 9, 9) !important;
     }
     .chorus_active {
-        border-color: rgb(128, 9, 9) !important;
         border-radius: 0% !important;
+        border-color: rgb(128, 9, 9) !important;
+        background-color: rgba(128, 9, 9, 0.25) !important;
     }
     .next_active {
         border-color: rgb(128, 50, 74) !important;
