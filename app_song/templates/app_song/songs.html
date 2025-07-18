@@ -88,23 +88,23 @@
                 {% trans "AND" %}
             </label>
             <br>
-            <input type="text" class="w-3/4" placeholder="{% trans "find genre or band or artist" %}">
+            <input id="search_genre_band_artist" type="text" class="w-3/4" placeholder="{% trans "find genre or band or artist" %}">
             {% for genre in genres %}
-            <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
+            <label id="chk_genre_{{ genre.genre_id }}" style="width: 92%;" class="L_GENRE_BADGE text-xs block">
                 <input type="checkbox" name="chk_genre_{{ genre.genre_id }}"
                 style="width: 15%;" {% if genre.genre_id in search_genres %}checked{% endif %}>
                 🎼 {{ genre.group }} - {{ genre.name }}
             </label>
             {% endfor %}
             {% for band in bands %}
-            <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
+            <label id="chk_band_{{ band.band_id }}" style="width: 92%;" class="L_GENRE_BADGE text-xs block">
                 <input type="checkbox" name="chk_band_{{ band.band_id }}"
                 style="width: 15%;" {% if band.band_id in search_bands %}checked{% endif %}>
                 👥 {{ band.name }}
             </label>
             {% endfor %}
             {% for artist in artists %}
-            <label style="width: 92%;" class="L_GENRE_BADGE text-xs block">
+            <label id="chk_artist_{{ artist.artist_id }}" style="width: 92%;" class="L_GENRE_BADGE text-xs block">
                 <input type="checkbox" name="chk_artist_{{ artist.artist_id }}"
                 style="width: 15%;" {% if artist.artist_id in search_artists %}checked{% endif %}>
                 👤 {{ artist.name }}
@@ -220,6 +220,25 @@
     });
     
     updateSongList('{{ new_song_title }}');
+
+    
+    // Toggle advanced search visibility
+    (() => {
+    const filterInput = document.getElementById('search_genre_band_artist');
+    const labels = Array.from(
+        document.querySelectorAll(
+        'label[id^="chk_genre_"], label[id^="chk_band_"], label[id^="chk_artist_"]'
+        )
+    );
+
+    filterInput.addEventListener('input', e => {
+        const q = e.target.value.trim().toLowerCase();
+        labels.forEach(label => {
+        const text = label.textContent.trim().toLowerCase();
+        label.style.display = q && !text.includes(q) ? 'none' : '';
+        });
+    });
+    })();
 </script>
 <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
     <a href="#search" style="text-decoration: none!important;" class="lg:hidden text-3xl">🔎</a>
