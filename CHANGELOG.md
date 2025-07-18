@@ -1,3 +1,16 @@
+# [1.16.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.15.1...v1.16.0) (2025-07-18)
+
+
+### Bug Fixes
+
+* add confirm for delete bands and artists ([6d48220](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6d482208f23ba42a0e5076cffab80ebd2a0997bf))
+* css ([89c8b0b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/89c8b0b9b6ccd0171b20facfc1bb9af55a8687ad))
+
+
+### Features
+
+* search genre band or artist ([58ba5c1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/58ba5c1ec14a742d215c4f301026389fc8f36d87))
+
 ## [1.15.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.15.0...v1.15.1) (2025-07-16)
 
 
