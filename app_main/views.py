@@ -66,6 +66,12 @@ def homepage(request):
         if 'btn_save_site_params' in request.POST:
             site.verse_max_lines = request.POST.get('sel_verse_max_lines', 10)
             site.verse_max_characters_for_a_line = request.POST.get('sel_site_params_max_characters_for_a_line', 60)
+            site.fr_chorus_prefix = request.POST.get('txt_fr_chorus_prefix', 'R.')
+            site.fr_verse_prefix1 = request.POST.get('txt_fr_verse_prefix1', 'C')
+            site.fr_verse_prefix2 = request.POST.get('txt_fr_verse_prefix2', '.')
+            site.en_chorus_prefix = request.POST.get('txt_en_chorus_prefix', 'Chorus')
+            site.en_verse_prefix1 = request.POST.get('txt_en_verse_prefix1', 'Verse')
+            site.en_verse_prefix2 = request.POST.get('txt_en_verse_prefix2', '')
             if site.title and site.title_h1:
                 site.save()
             else:

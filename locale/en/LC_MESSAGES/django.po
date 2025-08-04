@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-16 15:15+0200\n"
+"POT-Creation-Date: 2025-08-04 14:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgstr ""
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
 #: app_main/templates/app_main/homepage.html:72
-#: app_main/templates/app_main/homepage.html:110
+#: app_main/templates/app_main/homepage.html:139
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr ""
@@ -259,7 +259,7 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
 #: app_main/templates/app_main/homepage.html:71
-#: app_main/templates/app_main/homepage.html:109
+#: app_main/templates/app_main/homepage.html:138
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:209
@@ -824,7 +824,46 @@ msgstr ""
 msgid "characters"
 msgstr ""
 
+#: app_main/templates/app_main/homepage.html:107
+msgid "FR - chorus prefix"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:110
+msgid "FR - verse prefix 1"
+msgstr ""
+
 #: app_main/templates/app_main/homepage.html:113
+msgid "FR - verse prefix 2"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:116
+#: app_main/templates/app_main/homepage.html:131
+msgid "Examples:"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:117
+#: app_main/templates/app_main/homepage.html:132
+msgid "my chorus"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:118
+#: app_main/templates/app_main/homepage.html:133
+msgid "my verse"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:122
+msgid "EN - chorus prefix"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:125
+msgid "EN - verse prefix 1"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:128
+msgid "EN - verse prefix 2"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:142
 msgid "Modify site params"
 msgstr ""
 

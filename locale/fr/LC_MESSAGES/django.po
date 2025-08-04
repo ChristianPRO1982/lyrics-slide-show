@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-16 15:15+0200\n"
+"POT-Creation-Date: 2025-08-04 14:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
 #: app_main/templates/app_main/homepage.html:72
-#: app_main/templates/app_main/homepage.html:110
+#: app_main/templates/app_main/homepage.html:139
 #: app_song/templates/app_song/moderator_song.html:32
 msgid "Cancel"
 msgstr "Annuler"
@@ -259,7 +259,7 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
 #: app_main/templates/app_main/homepage.html:71
-#: app_main/templates/app_main/homepage.html:109
+#: app_main/templates/app_main/homepage.html:138
 #: app_song/templates/app_song/moderator_song.html:28
 #: app_song/templates/app_song/modify_song.html:73
 #: app_song/templates/app_song/modify_song.html:209
@@ -835,7 +835,46 @@ msgstr "Nombre maximum de caractères pour une ligne"
 msgid "characters"
 msgstr "caractères"
 
+#: app_main/templates/app_main/homepage.html:107
+msgid "FR - chorus prefix"
+msgstr "FR - préfixe du refrain"
+
+#: app_main/templates/app_main/homepage.html:110
+msgid "FR - verse prefix 1"
+msgstr "FR - préfixe du couplet avant numéro"
+
 #: app_main/templates/app_main/homepage.html:113
+msgid "FR - verse prefix 2"
+msgstr "FR - préfixe du couplet après numéro"
+
+#: app_main/templates/app_main/homepage.html:116
+#: app_main/templates/app_main/homepage.html:131
+msgid "Examples:"
+msgstr "Exemples :"
+
+#: app_main/templates/app_main/homepage.html:117
+#: app_main/templates/app_main/homepage.html:132
+msgid "my chorus"
+msgstr "mon refrain"
+
+#: app_main/templates/app_main/homepage.html:118
+#: app_main/templates/app_main/homepage.html:133
+msgid "my verse"
+msgstr "mon couplet"
+
+#: app_main/templates/app_main/homepage.html:122
+msgid "EN - chorus prefix"
+msgstr "EN - préfixe du refrain"
+
+#: app_main/templates/app_main/homepage.html:125
+msgid "EN - verse prefix 1"
+msgstr "EN - préfixe du couplet avant numéro"
+
+#: app_main/templates/app_main/homepage.html:128
+msgid "EN - verse prefix 2"
+msgstr "EN - préfixe du couplet après numéro"
+
+#: app_main/templates/app_main/homepage.html:142
 msgid "Modify site params"
 msgstr "Modifier les paramètres du site"
 
@@ -857,7 +896,11 @@ msgstr ""
 "votre vie privée et de ne collecter que les données strictement nécessaires "
 "au fonctionnement du service.<br>Ce document vise à vous expliquer "
 "clairement quelles données sont collectées, dans quel but, et comment elles "
-"sont traitées.<br><br>Source CNIL : <a href=\"https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees#:~:text=Les%20donn%C3%A9es%20personnelles%20ne%20peuvent%20%C3%AAtre%20conserv%C3%A9es%20ind%C3%A9finiment,ayant%20conduit%20%C3%A0%20la%20collecte%20de%20ces%20donn%C3%A9es.\">Les durées de conservation des données - 28 juillet 2020</a>"
+"sont traitées.<br><br>Source CNIL : <a href=\"https://www.cnil.fr/fr/passer-"
+"laction/les-durees-de-conservation-des-donnees#:~:"
+"text=Les%20donn%C3%A9es%20personnelles%20ne%20peuvent%20%C3%AAtre%20conserv%C3%A9es%20ind%C3%A9finiment,"
+"ayant%20conduit%20%C3%A0%20la%20collecte%20de%20ces%20donn%C3%A9es.\">Les "
+"durées de conservation des données - 28 juillet 2020</a>"
 
 #: app_main/templates/app_main/privacy_policy.html:18
 msgid "privacy_policy_article_1_title"

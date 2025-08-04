@@ -187,7 +187,13 @@ CREATE TABLE `l_site` (
 
 CREATE TABLE `l_site_params` (
   `verse_max_lines` tinyint NOT NULL,
-  `verse_max_characters_for_a_line` tinyint NOT NULL
+  `verse_max_characters_for_a_line` tinyint NOT NULL,
+  `FR_chorus_prefix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `FR_verse_prefix1` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `FR_verse_prefix2` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `EN_chorus_prefix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `EN_verse_prefix1` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `EN_verse_prefix2` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_verse_prefixes` (

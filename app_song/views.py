@@ -12,6 +12,7 @@ from app_main.utils import (
     delete_band_in_search_params,
     delete_artist_in_search_params,
 )
+from app_main.SQL_main import Site
 
 
 @login_required
@@ -516,7 +517,7 @@ def print_lyrics(request, song_id):
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False)
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
 
     return render(request, 'app_song/print_lyrics.html', {
         'full_title': full_title,
@@ -538,7 +539,7 @@ def print_lyrics_one_chorus(request, song_id):
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True)
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True, Site=Site)
 
     return render(request, 'app_song/print_lyrics_one_chorus.html', {
         'full_title': full_title,
