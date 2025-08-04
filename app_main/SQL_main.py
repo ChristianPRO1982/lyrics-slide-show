@@ -292,9 +292,21 @@ SELECT *
         if row:
             self.verse_max_lines = row[0]
             self.verse_max_characters_for_a_line = row[1]
+            self.fr_chorus_prefix = row[2]
+            self.fr_verse_prefix1 = row[3]
+            self.fr_verse_prefix2 = row[4]
+            self.en_chorus_prefix = row[5]
+            self.en_verse_prefix1 = row[6]
+            self.en_verse_prefix2 = row[7]
         else:
             self.verse_max_lines = 10
             self.verse_max_characters_for_a_line = 60
+            self.fr_chorus_prefix = "R."
+            self.fr_verse_prefix1 = "C"
+            self.fr_verse_prefix2 = "."
+            self.en_chorus_prefix = "C"
+            self.en_verse_prefix1 = "V"
+            self.en_verse_prefix2 = ""
 
 
     def save(self):
@@ -316,9 +328,24 @@ UPDATE l_site
         request = """
 UPDATE l_site_params
    SET verse_max_lines = %s,
-       verse_max_characters_for_a_line = %s
+       verse_max_characters_for_a_line = %s,
+       fr_chorus_prefix = %s,
+       fr_verse_prefix1 = %s,
+       fr_verse_prefix2 = %s,
+       en_chorus_prefix = %s,
+       en_verse_prefix1 = %s,
+       en_verse_prefix2 = %s
 """
-        params = [self.verse_max_lines, self.verse_max_characters_for_a_line]
+        params = [
+            self.verse_max_lines,
+            self.verse_max_characters_for_a_line,
+            self.fr_chorus_prefix,
+            self.fr_verse_prefix1,
+            self.fr_verse_prefix2,
+            self.en_chorus_prefix,
+            self.en_verse_prefix1,
+            self.en_verse_prefix2
+        ]
 
         create_SQL_log(code_file, "Site.save", "UPDATE_4", request, params)
         with connection.cursor() as cursor:

@@ -233,15 +233,19 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
         return lyrics
     
 
-    def get_lyrics_to_display(self, display_the_chorus_once):
+    def get_lyrics_to_display(self, display_the_chorus_once, Site):
+        site = Site()
+
         choruses = []
         choruses_printed = False
         if translation.get_language() == 'fr':
-            chorus_marker = "R. "
-            verse_marker = "C"
+            chorus_marker = site.fr_chorus_prefix
+            verse_marker1 = site.fr_verse_prefix1
+            verse_marker2 = site.fr_verse_prefix2
         else:
-            chorus_marker = "C "
-            verse_marker = "V"
+            chorus_marker = site.en_chorus_prefix
+            verse_marker1 = site.en_verse_prefix1
+            verse_marker2 = site.en_verse_prefix2
         lyrics = ""
 
         # Get all choruses
@@ -249,13 +253,13 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
             if verse.chorus == 1:
                 choruses.append("<b>" + chorus_marker + verse.text.replace("\n", "<br>") + "</b>")
                 chorus_marker = ''
-
+        
         start_by_chorus = True
         for verse in self.verses:
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += verse_marker + str(verse.num_verse) + ". "
+                        lyrics += verse_marker1 + str(verse.num_verse) + verse_marker2
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     if verse.prefix:
@@ -523,7 +527,7 @@ UPDATE l_songs
     FROM l_songs_mod_message
    WHERE song_id = %s
      AND status <> 1
-ORDER BY date DESC
+ORDER BY date ASC
 """
             params = [self.song_id]
             
