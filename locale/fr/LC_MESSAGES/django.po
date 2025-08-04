@@ -857,7 +857,7 @@ msgstr ""
 "votre vie privée et de ne collecter que les données strictement nécessaires "
 "au fonctionnement du service.<br>Ce document vise à vous expliquer "
 "clairement quelles données sont collectées, dans quel but, et comment elles "
-"sont traitées."
+"sont traitées.<br><br>Source CNIL : <a href=\"https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees#:~:text=Les%20donn%C3%A9es%20personnelles%20ne%20peuvent%20%C3%AAtre%20conserv%C3%A9es%20ind%C3%A9finiment,ayant%20conduit%20%C3%A0%20la%20collecte%20de%20ces%20donn%C3%A9es.\">Les durées de conservation des données - 28 juillet 2020</a>"
 
 #: app_main/templates/app_main/privacy_policy.html:18
 msgid "privacy_policy_article_1_title"
