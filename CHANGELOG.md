@@ -1,3 +1,12 @@
+## [1.16.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.16.0...v1.16.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* add CNIL link ([781f942](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/781f9423042876d4e85e6ff4918b8863bbd956d2))
+* change order by of  "Song.get_moderator_new_messages", "SELECT_5" ([9b48f35](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9b48f3568d9e975f59abffb24b02eb2bb147790c))
+* prefixes in params ([d49213f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d49213ff30e78cc0b453811a15f42b735594970a))
+
 # [1.16.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.15.1...v1.16.0) (2025-07-18)
 
 
