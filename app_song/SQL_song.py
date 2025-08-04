@@ -523,7 +523,7 @@ UPDATE l_songs
     FROM l_songs_mod_message
    WHERE song_id = %s
      AND status <> 1
-ORDER BY date DESC
+ORDER BY date ASC
 """
             params = [self.song_id]
             
