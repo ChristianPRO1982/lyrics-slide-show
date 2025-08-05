@@ -1,3 +1,17 @@
+# [1.17.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.16.1...v1.17.0) (2025-08-05)
+
+
+### Bug Fixes
+
+* animation: display all songs all lyrics again ([6a88090](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6a88090cce8d8238261a2be443e7d2bbe681dc26))
+
+
+### Features
+
+* add link: smartphone view ([0fa4fb0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0fa4fb025fa259a0434adb78caa1bba5688ca577))
+* link to homapage in smartphone view ([15ad4bc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/15ad4bcf4419e63fe9cda6c9abad1b8c8e136e1f))
+* ultra speed search ([7f6ea6f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7f6ea6fc48258eb03a6f113e24e77de33bfb16ca))
+
 ## [1.16.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.16.0...v1.16.1) (2025-08-04)
 
 
