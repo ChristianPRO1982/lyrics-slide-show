@@ -13,6 +13,10 @@ urlpatterns = [
     path('modify_song/<int:song_id>/', views.modify_song, name='modify_song'),
     path('song_metadata/<int:song_id>/', views.song_metadata, name='song_metadata'),
     path('delete_song/<int:song_id>/', views.delete_song, name='delete_song'),
+    path('smartphone_view/<int:song_id>/', views.smartphone_view, name='smartphone_view'),
     path('print_lyrics/<int:song_id>/', views.print_lyrics, name='print_lyrics'),
     path('print_lyrics_one_chorus/<int:song_id>/', views.print_lyrics_one_chorus, name='print_lyrics_one_chorus'),
+    path('genre/<str:genre_str>/', views.filter_genre, name='filter_songs'),
+    path('band/<str:band_str>/', views.filter_band, name='filter_band'),
+    path('artist/<str:artist_str>/', views.filter_artist, name='filter_artist'),
 ]

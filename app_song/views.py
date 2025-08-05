@@ -504,6 +504,28 @@ def delete_artist(request, artist_id):
 
 
 @login_required
+def smartphone_view(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
+
+    return render(request, 'app_animation/all_lyrics.html', {
+        'full_title': 'Smartphone View',
+        'lyrics': lyrics,
+    })
+
+
+@login_required
 def print_lyrics(request, song_id):
     song = Song.get_song_by_id(song_id)
     if not song:
@@ -545,3 +567,66 @@ def print_lyrics_one_chorus(request, song_id):
         'full_title': full_title,
         'lyrics': lyrics,
     })
+
+
+@login_required
+def filter_genre(request, genre_str):
+    genre_id = Genre.get_genre_id_by_name(genre_str)
+    if genre_id is not None:
+        if get_search_params(request)['search_genres']:
+            search_genres = get_search_params(request)['search_genres'] + ',' + str(genre_id)
+        else:
+            search_genres = str(genre_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            search_genres,
+            get_search_params(request)['search_bands'],
+            get_search_params(request)['search_artists'],
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
+
+
+@login_required
+def filter_band(request, band_str):
+    band_id = Genre.get_band_id_by_name(band_str)
+    if band_id is not None:
+        if get_search_params(request)['search_bands']:
+            search_bands = get_search_params(request)['search_bands'] + ',' + str(band_id)
+        else:
+            search_bands = str(band_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            get_search_params(request)['search_genres'],
+            search_bands,
+            get_search_params(request)['search_artists'],
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
+
+
+@login_required
+def filter_artist(request, artist_str):
+    artist_id = Genre.get_artist_id_by_name(artist_str)
+    if artist_id is not None:
+        if get_search_params(request)['search_artists']:
+            search_artists = get_search_params(request)['search_artists'] + ',' + str(artist_id)
+        else:
+            search_artists = str(artist_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            get_search_params(request)['search_genres'],
+            get_search_params(request)['search_bands'],
+            search_artists,
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
