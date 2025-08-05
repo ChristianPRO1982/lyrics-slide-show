@@ -1054,3 +1054,60 @@ DELETE FROM l_genres
 
             create_SQL_log(code_file, "Genre.delete", "DELETE_4", request, params)
             cursor.execute(request, params)
+
+
+    @staticmethod
+    def get_genre_id_by_name(genre_str):
+        with connection.cursor() as cursor:
+            request = """
+SELECT genre_id
+  FROM l_genres
+ WHERE name = %s
+"""
+            params = [genre_str]
+
+            create_SQL_log(code_file, "Genre.get_genre_id_by_name", "SELECT_13", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+
+        if row:
+            return row[0]
+        return None
+    
+
+    @staticmethod
+    def get_band_id_by_name(band_str):
+        with connection.cursor() as cursor:
+            request = """
+SELECT band_id
+  FROM c_bands
+ WHERE name = %s
+"""
+            params = [band_str]
+
+            create_SQL_log(code_file, "Genre.get_band_id_by_name", "SELECT_14", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+
+        if row:
+            return row[0]
+        return None
+
+
+    @staticmethod
+    def get_artist_id_by_name(artist_str):
+        with connection.cursor() as cursor:
+            request = """
+SELECT artist_id
+  FROM c_artists
+ WHERE name = %s
+"""
+            params = [artist_str]
+
+            create_SQL_log(code_file, "Genre.get_artist_id_by_name", "SELECT_15", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+
+        if row:
+            return row[0]
+        return None

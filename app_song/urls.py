@@ -16,4 +16,7 @@ urlpatterns = [
     path('smartphone_view/<int:song_id>/', views.smartphone_view, name='smartphone_view'),
     path('print_lyrics/<int:song_id>/', views.print_lyrics, name='print_lyrics'),
     path('print_lyrics_one_chorus/<int:song_id>/', views.print_lyrics_one_chorus, name='print_lyrics_one_chorus'),
+    path('genre/<str:genre_str>/', views.filter_genre, name='filter_songs'),
+    path('band/<str:band_str>/', views.filter_band, name='filter_band'),
+    path('artist/<str:artist_str>/', views.filter_artist, name='filter_artist'),
 ]

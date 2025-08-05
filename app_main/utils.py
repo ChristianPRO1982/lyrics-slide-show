@@ -37,6 +37,11 @@ def add_search_params(
         search_artists,
         search_song_approved
         ):
+    
+    search_genres = ','.join(sorted(set(filter(None, search_genres.split(','))), key=int)) if search_genres else ''
+    search_bands = ','.join(sorted(set(filter(None, search_bands.split(','))), key=int)) if search_bands else ''
+    search_artists = ','.join(sorted(set(filter(None, search_artists.split(','))), key=int)) if search_artists else ''
+
     if request.user.is_authenticated:
         user = User(request.user.username)
         user.search_txt = search_txt

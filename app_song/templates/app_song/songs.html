@@ -168,7 +168,7 @@
                 genresArr.forEach(function(genre) {
                     const parts = genre.trim().split('|');
                     if (parts.length === 2 && !uniqueGenres.has(parts[1])) {
-                        li.innerHTML += '<span class="L_GENRE_BADGE">🎼 ' + parts[1] + '</span>';
+                        li.innerHTML += '<a href="/songs/genre/' + parts[1] + '/"><span class="L_GENRE_BADGE">🎼 ' + parts[1] + '</span></a>';
                         uniqueGenres.add(parts[1]);
                         br = '<br>';
                     }
@@ -180,7 +180,7 @@
                 const uniqueBands = new Set();
                 bandsArr.forEach(function(band) {
                     if (!uniqueBands.has(band) && band != 'None') {
-                        li.innerHTML += '<span class="L_GENRE_BADGE">👥 ' + band + '</span>';
+                        li.innerHTML += '<a href="/songs/band/' + band + '/"><span class="L_GENRE_BADGE">👥 ' + band + '</span></a>';
                         uniqueBands.add(band);
                         br = '<br>';
                     }
@@ -192,7 +192,7 @@
                 const uniqueArtists = new Set();
                 artistsArr.forEach(function(artist) {
                     if (!uniqueArtists.has(artist) && artist != 'None') {
-                        li.innerHTML += '<span class="L_GENRE_BADGE">👤 ' + artist + '</span>';
+                        li.innerHTML += '<a href="/songs/artist/' + artist + '/"><span class="L_GENRE_BADGE">👤 ' + artist + '</span></a>';
                         uniqueArtists.add(artist);
                         br = '<br>';
                     }

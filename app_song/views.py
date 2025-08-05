@@ -567,3 +567,66 @@ def print_lyrics_one_chorus(request, song_id):
         'full_title': full_title,
         'lyrics': lyrics,
     })
+
+
+@login_required
+def filter_genre(request, genre_str):
+    genre_id = Genre.get_genre_id_by_name(genre_str)
+    if genre_id is not None:
+        if get_search_params(request)['search_genres']:
+            search_genres = get_search_params(request)['search_genres'] + ',' + str(genre_id)
+        else:
+            search_genres = str(genre_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            search_genres,
+            get_search_params(request)['search_bands'],
+            get_search_params(request)['search_artists'],
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
+
+
+@login_required
+def filter_band(request, band_str):
+    band_id = Genre.get_band_id_by_name(band_str)
+    if band_id is not None:
+        if get_search_params(request)['search_bands']:
+            search_bands = get_search_params(request)['search_bands'] + ',' + str(band_id)
+        else:
+            search_bands = str(band_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            get_search_params(request)['search_genres'],
+            search_bands,
+            get_search_params(request)['search_artists'],
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
+
+
+@login_required
+def filter_artist(request, artist_str):
+    artist_id = Genre.get_artist_id_by_name(artist_str)
+    if artist_id is not None:
+        if get_search_params(request)['search_artists']:
+            search_artists = get_search_params(request)['search_artists'] + ',' + str(artist_id)
+        else:
+            search_artists = str(artist_id)
+
+        add_search_params(
+            request,
+            get_search_params(request)['search_txt'],
+            get_search_params(request)['search_everywhere'],
+            get_search_params(request)['search_logic'],
+            get_search_params(request)['search_genres'],
+            get_search_params(request)['search_bands'],
+            search_artists,
+            get_search_params(request)['search_song_approved'])
+    return redirect('songs')
