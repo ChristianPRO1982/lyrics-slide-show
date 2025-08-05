@@ -9,6 +9,7 @@ from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
 from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name
+from app_main.SQL_main import Site
 
 
 
@@ -411,7 +412,7 @@ def all_songs_all_lyrics(request, animation_id):
     <hr>
     <section id="song-{idx}">
         <h2>{song['full_title']}</h2>
-        <p>{song_info.get_lyrics_to_display(False)}</p>
+        <p>{song_info.get_lyrics_to_display(False, Site=Site)}</p>
     </section>'''
 
     
@@ -419,40 +420,3 @@ def all_songs_all_lyrics(request, animation_id):
         'full_title': full_title,
         'lyrics': lyrics,
     })
-
-
-# def all_songs_all_lyrics(request, animation_id):
-#     animation = Animation.get_animation_by_id_without_group_id(int(animation_id))
-
-#     if not animation:
-#         return redirect('animations')
-    
-#     animation.all_songs()
-#     if translation.get_language() == 'fr':
-#         summary = f"<h1>Toutes les paroles de <i>{animation.name}</i></h1>"
-#     else:
-#         summary = f"<h1>All lyrics for <i>{animation.name}</i></h1>"
-#     full_title = animation.name
-#     lyrics = ''
-#     song_params = get_song_params()
-    
-#     summary += "<ol>"
-#     for song in animation.songs:
-#         summary += f'<li><a href="#{song['num']}">{song['full_title']}</a></li>'
-#     summary += "</ol>"
-
-#     for song in animation.songs:
-#         song_info = Song(song['song_id'])
-#         song_info.verse_max_lines = song_params['verse_max_lines']
-#         song_info.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
-#         song_info.get_verses()
-#         lyrics += '<hr>' + summary + '<hr>'
-#         lyrics += f'<a id="{song['num']}"></a>'
-#         lyrics += f'<h2><i>{song['full_title']}</i></h2>'
-#         lyrics += '<p>' + song_info.get_lyrics_to_display(False) + '</p>'
-
-    
-#     return render(request, 'app_animation/all_lyrics.html', {
-#         'full_title': full_title,
-#         'lyrics': lyrics,
-#     })
