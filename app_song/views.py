@@ -504,6 +504,28 @@ def delete_artist(request, artist_id):
 
 
 @login_required
+def smartphone_view(request, song_id):
+    song = Song.get_song_by_id(song_id)
+    if not song:
+        request.session['error'] = '[ERR16]'
+        return redirect('songs')
+    
+    song_params = get_song_params()
+    
+    full_title = song.full_title
+    full_title = full_title.replace('✔️', '').replace('⁉️', '')
+    song.verse_max_lines = song_params['verse_max_lines']
+    song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
+    song.get_verses()
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
+
+    return render(request, 'app_animation/all_lyrics.html', {
+        'full_title': 'Smartphone View',
+        'lyrics': lyrics,
+    })
+
+
+@login_required
 def print_lyrics(request, song_id):
     song = Song.get_song_by_id(song_id)
     if not song:
