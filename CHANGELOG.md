@@ -1,3 +1,19 @@
+# [1.18.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.17.0...v1.18.0) (2025-08-06)
+
+
+### Bug Fixes
+
+* add up_down-1.webp ([f7bb4b4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f7bb4b47d929acc674f4945f3490f3ebe2cfb260))
+* backgroung of all_lyrics.html menu more opaque ([5fa085a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5fa085a49c13cf129f953be652e17a3ecc0dda75))
+* menu and CSS colors ([c0d78ea](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c0d78eafe04de5723440629416ac714cd6ae9a12))
+* menu more centered ([9b7f9b8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9b7f9b82d11d98c8432e6a7f101a5a0cd6a29f85))
+
+
+### Features
+
+* add CD in CICD ([f959d9d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f959d9d0debf8e7b69736d889bf987a649cf01d3))
+* backup to song page ([aeb6e1e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/aeb6e1e3230baceae2846d705f96547828d6194f))
+
 # [1.17.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.16.1...v1.17.0) (2025-08-05)
 
 
