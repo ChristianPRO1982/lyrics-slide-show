@@ -1,3 +1,10 @@
+## [1.18.7](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.6...v1.18.7) (2025-08-06)
+
+
+### Bug Fixes
+
+* dockerfile: try 3 ([6148d1c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6148d1c11406b050b62edbca826dba2c986686a8))
+
 ## [1.18.6](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.5...v1.18.6) (2025-08-06)
 
 
