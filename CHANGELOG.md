@@ -1,3 +1,12 @@
+## [1.18.8](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.7...v1.18.8) (2025-08-06)
+
+
+### Bug Fixes
+
+* background-color of L_BOX_TOP ([508a803](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/508a8033e3206d79e6740b0c450dcb0a865ec964))
+* footer not relative ([c206384](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c206384f1dd89f299df64cf5f62a50fbe52134e3))
+* top: 100px; for "🔎" ([f8acc8b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f8acc8b1a589f2d05ffa5031d8ed00944522bf53))
+
 ## [1.18.7](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.6...v1.18.7) (2025-08-06)
 
 
