@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.0...v1.18.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* CICD ([ae43703](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ae437032529cee2cce5a48f11d2a8bb723a2cad9))
+
 # [1.18.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.17.0...v1.18.0) (2025-08-06)
 
 
