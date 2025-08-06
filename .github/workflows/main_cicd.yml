@@ -68,7 +68,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            carthographie/api-carthographie:latest
+            carthographie/lyrics-slide-show:latest
 
 
   deploy:
