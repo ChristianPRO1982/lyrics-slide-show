@@ -85,7 +85,7 @@
 
   <div style="display:flex;gap:.5rem;">
     <button id="decreaseFont" aria-label="Texte plus petit">➖</button>
-    <img src="/static/images/" alt="A±" style="width: 3rem; height: 3rem;">
+    <img src="/static/images/up_down-1.webp" alt="A±" style="width: 3rem; height: 3rem;">
     <button id="increaseFont" aria-label="Texte plus grand">➕</button>
   </div>
 
@@ -97,7 +97,11 @@
   
   <hr style="width: 80%;">
 
-  <a href="https://www.carthographie.fr/" onclick="return confirm('Are you sure you want to leave this page?');"><img style="width: 95%;" src="/static/images/Lyrics.png"></a>
+  {% if song_id %}
+  <a href="../../song/{{song_id}}/"><img style="width: 95%;" src="/static/images/Lyrics.png"></a>
+  {% else %}
+  <img style="width: 95%;" src="/static/images/Lyrics.png">
+  {% endif %}
 
 </aside>
 
