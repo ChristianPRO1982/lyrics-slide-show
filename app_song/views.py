@@ -167,6 +167,7 @@ def modify_song(request, song_id):
                 song.title = request.POST.get('txt_title').strip()
                 song.sub_title = request.POST.get('txt_sub_title').strip()
                 song.description = request.POST.get('txt_description').strip()
+                song.licensed = request.POST.get('box_licensed', 'off') == 'on'
                 
                 status = song.save(moderator) # ✔️⁉️✖️
 

@@ -55,12 +55,13 @@ ARTIST_EMOJIS = [
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, full_title=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, licensed=None, full_title=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
         self.description = description
         self.status = status
+        self.licensed = licensed
         self.full_title = full_title
         self.verses = []
         self.genres = []
@@ -184,10 +185,11 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
                  'sub_title': row[2],
                  'description': row[3],
                  'status': row[4],
-                 'full_title': row[5],
-                 'genres': row[6],
-                 'bands': row[7],
-                 'artists': row[8]
+                 'licensed': row[5],
+                 'full_title': row[6],
+                 'genres': row[7],
+                 'bands': row[8],
+                 'artists': row[9]
                  } for row in rows]
     
 
@@ -311,7 +313,8 @@ SELECT *, CONCAT(title,
                 sub_title=row[2],
                 description=row[3],
                 status=row[4],
-                full_title=row[5])
+                licensed=row[5],
+                full_title=row[6])
         return None
     
 
@@ -339,12 +342,13 @@ SELECT COUNT(1)
 UPDATE l_songs
    SET title = %s,
        sub_title = %s,
-       description = %s
+       description = %s,
+       licensed = %s
  WHERE song_id = %s
    AND (status = 0 OR 1 = %s)
 """
-                params = [self.title, self.sub_title, self.description, self.song_id, moderator]
-                
+                params = [self.title, self.sub_title, self.description, self.licensed, self.song_id, moderator]
+
                 create_SQL_log(code_file, "Song.save", "UPDATE_1", request, params)
                 try:
                     cursor.execute(request, params)

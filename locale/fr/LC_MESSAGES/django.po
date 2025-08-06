@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-04 14:45+0200\n"
+"POT-Creation-Date: 2025-08-06 16:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,7 +105,7 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 #: app_animation/templates/app_animation/modify_animation.html:338
 #: app_main/templates/app_main/homepage.html:72
 #: app_main/templates/app_main/homepage.html:139
-#: app_song/templates/app_song/moderator_song.html:32
+#: app_song/templates/app_song/moderator_song.html:43
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -260,9 +260,9 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_group/templates/app_group/modify_group.html:87
 #: app_main/templates/app_main/homepage.html:71
 #: app_main/templates/app_main/homepage.html:138
-#: app_song/templates/app_song/moderator_song.html:28
-#: app_song/templates/app_song/modify_song.html:73
-#: app_song/templates/app_song/modify_song.html:209
+#: app_song/templates/app_song/moderator_song.html:39
+#: app_song/templates/app_song/modify_song.html:80
+#: app_song/templates/app_song/modify_song.html:216
 #: app_song/templates/app_song/song_metadata.html:17
 #: app_song/templates/app_song/song_metadata.html:196
 msgid "save"
@@ -270,9 +270,9 @@ msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
-#: app_song/templates/app_song/modify_song.html:116
-#: app_song/templates/app_song/modify_song.html:142
-#: app_song/templates/app_song/modify_song.html:157
+#: app_song/templates/app_song/modify_song.html:123
+#: app_song/templates/app_song/modify_song.html:149
+#: app_song/templates/app_song/modify_song.html:164
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -323,7 +323,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:135
+#: app_song/templates/app_song/modify_song.html:142
 msgid "before"
 msgstr "Avant"
 
@@ -333,12 +333,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:149
+#: app_song/templates/app_song/modify_song.html:156
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:150
+#: app_song/templates/app_song/modify_song.html:157
 msgid "after"
 msgstr "Après"
 
@@ -395,7 +395,7 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:210
+#: app_song/templates/app_song/modify_song.html:217
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -1157,6 +1157,7 @@ msgid "song2dot"
 msgstr "Chant&nbsp;: "
 
 #: app_song/templates/app_song/goto_song.html:19
+#: app_song/templates/app_song/moderator_song.html:16
 msgid "Messages:"
 msgstr "Messages&nbsp;:"
 
@@ -1167,15 +1168,15 @@ msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter sur un "
 "chant. Vous trouverer un lien vers le formulaire sur la page du chant."
 
-#: app_song/templates/app_song/moderator_song.html:18
+#: app_song/templates/app_song/moderator_song.html:29
 msgid "Message saved"
 msgstr "Message sauvegardé"
 
-#: app_song/templates/app_song/moderator_song.html:19
+#: app_song/templates/app_song/moderator_song.html:30
 msgid "Back to the song"
 msgstr "Retour au chant"
 
-#: app_song/templates/app_song/moderator_song.html:24
+#: app_song/templates/app_song/moderator_song.html:35
 msgid "Message"
 msgstr ""
 
@@ -1238,74 +1239,78 @@ msgstr "Sous-titre"
 msgid "description"
 msgstr "Description"
 
-#: app_song/templates/app_song/modify_song.html:80
+#: app_song/templates/app_song/modify_song.html:77
+msgid "Licensed"
+msgstr "Sous licence"
+
+#: app_song/templates/app_song/modify_song.html:87
 msgid "Too many lines"
 msgstr "Trop de lignes"
 
-#: app_song/templates/app_song/modify_song.html:85
+#: app_song/templates/app_song/modify_song.html:92
 msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
-#: app_song/templates/app_song/modify_song.html:94
-#: app_song/templates/app_song/modify_song.html:140
-#: app_song/templates/app_song/modify_song.html:155
+#: app_song/templates/app_song/modify_song.html:101
+#: app_song/templates/app_song/modify_song.html:147
+#: app_song/templates/app_song/modify_song.html:162
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:99
+#: app_song/templates/app_song/modify_song.html:106
 msgid "Use this option for not display chorus after"
 msgstr "Ne pas afficher le refrain après"
 
-#: app_song/templates/app_song/modify_song.html:99
+#: app_song/templates/app_song/modify_song.html:106
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:102
+#: app_song/templates/app_song/modify_song.html:109
 msgid "Not continue numbering"
 msgstr "Ne pas continuer la numérotation"
 
-#: app_song/templates/app_song/modify_song.html:102
+#: app_song/templates/app_song/modify_song.html:109
 msgid "Not C. num ⓘ"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:105
+#: app_song/templates/app_song/modify_song.html:112
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:121
+#: app_song/templates/app_song/modify_song.html:128
 msgid "Prefix"
 msgstr "Préfixe"
 
-#: app_song/templates/app_song/modify_song.html:133
+#: app_song/templates/app_song/modify_song.html:140
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:168
+#: app_song/templates/app_song/modify_song.html:175
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet&nbsp;?"
 
-#: app_song/templates/app_song/modify_song.html:169
-#: app_song/templates/app_song/modify_song.html:186
+#: app_song/templates/app_song/modify_song.html:176
+#: app_song/templates/app_song/modify_song.html:193
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:178
+#: app_song/templates/app_song/modify_song.html:185
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:182
+#: app_song/templates/app_song/modify_song.html:189
 msgid "Verse prefixes"
 msgstr "Préfixe de couplet"
 
-#: app_song/templates/app_song/modify_song.html:190
+#: app_song/templates/app_song/modify_song.html:197
 msgid "new prefix"
 msgstr "Nouveau préfixe"
 
-#: app_song/templates/app_song/modify_song.html:191
+#: app_song/templates/app_song/modify_song.html:198
 msgid "comment"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:211
+#: app_song/templates/app_song/modify_song.html:218
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -1499,14 +1504,18 @@ msgstr ""
 "chant"
 
 #: app_song/templates/common/song_actions.html:15
+msgid "Smartphone view"
+msgstr ""
+
+#: app_song/templates/common/song_actions.html:16
 msgid "Print"
 msgstr "Impression"
 
-#: app_song/templates/common/song_actions.html:16
+#: app_song/templates/common/song_actions.html:17
 msgid "Print song lyric"
 msgstr "Imprimer les paroles du chant"
 
-#: app_song/templates/common/song_actions.html:17
+#: app_song/templates/common/song_actions.html:18
 msgid "Print song lyric - one chorus"
 msgstr "Imprimer les paroles du chant - un seul refrain"
 
@@ -1871,12 +1880,12 @@ msgstr "[ERR51] no message"
 msgid "ERR60"
 msgstr "[ERR60] no message"
 
-#: templates/includes/header.html:19 templates/includes/header.html:21
-#: templates/includes/header.html:27
+#: templates/includes/header.html:17 templates/includes/header.html:19
+#: templates/includes/header.html:29
 msgid "language_flag"
 msgstr "🇫🇷&nbsp;FR"
 
-#: templates/includes/header.html:28
+#: templates/includes/header.html:30
 msgid "close"
 msgstr "fermer"
 

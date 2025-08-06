@@ -69,6 +69,13 @@
     <div>
         <label for="id_description">{% trans "description" %}</label><br>
         <textarea name="txt_description" id="id_description" style="width: 100%;">{{ song.description }}</textarea>
+    </div>
+    <div>
+        <label>
+        <input type="checkbox" name="box_licensed" id="box_licensed"
+        {% if song.license %}checked="checked"{% endif %} style="width: 5%;" />
+        {% trans "Licensed" %}
+        </label>
     </div><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
 
