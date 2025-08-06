@@ -1,3 +1,10 @@
+## [1.18.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.1...v1.18.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* CICD to the good dockerhub repo ([bf45a5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bf45a5e50b36cbfefb2afa403b32f6b7c657d23d))
+
 ## [1.18.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.0...v1.18.1) (2025-08-06)
 
 
