@@ -347,6 +347,7 @@ def moderator_song(request, song_id):
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     song_lyrics = song.get_lyrics()
+    song.get_bands_and_artists()
     valided = False
 
     if request.method == 'POST':
@@ -362,6 +363,9 @@ def moderator_song(request, song_id):
     return render(request, 'app_song/moderator_song.html', {
         'song': song,
         'song_lyrics': song_lyrics,
+        'song_messages': song.get_moderator_new_messages(),
+        'bands': song.bands,
+        'artists': song.artists,
         'valided': valided,
         'error': error,
         'css': css,

@@ -11,7 +11,18 @@
         <a href="{{ link|first }}">{{ link|last }}</a><br>
     {% endfor %}
 {% endblock bloc1 %}
-{% block bloc2 %}{% include "common/song_meta.html" %}{{ song_lyrics|safe }}{% endblock bloc2 %}
+{% block bloc2 %}
+{% if song_messages %}
+<h3 class="L_H3">⁉️ {% trans "Messages:" %}</h3>
+{% for message in song_messages %}
+<p><strong>{{ message.date|date:"d/m/Y H:i" }}</strong></p>
+<p>{{ message.message }}</p>
+{% endfor %}
+<hr>
+{% endif %}
+{% include "common/song_meta.html" %}
+{{ song_lyrics|safe }}
+{% endblock bloc2 %}
 
 {% block content %}
 {% if valided %}
