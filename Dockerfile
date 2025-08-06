@@ -19,10 +19,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
+
 RUN pip install --upgrade pip && pip install -r requirements.txt
-RUN django-admin compilemessages
 
 COPY . .
+
+RUN django-admin compilemessages
 
 RUN chmod +x scripts/wait_for_db.sh
 
