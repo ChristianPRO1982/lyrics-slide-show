@@ -1,3 +1,10 @@
+## [1.18.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.3...v1.18.4) (2025-08-06)
+
+
+### Bug Fixes
+
+* Dockerfile: add "django-admin compilemessages" during the build ([dfbc1ea](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dfbc1ea2b2b43f41c841f724d3057a66b712a103))
+
 ## [1.18.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.2...v1.18.3) (2025-08-06)
 
 
