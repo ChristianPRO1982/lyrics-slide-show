@@ -7,6 +7,7 @@ WORKDIR /app
 
 # ✅ Ajout des paquets nécessaires à mysqlclient
 RUN apt-get update && apt-get install -y \
+    gettext \
     gcc \
     g++ \
     default-libmysqlclient-dev \
