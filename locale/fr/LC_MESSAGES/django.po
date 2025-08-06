@@ -1874,7 +1874,7 @@ msgstr "[ERR60] no message"
 #: templates/includes/header.html:19 templates/includes/header.html:21
 #: templates/includes/header.html:27
 msgid "language_flag"
-msgstr "🇫🇷"
+msgstr "🇫🇷 FR"
 
 #: templates/includes/header.html:28
 msgid "close"

@@ -520,6 +520,7 @@ def smartphone_view(request, song_id):
     lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
 
     return render(request, 'app_animation/all_lyrics.html', {
+        'song_id': song_id,
         'full_title': 'Smartphone View',
         'lyrics': lyrics,
     })
