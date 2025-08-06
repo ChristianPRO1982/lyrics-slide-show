@@ -2,7 +2,7 @@
     color: #1C4E4A;
 }
 .L_BG{
-    background-color: #E6F0ED;
+    background-color: #bde7db;
 }
 
 a {
@@ -198,7 +198,8 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H2, .L_H3, .L_H4 {
-        color: #3d5a4b;
+        color: #68947d;
+        /* 3d5a4b > 68947d */
     }
     .L_H1 {
         color: #85b4a4;
@@ -207,7 +208,7 @@ hr {
         background-color: #0B1F26;
     }
     a {
-        color: #3d5a4b;
+        color: #68947d;
     }
     a:hover {
         color: #fd9153;
@@ -217,20 +218,20 @@ hr {
     }
     .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
-        border: 1px solid #3d5a4b;
-        color: #3d5a4b;
+        border: 1px solid #68947d;
+        color: #68947d;
     }
     .L_GENRE_BADGE {
         background-color: #2d1b1b;
-        color: #3d5a4b;
-        border: 1px solid #3d5a4b;
+        color: #68947d;
+        border: 1px solid #68947d;
     }
 
     .L_GENRE_BADGE:hover {
         background-color: #1a1a1a;
     }
     .L_BUTTON_LIKE_A_LINK {
-        color: #3d5a4b;
+        color: #68947d;
     }
 
     .L_BUTTON_LIKE_A_LINK:hover {
@@ -238,8 +239,8 @@ hr {
     }
     .L_LI {
         background-color: #2d1b1b;
-        border: 1px solid #3d5a4b;
-        color: #3d5a4b;
+        border: 1px solid #68947d;
+        color: #68947d;
     }
     .L_ERROR {
         color: #bb0000;
@@ -248,7 +249,7 @@ hr {
         color: #ee0000;
     }
     .L_HIGHLIGHT_GREEN {
-        color: #3d5a4b;
+        color: #68947d;
         background-color: #18bb67;
     }
     .slide {

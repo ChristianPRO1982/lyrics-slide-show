@@ -3,7 +3,7 @@
 
 <header class="L_BOX_HEADER py-4">
     <nav class="pl-5 container mx-auto flex items-center h-full">
-        <div class="flex ">
+        <div class="flex">
             <a href="{% url "homepage" %}"><img src="{% static "images/Lyrics.png" %}" alt="✞" style="width:40px;height:40px;"></a>
             {% include "includes/nav.html" %}
         </div>
@@ -11,18 +11,21 @@
         <!-- Right side (push with ml-auto) -->
         <div class="ml-auto">
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="NAV">👤 {% trans 'Profile' %}</a>
+            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 {% trans 'Profile' %}</a>
             {% endif %}
-            {% comment %} << {{ LANGUAGE_CODE }} / {{ language_code }} / Langue session : {{ request.session.django_language }} >> {% endcomment %}
             <a id="a_languages" href="#"
             onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;"
-            class="NAV">
-                {% trans "language_flag" %}
+            class="NAV L_LINK_HEADER">
+                <span class="font-arial">{% trans "language_flag" %}</span>
             </a>
             <div id="div_languages" style="display : none;">
-                <a href="{% url 'set_language' %}?language=fr" class="block px-4 py-2 hover:bg-gray-100">🇫🇷 Français</a>
-                <a href="{% url 'set_language' %}?language=en" class="block px-4 py-2 hover:bg-gray-100">🇬🇧 English</a>
-                <a href="#"
+                <a href="{% url 'set_language' %}?language=fr" class="block px-4 py-2 hover:bg-gray-100 NAV L_LINK_HEADER">
+                    <span class="font-arial">🇫🇷</span> Français
+                </a>
+                <a href="{% url 'set_language' %}?language=en" class="block px-4 py-2 hover:bg-gray-100 NAV L_LINK_HEADER">
+                    <span class="font-arial">🇬🇧</span> English
+                </a>
+                <a href="#" class="NAV L_LINK_HEADER"
                 onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;">
                     {% trans "close" %}
                 </a>

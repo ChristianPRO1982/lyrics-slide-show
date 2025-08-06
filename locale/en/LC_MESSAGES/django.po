@@ -1766,7 +1766,7 @@ msgstr ""
 #: templates/includes/header.html:19 templates/includes/header.html:21
 #: templates/includes/header.html:27
 msgid "language_flag"
-msgstr "🇬🇧"
+msgstr "🇬🇧 EN"
 
 #: templates/includes/header.html:28
 msgid "close"

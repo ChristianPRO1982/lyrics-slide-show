@@ -2,7 +2,7 @@
     color: #5a2b1f;
 }
 .L_BG{
-    background-color: #fef8f4;
+    background-color: #fdb;
 }
 
 a {
@@ -198,13 +198,14 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H1, .L_H2, .L_H3, .L_H4 {
-        color: #776b66;
+        color: #b17054;
+        /* 776b66 > b17054*/
     }
     .L_BG {
         background-color: #1C0F0A;
     }
     a {
-        color: #776b66;
+        color: #b17054;
     }
     a:hover {
         color: #fd9153;
@@ -214,28 +215,28 @@ hr {
     }
     .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
-        border: 1px solid #776b66;
-        color: #776b66;
+        border: 1px solid #b17054;
+        color: #b17054;
     }
     .L_GENRE_BADGE {
         background-color: #2d1b1b;
-        color: #776b66;
-        border: 1px solid #776b66;
+        color: #b17054;
+        border: 1px solid #b17054;
     }
 
     .L_GENRE_BADGE:hover {
         background-color: #502f2f;
     }
     .L_BUTTON_LIKE_A_LINK {
-        color: #776b66;
+        color: #b17054;
     }
     .L_BUTTON_LIKE_A_LINK:hover {
         color: #fd9153;
     }
     .L_LI {
         background-color: #2d1b1b;
-        border: 1px solid #776b66;
-        color: #776b66;
+        border: 1px solid #b17054;
+        color: #b17054;
     }
     .L_ERROR {
         color: #bb0000;
@@ -279,7 +280,7 @@ hr {
     }
 
     .L_LINK_HEADER {
-        color: #776b66;
+        color: #b17054;
     }
     
     .L_BOX_FOOTER {
@@ -341,7 +342,7 @@ input[type=submit]:hover {
 
 @media (prefers-color-scheme: dark) {
     input[type=submit] {
-        color: #776b66;
+        color: #b17054;
         background-color: #5e1414;
     }
 }
