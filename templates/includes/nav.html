@@ -24,18 +24,18 @@
 {% comment %} SMARTPHONE {% endcomment %}
 {% comment %} <a class="NAV mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a> {% endcomment %}
 {% if user.is_authenticated %}
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️</a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥<span class="text-3xl"></span></a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼<span class="text-3xl"></span></a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️<span class="text-3xl"></span></a>
             <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_logout' %}">
                     <span class="text-3xl">⥇</span>
                     | <b>LOGIN : {{ user.username }}</b>
                     {% if user.is_staff %}⚖️{% endif %}
             </a>
 {% else %}
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️</a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥<span class="text-3xl"></span></a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼<span class="text-3xl"></span></a>
+            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️<span class="text-3xl"></span></a>
             <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span></a>
             {% if request.path == '/account/login/' %}
                     <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span></a>
