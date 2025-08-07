@@ -1,3 +1,11 @@
+## [1.19.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.1...v1.19.2) (2025-08-07)
+
+
+### Bug Fixes
+
+* animation: Song.get_all_songs(request.user.is_authenticated) ([c89e199](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c89e1991f314d07bcfef658a57f7c720bcc3ef87))
+* songs: change order of total_songs ([417c30d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/417c30da97124992504f6a93fc08ad3049a26ef7))
+
 ## [1.19.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.0...v1.19.1) (2025-08-07)
 
 
