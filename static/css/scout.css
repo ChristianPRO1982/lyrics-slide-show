@@ -1,3 +1,9 @@
+.MAIN_BLOC {
+    @media (min-width: 1024px) {
+        min-height: 700px;
+    }
+}
+
 .L_TEXT {
     color: #1C4E4A;
 }
