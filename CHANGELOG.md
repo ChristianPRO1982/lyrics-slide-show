@@ -1,3 +1,19 @@
+# [1.19.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.8...v1.19.0) (2025-08-07)
+
+
+### Bug Fixes
+
+* add &nbsp; for languages ([cafdaf2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cafdaf29c9301a1d91be65032f2422217f8cb8b7))
+* add new message for song when user put a new message for the same song ([0022a54](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0022a54f5985b78860165d700114cd7663460866))
+* colors for delete account ([27a64c1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/27a64c184150d031ade89b11cf72fe0714606bf3))
+* license: init ([387fd63](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/387fd63d5fe7d748b61808c9ec0b30478b079a05))
+* menu ([57c4270](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/57c4270dd3858d607c0d78417c53f11c4cb7973a))
+
+
+### Features
+
+* add licensed song tag ([abd45f2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/abd45f26d98f61ac8b06f5335b81db3a4081c7f3))
+
 ## [1.18.8](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.7...v1.18.8) (2025-08-06)
 
 
