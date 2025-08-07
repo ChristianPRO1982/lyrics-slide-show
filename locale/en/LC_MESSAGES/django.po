@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-06 16:36+0200\n"
+"POT-Creation-Date: 2025-08-07 10:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,7 +380,7 @@ msgid "Go to the song"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:325
-#: app_song/templates/app_song/songs.html:54
+#: app_song/templates/app_song/songs.html:55
 msgid "Song research"
 msgstr ""
 
@@ -498,7 +498,7 @@ msgid "new_group"
 msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:128
+#: app_song/templates/app_song/songs.html:129
 msgid "add"
 msgstr ""
 
@@ -1185,7 +1185,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:51
 #: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/songs.html:71
+#: app_song/templates/app_song/songs.html:72
 msgid "Song approved"
 msgstr ""
 
@@ -1379,72 +1379,76 @@ msgstr ""
 msgid "✔️⁉️: Song valided with messages"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:58
-#: app_song/templates/app_song/songs.html:121
+#: app_song/templates/app_song/songs.html:23
+msgid "📄: Licensed song"
+msgstr ""
+
+#: app_song/templates/app_song/songs.html:59
+#: app_song/templates/app_song/songs.html:122
 msgid "Minimum 3 characters"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:62
+#: app_song/templates/app_song/songs.html:63
 msgid "Search in description and lyrics"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:64
+#: app_song/templates/app_song/songs.html:65
 msgid "Advanced search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:78
+#: app_song/templates/app_song/songs.html:79
 msgid "Song not approved"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:81
+#: app_song/templates/app_song/songs.html:82
 msgid "Logic by:"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:84
+#: app_song/templates/app_song/songs.html:85
 msgid "OR"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:88
+#: app_song/templates/app_song/songs.html:89
 msgid "AND"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:91
+#: app_song/templates/app_song/songs.html:92
 msgid "find genre or band or artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:114
+#: app_song/templates/app_song/songs.html:115
 msgid "genre"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:114
+#: app_song/templates/app_song/songs.html:115
 msgid "band"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:114
+#: app_song/templates/app_song/songs.html:115
 msgid "artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:117
+#: app_song/templates/app_song/songs.html:118
 msgid "save and search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:117
+#: app_song/templates/app_song/songs.html:118
 msgid "help_save_search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:118
+#: app_song/templates/app_song/songs.html:119
 msgid "reset"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:126
+#: app_song/templates/app_song/songs.html:127
 msgid "New song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:128
 msgid "New sub title"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:208
+#: app_song/templates/app_song/songs.html:209
 #: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr ""

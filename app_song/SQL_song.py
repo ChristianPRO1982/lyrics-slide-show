@@ -76,14 +76,15 @@ class Song:
 
 
     @staticmethod
-    def get_all_songs(search_txt: str = '',
-                      search_everywhere: bool = False,
-                      search_logic: int = 0,
-                      search_genres: str = '',
-                      search_bands: str = '',
-                      search_artists: str = '',
-                      search_song_approved: int = 0) -> list[dict[str, Any]]:
-        
+    def get_all_songs(is_authenticated: bool,
+        search_txt: str = '',
+        search_everywhere: bool = False,
+        search_logic: int = 0,
+        search_genres: str = '',
+        search_bands: str = '',
+        search_artists: str = '',
+        search_song_approved: int = 0) -> list[dict[str, Any]]:
+
         search_genres_is_null = '0'
         if not search_genres:
             search_genres = '0'
@@ -126,6 +127,10 @@ class Song:
                      WHEN ls1.status = 1 THEN ' ✔️'
                      WHEN ls1.status = 2 THEN ' ✔️⁉️'
                      ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.licensed IS TRUE THEN ' 📄'
+                     ELSE ''
                  END) AS full_title,
           CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres,
           CONCAT('[', GROUP_CONCAT(CONCAT(cb.name)), ']') AS bands,
@@ -137,7 +142,8 @@ LEFT JOIN l_song_bands lsb ON lsb.song_id = ls1.song_id
 LEFT JOIN c_bands cb ON cb.band_id = lsb.band_id
 LEFT JOIN l_song_artists lsa ON lsa.song_id = ls1.song_id
 LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
-    WHERE ({search_everywhere} IS FALSE
+    WHERE (ls1.licensed IS FALSE OR {is_authenticated} IS TRUE)
+      AND ({search_everywhere} IS FALSE
            AND (ls1.title LIKE '%{search_txt}%'
                 OR ls1.sub_title LIKE '%{search_txt}%')
             OR {search_everywhere} IS TRUE
@@ -170,6 +176,10 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
                  CASE
                      WHEN ls1.status = 1 THEN ' ✔️'
                      WHEN ls1.status = 2 THEN ' ✔️⁉️'
+                     ELSE ''
+                 END,
+                 CASE
+                     WHEN ls1.licensed IS TRUE THEN ' 📄'
                      ELSE ''
                  END)
  ORDER BY ls1.title, ls1.sub_title
@@ -285,7 +295,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
     
 
     @classmethod
-    def get_song_by_id(cls, song_id):
+    def get_song_by_id(cls, song_id, is_authenticated: bool):
         with connection.cursor() as cursor:
             request = """
 SELECT *, CONCAT(title,
@@ -297,12 +307,17 @@ SELECT *, CONCAT(title,
                      WHEN status = 1 THEN ' ✔️'
                      WHEN status = 2 THEN ' ✔️⁉️'
                      ELSE ''
+                 END,
+                 CASE
+                     WHEN licensed IS TRUE THEN ' 📄'
+                     ELSE ''
                  END) AS full_title
   FROM l_songs
  WHERE song_id = %s
+   AND (licensed IS FALSE OR %s IS TRUE)
 """
-            params = [song_id]
-            
+            params = [song_id, is_authenticated]
+
             create_SQL_log(code_file, "Song.get_song_by_id", "SELECT_2", request, params)
             cursor.execute(request, params)
             row = cursor.fetchone()
