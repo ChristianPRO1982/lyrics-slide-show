@@ -1,3 +1,10 @@
+## [1.19.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.2...v1.19.3) (2025-08-07)
+
+
+### Bug Fixes
+
+* CSS ([c67a9f9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c67a9f9499b782f1a187f045c829cf58c425384b))
+
 ## [1.19.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.1...v1.19.2) (2025-08-07)
 
 
