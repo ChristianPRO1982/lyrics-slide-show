@@ -15,12 +15,12 @@ from app_main.utils import (
 from app_main.SQL_main import Site
 
 
-@login_required
 def songs(request):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
     new_song_title = '';
+    is_authenticated = request.user.is_authenticated
 
     try:
         if request.session['error']:
@@ -96,7 +96,8 @@ def songs(request):
             add_search_params(request, '', 0, 0, '', '', '', 0)
             
     search_params = get_search_params(request)
-    songs = Song.get_all_songs(search_params['search_txt'],
+    songs = Song.get_all_songs(is_authenticated,
+                               search_params['search_txt'],
                                search_params['search_everywhere'],
                                search_params['search_logic'],
                                search_params['search_genres'],
@@ -147,7 +148,7 @@ def modify_song(request, song_id):
     new_verse = False
     song_params = get_song_params()
 
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -167,6 +168,7 @@ def modify_song(request, song_id):
                 song.title = request.POST.get('txt_title').strip()
                 song.sub_title = request.POST.get('txt_sub_title').strip()
                 song.description = request.POST.get('txt_description').strip()
+                song.licensed = request.POST.get('box_licensed', 'off') == 'on'
                 
                 status = song.save(moderator) # ✔️⁉️✖️
 
@@ -273,7 +275,7 @@ def delete_song(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     moderator = is_moderator(request)
     if song.status == 1 and not moderator:
         request.session['error'] = '[ERR18]'
@@ -302,13 +304,12 @@ def delete_song(request, song_id):
     })
 
 
-@login_required
 def goto_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if song:
         song_params = get_song_params()
         song.verse_max_lines = song_params['verse_max_lines']
@@ -341,12 +342,13 @@ def moderator_song(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     song_params = get_song_params()
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     song_lyrics = song.get_lyrics()
+    song.get_bands_and_artists()
     valided = False
 
     if request.method == 'POST':
@@ -362,6 +364,9 @@ def moderator_song(request, song_id):
     return render(request, 'app_song/moderator_song.html', {
         'song': song,
         'song_lyrics': song_lyrics,
+        'song_messages': song.get_moderator_new_messages(),
+        'bands': song.bands,
+        'artists': song.artists,
         'valided': valided,
         'error': error,
         'css': css,
@@ -375,7 +380,7 @@ def song_metadata(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
 
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -503,9 +508,8 @@ def delete_artist(request, artist_id):
     return redirect('songs')
 
 
-@login_required
 def smartphone_view(request, song_id):
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -526,9 +530,8 @@ def smartphone_view(request, song_id):
     })
 
 
-@login_required
 def print_lyrics(request, song_id):
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -548,9 +551,8 @@ def print_lyrics(request, song_id):
     })
 
 
-@login_required
 def print_lyrics_one_chorus(request, song_id):
-    song = Song.get_song_by_id(song_id)
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
         request.session['error'] = '[ERR16]'
         return redirect('songs')

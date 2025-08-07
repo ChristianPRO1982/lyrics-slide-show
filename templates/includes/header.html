@@ -11,7 +11,8 @@
         <!-- Right side (push with ml-auto) -->
         <div class="ml-auto">
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 {% trans 'Profile' %}</a>
+            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 <b>{{ user.username }}</b>
+            {% if user.is_staff %}⚖️{% endif %}</a>
             {% endif %}
             <a id="a_languages" href="#"
             onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;"

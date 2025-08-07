@@ -121,8 +121,8 @@ hr {
 }
 
 .L_ERROR_OTHER {
-    color: #aa0000;
-    background-color: #ff5555;
+    color: #700;
+    background-color: #f77;
 }
 
 .L_HIGHLIGHT_GREEN {
@@ -246,7 +246,8 @@ hr {
         color: #bb0000;
     }
     .L_ERROR_OTHER {
-        color: #ee0000;
+        color: #f22;
+        background-color: #200;
     }
     .L_HIGHLIGHT_GREEN {
         color: #68947d;
