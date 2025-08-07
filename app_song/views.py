@@ -20,7 +20,6 @@ def songs(request):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
     new_song_title = '';
-    is_authenticated = request.user.is_authenticated
 
     try:
         if request.session['error']:
@@ -96,7 +95,7 @@ def songs(request):
             add_search_params(request, '', 0, 0, '', '', '', 0)
             
     search_params = get_search_params(request)
-    songs = Song.get_all_songs(is_authenticated,
+    songs = Song.get_all_songs(request.user.is_authenticated,
                                search_params['search_txt'],
                                search_params['search_everywhere'],
                                search_params['search_logic'],
