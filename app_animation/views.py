@@ -153,7 +153,7 @@ def modify_animation(request, animation_id):
         database = ''
         list_lyrics = []
         for song in animation.songs:
-            song_lyrics = Song.get_song_by_id(song['song_id'])
+            song_lyrics = Song.get_song_by_id(song['song_id'], request.user.is_authenticated)
             song_params = get_song_params()
             song_lyrics.verse_max_lines = song_params['verse_max_lines']
             song_lyrics.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
@@ -174,7 +174,7 @@ def modify_animation(request, animation_id):
 
     return render(request, 'app_animation/modify_animation.html', {
         'animation': animation,
-        'all_songs': Song.get_all_songs(),
+        'all_songs': Song.get_all_songs(request.user.is_authenticated),
         'songs_already_in': songs_already_in,
         'list_lyrics': list_lyrics,
         'group_selected': group_selected,
