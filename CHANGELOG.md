@@ -1,3 +1,10 @@
+## [1.19.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.0...v1.19.1) (2025-08-07)
+
+
+### Bug Fixes
+
+* add button "save and exit" on the top of song modify page ([0c6b2ec](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0c6b2ecad832b3b0b5ebc3f521653d303c8a5536))
+
 # [1.19.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.18.8...v1.19.0) (2025-08-07)
 
 
