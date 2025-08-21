@@ -1,3 +1,10 @@
+## [1.19.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.3...v1.19.4) (2025-08-21)
+
+
+### Bug Fixes
+
+* company_name_small in global_variables ([60dcc3f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/60dcc3f89bc533c17e4938d6ae16bd60590319ce))
+
 ## [1.19.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.2...v1.19.3) (2025-08-07)
 
 
