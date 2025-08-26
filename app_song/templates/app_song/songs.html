@@ -11,11 +11,10 @@
     {% endif %}
 
     <span>{% trans "Songs:" %}</span> <span id="nb_song"></span><br>
-    <span>{{ total_songs }}</span><br>
-    <span title="{% trans "Total songs in DB" %}">{% trans "Total ⓘ:" %}</span>
     {% if user.is_authenticated %}
-    <br><span title="{% trans "Total songs in save search" %}">{% trans "Search ⓘ:" %}</span> <span>{{ total_search_songs }}</span>
+    <span title="{% trans 'Total songs in save search' %}">{% trans "Search ⓘ:" %}</span> <span>{{ total_search_songs }}</span><br>
     {% endif %}
+    <span title="{% trans 'Total songs in DB' %}">{% trans "Total ⓘ:" %}</span> <span>{{ total_songs }}</span>
     
     <br><br>
 
@@ -116,7 +115,7 @@
             🎼 : {% trans "genre" %} / 👥 : {% trans "band" %} / 👤 : {% trans "artist" %}
             <hr>
         </div>
-        <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans "help_save_search" %}" type="submit" />
+        <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans 'help_save_search' %}" type="submit" />
         <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
     </form>
     {% else %}
