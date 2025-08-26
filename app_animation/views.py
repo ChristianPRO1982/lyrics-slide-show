@@ -421,7 +421,7 @@ def all_songs_all_lyrics(request, animation_id):
         qr = qrcode.QRCode(box_size=10, border=4)
         qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
         qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
+        img = qr.make_image(fill_color="white", back_color="black")
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
         img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')
