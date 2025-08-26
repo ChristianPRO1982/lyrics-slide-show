@@ -1,3 +1,15 @@
+## [1.19.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.4...v1.19.5) (2025-08-26)
+
+
+### Bug Fixes
+
+* debug docker-compose & wait_for_db ([1b613fd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1b613fd31377ee206a63b5191953a37e01fe32ed))
+* new timestamp for song's messages: CONVERT_TZ(NOW(), '+00:00', 'Europe/Paris') ([2bef0c6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2bef0c6c765560b18abe70ebd91ec736a8eb0c8e))
+* test "ⓘ" for smartphone ([3395734](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/33957341d76fde06b48cc3c92e7c1fc622417afb))
+* try to put the good datestamp for song's messages ([8921826](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/89218260a0307e8f33fd1e0063f377c4380b5d02))
+* when a new song is created then reset search ([3a8f94d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3a8f94df5c127785dea048c03c801f7b927fabbb))
+* when create a new song if existing then push a message "double" ([b5dbd1d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b5dbd1ddf6eac3363da47ef21ece5faf2062c205))
+
 ## [1.19.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.3...v1.19.4) (2025-08-21)
 
 
