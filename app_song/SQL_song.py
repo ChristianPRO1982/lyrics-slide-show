@@ -370,7 +370,7 @@ UPDATE l_songs
                     affected_rows = cursor.rowcount
                     return affected_rows > 0
                 except Exception as e:
-                    return False
+                    return 0
 
             else:
                 request = """
@@ -383,9 +383,11 @@ INSERT INTO l_songs (title, sub_title, description)
                 try:
                     cursor.execute(request, params)
                     self.song_id = cursor.lastrowid
-                    return True
+                    return 0
                 except Exception as e:
-                    return False
+                    if 'Duplicate entry' in str(e):
+                        return 1
+                    return 2
 
 
     def delete(self):
