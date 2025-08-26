@@ -3,7 +3,9 @@
 {% for band in song.bands %}
 {% if band.song_id %}
 <span class="L_GENRE_BADGE">
-    {{ band.emoji_random }} {{ band.name }}
+    <a href="{% url 'songs' %}band/{{ band.name }}/">
+        {{ band.emoji_random }} {{ band.name }}
+    </a>
 </span>
 {% endif %}
 {% endfor %}
@@ -11,7 +13,9 @@
 {% for artist in song.artists %}
 {% if artist.song_id %}
 <span class="L_GENRE_BADGE">
-    {{ artist.emoji_random }} {{ artist.name }}
+    <a href="{% url 'songs' %}artist/{{ artist.name }}/">
+        {{ artist.emoji_random }} {{ artist.name }}
+    </a>
 </span>
 {% endif %}
 {% endfor %}
@@ -23,7 +27,9 @@
 <h4 class="L_H4">{{ genre.group }}</h4>
 {% endif %}
 <span class="L_GENRE_BADGE">
-    {{ genre.emoji_random }} {{ genre.name }}
+    <a href="{% url 'songs' %}genre/{{ genre.full_name }}/">
+        {{ genre.emoji_random }} {{ genre.name }}
+    </a>
 </span>
 {% endfor %}
 

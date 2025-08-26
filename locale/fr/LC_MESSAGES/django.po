@@ -1455,16 +1455,12 @@ msgid "find genre or band or artist"
 msgstr "Trouver le genre ou le groupe ou l'artiste"
 
 #: app_song/templates/app_song/songs.html:115
-#, fuzzy
-#| msgid "New genre"
 msgid "genre"
-msgstr "Nouveau genre"
+msgstr "Genre"
 
 #: app_song/templates/app_song/songs.html:115
-#, fuzzy
-#| msgid "New band"
 msgid "band"
-msgstr "Nouveau group de musique"
+msgstr "Groupe"
 
 #: app_song/templates/app_song/songs.html:115
 msgid "artist"

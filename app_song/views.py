@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+import qrcode
+import io, base64
 from .SQL_song import Song, Genre
 from app_main.utils import (
     is_moderator,
@@ -528,10 +530,24 @@ def smartphone_view(request, song_id):
     song.get_verses()
     lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
 
+    # QR-CODE
+    img_qr_code = ''
+    try:
+        qr = qrcode.QRCode(box_size=10, border=4)
+        qr.add_data(f'https://www.carthographie.fr/songs/smartphone_view/{song_id}/')
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="white", back_color="black")
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    except Exception as e:
+        error = "[ERR35]"
+
     return render(request, 'app_animation/all_lyrics.html', {
         'song_id': song_id,
         'full_title': 'Smartphone View',
         'lyrics': lyrics,
+        'img_qr_code': img_qr_code,
     })
 
 
