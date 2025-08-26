@@ -518,6 +518,11 @@ INSERT INTO l_song_genre (song_id, genre_id)
 INSERT INTO l_songs_mod_message (song_id, message, date)
      VALUES (%s, %s, CONVERT_TZ(NOW(), '+00:00', 'Europe/Paris'))
 """
+# for debug: a version of MySQL that does not support CONVERT_TZ()
+#             request = """
+# INSERT INTO l_songs_mod_message (song_id, message, date)
+#      VALUES (%s, %s, NOW())
+# """
             params = [self.song_id, message]
             
             try:
