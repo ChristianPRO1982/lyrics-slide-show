@@ -95,7 +95,7 @@ CREATE TABLE `l_songs_mod_message` (
   `song_id` mediumint NOT NULL,
   `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` smallint NOT NULL DEFAULT '0',
-  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date` datetime NOT NULL,
   PRIMARY KEY (`message_id`),
   KEY `l_songs_mod_message_l_songs_FK` (`song_id`),
   KEY `l_songs_mod_message_status_IDX` (`status`) USING BTREE,
