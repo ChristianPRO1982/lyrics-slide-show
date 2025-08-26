@@ -4,21 +4,21 @@ services:
     image: traefik:latest
     restart: always
     command:
-      - "--api.dashboard=true" # Active le dashboard
-      - "--providers.docker=true" # Permet à Traefik de détecter les containers Docker
-      - "--providers.docker.exposedbydefault=false" # Evite d'exposer tous les containers par défaut
-      - "--entrypoints.web.address=:80" # Trafic HTTP
-      - "--entrypoints.websecure.address=:443" # Trafic HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure" # Redirection HTTP -> HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https" # Redirection HTTP -> HTTPS
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true" # Challenge TLS pour Let's Encrypt
-      - "--certificatesresolvers.letsencrypt.acme.email=carthographie@outlook.fr" # Ton email Let's Encrypt
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json" # Stockage des certificats
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=carthographie@outlook.fr"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "80:80" # HTTP
-      - "443:443" # HTTPS
-      - "8000:8000" # API
-      - "8080:8080" # DASHBOARD
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # dashboard
+      # - "8000:8000" # optionnel, à retirer si non utilisé
     networks:
       - netcartho
     volumes:
@@ -26,36 +26,46 @@ services:
       - letsencrypt:/letsencrypt
     labels:
       - "traefik.enable=true"
-      # Route pour le dashboard
+      # Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.carthographie.fr`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-      # Redirection de carthographie.fr vers www.carthographie.fr
+
+      # Redirection carthographie.fr -> www.carthographie.fr
       - "traefik.http.routers.redirect-root.rule=Host(`carthographie.fr`)"
       - "traefik.http.routers.redirect-root.entrypoints=websecure"
       - "traefik.http.routers.redirect-root.tls.certresolver=letsencrypt"
       - "traefik.http.routers.redirect-root.middlewares=redirect-www"
-#      - "traefik.http.middlewares.redirect-www.redirectregex.regex=^https://carthographie.fr(.*)"
-#      - "traefik.http.middlewares.redirect-www.redirectregex.replacement=https://www.carthographie.fr$${1}"
-#      - "traefik.http.middlewares.redirect-www.redirectregex.permanent=true"
-      # Middleware pour l'authentification basique (optionnel mais recommandé)
-      # - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$9gzDnaoG$R7Nnpcr5w0wRDTo0.Lcn20" # Générez votre propre hash
-      # - "traefik.http.routers.dashboard.middlewares=auth"
-      # Headers de sécurité
-      # - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
-      # - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
-      # - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
-      # - "traefik.http.middlewares.security-headers.headers.customFrameOptionsValue=SAMEORIGIN"
-      # - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-      # - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
-      # - "traefik.http.middlewares.security-headers.headers.permissionsPolicy=camera=(), microphone=(), geolocation=(), payment=()"
+      # >>> Définition du middleware manquante AVANT : on la réactive <<<
+      - "traefik.http.middlewares.redirect-www.redirectregex.regex=^https://carthographie\\.fr(.*)"
+      - "traefik.http.middlewares.redirect-www.redirectregex.replacement=https://www.carthographie.fr$${1}"
+      - "traefik.http.middlewares.redirect-www.redirectregex.permanent=true"
 
-      # Appliquer les headers de sécurité au dashboard
-      # - "traefik.http.routers.dashboard.middlewares=security-headers"
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
+      MYSQL_USER: ${DOCKER_MYSQL_USER}
+      MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - netcartho
+    # Optionnel si pas d’accès depuis l’hôte :
+    # ports:
+    #   - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DOCKER_MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   web:
     image: carthographie/lyrics-slide-show:latest
+    restart: always
     command: >
       sh -c "scripts/wait_for_db.sh &&
              python manage.py migrate &&
@@ -66,7 +76,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - netcartho
     labels:
@@ -79,12 +90,11 @@ services:
       - "traefik.http.middlewares.add-slash.redirectregex.regex=^([^\\.]*)[^/]$"
       - "traefik.http.middlewares.add-slash.redirectregex.replacement=$${1}/"
       - "traefik.http.middlewares.add-slash.redirectregex.permanent=true"
-#      - "traefik.http.routers.django.middlewares=django-strip-static"
-#      - "traefik.http.middlewares.django-strip-static.stripprefix.prefixes=/static"
 
   nginx:
     image: nginx:alpine
     container_name: nginx-static
+    restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./staticfiles:/static:ro
@@ -100,25 +110,13 @@ services:
       - "traefik.http.routers.static.tls.certresolver=letsencrypt"
       - "traefik.http.services.static.loadbalancer.server.port=80"
 
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
-      MYSQL_USER: ${DOCKER_MYSQL_USER}
-      MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - netcartho
-    ports:
-      - "3306:3306"
-
   api:
     image: carthographie/api-carthographie:latest
     restart: always
     env_file:
       - .env
+    volumes:
+      - ./n8n_files/contrat:/files
     networks:
       - netcartho
     labels:
@@ -126,11 +124,11 @@ services:
       - "traefik.http.routers.api.rule=Host(`api.carthographie.fr`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.api.loadbalancer.server.port=8000"  # Port exposé dans le container FastAPI
-
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
 
   n8n:
-    image: n8nio/n8n
+    image: n8nio/n8n:1.91.2
+    restart: always
     environment:
       - N8N_HOST=n8n.carthographie.fr
       - N8N_PORT=5678
@@ -146,24 +144,11 @@ services:
       - ./n8n_files:/files
     networks:
       - netcartho
-    restart: always
-#    ports:
-#      - "5678:5678"
     labels:
       - traefik.enable=true
       - traefik.http.routers.n8n.rule=Host(`n8n.carthographie.fr`)
-#      - traefik.http.routers.n8n.tls=true
       - traefik.http.routers.n8n.entrypoints=web,websecure
       - traefik.http.routers.n8n.tls.certresolver=letsencrypt
-#      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
-#      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
-#      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
-#      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
-#      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
-#      - traefik.http.middlewares.n8n.headers.SSLHost=carthographie.fr
-#      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
-#      - traefik.http.middlewares.n8n.headers.STSPreload=true
-#      - traefik.http.routers.n8n.middlewares=n8n@docker
       - traefik.http.services.n8n.loadbalancer.server.port=5678
 
 networks:

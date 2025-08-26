@@ -370,7 +370,7 @@ UPDATE l_songs
                     affected_rows = cursor.rowcount
                     return affected_rows > 0
                 except Exception as e:
-                    return False
+                    return 0
 
             else:
                 request = """
@@ -383,9 +383,11 @@ INSERT INTO l_songs (title, sub_title, description)
                 try:
                     cursor.execute(request, params)
                     self.song_id = cursor.lastrowid
-                    return True
+                    return 0
                 except Exception as e:
-                    return False
+                    if 'Duplicate entry' in str(e):
+                        return 1
+                    return 2
 
 
     def delete(self):
@@ -513,8 +515,8 @@ INSERT INTO l_song_genre (song_id, genre_id)
     def moderator_new_message(self, message: str)->int:
         with connection.cursor() as cursor:
             request = """
-INSERT INTO l_songs_mod_message (song_id, message)
-     VALUES (%s, %s)
+INSERT INTO l_songs_mod_message (song_id, message, date)
+     VALUES (%s, %s, NOW())
 """
             params = [self.song_id, message]
             

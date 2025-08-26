@@ -40,13 +40,19 @@ def songs(request):
                             sub_title = request.POST.get('txt_new_sub_title').strip(),
                             description = ""
                            )
-            if not new_song.save():
-                error = '[ERR12]'
-            else:
+            status = new_song.save()
+            if status == 0:
                 new_song_title = new_song.title
-            request.POST = request.POST.copy()
-            request.POST['txt_new_title'] = ''
-            request.POST['txt_new_description'] = ''
+                request.POST = request.POST.copy()
+                request.POST['txt_new_title'] = ''
+                request.POST['txt_new_sub_title'] = ''
+                add_search_params(request, '', 0, 0, '', '', '', 0)
+            elif status == 1:
+                new_song_title = new_song.title
+                add_search_params(request, '', 0, 0, '', '', '', 0)
+                error = '[ERR23]'
+            else:
+                error = '[ERR12]'
 
         if 'btn_search' in request.POST:
             if request.POST.get('rad_search_logic') == 'or':
@@ -214,7 +220,7 @@ def modify_song(request, song_id):
                     else:
                         error = '[ERR13]'
 
-        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']) and status != False and error == '':
+        if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']) and status and error == '':
             return redirect('songs')
 
         # Recalculate 'num' and 'num_verse' the for all choruses/verses
