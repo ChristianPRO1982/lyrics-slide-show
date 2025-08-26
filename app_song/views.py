@@ -46,7 +46,8 @@ def songs(request):
                 new_song_title = new_song.title
             request.POST = request.POST.copy()
             request.POST['txt_new_title'] = ''
-            request.POST['txt_new_description'] = ''
+            request.POST['txt_new_sub_title'] = ''
+            add_search_params(request, '', 0, 0, '', '', '', 0)
 
         if 'btn_search' in request.POST:
             if request.POST.get('rad_search_logic') == 'or':
