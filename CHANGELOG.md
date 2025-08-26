@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.5...v1.20.0) (2025-08-26)
+
+
+### Bug Fixes
+
+* add a debug mode for a version of MySQL that does not support CONVERT_TZ() ([98f4f36](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/98f4f36c9588522d27884b038df0b2848440e98d))
+* drop out prefix of genres on songs page ([34c6c6e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/34c6c6eb912a8fd069a0f5ada785f92f53e67eb6))
+
+
+### Features
+
+* ultra speed search since goto page, modify page, etc. ([84bf382](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/84bf3820fe46672de69680a42be2a8910ee3d477))
+
 ## [1.19.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.4...v1.19.5) (2025-08-26)
 
 
