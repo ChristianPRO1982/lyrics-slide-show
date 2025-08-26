@@ -97,10 +97,16 @@
   
   <hr style="width: 80%;">
 
-  {% if song_id %}
-  <a href="../../song/{{song_id}}/"><img style="width: 95%;" src="/static/images/Lyrics.png"></a>
-  {% else %}
-  <img style="width: 95%;" src="/static/images/Lyrics.png">
+  <center>
+    {% if song_id %}
+    <a href="../../song/{{song_id}}/"><img style="width: 25%;" src="/static/images/Lyrics.png"></a>
+    {% else %}
+    <img style="width: 25%;" src="/static/images/Lyrics.png">
+    {% endif %}
+  </center>
+
+  {% if img_qr_code %}
+  <img src="data:image/png;base64,{{ img_qr_code }}" alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site." class="w-16 h-16 object-contain"></div>
   {% endif %}
 
 </aside>

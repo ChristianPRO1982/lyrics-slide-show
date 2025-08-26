@@ -168,8 +168,13 @@
                 const uniqueGenres = new Set();
                 genresArr.forEach(function(genre) {
                     const parts = genre.trim().split('|');
+                    if (/^\d+\s*-\s*/.test(parts[1])) {
+                        var name = parts[1].replace(/^\d+\s*-\s*/, '');
+                    } else {
+                        var name = parts[1];
+                    }
                     if (parts.length === 2 && !uniqueGenres.has(parts[1])) {
-                        li.innerHTML += '<a href="/songs/genre/' + parts[1] + '/"><span class="L_GENRE_BADGE">🎼 ' + parts[1] + '</span></a>';
+                        li.innerHTML += '<a href="/songs/genre/' + parts[1] + '/"><span class="L_GENRE_BADGE">🎼 ' + name + '</span></a>';
                         uniqueGenres.add(parts[1]);
                         br = '<br>';
                     }

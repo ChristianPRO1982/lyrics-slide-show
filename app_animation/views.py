@@ -396,7 +396,7 @@ def all_songs_all_lyrics(request, animation_id):
     animation = Animation.get_animation_by_id_without_group_id(int(animation_id))
 
     if not animation:
-        return redirect('animations')
+        return redirect('homepage')
     
     animation.all_songs()
     full_title = animation.name
@@ -414,9 +414,23 @@ def all_songs_all_lyrics(request, animation_id):
         <h2>{song['full_title']}</h2>
         <p>{song_info.get_lyrics_to_display(False, Site=Site)}</p>
     </section>'''
+        
+    # QR-CODE
+    img_qr_code = ''
+    try:
+        qr = qrcode.QRCode(box_size=10, border=4)
+        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    except Exception as e:
+        error = "[ERR35]"
 
     
     return render(request, 'app_animation/all_lyrics.html', {
         'full_title': full_title,
         'lyrics': lyrics,
+        'img_qr_code': img_qr_code,
     })

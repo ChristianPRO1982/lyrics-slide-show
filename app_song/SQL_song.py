@@ -459,10 +459,12 @@ ORDER BY link
                WHEN @prev_group IS NULL OR tt.`group` != @prev_group THEN 1
                ELSE 0
            END AS is_new_group,
+           full_name,
            @prev_group := tt.`group`
       FROM (  SELECT lg.genre_id,
                      CASE WHEN REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') = '' THEN lg.`group` ELSE REGEXP_REPLACE(lg.`group`, '^[0-9 _\-]+', '') END AS `group`,
-                     CASE WHEN REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') = '' THEN lg.name ELSE REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') END AS name
+                     CASE WHEN REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') = '' THEN lg.name ELSE REGEXP_REPLACE(lg.name, '^[0-9 _\-]+', '') END AS name,
+                     lg.name AS full_name
                 FROM l_song_genre lsg
                 JOIN l_genres lg ON lg.genre_id = lsg.genre_id
                WHERE lsg.song_id = %s
@@ -480,6 +482,7 @@ CROSS JOIN (SELECT @prev_group := NULL) vars
                     'group': row[1],
                     'name': row[2],
                     'is_new_group': row[3],
+                    'full_name': row[4],
                     'emoji_random': random.choice(MUSIC_EMOJIS)
                 })
 
