@@ -516,7 +516,7 @@ INSERT INTO l_song_genre (song_id, genre_id)
         with connection.cursor() as cursor:
             request = """
 INSERT INTO l_songs_mod_message (song_id, message, date)
-     VALUES (%s, %s, NOW())
+     VALUES (%s, %s, CONVERT_TZ(NOW(), '+00:00', 'Europe/Paris'))
 """
             params = [self.song_id, message]
             
