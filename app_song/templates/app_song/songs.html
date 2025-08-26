@@ -155,7 +155,7 @@
             ? songs.filter(song => song.full_title.toLowerCase().includes(query.toLowerCase()))
             : songs;
 
-        document.getElementById('nb_song').textContent = filteredSongs.length; 
+        document.getElementById('nb_song').textContent = filteredSongs.length;
         
         filteredSongs.forEach(song => {
             const li = document.createElement('li');
