@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from .SQL_main import User, Site
 import requests
+import time
+import os
 
 
 def is_moderator(request)->bool:
@@ -15,8 +17,15 @@ def is_admin(request)->bool:
             return True
     return False
 
-def is_no_loader(request)->bool:
+def is_no_loader(request) -> bool:
     if request.session.get('no_loader', False):
+        if 'no_loader_date' in request.session:
+            now_ts = time.time()
+            DEBUG = os.getenv("DEBUG", "False") == '1'
+            if now_ts - request.session['no_loader_date'] > 10 and DEBUG or now_ts - request.session['no_loader_date'] > 3600:  # 3600s = 1h
+                request.session.pop('no_loader', None)
+                request.session.pop('no_loader_date', None)
+                return False
         return True
     return False
 

@@ -4,6 +4,8 @@ from django.utils import translation
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.decorators import login_required
+import time
+from urllib3 import request
 from app_logs.utils import delete_old_logs
 from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
 from .SQL_main import User, Site, Songs, Band, Artist, DB
@@ -98,11 +100,13 @@ def homepage(request):
 
 def kill_loader(request):
     request.session['no_loader'] = True
+    request.session['no_loader_date'] = time.time()
     return redirect('homepage')
 
 
 def loader(request):
-    del request.session['no_loader']
+    request.session.pop('no_loader', None)
+    request.session.pop('no_loader_date', None)
     return redirect('homepage')
 
 
