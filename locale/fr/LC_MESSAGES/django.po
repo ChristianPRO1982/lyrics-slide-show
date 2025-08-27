@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-07 10:12+0200\n"
+"POT-Creation-Date: 2025-08-27 16:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
 #: app_main/templates/app_main/homepage.html:72
-#: app_main/templates/app_main/homepage.html:139
+#: app_main/templates/app_main/homepage.html:124
 #: app_song/templates/app_song/moderator_song.html:43
 msgid "Cancel"
 msgstr "Annuler"
@@ -259,10 +259,10 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
 #: app_main/templates/app_main/homepage.html:71
-#: app_main/templates/app_main/homepage.html:138
+#: app_main/templates/app_main/homepage.html:123
 #: app_song/templates/app_song/moderator_song.html:39
 #: app_song/templates/app_song/modify_song.html:80
-#: app_song/templates/app_song/modify_song.html:216
+#: app_song/templates/app_song/modify_song.html:217
 #: app_song/templates/app_song/song_metadata.html:17
 #: app_song/templates/app_song/song_metadata.html:196
 msgid "save"
@@ -270,9 +270,9 @@ msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
-#: app_song/templates/app_song/modify_song.html:123
-#: app_song/templates/app_song/modify_song.html:149
-#: app_song/templates/app_song/modify_song.html:164
+#: app_song/templates/app_song/modify_song.html:124
+#: app_song/templates/app_song/modify_song.html:150
+#: app_song/templates/app_song/modify_song.html:165
 msgid "verse_num"
 msgstr "Couplet n°"
 
@@ -323,7 +323,7 @@ msgid "move2dots"
 msgstr "Déplacer&nbsp;:"
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:142
+#: app_song/templates/app_song/modify_song.html:143
 msgid "before"
 msgstr "Avant"
 
@@ -333,12 +333,12 @@ msgid "song_num"
 msgstr "chant n°"
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:156
+#: app_song/templates/app_song/modify_song.html:157
 msgid "dont_do_nothing"
 msgstr "[ne rien faire]"
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:157
+#: app_song/templates/app_song/modify_song.html:158
 msgid "after"
 msgstr "Après"
 
@@ -395,7 +395,8 @@ msgid "Selected song will appear here..."
 msgstr "Les chants sélectionnés seront placés ici..."
 
 #: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:217
+#: app_song/templates/app_song/modify_song.html:81
+#: app_song/templates/app_song/modify_song.html:218
 msgid "save_exit"
 msgstr "Enregistrer + revenir à la liste des chants"
 
@@ -835,22 +836,31 @@ msgstr "Nombre maximum de caractères pour une ligne"
 msgid "characters"
 msgstr "caractères"
 
+#: app_main/templates/app_main/homepage.html:107
+msgid "Chorus prefix: "
+msgstr "Préfixe du refrain : "
+
+#: app_main/templates/app_main/homepage.html:110
+msgid "Verse prefix 1: "
+msgstr "Préfixe de couplet 1 : "
+
+#: app_main/templates/app_main/homepage.html:113
+msgid "Verse prefix 2: "
+msgstr "Préfixe de couplet 2 : "
+
 #: app_main/templates/app_main/homepage.html:116
-#: app_main/templates/app_main/homepage.html:131
 msgid "Examples:"
 msgstr "Exemples :"
 
 #: app_main/templates/app_main/homepage.html:117
-#: app_main/templates/app_main/homepage.html:132
 msgid "my chorus"
 msgstr "mon refrain"
 
 #: app_main/templates/app_main/homepage.html:118
-#: app_main/templates/app_main/homepage.html:133
 msgid "my verse"
 msgstr "mon couplet"
 
-#: app_main/templates/app_main/homepage.html:142
+#: app_main/templates/app_main/homepage.html:127
 msgid "Modify site params"
 msgstr "Modifier les paramètres du site"
 
@@ -1036,7 +1046,7 @@ msgstr ""
 "discrétion."
 
 #: app_main/templates/app_main/profile.html:6
-#: app_main/templates/app_main/profile.html:7 templates/includes/header.html:14
+#: app_main/templates/app_main/profile.html:7
 msgid "Profile"
 msgstr "Compte"
 
@@ -1219,74 +1229,74 @@ msgstr "Description"
 msgid "Licensed"
 msgstr "Sous licence"
 
-#: app_song/templates/app_song/modify_song.html:87
+#: app_song/templates/app_song/modify_song.html:88
 msgid "Too many lines"
 msgstr "Trop de lignes"
 
-#: app_song/templates/app_song/modify_song.html:92
+#: app_song/templates/app_song/modify_song.html:93
 msgid "Too many characters for a line"
 msgstr "Trop de caractères sur une ligne"
 
-#: app_song/templates/app_song/modify_song.html:101
-#: app_song/templates/app_song/modify_song.html:147
-#: app_song/templates/app_song/modify_song.html:162
+#: app_song/templates/app_song/modify_song.html:102
+#: app_song/templates/app_song/modify_song.html:148
+#: app_song/templates/app_song/modify_song.html:163
 msgid "chorus"
 msgstr "Refrain"
 
-#: app_song/templates/app_song/modify_song.html:106
+#: app_song/templates/app_song/modify_song.html:107
 msgid "Use this option for not display chorus after"
 msgstr "Ne pas afficher le refrain après"
 
-#: app_song/templates/app_song/modify_song.html:106
+#: app_song/templates/app_song/modify_song.html:107
 msgid "followed"
 msgstr "Suivi"
 
-#: app_song/templates/app_song/modify_song.html:109
+#: app_song/templates/app_song/modify_song.html:110
 msgid "Not continue numbering"
 msgstr "Ne pas continuer la numérotation"
 
-#: app_song/templates/app_song/modify_song.html:109
+#: app_song/templates/app_song/modify_song.html:110
 msgid "Not C. num ⓘ"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:113
 msgid "like_a_chorus"
 msgstr "Comme un refrain"
 
-#: app_song/templates/app_song/modify_song.html:128
+#: app_song/templates/app_song/modify_song.html:129
 msgid "Prefix"
 msgstr "Préfixe"
 
-#: app_song/templates/app_song/modify_song.html:140
+#: app_song/templates/app_song/modify_song.html:141
 msgid "move2dot"
 msgstr "Déplacer&nbsp;:"
 
-#: app_song/templates/app_song/modify_song.html:175
+#: app_song/templates/app_song/modify_song.html:176
 msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet&nbsp;?"
 
-#: app_song/templates/app_song/modify_song.html:176
-#: app_song/templates/app_song/modify_song.html:193
+#: app_song/templates/app_song/modify_song.html:177
+#: app_song/templates/app_song/modify_song.html:194
 msgid "delete"
 msgstr "Supprimer"
 
-#: app_song/templates/app_song/modify_song.html:185
+#: app_song/templates/app_song/modify_song.html:186
 msgid "new_verse"
 msgstr "Nouveau couplet/refrain"
 
-#: app_song/templates/app_song/modify_song.html:189
+#: app_song/templates/app_song/modify_song.html:190
 msgid "Verse prefixes"
 msgstr "Préfixe de couplet"
 
-#: app_song/templates/app_song/modify_song.html:197
+#: app_song/templates/app_song/modify_song.html:198
 msgid "new prefix"
 msgstr "Nouveau préfixe"
 
-#: app_song/templates/app_song/modify_song.html:198
+#: app_song/templates/app_song/modify_song.html:199
 msgid "comment"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:218
+#: app_song/templates/app_song/modify_song.html:219
 msgid "cancel_info"
 msgstr "Annuler (perdre toutes les modifications en cours)"
 
@@ -1369,21 +1379,21 @@ msgstr "Liste des chants"
 msgid "Songs:"
 msgstr "Chants&nbsp;:"
 
-#: app_song/templates/app_song/songs.html:14
-msgid "Total songs in DB"
-msgstr "Nombre total de chants en base de données"
-
-#: app_song/templates/app_song/songs.html:14
-msgid "Total ⓘ:"
-msgstr "Total ⓘ&nbsp;:"
-
-#: app_song/templates/app_song/songs.html:16
+#: app_song/templates/app_song/songs.html:15
 msgid "Total songs in save search"
 msgstr "Nombre de chants retournés par la recherche sauvegardée"
 
-#: app_song/templates/app_song/songs.html:16
+#: app_song/templates/app_song/songs.html:15
 msgid "Search ⓘ:"
 msgstr "Recherche ⓘ&nbsp;:"
+
+#: app_song/templates/app_song/songs.html:17
+msgid "Total songs in DB"
+msgstr "Nombre total de chants en base de données"
+
+#: app_song/templates/app_song/songs.html:17
+msgid "Total ⓘ:"
+msgstr "Total ⓘ&nbsp;:"
 
 #: app_song/templates/app_song/songs.html:21
 msgid "✔️: Song valided"
@@ -1464,7 +1474,7 @@ msgstr "Nouveau chant"
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:209
+#: app_song/templates/app_song/songs.html:214
 #: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
@@ -1565,327 +1575,327 @@ msgstr ""
 "La page ne s'affiche pas au bout de quelque seconde&nbsp;? Recharger là (F5) "
 "ou alors cliquer ici."
 
-#: templates/base.html:53
+#: templates/base.html:54
 msgid "ERR1"
 msgstr "Aucun groupe n'est sélectionné"
 
-#: templates/base.html:55
+#: templates/base.html:56
 msgid "ERR2"
 msgstr "Le nom est obligatoire."
 
-#: templates/base.html:57
+#: templates/base.html:58
 msgid "ERR3"
 msgstr "Le nom du groupe est obligatoire."
 
-#: templates/base.html:59
+#: templates/base.html:60
 msgid "ERR4"
 msgstr ""
 "Le 'username' indiqué ne se trouve pas en base de données. Merci d'indiquer "
 "un 'username' valide."
 
-#: templates/base.html:61 templates/base.html:63
+#: templates/base.html:62 templates/base.html:64
 msgid "ERR5"
 msgstr ""
 "[ERR5] Impossible d'ajouter le 'username' comme admin du groupe car il n'est "
 "pas reconnu dans le système. Contactez l'administrateur du site."
 
-#: templates/base.html:65
+#: templates/base.html:66
 msgid "ERR7"
 msgstr "Impossible d'ajouter 'username' comme administrateur du groupe."
 
-#: templates/base.html:67
+#: templates/base.html:68
 msgid "ERR8"
 msgstr ""
 "Le nom du groupe est déjà utilisé. Deux groupes ne peuvent pas avoir le même "
 "nom."
 
-#: templates/base.html:69
+#: templates/base.html:70
 msgid "ERR9"
 msgstr ""
 "[ERR9] Impossible de créer le groupe. Contactez l'administrateur du site."
 
-#: templates/base.html:71
+#: templates/base.html:72
 msgid "ERR10"
 msgstr "Ce groupe n'existe pas ou vous n'êtes pas admis à y accéder."
 
-#: templates/base.html:73
+#: templates/base.html:74
 msgid "ERR11"
 msgstr ""
 "[ERR11] Impossible d'accéder au groupe. Contactez l'administrateur du site."
 
-#: templates/base.html:75
+#: templates/base.html:76
 msgid "ERR12"
 msgstr ""
 "[ERR12] Impossible d'enregistrer ce chant. Contactez l'administrateur du "
 "site."
 
-#: templates/base.html:77
+#: templates/base.html:78
 msgid "ERR13"
 msgstr ""
 "[ERR13] Impossible d'enregistrer ce chant, il est peut-être “validé” (marqué "
 "“✔️”). Contactez un modérateur."
 
-#: templates/base.html:79
+#: templates/base.html:80
 msgid "ERR14"
 msgstr ""
 "[ERR14] Impossible d'enregistrer ce message. Contactez l'administrateur du "
 "site."
 
-#: templates/base.html:81
+#: templates/base.html:82
 msgid "ERR15"
 msgstr ""
 "[ERR15] Message sauvegardé mais le statut du chant n'a pas pu être modifié. "
 "Contactez l'administrateur du site"
 
-#: templates/base.html:83
+#: templates/base.html:84
 msgid "ERR16"
 msgstr "Ce chant n'existe pas ou vous n'êtes pas admis à y accéder."
 
-#: templates/base.html:85
+#: templates/base.html:86
 msgid "ERR17"
 msgstr ""
 "[ERR17] Impossible de générer les diapos. Contacter l'administrateur du site."
 
-#: templates/base.html:87
+#: templates/base.html:88
 msgid "ERR18"
 msgstr "Ce chant est au statut “validé” (marqué “✔️”). Contactez un modérateur."
 
-#: templates/base.html:89
+#: templates/base.html:90
 msgid "ERR19"
 msgstr "Le lien est déjà enregistré. Impossible de créer un doublon."
 
-#: templates/base.html:91
+#: templates/base.html:92
 msgid "ERR20"
 msgstr ""
 "[ERR20] Impossible d'enregistrer ce lien. Contacter l'administrateur du site."
 
-#: templates/base.html:93
+#: templates/base.html:94
 msgid "ERR21"
 msgstr ""
 "[ERR21] Impossible de supprimer ce lien. Contacter l'administrateur du site."
 
-#: templates/base.html:95
+#: templates/base.html:96
 msgid "ERR22"
 msgstr ""
 "[ERR22] Impossible de modifier un lien. Contacter l'administrateur du site."
 
-#: templates/base.html:97
+#: templates/base.html:98
 msgid "ERR23"
 msgstr "Le chant est déjà enregistré. Impossible de créer un doublon."
 
-#: templates/base.html:99
+#: templates/base.html:100
 msgid "ERR24"
 msgstr ""
 "[ERR24] Impossible de supprimer ce groupe. Contacter l'administrateur du "
 "site."
 
-#: templates/base.html:101
+#: templates/base.html:102
 msgid "ERR25"
 msgstr ""
 "[ERR25] Impossible d'ajouter cet utilisateur. Contacter l'administrateur du "
 "site."
 
-#: templates/base.html:103
+#: templates/base.html:104
 msgid "ERR26"
 msgstr ""
 "[ERR26] Impossible de supprimer cet utilisateur. Contacter l'administrateur "
 "du site."
 
-#: templates/base.html:105
+#: templates/base.html:106
 msgid "ERR27"
 msgstr "Seul les modérateurs peuvent modifier la page d'accueil."
 
-#: templates/base.html:107
+#: templates/base.html:108
 msgid "ERR28"
 msgstr ""
 "Les titres sont obligatoires&nbsp;: Titre &#60;head&#62 / Titre &#60;h1&#62"
 
-#: templates/base.html:109
+#: templates/base.html:110
 msgid "ERR29"
 msgstr "Seul les administrateurs peuvent modifier les paramètres du site."
 
-#: templates/base.html:111
+#: templates/base.html:112
 msgid "ERR30"
 msgstr "Aucune slide à afficher&nbsp;! Ajouter des chants avec du texte..."
 
-#: templates/base.html:113
+#: templates/base.html:114
 msgid "ERR31"
 msgstr ""
 "[ERR31] Une erreur est survenue lors de la mise à jour d'un couplet. Une "
 "modification du chant à peut être eue lieu en même temps. Si l'erreur "
 "persiste, contacter l'administrateur du site."
 
-#: templates/base.html:115
+#: templates/base.html:116
 msgid "ERR32"
 msgstr ""
 "[ERR32] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
-#: templates/base.html:117
+#: templates/base.html:118
 msgid "ERR33"
 msgstr ""
 "Ce genre existe déjà&nbsp;! Veuillez créer un couplet 'groupe/nom' unique."
 
-#: templates/base.html:119
+#: templates/base.html:120
 msgid "ERR34"
 msgstr ""
 "[ERR34] Impossible d'ajouter un genre. Contacter l'administrateur du site."
 
-#: templates/base.html:121
+#: templates/base.html:122
 msgid "ERR35"
 msgstr ""
 "[ERR35] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
 
-#: templates/base.html:123
+#: templates/base.html:124
 msgid "ERR36"
 msgstr "Ce préfixe existe déjà."
 
-#: templates/base.html:125
+#: templates/base.html:126
 msgid "ERR37"
 msgstr ""
 "[ERR37] Impossible d'ajouter ce préfixe. Contacter l'administrateur du site."
 
-#: templates/base.html:127
+#: templates/base.html:128
 msgid "ERR38"
 msgstr ""
 "[ERR38] Impossible de supprimer ce préfixe. Contacter l'administrateur du "
 "site."
 
-#: templates/base.html:129
+#: templates/base.html:130
 msgid "ERR39"
 msgstr ""
 "[ERR39] Impossible de modifier un genre. Contacter l'administrateur du site."
 
-#: templates/base.html:131
+#: templates/base.html:132
 msgid "ERR40"
 msgstr ""
 "[ERR40] Impossible de supprimer ce groupe de musique. Contacter "
 "l'administrateur du site."
 
-#: templates/base.html:133
+#: templates/base.html:134
 msgid "ERR41"
 msgstr ""
 "Ce nom existe déjà&nbsp;! Veuillez créer un nom de groupe de musique unique."
 
-#: templates/base.html:135
+#: templates/base.html:136
 msgid "ERR42"
 msgstr ""
 "[ERR42] Impossible de créer ce groupe de musique. Contacter l'administrateur "
 "du site."
 
-#: templates/base.html:137
+#: templates/base.html:138
 msgid "ERR43"
 msgstr ""
 "[ERR43] Impossible de modifier ce groupe de musique. Contacter "
 "l'administrateur du site."
 
-#: templates/base.html:139
+#: templates/base.html:140
 msgid "ERR44"
 msgstr "Cet artiste existe déjà&nbsp;! Veuillez créer un nom unique."
 
-#: templates/base.html:141
+#: templates/base.html:142
 msgid "ERR45"
 msgstr ""
 "[ERR45] Impossible de créer cet artist. Contacter l'administrateur du site."
 
-#: templates/base.html:143
+#: templates/base.html:144
 msgid "ERR46"
 msgstr ""
 "[ERR46] Impossible de modifier cet artist. Contacter l'administrateur du "
 "site."
 
-#: templates/base.html:145
+#: templates/base.html:146
 msgid "ERR47"
 msgstr ""
 "[ERR47] Impossible de supprimer ce groupe de musique. Contacter "
 "l'administrateur du site."
 
-#: templates/base.html:147
+#: templates/base.html:148
 msgid "ERR48"
 msgstr ""
 "[ERR48] Impossible d'ajouter ce groupe de musique. Contacter "
 "l'administrateur du site."
 
-#: templates/base.html:149
+#: templates/base.html:150
 msgid "ERR49"
 msgstr ""
 "[ERR49] Impossible d'ajouter cet artiste. Contacter l'administrateur du site."
 
-#: templates/base.html:151
+#: templates/base.html:152
 msgid "ERR50"
 msgstr ""
 "[ERR50] Un problème a eu lieu lors de la modification de votre email. "
 "Contacter l'administrateur du site."
 
-#: templates/base.html:153
+#: templates/base.html:154
 msgid "ERR51"
 msgstr "[ERR51] Impossible de faire le clean_db de : c_user_change_email"
 
-#: templates/base.html:155
+#: templates/base.html:156
 msgid "ERR52"
 msgstr "[ERR52] no message"
 
-#: templates/base.html:157
+#: templates/base.html:158
 msgid "ERR53"
 msgstr "[ERR51] no message."
 
-#: templates/base.html:159
+#: templates/base.html:160
 msgid "ERR54"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:161
+#: templates/base.html:162
 msgid "ERR55"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:163
+#: templates/base.html:164
 msgid "ERR56"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:165
+#: templates/base.html:166
 msgid "ERR57"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:167
+#: templates/base.html:168
 msgid "ERR58"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:169
+#: templates/base.html:170
 msgid "ERR59"
 msgstr "[ERR51] no message"
 
-#: templates/base.html:171
+#: templates/base.html:172
 msgid "ERR60"
 msgstr "[ERR60] no message"
 
-#: templates/includes/header.html:17 templates/includes/header.html:19
-#: templates/includes/header.html:29
+#: templates/includes/header.html:18 templates/includes/header.html:20
+#: templates/includes/header.html:30
 msgid "language_flag"
 msgstr "🇫🇷&nbsp;FR"
 
-#: templates/includes/header.html:30
+#: templates/includes/header.html:31
 msgid "close"
 msgstr "fermer"
 
-#: templates/includes/nav.html:8 templates/includes/nav.html:17
+#: templates/includes/nav.html:8 templates/includes/nav.html:13
 msgid "nav_groups_list"
 msgstr "Liste des groupes"
 
-#: templates/includes/nav.html:9 templates/includes/nav.html:18
+#: templates/includes/nav.html:9 templates/includes/nav.html:14
 msgid "nav_songs_list"
 msgstr "Liste des chants"
 
-#: templates/includes/nav.html:10 templates/includes/nav.html:19
+#: templates/includes/nav.html:10 templates/includes/nav.html:15
 msgid "nav_animations_list"
 msgstr "Liste des animations"
 
-#: templates/includes/nav.html:12
+#: templates/includes/nav.html:11
 msgid "nav_account_logout"
 msgstr "Déconnexion"
 
-#: templates/includes/nav.html:20
+#: templates/includes/nav.html:16
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/nav.html:22
+#: templates/includes/nav.html:18
 msgid "nav_signup"
 msgstr "Créer un compte"
 
@@ -2616,30 +2626,37 @@ msgid "noon"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:7
+#: venv/lib/python3.12/site-packages/tornado/locale.py:295
 msgid "Monday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:8
+#: venv/lib/python3.12/site-packages/tornado/locale.py:296
 msgid "Tuesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:9
+#: venv/lib/python3.12/site-packages/tornado/locale.py:297
 msgid "Wednesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:10
+#: venv/lib/python3.12/site-packages/tornado/locale.py:298
 msgid "Thursday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:11
+#: venv/lib/python3.12/site-packages/tornado/locale.py:299
 msgid "Friday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:12
+#: venv/lib/python3.12/site-packages/tornado/locale.py:300
 msgid "Saturday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:13
+#: venv/lib/python3.12/site-packages/tornado/locale.py:301
 msgid "Sunday"
 msgstr ""
 
@@ -2672,50 +2689,62 @@ msgid "Sun"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:25
+#: venv/lib/python3.12/site-packages/tornado/locale.py:281
 msgid "January"
 msgstr "Janvier"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:26
+#: venv/lib/python3.12/site-packages/tornado/locale.py:282
 msgid "February"
 msgstr "Février"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:27
+#: venv/lib/python3.12/site-packages/tornado/locale.py:283
 msgid "March"
 msgstr "Mars"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:28
+#: venv/lib/python3.12/site-packages/tornado/locale.py:284
 msgid "April"
 msgstr "Avril"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:29
+#: venv/lib/python3.12/site-packages/tornado/locale.py:285
 msgid "May"
 msgstr "Mai"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:30
+#: venv/lib/python3.12/site-packages/tornado/locale.py:286
 msgid "June"
 msgstr "Juin"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:31
+#: venv/lib/python3.12/site-packages/tornado/locale.py:287
 msgid "July"
 msgstr "Juillet"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:32
+#: venv/lib/python3.12/site-packages/tornado/locale.py:288
 msgid "August"
 msgstr "Août"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:33
+#: venv/lib/python3.12/site-packages/tornado/locale.py:289
 msgid "September"
 msgstr "Septembre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:34
+#: venv/lib/python3.12/site-packages/tornado/locale.py:290
 msgid "October"
 msgstr "Octobre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:35
+#: venv/lib/python3.12/site-packages/tornado/locale.py:291
 msgid "November"
 msgstr "Novembre"
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:36
+#: venv/lib/python3.12/site-packages/tornado/locale.py:292
 msgid "December"
 msgstr "Décembre"
 
@@ -3116,6 +3145,95 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:377
+msgid "1 second ago"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:383
+msgid "1 minute ago"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:388
+msgid "1 hour ago"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:391
+#, python-format
+msgid "%(time)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:393
+msgid "yesterday"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:393
+#, python-format
+msgid "yesterday at %(time)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:395
+#, python-format
+msgid "%(weekday)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:395
+#, python-format
+msgid "%(weekday)s at %(time)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:398
+#: venv/lib/python3.12/site-packages/tornado/locale.py:451
+#, python-format
+msgid "%(month_name)s %(day)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:400
+#, python-format
+msgid "%(month_name)s %(day)s at %(time)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:405
+#, python-format
+msgid "%(month_name)s %(day)s, %(year)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:407
+#, python-format
+msgid "%(month_name)s %(day)s, %(year)s at %(time)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:445
+#, python-format
+msgid "%(weekday)s, %(month_name)s %(day)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/locale.py:468
+#, python-format
+msgid "%(commas)s and %(last)s"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:68
+msgctxt "law"
+msgid "right"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:69
+msgctxt "good"
+msgid "right"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:70
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:72
+msgctxt "organization"
+msgid "club"
+msgstr ""
+
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:74
+#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:75
+msgctxt "stick"
+msgid "club"
 msgstr ""
 
 #~ msgid "update"

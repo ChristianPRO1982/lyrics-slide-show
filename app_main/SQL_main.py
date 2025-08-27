@@ -275,6 +275,8 @@ SELECT *
             self.chorus_prefix = row[8]
             self.verse_prefix1 = row[9]
             self.verse_prefix2 = row[10]
+            self.admin_message = row[11]
+            self.moderator_message = row[12]
         else:
             self.language = "FR"
             self.title = "Bienvenue !"
@@ -287,6 +289,8 @@ SELECT *
             self.chorus_prefix = "R. "
             self.verse_prefix1 = "C"
             self.verse_prefix2 = ". "
+            self.admin_message = ""
+            self.moderator_message = ""
 
 
     def save(self):
@@ -301,13 +305,16 @@ UPDATE l_site_params
        verse_max_characters_for_a_line = %s,
        chorus_prefix = %s,
        verse_prefix1 = %s,
-       verse_prefix2 = %s
+       verse_prefix2 = %s,
+       admin_message = %s,
+       moderator_message = %s
  WHERE language = %s
 """
         params = [
             self.title, self.title_h1, self.home_text, self.bloc1_text, self.bloc2_text,
             self.verse_max_lines, self.verse_max_characters_for_a_line,
             self.chorus_prefix, self.verse_prefix1, self.verse_prefix2,
+            self.admin_message, self.moderator_message,
             self.language
         ]
 
@@ -315,6 +322,13 @@ UPDATE l_site_params
         with connection.cursor() as cursor:
             cursor.execute(request, params)
 
+
+    def get_site_messages(self, moderator):
+        messages = self.admin_message
+        if moderator and self.moderator_message:
+            if messages: messages += '<hr>'
+            messages += self.moderator_message
+        return messages
 
 
 ##############################################

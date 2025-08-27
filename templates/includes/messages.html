@@ -1,0 +1,33 @@
+{% load i18n %}
+{% if messages != '' %}
+<div id="message-popup" style="
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 16px 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 300px;
+    max-width: 90vw;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+">
+    <span style="flex:1;">{{ messages|safe }}</span>
+    <button onclick="document.getElementById('message-popup').style.display='none';" style="
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        margin-left: 8px;
+        line-height: 1;
+    " aria-label="{% trans 'Close' %}">&#10006;</button>
+</div>
+{% endif %}

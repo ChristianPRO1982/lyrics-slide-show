@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 import time
 from urllib3 import request
 from app_logs.utils import delete_old_logs
-from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
+from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n, site_messages
 from .SQL_main import User, Site, Songs, Band, Artist, DB
 import hashlib
 import secrets
@@ -60,6 +60,7 @@ def homepage(request):
 
     if request.method == 'POST':
         if 'btn_save_homepage' in request.POST:
+            site.moderator_message = request.POST.get('txt_moderator_message', '').strip()
             site.title = request.POST.get('txt_title', '').strip()
             site.title_h1 = request.POST.get('txt_title_h1', '').strip()
             site.home_text = request.POST.get('txt_home_text', '').strip()
@@ -72,6 +73,7 @@ def homepage(request):
 
     if request.method == 'POST':
         if 'btn_save_site_params' in request.POST:
+            site.admin_message = request.POST.get('txt_admin_message', '').strip()
             site.verse_max_lines = request.POST.get('sel_verse_max_lines', 10)
             site.verse_max_characters_for_a_line = request.POST.get('sel_site_params_max_characters_for_a_line', 60)
             site.chorus_prefix = request.POST.get('txt_chorus_prefix', 'R.')
@@ -87,6 +89,7 @@ def homepage(request):
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
+        'messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         'moderator': moderator,
@@ -148,6 +151,7 @@ def bands(request):
     return render(request, 'app_main/bands.html', {
         'bands': bands,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -178,6 +182,7 @@ def artists(request):
     return render(request, 'app_main/artists.html', {
         'artists': artists,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -260,6 +265,7 @@ def profile(request):
     return render(request, 'app_main/profile.html', {
         'this_user': this_user,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -283,6 +289,7 @@ def email_check(request):
     return render(request, 'app_main/email_check.html', {
         'success': success,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -310,6 +317,7 @@ def delete_profile(request):
         'this_user': this_user,
         'status': status,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -323,6 +331,7 @@ def clean_db(request):
 
     return render(request, 'app_main/clean_db.html', {
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })

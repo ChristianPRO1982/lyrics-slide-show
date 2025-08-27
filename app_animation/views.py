@@ -8,7 +8,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name
+from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name, site_messages
 from app_main.SQL_main import Site
 
 
@@ -56,6 +56,7 @@ def animations(request):
         'date': request.POST.get('txt_new_date', ''),
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         })
@@ -185,6 +186,7 @@ def modify_animation(request, animation_id):
         'list_padding': range(10, 121, 5),
         'animation_font_class': font_class_by_name(animation.font),
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -217,6 +219,7 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -300,6 +303,7 @@ def lyrics_slide_show(request, animation_id):
         'slides_sliced': slides_sliced,
         'img_qr_code': img_qr_code,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -387,6 +391,7 @@ def modify_colors(request, xxx_id=None):
         'bg_rgba': bg_rbga,
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })

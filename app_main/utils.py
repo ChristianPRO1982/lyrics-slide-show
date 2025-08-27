@@ -16,6 +16,10 @@ def is_admin(request)->bool:
             return True
     return False
 
+def site_messages(request, moderator=False) -> str:
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
+    return site.get_site_messages(moderator)
+
 def is_no_loader(request) -> bool:
     if request.session.get('no_loader', False):
         if 'no_loader_date' in request.session:
