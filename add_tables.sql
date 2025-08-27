@@ -175,25 +175,19 @@ CREATE TABLE `c_group_user_ask_to_join` (
   PRIMARY KEY (`group_id`,`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `l_site` (
+CREATE TABLE `l_site_params` (
   `language` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `title_h1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `home_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bloc1_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bloc2_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bloc1_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bloc2_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `verse_max_lines` tinyint(1) NOT NULL,
+  `verse_max_characters_for_a_line` tinyint(1) NOT NULL,
+  `chorus_prefix` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `verse_prefix1` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `verse_prefix2` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE `l_site_params` (
-  `verse_max_lines` tinyint NOT NULL,
-  `verse_max_characters_for_a_line` tinyint NOT NULL,
-  `FR_chorus_prefix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `FR_verse_prefix1` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `FR_verse_prefix2` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `EN_chorus_prefix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `EN_verse_prefix1` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `EN_verse_prefix2` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `l_verse_prefixes` (

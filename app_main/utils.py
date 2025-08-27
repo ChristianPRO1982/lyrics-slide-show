@@ -108,8 +108,8 @@ def get_search_params(request):
 def strip_html(html_text):
     return BeautifulSoup(html_text, "html.parser").get_text()
 
-def get_song_params():
-    site = Site()
+def get_song_params(request):
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
     return {
         'verse_max_lines': site.verse_max_lines,
         'verse_max_characters_for_a_line': site.verse_max_characters_for_a_line,

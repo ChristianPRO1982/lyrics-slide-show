@@ -154,7 +154,7 @@ def modify_animation(request, animation_id):
         list_lyrics = []
         for song in animation.songs:
             song_lyrics = Song.get_song_by_id(song['song_id'], request.user.is_authenticated)
-            song_params = get_song_params()
+            song_params = get_song_params(request)
             song_lyrics.verse_max_lines = song_params['verse_max_lines']
             song_lyrics.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
             song_lyrics.get_verses()
@@ -401,7 +401,7 @@ def all_songs_all_lyrics(request, animation_id):
     animation.all_songs()
     full_title = animation.name
     lyrics = ''
-    song_params = get_song_params()
+    song_params = get_song_params(request)
 
     for idx, song in enumerate(animation.songs):
         song_info = Song(song['song_id'])
@@ -412,7 +412,7 @@ def all_songs_all_lyrics(request, animation_id):
     <hr>
     <section id="song-{idx}">
         <h2>{song['full_title']}</h2>
-        <p>{song_info.get_lyrics_to_display(False, Site=Site)}</p>
+        <p>{song_info.get_lyrics_to_display(False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))}</p>
     </section>'''
         
     # QR-CODE

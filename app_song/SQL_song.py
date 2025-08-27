@@ -1,5 +1,4 @@
 from django.db import connection
-from django.utils import translation
 from typing import Any
 import random
 from app_logs.utils import create_SQL_log
@@ -246,18 +245,13 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
     
 
     def get_lyrics_to_display(self, display_the_chorus_once, Site):
-        site = Site()
+        site = Site
 
         choruses = []
         choruses_printed = False
-        if translation.get_language() == 'fr':
-            chorus_marker = site.fr_chorus_prefix
-            verse_marker1 = site.fr_verse_prefix1
-            verse_marker2 = site.fr_verse_prefix2
-        else:
-            chorus_marker = site.en_chorus_prefix
-            verse_marker1 = site.en_verse_prefix1
-            verse_marker2 = site.en_verse_prefix2
+        chorus_marker = site.chorus_prefix
+        verse_marker1 = site.verse_prefix1
+        verse_marker2 = site.verse_prefix2
         lyrics = ""
 
         # Get all choruses

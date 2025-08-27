@@ -153,7 +153,7 @@ def modify_song(request, song_id):
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
     new_verse = False
-    song_params = get_song_params()
+    song_params = get_song_params(request)
 
     song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if not song:
@@ -294,7 +294,7 @@ def delete_song(request, song_id):
         return redirect('songs')
 
 
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
@@ -318,7 +318,7 @@ def goto_song(request, song_id):
 
     song = Song.get_song_by_id(song_id, request.user.is_authenticated)
     if song:
-        song_params = get_song_params()
+        song_params = get_song_params(request)
         song.verse_max_lines = song_params['verse_max_lines']
         song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song.get_verses()
@@ -350,7 +350,7 @@ def moderator_song(request, song_id):
     no_loader = is_no_loader(request)
 
     song = Song.get_song_by_id(song_id, request.user.is_authenticated)
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
@@ -467,7 +467,7 @@ def song_metadata(request, song_id):
                 genre = Genre(group=new_genre_group, name=new_genre_name)
                 error = genre.save()
 
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
@@ -521,14 +521,14 @@ def smartphone_view(request, song_id):
         request.session['error'] = '[ERR16]'
         return redirect('songs')
     
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     
     full_title = song.full_title
     full_title = full_title.replace('✔️', '').replace('⁉️', '')
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
 
     # QR-CODE
     img_qr_code = ''
@@ -557,14 +557,14 @@ def print_lyrics(request, song_id):
         request.session['error'] = '[ERR16]'
         return redirect('songs')
     
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     
     full_title = song.full_title
     full_title = full_title.replace('✔️', '').replace('⁉️', '')
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site)
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
 
     return render(request, 'app_song/print_lyrics.html', {
         'full_title': full_title,
@@ -578,14 +578,14 @@ def print_lyrics_one_chorus(request, song_id):
         request.session['error'] = '[ERR16]'
         return redirect('songs')
     
-    song_params = get_song_params()
+    song_params = get_song_params(request)
     
     full_title = song.full_title
     full_title = full_title.replace('✔️', '').replace('⁉️', '')
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
-    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True, Site=Site)
+    lyrics = song.get_lyrics_to_display(display_the_chorus_once=True, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
 
     return render(request, 'app_song/print_lyrics_one_chorus.html', {
         'full_title': full_title,

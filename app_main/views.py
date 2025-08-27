@@ -20,7 +20,13 @@ def error_404(request, exception):
 
 
 def homepage(request):
-    print("LANG SESSION:", request.session.get('django_language'))
+    print("LANG ACTIVE (request.LANGUAGE_CODE):", getattr(request, "LANGUAGE_CODE", None))
+    # print("LANG ACTIVE (translation.get_language):", translation.get_language())
+    # print("LANG COOKIE:", request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME))
+    # print("LANG SESSION (django_language):", request.session.get('django_language'))
+    # print("LANG SESSION (language):", request.GET.get('language'))
+    # Session key only exists if not logged out and was set:
+    # print("LANG SESSION (_language):", request.session.get("_language"))
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
@@ -35,7 +41,7 @@ def homepage(request):
         
     css = request.session.get('css', 'normal.css')
 
-    site = Site()
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
 
     songs = Songs()
 
@@ -68,12 +74,9 @@ def homepage(request):
         if 'btn_save_site_params' in request.POST:
             site.verse_max_lines = request.POST.get('sel_verse_max_lines', 10)
             site.verse_max_characters_for_a_line = request.POST.get('sel_site_params_max_characters_for_a_line', 60)
-            site.fr_chorus_prefix = request.POST.get('txt_fr_chorus_prefix', 'R.')
-            site.fr_verse_prefix1 = request.POST.get('txt_fr_verse_prefix1', 'C')
-            site.fr_verse_prefix2 = request.POST.get('txt_fr_verse_prefix2', '.')
-            site.en_chorus_prefix = request.POST.get('txt_en_chorus_prefix', 'Chorus')
-            site.en_verse_prefix1 = request.POST.get('txt_en_verse_prefix1', 'Verse')
-            site.en_verse_prefix2 = request.POST.get('txt_en_verse_prefix2', '')
+            site.chorus_prefix = request.POST.get('txt_chorus_prefix', 'R.')
+            site.verse_prefix1 = request.POST.get('txt_verse_prefix1', 'C')
+            site.verse_prefix2 = request.POST.get('txt_verse_prefix2', '.')
             if site.title and site.title_h1:
                 site.save()
             else:
@@ -191,7 +194,6 @@ def privacy_policy(request):
     })
 
 
-@login_required
 def change_language(request):
     lang = request.GET.get('language')
 

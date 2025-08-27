@@ -835,18 +835,6 @@ msgstr "Nombre maximum de caractères pour une ligne"
 msgid "characters"
 msgstr "caractères"
 
-#: app_main/templates/app_main/homepage.html:107
-msgid "FR - chorus prefix"
-msgstr "FR - préfixe du refrain"
-
-#: app_main/templates/app_main/homepage.html:110
-msgid "FR - verse prefix 1"
-msgstr "FR - préfixe du couplet avant numéro"
-
-#: app_main/templates/app_main/homepage.html:113
-msgid "FR - verse prefix 2"
-msgstr "FR - préfixe du couplet après numéro"
-
 #: app_main/templates/app_main/homepage.html:116
 #: app_main/templates/app_main/homepage.html:131
 msgid "Examples:"
@@ -861,18 +849,6 @@ msgstr "mon refrain"
 #: app_main/templates/app_main/homepage.html:133
 msgid "my verse"
 msgstr "mon couplet"
-
-#: app_main/templates/app_main/homepage.html:122
-msgid "EN - chorus prefix"
-msgstr "EN - préfixe du refrain"
-
-#: app_main/templates/app_main/homepage.html:125
-msgid "EN - verse prefix 1"
-msgstr "EN - préfixe du couplet avant numéro"
-
-#: app_main/templates/app_main/homepage.html:128
-msgid "EN - verse prefix 2"
-msgstr "EN - préfixe du couplet après numéro"
 
 #: app_main/templates/app_main/homepage.html:142
 msgid "Modify site params"
