@@ -196,6 +196,13 @@
         {% include 'includes/footer.html' %}
     </div>
 
+    <script>
+        window.LOADER_CONFIG = {
+            debug: {{ loader_debug|yesno:"true,false" }},
+            delayMs: {{ loader_debug_delay_ms|default:0 }},
+            preNavDelayMs: {{ loader_debug_prenav_delay_ms|default:0 }}
+        };
+    </script>
     <script src="{% static 'js/loader.js' %}"></script>
 </body>
 </html>
