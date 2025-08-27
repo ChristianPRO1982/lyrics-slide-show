@@ -1,3 +1,22 @@
+# [1.21.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.20.0...v1.21.0) (2025-08-27)
+
+
+### Bug Fixes
+
+* colors of QRCode ([b8d07ec](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b8d07ec31b430a8262b231de1a053081e850cdd3))
+* drop l_site > all params in l_site_params by languages ([9ca0ac9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9ca0ac99edebe55a2f8e1982c5a7b3e0d400d354))
+* readme updated ([5d1392e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5d1392e9bbc4838848d6a5eb14f697116b064a08))
+
+
+### Features
+
+* admin and moderator messages ([ae0d152](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ae0d152c532d770589943316a7d6175f5ee0e038))
+* **loader:** add waiting screen during HTTP calls and enable bypass link (/kill_loader) ([12de69c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/12de69cce5b401364f885e406c956720f90b35d2))
+* **loader:** add waiting screen during HTTP calls and enable bypass link (/kill_loader) ([ba7c757](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ba7c757c84fa848c8ee0a3dea6dfbb73bc6d3ad8))
+* **loader:** add waiting screen during HTTP calls and enable bypass link (/kill_loader) ([892858b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/892858b436308f42f3a1b665503706e0655b64d1))
+* **loader:** delay for stop "kill_loader": DEV=10s / PROD=3600s ([e0b13b6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e0b13b61b6024dbc2fc302bee042ef965bd272db))
+* **loader:** loader can be tested ([4450366](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4450366c2ad991c5df0058483d597c1929b53048))
+
 # [1.20.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.19.5...v1.20.0) (2025-08-26)
 
 
