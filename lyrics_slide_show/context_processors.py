@@ -1,5 +1,7 @@
 from django.conf import settings
 
+from django.conf import settings
+
 def global_variables(request):
     return {
         'company_name': 'cARThographie',

@@ -29,6 +29,13 @@ def is_no_loader(request) -> bool:
                 request.session.pop('no_loader', None)
                 request.session.pop('no_loader_date', None)
                 return False
+        if 'no_loader_date' in request.session:
+            now_ts = time.time()
+            DEBUG = os.getenv("DEBUG", "False") == '1'
+            if now_ts - request.session['no_loader_date'] > 10 and DEBUG or now_ts - request.session['no_loader_date'] > 3600:  # 3600s = 1h
+                request.session.pop('no_loader', None)
+                request.session.pop('no_loader_date', None)
+                return False
         return True
     return False
 
