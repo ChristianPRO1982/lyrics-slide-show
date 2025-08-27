@@ -246,17 +246,18 @@ SELECT SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) AS active_count,
 ##############################################
 ##############################################
 class Site:
-    def __init__(self):
+    def __init__(self, language):
+        self.language = language.upper()
         self.get_site_info()
-        self.get_site_parameters()
 
 
     def get_site_info(self):
         request = """
 SELECT *
-  FROM l_site
+  FROM l_site_params
+ WHERE language = %s
 """
-        params = []
+        params = [self.language]
 
         create_SQL_log(code_file, "Site.get_site_info", "SELECT_3", request, params)
         with connection.cursor() as cursor:
@@ -269,88 +270,65 @@ SELECT *
             self.home_text = row[3]
             self.bloc1_text = row[4]
             self.bloc2_text = row[5]
+            self.verse_max_lines = row[6]
+            self.verse_max_characters_for_a_line = row[7]
+            self.chorus_prefix = row[8]
+            self.verse_prefix1 = row[9]
+            self.verse_prefix2 = row[10]
+            self.admin_message = row[11]
+            self.moderator_message = row[12]
         else:
-            self.language = "EN"
-            self.title = "Welcome!"
-            self.title_h1 = "Welcome!"
+            self.language = "FR"
+            self.title = "Bienvenue !"
+            self.title_h1 = "Bienvenue !"
             self.home_text = ""
             self.bloc1_text = ""
             self.bloc2_text = ""
-
-
-    def get_site_parameters(self):
-        request = """
-SELECT *
-  FROM l_site_params
-"""
-        params = []
-
-        create_SQL_log(code_file, "Site.get_site_parameters", "SELECT_4", request, params)
-        with connection.cursor() as cursor:
-            cursor.execute(request, params)
-            row = cursor.fetchone()
-        if row:
-            self.verse_max_lines = row[0]
-            self.verse_max_characters_for_a_line = row[1]
-            self.fr_chorus_prefix = row[2]
-            self.fr_verse_prefix1 = row[3]
-            self.fr_verse_prefix2 = row[4]
-            self.en_chorus_prefix = row[5]
-            self.en_verse_prefix1 = row[6]
-            self.en_verse_prefix2 = row[7]
-        else:
             self.verse_max_lines = 10
             self.verse_max_characters_for_a_line = 60
-            self.fr_chorus_prefix = "R."
-            self.fr_verse_prefix1 = "C"
-            self.fr_verse_prefix2 = "."
-            self.en_chorus_prefix = "C"
-            self.en_verse_prefix1 = "V"
-            self.en_verse_prefix2 = ""
+            self.chorus_prefix = "R. "
+            self.verse_prefix1 = "C"
+            self.verse_prefix2 = ". "
+            self.admin_message = ""
+            self.moderator_message = ""
 
 
     def save(self):
         request = """
-UPDATE l_site
-   SET language = %s,
-       title = %s,
+UPDATE l_site_params
+   SET title = %s,
        title_h1 = %s,
        home_text = %s,
        bloc1_text = %s,
-       bloc2_text = %s
+       bloc2_text = %s,
+       verse_max_lines = %s,
+       verse_max_characters_for_a_line = %s,
+       chorus_prefix = %s,
+       verse_prefix1 = %s,
+       verse_prefix2 = %s,
+       admin_message = %s,
+       moderator_message = %s
+ WHERE language = %s
 """
-        params = [self.language, self.title, self.title_h1, self.home_text, self.bloc1_text, self.bloc2_text]
+        params = [
+            self.title, self.title_h1, self.home_text, self.bloc1_text, self.bloc2_text,
+            self.verse_max_lines, self.verse_max_characters_for_a_line,
+            self.chorus_prefix, self.verse_prefix1, self.verse_prefix2,
+            self.admin_message, self.moderator_message,
+            self.language
+        ]
 
         create_SQL_log(code_file, "Site.save", "UPDATE_3", request, params)
         with connection.cursor() as cursor:
             cursor.execute(request, params)
 
-        request = """
-UPDATE l_site_params
-   SET verse_max_lines = %s,
-       verse_max_characters_for_a_line = %s,
-       fr_chorus_prefix = %s,
-       fr_verse_prefix1 = %s,
-       fr_verse_prefix2 = %s,
-       en_chorus_prefix = %s,
-       en_verse_prefix1 = %s,
-       en_verse_prefix2 = %s
-"""
-        params = [
-            self.verse_max_lines,
-            self.verse_max_characters_for_a_line,
-            self.fr_chorus_prefix,
-            self.fr_verse_prefix1,
-            self.fr_verse_prefix2,
-            self.en_chorus_prefix,
-            self.en_verse_prefix1,
-            self.en_verse_prefix2
-        ]
 
-        create_SQL_log(code_file, "Site.save", "UPDATE_4", request, params)
-        with connection.cursor() as cursor:
-            cursor.execute(request, params)
-
+    def get_site_messages(self, moderator):
+        messages = self.admin_message
+        if moderator and self.moderator_message:
+            if messages: messages += '<hr>'
+            messages += self.moderator_message
+        return messages
 
 
 ##############################################

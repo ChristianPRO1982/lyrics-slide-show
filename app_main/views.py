@@ -4,8 +4,10 @@ from django.utils import translation
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.decorators import login_required
+import time
+from urllib3 import request
 from app_logs.utils import delete_old_logs
-from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n
+from .utils import is_moderator, is_admin, is_no_loader, save_user_theme, send_email_via_n8n, site_messages
 from .SQL_main import User, Site, Songs, Band, Artist, DB
 import hashlib
 import secrets
@@ -18,7 +20,13 @@ def error_404(request, exception):
 
 
 def homepage(request):
-    print("LANG SESSION:", request.session.get('django_language'))
+    print("LANG ACTIVE (request.LANGUAGE_CODE):", getattr(request, "LANGUAGE_CODE", None))
+    # print("LANG ACTIVE (translation.get_language):", translation.get_language())
+    # print("LANG COOKIE:", request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME))
+    # print("LANG SESSION (django_language):", request.session.get('django_language'))
+    # print("LANG SESSION (language):", request.GET.get('language'))
+    # Session key only exists if not logged out and was set:
+    # print("LANG SESSION (_language):", request.session.get("_language"))
     error = ''
     no_loader = is_no_loader(request)
     moderator = is_moderator(request)
@@ -33,7 +41,7 @@ def homepage(request):
         
     css = request.session.get('css', 'normal.css')
 
-    site = Site()
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
 
     songs = Songs()
 
@@ -52,6 +60,7 @@ def homepage(request):
 
     if request.method == 'POST':
         if 'btn_save_homepage' in request.POST:
+            site.moderator_message = request.POST.get('txt_moderator_message', '').strip()
             site.title = request.POST.get('txt_title', '').strip()
             site.title_h1 = request.POST.get('txt_title_h1', '').strip()
             site.home_text = request.POST.get('txt_home_text', '').strip()
@@ -64,14 +73,12 @@ def homepage(request):
 
     if request.method == 'POST':
         if 'btn_save_site_params' in request.POST:
+            site.admin_message = request.POST.get('txt_admin_message', '').strip()
             site.verse_max_lines = request.POST.get('sel_verse_max_lines', 10)
             site.verse_max_characters_for_a_line = request.POST.get('sel_site_params_max_characters_for_a_line', 60)
-            site.fr_chorus_prefix = request.POST.get('txt_fr_chorus_prefix', 'R.')
-            site.fr_verse_prefix1 = request.POST.get('txt_fr_verse_prefix1', 'C')
-            site.fr_verse_prefix2 = request.POST.get('txt_fr_verse_prefix2', '.')
-            site.en_chorus_prefix = request.POST.get('txt_en_chorus_prefix', 'Chorus')
-            site.en_verse_prefix1 = request.POST.get('txt_en_verse_prefix1', 'Verse')
-            site.en_verse_prefix2 = request.POST.get('txt_en_verse_prefix2', '')
+            site.chorus_prefix = request.POST.get('txt_chorus_prefix', 'R.')
+            site.verse_prefix1 = request.POST.get('txt_verse_prefix1', 'C')
+            site.verse_prefix2 = request.POST.get('txt_verse_prefix2', '.')
             if site.title and site.title_h1:
                 site.save()
             else:
@@ -82,6 +89,7 @@ def homepage(request):
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
+        'messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         'moderator': moderator,
@@ -98,11 +106,13 @@ def homepage(request):
 
 def kill_loader(request):
     request.session['no_loader'] = True
+    request.session['no_loader_date'] = time.time()
     return redirect('homepage')
 
 
 def loader(request):
-    del request.session['no_loader']
+    request.session.pop('no_loader', None)
+    request.session.pop('no_loader_date', None)
     return redirect('homepage')
 
 
@@ -141,6 +151,7 @@ def bands(request):
     return render(request, 'app_main/bands.html', {
         'bands': bands,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -171,6 +182,7 @@ def artists(request):
     return render(request, 'app_main/artists.html', {
         'artists': artists,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -187,7 +199,6 @@ def privacy_policy(request):
     })
 
 
-@login_required
 def change_language(request):
     lang = request.GET.get('language')
 
@@ -254,6 +265,7 @@ def profile(request):
     return render(request, 'app_main/profile.html', {
         'this_user': this_user,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -277,6 +289,7 @@ def email_check(request):
     return render(request, 'app_main/email_check.html', {
         'success': success,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -304,6 +317,7 @@ def delete_profile(request):
         'this_user': this_user,
         'status': status,
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -317,6 +331,7 @@ def clean_db(request):
 
     return render(request, 'app_main/clean_db.html', {
         'error': error,
+        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })

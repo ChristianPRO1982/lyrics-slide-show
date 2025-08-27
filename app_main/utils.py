@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from .SQL_main import User, Site
 import requests
+import time, os
 
 
 def is_moderator(request)->bool:
@@ -15,8 +16,26 @@ def is_admin(request)->bool:
             return True
     return False
 
-def is_no_loader(request)->bool:
+def site_messages(request, moderator=False) -> str:
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
+    return site.get_site_messages(moderator)
+
+def is_no_loader(request) -> bool:
     if request.session.get('no_loader', False):
+        if 'no_loader_date' in request.session:
+            now_ts = time.time()
+            DEBUG = os.getenv("DEBUG", "False") == '1'
+            if now_ts - request.session['no_loader_date'] > 10 and DEBUG or now_ts - request.session['no_loader_date'] > 3600:  # 3600s = 1h
+                request.session.pop('no_loader', None)
+                request.session.pop('no_loader_date', None)
+                return False
+        if 'no_loader_date' in request.session:
+            now_ts = time.time()
+            DEBUG = os.getenv("DEBUG", "False") == '1'
+            if now_ts - request.session['no_loader_date'] > 10 and DEBUG or now_ts - request.session['no_loader_date'] > 3600:  # 3600s = 1h
+                request.session.pop('no_loader', None)
+                request.session.pop('no_loader_date', None)
+                return False
         return True
     return False
 
@@ -100,8 +119,8 @@ def get_search_params(request):
 def strip_html(html_text):
     return BeautifulSoup(html_text, "html.parser").get_text()
 
-def get_song_params():
-    site = Site()
+def get_song_params(request):
+    site = Site(getattr(request, "LANGUAGE_CODE", None))
     return {
         'verse_max_lines': site.verse_max_lines,
         'verse_max_characters_for_a_line': site.verse_max_characters_for_a_line,

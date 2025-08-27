@@ -6,8 +6,7 @@ from io import BytesIO
 import base64
 import uuid
 from .SQL_group import Group
-from app_main.utils import is_no_loader, is_moderator
-
+from app_main.utils import is_no_loader, is_moderator, site_messages
 
 
 def groups(request):
@@ -37,6 +36,7 @@ def groups(request):
         'groups': groups,
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         })
@@ -115,6 +115,7 @@ def add_group(request):
         'username': username,
         'valided': valided,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
         })
@@ -211,6 +212,7 @@ def modify_group(request, group_id):
         'nb_admins': nb_admins,
         'list_ask_to_be_member': list_ask_to_be_member,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
         })

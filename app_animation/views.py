@@ -8,7 +8,7 @@ from .SQL_animation import Animation
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
-from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name
+from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name, site_messages
 from app_main.SQL_main import Site
 
 
@@ -56,6 +56,7 @@ def animations(request):
         'date': request.POST.get('txt_new_date', ''),
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         })
@@ -154,7 +155,7 @@ def modify_animation(request, animation_id):
         list_lyrics = []
         for song in animation.songs:
             song_lyrics = Song.get_song_by_id(song['song_id'], request.user.is_authenticated)
-            song_params = get_song_params()
+            song_params = get_song_params(request)
             song_lyrics.verse_max_lines = song_params['verse_max_lines']
             song_lyrics.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
             song_lyrics.get_verses()
@@ -185,6 +186,7 @@ def modify_animation(request, animation_id):
         'list_padding': range(10, 121, 5),
         'animation_font_class': font_class_by_name(animation.font),
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -217,6 +219,7 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -300,6 +303,7 @@ def lyrics_slide_show(request, animation_id):
         'slides_sliced': slides_sliced,
         'img_qr_code': img_qr_code,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -387,6 +391,7 @@ def modify_colors(request, xxx_id=None):
         'bg_rgba': bg_rbga,
         'group_selected': group_selected,
         'error': error,
+        'messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -401,7 +406,7 @@ def all_songs_all_lyrics(request, animation_id):
     animation.all_songs()
     full_title = animation.name
     lyrics = ''
-    song_params = get_song_params()
+    song_params = get_song_params(request)
 
     for idx, song in enumerate(animation.songs):
         song_info = Song(song['song_id'])
@@ -412,7 +417,7 @@ def all_songs_all_lyrics(request, animation_id):
     <hr>
     <section id="song-{idx}">
         <h2>{song['full_title']}</h2>
-        <p>{song_info.get_lyrics_to_display(False, Site=Site)}</p>
+        <p>{song_info.get_lyrics_to_display(False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))}</p>
     </section>'''
         
     # QR-CODE
@@ -421,7 +426,7 @@ def all_songs_all_lyrics(request, animation_id):
         qr = qrcode.QRCode(box_size=10, border=4)
         qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
         qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
+        img = qr.make_image(fill_color="white", back_color="black")
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
         img_qr_code = base64.b64encode(buffer.getvalue()).decode('utf-8')

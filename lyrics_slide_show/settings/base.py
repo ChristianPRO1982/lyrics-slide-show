@@ -203,3 +203,7 @@ APPEND_SLASH = True # If True, Django will append a slash at the end of URLs tha
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# --- Loader debug config (simulate slow network) ---
+LOADER_DEBUG = os.getenv("LOADER_DEBUG", "0") == "1"
+LOADER_DEBUG_DELAY_MS = int(os.getenv("LOADER_DEBUG_DELAY_MS", "1500"))

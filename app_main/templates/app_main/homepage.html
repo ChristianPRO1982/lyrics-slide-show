@@ -45,6 +45,10 @@
     {% if modify_homepage %}
         <form method="post" action="{% url "homepage" %}">
             {% csrf_token %}
+            <label>{% trans "Moderator message" %}
+            <textarea name="txt_moderator_message">{{ site.moderator_message }}</textarea>
+            🚧
+            </label>
             <div>
                 <label for="id_title">{% trans "Title &#60;head&#62;" %}</label><br>
                 <input type="text" name="txt_title" id="id_title" maxlength="255" value="{{ site.title }}" style="width: 100%;" required>
@@ -82,6 +86,10 @@
     {% if modify_site_params %}
         <form method="post" action="{% url "homepage" %}">
             {% csrf_token %}
+            <label>{% trans "Admin message" %}
+            <textarea name="txt_admin_message">{{ site.admin_message }}</textarea>
+            🚧
+            </label>
             <div>
                 <label for="id_verse_max_lines">{% trans "Max lines" %}</label><br>
                 <select name="sel_verse_max_lines" id="id_verse_max_lines" style="width: 100%;">
@@ -104,33 +112,18 @@
                 </select>
             </div>
             <div>
-                <label>{% trans "FR - chorus prefix" %}
-                    <input type="text" name="txt_fr_chorus_prefix" value="{{ site.fr_chorus_prefix }}" style="width: 10%;" maxlength="10" />
+                <label>{% trans "Chorus prefix: " %}
+                    <input type="text" name="txt_chorus_prefix" value="{{ site.chorus_prefix }}" style="width: 10%;" maxlength="10" />
                 </label><br>
-                <label>{% trans "FR - verse prefix 1" %}
-                    <input type="text" name="txt_fr_verse_prefix1" value="{{ site.fr_verse_prefix1 }}" style="width: 10%;" maxlength="10" />
+                <label>{% trans "Verse prefix 1: " %}
+                    <input type="text" name="txt_verse_prefix1" value="{{ site.verse_prefix1 }}" style="width: 10%;" maxlength="10" />
                 </label><br>
-                <label>{% trans "FR - verse prefix 2" %}
-                    <input type="text" name="txt_fr_verse_prefix2" value="{{ site.fr_verse_prefix2 }}" style="width: 10%;" maxlength="3" />
+                <label>{% trans "Verse prefix 2: " %}
+                    <input type="text" name="txt_verse_prefix2" value="{{ site.verse_prefix2 }}" style="width: 10%;" maxlength="3" />
                 </label><br><br>
                 <b><i>{% trans "Examples:" %}</i></b><br>
-                <b><i>{{ site.fr_chorus_prefix }}</i></b>{% trans "my chorus" %}<br>
-                <b><i>{{ site.fr_verse_prefix1 }}1{{ site.fr_verse_prefix2 }}</i></b>{% trans "my verse" %}
-            </div>
-            <br>
-            <div>
-                <label>{% trans "EN - chorus prefix" %}
-                    <input type="text" name="txt_en_chorus_prefix" value="{{ site.en_chorus_prefix }}" style="width: 10%;" maxlength="10" />
-                </label><br>
-                <label>{% trans "EN - verse prefix 1" %}
-                    <input type="text" name="txt_en_verse_prefix1" value="{{ site.en_verse_prefix1 }}" style="width: 10%;" maxlength="10" />
-                </label><br>
-                <label>{% trans "EN - verse prefix 2" %}
-                    <input type="text" name="txt_en_verse_prefix2" value="{{ site.en_verse_prefix2 }}" style="width: 10%;" maxlength="3" />
-                </label><br><br>
-                <b><i>{% trans "Examples:" %}</i></b><br>
-                <b><i>{{ site.en_chorus_prefix }}</i></b>{% trans "my chorus" %}<br>
-                <b><i>{{ site.en_verse_prefix1 }}1{{ site.en_verse_prefix2 }}</i></b>{% trans "my verse" %}
+                <b><i>{{ site.chorus_prefix }}</i></b>{% trans "my chorus" %}<br>
+                <b><i>{{ site.verse_prefix1 }}1{{ site.verse_prefix2 }}</i></b>{% trans "my verse" %}
             </div>
 
             <br><hr><br>
