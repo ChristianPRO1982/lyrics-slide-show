@@ -150,6 +150,8 @@
   
     function updateSongList(query) {
         songList.innerHTML = '';
+
+        query = query.replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
         
         const filteredSongs = query.length >= 3
             ? songs.filter(song => song.full_title.toLowerCase().includes(query.toLowerCase()))
@@ -224,7 +226,7 @@
     searchInput.addEventListener('input', (e) => {
         updateSongList(e.target.value);
     });
-    
+
     updateSongList('{{ new_song_title }}');
 
     
