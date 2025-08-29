@@ -194,7 +194,6 @@ def privacy_policy(request):
     
     return render(request, 'app_main/privacy_policy.html', {
         'error': '',
-        'messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
