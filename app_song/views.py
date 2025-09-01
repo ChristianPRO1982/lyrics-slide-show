@@ -540,8 +540,10 @@ def smartphone_view(request, song_id):
     # QR-CODE
     img_qr_code = ''
     try:
+        link_to_copy = f'https://www.carthographie.fr/songs/smartphone_view/{song_id}/'
+
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data(f'https://www.carthographie.fr/songs/smartphone_view/{song_id}/')
+        qr.add_data(link_to_copy)
         qr.make(fit=True)
         img = qr.make_image(fill_color="white", back_color="black")
         buffer = io.BytesIO()
@@ -554,6 +556,7 @@ def smartphone_view(request, song_id):
         'song_id': song_id,
         'full_title': 'Smartphone View',
         'lyrics': lyrics,
+        'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
     })
 

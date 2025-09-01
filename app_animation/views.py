@@ -286,8 +286,10 @@ def lyrics_slide_show(request, animation_id):
     # QR-CODE
     img_qr_code = ''
     try:
+        link_to_copy = f'https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/{animation_id}/'
+
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
+        qr.add_data(link_to_copy)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
@@ -301,6 +303,7 @@ def lyrics_slide_show(request, animation_id):
         'group_selected': group_selected,
         'slides': slides,
         'slides_sliced': slides_sliced,
+        'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
         'error': error,
         'messages': site_messages(request),
@@ -423,8 +426,10 @@ def all_songs_all_lyrics(request, animation_id):
     # QR-CODE
     img_qr_code = ''
     try:
+        link_to_copy = f'https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/{animation_id}/'
+        
         qr = qrcode.QRCode(box_size=10, border=4)
-        qr.add_data('https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/' + str(animation_id) + '/')
+        qr.add_data(link_to_copy)
         qr.make(fit=True)
         img = qr.make_image(fill_color="white", back_color="black")
         buffer = io.BytesIO()
@@ -437,5 +442,6 @@ def all_songs_all_lyrics(request, animation_id):
     return render(request, 'app_animation/all_lyrics.html', {
         'full_title': full_title,
         'lyrics': lyrics,
+        'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
     })

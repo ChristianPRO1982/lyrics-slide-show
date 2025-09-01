@@ -2,6 +2,7 @@ from django.db import connection
 from typing import Any
 import random
 from app_logs.utils import create_SQL_log
+from app_main.utils_SQL import build_like_pattern
 from .utils import check_max_lines, check_max_characters_for_a_line
 
 
@@ -83,6 +84,8 @@ class Song:
         search_bands: str = '',
         search_artists: str = '',
         search_song_approved: int = 0) -> list[dict[str, Any]]:
+
+        search_txt = build_like_pattern(search_txt, accent_insensitive=True)
 
         search_genres_is_null = '0'
         if not search_genres:
@@ -227,7 +230,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += str(verse.num_verse) + ". "
+                        lyrics += "<i>" + str(verse.num_verse) + ".</i> "
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
@@ -257,7 +260,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
         # Get all choruses
         for verse in self.verses:
             if verse.chorus == 1:
-                choruses.append("<b>" + chorus_marker + verse.text.replace("\n", "<br>") + "</b>")
+                choruses.append("<b><i>" + chorus_marker + "</i>" + verse.text.replace("\n", "<br>") + "</b>")
                 chorus_marker = ''
         
         start_by_chorus = True
@@ -265,11 +268,11 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += verse_marker1 + str(verse.num_verse) + verse_marker2
+                        lyrics += f"<i>{verse_marker1}{verse.num_verse}{verse_marker2}</i>"
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     if verse.prefix:
-                        lyrics += verse.prefix + "<br>"
+                        lyrics += f"<i>{verse.prefix}</i><br>"
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     if not choruses_printed or not display_the_chorus_once:

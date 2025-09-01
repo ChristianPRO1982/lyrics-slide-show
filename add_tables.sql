@@ -112,7 +112,7 @@ CREATE TABLE `l_verses` (
   `followed` tinyint(1) NOT NULL DEFAULT '0',
   `notcontinuenumbering` tinyint(1) NOT NULL DEFAULT '0',
   `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `prefix` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prefix` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`verse_id`),
   KEY `l_verses_song_id_IDX` (`song_id`) USING BTREE,
   KEY `l_verses_num_IDX` (`num`) USING BTREE,
@@ -187,6 +187,8 @@ CREATE TABLE `l_site_params` (
   `chorus_prefix` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `verse_prefix1` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `verse_prefix2` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `admin_message` text COLLATE utf8mb4_unicode_ci,
+  `moderator_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

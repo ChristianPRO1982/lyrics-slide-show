@@ -41,13 +41,36 @@
     <h4 class="L_H4">{% trans "Song statistics" %}</h4>
     <p>{{ approved_songs_stats.approved_percent|floatformat:1 }}&#8239;% {% trans "songs approved" %}
     ({{ approved_songs_stats.approved_songs }} / {{ approved_songs_stats.total_songs }})</p><br>
+    <a id="modify_homepage"></a>
     <h3 class="L_H3">{% trans "Modify homepage" %}</h3>
     {% if modify_homepage %}
         <form method="post" action="{% url "homepage" %}">
             {% csrf_token %}
             <label>{% trans "Moderator message" %}
-            <textarea name="txt_moderator_message">{{ site.moderator_message }}</textarea>
-            🚧
+            <textarea id="txt_moderator_message" name="txt_moderator_message">{{ site.moderator_message }}</textarea><br>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '⚠️ '; return false;">⚠️</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🚧 '; return false;">🚧</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🚨 '; return false;">🚨</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '❗ '; return false;">❗</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '❌ '; return false;">❌</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🚫 '; return false;">🚫</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '⛔ '; return false;">⛔</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🛠️ '; return false;">🛠️</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🔧 '; return false;">🔧</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '⚙️ '; return false;">⚙️</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '⏳ '; return false;">⏳</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🔒 '; return false;">🔒</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🔓 '; return false;">🔓</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🛡️ '; return false;">🛡️</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🕵️ '; return false;">🕵️</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🐛 '; return false;">🐛</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '✅ '; return false;">✅</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🟢 '; return false;">🟢</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🟠 '; return false;">🟠</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🔴 '; return false;">🔴</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🆗 '; return false;">🆗</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '🎉 '; return false;">🎉</a>
+            <a href="#" onclick="document.getElementById('txt_moderator_message').value += '👉 '; return false;">👉</a>
             </label>
             <div>
                 <label for="id_title">{% trans "Title &#60;head&#62;" %}</label><br>
@@ -59,15 +82,15 @@
             </div>
             <div>
                 <label for="id_home_text">{% trans "Home text" %}</label><br>
-                <textarea name="txt_home_text" id="id_home_text" style="width: 100%;">{{ site.home_text }}</textarea>
+                <textarea name="txt_home_text" id="id_home_text" style="width: 100%;" rows="10">{{ site.home_text }}</textarea>
             </div>
             <div>
                 <label for="id_bloc1_text">{% trans "Bloc1 text: on left" %}</label><br>
-                <textarea name="txt_bloc1_text" id="id_bloc1_text" style="width: 100%;">{{ site.bloc1_text }}</textarea>
+                <textarea name="txt_bloc1_text" id="id_bloc1_text" style="width: 100%;" rows="5">{{ site.bloc1_text }}</textarea>
             </div>
             <div>
                 <label for="id_bloc2_text">{% trans "Bloc2 text: on right" %}</label><br>
-                <textarea name="txt_bloc2_text" id="id_bloc2_text" style="width: 100%;">{{ site.bloc2_text }}</textarea>
+                <textarea name="txt_bloc2_text" id="id_bloc2_text" style="width: 100%;" rows="3">{{ site.bloc2_text }}</textarea>
             </div>
 
             <br><hr><br>
@@ -76,19 +99,42 @@
             <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
         </form>
     {% else %}
-        <a href="{% url 'homepage' %}?modify_homepage">{% trans "Modify homepage" %}</a>
+        <a href="{% url 'homepage' %}?modify_homepage#modify_homepage">{% trans "Modify homepage" %}</a>
     {% endif %}
 {% endif %}
 {% if admin %}
     <hr>
     <h2 class="L_H2">{% trans "Administrator" %}</h2>
+    <a id="modify_site_params"></a>
     <h3 class="L_H3">{% trans "Site params" %}</h3>
     {% if modify_site_params %}
         <form method="post" action="{% url "homepage" %}">
             {% csrf_token %}
             <label>{% trans "Admin message" %}
-            <textarea name="txt_admin_message">{{ site.admin_message }}</textarea>
-            🚧
+            <textarea id="txt_admin_message" name="txt_admin_message">{{ site.admin_message }}</textarea><br>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '⚠️ '; return false;">⚠️</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🚧 '; return false;">🚧</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🚨 '; return false;">🚨</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '❗ '; return false;">❗</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '❌ '; return false;">❌</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🚫 '; return false;">🚫</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '⛔ '; return false;">⛔</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🛠️ '; return false;">🛠️</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🔧 '; return false;">🔧</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '⚙️ '; return false;">⚙️</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '⏳ '; return false;">⏳</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🔒 '; return false;">🔒</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🔓 '; return false;">🔓</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🛡️ '; return false;">🛡️</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🕵️ '; return false;">🕵️</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🐛 '; return false;">🐛</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '✅ '; return false;">✅</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🟢 '; return false;">🟢</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🟠 '; return false;">🟠</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🔴 '; return false;">🔴</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🆗 '; return false;">🆗</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '🎉 '; return false;">🎉</a>
+            <a href="#" onclick="document.getElementById('txt_admin_message').value += '👉 '; return false;">👉</a>
             </label>
             <div>
                 <label for="id_verse_max_lines">{% trans "Max lines" %}</label><br>
@@ -132,7 +178,7 @@
             <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
         </form>
     {% else %}
-        <a href="{% url 'homepage' %}?modify_site_params">{% trans "Modify site params" %}</a>
+        <a href="{% url 'homepage' %}?modify_site_params#modify_site_params">{% trans "Modify site params" %}</a>
     {% endif %}
 {% endif %}
 {% endblock content %}
