@@ -85,11 +85,11 @@ def homepage(request):
                 error = '[ERR28]'
 
     songs.get_approved_songs_stats()
-
+    
     delete_old_logs()
     return render(request, 'app_main/homepage.html', {
         'error': error,
-        'messages': site_messages(request, moderator=True),
+        'l_site_messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         'moderator': moderator,
@@ -151,7 +151,7 @@ def bands(request):
     return render(request, 'app_main/bands.html', {
         'bands': bands,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -182,7 +182,7 @@ def artists(request):
     return render(request, 'app_main/artists.html', {
         'artists': artists,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -196,6 +196,7 @@ def privacy_policy(request):
         'error': '',
         'no_loader': no_loader,
         'css': css,
+        'l_site_messages': site_messages(request),
     })
 
 
@@ -265,7 +266,7 @@ def profile(request):
     return render(request, 'app_main/profile.html', {
         'this_user': this_user,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -289,7 +290,7 @@ def email_check(request):
     return render(request, 'app_main/email_check.html', {
         'success': success,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -317,7 +318,7 @@ def delete_profile(request):
         'this_user': this_user,
         'status': status,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })
@@ -331,7 +332,7 @@ def clean_db(request):
 
     return render(request, 'app_main/clean_db.html', {
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'no_loader': no_loader,
         'css': css,
     })

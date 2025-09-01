@@ -143,7 +143,7 @@ def songs(request):
         'moderator': moderator,
         'new_song_title': new_song_title,
         'error': error,
-        'messages': site_messages(request, moderator=True),
+        'l_site_messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
     })
@@ -274,7 +274,7 @@ def modify_song(request, song_id):
         'bands': song.bands,
         'artists': song.artists,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -309,7 +309,7 @@ def delete_song(request, song_id):
         'bands': song.bands,
         'artists': song.artists,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -342,7 +342,7 @@ def goto_song(request, song_id):
         'bands': song.bands,
         'artists': song.artists,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -381,7 +381,7 @@ def moderator_song(request, song_id):
         'artists': song.artists,
         'valided': valided,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -496,7 +496,7 @@ def song_metadata(request, song_id):
         'bands': song.bands,
         'artists': song.artists,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'moderator': moderator,
         'no_loader': no_loader,

@@ -56,7 +56,7 @@ def animations(request):
         'date': request.POST.get('txt_new_date', ''),
         'group_selected': group_selected,
         'error': error,
-        'messages': site_messages(request, moderator=True),
+        'l_site_messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
         })
@@ -186,7 +186,7 @@ def modify_animation(request, animation_id):
         'list_padding': range(10, 121, 5),
         'animation_font_class': font_class_by_name(animation.font),
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -219,7 +219,7 @@ def delete_animation(request, animation_id):
         'animation': animation,
         'group_selected': group_selected,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -306,7 +306,7 @@ def lyrics_slide_show(request, animation_id):
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
@@ -394,7 +394,7 @@ def modify_colors(request, xxx_id=None):
         'bg_rgba': bg_rbga,
         'group_selected': group_selected,
         'error': error,
-        'messages': site_messages(request),
+        'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
     })
