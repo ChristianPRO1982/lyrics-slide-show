@@ -16,7 +16,6 @@
 - Non-linear slide display
 - Easy to use interface
 
-
 ## .ENV
 
 ```bash
