@@ -6,6 +6,7 @@
 {% block title %}{% trans "Bands" %}{% endblock title %}
 {% block title_h1 %}{% trans "Bands" %}{% endblock title_h1 %}
 {% block bloc1 %}
+<a href="{% url 'artists' %}">{% trans "Modify artists" %}</a>
 {% endblock bloc1 %}
 {% block bloc2 %}
     <input class="" type="text" name="txt_new_name" placeholder="{% trans "New band" %}"
