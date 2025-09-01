@@ -1,9 +1,6 @@
 name: CI/CD - Main Branch
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -25,8 +22,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}2
-          password: ${{ secrets.DOCKERHUB_TOKEN }}2
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -39,7 +36,6 @@ jobs:
 
   # Triggers n8n backup via Webhook and waits for completion (2xx = success, >=400 = fail).
   n8n_backup:
-    needs: build-and-push
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -66,7 +62,9 @@ jobs:
 
   deploy:
     name: Deploy to OVH VPS
-    needs: n8n_backup
+    needs:
+      - build-and-push
+      - n8n_backup
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
