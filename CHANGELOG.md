@@ -1,3 +1,22 @@
+# [1.22.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.21.0...v1.22.0) (2025-09-01)
+
+
+### Bug Fixes
+
+* nb prefix charaters to 50 ([0846af2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0846af2107df5929ca232d38a173b9736d5379d3))
+* **privacy_policy:** add admin & moderator's messages ([f0dd9cf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f0dd9cf9de5b116c2aa85a9816c596163a9c0ff0))
+* **songs:** display correctly a new song with quot characters: ' " ([8500875](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/85008757e19abc12c005138509283c90164b45fc))
+* **SQL:** add_tables.sql updated ([f9d9b78](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f9d9b784536f6de8a041c62769cb0f8e594c5c99))
+
+
+### Features
+
+* emojis for admin & moderator's messages ([22c06c5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/22c06c5a346e2ab10fb55d8fa3546726f63a3ea6))
+* link to copy in smartphone view ([b74fc99](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b74fc9997127ddb0ed540584d99095883d046fbb))
+* links between moderators pages: artists & bands ([e308b28](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e308b28ee920d1f0c83f183ca280366cfc3564b2))
+* prefixes displayed in italics ([61211e0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/61211e05dce43a7f3b53b8d9ec1972a1b4419867))
+* **songs:** add use_user_wildcards, collapse_separators, accent_insensitive, auto_wrap_percent and escape_char for search songs like PEP8 ([e353dce](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e353dce7a3543e045ae98a4059e0a24720c7da40))
+
 # [1.21.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.20.0...v1.21.0) (2025-08-27)
 
 
