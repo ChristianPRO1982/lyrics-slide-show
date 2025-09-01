@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if messages != '' %}
+{% if l_site_messages|length > 0 %}
 <div id="message-popup" style="
     position: fixed;
     top: 50px;
@@ -19,7 +19,7 @@
     justify-content: center;
     gap: 16px;
 ">
-    <span style="flex:1;">{{ messages|safe }}</span>
+    <span style="flex:1;">{{ l_site_messages|safe }}</span>
     <button onclick="document.getElementById('message-popup').style.display='none';" style="
         background: none;
         border: none;
