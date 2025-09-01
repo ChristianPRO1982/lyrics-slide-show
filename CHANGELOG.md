@@ -1,3 +1,15 @@
+# [1.24.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.23.0...v1.24.0) (2025-09-01)
+
+
+### Bug Fixes
+
+* admin and moderator's popup in account pages and privacy_policy page ([fe5cdb5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fe5cdb586ce58e3dea475f106738519c493e4e0e))
+
+
+### Features
+
+* protect main branch: only PR from dev can be merged ([8c2bd51](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8c2bd51f96bb8048a2fdd3649db2fd08f582a6db))
+
 # [1.23.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.22.0...v1.23.0) (2025-09-01)
 
 
