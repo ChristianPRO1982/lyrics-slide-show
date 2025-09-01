@@ -2,6 +2,7 @@ from django.db import connection
 from typing import Any
 import random
 from app_logs.utils import create_SQL_log
+from app_main.utils_SQL import build_like_pattern
 from .utils import check_max_lines, check_max_characters_for_a_line
 
 
@@ -83,6 +84,8 @@ class Song:
         search_bands: str = '',
         search_artists: str = '',
         search_song_approved: int = 0) -> list[dict[str, Any]]:
+
+        search_txt = build_like_pattern(search_txt, accent_insensitive=True)
 
         search_genres_is_null = '0'
         if not search_genres:
