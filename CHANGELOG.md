@@ -1,3 +1,16 @@
+# [1.23.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.22.0...v1.23.0) (2025-09-01)
+
+
+### Bug Fixes
+
+* GitHub to N8N backup ([89ffb91](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/89ffb91dbf739dcf93da5f7235725a88e395253b))
+* trigger of CICD ([8d15678](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8d15678581a070b7e86f2a4d3d2530500eb788ff))
+
+
+### Features
+
+* new CICD with N8N backup ([c8624ab](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c8624abf6c4b2fd62d522224399e784df8f5025b))
+
 # [1.22.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.21.0...v1.22.0) (2025-09-01)
 
 
