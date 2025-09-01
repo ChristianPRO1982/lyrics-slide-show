@@ -227,7 +227,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += str(verse.num_verse) + ". "
+                        lyrics += "<i>" + str(verse.num_verse) + ".</i> "
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
@@ -257,7 +257,7 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
         # Get all choruses
         for verse in self.verses:
             if verse.chorus == 1:
-                choruses.append("<b>" + chorus_marker + verse.text.replace("\n", "<br>") + "</b>")
+                choruses.append("<b><i>" + chorus_marker + "</i>" + verse.text.replace("\n", "<br>") + "</b>")
                 chorus_marker = ''
         
         start_by_chorus = True
@@ -265,11 +265,11 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
             if verse.chorus != 1:
                 if verse.text and not verse.like_chorus:
                     if not verse.notcontinuenumbering:
-                        lyrics += verse_marker1 + str(verse.num_verse) + verse_marker2
+                        lyrics += f"<i>{verse_marker1}{verse.num_verse}{verse_marker2}</i>"
                     lyrics += verse.text.replace("\n", "<br>") + "<br><br>"
                 if verse.text and verse.like_chorus:
                     if verse.prefix:
-                        lyrics += verse.prefix + "<br>"
+                        lyrics += f"<i>{verse.prefix}</i><br>"
                     lyrics += "<b>" + verse.text.replace("\n", "<br>") + "</b><br><br>"
                 if not verse.followed and not verse.notdisplaychorusnext and choruses:
                     if not choruses_printed or not display_the_chorus_once:
