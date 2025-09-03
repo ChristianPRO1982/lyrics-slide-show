@@ -844,6 +844,7 @@ msgstr "Préfixe du refrain : "
 msgid "Verse prefix 1: "
 msgstr "Préfixe de couplet 1 : "
 
+
 #: app_main/templates/app_main/homepage.html:113
 msgid "Verse prefix 2: "
 msgstr "Préfixe de couplet 2 : "
