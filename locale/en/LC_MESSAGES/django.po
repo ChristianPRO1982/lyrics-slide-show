@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-27 16:19+0200\n"
+"POT-Creation-Date: 2025-09-01 09:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,8 +74,8 @@ msgstr ""
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:306
 #: app_animation/templates/common/animation_actions.html:7
-#: app_main/templates/app_main/artists.html:24
-#: app_main/templates/app_main/bands.html:24
+#: app_main/templates/app_main/artists.html:25
+#: app_main/templates/app_main/bands.html:25
 #: app_song/templates/app_song/song_metadata.html:38
 #: app_song/templates/app_song/song_metadata.html:173
 #: app_song/templates/common/song_actions.html:8
@@ -103,8 +103,8 @@ msgstr ""
 
 #: app_animation/templates/app_animation/delete_animation.html:22
 #: app_animation/templates/app_animation/modify_animation.html:338
-#: app_main/templates/app_main/homepage.html:72
-#: app_main/templates/app_main/homepage.html:124
+#: app_main/templates/app_main/homepage.html:99
+#: app_main/templates/app_main/homepage.html:178
 #: app_song/templates/app_song/moderator_song.html:43
 msgid "Cancel"
 msgstr ""
@@ -258,8 +258,8 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:87
-#: app_main/templates/app_main/homepage.html:71
-#: app_main/templates/app_main/homepage.html:123
+#: app_main/templates/app_main/homepage.html:98
+#: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
 #: app_song/templates/app_song/modify_song.html:80
 #: app_song/templates/app_song/modify_song.html:217
@@ -655,28 +655,33 @@ msgstr ""
 msgid "Artists"
 msgstr ""
 
-#: app_main/templates/app_main/artists.html:11
+#: app_main/templates/app_main/artists.html:9
+#: app_main/templates/app_main/homepage.html:16
+msgid "Modify bands"
+msgstr ""
+
+#: app_main/templates/app_main/artists.html:12
 msgid "New artist"
 msgstr ""
 
-#: app_main/templates/app_main/artists.html:19
-#: app_main/templates/app_main/artists.html:28
-#: app_main/templates/app_main/bands.html:19
-#: app_main/templates/app_main/bands.html:28
+#: app_main/templates/app_main/artists.html:20
+#: app_main/templates/app_main/artists.html:29
+#: app_main/templates/app_main/bands.html:20
+#: app_main/templates/app_main/bands.html:29
 #: app_main/templates/app_main/profile.html:74
 #: app_main/templates/app_main/profile.html:109
 msgid "Save"
 msgstr ""
 
-#: app_main/templates/app_main/artists.html:22
-#: app_main/templates/app_main/bands.html:22
+#: app_main/templates/app_main/artists.html:23
+#: app_main/templates/app_main/bands.html:23
 #: app_main/templates/app_main/profile.html:80
 #: app_main/templates/app_main/profile.html:82
 #: app_main/templates/app_main/profile.html:84
 msgid "mandatory"
 msgstr ""
 
-#: app_main/templates/app_main/artists.html:25
+#: app_main/templates/app_main/artists.html:26
 msgid "Are you sure you want to delete this artist?"
 msgstr ""
 
@@ -686,11 +691,16 @@ msgstr ""
 msgid "Bands"
 msgstr ""
 
-#: app_main/templates/app_main/bands.html:11
+#: app_main/templates/app_main/bands.html:9
+#: app_main/templates/app_main/homepage.html:17
+msgid "Modify artists"
+msgstr ""
+
+#: app_main/templates/app_main/bands.html:12
 msgid "New band"
 msgstr ""
 
-#: app_main/templates/app_main/bands.html:25
+#: app_main/templates/app_main/bands.html:26
 msgid "Are you sure you want to delete this band?"
 msgstr ""
 
@@ -746,14 +756,6 @@ msgstr ""
 msgid "Themes"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:16
-msgid "Modify bands"
-msgstr ""
-
-#: app_main/templates/app_main/homepage.html:17
-msgid "Modify artists"
-msgstr ""
-
 #: app_main/templates/app_main/homepage.html:25
 msgid "powered by"
 msgstr ""
@@ -776,80 +778,88 @@ msgstr ""
 msgid "songs approved"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:44
-#: app_main/templates/app_main/homepage.html:75
+#: app_main/templates/app_main/homepage.html:45
+#: app_main/templates/app_main/homepage.html:102
 msgid "Modify homepage"
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:49
+msgid "Moderator message"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:76
 msgid "Title &#60;head&#62;"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:53
+#: app_main/templates/app_main/homepage.html:80
 msgid "Title &#60;h1&#62;"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:57
+#: app_main/templates/app_main/homepage.html:84
 msgid "Home text"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:61
+#: app_main/templates/app_main/homepage.html:88
 msgid "Bloc1 text: on left"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:65
+#: app_main/templates/app_main/homepage.html:92
 msgid "Bloc2 text: on right"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:80
+#: app_main/templates/app_main/homepage.html:107
 msgid "Administrator"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:81
+#: app_main/templates/app_main/homepage.html:109
 msgid "Site params"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:86
+#: app_main/templates/app_main/homepage.html:113
+msgid "Admin message"
+msgstr ""
+
+#: app_main/templates/app_main/homepage.html:140
 msgid "Max lines"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:90
+#: app_main/templates/app_main/homepage.html:144
 msgid "lines"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:96
+#: app_main/templates/app_main/homepage.html:150
 msgid "Max characters for a line"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:101
+#: app_main/templates/app_main/homepage.html:155
 msgid "characters"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:107
+#: app_main/templates/app_main/homepage.html:161
 msgid "Chorus prefix: "
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:110
+#: app_main/templates/app_main/homepage.html:164
 msgid "Verse prefix 1: "
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:113
+#: app_main/templates/app_main/homepage.html:167
 msgid "Verse prefix 2: "
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:116
+#: app_main/templates/app_main/homepage.html:170
 msgid "Examples:"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:117
+#: app_main/templates/app_main/homepage.html:171
 msgid "my chorus"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:118
+#: app_main/templates/app_main/homepage.html:172
 msgid "my verse"
 msgstr ""
 
-#: app_main/templates/app_main/homepage.html:127
+#: app_main/templates/app_main/homepage.html:181
 msgid "Modify site params"
 msgstr ""
 
@@ -1175,7 +1185,8 @@ msgstr ""
 msgid "Song approved"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:62
+#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
+#: copy.html:47
 msgid "title"
 msgstr ""
 
@@ -1183,7 +1194,8 @@ msgstr ""
 msgid "subtitle"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:70
+#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
+#: copy.html:48
 msgid "description"
 msgstr ""
 
@@ -1238,7 +1250,7 @@ msgid "Are you sure you want to delete this verse?"
 msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:177
-#: app_song/templates/app_song/modify_song.html:194
+#: app_song/templates/app_song/modify_song.html:194 chris/songs copy.html:33
 msgid "delete"
 msgstr ""
 
@@ -1333,7 +1345,7 @@ msgid "New genre"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6
+#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
 msgid "songs_list"
 msgstr "Songs list"
 
@@ -1435,7 +1447,7 @@ msgid "New sub title"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:214
-#: app_song/templates/common/song_actions.html:10
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr ""
 
@@ -1443,7 +1455,7 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: app_song/templates/common/song_actions.html:10
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "contact_moderators_info"
 msgstr ""
 
@@ -1461,6 +1473,18 @@ msgstr ""
 
 #: app_song/templates/common/song_actions.html:18
 msgid "Print song lyric - one chorus"
+msgstr ""
+
+#: chris/songs copy.html:19 copy.html:49
+msgid "actions"
+msgstr ""
+
+#: chris/songs copy.html:32
+msgid "update"
+msgstr ""
+
+#: chris/songs copy.html:35
+msgid "Go to"
 msgstr ""
 
 #: templates/account/login.html:6 templates/account/login.html:7
@@ -1769,6 +1793,10 @@ msgstr "🇬🇧&nbsp;EN"
 
 #: templates/includes/header.html:31
 msgid "close"
+msgstr ""
+
+#: templates/includes/messages.html:31
+msgid "Close"
 msgstr ""
 
 #: templates/includes/nav.html:8 templates/includes/nav.html:13
@@ -2522,37 +2550,30 @@ msgid "noon"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:7
-#: venv/lib/python3.12/site-packages/tornado/locale.py:295
 msgid "Monday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:8
-#: venv/lib/python3.12/site-packages/tornado/locale.py:296
 msgid "Tuesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:9
-#: venv/lib/python3.12/site-packages/tornado/locale.py:297
 msgid "Wednesday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:10
-#: venv/lib/python3.12/site-packages/tornado/locale.py:298
 msgid "Thursday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:11
-#: venv/lib/python3.12/site-packages/tornado/locale.py:299
 msgid "Friday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:12
-#: venv/lib/python3.12/site-packages/tornado/locale.py:300
 msgid "Saturday"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:13
-#: venv/lib/python3.12/site-packages/tornado/locale.py:301
 msgid "Sunday"
 msgstr ""
 
@@ -2585,62 +2606,50 @@ msgid "Sun"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:25
-#: venv/lib/python3.12/site-packages/tornado/locale.py:281
 msgid "January"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:26
-#: venv/lib/python3.12/site-packages/tornado/locale.py:282
 msgid "February"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:27
-#: venv/lib/python3.12/site-packages/tornado/locale.py:283
 msgid "March"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:28
-#: venv/lib/python3.12/site-packages/tornado/locale.py:284
 msgid "April"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:29
-#: venv/lib/python3.12/site-packages/tornado/locale.py:285
 msgid "May"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:30
-#: venv/lib/python3.12/site-packages/tornado/locale.py:286
 msgid "June"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:31
-#: venv/lib/python3.12/site-packages/tornado/locale.py:287
 msgid "July"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:32
-#: venv/lib/python3.12/site-packages/tornado/locale.py:288
 msgid "August"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:33
-#: venv/lib/python3.12/site-packages/tornado/locale.py:289
 msgid "September"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:34
-#: venv/lib/python3.12/site-packages/tornado/locale.py:290
 msgid "October"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:35
-#: venv/lib/python3.12/site-packages/tornado/locale.py:291
 msgid "November"
 msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/utils/dates.py:36
-#: venv/lib/python3.12/site-packages/tornado/locale.py:292
 msgid "December"
 msgstr ""
 
@@ -3041,93 +3050,4 @@ msgstr ""
 
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:377
-msgid "1 second ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:383
-msgid "1 minute ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:388
-msgid "1 hour ago"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:391
-#, python-format
-msgid "%(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:393
-msgid "yesterday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:393
-#, python-format
-msgid "yesterday at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:395
-#, python-format
-msgid "%(weekday)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:395
-#, python-format
-msgid "%(weekday)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:398
-#: venv/lib/python3.12/site-packages/tornado/locale.py:451
-#, python-format
-msgid "%(month_name)s %(day)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:400
-#, python-format
-msgid "%(month_name)s %(day)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:405
-#, python-format
-msgid "%(month_name)s %(day)s, %(year)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:407
-#, python-format
-msgid "%(month_name)s %(day)s, %(year)s at %(time)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:445
-#, python-format
-msgid "%(weekday)s, %(month_name)s %(day)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/locale.py:468
-#, python-format
-msgid "%(commas)s and %(last)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:68
-msgctxt "law"
-msgid "right"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:69
-msgctxt "good"
-msgid "right"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:70
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:72
-msgctxt "organization"
-msgid "club"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:74
-#: venv/lib/python3.12/site-packages/tornado/test/locale_test.py:75
-msgctxt "stick"
-msgid "club"
 msgstr ""

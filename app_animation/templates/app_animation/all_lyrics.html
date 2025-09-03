@@ -80,7 +80,10 @@
 <button id="menuToggle" aria-label="Ouvrir le menu" style="color:#888">☰</button>
 
 <aside id="controlPanel" aria-label="Menu des commandes">
-  <br>
+  <button id="closePanel" aria-label="Fermer le menu">❌</button>
+  
+  <hr style="width: 80%;">
+
   <select id="songSelect" aria-label="Choisir un chant"></select>
 
   <div style="display:flex;gap:.5rem;">
@@ -91,21 +94,29 @@
 
   <button id="themeToggle" aria-label="Changer de thème">🌙/☀️</button>
 
-  <hr style="width: 80%;">
-  
-  <button id="closePanel" aria-label="Fermer le menu">❌</button>
-  
-  <hr style="width: 80%;">
-
   <center>
     {% if song_id %}
-    <a href="../../song/{{song_id}}/"><img style="width: 25%;" src="/static/images/Lyrics.png"></a>
+    <a href="../../song/{{song_id}}/"><img style="width: 15%;" src="/static/images/Lyrics.png"></a>
     {% else %}
-    <img style="width: 25%;" src="/static/images/Lyrics.png">
+    <img style="width: 15%;" src="/static/images/Lyrics.png">
     {% endif %}
   </center>
 
   {% if img_qr_code %}
+  <div style="margin: 1rem 0; text-align: center;">
+    <input id="linkToCopy" type="text" value="{{ link_to_copy }}" readonly style="width: 80%; font-size: 1rem; padding: 0.3rem;">
+    <button id="copyLinkBtn" style="margin-left: 0.5rem;">Copy link / Copier le lien</button>
+  </div>
+  <script>
+  document.getElementById('copyLinkBtn').onclick = function() {
+    const input = document.getElementById('linkToCopy');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    this.textContent = 'OK!';
+    setTimeout(()=>{ this.textContent = 'Copier le lien'; }, 1500);
+  };
+  </script>
   <img src="data:image/png;base64,{{ img_qr_code }}" alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site." class="w-16 h-16 object-contain"></div>
   {% endif %}
 
