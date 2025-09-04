@@ -12,8 +12,9 @@
 
     <span>{% trans "Songs:" %}</span> <span id="nb_song"></span><br>
     {% if user.is_authenticated %}
-    <span title="{% trans 'Total songs in save search' %}">{% trans "Search ⓘ:" %}</span> <span>{{ total_search_songs }}</span><br>
+    <span title="{% trans 'Total songs in save search' %}">{% trans "Search ⓘ:" %}</span><br>
     {% endif %}
+    <span>{{ total_search_songs }}</span>
     <span title="{% trans 'Total songs in DB' %}">{% trans "Total ⓘ:" %}</span> <span>{{ total_songs }}</span>
     
     <br><br>
