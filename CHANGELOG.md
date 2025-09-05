@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.0...v1.24.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* display song number ([eed98be](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/eed98bec4d9a76083f8001bcb18a5fff69b7eb3c))
+
 # [1.24.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.23.0...v1.24.0) (2025-09-01)
 
 
