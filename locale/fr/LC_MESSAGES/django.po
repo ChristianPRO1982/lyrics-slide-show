@@ -598,13 +598,13 @@ msgid "private_info2"
 msgstr ""
 "Un groupe “ouvert” peut être rejoint par n'importe quelle personne "
 "connectée. Il n'y a pas de restriction autre que celle d'être connectée."
-"<hr>(*) Un groupe privé n'est accéssible que par des membres connectés au "
+"<hr>Un groupe privé n'est accéssible que par des membres connectés au "
 "site et dont l'affiliation au groupe a été effectué."
 
 #: app_group/templates/app_group/modify_group.html:43
 msgid "token_info2"
 msgstr ""
-"(**) Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
+"Le token est permanent et permet à ceux qui l'ont reçu de se connecter "
 "au groupe. Ils n'ont pas besoin d'avoir un compte sur le site et d'être "
 "logués.<br><br>Pour créer un token ou pour en générer un nouveau, cliquer "
 "sur la case “créer un nouveau token”. Si un token existait déjà, il sera "
@@ -619,11 +619,11 @@ msgstr "OBLIGATOIRE"
 
 #: app_group/templates/app_group/modify_group.html:52
 msgid "Private group"
-msgstr "Création d'un groupe privé"
+msgstr "Groupe privé"
 
 #: app_group/templates/app_group/modify_group.html:53
 msgid "private_info1"
-msgstr "Seul les membres du groupe peuvent y accéder (*)."
+msgstr "Seul les membres du groupe peuvent y accéder."
 
 #: app_group/templates/app_group/modify_group.html:55
 msgid "Make the group private"
@@ -635,7 +635,7 @@ msgstr ""
 
 #: app_group/templates/app_group/modify_group.html:58
 msgid "token_info1"
-msgstr "Gestion du token pour accéder au groupe (**)."
+msgstr "Gestion du token pour accéder au groupe."
 
 #: app_group/templates/app_group/modify_group.html:60
 msgid "New group token"

@@ -40,7 +40,13 @@
 </p>
 {% endfor %}
 {% endblock bloc1 %}
-{% block bloc2 %}{% trans "private_info2" %}<hr>{% trans "token_info2" %}{% endblock bloc2 %}
+{% block bloc2 %}
+<a id="private_info2"></a>
+{% trans "private_info2" %}
+<hr>
+<a id="token_info2"></a>
+{% trans "token_info2" %}
+{% endblock bloc2 %}
 
 {% block content %}
 
@@ -50,12 +56,12 @@
     <textarea name="txt_group_info" placeholder="{% trans "Description" %}" maxlength="255">{{ group.info }}</textarea>
     <hr>
     <h2 class="L_H2">{% trans "Private group" %}</h2>
-    {% trans "private_info1" %}<br>
+    {% trans "private_info1" %} <a href="#private_info2">⓵</a><br>
     <input class="w-4 h-4" id="box_group_private" type="checkbox" name="box_group_private" maxlength="255"{% if group.private %} checked="checked"{% endif %} />
     <label for="box_group_private">{% trans "Make the group private" %}</label>
     <hr>
     <h2 class="L_H2">{% trans "Token" %}</h2>
-    {% trans "token_info1" %}<br>
+    {% trans "token_info1" %} <a href="#token_info2">⓶</a><br>
     <input class="w-4 h-4" id="box_group_token" type="checkbox" name="box_group_token" maxlength="255" />
     <label for="box_group_token">{% trans "New group token" %}</label>
     {% if group.token %}
