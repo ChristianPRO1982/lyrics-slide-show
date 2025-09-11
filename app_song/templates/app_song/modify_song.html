@@ -104,10 +104,14 @@
                     {% if verse.chorus != 1 %}
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_followed_{{ verse.verse_id }}"
                         id="box_verse_followed_{{ verse.verse_id }}" {% if verse.followed %}checked{% endif %} />
-                        <label for="box_verse_followed_{{ verse.verse_id }}" title="{% trans "Use this option for not display chorus after" %}">{% trans "followed" %} ⓘ</label>
+                        <label for="box_verse_followed_{{ verse.verse_id }}" title="{% trans "Use this option for not display chorus after" %}">{% trans "followed" %}</label>
+                        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info1')">ⓘ</button>
+                        <span id="info1" class="hidden text-xs">{% trans "Use this option for not display chorus after" %}</span>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_notcontinuenumbering_{{ verse.verse_id }}"
                         id="box_verse_notcontinuenumbering_{{ verse.verse_id }}" {% if verse.notcontinuenumbering %}checked{% endif %} />
-                        <label for="box_verse_notcontinuenumbering_{{ verse.verse_id }}" title="{% trans "Not continue numbering" %}">{% trans "Not C. num ⓘ" %}</label>
+                        <label for="box_verse_notcontinuenumbering_{{ verse.verse_id }}" title="{% trans "Not continue numbering" %}">{% trans "Not C. num" %}</label>
+                        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info2')">ⓘ</button>
+                        <span id="info2" class="hidden text-xs">{% trans "Not continue numbering" %}</span>
                         <br><input style="width: 10%;" type="checkbox" name="box_verse_like_chorus_{{ verse.verse_id }}"
                         id="box_verse_like_chorus_{{ verse.verse_id }}" {% if verse.like_chorus != 0 %}checked{% endif %} />
                         <label for="box_verse_like_chorus_{{ verse.verse_id }}">{% trans "like_a_chorus" %}</label>
