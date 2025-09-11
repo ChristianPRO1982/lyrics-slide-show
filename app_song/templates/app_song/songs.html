@@ -216,7 +216,8 @@
             li.innerHTML += br;
 
             if (song.description) {
-                li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ - </span>';
+                li.innerHTML += '<button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility(' + "'info_" + song.song_id + "'" + ')">' + txt_Description + ' ⓘ</button> - ';
+                li.innerHTML += '<textarea id="info_' + song.song_id + '" class="hidden" readonly="readonly" rows="3">' + song.description + '</textarea>';
             }
             if (song.status != 0) {
                 li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';
