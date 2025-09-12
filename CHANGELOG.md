@@ -1,3 +1,14 @@
+## [1.24.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.1...v1.24.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* add 📄 for song licensed in metadata song page ([354ba06](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/354ba064ded1650f24e27a78c3c775d3cfd4941d))
+* translate and add link ⓘ for smartphone in groupe pages ([cb75f58](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cb75f58381290a6c81a2df166d28d4589561f408))
+* translate and add link ⓘ for smartphone in songs page ([baced38](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/baced38e39e59768277973683c7ca923bbdc4010))
+* translate and add link ⓘ for smartphone in songs page ([cd6e845](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cd6e8457a4697f9dd948d7678a101bf6634ffe1b))
+* translate and add link ⓘ for smartphone in songs page ([0412586](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/041258646e0a26e9fa57c1bfd8c3361223754214))
+
 ## [1.24.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.0...v1.24.1) (2025-09-05)
 
 
