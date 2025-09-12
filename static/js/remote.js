@@ -70,7 +70,17 @@ function showSlide(index, updateCurrentSlide = true) {
         displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         displayWindow.document.getElementById('slideContent').style.fontFamily = font;
         displayWindow.document.getElementById('slideContent').style.color = color_rgba;
-        displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
+        if (bg_rgba == "image_scout") {
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
+            const sc = displayWindow.document.getElementById('slideContent');
+            sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_50.png')";
+            // sc.style.backgroundSize = 'cover';
+            sc.style.backgroundSize = '100% 100%';
+            sc.style.backgroundPosition = 'center center';
+            sc.style.backgroundRepeat = 'no-repeat';
+        } else {
+            displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
+        }
         last_text = text;
         last_color_rgba = color_rgba;
         last_bg_rgba = bg_rgba;
