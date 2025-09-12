@@ -1,3 +1,11 @@
+## [1.24.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.2...v1.24.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* **remote:** background image restored correctly after blackmode or qr-code ([e9fece4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e9fece46304de8ea07e4e7d5739756aa63eed2ec))
+* rename jobs in CI/CD ([dc29258](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dc292585eafead3db8e50bedf165a68d039910f9))
+
 ## [1.24.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.1...v1.24.2) (2025-09-12)
 
 
