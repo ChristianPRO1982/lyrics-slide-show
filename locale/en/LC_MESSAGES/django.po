@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-01 09:35+0200\n"
+"POT-Creation-Date: 2025-09-11 10:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,8 +35,8 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:38
 #: app_animation/templates/app_animation/animations.html:73
 #: app_animation/templates/app_animation/modify_animation.html:50
-#: app_song/templates/app_song/song_metadata.html:160
-#: app_song/templates/app_song/song_metadata.html:187
+#: app_song/templates/app_song/song_metadata.html:165
+#: app_song/templates/app_song/song_metadata.html:192
 msgid "Name"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:74
 #: app_animation/templates/app_animation/modify_animation.html:54
 #: app_group/templates/app_group/add_group.html:16
-#: app_group/templates/app_group/modify_group.html:50
+#: app_group/templates/app_group/modify_group.html:56
 msgid "Description"
 msgstr ""
 
@@ -58,10 +58,10 @@ msgstr ""
 #: app_animation/templates/app_animation/animations.html:41
 #: app_animation/templates/app_animation/animations.html:76
 #: app_animation/templates/common/animation_actions.html:3
-#: app_song/templates/app_song/song_metadata.html:28
-#: app_song/templates/app_song/song_metadata.html:53
-#: app_song/templates/app_song/song_metadata.html:161
-#: app_song/templates/app_song/song_metadata.html:188
+#: app_song/templates/app_song/song_metadata.html:33
+#: app_song/templates/app_song/song_metadata.html:58
+#: app_song/templates/app_song/song_metadata.html:166
+#: app_song/templates/app_song/song_metadata.html:193
 #: app_song/templates/common/song_actions.html:3
 msgid "Actions"
 msgstr ""
@@ -76,8 +76,8 @@ msgstr ""
 #: app_animation/templates/common/animation_actions.html:7
 #: app_main/templates/app_main/artists.html:25
 #: app_main/templates/app_main/bands.html:25
-#: app_song/templates/app_song/song_metadata.html:38
-#: app_song/templates/app_song/song_metadata.html:173
+#: app_song/templates/app_song/song_metadata.html:43
+#: app_song/templates/app_song/song_metadata.html:178
 #: app_song/templates/common/song_actions.html:8
 #: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
@@ -257,22 +257,22 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_animation.html:113
 #: app_animation/templates/app_animation/modify_animation.html:336
 #: app_animation/templates/app_animation/modify_colors.html:38
-#: app_group/templates/app_group/modify_group.html:87
+#: app_group/templates/app_group/modify_group.html:93
 #: app_main/templates/app_main/homepage.html:98
 #: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
 #: app_song/templates/app_song/modify_song.html:80
-#: app_song/templates/app_song/modify_song.html:217
-#: app_song/templates/app_song/song_metadata.html:17
-#: app_song/templates/app_song/song_metadata.html:196
+#: app_song/templates/app_song/modify_song.html:221
+#: app_song/templates/app_song/song_metadata.html:22
+#: app_song/templates/app_song/song_metadata.html:201
 msgid "save"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:126
 #: app_animation/templates/app_animation/modify_animation.html:134
-#: app_song/templates/app_song/modify_song.html:124
-#: app_song/templates/app_song/modify_song.html:150
-#: app_song/templates/app_song/modify_song.html:165
+#: app_song/templates/app_song/modify_song.html:128
+#: app_song/templates/app_song/modify_song.html:154
+#: app_song/templates/app_song/modify_song.html:169
 msgid "verse_num"
 msgstr ""
 
@@ -323,7 +323,7 @@ msgid "move2dots"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:209
-#: app_song/templates/app_song/modify_song.html:143
+#: app_song/templates/app_song/modify_song.html:147
 msgid "before"
 msgstr ""
 
@@ -333,12 +333,12 @@ msgid "song_num"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:218
-#: app_song/templates/app_song/modify_song.html:157
+#: app_song/templates/app_song/modify_song.html:161
 msgid "dont_do_nothing"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:219
-#: app_song/templates/app_song/modify_song.html:158
+#: app_song/templates/app_song/modify_song.html:162
 msgid "after"
 msgstr ""
 
@@ -380,7 +380,7 @@ msgid "Go to the song"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:325
-#: app_song/templates/app_song/songs.html:55
+#: app_song/templates/app_song/songs.html:59
 msgid "Song research"
 msgstr ""
 
@@ -394,7 +394,7 @@ msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:337
 #: app_song/templates/app_song/modify_song.html:81
-#: app_song/templates/app_song/modify_song.html:218
+#: app_song/templates/app_song/modify_song.html:222
 msgid "save_exit"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgid "new_group"
 msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:129
+#: app_song/templates/app_song/songs.html:135
 msgid "add"
 msgstr ""
 
@@ -584,7 +584,7 @@ msgstr ""
 msgid "Add this member"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:43
+#: app_group/templates/app_group/modify_group.html:45
 msgid "private_info2"
 msgstr ""
 "An “open” group can be joined by anyone connected. There are no restrictions "
@@ -592,7 +592,7 @@ msgstr ""
 "members connected to the site and whose affiliation to the group has been "
 "completed."
 
-#: app_group/templates/app_group/modify_group.html:43
+#: app_group/templates/app_group/modify_group.html:48
 msgid "token_info2"
 msgstr ""
 "(**) The token is permanent and allows those who have received it to connect "
@@ -604,54 +604,54 @@ msgstr ""
 "connect to it.<br><br>It is also possible to delete the token with the "
 "“delete token” checkbox."
 
-#: app_group/templates/app_group/modify_group.html:49
+#: app_group/templates/app_group/modify_group.html:55
 msgid "MANDATORY"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:52
+#: app_group/templates/app_group/modify_group.html:58
 msgid "Private group"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:53
+#: app_group/templates/app_group/modify_group.html:59
 msgid "private_info1"
 msgstr "Only group members have access (*)."
 
-#: app_group/templates/app_group/modify_group.html:55
+#: app_group/templates/app_group/modify_group.html:61
 msgid "Make the group private"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:57
+#: app_group/templates/app_group/modify_group.html:63
 msgid "Token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:58
+#: app_group/templates/app_group/modify_group.html:64
 msgid "token_info1"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:60
+#: app_group/templates/app_group/modify_group.html:66
 msgid "New group token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:64
+#: app_group/templates/app_group/modify_group.html:70
 msgid "Delete group token"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:68
+#: app_group/templates/app_group/modify_group.html:74
 msgid "Delete group"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:70
-#: app_group/templates/app_group/modify_group.html:72
+#: app_group/templates/app_group/modify_group.html:76
+#: app_group/templates/app_group/modify_group.html:78
 msgid "Confirm group deletion"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:88
+#: app_group/templates/app_group/modify_group.html:94
 msgid "cancel"
 msgstr ""
 
 #: app_main/templates/app_main/artists.html:6
 #: app_main/templates/app_main/artists.html:7
-#: app_song/templates/app_song/song_metadata.html:120
+#: app_song/templates/app_song/song_metadata.html:125
 msgid "Artists"
 msgstr ""
 
@@ -687,7 +687,7 @@ msgstr ""
 
 #: app_main/templates/app_main/bands.html:6
 #: app_main/templates/app_main/bands.html:7
-#: app_song/templates/app_song/song_metadata.html:89
+#: app_song/templates/app_song/song_metadata.html:94
 msgid "Bands"
 msgstr ""
 
@@ -762,7 +762,7 @@ msgstr ""
 
 #: app_main/templates/app_main/homepage.html:34
 #: app_main/templates/app_main/profile.html:105
-#: app_song/templates/app_song/song_metadata.html:154
+#: app_song/templates/app_song/song_metadata.html:159
 msgid "Moderator"
 msgstr ""
 
@@ -1181,7 +1181,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:51
 #: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/songs.html:72
+#: app_song/templates/app_song/songs.html:76
 msgid "Song approved"
 msgstr ""
 
@@ -1212,12 +1212,13 @@ msgid "Too many characters for a line"
 msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:102
-#: app_song/templates/app_song/modify_song.html:148
-#: app_song/templates/app_song/modify_song.html:163
+#: app_song/templates/app_song/modify_song.html:152
+#: app_song/templates/app_song/modify_song.html:167
 msgid "chorus"
 msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:107
+#: app_song/templates/app_song/modify_song.html:109
 msgid "Use this option for not display chorus after"
 msgstr ""
 
@@ -1225,122 +1226,123 @@ msgstr ""
 msgid "followed"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:110
+#: app_song/templates/app_song/modify_song.html:112
+#: app_song/templates/app_song/modify_song.html:114
 msgid "Not continue numbering"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:110
-msgid "Not C. num ⓘ"
+#: app_song/templates/app_song/modify_song.html:112
+msgid "Not C. num"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:113
+#: app_song/templates/app_song/modify_song.html:117
 msgid "like_a_chorus"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:129
+#: app_song/templates/app_song/modify_song.html:133
 msgid "Prefix"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:141
+#: app_song/templates/app_song/modify_song.html:145
 msgid "move2dot"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:176
+#: app_song/templates/app_song/modify_song.html:180
 msgid "Are you sure you want to delete this verse?"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:177
-#: app_song/templates/app_song/modify_song.html:194 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:181
+#: app_song/templates/app_song/modify_song.html:198 chris/songs copy.html:33
 msgid "delete"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:186
+#: app_song/templates/app_song/modify_song.html:190
 msgid "new_verse"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:190
+#: app_song/templates/app_song/modify_song.html:194
 msgid "Verse prefixes"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:198
+#: app_song/templates/app_song/modify_song.html:202
 msgid "new prefix"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:199
+#: app_song/templates/app_song/modify_song.html:203
 msgid "comment"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:219
+#: app_song/templates/app_song/modify_song.html:223
 msgid "cancel_info"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:14
+#: app_song/templates/app_song/song_metadata.html:19
 #: app_song/templates/common/song_actions.html:7
 msgid "Metadata"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:21
+#: app_song/templates/app_song/song_metadata.html:26
 msgid "Web links"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:26
-#: app_song/templates/app_song/song_metadata.html:51
+#: app_song/templates/app_song/song_metadata.html:31
+#: app_song/templates/app_song/song_metadata.html:56
 msgid "Link"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:27
-#: app_song/templates/app_song/song_metadata.html:52
+#: app_song/templates/app_song/song_metadata.html:32
+#: app_song/templates/app_song/song_metadata.html:57
 msgid "Auto-text"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:37
+#: app_song/templates/app_song/song_metadata.html:42
 msgid "Delete this link?"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:45
+#: app_song/templates/app_song/song_metadata.html:50
 msgid "New link"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:60
+#: app_song/templates/app_song/song_metadata.html:65
 msgid "Genres"
-msgstr ""
-
-#: app_song/templates/app_song/song_metadata.html:62
-#: app_song/templates/app_song/song_metadata.html:91
-#: app_song/templates/app_song/song_metadata.html:122
-msgid "display / undisplay"
-msgstr ""
-
-#: app_song/templates/app_song/song_metadata.html:66
-#: app_song/templates/app_song/song_metadata.html:95
-#: app_song/templates/app_song/song_metadata.html:126
-msgid "Selected"
 msgstr ""
 
 #: app_song/templates/app_song/song_metadata.html:67
 #: app_song/templates/app_song/song_metadata.html:96
 #: app_song/templates/app_song/song_metadata.html:127
+msgid "display / undisplay"
+msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:71
+#: app_song/templates/app_song/song_metadata.html:100
+#: app_song/templates/app_song/song_metadata.html:131
+msgid "Selected"
+msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:72
+#: app_song/templates/app_song/song_metadata.html:101
+#: app_song/templates/app_song/song_metadata.html:132
 msgid "Available"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:155
+#: app_song/templates/app_song/song_metadata.html:160
 msgid "Genre"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:159
-#: app_song/templates/app_song/song_metadata.html:186
+#: app_song/templates/app_song/song_metadata.html:164
+#: app_song/templates/app_song/song_metadata.html:191
 msgid "Group"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:181
+#: app_song/templates/app_song/song_metadata.html:186
 msgid "Group name"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:182
+#: app_song/templates/app_song/song_metadata.html:187
 msgid "Genre name"
 msgstr ""
 
-#: app_song/templates/app_song/song_metadata.html:183
+#: app_song/templates/app_song/song_metadata.html:188
 msgid "New genre"
 msgstr ""
 
@@ -1354,99 +1356,99 @@ msgid "Songs:"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:15
-msgid "Total songs in save search"
-msgstr ""
-
-#: app_song/templates/app_song/songs.html:15
 msgid "Search ⓘ:"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:17
-msgid "Total songs in DB"
+msgid "Total songs in save search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:17
+#: app_song/templates/app_song/songs.html:19
 msgid "Total ⓘ:"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:21
+msgid "Total songs in DB"
+msgstr ""
+
+#: app_song/templates/app_song/songs.html:25
 msgid "✔️: Song valided"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:22
+#: app_song/templates/app_song/songs.html:26
 msgid "✔️⁉️: Song valided with messages"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:23
+#: app_song/templates/app_song/songs.html:27
 msgid "📄: Licensed song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:59
-#: app_song/templates/app_song/songs.html:122
+#: app_song/templates/app_song/songs.html:63
+#: app_song/templates/app_song/songs.html:128
 msgid "Minimum 3 characters"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:63
+#: app_song/templates/app_song/songs.html:67
 msgid "Search in description and lyrics"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:65
+#: app_song/templates/app_song/songs.html:69
 msgid "Advanced search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:79
+#: app_song/templates/app_song/songs.html:83
 msgid "Song not approved"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:82
+#: app_song/templates/app_song/songs.html:86
 msgid "Logic by:"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:85
+#: app_song/templates/app_song/songs.html:89
 msgid "OR"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:89
+#: app_song/templates/app_song/songs.html:93
 msgid "AND"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:92
+#: app_song/templates/app_song/songs.html:96
 msgid "find genre or band or artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:115
+#: app_song/templates/app_song/songs.html:119
 msgid "genre"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:115
+#: app_song/templates/app_song/songs.html:119
 msgid "band"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:115
+#: app_song/templates/app_song/songs.html:119
 msgid "artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:118
+#: app_song/templates/app_song/songs.html:122
 msgid "save and search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:118
-msgid "help_save_search"
-msgstr ""
-
-#: app_song/templates/app_song/songs.html:119
+#: app_song/templates/app_song/songs.html:123
 msgid "reset"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:125
+msgid "help_save_search"
+msgstr ""
+
+#: app_song/templates/app_song/songs.html:133
 msgid "New song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:128
+#: app_song/templates/app_song/songs.html:134
 msgid "New sub title"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:214
+#: app_song/templates/app_song/songs.html:223
 #: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr ""
@@ -1795,7 +1797,7 @@ msgstr "🇬🇧&nbsp;EN"
 msgid "close"
 msgstr ""
 
-#: templates/includes/messages.html:31
+#: templates/includes/l_site_messages.html:31
 msgid "Close"
 msgstr ""
 

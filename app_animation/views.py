@@ -94,13 +94,14 @@ def modify_animation(request, animation_id):
                     animation.font_size = request.POST.get('sel_font_size', 60)
                     animation.font = request.POST.get('sel_font', 'Arial')
                     change_colors = request.POST.get('rad_animation_colors', 'no_change').split('|')
+                    image_scout = request.POST.get('box_image_scout', 'off')
                     if len(change_colors) == 2:
                         animation.color_rgba = change_colors[0]
                         animation.bg_rgba = change_colors[1]
+                    if image_scout == 'on':
+                        animation.bg_rgba = "image_scout"
                     animation.save()
 
-                    # if 'btn_new_song' in request.POST:
-                    #     animation.new_song_verses(request.POST.get('sel_song_id'))
                     if request.POST.get('txt_new_songs', '').strip():
                         new_songs = request.POST.get('txt_new_songs').split('|')
                         for song_id in new_songs:

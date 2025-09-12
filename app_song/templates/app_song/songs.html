@@ -12,11 +12,15 @@
 
     <span>{% trans "Songs:" %}</span> <span id="nb_song"></span><br>
     {% if user.is_authenticated %}
-    <span title="{% trans 'Total songs in save search' %}">{% trans "Search ⓘ:" %}</span> <span>{{ total_search_songs }}</span><br>
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info1')">{% trans "Search ⓘ:" %}</button>
+    <span>{{ total_search_songs }}</span><br>
+    <span id="info1" class="hidden text-xs">{% trans 'Total songs in save search' %}</span>
     {% endif %}
-    <span title="{% trans 'Total songs in DB' %}">{% trans "Total ⓘ:" %}</span> <span>{{ total_songs }}</span>
+    <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info2')">{% trans "Total ⓘ:" %}</button>
+    <span>{{ total_songs }}</span><br>
+    <span id="info2" class="hidden text-xs">{% trans 'Total songs in DB' %}</span>
     
-    <br><br>
+    <br>
 
     {% trans "✔️: Song valided" %}<br>
     {% trans "✔️⁉️: Song valided with messages" %}<br>
@@ -115,13 +119,15 @@
             🎼 : {% trans "genre" %} / 👥 : {% trans "band" %} / 👤 : {% trans "artist" %}
             <hr>
         </div>
-        <input name="btn_search" value="{% trans "save and search" %} ⓘ" title="{% trans 'help_save_search' %}" type="submit" />
+        <input name="btn_search" value="{% trans "save and search" %}" type="submit" />
         <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
+        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info3')">ⓘ</button>
+        <span id="info3" class="hidden text-xs">{% trans 'help_save_search' %}</span>
     </form>
     {% else %}
     <input type="text" id="search" placeholder="{% trans "Minimum 3 characters" %}" value="{{ search_txt }}" /><br>
     {% endif %}
-    <br><hr><br>
+    <hr><br>
     <form method="post">
         {% csrf_token %}
         <input type="text" name="txt_new_title" placeholder="{% trans "New song" %}" maxlength="255" {% if title != '' %}value="{{ title }}"{% endif %} required /><br>
@@ -210,7 +216,8 @@
             li.innerHTML += br;
 
             if (song.description) {
-                li.innerHTML += '<span class="L_LIKE_A" title="' + song.description + '">' + txt_Description + ' ⓘ</span> - ';
+                li.innerHTML += '<button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility(' + "'info_" + song.song_id + "'" + ')">' + txt_Description + ' ⓘ</button> - ';
+                li.innerHTML += '<textarea id="info_' + song.song_id + '" class="hidden" readonly="readonly" rows="3">' + song.description + '</textarea>';
             }
             if (song.status != 0) {
                 li.innerHTML += '<a href="/songs/moderator_song/' + song.song_id + '/">' + '{% trans "Contact moderators" %}' + '</a>';

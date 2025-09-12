@@ -55,12 +55,6 @@ CARTHOGRAPHIE_FUNCTIONAL_SSL=''
 #########
 EMAIL_HOST_USER=''
 EMAIL_HOST_PASSWORD=''
-
-#########
-# GMAIL #
-#########
-EMAIL_HOST_USER=''
-EMAIL_HOST_PASSWORD=''
 ```
 
 ## Installation
