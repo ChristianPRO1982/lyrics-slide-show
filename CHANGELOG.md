@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.3...v1.25.0) (2025-09-12)
+
+
+### Features
+
+* polices d'écritures SGDF ([fe23dce](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fe23dcec697b4f5a82a4ed8dd99e318b107a3349))
+
 ## [1.24.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.2...v1.24.3) (2025-09-12)
 
 
