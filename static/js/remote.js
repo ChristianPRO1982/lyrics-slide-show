@@ -79,6 +79,7 @@ function showSlide(index, updateCurrentSlide = true) {
             sc.style.backgroundPosition = 'center center';
             sc.style.backgroundRepeat = 'no-repeat';
         } else {
+            displayWindow.document.getElementById('slideContent').style.backgroundImage = '';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = bg_rgba;
         }
         last_text = text;
@@ -201,6 +202,7 @@ function blackMode() {
     const div = document.getElementById('blackMode');
     if (!div.classList.contains('active_background')) {
         if (displayWindow) {
+            displayWindow.document.getElementById('slideContent').style.backgroundImage = '';
             displayWindow.document.getElementById('slideContent').innerHTML = '';
             displayWindow.document.getElementById('slideContent').style.color = 'black';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
@@ -210,7 +212,17 @@ function blackMode() {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
-            displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
+            if (last_bg_rgba == "image_scout") {
+                displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
+                const sc = displayWindow.document.getElementById('slideContent');
+                sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_50.png')";
+                // sc.style.backgroundSize = 'cover';
+                sc.style.backgroundSize = '100% 100%';
+                sc.style.backgroundPosition = 'center center';
+                sc.style.backgroundRepeat = 'no-repeat';
+            } else {
+                displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
+            }
         }
         div.classList.remove('active_background');
     }
@@ -583,6 +595,7 @@ function qr_code() {
                 + '<img src="data:image/png;base64,'
                 + img_qr_code + '" alt="📱 '
                 + err_qr_code + '" style="height: 100%;" class="object-contain">';
+            displayWindow.document.getElementById('slideContent').style.backgroundImage = '';
             displayWindow.document.getElementById('slideContent').style.color = 'white';
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
         }
@@ -591,7 +604,17 @@ function qr_code() {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
-            displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
+            if (last_bg_rgba == "image_scout") {
+                displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
+                const sc = displayWindow.document.getElementById('slideContent');
+                sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_50.png')";
+                // sc.style.backgroundSize = 'cover';
+                sc.style.backgroundSize = '100% 100%';
+                sc.style.backgroundPosition = 'center center';
+                sc.style.backgroundRepeat = 'no-repeat';
+            } else {
+                displayWindow.document.getElementById('slideContent').style.backgroundColor = last_bg_rgba;
+            }
         }
         div.classList.remove('active_background');
     }
