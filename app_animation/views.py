@@ -95,11 +95,14 @@ def modify_animation(request, animation_id):
                     animation.font = request.POST.get('sel_font', 'Arial')
                     change_colors = request.POST.get('rad_animation_colors', 'no_change').split('|')
                     image_scout = request.POST.get('box_image_scout', 'off')
+                    image_scout_inversee = request.POST.get('box_image_scout_inversee', 'off')
                     if len(change_colors) == 2:
                         animation.color_rgba = change_colors[0]
                         animation.bg_rgba = change_colors[1]
                     if image_scout == 'on':
                         animation.bg_rgba = "image_scout"
+                    if image_scout_inversee == 'on':
+                        animation.bg_rgba = "image_scout_inversee"
                     animation.save()
 
                     if request.POST.get('txt_new_songs', '').strip():

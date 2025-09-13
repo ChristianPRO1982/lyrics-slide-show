@@ -110,8 +110,12 @@
     {% endfor %}<br><br>
     </div>
     <label>
-        {% trans "image scout" %}
+        image scout
         <input style="width: 10%;" type="checkbox" name="box_image_scout" />
+    </label><br>
+    <label>
+        image scout inversée
+        <input style="width: 10%;" type="checkbox" name="box_image_scout_inversee" />
     </label><br>
     <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
