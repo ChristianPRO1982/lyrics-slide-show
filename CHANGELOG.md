@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.0...v1.25.1) (2025-09-13)
+
+
+### Bug Fixes
+
+* image scoute inversée ([cdd2bf5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cdd2bf541a9162aae5680dd44a6d325f97f634b5))
+
 # [1.25.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.24.3...v1.25.0) (2025-09-12)
 
 
