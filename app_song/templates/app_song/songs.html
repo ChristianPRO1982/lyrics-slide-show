@@ -121,7 +121,7 @@
         </div>
         <input name="btn_search" value="{% trans "save and search" %}" type="submit" />
         <input name="btn_reset_search" value="{% trans "reset" %}" type="submit" />
-        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info3')">ⓘ</button>
+        <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info3')">{% trans "help on ‘advanced search’" %} ⓘ</button>
         <span id="info3" class="hidden text-xs">{% trans 'help_save_search' %}</span>
     </form>
     {% else %}
