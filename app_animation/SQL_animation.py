@@ -458,7 +458,7 @@ ORDER BY las.num, lv.num
                         'chorus': row[3],
                         'num_verse': row[4],
                         'followed': row[5],
-                        'text': row[6],
+                        'text': row[6].replace(' :', '&nbsp;:').replace(' -', '&nbsp;-').replace(' ?', '&nbsp;?').replace(' !', '&nbsp;!').replace(' ;', '&nbsp;;'),
                         'new_animation_song': row[7],
                         'color_rgba': row[8],
                         'bg_rgba': row[9],

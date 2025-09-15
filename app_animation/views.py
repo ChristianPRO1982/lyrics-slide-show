@@ -147,7 +147,7 @@ def modify_animation(request, animation_id):
                 animation = Animation.get_animation_by_id(animation_id, group_id)
 
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
-                return redirect('animations')
+                return redirect('lyrics_slide_show', animation_id=animation_id)
         
             # Recalculate the 'order' for all songs
             for index, song in enumerate(animation.songs):

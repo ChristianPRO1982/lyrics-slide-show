@@ -284,7 +284,7 @@ function navPreviousSlideInit() {
 
     if (navPreviousSlideDiv) {
         navPreviousSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🔙📜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🔙</div></a>';
     }
 }
 
@@ -296,7 +296,7 @@ function navNextSlideInit() {
 
     if (navNextSlideDiv) {
         navNextSlideDiv.innerHTML = '<a href="#song_' + current_song_id +
-        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">📜🔜</div></a>';
+        '" style="text-decoration: none!important;" class="w-full"><div class="slide flex w-full h-20 p-2 items-center justify-center border rounded-lg text-4xl">🔜</div></a>';
     }
 }
 
