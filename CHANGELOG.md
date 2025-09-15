@@ -1,3 +1,13 @@
+## [1.25.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.1...v1.25.2) (2025-09-15)
+
+
+### Bug Fixes
+
+* **animation:** display buttons ([d0515ca](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d0515ca092c96b1779113504c44894762844b31c))
+* **LSS:** add "& nbsp ;" in slide before characters: ! : ; ? - ([3588fc5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3588fc5d39c8d515dfe56006560f46d582681361))
+* **songs:** help for advanced search ([fcd3ae4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fcd3ae4e8127f042927fe2b1bdce7db41857b1d2))
+* translation of "save and exit" buttons ([ef12c42](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ef12c4294234bacbbe76b32df95683dabc43289a))
+
 ## [1.25.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.0...v1.25.1) (2025-09-13)
 
 
