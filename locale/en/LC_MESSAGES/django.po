@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-11 10:20+0200\n"
+"POT-Creation-Date: 2025-09-15 10:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:55
 #: app_animation/templates/app_animation/delete_animation.html:21
-#: app_animation/templates/app_animation/modify_animation.html:306
+#: app_animation/templates/app_animation/modify_animation.html:315
 #: app_animation/templates/common/animation_actions.html:7
 #: app_main/templates/app_main/artists.html:25
 #: app_main/templates/app_main/bands.html:25
@@ -102,7 +102,7 @@ msgid "confirm_delete_animation_2dot"
 msgstr ""
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:338
+#: app_animation/templates/app_animation/modify_animation.html:347
 #: app_main/templates/app_main/homepage.html:99
 #: app_main/templates/app_main/homepage.html:178
 #: app_song/templates/app_song/moderator_song.html:43
@@ -239,23 +239,23 @@ msgid "Animation's colors"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:97
-#: app_animation/templates/app_animation/modify_animation.html:187
-#: app_animation/templates/app_animation/modify_animation.html:287
+#: app_animation/templates/app_animation/modify_animation.html:196
+#: app_animation/templates/app_animation/modify_animation.html:296
 msgid "No change"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:105
-#: app_animation/templates/app_animation/modify_animation.html:195
-#: app_animation/templates/app_animation/modify_animation.html:295
+#: app_animation/templates/app_animation/modify_animation.html:204
+#: app_animation/templates/app_animation/modify_animation.html:304
 msgid "Sel"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:112
+#: app_animation/templates/app_animation/modify_animation.html:121
 msgid "Modifiy animation's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:113
-#: app_animation/templates/app_animation/modify_animation.html:336
+#: app_animation/templates/app_animation/modify_animation.html:122
+#: app_animation/templates/app_animation/modify_animation.html:345
 #: app_animation/templates/app_animation/modify_colors.html:38
 #: app_group/templates/app_group/modify_group.html:93
 #: app_main/templates/app_main/homepage.html:98
@@ -268,135 +268,135 @@ msgstr ""
 msgid "save"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:126
-#: app_animation/templates/app_animation/modify_animation.html:134
+#: app_animation/templates/app_animation/modify_animation.html:135
+#: app_animation/templates/app_animation/modify_animation.html:143
 #: app_song/templates/app_song/modify_song.html:128
 #: app_song/templates/app_song/modify_song.html:154
 #: app_song/templates/app_song/modify_song.html:169
 msgid "verse_num"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:145
-#: app_animation/templates/app_animation/modify_animation.html:244
+#: app_animation/templates/app_animation/modify_animation.html:154
+#: app_animation/templates/app_animation/modify_animation.html:253
 msgid "Font_size2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:147
-#: app_animation/templates/app_animation/modify_animation.html:246
+#: app_animation/templates/app_animation/modify_animation.html:156
+#: app_animation/templates/app_animation/modify_animation.html:255
 msgid "decrease size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:154
-#: app_animation/templates/app_animation/modify_animation.html:253
+#: app_animation/templates/app_animation/modify_animation.html:163
+#: app_animation/templates/app_animation/modify_animation.html:262
 msgid "same size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:159
-#: app_animation/templates/app_animation/modify_animation.html:258
+#: app_animation/templates/app_animation/modify_animation.html:168
+#: app_animation/templates/app_animation/modify_animation.html:267
 msgid "increase size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:167
-#: app_animation/templates/app_animation/modify_animation.html:266
+#: app_animation/templates/app_animation/modify_animation.html:176
+#: app_animation/templates/app_animation/modify_animation.html:275
 msgid "Font_family2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:169
+#: app_animation/templates/app_animation/modify_animation.html:178
 msgid "Same like song..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:172
-#: app_animation/templates/app_animation/modify_animation.html:271
+#: app_animation/templates/app_animation/modify_animation.html:181
+#: app_animation/templates/app_animation/modify_animation.html:280
 msgid "Fonts family"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:185
+#: app_animation/templates/app_animation/modify_animation.html:194
 msgid "Verse's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:201
+#: app_animation/templates/app_animation/modify_animation.html:210
 msgid "Modifiy verse's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:207
+#: app_animation/templates/app_animation/modify_animation.html:216
 msgid "move2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:209
+#: app_animation/templates/app_animation/modify_animation.html:218
 #: app_song/templates/app_song/modify_song.html:147
 msgid "before"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:213
-#: app_animation/templates/app_animation/modify_animation.html:223
+#: app_animation/templates/app_animation/modify_animation.html:222
+#: app_animation/templates/app_animation/modify_animation.html:232
 msgid "song_num"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:218
+#: app_animation/templates/app_animation/modify_animation.html:227
 #: app_song/templates/app_song/modify_song.html:161
 msgid "dont_do_nothing"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:219
+#: app_animation/templates/app_animation/modify_animation.html:228
 #: app_song/templates/app_song/modify_song.html:162
 msgid "after"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:233
-#: app_animation/templates/app_animation/modify_animation.html:241
+#: app_animation/templates/app_animation/modify_animation.html:242
+#: app_animation/templates/app_animation/modify_animation.html:250
 msgid "Display options"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:234
+#: app_animation/templates/app_animation/modify_animation.html:243
 msgid "Hide options"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:268
+#: app_animation/templates/app_animation/modify_animation.html:277
 msgid "Same like animation..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:285
+#: app_animation/templates/app_animation/modify_animation.html:294
 msgid "Song's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:302
+#: app_animation/templates/app_animation/modify_animation.html:311
 msgid "Modifiy song's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:305
+#: app_animation/templates/app_animation/modify_animation.html:314
 msgid "Are you sure you want to delete this song?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:312
+#: app_animation/templates/app_animation/modify_animation.html:321
 msgid "See the song"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:315
+#: app_animation/templates/app_animation/modify_animation.html:324
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:316
+#: app_animation/templates/app_animation/modify_animation.html:325
 msgid "Go to the song"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:325
+#: app_animation/templates/app_animation/modify_animation.html:334
 #: app_song/templates/app_song/songs.html:59
 msgid "Song research"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:326
+#: app_animation/templates/app_animation/modify_animation.html:335
 msgid "Type the name of a song..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:330
+#: app_animation/templates/app_animation/modify_animation.html:339
 msgid "Selected song will appear here..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:337
-#: app_song/templates/app_song/modify_song.html:81
-#: app_song/templates/app_song/modify_song.html:222
-msgid "save_exit"
-msgstr ""
+#: app_animation/templates/app_animation/modify_animation.html:346
+#, fuzzy
+#| msgid "animations_title"
+msgid "animation_save_exit"
+msgstr "Animations"
 
 #: app_animation/templates/app_animation/modify_colors.html:15
 msgid "text_test"
@@ -1203,6 +1203,10 @@ msgstr ""
 msgid "Licensed"
 msgstr ""
 
+#: app_song/templates/app_song/modify_song.html:81
+msgid "save_exit"
+msgstr ""
+
 #: app_song/templates/app_song/modify_song.html:88
 msgid "Too many lines"
 msgstr ""
@@ -1271,6 +1275,12 @@ msgstr ""
 #: app_song/templates/app_song/modify_song.html:203
 msgid "comment"
 msgstr ""
+
+#: app_song/templates/app_song/modify_song.html:222
+#, fuzzy
+#| msgid "songs_list"
+msgid "song_save_exit"
+msgstr "Songs list"
 
 #: app_song/templates/app_song/modify_song.html:223
 msgid "cancel_info"
@@ -1544,247 +1554,247 @@ msgstr ""
 msgid "Sign up using a passkey"
 msgstr ""
 
-#: templates/base.html:26 templates/base.html:30
+#: templates/base.html:28 templates/base.html:32
 msgid "Loading..."
 msgstr ""
 
-#: templates/base.html:34
+#: templates/base.html:36
 msgid "Page not displayed after a few seconds? Refresh (F5) it or click here."
 msgstr ""
 
-#: templates/base.html:54
+#: templates/base.html:56
 msgid "ERR1"
 msgstr ""
 
-#: templates/base.html:56
+#: templates/base.html:58
 msgid "ERR2"
 msgstr ""
 
-#: templates/base.html:58
+#: templates/base.html:60
 msgid "ERR3"
 msgstr ""
 
-#: templates/base.html:60
+#: templates/base.html:62
 msgid "ERR4"
 msgstr ""
 
-#: templates/base.html:62 templates/base.html:64
+#: templates/base.html:64 templates/base.html:66
 msgid "ERR5"
 msgstr ""
 
-#: templates/base.html:66
+#: templates/base.html:68
 msgid "ERR7"
 msgstr ""
 
-#: templates/base.html:68
+#: templates/base.html:70
 msgid "ERR8"
 msgstr ""
 
-#: templates/base.html:70
+#: templates/base.html:72
 msgid "ERR9"
 msgstr ""
 
-#: templates/base.html:72
+#: templates/base.html:74
 msgid "ERR10"
 msgstr ""
 
-#: templates/base.html:74
+#: templates/base.html:76
 msgid "ERR11"
 msgstr ""
 
-#: templates/base.html:76
+#: templates/base.html:78
 msgid "ERR12"
 msgstr ""
 
-#: templates/base.html:78
+#: templates/base.html:80
 msgid "ERR13"
 msgstr ""
 
-#: templates/base.html:80
+#: templates/base.html:82
 msgid "ERR14"
 msgstr ""
 
-#: templates/base.html:82
+#: templates/base.html:84
 msgid "ERR15"
 msgstr ""
 
-#: templates/base.html:84
+#: templates/base.html:86
 msgid "ERR16"
 msgstr ""
 
-#: templates/base.html:86
+#: templates/base.html:88
 msgid "ERR17"
 msgstr ""
 
-#: templates/base.html:88
+#: templates/base.html:90
 msgid "ERR18"
 msgstr ""
 
-#: templates/base.html:90
+#: templates/base.html:92
 msgid "ERR19"
 msgstr ""
 
-#: templates/base.html:92
+#: templates/base.html:94
 msgid "ERR20"
 msgstr ""
 
-#: templates/base.html:94
+#: templates/base.html:96
 msgid "ERR21"
 msgstr ""
 
-#: templates/base.html:96
+#: templates/base.html:98
 msgid "ERR22"
 msgstr ""
 
-#: templates/base.html:98
+#: templates/base.html:100
 msgid "ERR23"
 msgstr ""
 
-#: templates/base.html:100
+#: templates/base.html:102
 msgid "ERR24"
 msgstr ""
 
-#: templates/base.html:102
+#: templates/base.html:104
 msgid "ERR25"
 msgstr ""
 
-#: templates/base.html:104
+#: templates/base.html:106
 msgid "ERR26"
 msgstr ""
 
-#: templates/base.html:106
+#: templates/base.html:108
 msgid "ERR27"
 msgstr ""
 
-#: templates/base.html:108
+#: templates/base.html:110
 msgid "ERR28"
 msgstr ""
 
-#: templates/base.html:110
+#: templates/base.html:112
 msgid "ERR29"
 msgstr ""
 
-#: templates/base.html:112
+#: templates/base.html:114
 msgid "ERR30"
 msgstr ""
 
-#: templates/base.html:114
+#: templates/base.html:116
 msgid "ERR31"
 msgstr ""
 
-#: templates/base.html:116
+#: templates/base.html:118
 msgid "ERR32"
 msgstr ""
 
-#: templates/base.html:118
+#: templates/base.html:120
 msgid "ERR33"
 msgstr ""
 
-#: templates/base.html:120
+#: templates/base.html:122
 msgid "ERR34"
 msgstr ""
 
-#: templates/base.html:122
+#: templates/base.html:124
 msgid "ERR35"
 msgstr ""
 
-#: templates/base.html:124
+#: templates/base.html:126
 msgid "ERR36"
 msgstr ""
 
-#: templates/base.html:126
+#: templates/base.html:128
 msgid "ERR37"
 msgstr ""
 
-#: templates/base.html:128
+#: templates/base.html:130
 msgid "ERR38"
 msgstr ""
 
-#: templates/base.html:130
+#: templates/base.html:132
 msgid "ERR39"
 msgstr ""
 
-#: templates/base.html:132
+#: templates/base.html:134
 msgid "ERR40"
 msgstr ""
 
-#: templates/base.html:134
+#: templates/base.html:136
 msgid "ERR41"
 msgstr ""
 
-#: templates/base.html:136
+#: templates/base.html:138
 msgid "ERR42"
 msgstr ""
 
-#: templates/base.html:138
+#: templates/base.html:140
 msgid "ERR43"
 msgstr ""
 
-#: templates/base.html:140
+#: templates/base.html:142
 msgid "ERR44"
 msgstr ""
 
-#: templates/base.html:142
+#: templates/base.html:144
 msgid "ERR45"
 msgstr ""
 
-#: templates/base.html:144
+#: templates/base.html:146
 msgid "ERR46"
 msgstr ""
 
-#: templates/base.html:146
+#: templates/base.html:148
 msgid "ERR47"
 msgstr ""
 
-#: templates/base.html:148
+#: templates/base.html:150
 msgid "ERR48"
 msgstr ""
 
-#: templates/base.html:150
+#: templates/base.html:152
 msgid "ERR49"
 msgstr ""
 
-#: templates/base.html:152
+#: templates/base.html:154
 msgid "ERR50"
 msgstr ""
 
-#: templates/base.html:154
+#: templates/base.html:156
 msgid "ERR51"
 msgstr ""
 
-#: templates/base.html:156
+#: templates/base.html:158
 msgid "ERR52"
 msgstr ""
 
-#: templates/base.html:158
+#: templates/base.html:160
 msgid "ERR53"
 msgstr ""
 
-#: templates/base.html:160
+#: templates/base.html:162
 msgid "ERR54"
 msgstr ""
 
-#: templates/base.html:162
+#: templates/base.html:164
 msgid "ERR55"
 msgstr ""
 
-#: templates/base.html:164
+#: templates/base.html:166
 msgid "ERR56"
 msgstr ""
 
-#: templates/base.html:166
+#: templates/base.html:168
 msgid "ERR57"
 msgstr ""
 
-#: templates/base.html:168
+#: templates/base.html:170
 msgid "ERR58"
 msgstr ""
 
-#: templates/base.html:170
+#: templates/base.html:172
 msgid "ERR59"
 msgstr ""
 
-#: templates/base.html:172
+#: templates/base.html:174
 msgid "ERR60"
 msgstr ""
 
