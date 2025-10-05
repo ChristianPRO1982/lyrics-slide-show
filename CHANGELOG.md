@@ -1,3 +1,11 @@
+## [1.25.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.2...v1.25.3) (2025-10-05)
+
+
+### Bug Fixes
+
+* HTML ([92a0048](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/92a00485355209f8a374743c8545755218fb4d70))
+* name of old HTML ([648be84](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/648be84dd6fb0301bd3dc7a2d91a47b0822fe5ce))
+
 ## [1.25.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.1...v1.25.2) (2025-09-15)
 
 
