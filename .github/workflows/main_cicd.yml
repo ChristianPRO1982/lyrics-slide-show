@@ -36,30 +36,30 @@ jobs:
             carthographie/lyrics-slide-show:latest
 
   # Triggers n8n backup via Webhook and waits for completion (2xx = success, >=400 = fail).
-  #n8n_backup:
- #   name: INSERT dump by N8N
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 30
-#    steps:
-#      - name: Call n8n webhook and wait for completion
-#        env:
-#          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}     # URL prod du Webhook
- #         N8N_USER:        ${{ secrets.N8N_USER }}            # Basic auth user
-#          N8N_PASS:        ${{ secrets.N8N_PASS }}            # Basic auth pass
-#        run: |
-#          set -euo pipefail
-          payload=$(jq -n --arg repo "$GITHUB_REPOSITORY" --arg sha "$GITHUB_SHA" --arg ref "$GITHUB_REF_NAME" \
-#            '{repo:$repo, sha:$sha, ref:$ref, action:"pre-deploy-backup"}')
+  # n8n_backup:
+  #   name: INSERT dump by N8N
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   steps:
+  #     - name: Call n8n webhook and wait for completion
+  #       env:
+  #         N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}     # URL prod du Webhook
+  #         N8N_USER:        ${{ secrets.N8N_USER }}            # Basic auth user
+  #         N8N_PASS:        ${{ secrets.N8N_PASS }}            # Basic auth pass
+  #       run: |
+  #         set -euo pipefail
+  #         payload=$(jq -n --arg repo "$GITHUB_REPOSITORY" --arg sha "$GITHUB_SHA" --arg ref "$GITHUB_REF_NAME" \
+  #           '{repo:$repo, sha:$sha, ref:$ref, action:"pre-deploy-backup"}')
 
-#          code=$(curl -sS -m 1800 -w "%{http_code}" -o response.json \
-  #          -u "${N8N_USER}:${N8N_PASS}" \
- #           -H "content-type: application/json" \
-#            -X POST "$N8N_WEBHOOK_URL" \
-#            -d "$payload")
+  #         code=$(curl -sS -m 1800 -w "%{http_code}" -o response.json \
+  #           -u "${N8N_USER}:${N8N_PASS}" \
+  #           -H "content-type: application/json" \
+  #           -X POST "$N8N_WEBHOOK_URL" \
+  #           -d "$payload")
 
- #         echo "HTTP_STATUS=$code"
-#          echo "RESPONSE_BODY=$(tr -d '\n' < response.json | head -c 500)"
-#          test "$code" -ge 200 -a "$code" -lt 300
+  #         echo "HTTP_STATUS=$code"
+  #         echo "RESPONSE_BODY=$(tr -d '\n' < response.json | head -c 500)"
+  #         test "$code" -ge 200 -a "$code" -lt 300
 
 
   deploy:
