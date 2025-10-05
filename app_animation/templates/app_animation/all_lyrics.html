@@ -1,4 +1,241 @@
 <!DOCTYPE html>
 <html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Chants de veillée</title>
+  <link rel="icon" sizes="192x192" href="/static/images/Lyrics.png" type="image/png"/>
+  <style>
+    :root{
+      --bg-light:#fdb; --fg-light:#421;
+      --bg-dark:#111;  --fg-dark:#aaa;
+      --font-size:1.5rem;
 
+      /* Layout */
+      --sidebar-w:4rem;     /* largeur barre gauche */
+      --topbar-h:3.25rem;   /* hauteur barre haute */
+
+      /* UI */
+      --icon-size:28px;
+      --icon-btn-size:2.75rem;
+    }
+
+    [data-theme="light"]{background:var(--bg-light);color:var(--fg-light);}
+    [data-theme="dark"] {background:var(--bg-dark); color:var(--fg-dark);}
+
+    body{
+      margin:0;padding:1rem;font-size:var(--font-size);line-height:1.4;
+      overflow-wrap:anywhere;
+      -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+    }
+
+    /* Inputs visuels */
+    select, button { height:2.5rem; }
+    [data-theme="light"] select,[data-theme="light"] button { background:#fdb;color:#220;border:1px solid #ccc; }
+    [data-theme="dark"]  select,[data-theme="dark"]  button { background:#222;color:#ffd;border:1px solid #444; }
+
+    /* Contenu décalé pour ne pas passer sous les barres fixes */
+    .content{
+      margin-left:calc(var(--sidebar-w) + 1rem);
+      margin-right:2rem;
+      padding-top:calc(var(--topbar-h) + 0.5rem);
+    }
+
+    /* Bouton hamburger (en haut à droite) */
+    #menuToggle{
+      position:sticky;top:0;right:0;margin-left:auto;
+      background:rgba(128,128,128,0.3);border:1px solid currentColor;
+      font-size:0;line-height:1;
+      width:var(--icon-btn-size);height:var(--icon-btn-size);
+      border-radius:.75rem;z-index:1100;display:inline-flex;align-items:center;justify-content:center;
+      cursor:pointer;padding:.25rem;
+    }
+    #menuToggle img{ width:var(--icon-size); height:var(--icon-size); display:block; }
+
+    /* Panneau coulissant (tiroir) — ne conserve que QR, lien, logo */
+    #controlPanel{
+      position:fixed;top:0;right:0;max-width:80vw;width:400px;height:100vh;padding:1rem;
+      border-left:1px solid currentColor;
+      transform:translateX(100%);transition:transform .3s ease;
+      display:flex;flex-direction:column;gap:1rem;z-index:1200;
+    }
+    [data-theme="light"] #controlPanel { background-color:rgba(222,222,222,0.8); }
+    [data-theme="dark"]  #controlPanel { background-color:rgba(0,0,0,0.8); }
+    #controlPanel.open{ transform:translateX(0); }
+
+    /* Barre gauche fixe */
+    #quickControls{
+      position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);
+      display:flex;flex-direction:column;gap:.75rem;align-items:center;justify-content:flex-start;
+      padding:.75rem .5rem;z-index:1000;border-right:1px solid currentColor;
+    }
+    [data-theme="light"] #quickControls{ background:rgba(255,255,255,.35); }
+    [data-theme="dark"]  #quickControls{ background:rgba(0,0,0,.35); }
+
+    /* Boutons icônes PNG (pas de mask) */
+    .icon-btn{
+      width:var(--icon-btn-size);height:var(--icon-btn-size);
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:.25rem;border:1px solid currentColor;border-radius:.75rem;
+      cursor:pointer;backdrop-filter:saturate(120%) blur(2px);
+    }
+    .icon-btn img{ width:var(--icon-size);height:var(--icon-size);display:block; }
+    .icon-btn:hover{ opacity:.9; }
+    .icon-btn:focus-visible{ outline:2px solid currentColor; outline-offset:2px; }
+    [data-theme="light"] .icon-btn{ background:rgba(255,255,255,.65); }
+    [data-theme="dark"]  .icon-btn{ background:rgba(0,0,0,.45); }
+
+    /* Barre supérieure fixe (select) */
+    #topBar{
+      position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);
+      display:flex;align-items:center;gap:.75rem;padding:.5rem 1rem;z-index:999;border-bottom:1px solid currentColor;
+    }
+    [data-theme="light"] #topBar{ background:rgba(255,255,255,.7); }
+    [data-theme="dark"]  #topBar{ background:rgba(0,0,0,.6); }
+    #topBar select{ max-width:min(720px,80vw); }
+
+    main>section{ margin:2rem 0; }
+  </style>
+</head>
+<body>
+  <!-- Barre gauche fixe : taille texte + thème -->
+  <aside id="quickControls" aria-label="Contrôles rapides (fixes)">
+    <button id="decreaseFontLeft" title="Texte plus petit" aria-label="Texte plus petit" class="icon-btn">
+      <img src="/static/images/icons/text-decrease.png" alt="">
+    </button>
+    <button id="increaseFontLeft" title="Texte plus grand" aria-label="Texte plus grand" class="icon-btn">
+      <img src="/static/images/icons/text-increase.png" alt="">
+    </button>
+    <button id="themeToggleLeft" title="Basculer thème" aria-label="Changer de thème" class="icon-btn">
+      <img id="themeIcon" src="/static/images/icons/theme-moon.png" alt="">
+    </button>
+  </aside>
+
+  <!-- Barre top fixe : sélection de chant -->
+  <div id="topBar" aria-label="Navigation (fixe)">
+    <select id="songSelectTop" aria-label="Choisir un chant (fixe)"></select>
+  </div>
+
+  <!-- Bouton hamburger (ouvre le tiroir à droite) -->
+  <button id="menuToggle" aria-label="Ouvrir le menu" title="Menu">
+    <img src="/static/images/icons/menu.png" alt="">
+  </button>
+
+  <!-- Tiroir : QR + lien + logo -->
+  <aside id="controlPanel" aria-label="Menu des commandes">
+    <button id="closePanel" aria-label="Fermer le menu">❌</button>
+    <hr style="width:80%;">
+    {% if img_qr_code %}
+    <div style="margin:1rem 0;text-align:center;">
+      <input id="linkToCopy" type="text" value="{{ link_to_copy }}" readonly
+             style="width:80%;font-size:1rem;padding:.3rem;">
+      <button id="copyLinkBtn" style="margin-left:.5rem;">Copy link / Copier le lien</button>
+    </div>
+    <img src="data:image/png;base64,{{ img_qr_code }}"
+         alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
+         class="w-16 h-16 object-contain">
+    {% endif %}
+    <center style="margin-top:1rem;">
+      {% if song_id %}
+      <a href="../../song/{{song_id}}/"><img style="width:15%;" src="/static/images/Lyrics.png" alt="Logo"></a>
+      {% else %}
+      <img style="width:15%;" src="/static/images/Lyrics.png" alt="Logo">
+      {% endif %}
+    </center>
+  </aside>
+
+  <h1 class="content">{{ full_title }}</h1>
+  <main id="lyrics" class="content">
+    {{ lyrics|safe }}
+  </main>
+
+  <script>
+  /* UI fixe (gauche + haut) + tiroir (QR, lien, logo). PNG icônes, pas de mask. */
+  (() => {
+    // Thème initial selon préférences
+    const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const setThemeAttr = (dark) => {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    };
+    setThemeAttr(prefersDark);
+
+    // Refs DOM
+    const menuToggle   = document.getElementById('menuToggle');
+    const closePanel   = document.getElementById('closePanel');
+    const controlPanel = document.getElementById('controlPanel');
+
+    const topSelect    = document.getElementById('songSelectTop');
+    const themeLeft    = document.getElementById('themeToggleLeft');
+    const themeIcon    = document.getElementById('themeIcon');
+    const incLeft      = document.getElementById('increaseFontLeft');
+    const decLeft      = document.getElementById('decreaseFontLeft');
+
+    const sections = [...document.querySelectorAll('main > section')];
+
+    // Construire la liste des chants dans la barre top
+    const buildTopSelect = () => {
+      if (!topSelect) return;
+      topSelect.innerHTML = '';
+      sections.forEach((s, i) => {
+        const o = document.createElement('option');
+        o.value = s.id;
+        o.textContent = s.querySelector('h2')?.textContent || `Chant ${i+1}`;
+        topSelect.appendChild(o);
+      });
+    };
+    buildTopSelect();
+
+    // Navigation depuis la liste
+    topSelect?.addEventListener('change', e => {
+      document.getElementById(e.target.value)?.scrollIntoView({ behavior:'smooth' });
+      controlPanel?.classList?.remove('open');
+    });
+
+    // Tiroir (ouverture/fermeture)
+    menuToggle?.addEventListener('click', () => controlPanel.classList.toggle('open'));
+    closePanel?.addEventListener('click', () => controlPanel.classList.remove('open'));
+
+    // Copie du lien (dans le tiroir)
+    const copyBtn = document.getElementById('copyLinkBtn');
+    if (copyBtn) {
+      copyBtn.onclick = function() {
+        const input = document.getElementById('linkToCopy');
+        if (!input) return;
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        this.textContent = 'OK!';
+        setTimeout(()=>{ this.textContent = 'Copier le lien'; }, 1500);
+      };
+    }
+
+    // Thème : changer l'icône PNG selon l'état
+    const applyThemeIcon = () => {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      themeIcon.src = dark
+        ? '/static/images/icons/theme-sun.png'   // indique qu'on peut passer en clair
+        : '/static/images/icons/theme-moon.png'; // indique qu'on peut passer en sombre
+    };
+    const toggleTheme = () => {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setThemeAttr(!dark);
+      applyThemeIcon();
+    };
+    themeLeft?.addEventListener('click', toggleTheme);
+    applyThemeIcon(); // init
+
+    // Taille de police (variable CSS)
+    let size = 1.5;
+    const applySize = () => document.documentElement.style.setProperty('--font-size', `${size}rem`);
+    const inc = () => { if (size < 3)   { size = Math.round((size + 0.1) * 10) / 10; applySize(); } };
+    const dec = () => { if (size > 0.8) { size = Math.round((size - 0.1) * 10) / 10; applySize(); } };
+    incLeft?.addEventListener('click', inc);
+    decLeft?.addEventListener('click', dec);
+    applySize();
+
+    // (Optionnel) synchronisation du select au scroll — peut être ajoutée plus tard
+  })();
+  </script>
+</body>
 </html>
