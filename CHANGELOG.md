@@ -1,3 +1,10 @@
+## [1.25.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.3...v1.25.4) (2025-10-05)
+
+
+### Bug Fixes
+
+* new design of smartphone view ([8d8c03a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8d8c03ae46aa4df033e1dc234cb6f82cd698eaea))
+
 ## [1.25.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.2...v1.25.3) (2025-10-05)
 
 
