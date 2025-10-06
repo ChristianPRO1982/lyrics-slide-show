@@ -24,7 +24,11 @@
 
     {% trans "✔️: Song valided" %}<br>
     {% trans "✔️⁉️: Song valided with messages" %}<br>
-    {% trans "📄: Licensed song" %}
+    {% trans "📄: Licensed song" %}<br>
+    {% trans "📱: Smartphone view" %}<br>
+    {% trans "🖨️💯: Print song lyric - with chorus between all verses" %}<br>
+    {% trans "🖨️1️⃣: Print song lyric - with only one chorus" %}
+    
 {% endblock bloc1 %}
 {% block bloc2 %}
 <div class="sticky top-0 p-2">
@@ -169,8 +173,8 @@
             const li = document.createElement('li');
             li.classList.add('L_LI');
             li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a><br>';
-            br = '';
             
+            br = '';
             if (song.genres) {
                 const genresArr = song.genres.replace(/^\[|\]$/g, '').split(',');
                 const uniqueGenres = new Set();
@@ -225,7 +229,11 @@
                 li.innerHTML += '<a href="/songs/modify_song/' + song.song_id + '/">' + txt_Modify + '</a>';
                 li.innerHTML += ' - <a href="/songs/delete_song/' + song.song_id + '/">' + txt_Delete + '</a>';
             }
-        
+
+            li.innerHTML += ' - <a style="text-decoration: none!important;" href="/songs/smartphone_view/' + song.song_id + '/">📱</a>';
+            li.innerHTML += ' - <a style="text-decoration: none!important;" href="/songs/print_lyrics/' + song.song_id + '/">🖨️💯</a>';
+            li.innerHTML += ' - <a style="text-decoration: none!important;" href="/songs/print_lyrics_one_chorus/' + song.song_id + '/">🖨️1️⃣</a>';
+
             songList.appendChild(li);
         });
     }
