@@ -554,7 +554,7 @@ def smartphone_view(request, song_id):
 
     return render(request, 'app_animation/all_lyrics.html', {
         'song_id': song_id,
-        'full_title': 'Smartphone View',
+        'full_title': song.title + (f" - {song.sub_title}" if song.sub_title else ''),
         'lyrics': lyrics,
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
