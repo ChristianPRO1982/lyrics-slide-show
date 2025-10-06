@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-06 21:48+0200\n"
+"POT-Creation-Date: 2025-10-06 22:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -263,8 +263,6 @@ msgstr ""
 #: app_song/templates/app_song/moderator_song.html:39
 #: app_song/templates/app_song/modify_song.html:80
 #: app_song/templates/app_song/modify_song.html:221
-#: app_song/templates/app_song/song_metadata.html:22
-#: app_song/templates/app_song/song_metadata.html:201
 msgid "save"
 msgstr ""
 
@@ -671,6 +669,7 @@ msgstr ""
 #: app_main/templates/app_main/bands.html:29
 #: app_main/templates/app_main/profile.html:74
 #: app_main/templates/app_main/profile.html:109
+#: app_song/templates/app_song/song_metadata.html:201
 msgid "Save"
 msgstr ""
 
@@ -1287,6 +1286,11 @@ msgstr ""
 #: app_song/templates/app_song/song_metadata.html:19
 #: app_song/templates/common/song_actions.html:7
 msgid "Metadata"
+msgstr ""
+
+#: app_song/templates/app_song/song_metadata.html:22
+#: app_song/templates/app_song/song_metadata.html:202
+msgid "Save and return to modify"
 msgstr ""
 
 #: app_song/templates/app_song/song_metadata.html:26

@@ -473,6 +473,9 @@ def song_metadata(request, song_id):
                 genre = Genre(group=new_genre_group, name=new_genre_name)
                 error = genre.save()
 
+        if 'btn_save_goto_modify' in request.POST and error == '':
+            return redirect('modify_song', song_id=song.song_id)
+
     song_params = get_song_params(request)
     song.verse_max_lines = song_params['verse_max_lines']
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
