@@ -13,12 +13,8 @@
       --font-size:1.5rem;
 
       /* Layout */
-      --sidebar-w:4rem;     /* largeur barre gauche */
-      --topbar-h:3.25rem;   /* hauteur barre haute */
-
-      /* UI */
-      --icon-size:28px;
-      --icon-btn-size:2.75rem;
+      --sidebar-w:4rem;     /* largeur de la marge gauche avec icônes */
+      --topbar-h:3.25rem;   /* hauteur de la barre haute */
     }
 
     [data-theme="light"]{background:var(--bg-light);color:var(--fg-light);}
@@ -30,10 +26,10 @@
       -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
     }
 
-    /* Inputs visuels */
-    select, button { height:2.5rem; }
-    [data-theme="light"] select,[data-theme="light"] button { background:#fdb;color:#220;border:1px solid #ccc; }
-    [data-theme="dark"]  select,[data-theme="dark"]  button { background:#222;color:#ffd;border:1px solid #444; }
+    /* Inputs */
+    select{ height:2.5rem; }
+    [data-theme="light"] select{ background:#fdb;color:#220;border:1px solid #ccc; }
+    [data-theme="dark"]  select{ background:#222;color:#ffd;border:1px solid #444; }
 
     /* Contenu décalé pour ne pas passer sous les barres fixes */
     .content{
@@ -41,17 +37,6 @@
       margin-right:2rem;
       padding-top:calc(var(--topbar-h) + 0.5rem);
     }
-
-    /* Bouton hamburger (en haut à droite) */
-    #menuToggle{
-      position:sticky;top:0;right:0;margin-left:auto;
-      background:rgba(128,128,128,0.3);border:1px solid currentColor;
-      font-size:0;line-height:1;
-      width:var(--icon-btn-size);height:var(--icon-btn-size);
-      border-radius:.75rem;z-index:1100;display:inline-flex;align-items:center;justify-content:center;
-      cursor:pointer;padding:.25rem;
-    }
-    #menuToggle img{ width:var(--icon-size); height:var(--icon-size); display:block; }
 
     /* Panneau coulissant (tiroir) — ne conserve que QR, lien, logo */
     #controlPanel{
@@ -64,83 +49,91 @@
     [data-theme="dark"]  #controlPanel { background-color:rgba(0,0,0,0.8); }
     #controlPanel.open{ transform:translateX(0); }
 
-    /* Barre gauche fixe */
+    /* Barre gauche fixe — images cliquables (pas de "gros boutons") */
     #quickControls{
       position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);
-      display:flex;flex-direction:column;gap:.75rem;align-items:center;justify-content:flex-start;
-      padding:.75rem .5rem;z-index:1000;border-right:1px solid currentColor;
+      display:flex;flex-direction:column;gap:.5rem;align-items:center;justify-content:flex-start;
+      padding:.5rem .25rem;z-index:1000;border-right:1px solid currentColor;
     }
     [data-theme="light"] #quickControls{ background:rgba(255,255,255,.35); }
     [data-theme="dark"]  #quickControls{ background:rgba(0,0,0,.35); }
 
-    /* Boutons icônes PNG (pas de mask) */
-    .icon-btn{
-      width:var(--icon-btn-size);height:var(--icon-btn-size);
-      display:inline-flex;align-items:center;justify-content:center;
-      padding:.25rem;border:1px solid currentColor;border-radius:.75rem;
-      cursor:pointer;backdrop-filter:saturate(120%) blur(2px);
+    #quickControls a{
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none; outline:none;
+      padding:.1rem 0; /* petit padding pour hitbox légère */
     }
-    .icon-btn img{ width:var(--icon-size);height:var(--icon-size);display:block; }
-    .icon-btn:hover{ opacity:.9; }
-    .icon-btn:focus-visible{ outline:2px solid currentColor; outline-offset:2px; }
-    [data-theme="light"] .icon-btn{ background:rgba(255,255,255,.65); }
-    [data-theme="dark"]  .icon-btn{ background:rgba(0,0,0,.45); }
+    #quickControls a:focus-visible{ outline:2px solid currentColor; outline-offset:2px; border-radius:.25rem; }
+    #quickControls img{
+      width:72%; height:auto; display:block; /* taille relative à la marge */
+      user-drag:none; -webkit-user-drag:none;
+    }
+    #quickControls a:hover img{ opacity:.9; }
 
-    /* Barre supérieure fixe (select) */
+    /* Barre supérieure fixe (select 90% de largeur) */
     #topBar{
       position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);
-      display:flex;align-items:center;gap:.75rem;padding:.5rem 1rem;z-index:999;border-bottom:1px solid currentColor;
+      display:flex;align-items:center;justify-content:center;padding:.5rem 1rem;
+      z-index:999;border-bottom:1px solid currentColor;
     }
-    [data-theme="light"] #topBar{ background:rgba(255,255,255,.7); }
-    [data-theme="dark"]  #topBar{ background:rgba(0,0,0,.6); }
-    #topBar select{ max-width:min(720px,80vw); }
+    #topBar select{ width:90%; }  /* demandé : 90% */
+
+    /* Offset naturel quand on scroll vers une section ou un <hr> sous une topbar fixe */
+    main > section,
+    #lyrics hr{
+      scroll-margin-top: calc(var(--topbar-h) + 0.75rem);
+    }
 
     main>section{ margin:2rem 0; }
   </style>
 </head>
 <body>
-  <!-- Barre gauche fixe : taille texte + thème -->
-  <aside id="quickControls" aria-label="Contrôles rapides (fixes)">
-    <button id="decreaseFontLeft" title="Texte plus petit" aria-label="Texte plus petit" class="icon-btn">
-      <img src="/static/images/icons/text-decrease.png" alt="">
-    </button>
-    <button id="increaseFontLeft" title="Texte plus grand" aria-label="Texte plus grand" class="icon-btn">
-      <img src="/static/images/icons/text-increase.png" alt="">
-    </button>
-    <button id="themeToggleLeft" title="Basculer thème" aria-label="Changer de thème" class="icon-btn">
-      <img id="themeIcon" src="/static/images/icons/theme-moon.png" alt="">
-    </button>
-  </aside>
+  <!-- Barre gauche fixe : QR (toggle du tiroir), taille texte, thème -->
+  <nav id="quickControls" aria-label="Contrôles rapides (fixes)">
+    <!-- 1. Icône QR (toggle tiroir) -->
+    <a href="#" id="toggleQRDrawer" aria-label="Afficher/masquer le QR code" title="QR code">
+      <img src="/static/images/all_lyrics-QR_code.png" alt="">
+    </a>
+    <!-- 2. Taille + -->
+    <a href="#" id="increaseFontLeft" aria-label="Texte plus grand" title="Texte plus grand">
+      <img src="/static/images/all_lyrics-size_increase.png" alt="">
+    </a>
+    <!-- 3. Taille - -->
+    <a href="#" id="decreaseFontLeft" aria-label="Texte plus petit" title="Texte plus petit">
+      <img src="/static/images/all_lyrics-size_decrease.png" alt="">
+    </a>
+    <!-- 4. Thèmes (une seule image) -->
+    <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
+      <img src="/static/images/all_lyrics-themes.png" alt="">
+    </a>
+  </nav>
 
   <!-- Barre top fixe : sélection de chant -->
   <div id="topBar" aria-label="Navigation (fixe)">
     <select id="songSelectTop" aria-label="Choisir un chant (fixe)"></select>
   </div>
 
-  <!-- Bouton hamburger (ouvre le tiroir à droite) -->
-  <button id="menuToggle" aria-label="Ouvrir le menu" title="Menu">
-    <img src="/static/images/icons/menu.png" alt="">
-  </button>
-
   <!-- Tiroir : QR + lien + logo -->
   <aside id="controlPanel" aria-label="Menu des commandes">
     <button id="closePanel" aria-label="Fermer le menu">❌</button>
     <hr style="width:80%;">
     {% if img_qr_code %}
-    <div style="margin:1rem 0;text-align:center;">
+    <div id="qrBlock" style="margin:1rem 0;text-align:center;">
       <input id="linkToCopy" type="text" value="{{ link_to_copy }}" readonly
              style="width:80%;font-size:1rem;padding:.3rem;">
       <button id="copyLinkBtn" style="margin-left:.5rem;">Copy link / Copier le lien</button>
+      <div style="margin-top:.75rem;">
+        <img src="data:image/png;base64,{{ img_qr_code }}"
+             alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
+             style="max-width:60%;height:auto;">
+      </div>
     </div>
-    <img src="data:image/png;base64,{{ img_qr_code }}"
-         alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
-         class="w-16 h-16 object-contain">
     {% endif %}
     <center style="margin-top:1rem;">
       {% if song_id %}
-      <a href="../../song/{{song_id}}/"><img style="width:15%;" src="/static/images/Lyrics.png" alt="Logo"></a>
+      <a href="../../song/{{song_id}}/"><img style="width: 15%;" src="/static/images/Lyrics.png" alt="Logo"></a>
       {% else %}
-      <img style="width:15%;" src="/static/images/Lyrics.png" alt="Logo">
+      <img style="width: 15%;" src="/static/images/Lyrics.png" alt="Logo">
       {% endif %}
     </center>
   </aside>
@@ -151,7 +144,7 @@
   </main>
 
   <script>
-  /* UI fixe (gauche + haut) + tiroir (QR, lien, logo). PNG icônes, pas de mask. */
+  // UI fixe (gauche + haut) + tiroir (QR, lien, logo). Scroll sur <hr> si possible.
   (() => {
     // Thème initial selon préférences
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
@@ -161,19 +154,19 @@
     setThemeAttr(prefersDark);
 
     // Refs DOM
-    const menuToggle   = document.getElementById('menuToggle');
-    const closePanel   = document.getElementById('closePanel');
-    const controlPanel = document.getElementById('controlPanel');
+    const controlPanel   = document.getElementById('controlPanel');
+    const closePanel     = document.getElementById('closePanel');
 
-    const topSelect    = document.getElementById('songSelectTop');
-    const themeLeft    = document.getElementById('themeToggleLeft');
-    const themeIcon    = document.getElementById('themeIcon');
-    const incLeft      = document.getElementById('increaseFontLeft');
-    const decLeft      = document.getElementById('decreaseFontLeft');
+    const toggleQRDrawer = document.getElementById('toggleQRDrawer');
+
+    const topSelect  = document.getElementById('songSelectTop');
+    const themeLeft  = document.getElementById('themeToggleLeft');
+    const incLeft    = document.getElementById('increaseFontLeft');
+    const decLeft    = document.getElementById('decreaseFontLeft');
 
     const sections = [...document.querySelectorAll('main > section')];
 
-    // Construire la liste des chants dans la barre top
+    // Construire la liste des chants (haut)
     const buildTopSelect = () => {
       if (!topSelect) return;
       topSelect.innerHTML = '';
@@ -186,15 +179,56 @@
     };
     buildTopSelect();
 
-    // Navigation depuis la liste
+    // Helpers tiroir
+    const isDrawerOpen = () => controlPanel.classList.contains('open');
+    const openDrawer   = () => controlPanel.classList.add('open');
+    const closeDrawer  = () => controlPanel.classList.remove('open');
+
+    // Helper: trouver l’ancre idéale (hr au-dessus du titre si présent)
+    const findScrollAnchor = (sectionEl) => {
+      if (!sectionEl) return null;
+
+      // 1) un <hr> à l’intérieur de la section
+      const hrInside = sectionEl.querySelector('hr');
+      if (hrInside) return hrInside;
+
+      // 2) sinon, un <hr> juste avant la section
+      let prev = sectionEl.previousElementSibling;
+      while (prev && (prev.tagName === 'SCRIPT' || prev.tagName === 'STYLE')) {
+        prev = prev.previousElementSibling;
+      }
+      if (prev && prev.tagName === 'HR') return prev;
+
+      // 3) fallback: la section elle-même
+      return sectionEl;
+    };
+
+    // Navigation depuis la liste (utilise l’ancre calculée)
     topSelect?.addEventListener('change', e => {
-      document.getElementById(e.target.value)?.scrollIntoView({ behavior:'smooth' });
-      controlPanel?.classList?.remove('open');
+      const id = e.target.value;
+      const sectionEl = document.getElementById(id);
+      const anchor = findScrollAnchor(sectionEl);
+      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      closeDrawer();
     });
 
-    // Tiroir (ouverture/fermeture)
-    menuToggle?.addEventListener('click', () => controlPanel.classList.toggle('open'));
-    closePanel?.addEventListener('click', () => controlPanel.classList.remove('open'));
+    // QR icon : toggle tiroir (ouvre ou ferme)
+    toggleQRDrawer?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isDrawerOpen()) {
+        closeDrawer();
+      } else {
+        openDrawer();
+        // centrer la zone QR si présente
+        setTimeout(() => {
+          const qr = document.getElementById('qrBlock');
+          qr?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    });
+
+    // Bouton ❌ dans le tiroir
+    closePanel?.addEventListener('click', () => closeDrawer());
 
     // Copie du lien (dans le tiroir)
     const copyBtn = document.getElementById('copyLinkBtn');
@@ -210,31 +244,21 @@
       };
     }
 
-    // Thème : changer l'icône PNG selon l'état
-    const applyThemeIcon = () => {
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      themeIcon.src = dark
-        ? '/static/images/icons/theme-sun.png'   // indique qu'on peut passer en clair
-        : '/static/images/icons/theme-moon.png'; // indique qu'on peut passer en sombre
-    };
+    // Thème (une seule image d'icône, on ne change pas le src)
     const toggleTheme = () => {
       const dark = document.documentElement.getAttribute('data-theme') === 'dark';
       setThemeAttr(!dark);
-      applyThemeIcon();
     };
-    themeLeft?.addEventListener('click', toggleTheme);
-    applyThemeIcon(); // init
+    themeLeft?.addEventListener('click', (e) => { e.preventDefault(); toggleTheme(); });
 
     // Taille de police (variable CSS)
     let size = 1.5;
     const applySize = () => document.documentElement.style.setProperty('--font-size', `${size}rem`);
     const inc = () => { if (size < 3)   { size = Math.round((size + 0.1) * 10) / 10; applySize(); } };
     const dec = () => { if (size > 0.8) { size = Math.round((size - 0.1) * 10) / 10; applySize(); } };
-    incLeft?.addEventListener('click', inc);
-    decLeft?.addEventListener('click', dec);
+    incLeft?.addEventListener('click', (e) => { e.preventDefault(); inc(); });
+    decLeft?.addEventListener('click', (e) => { e.preventDefault(); dec(); });
     applySize();
-
-    // (Optionnel) synchronisation du select au scroll — peut être ajoutée plus tard
   })();
   </script>
 </body>
