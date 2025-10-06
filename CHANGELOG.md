@@ -1,3 +1,10 @@
+## [1.25.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.4...v1.25.5) (2025-10-06)
+
+
+### Bug Fixes
+
+* all_lyrics V2 ([b871ce0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b871ce0f5a0de8c8d0c72b97896eead3dacb5672))
+
 ## [1.25.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.3...v1.25.4) (2025-10-05)
 
 
