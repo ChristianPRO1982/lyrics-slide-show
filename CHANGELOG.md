@@ -1,3 +1,19 @@
+# [1.26.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.5...v1.26.0) (2025-10-07)
+
+
+### Bug Fixes
+
+* button wiki hidden ([ed188c4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ed188c48740533405610751152ef77f6d8b9fc65))
+* **header:** connection links on right in the nav bar ([b41e0ea](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b41e0ea0098f3cc8e7217bf8102b904809600e68))
+* **profil.html:** link to disconnect ([436cf6e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/436cf6e6d106f33706e2e7633ddd8d227355c320))
+* **song_meta.html:** quick search can use link with slashes ([63bd890](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/63bd890a8e9a3804b8a5f3e7f67122f75c6406ad))
+* **song_metadata:** add save and return button ([618bc58](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/618bc58e5bd5ce353fe45d40d0db7dce24b351ee))
+
+
+### Features
+
+* **songs:** new links fosmart view and print ([dcf3f13](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dcf3f13f2fc228133498c4ea29a4f6f1bc7545da))
+
 ## [1.25.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.4...v1.25.5) (2025-10-06)
 
 
