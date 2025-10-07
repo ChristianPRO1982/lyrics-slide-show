@@ -1,3 +1,12 @@
+## [1.26.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.2...v1.26.3) (2025-10-07)
+
+
+### Bug Fixes
+
+* **all_lyrics.html:** QR code bigger ([959eefd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/959eefdb29d4639363afc3078e18ee46b12a182e))
+* **song_actions:** replace 🖨️ by 🖨️💯 and 🖨️1️⃣ ([0ede9a5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0ede9a5a97248c5389e28fb4ff76b6e47bee6ed7))
+* **songs:** create a new song disconnected is forbiden now ([daa507c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/daa507c04e2973b9b880a4a6c2eea4c37baf9eb2))
+
 ## [1.26.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.1...v1.26.2) (2025-10-07)
 
 
