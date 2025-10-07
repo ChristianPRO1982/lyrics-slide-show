@@ -92,19 +92,19 @@
   <nav id="quickControls" aria-label="Contrôles rapides (fixes)">
     <!-- 1. Icône QR (toggle tiroir) -->
     <a href="#" id="toggleQRDrawer" aria-label="Afficher/masquer le QR code" title="QR code">
-      <img src="/static/images/all_lyrics-QR_code.png" alt="">
+      <img src="/static/images/all_lyrics-QR_code.png" alt="QR code">
     </a>
     <!-- 2. Taille + -->
     <a href="#" id="increaseFontLeft" aria-label="Texte plus grand" title="Texte plus grand">
-      <img src="/static/images/all_lyrics-size_increase.png" alt="">
+      <img src="/static/images/all_lyrics-size_increase.png" alt="ₐa">
     </a>
     <!-- 3. Taille - -->
     <a href="#" id="decreaseFontLeft" aria-label="Texte plus petit" title="Texte plus petit">
-      <img src="/static/images/all_lyrics-size_decrease.png" alt="">
+      <img src="/static/images/all_lyrics-size_decrease.png" alt="aₐ">
     </a>
     <!-- 4. Thèmes (une seule image) -->
     <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
-      <img src="/static/images/all_lyrics-themes.png" alt="">
+      <img src="/static/images/all_lyrics-themes.png" alt="🌙/☀️">
     </a>
   </nav>
 
@@ -115,8 +115,7 @@
 
   <!-- Tiroir : QR + lien + logo -->
   <aside id="controlPanel" aria-label="Menu des commandes">
-    <button id="closePanel" aria-label="Fermer le menu">❌</button>
-    <hr style="width:80%;">
+    <button id="closePanel" aria-label="Fermer le menu" style="height: 3rem;">❌</button>
     {% if img_qr_code %}
     <div id="qrBlock" style="margin:1rem 0;text-align:center;">
       <input id="linkToCopy" type="text" value="{{ link_to_copy }}" readonly
@@ -125,15 +124,15 @@
       <div style="margin-top:.75rem;">
         <img src="data:image/png;base64,{{ img_qr_code }}"
              alt="📱 [ERR35b] Impossible de générer le QR-CODE. Contacter l'administrateur du site."
-             style="max-width:60%;height:auto;">
+             style="max-width:100%;height:auto;">
       </div>
     </div>
     {% endif %}
     <center style="margin-top:1rem;">
       {% if song_id %}
-      <a href="../../song/{{song_id}}/"><img style="width: 15%;" src="/static/images/Lyrics.png" alt="Logo"></a>
+      <a href="../../song/{{song_id}}/"><img style="width: 30%;" src="/static/images/Lyrics.png" alt="Logo"></a>
       {% else %}
-      <img style="width: 15%;" src="/static/images/Lyrics.png" alt="Logo">
+      <img style="width: 30%;" src="/static/images/Lyrics.png" alt="Logo">
       {% endif %}
     </center>
   </aside>

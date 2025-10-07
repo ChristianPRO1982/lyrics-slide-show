@@ -279,7 +279,7 @@ def modify_song(request, song_id):
         'no_loader': no_loader,
     })
 
-
+@login_required
 def delete_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
@@ -347,8 +347,6 @@ def goto_song(request, song_id):
         'no_loader': no_loader,
     })
 
-
-@login_required
 def moderator_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
