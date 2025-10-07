@@ -1435,11 +1435,11 @@ msgstr "📱 : Smartphone view"
 
 #: app_song/templates/app_song/songs.html:29
 msgid "🖨️💯: Print song lyric - with chorus between all verses"
-msgstr "🖨️💯: Impression du chant - avec un refrai entre chaque couplet"
+msgstr "🖨️💯: Impression du chant - avec un refrain entre chaque couplet"
 
 #: app_song/templates/app_song/songs.html:30
 msgid "🖨️1️⃣: Print song lyric - with only one chorus"
-msgstr "🖨️1️⃣ : Impression du chant - avec un seul refrai"
+msgstr "🖨️1️⃣ : Impression du chant - avec un seul refrain"
 
 #: app_song/templates/app_song/songs.html:67
 #: app_song/templates/app_song/songs.html:132
