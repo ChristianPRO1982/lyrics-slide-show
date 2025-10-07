@@ -1,3 +1,11 @@
+## [1.26.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.1...v1.26.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **modify_song:** replace 👀 by 💬 ([ea68d22](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ea68d229458fe49f0b3bc78cddb4329f246e39c1))
+* **translate:** refrai > refrain ([92853a0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/92853a06c73c7df9c17444ee14d8de95383492f9))
+
 ## [1.26.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.0...v1.26.1) (2025-10-07)
 
 
