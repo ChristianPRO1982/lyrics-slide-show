@@ -13,6 +13,8 @@
 </div>
 {% endblock bloc1 %}
 {% block bloc2 %}
+    <span class="text-3xl">⥇</span> <a href="{% url 'account_logout' %}">{% trans "nav_account_logout" %}</a>
+    <hr>
     <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('pwd'); document.getElementById('txt_password').value=''; document.getElementById('txt_password_confirm').value='';">{% trans "Password" %}</button>
     <div id="pwd" style="display: none;">
         <h3 class="L_H3">{% trans "new password" %}</h3>

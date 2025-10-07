@@ -22,8 +22,15 @@
     </div>
 </footer>
 
-<div class="L_BOX_TOP p-1 md:p-2 fixed bottom-1 right-1 text-xl md:bottom-7 md:right-5 md:text-xl rounded-tl-lg rounded-br-lg">
-    <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/wiki" target="_blank" rel="noopener noreferrer"
-    title="Wiki" style="text-decoration: none!important;">❓</a>
+<div class="flex L_BOX_TOP p-1 md:p-2 fixed bottom-1 right-1 text-xl md:bottom-7 md:right-5 md:text-xl rounded-tl-lg rounded-br-lg">
+    <button id="help-icon" class="hidden" type="button"
+    onclick="toggleVisibility('help-icon');
+    toggleVisibility('help-wiki');
+    toggleVisibilityAfterSeconds('help-icon', 3);
+    toggleVisibilityAfterSeconds('help-wiki', 3);">❓</button>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a id="help-wiki" href="https://github.com/ChristianPRO1982/lyrics-slide-show/wiki" class="hidden"
+    target="_blank" rel="noopener noreferrer" title="Wiki" style="text-decoration: none!important;">WIKI&nbsp;&nbsp;</a>
     <a href="#" style="text-decoration: none!important;">⬆️</a>
 </div>
+
+<script>toggleVisibility('help-icon');</script>

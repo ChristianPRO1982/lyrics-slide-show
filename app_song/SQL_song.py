@@ -474,12 +474,14 @@ CROSS JOIN (SELECT @prev_group := NULL) vars
             cursor.execute(request, params)
             rows = cursor.fetchall()
             for row in rows:
+                link = row[2].replace('/', '§slash§')
                 self.genres.append({
                     'genre_id': row[0],
                     'group': row[1],
                     'name': row[2],
                     'is_new_group': row[3],
                     'full_name': row[4],
+                    'link': link,
                     'emoji_random': random.choice(MUSIC_EMOJIS)
                 })
 

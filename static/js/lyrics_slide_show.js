@@ -283,3 +283,9 @@ class TransferManager {
 document.addEventListener('DOMContentLoaded', () => {
   TransferManager.initAll(updateHiddenInputs);
 });
+
+function toggleVisibilityAfterSeconds(elementId, seconds) {
+    setTimeout(() => {
+        toggleVisibility(elementId);
+    }, seconds * 1000);
+}

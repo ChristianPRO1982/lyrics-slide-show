@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-15 10:30+0200\n"
+"POT-Creation-Date: 2025-10-06 22:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -263,8 +263,6 @@ msgstr "Modifier les couleurs de l'animation"
 #: app_song/templates/app_song/moderator_song.html:39
 #: app_song/templates/app_song/modify_song.html:80
 #: app_song/templates/app_song/modify_song.html:221
-#: app_song/templates/app_song/song_metadata.html:22
-#: app_song/templates/app_song/song_metadata.html:201
 msgid "save"
 msgstr "Enregistrer"
 
@@ -387,7 +385,7 @@ msgid "Go to the song"
 msgstr "Aller vers le chant"
 
 #: app_animation/templates/app_animation/modify_animation.html:335
-#: app_song/templates/app_song/songs.html:59
+#: app_song/templates/app_song/songs.html:63
 msgid "Song research"
 msgstr "Recherche de chant"
 
@@ -507,7 +505,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:135
+#: app_song/templates/app_song/songs.html:139
 msgid "add"
 msgstr "ajouter"
 
@@ -678,6 +676,7 @@ msgstr "Nouvel artiste"
 #: app_main/templates/app_main/bands.html:29
 #: app_main/templates/app_main/profile.html:74
 #: app_main/templates/app_main/profile.html:109
+#: app_song/templates/app_song/song_metadata.html:201
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -1218,7 +1217,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:51
 #: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/songs.html:76
+#: app_song/templates/app_song/songs.html:80
 msgid "Song approved"
 msgstr "Chant validé"
 
@@ -1323,6 +1322,11 @@ msgstr "Annuler (perdre toutes les modifications en cours)"
 msgid "Metadata"
 msgstr "Métadonnées"
 
+#: app_song/templates/app_song/song_metadata.html:22
+#: app_song/templates/app_song/song_metadata.html:202
+msgid "Save and return to modify"
+msgstr "Enregistrer et revenir à la modification"
+
 #: app_song/templates/app_song/song_metadata.html:26
 msgid "Web links"
 msgstr "Liens web"
@@ -1425,78 +1429,92 @@ msgstr "✔️⁉️&nbsp;: Chant validé avec des messages"
 msgid "📄: Licensed song"
 msgstr "📄 : Chant sous licence"
 
-#: app_song/templates/app_song/songs.html:63
-#: app_song/templates/app_song/songs.html:128
+#: app_song/templates/app_song/songs.html:28
+msgid "📱: Smartphone view"
+msgstr "📱 : Smartphone view"
+
+#: app_song/templates/app_song/songs.html:29
+msgid "🖨️💯: Print song lyric - with chorus between all verses"
+msgstr "🖨️💯: Impression du chant - avec un refrai entre chaque couplet"
+
+#: app_song/templates/app_song/songs.html:30
+msgid "🖨️1️⃣: Print song lyric - with only one chorus"
+msgstr "🖨️1️⃣ : Impression du chant - avec un seul refrai"
+
+#: app_song/templates/app_song/songs.html:67
+#: app_song/templates/app_song/songs.html:132
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
-#: app_song/templates/app_song/songs.html:67
+#: app_song/templates/app_song/songs.html:71
 msgid "Search in description and lyrics"
 msgstr "Recherche dans les descriptions et le texte des chants"
 
-#: app_song/templates/app_song/songs.html:69
+#: app_song/templates/app_song/songs.html:73
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:83
+#: app_song/templates/app_song/songs.html:87
 msgid "Song not approved"
 msgstr "Chant non validé"
 
-#: app_song/templates/app_song/songs.html:86
+#: app_song/templates/app_song/songs.html:90
 msgid "Logic by:"
 msgstr "Logique par&nbsp;:"
 
-#: app_song/templates/app_song/songs.html:89
+#: app_song/templates/app_song/songs.html:93
 msgid "OR"
 msgstr "OU"
 
-#: app_song/templates/app_song/songs.html:93
+#: app_song/templates/app_song/songs.html:97
 msgid "AND"
 msgstr "ET"
 
-#: app_song/templates/app_song/songs.html:96
+#: app_song/templates/app_song/songs.html:100
 msgid "find genre or band or artist"
 msgstr "Trouver le genre ou le groupe ou l'artiste"
 
-#: app_song/templates/app_song/songs.html:119
+#: app_song/templates/app_song/songs.html:123
 msgid "genre"
 msgstr "Genre"
 
-#: app_song/templates/app_song/songs.html:119
+#: app_song/templates/app_song/songs.html:123
 msgid "band"
 msgstr "Groupe"
 
-#: app_song/templates/app_song/songs.html:119
+#: app_song/templates/app_song/songs.html:123
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/songs.html:122
+#: app_song/templates/app_song/songs.html:126
 msgid "save and search"
 msgstr "sauvegarder et rechercher"
 
-#: app_song/templates/app_song/songs.html:123
+#: app_song/templates/app_song/songs.html:127
 msgid "reset"
 msgstr "réinitialiser"
 
-#: app_song/templates/app_song/songs.html:124
+#: app_song/templates/app_song/songs.html:128
 msgid "help on ‘advanced search’"
 msgstr "Aide sur la ‘Recherche avancée’"
 
-#: app_song/templates/app_song/songs.html:125
+#: app_song/templates/app_song/songs.html:129
 msgid "help_save_search"
 msgstr ""
-"Vous pouvez sauvegarder votre recherche. Cliquer sur “réinitialiser” "
-"pour réafficher tous les chants. La ‘Recherche avancée’ permet de rechercher dans la description des chants ainsi que dans le texte des chants. Plus d'information sur le wiki (voir ‘❓’ en bas de page)."
+"Vous pouvez sauvegarder votre recherche. Cliquer sur “réinitialiser” pour "
+"réafficher tous les chants. La ‘Recherche avancée’ permet de rechercher dans "
+"la description des chants ainsi que dans le texte des chants. Plus "
+"d'information sur le wiki (voir ‘❓’ en bas de page)."
 
-#: app_song/templates/app_song/songs.html:133
+#: app_song/templates/app_song/songs.html:137
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:134
+#: app_song/templates/app_song/songs.html:138
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:223
+#: app_song/templates/app_song/songs.html:227
 #: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"

@@ -27,7 +27,7 @@
 <h4 class="L_H4">{{ genre.group }}</h4>
 {% endif %}
 <span class="L_GENRE_BADGE">
-    <a href="{% url 'songs' %}genre/{{ genre.full_name }}/">
+    <a href="{% url 'songs' %}genre/{{ genre.link }}/">
         {{ genre.emoji_random }} {{ genre.name }}
     </a>
 </span>
