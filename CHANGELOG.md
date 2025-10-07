@@ -1,3 +1,10 @@
+## [1.26.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.0...v1.26.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **footer:** color of WIKI link with class:L_LINK_HEADER ([190374f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/190374ff87e54e85f1a24f71e387a5d8b6f9c42f))
+
 # [1.26.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.5...v1.26.0) (2025-10-07)
 
 
