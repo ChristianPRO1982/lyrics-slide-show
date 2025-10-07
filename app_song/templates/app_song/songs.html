@@ -186,7 +186,7 @@
                         var name = parts[1];
                     }
                     if (parts.length === 2 && !uniqueGenres.has(parts[1])) {
-                        li.innerHTML += '<a href="/songs/genre/' + parts[1] + '/"><span class="L_GENRE_BADGE">🎼 ' + name + '</span></a>';
+                        li.innerHTML += '<a href="/songs/genre/' + parts[1].replace('/', '§slash§') + '/"><span class="L_GENRE_BADGE">🎼 ' + name + '</span></a>';
                         uniqueGenres.add(parts[1]);
                         br = '<br>';
                     }

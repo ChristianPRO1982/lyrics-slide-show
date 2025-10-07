@@ -608,7 +608,7 @@ def print_lyrics_one_chorus(request, song_id):
 
 @login_required
 def filter_genre(request, genre_str):
-    genre_id = Genre.get_genre_id_by_name(genre_str)
+    genre_id = Genre.get_genre_id_by_name(genre_str.replace('§slash§', '/'))
     if genre_id is not None:
         if get_search_params(request)['search_genres']:
             search_genres = get_search_params(request)['search_genres'] + ',' + str(genre_id)
