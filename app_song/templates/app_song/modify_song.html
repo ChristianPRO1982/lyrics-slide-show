@@ -9,7 +9,7 @@
     <hr>
     {% if moderator %}
         <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('new_messages')">{% trans "New messages" %} 💬</button><br>
-        <div id="new_messages" style="display: none;">
+        <div id="new_messages" class="hidden">
             {% if mod_new_messages|length == 0 %}{% trans "No message" %} 🤷{% endif %}
             {% for message in mod_new_messages %}
                 <p><strong>{{ message.date|date:"d/m/Y H:i" }}</strong></p>
@@ -22,7 +22,7 @@
             {% endfor %}
         </div>
         <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('old_messages')">{% trans "Old messages" %} 💭</button><br>
-        <div id="old_messages" style="display: none;">
+        <div id="old_messages" class="hidden">
             {% if mod_old_messages|length == 0 %}{% trans "No message" %} 🤷{% endif %}
             {% for message in mod_old_messages %}
                 <p><strong>{{ message.date|date:"d/m/Y H:i" }}</strong></p>
