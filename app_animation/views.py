@@ -449,3 +449,24 @@ def all_songs_all_lyrics(request, animation_id):
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
     })
+
+@login_required
+def submit_image(request):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        group_selected = group.name
+
+    return render(request, 'app_animation/submit_image.html', {
+        'group_selected': group_selected,
+        'error': error,
+        'l_site_messages': site_messages(request),
+        'css': css,
+        'no_loader': no_loader,
+    })

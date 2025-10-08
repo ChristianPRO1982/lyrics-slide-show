@@ -6,6 +6,8 @@
 {% block title_h1 %}{% trans "animations_title" %}{% endblock title_h1 %}
 {% block bloc1 %}
 {% include "common/group_selected.html" %}
+<hr>
+🌄 <a href="{% url "submit_image" %}">{% trans "Submit a background image" %}</a>
 {% endblock bloc1 %}
 {% block bloc2 %}
 <button id="togglePassedBtn" onclick="togglePassedAnimations()">{% trans "Show past animations" %}</button>
