@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:31+0200\n"
+"POT-Creation-Date: 2025-10-08 22:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -453,31 +453,54 @@ msgid "Submit an image"
 msgstr "Proposer une image"
 
 #: app_animation/templates/app_animation/submit_image.html:11
-msgid "submit_an_image_info"
-msgstr ""
-"Proposer une image ne signifie pas qu'elle sera ajoutée automatiquement à la banque d'images disponible pour créer des fonds dans les animations. Votre image sera vérifiée par les modérateurs qui jugeront si elle correspond aux critères du site : image libre de droit, ne contrevenant pas aux lois de propriété (ex : partitions de musique interdites). Seules les images au format .jpg ou .png, de moins de 5 Mo, sont acceptées."
+msgid "submit_an_image_info1"
+msgstr "Avant de soumettre une image, merci de lire attentivement ces règles :"
 
-#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image.html:12
+msgid "submit_an_image_info2"
+msgstr "Votre image ne sera pas ajoutée automatiquement à la bibliothèque : chaque proposition est vérifiée par nos modérateurs."
+
+#: app_animation/templates/app_animation/submit_image.html:13
+msgid "submit_an_image_info3"
+msgstr "Seules les images respectant le droit d’auteur et le droit à l’image peuvent être acceptées. Cela s’applique aussi bien aux photos personnelles qu’aux créations originales (dessins, montages, etc.)."
+
+#: app_animation/templates/app_animation/submit_image.html:14
+msgid "submit_an_image_info4"
+msgstr "Les partitions de musique et tout contenu protégé par un tiers sont strictement interdits."
+
+#: app_animation/templates/app_animation/submit_image.html:15
+msgid "submit_an_image_info5"
+msgstr "Formats acceptés : .jpg ou .png"
+
+#: app_animation/templates/app_animation/submit_image.html:16
+msgid "submit_an_image_info6"
+msgstr "Taille maximale : 2 Mo"
+
+#: app_animation/templates/app_animation/submit_image.html:17
+msgid "submit_an_image_info7"
+msgstr "L’objectif n’est pas d’accumuler des milliers d’images, mais de créer une banque visuelle cohérente, légale et variée, permettant d’habiller les slides des animations de chant, quel que soit leur style ou leur contexte."
+
+#: app_animation/templates/app_animation/submit_image.html:24
 msgid "Drag & drop your image here (.jpg or .png)"
 msgstr "Glisser/déposer votre image ici (.jpg ou .png)"
 
-#: app_animation/templates/app_animation/submit_image.html:20
+#: app_animation/templates/app_animation/submit_image.html:26
 msgid "Choose Image"
 msgstr "Choisir une image"
 
-#: app_animation/templates/app_animation/submit_image.html:23
+#: app_animation/templates/app_animation/submit_image.html:29
 msgid "Image description (max 200 characters):"
 msgstr "Description de l'image (200 caractères maximum) :"
 
-#: app_animation/templates/app_animation/submit_image.html:26
+#: app_animation/templates/app_animation/submit_image.html:32
 msgid "Submit"
 msgstr "Envoyer"
 
-#: app_animation/templates/app_animation/submit_image.html:57
+#: app_animation/templates/app_animation/submit_image.html:63
 msgid "Invalid file type."
 msgstr "Type d'image invalide."
 
-#: app_animation/templates/app_animation/submit_image.html:62
+#: app_animation/templates/app_animation/submit_image.html:68
 msgid "Preview"
 msgstr "Prévisualisation"
 

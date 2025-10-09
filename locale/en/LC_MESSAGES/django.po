@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:31+0200\n"
+"POT-Creation-Date: 2025-10-08 22:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -452,30 +452,54 @@ msgid "Submit an image"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:11
-msgid "submit_an_image_info"
+msgid "submit_an_image_info1"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image.html:12
+msgid "submit_an_image_info2"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:13
+msgid "submit_an_image_info3"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:14
+msgid "submit_an_image_info4"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:15
+msgid "submit_an_image_info5"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:16
+msgid "submit_an_image_info6"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:17
+msgid "submit_an_image_info7"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:24
 msgid "Drag & drop your image here (.jpg or .png)"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:20
+#: app_animation/templates/app_animation/submit_image.html:26
 msgid "Choose Image"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:23
+#: app_animation/templates/app_animation/submit_image.html:29
 msgid "Image description (max 200 characters):"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:26
+#: app_animation/templates/app_animation/submit_image.html:32
 msgid "Submit"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:57
+#: app_animation/templates/app_animation/submit_image.html:63
 msgid "Invalid file type."
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:62
+#: app_animation/templates/app_animation/submit_image.html:68
 msgid "Preview"
 msgstr ""
 
