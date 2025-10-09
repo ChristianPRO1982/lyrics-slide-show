@@ -3,36 +3,38 @@
 
 <header class="L_BOX_HEADER py-4">
     <nav class="pl-5 container mx-auto flex items-center h-full flex-nowrap">
-        <div class="flex flex-nowrap" style="margin-top: -0.3rem;">
+        <div class="flex flex-nowrap">
             <a href="{% url "homepage" %}"><img src="{% static "images/Lyrics.png" %}" alt="✞" style="width:40px;height:40px;"></a>
+        </div>
+
+        <div class="flex flex-nowrap" style="margin-left: 1rem;">
             {% include "includes/nav.html" %}
         </div>
 
         <!-- Right side (push with ml-auto) -->
         <div class="ml-auto flex flex-nowrap">
             {% if user.is_authenticated %}
-                        <a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span> {% trans "nav_account_logout" %}</a>
-                        <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_logout' %}"><span class="text-3xl">⥇</span></a>
+                        <span class="hidden md:block">👋 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_logout' %}"> {% trans "nav_account_logout" %}</a>
+                        <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_logout' %}">👋</a>
             {% else %}
-                        <a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span> {% trans "nav_login" %}</a>
+                        <span class="hidden md:block">🔑 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_login' %}">{% trans "nav_login" %}</a>
                         {% if request.path == '/account/login/' %}
-                                <a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span> {% trans "nav_signup" %}</a>
+                                <span class="hidden md:block">🆕 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url 'account_signup' %}">{% trans "nav_signup" %}</a>
                         {% endif %}
-                        <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_login' %}"><span class="text-3xl">⇴</span></a>
+                        <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_login' %}">🔑</a>
                         {% if request.path == '/account/login/' %}
-                                <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_signup' %}"><span class="text-3xl">⥅</span></a>
+                                <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url 'account_signup' %}">🆕</a>
                         {% endif %}
             {% endif %}
 
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER"><span class="text-3xl"></span>👤 <b>{{ user.username }}</b>
+            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 <b>{{ user.username }}</b>
             {% if user.is_staff %}⚖️{% endif %}</a>
             {% endif %}
             
             <a id="a_languages" href="#"
             onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;"
             class="NAV L_LINK_HEADER">
-                <span class="text-3xl"></span>
                 <span class="font-arial">{% trans "language_flag" %}</span>
             </a>
             <div id="div_languages" style="display : none;">
