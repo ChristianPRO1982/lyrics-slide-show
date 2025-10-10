@@ -28,10 +28,13 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 <b>{{ user.username }}</b>
-            {% if user.is_staff %}⚖️{% endif %}</a>
+            <a href="{% url 'profile' %}" class="NAV L_LINK_HEADER">👤 <b>{{ user.username }}</b></a>
+            {% if user.is_staff %}&nbsp;<span title="{% trans 'moderator' %}">⚖️</span>{% endif %}
+            {% if user.is_superuser %}&nbsp;<span title="{% trans 'administrator' %}">👑</span>{% endif %}
             {% endif %}
             
+            &nbsp;
+
             <a id="a_languages" href="#"
             onclick="toggleDivDisplay('div_languages', 'a_languages', '{% trans "language_flag" %}', ''); return false;"
             class="NAV L_LINK_HEADER">

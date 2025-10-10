@@ -1,16 +1,27 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import translation
 import qrcode
 import io, base64
-from .SQL_animation import Animation
+from .SQL_animation import Animation, BackgroundImageSubmission
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
 from app_main.utils import is_no_loader, is_moderator, get_song_params, list_fonts, font_class_by_name, site_messages
 from app_main.SQL_main import Site
 
+# for upload image
+import secrets
+from pathlib import Path
+from typing import Optional
+from django.conf import settings
+from django.contrib import messages
+from django.http import HttpRequest, HttpResponse
+from django.utils import timezone
+from django.utils.translation import gettext as _
+from django.views.decorators.http import require_http_methods
+from app_main.params import get_image_params
+from . import utils
 
 
 def animations(request):
@@ -450,8 +461,23 @@ def all_songs_all_lyrics(request, animation_id):
         'img_qr_code': img_qr_code,
     })
 
+
+def _client_ip(request: HttpRequest) -> str:
+    xff = request.META.get("HTTP_X_FORWARDED_FOR")
+    return (xff.split(",")[0].strip() if xff else request.META.get("REMOTE_ADDR", ""))
+
+def _ensure_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+def _random_filename(original_name: str) -> str:
+    ext = Path(original_name).suffix.lower()
+    token = secrets.token_hex(5)  # ex: djhekghdke
+    return f"{token}{ext}"
+
 @login_required
-def submit_image(request):
+@require_http_methods(["GET", "POST"])
+def submit_image(request: HttpRequest) -> HttpResponse:
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
@@ -461,9 +487,52 @@ def submit_image(request):
     url_token = request.session.get('url_token', '')
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
-        group_selected = group.name
+        if group != 0:
+            group_selected = group.name
 
-    return render(request, 'app_animation/submit_image.html', {
+
+    description = (request.POST.get("txt_description") or "").strip()
+    
+    if request.method == "POST" and "btn_save" in request.POST:
+        uploaded = request.FILES.get("img_file")
+        if not uploaded:
+            error = "[ERR52]"
+        else:
+            cfg = get_image_params(request)
+            error = utils.validate_image(uploaded, cfg)
+
+            if not error:
+                temp_dir = _ensure_dir(Path(settings.IMG_TEMP_DIR))
+                filename = _random_filename(uploaded.name)
+                dest_path = temp_dir / filename
+
+                with dest_path.open("wb") as fh:
+                    for chunk in uploaded.chunks():
+                        fh.write(chunk)
+
+                rel_path = str(dest_path.relative_to(Path(settings.MEDIA_ROOT)))
+                user_id: Optional[int] = request.user.id if request.user.is_authenticated else None
+                ip = _client_ip(request)
+
+                submission = BackgroundImageSubmission(
+                    stored_path=rel_path,
+                    original_name=uploaded.name[:255],
+                    mime=uploaded.content_type,
+                    size_bytes=int(uploaded.size),
+                    description=description[:200]
+                )
+                if submission.save():
+                    return render(request, "app_animation/submit_image_ok.html", {
+                        'group_selected': group_selected,
+                        'error': error,
+                        'l_site_messages': site_messages(request),
+                        'css': css,
+                        'no_loader': no_loader,
+                    })
+                else:
+                    error = "[ERR60]"
+
+    return render(request, "app_animation/submit_image.html", {
         'group_selected': group_selected,
         'error': error,
         'l_site_messages': site_messages(request),

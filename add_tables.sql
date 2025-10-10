@@ -189,6 +189,15 @@ CREATE TABLE `l_site_params` (
   `verse_prefix2` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
   `admin_message` text COLLATE utf8mb4_unicode_ci,
   `moderator_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `bg_img_max_bytes` mediumint NOT NULL DEFAULT '2097152',
+  `bg_img_min_w` mediumint NOT NULL DEFAULT '800',
+  `bg_img_min_h` mediumint NOT NULL DEFAULT '600',
+  `bg_img_max_w` mediumint NOT NULL DEFAULT '4096',
+  `bg_img_max_h` mediumint NOT NULL DEFAULT '3072',
+  `bg_img_ratio_min` float NOT NULL DEFAULT '1.3',
+  `bg_img_ratio_max` float NOT NULL DEFAULT '2',
+  `bg_img_allowed_ext` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '.jpg,.jpeg,.png',
+  `bg_img_allowed_mime` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'image/jpeg,image/png',
   PRIMARY KEY (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -243,4 +252,29 @@ CREATE TABLE `l_song_artists` (
   KEY `l_song_artists_c_artists_FK` (`artist_id`),
   CONSTRAINT `l_song_artists_c_artists_FK` FOREIGN KEY (`artist_id`) REFERENCES `c_artists` (`artist_id`) ON DELETE CASCADE,
   CONSTRAINT `l_song_artists_l_songs_FK` FOREIGN KEY (`song_id`) REFERENCES `l_songs` (`song_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_image_submissions` (
+  `image_id` mediumint NOT NULL AUTO_INCREMENT,
+  `stored_path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `original_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mime` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size_bytes` int NOT NULL,
+  `description` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('PENDING','APPROVED','REJECTED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`image_id`),
+  KEY `l_image_submissions_status_IDX` (`status`,`created_at`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_image_backgrounds` (
+  `image_id` mediumint NOT NULL AUTO_INCREMENT,
+  `stored_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mime` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size_bytes` int NOT NULL,
+  `comment` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL,
+  `status` enum('ACTIVED','UNACTIVED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVED',
+  PRIMARY KEY (`image_id`),
+  KEY `l_image_backgrounds_created_at_IDX` (`created_at`,`status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

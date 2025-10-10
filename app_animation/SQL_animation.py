@@ -535,3 +535,34 @@ SELECT lasv.color_rgba, lasv.bg_rgba
                 self.colors = [{'color_rgba': row[0], 'bg_rgba': row[1]} for row in rows]
             except Exception as e:
                 self.colors = []
+
+
+###################################################
+###################################################
+############### BACKGROUNDS IMAGES ################
+###################################################
+###################################################
+class BackgroundImageSubmission:
+    def __init__(self, stored_path, original_name, mime, size_bytes, description):
+        self.stored_path = stored_path
+        self.original_name = original_name
+        self.mime = mime
+        self.size_bytes = size_bytes
+        self.description = description
+        self.status = None
+        self.created_at = None
+
+    def save(self):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, description, created_at)
+     VALUES (%s, %s, %s, %s, %s, SYSDATE())
+"""
+            params = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.description]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_2", request, params)
+            try:
+                cursor.execute(request, params)
+                return True
+            except Exception as e:
+                return False

@@ -277,6 +277,15 @@ SELECT *
             self.verse_prefix2 = row[10]
             self.admin_message = row[11]
             self.moderator_message = row[12]
+            self.bg_img_max_bytes = row[13]
+            self.bg_img_min_w = row[14]
+            self.bg_img_min_h = row[15]
+            self.bg_img_max_w = row[16]
+            self.bg_img_max_h = row[17]
+            self.bg_img_ratio_min = row[18]
+            self.bg_img_ratio_max = row[19]
+            self.bg_img_allowed_ext = row[20]
+            self.bg_img_allowed_mime = row[21]
         else:
             self.language = "FR"
             self.title = "Bienvenue !"
@@ -291,6 +300,15 @@ SELECT *
             self.verse_prefix2 = ". "
             self.admin_message = ""
             self.moderator_message = ""
+            self.bg_img_max_bytes = 2 * 1024 * 1024
+            self.bg_img_min_w = 800
+            self.bg_img_min_h = 600
+            self.bg_img_max_w = 4096
+            self.bg_img_max_h = 3072
+            self.bg_img_ratio_min = 1.3
+            self.bg_img_ratio_max = 2.0
+            self.bg_img_allowed_ext = ".jpg,.jpeg,.png"
+            self.bg_img_allowed_mime = "image/jpeg,image/png"
 
 
     def save(self):

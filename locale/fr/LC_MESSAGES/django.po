@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 22:33+0200\n"
+"POT-Creation-Date: 2025-10-10 20:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -449,60 +449,87 @@ msgstr "Retour"
 
 #: app_animation/templates/app_animation/submit_image.html:5
 #: app_animation/templates/app_animation/submit_image.html:6
+#: app_animation/templates/app_animation/submit_image_ok.html:5
+#: app_animation/templates/app_animation/submit_image_ok.html:6
 msgid "Submit an image"
 msgstr "Proposer une image"
 
 #: app_animation/templates/app_animation/submit_image.html:11
+#: app_animation/templates/app_animation/submit_image_ok.html:11
 msgid "submit_an_image_info1"
 msgstr "Avant de soumettre une image, merci de lire attentivement ces règles :"
 
 #: app_animation/templates/app_animation/submit_image.html:12
+#: app_animation/templates/app_animation/submit_image_ok.html:12
 msgid "submit_an_image_info2"
-msgstr "Votre image ne sera pas ajoutée automatiquement à la bibliothèque : chaque proposition est vérifiée par nos modérateurs."
+msgstr ""
+"Votre image ne sera pas ajoutée automatiquement à la bibliothèque : chaque "
+"proposition est vérifiée par nos modérateurs."
 
 #: app_animation/templates/app_animation/submit_image.html:13
+#: app_animation/templates/app_animation/submit_image_ok.html:13
 msgid "submit_an_image_info3"
-msgstr "Seules les images respectant le droit d’auteur et le droit à l’image peuvent être acceptées. Cela s’applique aussi bien aux photos personnelles qu’aux créations originales (dessins, montages, etc.)."
+msgstr ""
+"Seules les images respectant le droit d’auteur et le droit à l’image peuvent "
+"être acceptées. Cela s’applique aussi bien aux photos personnelles qu’aux "
+"créations originales (dessins, montages, etc.)."
 
 #: app_animation/templates/app_animation/submit_image.html:14
+#: app_animation/templates/app_animation/submit_image_ok.html:14
 msgid "submit_an_image_info4"
-msgstr "Les partitions de musique et tout contenu protégé par un tiers sont strictement interdits."
+msgstr ""
+"Les partitions de musique et tout contenu protégé par un tiers sont "
+"strictement interdits."
 
 #: app_animation/templates/app_animation/submit_image.html:15
+#: app_animation/templates/app_animation/submit_image_ok.html:15
 msgid "submit_an_image_info5"
 msgstr "Formats acceptés : .jpg ou .png"
 
 #: app_animation/templates/app_animation/submit_image.html:16
+#: app_animation/templates/app_animation/submit_image_ok.html:16
 msgid "submit_an_image_info6"
 msgstr "Taille maximale : 2 Mo"
 
 #: app_animation/templates/app_animation/submit_image.html:17
+#: app_animation/templates/app_animation/submit_image_ok.html:17
 msgid "submit_an_image_info7"
-msgstr "L’objectif n’est pas d’accumuler des milliers d’images, mais de créer une banque visuelle cohérente, légale et variée, permettant d’habiller les slides des animations de chant, quel que soit leur style ou leur contexte."
+msgstr "Le ratio (largeur / hauteur) doit être compris entre 1.3 et 2.0."
 
-#: app_animation/templates/app_animation/submit_image.html:24
-msgid "Drag & drop your image here (.jpg or .png)"
+#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image_ok.html:18
+msgid "submit_an_image_info8"
+msgstr ""
+"L’objectif n’est pas d’accumuler des milliers d’images, mais de créer une "
+"banque visuelle cohérente, légale et variée, permettant d’habiller les "
+"slides des animations de chant, quel que soit leur style ou leur contexte."
+
+#: app_animation/templates/app_animation/submit_image.html:25
+msgid "Drag &amp; drop your image here (.jpg or .png)"
 msgstr "Glisser/déposer votre image ici (.jpg ou .png)"
 
-#: app_animation/templates/app_animation/submit_image.html:26
+#: app_animation/templates/app_animation/submit_image.html:27
 msgid "Choose Image"
 msgstr "Choisir une image"
 
-#: app_animation/templates/app_animation/submit_image.html:29
+#: app_animation/templates/app_animation/submit_image.html:30
 msgid "Image description (max 200 characters):"
 msgstr "Description de l'image (200 caractères maximum) :"
 
 #: app_animation/templates/app_animation/submit_image.html:32
-msgid "Submit"
-msgstr "Envoyer"
+#: app_main/templates/app_main/artists.html:20
+#: app_main/templates/app_main/artists.html:29
+#: app_main/templates/app_main/bands.html:20
+#: app_main/templates/app_main/bands.html:29
+#: app_main/templates/app_main/profile.html:76
+#: app_main/templates/app_main/profile.html:111
+#: app_song/templates/app_song/song_metadata.html:201
+msgid "Save"
+msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/submit_image.html:63
-msgid "Invalid file type."
-msgstr "Type d'image invalide."
-
-#: app_animation/templates/app_animation/submit_image.html:68
-msgid "Preview"
-msgstr "Prévisualisation"
+#: app_animation/templates/app_animation/submit_image_ok.html:22
+msgid "Background image is correctly submitted."
+msgstr "L'image a été correctement enregistrée."
 
 #: app_animation/templates/common/animation_actions.html:5
 msgid "Slide show"
@@ -731,16 +758,6 @@ msgstr "Modifier les groupes de musique"
 #: app_main/templates/app_main/artists.html:12
 msgid "New artist"
 msgstr "Nouvel artiste"
-
-#: app_main/templates/app_main/artists.html:20
-#: app_main/templates/app_main/artists.html:29
-#: app_main/templates/app_main/bands.html:20
-#: app_main/templates/app_main/bands.html:29
-#: app_main/templates/app_main/profile.html:76
-#: app_main/templates/app_main/profile.html:111
-#: app_song/templates/app_song/song_metadata.html:201
-msgid "Save"
-msgstr "Enregistrer"
 
 #: app_main/templates/app_main/artists.html:23
 #: app_main/templates/app_main/bands.html:23
@@ -1129,7 +1146,7 @@ msgstr ""
 "supprimer votre compte&nbsp;?"
 
 #: app_main/templates/app_main/profile.html:16
-#: templates/includes/header.html:14
+#: templates/includes/header.html:17
 msgid "nav_account_logout"
 msgstr "Déconnexion"
 
@@ -1937,54 +1954,62 @@ msgstr "[ERR51] Impossible de faire le clean_db de : c_user_change_email"
 
 #: templates/base.html:158
 msgid "ERR52"
-msgstr "[ERR52] no message"
+msgstr "Pas d'image sélectionnée !"
 
 #: templates/base.html:160
 msgid "ERR53"
-msgstr "[ERR51] no message."
+msgstr "L'image envoyé est trop lourde."
 
 #: templates/base.html:162
 msgid "ERR54"
-msgstr "[ERR51] no message"
+msgstr "L'extension du fichier n'est pas autorisée."
 
 #: templates/base.html:164
 msgid "ERR55"
-msgstr "[ERR51] no message"
+msgstr "Ce type de fichier n'est pas un standard autoriser (MIME type)"
 
 #: templates/base.html:166
 msgid "ERR56"
-msgstr "[ERR51] no message"
+msgstr "L'image ne peut pas être lue."
 
 #: templates/base.html:168
 msgid "ERR57"
-msgstr "[ERR51] no message"
+msgstr "L'image est trop petite en largeur ou hauteur"
 
 #: templates/base.html:170
 msgid "ERR58"
-msgstr "[ERR51] no message"
+msgstr "L'image est trop grande en largeur ou hauteur"
 
 #: templates/base.html:172
 msgid "ERR59"
-msgstr "[ERR51] no message"
+msgstr "Le ratio de l'image n'est pas conforme (largeur / hauteur)."
 
 #: templates/base.html:174
 msgid "ERR60"
-msgstr "[ERR60] no message"
+msgstr "[ERR60] Impossible d'enregistrer l'image en BDD."
 
-#: templates/includes/header.html:17
+#: templates/includes/header.html:20
 msgid "nav_login"
 msgstr "Connexion"
 
-#: templates/includes/header.html:19
+#: templates/includes/header.html:22
 msgid "nav_signup"
 msgstr "Créer un compte"
 
-#: templates/includes/header.html:33 templates/includes/header.html:36
-#: templates/includes/header.html:46
-msgid "language_flag"
-msgstr "🇫🇷&nbsp;FR"
+#: templates/includes/header.html:32
+msgid "moderator"
+msgstr "modérateur"
 
-#: templates/includes/header.html:47
+#: templates/includes/header.html:33
+msgid "administrator"
+msgstr "administrateur"
+
+#: templates/includes/header.html:39 templates/includes/header.html:41
+#: templates/includes/header.html:51
+msgid "language_flag"
+msgstr "🇫🇷"
+
+#: templates/includes/header.html:52
 msgid "close"
 msgstr "fermer"
 
@@ -3264,6 +3289,22 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Invalid file type."
+#~ msgid "Invalid file extension."
+#~ msgstr "Type d'image invalide."
+
+#, fuzzy
+#~| msgid "Invalid file type."
+#~ msgid "Invalid MIME type."
+#~ msgstr "Type d'image invalide."
+
+#~ msgid "Submit"
+#~ msgstr "Envoyer"
+
+#~ msgid "Preview"
+#~ msgstr "Prévisualisation"
 
 #~ msgid "update"
 #~ msgstr "Modifier"

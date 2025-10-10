@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 22:33+0200\n"
+"POT-Creation-Date: 2025-10-10 20:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -448,59 +448,76 @@ msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:5
 #: app_animation/templates/app_animation/submit_image.html:6
+#: app_animation/templates/app_animation/submit_image_ok.html:5
+#: app_animation/templates/app_animation/submit_image_ok.html:6
 msgid "Submit an image"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:11
+#: app_animation/templates/app_animation/submit_image_ok.html:11
 msgid "submit_an_image_info1"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:12
+#: app_animation/templates/app_animation/submit_image_ok.html:12
 msgid "submit_an_image_info2"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:13
+#: app_animation/templates/app_animation/submit_image_ok.html:13
 msgid "submit_an_image_info3"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:14
+#: app_animation/templates/app_animation/submit_image_ok.html:14
 msgid "submit_an_image_info4"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:15
+#: app_animation/templates/app_animation/submit_image_ok.html:15
 msgid "submit_an_image_info5"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:16
+#: app_animation/templates/app_animation/submit_image_ok.html:16
 msgid "submit_an_image_info6"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:17
+#: app_animation/templates/app_animation/submit_image_ok.html:17
 msgid "submit_an_image_info7"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:24
-msgid "Drag & drop your image here (.jpg or .png)"
+#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image_ok.html:18
+msgid "submit_an_image_info8"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:26
+#: app_animation/templates/app_animation/submit_image.html:25
+msgid "Drag &amp; drop your image here (.jpg or .png)"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:27
 msgid "Choose Image"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:29
+#: app_animation/templates/app_animation/submit_image.html:30
 msgid "Image description (max 200 characters):"
 msgstr ""
 
 #: app_animation/templates/app_animation/submit_image.html:32
-msgid "Submit"
+#: app_main/templates/app_main/artists.html:20
+#: app_main/templates/app_main/artists.html:29
+#: app_main/templates/app_main/bands.html:20
+#: app_main/templates/app_main/bands.html:29
+#: app_main/templates/app_main/profile.html:76
+#: app_main/templates/app_main/profile.html:111
+#: app_song/templates/app_song/song_metadata.html:201
+msgid "Save"
 msgstr ""
 
-#: app_animation/templates/app_animation/submit_image.html:63
-msgid "Invalid file type."
-msgstr ""
-
-#: app_animation/templates/app_animation/submit_image.html:68
-msgid "Preview"
+#: app_animation/templates/app_animation/submit_image_ok.html:22
+msgid "Background image is correctly submitted."
 msgstr ""
 
 #: app_animation/templates/common/animation_actions.html:5
@@ -723,16 +740,6 @@ msgstr ""
 
 #: app_main/templates/app_main/artists.html:12
 msgid "New artist"
-msgstr ""
-
-#: app_main/templates/app_main/artists.html:20
-#: app_main/templates/app_main/artists.html:29
-#: app_main/templates/app_main/bands.html:20
-#: app_main/templates/app_main/bands.html:29
-#: app_main/templates/app_main/profile.html:76
-#: app_main/templates/app_main/profile.html:111
-#: app_song/templates/app_song/song_metadata.html:201
-msgid "Save"
 msgstr ""
 
 #: app_main/templates/app_main/artists.html:23
@@ -1106,7 +1113,7 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/app_main/profile.html:16
-#: templates/includes/header.html:14
+#: templates/includes/header.html:17
 msgid "nav_account_logout"
 msgstr "Logout"
 
@@ -1869,20 +1876,28 @@ msgstr ""
 msgid "ERR60"
 msgstr ""
 
-#: templates/includes/header.html:17
+#: templates/includes/header.html:20
 msgid "nav_login"
 msgstr "Login"
 
-#: templates/includes/header.html:19
+#: templates/includes/header.html:22
 msgid "nav_signup"
 msgstr "Sign up"
 
-#: templates/includes/header.html:33 templates/includes/header.html:36
-#: templates/includes/header.html:46
-msgid "language_flag"
-msgstr "🇬🇧&nbsp;EN"
+#: templates/includes/header.html:32
+msgid "moderator"
+msgstr ""
 
-#: templates/includes/header.html:47
+#: templates/includes/header.html:33
+msgid "administrator"
+msgstr ""
+
+#: templates/includes/header.html:39 templates/includes/header.html:41
+#: templates/includes/header.html:51
+msgid "language_flag"
+msgstr "🇬🇧"
+
+#: templates/includes/header.html:52
 msgid "close"
 msgstr ""
 
