@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import translation
+from PIL import Image
 import qrcode
 import io, base64
 from .SQL_animation import Animation, BackgroundImageSubmission
@@ -59,6 +60,9 @@ def animations(request):
         animations = []
         error = "[ERR1]"
 
+    if is_moderator(request): ismoderator = "moderator"
+    else: ismoderator = None
+
 
     return render(request, 'app_animation/animations.html', {
         'animations': animations,
@@ -70,6 +74,8 @@ def animations(request):
         'l_site_messages': site_messages(request, moderator=True),
         'css': css,
         'no_loader': no_loader,
+        'ismoderator': ismoderator,
+        'pending_submissions_count': BackgroundImageSubmission.pending_submissions_count(),
         })
 
 
@@ -514,11 +520,19 @@ def submit_image(request: HttpRequest) -> HttpResponse:
                 user_id: Optional[int] = request.user.id if request.user.is_authenticated else None
                 ip = _client_ip(request)
 
+                try:
+                    with Image.open(dest_path) as im:
+                        width, height = im.size
+                except Exception as e:
+                    width, height = 0, 0
+
                 submission = BackgroundImageSubmission(
                     stored_path=rel_path,
                     original_name=uploaded.name[:255],
                     mime=uploaded.content_type,
                     size_bytes=int(uploaded.size),
+                    width=width,
+                    height=height,
                     description=description[:200]
                 )
                 if submission.save():
@@ -538,4 +552,36 @@ def submit_image(request: HttpRequest) -> HttpResponse:
         'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
+    })
+
+
+@login_required
+def get_submissions(request):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        if group != 0:
+            group_selected = group.name
+    
+    if not is_moderator(request):
+        return redirect('animations')
+    
+    submission_list = BackgroundImageSubmission.get_submissions()
+    if not submission_list:
+        return redirect('animations')
+
+    return render(request, "app_animation/get_submissions.html", {
+        'group_selected': group_selected,
+        'error': error,
+        'submission_list': submission_list,
+        'l_site_messages': site_messages(request),
+        'css': css,
+        'no_loader': no_loader,
+        'pending_submissions_count': BackgroundImageSubmission.pending_submissions_count(),
     })

@@ -543,11 +543,13 @@ SELECT lasv.color_rgba, lasv.bg_rgba
 ###################################################
 ###################################################
 class BackgroundImageSubmission:
-    def __init__(self, stored_path, original_name, mime, size_bytes, description):
+    def __init__(self, stored_path, original_name, mime, size_bytes, width, height, description):
         self.stored_path = stored_path
         self.original_name = original_name
         self.mime = mime
         self.size_bytes = size_bytes
+        self.width = width
+        self.height = height
         self.description = description
         self.status = None
         self.created_at = None
@@ -555,10 +557,10 @@ class BackgroundImageSubmission:
     def save(self):
         with connection.cursor() as cursor:
             request = """
-INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, description, created_at)
-     VALUES (%s, %s, %s, %s, %s, SYSDATE())
+INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, width, height, description, created_at)
+     VALUES (%s, %s, %s, %s, %s, %s, %s, SYSDATE())
 """
-            params = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.description]
+            params = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description]
 
             create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_2", request, params)
             try:
@@ -566,3 +568,47 @@ INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, d
                 return True
             except Exception as e:
                 return False
+            
+
+    @staticmethod
+    def get_submissions():
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, status, created_at
+  FROM l_image_submissions
+ ORDER BY status, created_at DESC
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.get_submissions", "SELECT_11", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [{
+                    'image_id': row[0],
+                    'stored_path': row[1],
+                    'original_name': row[2],
+                    'mime': row[3],
+                    'size_bytes': row[4],
+                    'width': row[5],
+                    'height': row[6],
+                    'aspect_ratio': round(row[5] / row[6], 2) if row[6] != 0 else None,
+                    'description': row[7],
+                    'status': row[8],
+                    'created_at': row[9],
+                } for row in rows]
+        
+
+    @staticmethod
+    def pending_submissions_count():
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_submissions
+ WHERE status = 'PENDING'
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.pending_submissions_count", "SELECT_12", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] if row else 0

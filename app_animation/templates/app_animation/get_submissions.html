@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Submission moderation" %}{% endblock title %}
+{% block title_h1 %}{% trans "Submission moderation" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+<hr>
+{% trans "Pending Submissions:" %} {{ pending_submissions_count }}
+{% endblock bloc1 %}
+{% block bloc2 %}
+<strong>{% trans "submit_an_image_info1" %}</strong><br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info2" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info3" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info4" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info5" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info6" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info7" %}<br><br>
+{% trans "submit_an_image_info8" %}
+{% endblock bloc2 %}
+
+{% block content %}
+<ul class="mt-6 space-y-6">
+  {% for submission in submission_list %}
+    <li class="L_LI bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+      <!-- Image -->
+      <div class="relative w-full h-56 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        <img src="/media/{{ submission.stored_path }}" alt="{{ submission.description }}"
+             class="object-cover w-full h-full transition-transform duration-300 hover:scale-105">
+      </div>
+
+      <!-- Info -->
+      <div class="p-4">
+        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 list-disc list-inside">
+          {% if submission.status == 'validated' %} <li class="bg-green-300 text-green-700">
+          {% elif submission.status == 'pending' %} <li class="bg-yellow-300 text-yellow-700">
+          {% else %}<li class="bg-red-300 text-red-700">{% endif %}
+            <b>[id {{ submission.image_id }}]</b> {{ submission.original_name }}
+          </li>
+          <li><b>{% trans "Stored Path:" %}</b> {{ submission.stored_path }}</li>
+          <li><b>{% trans "MIME Type:" %}</b> {{ submission.mime }}</li>
+          <li>
+            <b>{% trans "Size (bytes):" %}</b> {{ submission.size_bytes }} Mo
+            | <b>{% trans "Dimensions:" %}</b> {{ submission.width }}×{{ submission.height }} px
+            | <b>{% trans "Aspect Ratio:" %}</b> {{ submission.aspect_ratio|floatformat:2 }}
+          </li>
+          <li><b>{% trans "Description:" %}</b> {{ submission.description }}</li>
+          <li><b>{% trans "Status:" %}</b> 
+            <span class="px-2 py-0.5 rounded-full text-xs 
+              {% if submission.status == 'validated' %} bg-green-300 text-green-700 
+              {% elif submission.status == 'pending' %} bg-yellow-300 text-yellow-700 
+              {% else %} bg-red-300 text-red-700 {% endif %}">
+              {{ submission.status }}
+            </span>
+            | <b>{% trans "Created At:" %}</b> {{ submission.created_at }}
+          </li>
+        </ul>
+      </div>
+      <div class="px-4 pb-4">
+        <form method="post" action="{% url 'get_submissions' %}?id={{ submission.image_id }}">
+          {% csrf_token %}
+          <input style="width: 50%" type="submit" name="btn_validate" value="{% trans 'Validate' %}">
+          <input style="width: 49%" onclick="return confirm('{% trans 'Are you sure you want to invalidate this submission?' %}');" type="submit" name="btn_invalidate" value="{% trans 'Invalidate' %}">
+        </form>
+      </div>
+    </li>
+  {% empty %}
+    <p class="text-center text-gray-500 mt-10">{% trans "No submissions found." %}</p>
+  {% endfor %}
+</ul>
+{% endblock content %}

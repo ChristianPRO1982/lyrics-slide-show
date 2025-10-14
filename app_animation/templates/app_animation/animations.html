@@ -8,6 +8,12 @@
 {% include "common/group_selected.html" %}
 <hr>
 🌄 <a href="{% url "submit_image" %}">{% trans "Submit a background image" %}</a>
+{% if ismoderator %}
+<br>
+{% if pending_submissions_count > 0 %}
+✅ <a href="{% url "get_submissions" %}">{% trans "Submission moderation" %}</a>
+{% endif %}
+{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <button id="togglePassedBtn" onclick="togglePassedAnimations()">{% trans "Show past animations" %}</button>

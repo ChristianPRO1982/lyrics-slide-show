@@ -55,8 +55,8 @@ services:
     networks:
       - netcartho
     # Optionnel si pas d’accès depuis l’hôte :
-    # ports:
-    #   - "3306:3306"
+    ports:
+      - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DOCKER_MYSQL_ROOT_PASSWORD}"]
       interval: 5s
