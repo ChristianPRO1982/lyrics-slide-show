@@ -574,9 +574,9 @@ INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, w
     def get_submissions():
         with connection.cursor() as cursor:
             request = """
-SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, status, created_at
+SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at
   FROM l_image_submissions
- ORDER BY status, created_at DESC
+ ORDER BY created_at DESC
 """
             params = []
 
@@ -593,8 +593,7 @@ SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2
                     'height': row[6],
                     'aspect_ratio': round(row[5] / row[6], 2) if row[6] != 0 else None,
                     'description': row[7],
-                    'status': row[8],
-                    'created_at': row[9],
+                    'created_at': row[8],
                 } for row in rows]
         
 
@@ -604,7 +603,6 @@ SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2
             request = """
 SELECT COUNT(*)
   FROM l_image_submissions
- WHERE status = 'PENDING'
 """
             params = []
 
