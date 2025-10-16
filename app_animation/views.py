@@ -552,9 +552,14 @@ def submit_image(request: HttpRequest) -> HttpResponse:
         'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
-    })
+    })            
+            
 
-
+    # Remove DB entries for images not present in img_dir
+    # db_filenames = db_table.get_all_filenames()
+    # missing_files = set(db_filenames) - dir_filenames
+    # for filename in missing_files:
+    #     db_table.delete_by_filename(filename)
 def _sync_images_with_db(img_dir: Path, db_table: str):
     """
     Synchronize images in img_dir with db_table.
@@ -588,16 +593,21 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
                 description=""
             )
             submission.save()
-        else
+        else:
             image = BackgroundImageSubmission(stored_path=file_path_name)
-            
-            
+            image.hydrate()
+            # Compare and update if necessary
+            image = BackgroundImageSubmission(stored_path=file_path_name)
+            image.hydrate()
+            if image.mime != mime or image.size_bytes != size_bytes or image.width != width or image.height != height:
+                image.mime = mime
+                image.size_bytes = size_bytes
+                image.width = width
+                image.height = height
+                image.save()
 
-    # Remove DB entries for images not present in img_dir
-    # db_filenames = db_table.get_all_filenames()
-    # missing_files = set(db_filenames) - dir_filenames
-    # for filename in missing_files:
-    #     db_table.delete_by_filename(filename)
+def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
+    pass
 
 def _clean_submissions_and_images():
     """
@@ -606,6 +616,7 @@ def _clean_submissions_and_images():
     # Temp submissions folder
     temp_dir = Path(settings.IMG_TEMP_DIR)
     _sync_images_with_db(temp_dir, "l_image_submissions")
+    _delete_db_image_without_image_file(temp_dir, "l_image_submissions")
 
     # Validated imaegs folder
     validated_dir = Path(settings.IMG_VALIDATED_SUBDIR)

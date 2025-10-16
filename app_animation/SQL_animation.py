@@ -557,18 +557,35 @@ class BackgroundImageSubmission:
 
     def save(self):
         with connection.cursor() as cursor:
-            request = """
+            # Try to update first
+            request_update = """
+UPDATE l_image_submissions
+   SET original_name = %s,
+       mime = %s,
+       size_bytes = %s,
+       width = %s,
+       height = %s,
+       description = %s
+ WHERE stored_path = %s
+"""
+            params_update = [self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description, self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.save", "UPDATE_6", request_update, params_update)
+            cursor.execute(request_update, params_update)
+            if cursor.rowcount == 0:
+                # If no row was updated, do an insert
+                request_insert = """
 INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, width, height, description, created_at)
      VALUES (%s, %s, %s, %s, %s, %s, %s, SYSDATE())
 """
-            params = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description]
-
-            create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_2", request, params)
-            try:
-                cursor.execute(request, params)
-                return True
-            except Exception as e:
-                return False
+                params_insert = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description]
+                create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_4", request_insert, params_insert)
+                try:
+                    cursor.execute(request_insert, params_insert)
+                    return True
+                except Exception as e:
+                    return False
+            return True
             
 
     def hydrate(self):
@@ -580,13 +597,19 @@ SELECT image_id, original_name, mime, size_bytes, width, height, description, cr
 """
             params = [self.stored_path]
 
-            create_SQL_log(code_file, "BackgroundImageSubmission.get_submissions", "SELECT_14", request, params)
+            create_SQL_log(code_file, "BackgroundImageSubmission.hydrate", "SELECT_14", request, params)
             cursor.execute(request, params)
-            row = cursor.fetchall()
-            self.image_id = row[0]
-            self.original_name = row[1]
-            self.mime = row[2]
-            
+            row = cursor.fetchone()
+            if row:
+                self.image_id = row[0]
+                self.original_name = row[1]
+                self.mime = row[2]
+                self.size_bytes = row[3]
+                self.width = row[4]
+                self.height = row[5]
+                self.description = row[6]
+                self.created_at = row[7]
+                
 
     @staticmethod
     def get_submissions():
