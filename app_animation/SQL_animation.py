@@ -357,8 +357,6 @@ DELETE FROM l_animation_song
 
             create_SQL_log(code_file, "Animations.delete_song", "DELETE_2", request, params)
             cursor.execute(request, params)
-            rows = cursor.fetchall()
-            return [row[0] for row in rows]
         
 
     def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size, change_colors):
@@ -667,3 +665,16 @@ SELECT COUNT(*)
             cursor.execute(request, params)
             row = cursor.fetchone()
             return row[0] > 0 if row else 0
+        
+
+    @staticmethod
+    def delete_by_stored_path(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_image_submissions
+      WHERE stored_path = %s
+"""
+            params = [stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.delete_by_stored_path", "DELETE_3", request, params)
+            cursor.execute(request, params)

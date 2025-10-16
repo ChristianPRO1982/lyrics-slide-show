@@ -555,11 +555,7 @@ def submit_image(request: HttpRequest) -> HttpResponse:
     })            
             
 
-    # Remove DB entries for images not present in img_dir
-    # db_filenames = db_table.get_all_filenames()
-    # missing_files = set(db_filenames) - dir_filenames
-    # for filename in missing_files:
-    #     db_table.delete_by_filename(filename)
+# Remove DB entries for images not present in img_dir
 def _sync_images_with_db(img_dir: Path, db_table: str):
     """
     Synchronize images in img_dir with db_table.
@@ -567,7 +563,6 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
     - Remove DB entries for images missing from img_dir.
     """
     files_in_dir = list(img_dir.glob("*"))
-    dir_filenames = set(f.name for f in files_in_dir)
 
     # Update or insert images in DB
     for file_path in files_in_dir:
@@ -607,7 +602,19 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
                 image.save()
 
 def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
-    pass
+    submission_list = BackgroundImageSubmission.get_submissions()
+    files_in_dir = list(img_dir.glob("*"))
+
+
+    for submission in submission_list:
+        stored_path = submission['stored_path']
+        to_delete = True
+        for file in files_in_dir:
+            if file == f"{img_dir}/{stored_path}": to_delete = False
+            print("")
+            print(file)
+            print(f"{img_dir}/{stored_path}")
+        print(to_delete)
 
 def _clean_submissions_and_images():
     """
