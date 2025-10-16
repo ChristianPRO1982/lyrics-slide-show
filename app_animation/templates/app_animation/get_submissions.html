@@ -45,7 +45,6 @@
             | <b>{% trans "Dimensions:" %}</b> {{ submission.width }}×{{ submission.height }} px
             | <b>{% trans "Aspect Ratio:" %}</b> {{ submission.aspect_ratio|floatformat:2 }}
           </li>
-          <li><b>{% trans "Description:" %}</b> {{ submission.description }}</li>
           <li><b>{% trans "Status:" %}</b> 
             <span class="px-2 py-0.5 rounded-full text-xs 
               {% if submission.status == 'validated' %} bg-green-300 text-green-700 
@@ -55,6 +54,7 @@
             </span>
             | <b>{% trans "Created At:" %}</b> {{ submission.created_at }}
           </li>
+          <li><b>{% trans "Description:" %}</b> {{ submission.description }}</li>
         </ul>
       </div>
       <div class="px-4 pb-4">

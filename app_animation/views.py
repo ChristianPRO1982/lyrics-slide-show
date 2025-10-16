@@ -580,7 +580,7 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
             # create image
             submission = BackgroundImageSubmission(
                 stored_path=file_path_name,
-                original_name=file_path_name,
+                original_name="new INSERT",
                 mime=mime,
                 size_bytes=size_bytes,
                 width=width,
@@ -610,11 +610,9 @@ def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
         stored_path = submission['stored_path']
         to_delete = True
         for file in files_in_dir:
-            if file == f"{img_dir}/{stored_path}": to_delete = False
-            print("")
-            print(file)
-            print(f"{img_dir}/{stored_path}")
-        print(to_delete)
+            stored_path_file = str(img_dir).split("media/")[0] + "media/" + stored_path
+            if str(file) == stored_path_file: to_delete = False
+        if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
 
 def _clean_submissions_and_images():
     """
