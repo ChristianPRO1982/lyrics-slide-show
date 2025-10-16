@@ -543,8 +543,9 @@ SELECT lasv.color_rgba, lasv.bg_rgba
 ###################################################
 ###################################################
 class BackgroundImageSubmission:
-    def __init__(self, stored_path, original_name, mime, size_bytes, width, height, description):
+    def __init__(self, stored_path, image_id=0, original_name="", mime="", size_bytes="", width="", height="", description=""):
         self.stored_path = stored_path
+        self.image_id = image_id
         self.original_name = original_name
         self.mime = mime
         self.size_bytes = size_bytes
@@ -568,6 +569,23 @@ INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, w
                 return True
             except Exception as e:
                 return False
+            
+
+    def hydrate(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, original_name, mime, size_bytes, width, height, description, created_at
+  FROM l_image_submissions
+ WHERE stored_path = %s
+"""
+            params = [self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.get_submissions", "SELECT_14", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchall()
+            self.image_id = row[0]
+            self.original_name = row[1]
+            self.mime = row[2]
             
 
     @staticmethod
@@ -610,3 +628,19 @@ SELECT COUNT(*)
             cursor.execute(request, params)
             row = cursor.fetchone()
             return row[0] if row else 0
+        
+
+    @staticmethod
+    def image_exists(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_submissions
+ WHERE stored_path = %s
+"""
+            params = [stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.image_exists", "SELECT_13", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] > 0 if row else 0

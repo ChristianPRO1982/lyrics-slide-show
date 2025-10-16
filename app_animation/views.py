@@ -555,11 +555,69 @@ def submit_image(request: HttpRequest) -> HttpResponse:
     })
 
 
+def _sync_images_with_db(img_dir: Path, db_table: str):
+    """
+    Synchronize images in img_dir with db_table.
+    - Add/update DB entries for images present in img_dir.
+    - Remove DB entries for images missing from img_dir.
+    """
+    files_in_dir = list(img_dir.glob("*"))
+    dir_filenames = set(f.name for f in files_in_dir)
+
+    # Update or insert images in DB
+    for file_path in files_in_dir:
+        try:
+            with Image.open(file_path) as im:
+                width, height = im.size
+            size_bytes = file_path.stat().st_size
+            mime = Image.MIME.get(im.format, "application/octet-stream")
+        except Exception:
+            width, height, size_bytes, mime = 0, 0, 0, "application/octet-stream"
+
+        rel_img_dir = str(img_dir.relative_to(settings.MEDIA_ROOT))
+        file_path_name = str(img_dir).split("media/")[1] + "/" + file_path.name
+        if not BackgroundImageSubmission.image_exists(stored_path=file_path_name):
+            # create image
+            submission = BackgroundImageSubmission(
+                stored_path=file_path_name,
+                original_name=file_path_name,
+                mime=mime,
+                size_bytes=size_bytes,
+                width=width,
+                height=height,
+                description=""
+            )
+            submission.save()
+        else
+            image = BackgroundImageSubmission(stored_path=file_path_name)
+            
+            
+
+    # Remove DB entries for images not present in img_dir
+    # db_filenames = db_table.get_all_filenames()
+    # missing_files = set(db_filenames) - dir_filenames
+    # for filename in missing_files:
+    #     db_table.delete_by_filename(filename)
+
+def _clean_submissions_and_images():
+    """
+    Synchronize both temp and validated image directories with their respective DB tables.
+    """
+    # Temp submissions folder
+    temp_dir = Path(settings.IMG_TEMP_DIR)
+    _sync_images_with_db(temp_dir, "l_image_submissions")
+
+    # Validated imaegs folder
+    validated_dir = Path(settings.IMG_VALIDATED_SUBDIR)
+    _sync_images_with_db(validated_dir, "l_image_submissions")
+
 @login_required
 def get_submissions(request):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
+
+    _clean_submissions_and_images()
 
     group_selected = ''
     group_id = request.session.get('group_id', '')
