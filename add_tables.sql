@@ -275,7 +275,7 @@ CREATE TABLE `l_image_backgrounds` (
   `size_bytes` int NOT NULL,
   `width` int NOT NULL,
   `height` int NOT NULL,
-  `comment` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `status` enum('ACTIVED','UNACTIVED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVED',
   PRIMARY KEY (`image_id`),

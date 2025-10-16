@@ -602,17 +602,22 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
                 image.save()
 
 def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
-    submission_list = BackgroundImageSubmission.get_submissions()
+    if db_table == "l_image_submissions":
+        image_list = BackgroundImageSubmission.get_submissions()
+    elif db_table == "l_image_backgrounds":
+        image_list = BackgroundImageSubmission.get_backgrounds()
+    else:
+        return
+
     files_in_dir = list(img_dir.glob("*"))
 
-
-    for submission in submission_list:
-        stored_path = submission['stored_path']
+    for image in image_list:
+        stored_path = image['stored_path']
         to_delete = True
         for file in files_in_dir:
             stored_path_file = str(img_dir).split("media/")[0] + "media/" + stored_path
             if str(file) == stored_path_file: to_delete = False
-        if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
+        if to_delete: BackgroundImageSubmission.delete_by_stored_path(db_table, stored_path)
 
 def _clean_submissions_and_images():
     """
@@ -623,9 +628,10 @@ def _clean_submissions_and_images():
     _sync_images_with_db(temp_dir, "l_image_submissions")
     _delete_db_image_without_image_file(temp_dir, "l_image_submissions")
 
-    # Validated imaegs folder
-    validated_dir = Path(settings.IMG_VALIDATED_SUBDIR)
-    _sync_images_with_db(validated_dir, "l_image_submissions")
+    # Validated images folder
+    validated_dir = Path(settings.IMG_VALIDATED_DIR)
+    _sync_images_with_db(validated_dir, "l_image_backgrounds")
+    _delete_db_image_without_image_file(validated_dir, "l_image_backgrounds")
 
 @login_required
 def get_submissions(request):

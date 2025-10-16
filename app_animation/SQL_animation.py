@@ -634,6 +634,32 @@ SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2
                     'description': row[7],
                     'created_at': row[8],
                 } for row in rows]
+                
+
+    @staticmethod
+    def get_backgrounds():
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at
+  FROM l_image_backgrounds
+ ORDER BY created_at DESC
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.get_backgrounds", "SELECT_15", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [{
+                    'image_id': row[0],
+                    'stored_path': row[1],
+                    'mime': row[2],
+                    'size_bytes': row[3],
+                    'width': row[4],
+                    'height': row[5],
+                    'aspect_ratio': round(row[4] / row[5], 2) if row[5] != 0 else None,
+                    'description': row[6],
+                    'created_at': row[7],
+                } for row in rows]
         
 
     @staticmethod
@@ -668,13 +694,21 @@ SELECT COUNT(*)
         
 
     @staticmethod
-    def delete_by_stored_path(stored_path):
+    def delete_by_stored_path(l_image, stored_path):
         with connection.cursor() as cursor:
-            request = """
+            if l_image == "l_image_submissions":
+                request = """
 DELETE FROM l_image_submissions
       WHERE stored_path = %s
 """
+            elif l_image == "l_image_backgrounds":
+                request = """
+DELETE FROM l_image_backgrounds
+      WHERE stored_path = %s
+"""
+            else:
+                return
             params = [stored_path]
-
+            print(stored_path)
             create_SQL_log(code_file, "BackgroundImageSubmission.delete_by_stored_path", "DELETE_3", request, params)
             cursor.execute(request, params)
