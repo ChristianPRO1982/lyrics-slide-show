@@ -4,7 +4,7 @@ from django.utils import translation
 from PIL import Image
 import qrcode
 import io, base64
-from .SQL_animation import Animation, BackgroundImageSubmission
+from .SQL_animation import Animation, BackgroundImageSubmission, BackgroundImage
 from .utils import all_lyrics
 from app_song.SQL_song import Song
 from app_group.SQL_group import Group
@@ -563,7 +563,7 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
     - Remove DB entries for images missing from img_dir.
     """
     files_in_dir = list(img_dir.glob("*"))
-
+    
     # Update or insert images in DB
     for file_path in files_in_dir:
         try:
@@ -576,36 +576,65 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
 
         rel_img_dir = str(img_dir.relative_to(settings.MEDIA_ROOT))
         file_path_name = str(img_dir).split("media/")[1] + "/" + file_path.name
-        if not BackgroundImageSubmission.image_exists(stored_path=file_path_name):
-            # create image
-            submission = BackgroundImageSubmission(
-                stored_path=file_path_name,
-                original_name="new INSERT",
-                mime=mime,
-                size_bytes=size_bytes,
-                width=width,
-                height=height,
-                description=""
-            )
-            submission.save()
-        else:
-            image = BackgroundImageSubmission(stored_path=file_path_name)
-            image.hydrate()
-            # Compare and update if necessary
-            image = BackgroundImageSubmission(stored_path=file_path_name)
-            image.hydrate()
-            if image.mime != mime or image.size_bytes != size_bytes or image.width != width or image.height != height:
-                image.mime = mime
-                image.size_bytes = size_bytes
-                image.width = width
-                image.height = height
-                image.save()
+        if db_table == 'l_image_submissions':
+            if not BackgroundImageSubmission.image_exists(stored_path=file_path_name):
+                # create image
+                submission = BackgroundImageSubmission(
+                    stored_path=file_path_name,
+                    original_name="new INSERT",
+                    mime=mime,
+                    size_bytes=size_bytes,
+                    width=width,
+                    height=height,
+                    description=""
+                )
+                submission.save()
+            else:
+                image = BackgroundImageSubmission(stored_path=file_path_name)
+                image.hydrate()
+                # Compare and update if necessary
+                image = BackgroundImageSubmission(stored_path=file_path_name)
+                image.hydrate()
+                if image.mime != mime or image.size_bytes != size_bytes or image.width != width or image.height != height:
+                    image.mime = mime
+                    image.size_bytes = size_bytes
+                    image.width = width
+                    image.height = height
+                    image.save()
+        elif db_table == 'l_image_backgrounds':
+            print("c1")
+            if not BackgroundImage.image_exists(stored_path=file_path_name):
+                print("c2")
+                # create image
+                bg_image = BackgroundImage(
+                    stored_path=file_path_name,
+                    mime=mime,
+                    size_bytes=size_bytes,
+                    width=width,
+                    height=height,
+                    description=""
+                )
+                bg_image.save()
+            else:
+                print("c3")
+                image = BackgroundImage(stored_path=file_path_name)
+                image.hydrate()
+                # Compare and update if necessary
+                image = BackgroundImage(stored_path=file_path_name)
+                image.hydrate()
+                if image.mime != mime or image.size_bytes != size_bytes or image.width != width or image.height != height:
+                    image.mime = mime
+                    image.size_bytes = size_bytes
+                    image.width = width
+                    image.height = height
+                    image.save()
 
 def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
     if db_table == "l_image_submissions":
         image_list = BackgroundImageSubmission.get_submissions()
     elif db_table == "l_image_backgrounds":
-        image_list = BackgroundImageSubmission.get_backgrounds()
+        # image_list = BackgroundImageSubmission.get_backgrounds()
+        return
     else:
         return
 
@@ -617,7 +646,7 @@ def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
         for file in files_in_dir:
             stored_path_file = str(img_dir).split("media/")[0] + "media/" + stored_path
             if str(file) == stored_path_file: to_delete = False
-        if to_delete: BackgroundImageSubmission.delete_by_stored_path(db_table, stored_path)
+        if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
 
 def _clean_submissions_and_images():
     """
@@ -631,7 +660,7 @@ def _clean_submissions_and_images():
     # Validated images folder
     validated_dir = Path(settings.IMG_VALIDATED_DIR)
     _sync_images_with_db(validated_dir, "l_image_backgrounds")
-    _delete_db_image_without_image_file(validated_dir, "l_image_backgrounds")
+    # _delete_db_image_without_image_file(validated_dir, "l_image_backgrounds")
 
 @login_required
 def get_submissions(request):
