@@ -33,11 +33,6 @@
       <!-- Info -->
       <div class="p-4">
         <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 list-disc list-inside">
-          {% if submission.status == 'validated' %} <li class="bg-green-300 text-green-700">
-          {% elif submission.status == 'pending' %} <li class="bg-yellow-300 text-yellow-700">
-          {% else %}<li class="bg-red-300 text-red-700">{% endif %}
-            <b>[id {{ submission.image_id }}]</b> {{ submission.original_name }}
-          </li>
           <li><b>{% trans "Stored Path:" %}</b> {{ submission.stored_path }}</li>
           <li><b>{% trans "MIME Type:" %}</b> {{ submission.mime }}</li>
           <li>
@@ -45,14 +40,8 @@
             | <b>{% trans "Dimensions:" %}</b> {{ submission.width }}×{{ submission.height }} px
             | <b>{% trans "Aspect Ratio:" %}</b> {{ submission.aspect_ratio|floatformat:2 }}
           </li>
-          <li><b>{% trans "Status:" %}</b> 
-            <span class="px-2 py-0.5 rounded-full text-xs 
-              {% if submission.status == 'validated' %} bg-green-300 text-green-700 
-              {% elif submission.status == 'pending' %} bg-yellow-300 text-yellow-700 
-              {% else %} bg-red-300 text-red-700 {% endif %}">
-              {{ submission.status }}
-            </span>
-            | <b>{% trans "Created At:" %}</b> {{ submission.created_at }}
+          <li>
+            <b>{% trans "Created At:" %}</b> {{ submission.created_at }}
           </li>
           <li><b>{% trans "Description:" %}</b> {{ submission.description }}</li>
         </ul>
@@ -61,6 +50,16 @@
         <form method="post" action="{% url 'get_submissions' %}">
           {% csrf_token %}
           <input type="hidden" name="stored_path" value="{{ submission.stored_path }}">
+          <label for="moderation_description">{% trans "Moderator description" %}</label>
+          <input id="moderation_description" name="txt_moderation_description" type="text" maxlength="200"
+                  placeholder="{% trans 'Add a description (max 200 characters)' %}"
+                  value="{{ submission.description }}">
+          <button type="button"
+            class="ml-2 px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300"
+            onclick="this.form.querySelector('[name=txt_moderation_description]').value = '{{ submission.description|escapejs }}'; this.form.querySelector('[name=txt_moderation_description]').focus();">
+            {% trans "Copy user's description" %}
+          </button>
+          <br>
           <input style="width: 50%" type="submit" name="btn_validate" value="{% trans 'Validate' %}">
           <input style="width: 49%" onclick="return confirm('{% trans 'Are you sure you want to invalidate this submission?' %}');" type="submit" name="btn_invalidate" value="{% trans 'Invalidate' %}">
         </form>

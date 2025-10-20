@@ -615,7 +615,7 @@ SELECT image_id, original_name, mime, size_bytes, width, height, description, cr
             request = """
 SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at
   FROM l_image_submissions
- ORDER BY created_at DESC
+ ORDER BY created_at
 """
             params = []
 
@@ -702,11 +702,12 @@ UPDATE l_image_backgrounds
        size_bytes = %s,
        width = %s,
        height = %s,
-       description = %s
+       description = %s,
+       status = %s
  WHERE stored_path = %s
 """
-            params_update = [self.mime, self.size_bytes, self.width, self.height, self.description, self.stored_path]
-            
+            params_update = [self.mime, self.size_bytes, self.width, self.height, self.description, self.status, self.stored_path]
+
             create_SQL_log(code_file, "BackgroundImage.save", "UPDATE_7", request_update, params_update)
             cursor.execute(request_update, params_update)
             if cursor.rowcount == 0:
@@ -728,7 +729,7 @@ INSERT INTO l_image_backgrounds (stored_path, mime, size_bytes, width, height, d
     def hydrate(self):
         with connection.cursor() as cursor:
             request = """
-SELECT image_id, mime, size_bytes, width, height, description, created_at
+SELECT image_id, mime, size_bytes, width, height, description, created_at, status
   FROM l_image_backgrounds
  WHERE stored_path = %s
 """
@@ -745,15 +746,15 @@ SELECT image_id, mime, size_bytes, width, height, description, created_at
                 self.height = row[4]
                 self.description = row[5]
                 self.created_at = row[6]
-                
+                self.status = row[7]
 
     @staticmethod
     def get_backgrounds():
         with connection.cursor() as cursor:
             request = """
-SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at
+SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at, status
   FROM l_image_backgrounds
- ORDER BY created_at DESC
+ ORDER BY status, created_at DESC
 """
             params = []
 
@@ -770,6 +771,7 @@ SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes
                     'aspect_ratio': round(row[4] / row[5], 2) if row[5] != 0 else None,
                     'description': row[6],
                     'created_at': row[7],
+                    'status': row[8],
                 } for row in rows]
         
 

@@ -11,8 +11,9 @@
 {% if ismoderator %}
 <br>
 {% if pending_submissions_count > 0 %}
-✅ <a href="{% url "get_submissions" %}">{% trans "Submission moderation" %}</a>
+✅ <a href="{% url "get_submissions" %}">{% trans "Submission moderation" %}</a><br>
 {% endif %}
+🟢/🔴 <a href="{% url "moderate_images" %}">{% trans "Moderate images" %}</a><br>
 {% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}

@@ -23,6 +23,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 from app_main.params import get_image_params
 from . import utils
+import shutil
 
 
 def animations(request):
@@ -685,13 +686,37 @@ def get_submissions(request):
         stored_path = request.POST.getlist("stored_path")
 
         if 'btn_validate' in request.POST:
-            print(stored_path)
-            # tmp_image = BackgroundImageSubmission(stored_path=stored_path)
-            # tmp_image.hydrate()
-            # print(tmp_image.image_id)
+            image_tmp = BackgroundImageSubmission(stored_path=stored_path)
+            image_tmp.hydrate()
+            
+            image_validated = BackgroundImage(
+                stored_path=str(image_tmp.stored_path).replace("/tmp/", "/validated/"),
+                image_id=0,
+                mime=image_tmp.mime,
+                size_bytes=image_tmp.size_bytes,
+                width=image_tmp.width,
+                height=image_tmp.height,
+                description=request.POST.get("txt_moderation_description", "")[:200]
+            )
+
+            try:
+                src = Path(settings.MEDIA_ROOT) / image_tmp.stored_path[0].lstrip("/")
+                dest = Path(settings.MEDIA_ROOT) / image_tmp.stored_path[0].replace("/tmp/", "/validated/").lstrip("/")
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(src), str(dest))
+                image_validated.save()
+            except Exception as e:
+                error = "Error moving file"
+
 
         if 'btn_invalidate' in request.POST:
-            pass
+            image_tmp = BackgroundImageSubmission(stored_path=stored_path)
+            image_tmp.hydrate()
+            src = Path(settings.MEDIA_ROOT) / image_tmp.stored_path[0].lstrip("/")
+            if src.exists(): src.unlink()
+
+        _clean_submissions_and_images()
+            
     
     submission_list = BackgroundImageSubmission.get_submissions()
     if not submission_list:
@@ -705,4 +730,49 @@ def get_submissions(request):
         'css': css,
         'no_loader': no_loader,
         'pending_submissions_count': BackgroundImageSubmission.pending_submissions_count(),
+    })
+
+
+@login_required
+def moderate_images(request):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        if group != 0:
+            group_selected = group.name
+    
+    if not is_moderator(request):
+        return redirect('animations')
+    
+    _clean_submissions_and_images()
+
+    if request.method == "POST":
+        image = BackgroundImage(stored_path=request.POST.get("txt_stored_path", ""))
+        image.hydrate()
+        if 'btn_activate' in request.POST:
+            image.status = "ACTIVED"
+            image.save()
+        if 'btn_unactivate' in request.POST:
+            image.status = "UNACTIVED"
+            image.save()
+        if 'btn_delete' in request.POST:
+            img_path = Path(settings.MEDIA_ROOT) / image.stored_path.lstrip("/")
+            if img_path.exists(): img_path.unlink()
+            BackgroundImage.delete_by_stored_path(image.stored_path)
+
+    background_images = BackgroundImage.get_backgrounds()
+
+    return render(request, "app_animation/moderate_images.html", {
+        'group_selected': group_selected,
+        'error': error,
+        'background_images': background_images,
+        'l_site_messages': site_messages(request),
+        'css': css,
+        'no_loader': no_loader,
     })

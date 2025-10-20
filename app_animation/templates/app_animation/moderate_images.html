@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Moderation images" %}{% endblock title %}
+{% block title_h1 %}{% trans "Moderation images" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+{% for image in background_images %}
+  <img src="/media/{{ image.stored_path }}"
+    style="max-height:7rem; height:auto; width:auto; object-fit:contain;"
+    alt="{{ image.description|default_if_none:'' }}">
+    {% if image.status == 'ACTIVED' %}🟢{% else %}🔴{% endif %}
+    {{ image.status|default_if_none:'' }}<hr>
+{% endfor %}
+{% endblock bloc2 %}
+
+{% block content %}
+<form method="post" action="{% url 'moderate_images' %}">
+  {% csrf_token %}
+  <div id="selected-image-preview">
+    <div id="preview-img-wrap">
+      <p>{% trans "Select an image" %}</p>
+    </div>
+    <div id="preview-meta" style="flex:1;">
+    </div>
+  </div>
+</form>
+
+<script>
+/* stocke les informations des background_images en JS */
+const bgImages = [
+{% for image in background_images %}
+  {
+    id: {{ image.image_id|default:'null' }},
+    src: "/media/{{ image.stored_path|escapejs }}",
+    description: "{{ image.description|default_if_none:''|escapejs }}",
+    stored_path: "{{ image.stored_path|escapejs }}",
+    mime: "{{ image.mime|escapejs }}",
+    size_bytes: "{{ image.size_bytes|escapejs }}",
+    width: "{{ image.width|escapejs }}",
+    height: "{{ image.height|escapejs }}",
+    aspect_ratio: "{{ image.aspect_ratio|escapejs }}",
+    created_at: "{{ image.created_at|escapejs }}",
+    status: "{{ image.status|escapejs }}"
+  }{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+
+function renderPreview(obj) {
+  const wrap = document.getElementById('preview-img-wrap');
+  const meta = document.getElementById('preview-meta');
+  wrap.innerHTML = '';
+  meta.innerHTML = '';
+
+  const img = document.createElement('img');
+  img.src = obj.src;
+  img.alt = obj.description || '';
+  img.style.maxHeight = '20rem';
+  img.style.width = 'auto';
+  img.style.objectFit = 'contain';
+  img.style.display = 'block';
+  wrap.appendChild(img);
+
+  const title = document.createElement('div');
+  title.innerHTML = '<strong>ID:</strong> ' + (obj.id !== null ? obj.id : '—');
+  const desc = document.createElement('div');
+  desc.innerHTML = '<strong>Description:</strong> ' + (obj.description ? escapeHtml(obj.description) : '—');
+  desc.innerHTML += '<br><strong>MIME Type:</strong> ' + (obj.mime ? escapeHtml(obj.mime) : '—');
+  desc.innerHTML += '<br><strong>Size:</strong> ' + (obj.size_bytes ? escapeHtml(obj.size_bytes + " Mo") : '—');
+  desc.innerHTML += '<br><strong>Dimensions:</strong> ' + (obj.width && obj.height ? escapeHtml(obj.width + " x " + obj.height + " px") : '—');
+  desc.innerHTML += '<br><strong>Aspect Ratio:</strong> ' + (obj.aspect_ratio ? escapeHtml(obj.aspect_ratio) : '—');
+  desc.innerHTML += '<br><strong>Created At:</strong> ' + (obj.created_at ? escapeHtml(obj.created_at) : '—');
+  desc.innerHTML += '<br><strong>Status:</strong> ' + (obj.status ? escapeHtml(obj.status) : '—');
+  desc.innerHTML += '<br><input type="hidden" name="txt_stored_path" value="' + escapeHtml(obj.stored_path) + '">';
+  if (obj.status == 'ACTIVED') {
+    desc.innerHTML += '<br><input type="submit" name="btn_unactivate" value="{% trans "Unactivate Image" %}">';
+  } else {
+    desc.innerHTML += '<br><input type="submit" name="btn_activate" value="{% trans "Activate Image" %}">';
+    desc.innerHTML += '<br><input type="submit" name="btn_delete" value="{% trans "Delete Image" %}">';
+  }
+
+  meta.appendChild(title);
+  meta.appendChild(desc);
+}
+
+/* simple escape pour sécurité d'affichage */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // sélectionne les images dont la source commence par /media/ (les background_images affichées dans block2)
+  const imgs = document.querySelectorAll('img[src^="/media/"]');
+  imgs.forEach(img => {
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', function() {
+      const src = img.getAttribute('src');
+      const match = bgImages.find(o => o.src === src);
+      if (match) {
+        renderPreview(match);
+      } else {
+        // fallback : utilise l'attribut alt si pas d'entrée trouvée
+        renderPreview({ id: null, src: src, description: img.getAttribute('alt') || '' });
+      }
+      // optionnel : scroll vers la prévisualisation
+      document.getElementById('selected-image-preview').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+});
+</script>
+{% endblock content %}

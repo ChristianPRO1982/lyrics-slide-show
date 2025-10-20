@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 20:41+0200\n"
+"POT-Creation-Date: 2025-10-20 15:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,40 +28,50 @@ msgstr "Liste des animations"
 msgid "Submit a background image"
 msgstr "Proposer une image de fond"
 
-#: app_animation/templates/app_animation/animations.html:13
-#: app_animation/templates/app_animation/animations.html:30
+#: app_animation/templates/app_animation/animations.html:14
+#: app_animation/templates/app_animation/get_submissions.html:5
+#: app_animation/templates/app_animation/get_submissions.html:6
+msgid "Submission moderation"
+msgstr "Modération : Validation des images de fond de slide"
+
+#: app_animation/templates/app_animation/animations.html:16
+msgid "Moderate images"
+msgstr "Modération des images"
+
+#: app_animation/templates/app_animation/animations.html:20
+#: app_animation/templates/app_animation/animations.html:37
 msgid "Show past animations"
 msgstr "Afficher les anciennes animations"
 
-#: app_animation/templates/app_animation/animations.html:28
+#: app_animation/templates/app_animation/animations.html:35
 msgid "Hide past animations"
 msgstr "Masquer les anciennes animations"
 
-#: app_animation/templates/app_animation/animations.html:40
-#: app_animation/templates/app_animation/animations.html:75
+#: app_animation/templates/app_animation/animations.html:47
+#: app_animation/templates/app_animation/animations.html:82
 #: app_animation/templates/app_animation/modify_animation.html:50
 #: app_song/templates/app_song/song_metadata.html:165
 #: app_song/templates/app_song/song_metadata.html:192
 msgid "Name"
 msgstr "Nom"
 
-#: app_animation/templates/app_animation/animations.html:41
-#: app_animation/templates/app_animation/animations.html:66
-#: app_animation/templates/app_animation/animations.html:76
+#: app_animation/templates/app_animation/animations.html:48
+#: app_animation/templates/app_animation/animations.html:73
+#: app_animation/templates/app_animation/animations.html:83
 #: app_animation/templates/app_animation/modify_animation.html:54
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/modify_group.html:56
 msgid "Description"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:42
-#: app_animation/templates/app_animation/animations.html:77
+#: app_animation/templates/app_animation/animations.html:49
+#: app_animation/templates/app_animation/animations.html:84
 #: app_animation/templates/app_animation/modify_animation.html:58
 msgid "Date"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:43
-#: app_animation/templates/app_animation/animations.html:78
+#: app_animation/templates/app_animation/animations.html:50
+#: app_animation/templates/app_animation/animations.html:85
 #: app_animation/templates/common/animation_actions.html:3
 #: app_song/templates/app_song/song_metadata.html:33
 #: app_song/templates/app_song/song_metadata.html:58
@@ -71,11 +81,11 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:56
+#: app_animation/templates/app_animation/animations.html:63
 msgid "Update"
 msgstr "Modifier"
 
-#: app_animation/templates/app_animation/animations.html:57
+#: app_animation/templates/app_animation/animations.html:64
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:316
 #: app_animation/templates/common/animation_actions.html:7
@@ -88,11 +98,11 @@ msgstr "Modifier"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: app_animation/templates/app_animation/animations.html:65
+#: app_animation/templates/app_animation/animations.html:72
 msgid "new_animation"
 msgstr "Nouvelle animation"
 
-#: app_animation/templates/app_animation/animations.html:68
+#: app_animation/templates/app_animation/animations.html:75
 #: app_group/templates/app_group/add_group.html:21
 msgid "Add"
 msgstr "Ajouter"
@@ -113,6 +123,124 @@ msgstr "Confirmer la suppression de cette animation&nbsp;: "
 #: app_song/templates/app_song/moderator_song.html:43
 msgid "Cancel"
 msgstr "Annuler"
+
+#: app_animation/templates/app_animation/get_submissions.html:10
+msgid "Pending Submissions:"
+msgstr "Images en attente de validation :"
+
+#: app_animation/templates/app_animation/get_submissions.html:13
+#: app_animation/templates/app_animation/submit_image.html:11
+#: app_animation/templates/app_animation/submit_image_ok.html:11
+msgid "submit_an_image_info1"
+msgstr "Avant de soumettre une image, merci de lire attentivement ces règles :"
+
+#: app_animation/templates/app_animation/get_submissions.html:14
+#: app_animation/templates/app_animation/submit_image.html:12
+#: app_animation/templates/app_animation/submit_image_ok.html:12
+msgid "submit_an_image_info2"
+msgstr ""
+"Votre image ne sera pas ajoutée automatiquement à la bibliothèque : chaque "
+"proposition est vérifiée par nos modérateurs."
+
+#: app_animation/templates/app_animation/get_submissions.html:15
+#: app_animation/templates/app_animation/submit_image.html:13
+#: app_animation/templates/app_animation/submit_image_ok.html:13
+msgid "submit_an_image_info3"
+msgstr ""
+"Seules les images respectant le droit d’auteur et le droit à l’image peuvent "
+"être acceptées. Cela s’applique aussi bien aux photos personnelles qu’aux "
+"créations originales (dessins, montages, etc.)."
+
+#: app_animation/templates/app_animation/get_submissions.html:16
+#: app_animation/templates/app_animation/submit_image.html:14
+#: app_animation/templates/app_animation/submit_image_ok.html:14
+msgid "submit_an_image_info4"
+msgstr ""
+"Les partitions de musique et tout contenu protégé par un tiers sont "
+"strictement interdits."
+
+#: app_animation/templates/app_animation/get_submissions.html:17
+#: app_animation/templates/app_animation/submit_image.html:15
+#: app_animation/templates/app_animation/submit_image_ok.html:15
+msgid "submit_an_image_info5"
+msgstr "Formats acceptés : .jpg ou .png"
+
+#: app_animation/templates/app_animation/get_submissions.html:18
+#: app_animation/templates/app_animation/submit_image.html:16
+#: app_animation/templates/app_animation/submit_image_ok.html:16
+msgid "submit_an_image_info6"
+msgstr "Taille maximale : 2 Mo"
+
+#: app_animation/templates/app_animation/get_submissions.html:19
+#: app_animation/templates/app_animation/submit_image.html:17
+#: app_animation/templates/app_animation/submit_image_ok.html:17
+msgid "submit_an_image_info7"
+msgstr "Le ratio (largeur / hauteur) doit être compris entre 1.3 et 2.0."
+
+#: app_animation/templates/app_animation/get_submissions.html:20
+#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image_ok.html:18
+msgid "submit_an_image_info8"
+msgstr ""
+"L’objectif n’est pas d’accumuler des milliers d’images, mais de créer une "
+"banque visuelle cohérente, légale et variée, permettant d’habiller les "
+"slides des animations de chant, quel que soit leur style ou leur contexte."
+
+#: app_animation/templates/app_animation/get_submissions.html:36
+msgid "Stored Path:"
+msgstr "Path :"
+
+#: app_animation/templates/app_animation/get_submissions.html:37
+msgid "MIME Type:"
+msgstr "MIME Type :"
+
+#: app_animation/templates/app_animation/get_submissions.html:39
+msgid "Size (bytes):"
+msgstr "Poids (bytes) :"
+
+#: app_animation/templates/app_animation/get_submissions.html:40
+msgid "Dimensions:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:41
+msgid "Aspect Ratio:"
+msgstr "Ratio :"
+
+#: app_animation/templates/app_animation/get_submissions.html:44
+msgid "Created At:"
+msgstr "Créée le :"
+
+#: app_animation/templates/app_animation/get_submissions.html:46
+msgid "Description:"
+msgstr "Description :"
+
+#: app_animation/templates/app_animation/get_submissions.html:53
+msgid "Moderator description"
+msgstr "Description du modérateur"
+
+#: app_animation/templates/app_animation/get_submissions.html:55
+msgid "Add a description (max 200 characters)"
+msgstr "Description de l'image (200 caractères maximum) :"
+
+#: app_animation/templates/app_animation/get_submissions.html:60
+msgid "Copy user's description"
+msgstr "Copier la description de l'utilisateur"
+
+#: app_animation/templates/app_animation/get_submissions.html:63
+msgid "Validate"
+msgstr "Valider"
+
+#: app_animation/templates/app_animation/get_submissions.html:64
+msgid "Are you sure you want to invalidate this submission?"
+msgstr "Êtes-vous sûr de vouloir invalidé cette image&nbsp;?"
+
+#: app_animation/templates/app_animation/get_submissions.html:64
+msgid "Invalidate"
+msgstr "Invalider"
+
+#: app_animation/templates/app_animation/get_submissions.html:69
+msgid "No submissions found."
+msgstr "Aucune image à valider trouvée."
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:96
 #: app_animation/templates/app_animation/lyrics_slide_show.html:132
@@ -218,6 +346,29 @@ msgstr "Diapo active"
 #: app_animation/templates/app_animation/lyrics_slide_show.html:286
 msgid "Preview next slide"
 msgstr "Diapo suivante"
+
+#: app_animation/templates/app_animation/moderate_images.html:5
+#: app_animation/templates/app_animation/moderate_images.html:6
+msgid "Moderation images"
+msgstr "Modération des images"
+
+#: app_animation/templates/app_animation/moderate_images.html:25
+#, fuzzy
+#| msgid "Submit an image"
+msgid "Select an image"
+msgstr "Proposer une image"
+
+#: app_animation/templates/app_animation/moderate_images.html:79
+msgid "Unactivate Image"
+msgstr "Désactiver l’image"
+
+#: app_animation/templates/app_animation/moderate_images.html:81
+msgid "Activate Image"
+msgstr "Activer l’image"
+
+#: app_animation/templates/app_animation/moderate_images.html:82
+msgid "Delete Image"
+msgstr "Supprimer l’image"
 
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "List of available fonts"
@@ -453,56 +604,6 @@ msgstr "Retour"
 #: app_animation/templates/app_animation/submit_image_ok.html:6
 msgid "Submit an image"
 msgstr "Proposer une image"
-
-#: app_animation/templates/app_animation/submit_image.html:11
-#: app_animation/templates/app_animation/submit_image_ok.html:11
-msgid "submit_an_image_info1"
-msgstr "Avant de soumettre une image, merci de lire attentivement ces règles :"
-
-#: app_animation/templates/app_animation/submit_image.html:12
-#: app_animation/templates/app_animation/submit_image_ok.html:12
-msgid "submit_an_image_info2"
-msgstr ""
-"Votre image ne sera pas ajoutée automatiquement à la bibliothèque : chaque "
-"proposition est vérifiée par nos modérateurs."
-
-#: app_animation/templates/app_animation/submit_image.html:13
-#: app_animation/templates/app_animation/submit_image_ok.html:13
-msgid "submit_an_image_info3"
-msgstr ""
-"Seules les images respectant le droit d’auteur et le droit à l’image peuvent "
-"être acceptées. Cela s’applique aussi bien aux photos personnelles qu’aux "
-"créations originales (dessins, montages, etc.)."
-
-#: app_animation/templates/app_animation/submit_image.html:14
-#: app_animation/templates/app_animation/submit_image_ok.html:14
-msgid "submit_an_image_info4"
-msgstr ""
-"Les partitions de musique et tout contenu protégé par un tiers sont "
-"strictement interdits."
-
-#: app_animation/templates/app_animation/submit_image.html:15
-#: app_animation/templates/app_animation/submit_image_ok.html:15
-msgid "submit_an_image_info5"
-msgstr "Formats acceptés : .jpg ou .png"
-
-#: app_animation/templates/app_animation/submit_image.html:16
-#: app_animation/templates/app_animation/submit_image_ok.html:16
-msgid "submit_an_image_info6"
-msgstr "Taille maximale : 2 Mo"
-
-#: app_animation/templates/app_animation/submit_image.html:17
-#: app_animation/templates/app_animation/submit_image_ok.html:17
-msgid "submit_an_image_info7"
-msgstr "Le ratio (largeur / hauteur) doit être compris entre 1.3 et 2.0."
-
-#: app_animation/templates/app_animation/submit_image.html:18
-#: app_animation/templates/app_animation/submit_image_ok.html:18
-msgid "submit_an_image_info8"
-msgstr ""
-"L’objectif n’est pas d’accumuler des milliers d’images, mais de créer une "
-"banque visuelle cohérente, légale et variée, permettant d’habiller les "
-"slides des animations de chant, quel que soit leur style ou leur contexte."
 
 #: app_animation/templates/app_animation/submit_image.html:25
 msgid "Drag &amp; drop your image here (.jpg or .png)"
@@ -1305,7 +1406,8 @@ msgstr ""
 msgid "Song approved"
 msgstr "Chant validé"
 
-#: app_song/templates/app_song/modify_song.html:62
+#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
+#: copy.html:47
 msgid "title"
 msgstr "Titre"
 
@@ -1313,7 +1415,8 @@ msgstr "Titre"
 msgid "subtitle"
 msgstr "Sous-titre"
 
-#: app_song/templates/app_song/modify_song.html:70
+#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
+#: copy.html:48
 msgid "description"
 msgstr "Description"
 
@@ -1375,7 +1478,7 @@ msgid "Are you sure you want to delete this verse?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce couplet&nbsp;?"
 
 #: app_song/templates/app_song/modify_song.html:181
-#: app_song/templates/app_song/modify_song.html:198
+#: app_song/templates/app_song/modify_song.html:198 chris/songs copy.html:33
 msgid "delete"
 msgstr "Supprimer"
 
@@ -1475,7 +1578,7 @@ msgid "New genre"
 msgstr "Nouveau genre"
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6
+#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
 msgid "songs_list"
 msgstr "Liste des chants"
 
@@ -1597,7 +1700,7 @@ msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
 #: app_song/templates/app_song/songs.html:229
-#: app_song/templates/common/song_actions.html:10
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"
 
@@ -1605,7 +1708,7 @@ msgstr "Contacter les modérateurs"
 msgid "Display"
 msgstr "Afficher"
 
-#: app_song/templates/common/song_actions.html:10
+#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
 msgid "contact_moderators_info"
 msgstr ""
 "Contacter les modérateurs pour indiquer une modification à apporter à ce "
@@ -1626,6 +1729,18 @@ msgstr "Imprimer les paroles du chant"
 #: app_song/templates/common/song_actions.html:18
 msgid "Print song lyric - one chorus"
 msgstr "Imprimer les paroles du chant - un seul refrain"
+
+#: chris/songs copy.html:19 copy.html:49
+msgid "actions"
+msgstr ""
+
+#: chris/songs copy.html:32
+msgid "update"
+msgstr "Modifier"
+
+#: chris/songs copy.html:35
+msgid "Go to"
+msgstr "Voir"
 
 #: templates/account/login.html:6 templates/account/login.html:7
 #: templates/account/login.html:35
@@ -3295,22 +3410,11 @@ msgstr ""
 #~ msgid "Invalid file extension."
 #~ msgstr "Type d'image invalide."
 
-#, fuzzy
-#~| msgid "Invalid file type."
-#~ msgid "Invalid MIME type."
-#~ msgstr "Type d'image invalide."
-
 #~ msgid "Submit"
 #~ msgstr "Envoyer"
 
 #~ msgid "Preview"
 #~ msgstr "Prévisualisation"
-
-#~ msgid "update"
-#~ msgstr "Modifier"
-
-#~ msgid "Go to"
-#~ msgstr "Voir"
 
 #~ msgid "Artist:"
 #~ msgstr "Artiste&nbsp;:"
