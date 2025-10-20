@@ -811,7 +811,10 @@ def modify_BG_image_animation(request, xxx_id=None):
         if request.method == 'POST':
             if 'btn_return' in request.POST:
                 return redirect('modify_animation', animation_id=animation_id)
-            pass
+            if 'btn_save' in request.POST:
+                if target == 'animation':
+                    animation.bg_rgba = request.POST.get('txt_bg_image', 0)
+                    animation.save()
             # if 'btn_del_song_colors' in request.POST:
             #     animation.update_animation_song_colors(xxx_id, None, None)
             # elif 'btn_del_verse_colors' in request.POST:
@@ -833,9 +836,30 @@ def modify_BG_image_animation(request, xxx_id=None):
 
     bg_images = BackgroundImage.get_backgrounds(status_filter="ACTIVED")
 
+    song_full_title = ''
+    verse_preview = ''
+    if target == 'animation':
+        pass
+    elif target == 'song':
+        for song in animation.songs:
+            if song['animation_song_id'] == xxx_id:
+                song_full_title = song['full_title']
+                break
+    elif target == 'verse':
+        for song in animation.songs:
+            if song['animation_song_id'] == xxx_id:
+                song_full_title = song['full_title']
+                break
+        for verse in animation.verses:
+            if verse['animation_song_id'] == xxx_id and verse['verse_id'] == verse_id:
+                verse_preview = verse['text']
+                break
+
     return render(request, 'app_animation/modify_BG_image_animation.html', {
         'animation': animation,
         'target': target,
+        'song_full_title': song_full_title,
+        'verse_preview': verse_preview,
         'bg_images': bg_images,
         'group_selected': group_selected,
         'error': error,

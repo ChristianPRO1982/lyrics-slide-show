@@ -22,10 +22,10 @@
     <h2 class="L_H2">{% trans "Modify background image" %}</h2>
     {% if target != "animation" %}{% trans "Song:" %} {{ song_full_title }}{% endif %}
     {% if target == "verse" %}<br>{% trans "Verse:" %} {{ verse_preview }} [...]{% endif %}
-    <img id="bg_image" src="" /><br>
+    <img id="bg_image" src="/media/{{ animation.bg_rgba }}" /><br>
     <form method="post">
         {% csrf_token %}
-        <input type="text" name="txt_bg_image" />
+        <input type="hidden" name="txt_bg_image" />
         <input name="btn_save" value="{% trans "Save" %}" type="submit" />
         <input name="btn_return" value="{% trans "Return" %}" type="submit" />
     </form>

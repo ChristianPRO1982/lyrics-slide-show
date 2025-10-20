@@ -117,8 +117,8 @@
         image scout inversée
         <input style="width: 10%;" type="checkbox" name="box_image_scout_inversee" />
     </label><br> {% endcomment %}
-    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
-    <a href="{% url "modify_BG_image_animation" animation.animation_id %}">{% trans "Modifiy animation's background image" %}</a><br><br>
+    🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
+    🌄 <a href="{% url "modify_BG_image_animation" animation.animation_id %}">{% trans "Modifiy animation's background image" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "animation_save_exit" %}" type="submit" />
     <br><br><hr><br>
@@ -208,7 +208,8 @@
                                         </label>
                                     {% endif %}
                                 {% endfor %}<br>
-                                <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br><br>
+                                🎨 <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br>
+                                🌄 <a href="{% url "modify_BG_image_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's background image" %}</a><br><br>
                             </p>
                         {% endif %}
                     {% endfor %}
@@ -309,7 +310,8 @@
                                 {% endif %}
                             {% endfor %}<br><br>
                         </div>
-                        <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a><br><br>
+                        🎨 <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a><br>
+                        🌄 <a href="{% url "modify_BG_image_song" song.animation_song_id %}">{% trans "Modifiy song's background image" %}</a><br><br>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
