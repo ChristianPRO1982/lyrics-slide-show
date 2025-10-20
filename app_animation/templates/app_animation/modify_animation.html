@@ -117,7 +117,8 @@
         image scout inversée
         <input style="width: 10%;" type="checkbox" name="box_image_scout_inversee" />
     </label><br> {% endcomment %}
-    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br><br>
+    <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
+    <a href="{% url "modify_BG_image_animation" animation.animation_id %}">{% trans "Modifiy animation's background image" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "animation_save_exit" %}" type="submit" />
     <br><br><hr><br>

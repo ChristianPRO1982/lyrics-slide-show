@@ -749,11 +749,18 @@ SELECT image_id, mime, size_bytes, width, height, description, created_at, statu
                 self.status = row[7]
 
     @staticmethod
-    def get_backgrounds():
+    def get_backgrounds(status_filter=None):
+        if status_filter is not None:
+            status = f"""
+   AND status = '{status_filter}'"""
+        else:
+            status = ""
+
         with connection.cursor() as cursor:
-            request = """
+            request = f"""
 SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at, status
   FROM l_image_backgrounds
+ WHERE 1 = 1{status}
  ORDER BY status, created_at DESC
 """
             params = []
