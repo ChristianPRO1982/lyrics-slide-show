@@ -602,9 +602,7 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
                     image.height = height
                     image.save()
         elif db_table == 'l_image_backgrounds':
-            print("c1")
             if not BackgroundImage.image_exists(stored_path=file_path_name):
-                print("c2")
                 # create image
                 bg_image = BackgroundImage(
                     stored_path=file_path_name,
@@ -616,7 +614,6 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
                 )
                 bg_image.save()
             else:
-                print("c3")
                 image = BackgroundImage(stored_path=file_path_name)
                 image.hydrate()
                 # Compare and update if necessary
@@ -633,8 +630,7 @@ def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
     if db_table == "l_image_submissions":
         image_list = BackgroundImageSubmission.get_submissions()
     elif db_table == "l_image_backgrounds":
-        # image_list = BackgroundImageSubmission.get_backgrounds()
-        return
+        image_list = BackgroundImage.get_backgrounds()
     else:
         return
 
@@ -646,7 +642,11 @@ def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
         for file in files_in_dir:
             stored_path_file = str(img_dir).split("media/")[0] + "media/" + stored_path
             if str(file) == stored_path_file: to_delete = False
-        if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
+        
+        if db_table == "l_image_submissions":
+            if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
+        elif db_table == "l_image_backgrounds":
+            if to_delete: BackgroundImage.delete_by_stored_path(stored_path)
 
 def _clean_submissions_and_images():
     """
@@ -660,7 +660,7 @@ def _clean_submissions_and_images():
     # Validated images folder
     validated_dir = Path(settings.IMG_VALIDATED_DIR)
     _sync_images_with_db(validated_dir, "l_image_backgrounds")
-    # _delete_db_image_without_image_file(validated_dir, "l_image_backgrounds")
+    _delete_db_image_without_image_file(validated_dir, "l_image_backgrounds")
 
 @login_required
 def get_submissions(request):
@@ -680,6 +680,18 @@ def get_submissions(request):
     
     if not is_moderator(request):
         return redirect('animations')
+    
+    if request.method == "POST":
+        stored_path = request.POST.getlist("stored_path")
+
+        if 'btn_validate' in request.POST:
+            print(stored_path)
+            # tmp_image = BackgroundImageSubmission(stored_path=stored_path)
+            # tmp_image.hydrate()
+            # print(tmp_image.image_id)
+
+        if 'btn_invalidate' in request.POST:
+            pass
     
     submission_list = BackgroundImageSubmission.get_submissions()
     if not submission_list:

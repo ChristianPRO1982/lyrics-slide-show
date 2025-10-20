@@ -58,8 +58,9 @@
         </ul>
       </div>
       <div class="px-4 pb-4">
-        <form method="post" action="{% url 'get_submissions' %}?id={{ submission.image_id }}">
+        <form method="post" action="{% url 'get_submissions' %}">
           {% csrf_token %}
+          <input type="hidden" name="stored_path" value="{{ submission.stored_path }}">
           <input style="width: 50%" type="submit" name="btn_validate" value="{% trans 'Validate' %}">
           <input style="width: 49%" onclick="return confirm('{% trans 'Are you sure you want to invalidate this submission?' %}');" type="submit" name="btn_invalidate" value="{% trans 'Invalidate' %}">
         </form>
