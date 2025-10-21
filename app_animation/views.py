@@ -698,7 +698,7 @@ def get_submissions(request):
             image_tmp.hydrate()
             
             image_validated = BackgroundImage(
-                stored_path=str(image_tmp.stored_path).replace("/tmp/", "/validated/"),
+                stored_path=str(image_tmp.stored_path).replace("/tmp/", "/validated/").replace("[", "").replace("]", "").replace("'", ""),
                 image_id=0,
                 mime=image_tmp.mime,
                 size_bytes=image_tmp.size_bytes,
@@ -780,90 +780,6 @@ def moderate_images(request):
         'group_selected': group_selected,
         'error': error,
         'background_images': background_images,
-        'l_site_messages': site_messages(request),
-        'css': css,
-        'no_loader': no_loader,
-    })
-
-
-@login_required
-def modify_BG_image_animation(request, xxx_id=None):
-    error = ''
-    css = request.session.get('css', 'normal.css')
-    no_loader = is_no_loader(request)
-    bg_image = ""
-
-    if "modify_BG_image_animation" in request.resolver_match.url_name:
-        target = 'animation'
-        animation_id = xxx_id
-    elif "modify_BG_image_song" in request.resolver_match.url_name:
-        target = 'song'
-        animation_id = Animation.get_animation_id_by_song_id(xxx_id)
-    elif "modify_BG_image_verse" in request.resolver_match.url_name:
-        target = 'verse'
-        verse_id = int(request.GET.get('verse_id', 0))
-        animation_id = Animation.get_animation_id_by_verse_id(xxx_id, verse_id)
-
-    animation = None
-    group_selected = ''
-    group_id = request.session.get('group_id', '')
-    url_token = request.session.get('url_token', '')
-    if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
-        group_selected = group.name
-    
-    if group_selected:
-        animation = Animation.get_animation_by_id(animation_id, group_id)
-        if not animation:
-            return redirect('animations')
-
-        if request.method == 'POST':
-            if 'btn_save' in request.POST:
-                if target == 'animation':
-                    animation.bg_rgba = request.POST.get('txt_bg_image', 0)
-                    animation.save()
-                if target == 'song':
-                    animation.update_animation_song_colors(xxx_id, animation.color_rgba, request.POST.get('txt_bg_image', 0))
-                if target == 'verse':
-                    animation.update_animation_verse_colors(xxx_id, verse_id, animation.color_rgba, request.POST.get('txt_bg_image', 0))
-            if 'btn_del_song_colors' in request.POST:
-                animation.update_animation_song_colors(xxx_id, None, None)
-            if 'btn_del_verse_colors' in request.POST:
-                animation.update_animation_verse_colors(xxx_id, verse_id, None, None)
-            return redirect('modify_animation', animation_id=animation_id)
-
-    bg_images = BackgroundImage.get_backgrounds(status_filter="ACTIVED")
-
-    song_full_title = ''
-    verse_preview = ''
-    if target == 'animation':
-        bg_image = animation.bg_rgba
-    elif target == 'song':
-        for song in animation.songs:
-            if song['animation_song_id'] == xxx_id:
-                song_full_title = song['full_title']
-                bg_image = song['bg_rgba']
-                break
-    elif target == 'verse':
-        for song in animation.songs:
-            if song['animation_song_id'] == xxx_id:
-                song_full_title = song['full_title']
-                break
-        for verse in animation.verses:
-            if verse['animation_song_id'] == xxx_id and verse['verse_id'] == verse_id:
-                verse_preview = verse['text']
-                bg_image = verse['bg_rgba']
-                break
-
-    return render(request, 'app_animation/modify_BG_image_animation.html', {
-        'animation': animation,
-        'target': target,
-        'song_full_title': song_full_title,
-        'verse_preview': verse_preview,
-        'bg_image': bg_image,
-        'bg_images': bg_images,
-        'group_selected': group_selected,
-        'error': error,
         'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,

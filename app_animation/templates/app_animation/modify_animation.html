@@ -102,7 +102,7 @@
                 style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
                 border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
                 background-image: url('/media/{{ color.bg_rgba }}');
-                background-size: cover;
+                background-size: 100% 100%;
                 background-position: center;
                 background-repeat: no-repeat;
                 color: {{ color.color_rgba }};" class="slide border">
@@ -125,8 +125,7 @@
     {% endfor %}<br><br>
     </div>
     
-    🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
-    🌄 <a href="{% url "modify_BG_image_animation" animation.animation_id %}">{% trans "Modifiy animation's background image" %}</a><br><br>
+    🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "animation_save_exit" %}" type="submit" />
     <br><br><hr><br>
@@ -205,19 +204,33 @@
                                 <label for="no_change_verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}"><small>{% trans "No change" %}</small></label>
                                 {% for color in animation.colors %}
                                     {% if color.color_rgba != None %}
-                                        <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
-                                        style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
-                                        border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
-                                        background-color: {{ color.bg_rgba }};
-                                        color: {{ color.color_rgba }};" class="slide border">
-                                            <small><small>{% trans "Sel" %}</small></small>
-                                            <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
-                                            value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
-                                        </label>
+                                        {% if color.bg_rgba|slice:":21" == "backgrounds/validated" %}
+                                            <label for="animation_{{ forloop.counter }}"
+                                            style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
+                                            border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                            background-image: url('/media/{{ color.bg_rgba }}');
+                                            background-size: 100% 100%;
+                                            background-position: center;
+                                            background-repeat: no-repeat;
+                                            color: {{ color.color_rgba }};" class="slide border">
+                                                <small><small>{% trans "Sel" %}</small></small>
+                                                <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
+                                                id="animation_{{ forloop.counter }}" style="width: 25%;">
+                                            </label>
+                                        {% else %}
+                                            <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
+                                            style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
+                                            border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                            background-color: {{ color.bg_rgba }};
+                                            color: {{ color.color_rgba }};" class="slide border">
+                                                <small><small>{% trans "Sel" %}</small></small>
+                                                <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
+                                                value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                            </label>
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}<br>
-                                🎨 <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br>
-                                🌄 <a href="{% url "modify_BG_image_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's background image" %}</a><br><br>
+                                🎨 <a href="{% url "modify_colors_verse" verse.animation_song_id %}?verse_id={{ verse.verse_id }}">{% trans "Modifiy verse's colors" %}</a><br><br>
                             </p>
                         {% endif %}
                     {% endfor %}
@@ -306,20 +319,34 @@
                             <label for="no_change_song_{{ song.animation_song_id }}"><small>{% trans "No change" %}</small></label><br>
                             {% for color in animation.colors %}
                                 {% if color.color_rgba != None %}
-                                    <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
-                                    style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
-                                    border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
-                                    background-color: {{ color.bg_rgba }};
-                                    color: {{ color.color_rgba }};" class="slide border">
-                                        <small><small>{% trans "Sel" %}</small></small>
-                                        <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
-                                        value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
-                                    </label>
+                                    {% if color.bg_rgba|slice:":21" == "backgrounds/validated" %}
+                                        <label for="animation_{{ forloop.counter }}"
+                                        style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
+                                        border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                        background-image: url('/media/{{ color.bg_rgba }}');
+                                        background-size: 100% 100%;
+                                        background-position: center;
+                                        background-repeat: no-repeat;
+                                        color: {{ color.color_rgba }};" class="slide border">
+                                            <small><small>{% trans "Sel" %}</small></small>
+                                            <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
+                                            id="animation_{{ forloop.counter }}" style="width: 25%;">
+                                        </label>
+                                    {% else %}
+                                        <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
+                                        style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold; 
+                                        border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                                        background-color: {{ color.bg_rgba }};
+                                        color: {{ color.color_rgba }};" class="slide border">
+                                            <small><small>{% trans "Sel" %}</small></small>
+                                            <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
+                                            value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                        </label>
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}<br><br>
                         </div>
-                        🎨 <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a><br>
-                        🌄 <a href="{% url "modify_BG_image_song" song.animation_song_id %}">{% trans "Modifiy song's background image" %}</a><br><br>
+                        🎨 <a href="{% url "modify_colors_song" song.animation_song_id %}">{% trans "Modifiy song's colors" %}</a><br><br>
                     </div>
                     <input style="width: 10%;" type="checkbox" name="box_delete_song_{{ song.animation_song_id }}" id="box_delete_song_{{ song.animation_song_id }}" 
                     onclick="if(this.checked) { return confirm('{% trans "Are you sure you want to delete this song?" %}'); }"/>
