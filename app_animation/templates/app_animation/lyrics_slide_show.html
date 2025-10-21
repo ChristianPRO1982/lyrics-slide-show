@@ -331,4 +331,24 @@ function enableDrag(dragDivId, dragHeaderId) {
 enableDrag('draggableDivCurrentSlide', 'draggableHeaderCurrentSlide');
 enableDrag('draggableDivNextSlide', 'draggableHeaderNextSlide');
 </script>
+<script src="{% static 'js/preload.js' %}"></script>
+<script>
+  // 👉 Tu fournis toi-même la liste (exemple simple) :
+  const bgUrls = [
+  {% for bg_image in bg_images %}
+    "/media/{{ bg_image }}",
+  {% endfor %}
+  ];
+
+  // Lancement
+  preloadImages(bgUrls, ({ loaded, total }) => {
+    // optionnel : afficher une jauge
+    // console.log(`Preload ${loaded}/${total}`);
+  }).then(({ ok, failed }) => {
+    console.log(`✅ ${ok} images préchargées`);
+    if (failed.length > 0) {
+        console.warn(`⚠️ ${failed.length} échecs:`, failed);
+    }
+  });
+</script>
 {% endblock content %}

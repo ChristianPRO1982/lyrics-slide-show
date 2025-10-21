@@ -535,6 +535,46 @@ SELECT lasv.color_rgba, lasv.bg_rgba
                 self.colors = []
 
 
+    def list_BG_images(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT la.bg_rgba
+  FROM l_animations la
+ WHERE la.animation_id = %s
+   AND la.bg_rgba LIKE %s
+ UNION
+SELECT las.bg_rgba
+  FROM l_animations la
+  JOIN l_animation_song las ON las.animation_id = la.animation_id
+ WHERE la.animation_id = %s
+   AND las.bg_rgba LIKE %s
+ UNION
+SELECT lasv.bg_rgba
+  FROM l_animations la
+  JOIN l_animation_song las ON las.animation_id = la.animation_id
+  JOIN l_animation_song_verse lasv ON lasv.animation_song_id = las.animation_song_id
+ WHERE la.animation_id = %s
+   AND lasv.bg_rgba LIKE %s
+"""
+            params = [
+                self.animation_id,
+                'backgrounds/validated/%',
+                self.animation_id,
+                'backgrounds/validated/%',
+                self.animation_id,
+                'backgrounds/validated/%'
+                ]
+
+            create_SQL_log(code_file, "Animations.list_BG_images", "SELECT_19", request, params)
+            try:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                return [row[0] for row in rows]
+            except Exception as e:
+                print(e)
+                return []
+            
+
 ###################################################
 ###################################################
 ############### BACKGROUNDS IMAGES ################

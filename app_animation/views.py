@@ -320,6 +320,8 @@ def lyrics_slide_show(request, animation_id):
     except Exception as e:
         error = "[ERR35]"
 
+    bg_images = animation.list_BG_images()
+
     return render(request, 'app_animation/lyrics_slide_show.html', {
         'animation': animation,
         'group_selected': group_selected,
@@ -327,6 +329,7 @@ def lyrics_slide_show(request, animation_id):
         'slides_sliced': slides_sliced,
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
+        'bg_images': bg_images,
         'error': error,
         'l_site_messages': site_messages(request),
         'css': css,
