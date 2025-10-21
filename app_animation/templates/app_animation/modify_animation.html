@@ -97,26 +97,34 @@
     <label for="no_change_animation"><small>{% trans "No change" %}</small></label>
     {% for color in animation.colors %}
         {% if color.color_rgba != None %}
-            <label for="animation_{{ forloop.counter }}"
-            style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
-            border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
-            background-color: {{ color.bg_rgba }};
-            color: {{ color.color_rgba }};" class="slide border">
-                <small><small>{% trans "Sel" %}</small></small>
-                <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
-                id="animation_{{ forloop.counter }}" style="width: 25%;">
-            </label>
+            {% if color.bg_rgba|slice:":21" == "backgrounds/validated" %}
+                <label for="animation_{{ forloop.counter }}"
+                style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
+                border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                background-image: url('/media/{{ color.bg_rgba }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                color: {{ color.color_rgba }};" class="slide border">
+                    <small><small>{% trans "Sel" %}</small></small>
+                    <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
+                    id="animation_{{ forloop.counter }}" style="width: 25%;">
+                </label>
+            {% else %}
+                <label for="animation_{{ forloop.counter }}"
+                style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
+                border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
+                background-color: {{ color.bg_rgba }};
+                color: {{ color.color_rgba }};" class="slide border">
+                    <small><small>{% trans "Sel" %}</small></small>
+                    <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
+                    id="animation_{{ forloop.counter }}" style="width: 25%;">
+                </label>
+            {% endif %}
         {% endif %}
     {% endfor %}<br><br>
     </div>
-    {% comment %} <label>
-        image scout
-        <input style="width: 10%;" type="checkbox" name="box_image_scout" />
-    </label><br>
-    <label>
-        image scout inversée
-        <input style="width: 10%;" type="checkbox" name="box_image_scout_inversee" />
-    </label><br> {% endcomment %}
+    
     🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
     🌄 <a href="{% url "modify_BG_image_animation" animation.animation_id %}">{% trans "Modifiy animation's background image" %}</a><br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />

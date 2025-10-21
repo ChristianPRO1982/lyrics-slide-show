@@ -615,7 +615,7 @@ msgstr "Les chants sélectionnés seront placés ici..."
 #: app_animation/templates/app_animation/modify_colors.html:14
 msgid "text_test"
 msgstr ""
-"Voici un texte pour tester l'affichage<br><br><b>Est-ce beau&nbsp;?</b>"
+"<br><br>Voici un texte pour tester l'affichage<br><br><br><br><b>Est-ce beau&nbsp;?</b><br><br><br><br>En tout cas, on fera avec !!!<br><br>"
 
 #: app_animation/templates/app_animation/modify_colors.html:20
 msgid "Modify colors"

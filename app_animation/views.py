@@ -383,17 +383,22 @@ def modify_colors(request, xxx_id=None):
             animation = Animation.get_animation_by_id(animation_id, group_id)
             return redirect('modify_animation', animation_id=animation_id)
     
+
+    bg_images = BackgroundImage.get_backgrounds(status_filter="ACTIVED")
+
     song_full_title = ''
     verse_preview = ''
     if target == 'animation':
         color_rgba = animation.color_rgba
         bg_rbga = animation.bg_rgba
+        bg_image = animation.bg_rgba
     elif target == 'song':
         for song in animation.songs:
             if song['animation_song_id'] == xxx_id:
                 song_full_title = song['full_title']
                 color_rgba = song['color_rgba']
                 bg_rbga = song['bg_rgba']
+                bg_image = song['bg_rgba']
                 break
     elif target == 'verse':
         for song in animation.songs:
@@ -405,6 +410,7 @@ def modify_colors(request, xxx_id=None):
                 color_rgba = verse['color_rgba']
                 bg_rbga = verse['bg_rgba']
                 verse_preview = verse['text']
+                bg_image = verse['bg_rgba']
                 break
 
     return render(request, 'app_animation/modify_colors.html', {
@@ -414,6 +420,8 @@ def modify_colors(request, xxx_id=None):
         'verse_preview': verse_preview,
         'color_rgba': color_rgba,
         'bg_rgba': bg_rbga,
+        'bg_image': bg_image,
+        'bg_images': bg_images,
         'group_selected': group_selected,
         'error': error,
         'l_site_messages': site_messages(request),

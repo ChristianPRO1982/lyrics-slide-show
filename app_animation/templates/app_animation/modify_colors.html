@@ -10,14 +10,33 @@
 {% include "common/animation_actions.html" %}
 {% endblock bloc1 %}
 {% block bloc2 %}
-<div id="preview" style="color: {{ color_rgba }}; Background: {{ bg_rgba }}" class="p-10">
-  {% trans "text_test" %}
-</div>
+<script>
+    function bg_image(data_path) {
+        const preview = document.getElementById('preview');
+        const input = document.getElementById('bg-color-input');
+        
+        preview.style.backgroundImage = 'url(' + data_path + ')';
+        preview.style.backgroundSize = '100% 100%';
+        preview.style.backgroundPosition = 'center center';
+        input.value = data_path;
+}
+</script>
+
+{% for bg_image in bg_images %}
+    <img onclick="bg_image('/media/{{ bg_image.stored_path }}');"
+        style="cursor:pointer; max-height:200px;"
+        src="/media/{{ bg_image.stored_path }}"  /><br>
+    {{ bg_image.description }}<hr>
+{% endfor %}
 {% endblock bloc2 %}
 
 {% block content %}
 {% load static %}
     <h2 class="L_H2">{% trans "Modify colors" %}</h2>
+    <div id="preview" style="color: {{ color_rgba }}; Background: {{ bg_rgba }}; padding: 15px;" class="text-center p-10">
+    {% trans "text_test" %}
+    </div>
+    
     {% if target != "animation" %}{% trans "Song:" %} {{ song_full_title }}{% endif %}
     {% if target == "verse" %}<br>{% trans "Verse:" %} {{ verse_preview }} [...]{% endif %}
     <form method="post">
