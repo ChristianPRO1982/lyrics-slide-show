@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-20 17:15+0200\n"
+"POT-Creation-Date: 2025-10-21 10:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -396,7 +396,23 @@ msgstr "Couplet&nbsp;:"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: app_animation/templates/app_animation/modify_BG_image_animation.html:30
+#: app_animation/templates/app_animation/modify_BG_image_animation.html:31
+msgid "Are you sure you want to delete this song’s background?"
+msgstr "Êtes-vous sûr de vouloir supprimer l'image de fond de ce chant&nbsp;?"
+
+#: app_animation/templates/app_animation/modify_BG_image_animation.html:32
+msgid "Delete song's background"
+msgstr "Supprimer l'image de fond de ce chant"
+
+#: app_animation/templates/app_animation/modify_BG_image_animation.html:35
+msgid "Are you sure you want to delete this verse’s background?"
+msgstr "Êtes-vous sûr de vouloir supprimer l'image de fond de ce couplet&nbsp;?"
+
+#: app_animation/templates/app_animation/modify_BG_image_animation.html:36
+msgid "Delete verse's background"
+msgstr "Supprimer l'image de fond de ce couplet"
+
+#: app_animation/templates/app_animation/modify_BG_image_animation.html:38
 #: app_animation/templates/app_animation/modify_colors.html:46
 msgid "Return"
 msgstr "Retour"
