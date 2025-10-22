@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 08:28+0200\n"
+"POT-Creation-Date: 2025-10-22 13:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: app_animation/templates/app_animation/all_lyrics.html:242
+msgid "Copy link"
+msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:5
 #: app_animation/templates/app_animation/animations.html:6
@@ -408,7 +412,7 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_animation.html:131
 #: app_animation/templates/app_animation/modify_animation.html:385
 #: app_animation/templates/app_animation/modify_colors.html:62
-#: app_group/templates/app_group/modify_group.html:93
+#: app_group/templates/app_group/modify_group.html:94
 #: app_main/templates/app_main/homepage.html:98
 #: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
@@ -830,7 +834,7 @@ msgstr ""
 msgid "Confirm group deletion"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:94
+#: app_group/templates/app_group/modify_group.html:95
 msgid "cancel"
 msgstr ""
 
