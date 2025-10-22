@@ -34,6 +34,7 @@ GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == '1'
+# DEBUG = '1'
 
 ALLOWED_HOSTS = ['*']
 
@@ -207,3 +208,16 @@ LOGOUT_REDIRECT_URL = '/'
 # --- Loader debug config (simulate slow network) ---
 LOADER_DEBUG = os.getenv("LOADER_DEBUG", "0") == "1"
 LOADER_DEBUG_DELAY_MS = int(os.getenv("LOADER_DEBUG_DELAY_MS", "1500"))
+
+# --- user's medias
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+IMG_TEMP_SUBDIR = "backgrounds/tmp"
+IMG_VALIDATED_SUBDIR = "backgrounds/validated"
+
+IMG_TEMP_DIR = MEDIA_ROOT / IMG_TEMP_SUBDIR
+IMG_VALIDATED_DIR = MEDIA_ROOT / IMG_VALIDATED_SUBDIR
+
+IMG_TEMP_URL = f"{MEDIA_URL}{IMG_TEMP_SUBDIR}/"
+IMG_VALIDATED_URL = f"{MEDIA_URL}{IMG_VALIDATED_SUBDIR}/"

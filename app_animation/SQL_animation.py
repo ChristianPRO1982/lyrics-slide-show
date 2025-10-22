@@ -357,8 +357,6 @@ DELETE FROM l_animation_song
 
             create_SQL_log(code_file, "Animations.delete_song", "DELETE_2", request, params)
             cursor.execute(request, params)
-            rows = cursor.fetchall()
-            return [row[0] for row in rows]
         
 
     def update_animation_verse(self, animation_song_id, verse_id, selected, font, font_size, change_colors):
@@ -535,3 +533,334 @@ SELECT lasv.color_rgba, lasv.bg_rgba
                 self.colors = [{'color_rgba': row[0], 'bg_rgba': row[1]} for row in rows]
             except Exception as e:
                 self.colors = []
+
+
+    def list_BG_images(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT la.bg_rgba
+  FROM l_animations la
+ WHERE la.animation_id = %s
+   AND la.bg_rgba LIKE %s
+ UNION
+SELECT las.bg_rgba
+  FROM l_animations la
+  JOIN l_animation_song las ON las.animation_id = la.animation_id
+ WHERE la.animation_id = %s
+   AND las.bg_rgba LIKE %s
+ UNION
+SELECT lasv.bg_rgba
+  FROM l_animations la
+  JOIN l_animation_song las ON las.animation_id = la.animation_id
+  JOIN l_animation_song_verse lasv ON lasv.animation_song_id = las.animation_song_id
+ WHERE la.animation_id = %s
+   AND lasv.bg_rgba LIKE %s
+"""
+            params = [
+                self.animation_id,
+                'backgrounds/validated/%',
+                self.animation_id,
+                'backgrounds/validated/%',
+                self.animation_id,
+                'backgrounds/validated/%'
+                ]
+
+            create_SQL_log(code_file, "Animations.list_BG_images", "SELECT_19", request, params)
+            try:
+                cursor.execute(request, params)
+                rows = cursor.fetchall()
+                return [row[0] for row in rows]
+            except Exception as e:
+                print(e)
+                return []
+            
+
+###################################################
+###################################################
+############### BACKGROUNDS IMAGES ################
+###################################################
+###################################################
+class BackgroundImageSubmission:
+    def __init__(self, stored_path, image_id=0, original_name="", mime="", size_bytes="", width="", height="", description=""):
+        self.stored_path = stored_path
+        self.image_id = image_id
+        self.original_name = original_name
+        self.mime = mime
+        self.size_bytes = size_bytes
+        self.width = width
+        self.height = height
+        self.description = description
+        self.status = None
+        self.created_at = None
+
+    def save(self):
+        with connection.cursor() as cursor:
+            # Try to update first
+            request_update = """
+UPDATE l_image_submissions
+   SET original_name = %s,
+       mime = %s,
+       size_bytes = %s,
+       width = %s,
+       height = %s,
+       description = %s
+ WHERE stored_path = %s
+"""
+            params_update = [self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description, self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.save", "UPDATE_6", request_update, params_update)
+            cursor.execute(request_update, params_update)
+            if cursor.rowcount == 0:
+                # If no row was updated, do an insert
+                request_insert = """
+INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, width, height, description, created_at)
+     VALUES (%s, %s, %s, %s, %s, %s, %s, SYSDATE())
+"""
+                params_insert = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description]
+                create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_4", request_insert, params_insert)
+                try:
+                    cursor.execute(request_insert, params_insert)
+                    return True
+                except Exception as e:
+                    return False
+            return True
+            
+
+    def hydrate(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, original_name, mime, size_bytes, width, height, description, created_at
+  FROM l_image_submissions
+ WHERE stored_path = %s
+"""
+            params = [self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.hydrate", "SELECT_14", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            if row:
+                self.image_id = row[0]
+                self.original_name = row[1]
+                self.mime = row[2]
+                self.size_bytes = row[3]
+                self.width = row[4]
+                self.height = row[5]
+                self.description = row[6]
+                self.created_at = row[7]
+                
+
+    @staticmethod
+    def get_submissions():
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, stored_path, original_name, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at
+  FROM l_image_submissions
+ ORDER BY created_at
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.get_submissions", "SELECT_11", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [{
+                    'image_id': row[0],
+                    'stored_path': row[1],
+                    'original_name': row[2],
+                    'mime': row[3],
+                    'size_bytes': row[4],
+                    'width': row[5],
+                    'height': row[6],
+                    'aspect_ratio': round(row[5] / row[6], 2) if row[6] != 0 else None,
+                    'description': row[7],
+                    'created_at': row[8],
+                } for row in rows]
+        
+
+    @staticmethod
+    def pending_submissions_count():
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_submissions
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.pending_submissions_count", "SELECT_12", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] if row else 0
+        
+
+    @staticmethod
+    def image_exists(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_submissions
+ WHERE stored_path = %s
+"""
+            params = [stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.image_exists", "SELECT_13", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] > 0 if row else 0
+        
+
+    @staticmethod
+    def delete_by_stored_path(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_image_submissions
+      WHERE stored_path = %s
+"""
+            params = [stored_path]
+
+            create_SQL_log(code_file, "BackgroundImageSubmission.delete_by_stored_path", "DELETE_3", request, params)
+            cursor.execute(request, params)
+
+
+
+class BackgroundImage:
+    def __init__(self, stored_path, image_id=0, mime="", size_bytes="", width="", height="", description=""):
+        self.stored_path = stored_path
+        self.image_id = image_id
+        self.mime = mime
+        self.size_bytes = size_bytes
+        self.width = width
+        self.height = height
+        self.description = description
+        self.status = None
+        self.created_at = None
+
+    def save(self):
+        with connection.cursor() as cursor:
+            # Try to update first
+            request_update = """
+UPDATE l_image_backgrounds
+   SET mime = %s,
+       size_bytes = %s,
+       width = %s,
+       height = %s,
+       description = %s,
+       status = %s
+ WHERE stored_path = %s
+"""
+            params_update = [self.mime, self.size_bytes, self.width, self.height, self.description, self.status, self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImage.save", "UPDATE_7", request_update, params_update)
+            cursor.execute(request_update, params_update)
+            if cursor.rowcount == 0:
+                # If no row was updated, do an insert
+                request_insert = """
+INSERT INTO l_image_backgrounds (stored_path, mime, size_bytes, width, height, description, created_at)
+     VALUES (%s, %s, %s, %s, %s, %s, SYSDATE())
+"""
+                params_insert = [self.stored_path, self.mime, self.size_bytes, self.width, self.height, self.description]
+                create_SQL_log(code_file, "BackgroundImage.save", "INSERT_5", request_insert, params_insert)
+                try:
+                    cursor.execute(request_insert, params_insert)
+                    return True
+                except Exception as e:
+                    return False
+            return True
+            
+
+    def hydrate(self):
+        with connection.cursor() as cursor:
+            request = """
+SELECT image_id, mime, size_bytes, width, height, description, created_at, status
+  FROM l_image_backgrounds
+ WHERE stored_path = %s
+"""
+            params = [self.stored_path]
+
+            create_SQL_log(code_file, "BackgroundImage.hydrate", "SELECT_16", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            if row:
+                self.image_id = row[0]
+                self.mime = row[1]
+                self.size_bytes = row[2]
+                self.width = row[3]
+                self.height = row[4]
+                self.description = row[5]
+                self.created_at = row[6]
+                self.status = row[7]
+
+    @staticmethod
+    def get_backgrounds(status_filter=None):
+        if status_filter is not None:
+            status = f"""
+   AND status = '{status_filter}'"""
+        else:
+            status = ""
+
+        with connection.cursor() as cursor:
+            request = f"""
+SELECT image_id, stored_path, mime, ROUND(size_bytes / 1048576, 2) AS size_bytes, width, height, description, created_at, status
+  FROM l_image_backgrounds
+ WHERE 1 = 1{status}
+ ORDER BY status, created_at DESC
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImage.get_backgrounds", "SELECT_15", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [{
+                    'image_id': row[0],
+                    'stored_path': row[1],
+                    'mime': row[2],
+                    'size_bytes': row[3],
+                    'width': row[4],
+                    'height': row[5],
+                    'aspect_ratio': round(row[4] / row[5], 2) if row[5] != 0 else None,
+                    'description': row[6],
+                    'created_at': row[7],
+                    'status': row[8],
+                } for row in rows]
+        
+
+    @staticmethod
+    def pending_submissions_count():
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_backgrounds
+"""
+            params = []
+
+            create_SQL_log(code_file, "BackgroundImage.pending_submissions_count", "SELECT_17", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] if row else 0
+        
+
+    @staticmethod
+    def image_exists(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+SELECT COUNT(*)
+  FROM l_image_backgrounds
+ WHERE stored_path = %s
+"""
+            params = [stored_path]
+
+            create_SQL_log(code_file, "BackgroundImage.image_exists", "SELECT_18", request, params)
+            cursor.execute(request, params)
+            row = cursor.fetchone()
+            return row[0] > 0 if row else 0
+        
+
+    @staticmethod
+    def delete_by_stored_path(stored_path):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_image_backgrounds
+      WHERE stored_path = %s
+"""
+            params = [stored_path]
+            
+            create_SQL_log(code_file, "BackgroundImage.delete_by_stored_path", "DELETE_4", request, params)
+            cursor.execute(request, params)

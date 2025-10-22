@@ -82,6 +82,12 @@ module.exports = {
     'object-contain',
     'cursor-pointer',
     'text-justify',
+    'bg-green-300',
+    'text-green-700',
+    'bg-yellow-300',
+    'text-yellow-700',
+    'bg-red-300',
+    'text-red-700',
   ],
   theme: {
     extend: {},

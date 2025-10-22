@@ -92,19 +92,19 @@
   <nav id="quickControls" aria-label="Contrôles rapides (fixes)">
     <!-- 1. Icône QR (toggle tiroir) -->
     <a href="#" id="toggleQRDrawer" aria-label="Afficher/masquer le QR code" title="QR code">
-      <img src="/static/images/all_lyrics-QR_code.png" alt="QR code">
+      <img src="/static/images/all_lyrics-QR_code.webp" alt="QR code">
     </a>
     <!-- 2. Taille + -->
     <a href="#" id="increaseFontLeft" aria-label="Texte plus grand" title="Texte plus grand">
-      <img src="/static/images/all_lyrics-size_increase.png" alt="ₐa">
+      <img src="/static/images/all_lyrics-size_increase.webp" alt="ₐa">
     </a>
     <!-- 3. Taille - -->
     <a href="#" id="decreaseFontLeft" aria-label="Texte plus petit" title="Texte plus petit">
-      <img src="/static/images/all_lyrics-size_decrease.png" alt="aₐ">
+      <img src="/static/images/all_lyrics-size_decrease.webp" alt="aₐ">
     </a>
     <!-- 4. Thèmes (une seule image) -->
     <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
-      <img src="/static/images/all_lyrics-themes.png" alt="🌙/☀️">
+      <img src="/static/images/all_lyrics-themes.webp" alt="🌙/☀️">
     </a>
   </nav>
 
@@ -239,7 +239,7 @@
         input.setSelectionRange(0, 99999);
         document.execCommand('copy');
         this.textContent = 'OK!';
-        setTimeout(()=>{ this.textContent = 'Copier le lien'; }, 1500);
+        setTimeout(()=>{ this.textContent = 'Copy link / Copier le lien'; }, 1500);
       };
     }
 

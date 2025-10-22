@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Submit an image" %}{% endblock title %}
+{% block title_h1 %}{% trans "Submit an image" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+<strong>{% trans "submit_an_image_info1" %}</strong><br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info2" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info3" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info4" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info5" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info6" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info7" %}<br><br>
+{% trans "submit_an_image_info8" %}
+{% endblock bloc2 %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" style="max-width: 600px; margin: 0 auto;">
+    {% csrf_token %}
+    <div id="drop-area" style="border: 2px dashed #aaa; padding: 40px; text-align: center; margin-bottom: 20px; background: #f9f9f9;">
+        <p>{% trans "Drag &amp; drop your image here (.jpg or .png)" %}</p>
+        <input type="file" id="img_file" name="img_file" accept=".jpg,.jpeg,.png" style="display:none;">
+        <button type="button" onclick="document.getElementById('img_file').click();" style="margin-top:10px;">{% trans "Choose Image" %}</button>
+        <div id="preview" style="margin-top:15px; display: flex; justify-content: center; align-items: center;"></div>
+    </div>
+    <label for="txt_description" style="display:block; margin-bottom:8px;">{% trans "Image description (max 200 characters):" %}</label>
+    <input type="text" id="txt_description" name="txt_description" maxlength="200" style="width:100%; margin-bottom:20px;">
+    <input name="btn_save" type="submit" value="{% trans "Save" %}" style="padding:10px 30px;">
+</form>
+<script>
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('img_file');
+const preview = document.getElementById('preview');
+
+dropArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropArea.style.background = '#e0e0e0';
+});
+dropArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    dropArea.style.background = '#f9f9f9';
+});
+dropArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropArea.style.background = '#f9f9f9';
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        showPreview(fileInput.files[0]);
+    }
+});
+fileInput.addEventListener('change', function() {
+    if (fileInput.files.length) {
+        showPreview(fileInput.files[0]);
+    }
+});
+function showPreview(file) {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        preview.innerHTML = '<span style="color:red;">Invalid file type.</span>';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview" style="max-width:100%; max-height:200px;">';
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+{% endblock content %}

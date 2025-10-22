@@ -26,6 +26,10 @@
     font-family: 'Caveat', cursive;
 }
 
+.font-caveat-brush {
+  font-family: 'Caveat Brush', cursive;
+}
+
 .font-chewy {
     font-family: 'Chewy', cursive;
 }
@@ -70,12 +74,20 @@
     font-family: 'Righteous', cursive;
 }
 
+.font-raleway {
+  font-family: 'Raleway', sans-serif;
+}
+
 .font-roboto-slab {
     font-family: 'Roboto Slab', serif;
 }
 
 .font-sacramento {
     font-family: 'Sacramento', cursive;
+}
+
+.font-sarabun {
+  font-family: 'Sarabun', sans-serif;
 }
 
 .font-source-sans-pro {

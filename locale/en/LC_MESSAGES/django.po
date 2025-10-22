@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-06 22:13+0200\n"
+"POT-Creation-Date: 2025-10-22 13:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,40 +23,55 @@ msgstr ""
 msgid "animations_title"
 msgstr "Animations"
 
-#: app_animation/templates/app_animation/animations.html:11
-#: app_animation/templates/app_animation/animations.html:28
+#: app_animation/templates/app_animation/animations.html:10
+#: app_animation/templates/common/animation_actions.html:11
+msgid "Submit a background image"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:14
+#: app_animation/templates/app_animation/get_submissions.html:5
+#: app_animation/templates/app_animation/get_submissions.html:6
+msgid "Submission moderation"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:16
+msgid "Moderate images"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:20
+#: app_animation/templates/app_animation/animations.html:37
 msgid "Show past animations"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:26
+#: app_animation/templates/app_animation/animations.html:35
 msgid "Hide past animations"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:38
-#: app_animation/templates/app_animation/animations.html:73
+#: app_animation/templates/app_animation/animations.html:47
+#: app_animation/templates/app_animation/animations.html:82
 #: app_animation/templates/app_animation/modify_animation.html:50
 #: app_song/templates/app_song/song_metadata.html:165
 #: app_song/templates/app_song/song_metadata.html:192
 msgid "Name"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:39
-#: app_animation/templates/app_animation/animations.html:64
-#: app_animation/templates/app_animation/animations.html:74
+#: app_animation/templates/app_animation/animations.html:48
+#: app_animation/templates/app_animation/animations.html:73
+#: app_animation/templates/app_animation/animations.html:83
 #: app_animation/templates/app_animation/modify_animation.html:54
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/modify_group.html:56
 msgid "Description"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:40
-#: app_animation/templates/app_animation/animations.html:75
+#: app_animation/templates/app_animation/animations.html:49
+#: app_animation/templates/app_animation/animations.html:84
 #: app_animation/templates/app_animation/modify_animation.html:58
 msgid "Date"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:41
-#: app_animation/templates/app_animation/animations.html:76
+#: app_animation/templates/app_animation/animations.html:50
+#: app_animation/templates/app_animation/animations.html:85
 #: app_animation/templates/common/animation_actions.html:3
 #: app_song/templates/app_song/song_metadata.html:33
 #: app_song/templates/app_song/song_metadata.html:58
@@ -66,13 +81,13 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:54
+#: app_animation/templates/app_animation/animations.html:63
 msgid "Update"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:55
+#: app_animation/templates/app_animation/animations.html:64
 #: app_animation/templates/app_animation/delete_animation.html:21
-#: app_animation/templates/app_animation/modify_animation.html:316
+#: app_animation/templates/app_animation/modify_animation.html:355
 #: app_animation/templates/common/animation_actions.html:7
 #: app_main/templates/app_main/artists.html:25
 #: app_main/templates/app_main/bands.html:25
@@ -83,11 +98,11 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:63
+#: app_animation/templates/app_animation/animations.html:72
 msgid "new_animation"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:66
+#: app_animation/templates/app_animation/animations.html:75
 #: app_group/templates/app_group/add_group.html:21
 msgid "Add"
 msgstr ""
@@ -102,11 +117,119 @@ msgid "confirm_delete_animation_2dot"
 msgstr ""
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:348
+#: app_animation/templates/app_animation/modify_animation.html:387
 #: app_main/templates/app_main/homepage.html:99
 #: app_main/templates/app_main/homepage.html:178
 #: app_song/templates/app_song/moderator_song.html:43
 msgid "Cancel"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:10
+msgid "Pending Submissions:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:13
+#: app_animation/templates/app_animation/submit_image.html:11
+#: app_animation/templates/app_animation/submit_image_ok.html:11
+msgid "submit_an_image_info1"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:14
+#: app_animation/templates/app_animation/submit_image.html:12
+#: app_animation/templates/app_animation/submit_image_ok.html:12
+msgid "submit_an_image_info2"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:15
+#: app_animation/templates/app_animation/submit_image.html:13
+#: app_animation/templates/app_animation/submit_image_ok.html:13
+msgid "submit_an_image_info3"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:16
+#: app_animation/templates/app_animation/submit_image.html:14
+#: app_animation/templates/app_animation/submit_image_ok.html:14
+msgid "submit_an_image_info4"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:17
+#: app_animation/templates/app_animation/submit_image.html:15
+#: app_animation/templates/app_animation/submit_image_ok.html:15
+msgid "submit_an_image_info5"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:18
+#: app_animation/templates/app_animation/submit_image.html:16
+#: app_animation/templates/app_animation/submit_image_ok.html:16
+msgid "submit_an_image_info6"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:19
+#: app_animation/templates/app_animation/submit_image.html:17
+#: app_animation/templates/app_animation/submit_image_ok.html:17
+msgid "submit_an_image_info7"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:20
+#: app_animation/templates/app_animation/submit_image.html:18
+#: app_animation/templates/app_animation/submit_image_ok.html:18
+msgid "submit_an_image_info8"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:36
+msgid "Stored Path:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:37
+msgid "MIME Type:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:39
+msgid "Size (bytes):"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:40
+msgid "Dimensions:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:41
+msgid "Aspect Ratio:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:44
+msgid "Created At:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:46
+msgid "Description:"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:53
+msgid "Moderator description"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:55
+msgid "Add a description (max 200 characters)"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:60
+msgid "Copy user's description"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:63
+msgid "Validate"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:64
+msgid "Are you sure you want to invalidate this submission?"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:64
+msgid "Invalidate"
+msgstr ""
+
+#: app_animation/templates/app_animation/get_submissions.html:69
+msgid "No submissions found."
 msgstr ""
 
 #: app_animation/templates/app_animation/lyrics_slide_show.html:96
@@ -214,6 +337,27 @@ msgstr ""
 msgid "Preview next slide"
 msgstr ""
 
+#: app_animation/templates/app_animation/moderate_images.html:5
+#: app_animation/templates/app_animation/moderate_images.html:6
+msgid "Moderation images"
+msgstr ""
+
+#: app_animation/templates/app_animation/moderate_images.html:25
+msgid "Select an image"
+msgstr ""
+
+#: app_animation/templates/app_animation/moderate_images.html:79
+msgid "Unactivate Image"
+msgstr ""
+
+#: app_animation/templates/app_animation/moderate_images.html:81
+msgid "Activate Image"
+msgstr ""
+
+#: app_animation/templates/app_animation/moderate_images.html:82
+msgid "Delete Image"
+msgstr ""
+
 #: app_animation/templates/app_animation/modify_animation.html:12
 msgid "List of available fonts"
 msgstr ""
@@ -239,25 +383,32 @@ msgid "Animation's colors"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:97
-#: app_animation/templates/app_animation/modify_animation.html:197
-#: app_animation/templates/app_animation/modify_animation.html:297
+#: app_animation/templates/app_animation/modify_animation.html:206
+#: app_animation/templates/app_animation/modify_animation.html:321
 msgid "No change"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:105
-#: app_animation/templates/app_animation/modify_animation.html:205
-#: app_animation/templates/app_animation/modify_animation.html:305
+#: app_animation/templates/app_animation/modify_animation.html:109
+#: app_animation/templates/app_animation/modify_animation.html:119
+#: app_animation/templates/app_animation/modify_animation.html:218
+#: app_animation/templates/app_animation/modify_animation.html:228
+#: app_animation/templates/app_animation/modify_animation.html:333
+#: app_animation/templates/app_animation/modify_animation.html:343
 msgid "Sel"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:121
+#: app_animation/templates/app_animation/modify_animation.html:128
 msgid "Modifiy animation's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:122
-#: app_animation/templates/app_animation/modify_animation.html:346
-#: app_animation/templates/app_animation/modify_colors.html:38
-#: app_group/templates/app_group/modify_group.html:93
+#: app_animation/templates/app_animation/modify_animation.html:129
+msgid "Delete all colors and background images for song and verses"
+msgstr ""
+
+#: app_animation/templates/app_animation/modify_animation.html:131
+#: app_animation/templates/app_animation/modify_animation.html:385
+#: app_animation/templates/app_animation/modify_colors.html:62
+#: app_group/templates/app_group/modify_group.html:95
 #: app_main/templates/app_main/homepage.html:98
 #: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
@@ -266,179 +417,214 @@ msgstr ""
 msgid "save"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:123
-#: app_animation/templates/app_animation/modify_animation.html:347
+#: app_animation/templates/app_animation/modify_animation.html:132
+#: app_animation/templates/app_animation/modify_animation.html:386
 #, fuzzy
 #| msgid "animations_title"
 msgid "animation_save_exit"
 msgstr "Animations"
 
-#: app_animation/templates/app_animation/modify_animation.html:136
-#: app_animation/templates/app_animation/modify_animation.html:144
+#: app_animation/templates/app_animation/modify_animation.html:145
+#: app_animation/templates/app_animation/modify_animation.html:153
 #: app_song/templates/app_song/modify_song.html:128
 #: app_song/templates/app_song/modify_song.html:154
 #: app_song/templates/app_song/modify_song.html:169
 msgid "verse_num"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:155
-#: app_animation/templates/app_animation/modify_animation.html:254
+#: app_animation/templates/app_animation/modify_animation.html:164
+#: app_animation/templates/app_animation/modify_animation.html:278
 msgid "Font_size2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:157
-#: app_animation/templates/app_animation/modify_animation.html:256
+#: app_animation/templates/app_animation/modify_animation.html:166
+#: app_animation/templates/app_animation/modify_animation.html:280
 msgid "decrease size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:164
-#: app_animation/templates/app_animation/modify_animation.html:263
+#: app_animation/templates/app_animation/modify_animation.html:173
+#: app_animation/templates/app_animation/modify_animation.html:287
 msgid "same size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:169
-#: app_animation/templates/app_animation/modify_animation.html:268
+#: app_animation/templates/app_animation/modify_animation.html:178
+#: app_animation/templates/app_animation/modify_animation.html:292
 msgid "increase size"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:177
-#: app_animation/templates/app_animation/modify_animation.html:276
+#: app_animation/templates/app_animation/modify_animation.html:186
+#: app_animation/templates/app_animation/modify_animation.html:300
 msgid "Font_family2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:179
+#: app_animation/templates/app_animation/modify_animation.html:188
 msgid "Same like song..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:182
-#: app_animation/templates/app_animation/modify_animation.html:281
+#: app_animation/templates/app_animation/modify_animation.html:191
+#: app_animation/templates/app_animation/modify_animation.html:305
 msgid "Fonts family"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:195
+#: app_animation/templates/app_animation/modify_animation.html:204
 msgid "Verse's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:211
+#: app_animation/templates/app_animation/modify_animation.html:235
 msgid "Modifiy verse's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:217
+#: app_animation/templates/app_animation/modify_animation.html:241
 msgid "move2dots"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:219
+#: app_animation/templates/app_animation/modify_animation.html:243
 #: app_song/templates/app_song/modify_song.html:147
 msgid "before"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:223
-#: app_animation/templates/app_animation/modify_animation.html:233
+#: app_animation/templates/app_animation/modify_animation.html:247
+#: app_animation/templates/app_animation/modify_animation.html:257
 msgid "song_num"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:228
+#: app_animation/templates/app_animation/modify_animation.html:252
 #: app_song/templates/app_song/modify_song.html:161
 msgid "dont_do_nothing"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:229
+#: app_animation/templates/app_animation/modify_animation.html:253
 #: app_song/templates/app_song/modify_song.html:162
 msgid "after"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:243
-#: app_animation/templates/app_animation/modify_animation.html:251
+#: app_animation/templates/app_animation/modify_animation.html:267
+#: app_animation/templates/app_animation/modify_animation.html:275
 msgid "Display options"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:244
+#: app_animation/templates/app_animation/modify_animation.html:268
 msgid "Hide options"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:278
+#: app_animation/templates/app_animation/modify_animation.html:302
 msgid "Same like animation..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:295
+#: app_animation/templates/app_animation/modify_animation.html:319
 msgid "Song's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:312
+#: app_animation/templates/app_animation/modify_animation.html:351
 msgid "Modifiy song's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:315
+#: app_animation/templates/app_animation/modify_animation.html:354
 msgid "Are you sure you want to delete this song?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:322
+#: app_animation/templates/app_animation/modify_animation.html:361
 msgid "See the song"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:325
+#: app_animation/templates/app_animation/modify_animation.html:364
 msgid "Changes will be lost, do you really want to leave this page?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:326
+#: app_animation/templates/app_animation/modify_animation.html:365
 msgid "Go to the song"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:335
+#: app_animation/templates/app_animation/modify_animation.html:374
 #: app_song/templates/app_song/songs.html:63
 msgid "Song research"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:336
+#: app_animation/templates/app_animation/modify_animation.html:375
 msgid "Type the name of a song..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_animation.html:340
+#: app_animation/templates/app_animation/modify_animation.html:379
 msgid "Selected song will appear here..."
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:15
-msgid "text_test"
-msgstr ""
-
-#: app_animation/templates/app_animation/modify_colors.html:21
+#: app_animation/templates/app_animation/modify_colors.html:35
 msgid "Modify colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:22
+#: app_animation/templates/app_animation/modify_colors.html:38
+#: app_animation/templates/app_animation/modify_colors.html:42
+msgid "text_test"
+msgstr ""
+
+#: app_animation/templates/app_animation/modify_colors.html:46
 msgid "Song:"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:23
+#: app_animation/templates/app_animation/modify_colors.html:47
 msgid "Verse:"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:27
+#: app_animation/templates/app_animation/modify_colors.html:51
 msgid "Text color:"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:33
+#: app_animation/templates/app_animation/modify_colors.html:57
 msgid "Background color:"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:40
+#: app_animation/templates/app_animation/modify_colors.html:64
 msgid "Are you sure you want to delete this song’s colors?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:41
+#: app_animation/templates/app_animation/modify_colors.html:65
 msgid "Delete song's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:44
+#: app_animation/templates/app_animation/modify_colors.html:68
 msgid "Are you sure you want to delete this verse’s colors?"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:45
+#: app_animation/templates/app_animation/modify_colors.html:69
 msgid "Delete verse's colors"
 msgstr ""
 
-#: app_animation/templates/app_animation/modify_colors.html:47
+#: app_animation/templates/app_animation/modify_colors.html:71
 msgid "Return"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:5
+#: app_animation/templates/app_animation/submit_image.html:6
+#: app_animation/templates/app_animation/submit_image_ok.html:5
+#: app_animation/templates/app_animation/submit_image_ok.html:6
+msgid "Submit an image"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:25
+msgid "Drag &amp; drop your image here (.jpg or .png)"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:27
+msgid "Choose Image"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:30
+msgid "Image description (max 200 characters):"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image.html:32
+#: app_main/templates/app_main/artists.html:20
+#: app_main/templates/app_main/artists.html:29
+#: app_main/templates/app_main/bands.html:20
+#: app_main/templates/app_main/bands.html:29
+#: app_main/templates/app_main/profile.html:76
+#: app_main/templates/app_main/profile.html:111
+#: app_song/templates/app_song/song_metadata.html:201
+msgid "Save"
+msgstr ""
+
+#: app_animation/templates/app_animation/submit_image_ok.html:22
+msgid "Background image is correctly submitted."
 msgstr ""
 
 #: app_animation/templates/common/animation_actions.html:5
@@ -480,7 +666,7 @@ msgid "Username2dot"
 msgstr ""
 
 #: app_group/templates/app_group/add_group.html:20
-#: app_main/templates/app_main/profile.html:77
+#: app_main/templates/app_main/profile.html:79
 msgid "Username"
 msgstr ""
 
@@ -498,7 +684,7 @@ msgid "new_group"
 msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:139
+#: app_song/templates/app_song/songs.html:140
 msgid "add"
 msgstr ""
 
@@ -644,7 +830,13 @@ msgstr ""
 msgid "Confirm group deletion"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:94
+#: app_group/templates/app_group/modify_group.html:80
+msgid ""
+"Deleting a group means deleting the animations associated with that group. "
+"It is not possible to recover or transfer them."
+msgstr ""
+
+#: app_group/templates/app_group/modify_group.html:96
 msgid "cancel"
 msgstr ""
 
@@ -663,21 +855,11 @@ msgstr ""
 msgid "New artist"
 msgstr ""
 
-#: app_main/templates/app_main/artists.html:20
-#: app_main/templates/app_main/artists.html:29
-#: app_main/templates/app_main/bands.html:20
-#: app_main/templates/app_main/bands.html:29
-#: app_main/templates/app_main/profile.html:74
-#: app_main/templates/app_main/profile.html:109
-#: app_song/templates/app_song/song_metadata.html:201
-msgid "Save"
-msgstr ""
-
 #: app_main/templates/app_main/artists.html:23
 #: app_main/templates/app_main/bands.html:23
-#: app_main/templates/app_main/profile.html:80
 #: app_main/templates/app_main/profile.html:82
 #: app_main/templates/app_main/profile.html:84
+#: app_main/templates/app_main/profile.html:86
 msgid "mandatory"
 msgstr ""
 
@@ -761,7 +943,7 @@ msgid "powered by"
 msgstr ""
 
 #: app_main/templates/app_main/homepage.html:34
-#: app_main/templates/app_main/profile.html:105
+#: app_main/templates/app_main/profile.html:107
 #: app_song/templates/app_song/song_metadata.html:159
 msgid "Moderator"
 msgstr ""
@@ -1044,58 +1226,63 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/app_main/profile.html:16
+#: templates/includes/header.html:17
+msgid "nav_account_logout"
+msgstr "Logout"
+
+#: app_main/templates/app_main/profile.html:18
 msgid "Password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:18
+#: app_main/templates/app_main/profile.html:20
 msgid "new password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:20
+#: app_main/templates/app_main/profile.html:22
 msgid "confirm password"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:22
+#: app_main/templates/app_main/profile.html:24
 msgid "Passwords do not match"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:50
+#: app_main/templates/app_main/profile.html:52
 msgid "Password must be at least 8 characters."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:53
+#: app_main/templates/app_main/profile.html:55
 msgid "Password must contain a letter."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:56
+#: app_main/templates/app_main/profile.html:58
 msgid "Password must contain a number."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:76
+#: app_main/templates/app_main/profile.html:78
 msgid "User"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:78
+#: app_main/templates/app_main/profile.html:80
 msgid "Used for login, cannot be changed"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:79
+#: app_main/templates/app_main/profile.html:81
 msgid "First name"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:81
+#: app_main/templates/app_main/profile.html:83
 msgid "Last name"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:83
+#: app_main/templates/app_main/profile.html:85
 msgid "Email"
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:86
+#: app_main/templates/app_main/profile.html:88
 msgid "An email will be sent to confirm your new email address."
 msgstr ""
 
-#: app_main/templates/app_main/profile.html:106
+#: app_main/templates/app_main/profile.html:108
 msgid "Contact the administrator to change your role."
 msgstr ""
 
@@ -1185,8 +1372,7 @@ msgstr ""
 msgid "Song approved"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
-#: copy.html:47
+#: app_song/templates/app_song/modify_song.html:62
 msgid "title"
 msgstr ""
 
@@ -1194,8 +1380,7 @@ msgstr ""
 msgid "subtitle"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
-#: copy.html:48
+#: app_song/templates/app_song/modify_song.html:70
 msgid "description"
 msgstr ""
 
@@ -1259,7 +1444,7 @@ msgid "Are you sure you want to delete this verse?"
 msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:181
-#: app_song/templates/app_song/modify_song.html:198 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:198
 msgid "delete"
 msgstr ""
 
@@ -1359,7 +1544,7 @@ msgid "New genre"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
+#: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
 msgstr "Songs list"
 
@@ -1468,16 +1653,16 @@ msgstr ""
 msgid "help_save_search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:137
+#: app_song/templates/app_song/songs.html:138
 msgid "New song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:138
+#: app_song/templates/app_song/songs.html:139
 msgid "New sub title"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:227
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/app_song/songs.html:229
+#: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr ""
 
@@ -1485,7 +1670,7 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10
 msgid "contact_moderators_info"
 msgstr ""
 
@@ -1503,18 +1688,6 @@ msgstr ""
 
 #: app_song/templates/common/song_actions.html:18
 msgid "Print song lyric - one chorus"
-msgstr ""
-
-#: chris/songs copy.html:19 copy.html:49
-msgid "actions"
-msgstr ""
-
-#: chris/songs copy.html:32
-msgid "update"
-msgstr ""
-
-#: chris/songs copy.html:35
-msgid "Go to"
 msgstr ""
 
 #: templates/account/login.html:6 templates/account/login.html:7
@@ -1816,12 +1989,28 @@ msgstr ""
 msgid "ERR60"
 msgstr ""
 
-#: templates/includes/header.html:18 templates/includes/header.html:20
-#: templates/includes/header.html:30
-msgid "language_flag"
-msgstr "🇬🇧&nbsp;EN"
+#: templates/includes/header.html:20
+msgid "nav_login"
+msgstr "Login"
 
-#: templates/includes/header.html:31
+#: templates/includes/header.html:22
+msgid "nav_signup"
+msgstr "Sign up"
+
+#: templates/includes/header.html:32
+msgid "moderator"
+msgstr ""
+
+#: templates/includes/header.html:33
+msgid "administrator"
+msgstr ""
+
+#: templates/includes/header.html:39 templates/includes/header.html:41
+#: templates/includes/header.html:51
+msgid "language_flag"
+msgstr "🇬🇧"
+
+#: templates/includes/header.html:52
 msgid "close"
 msgstr ""
 
@@ -1829,29 +2018,45 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: templates/includes/nav.html:8 templates/includes/nav.html:13
+#: templates/includes/nav.html:8 templates/includes/nav.html:12
 msgid "nav_groups_list"
 msgstr "Groups list"
 
-#: templates/includes/nav.html:9 templates/includes/nav.html:14
+#: templates/includes/nav.html:9 templates/includes/nav.html:13
 msgid "nav_songs_list"
 msgstr "Songs list"
 
-#: templates/includes/nav.html:10 templates/includes/nav.html:15
+#: templates/includes/nav.html:10 templates/includes/nav.html:14
 msgid "nav_animations_list"
 msgstr "Animations list"
 
-#: templates/includes/nav.html:11
-msgid "nav_account_logout"
-msgstr "Logout"
+#: templates/socialaccount/login.html:6
+msgid "Social Sign In"
+msgstr ""
 
-#: templates/includes/nav.html:16
-msgid "nav_login"
-msgstr "Login"
+#: templates/socialaccount/login.html:7
+msgid "Sign In with Google"
+msgstr ""
 
-#: templates/includes/nav.html:18
-msgid "nav_signup"
-msgstr "Sign up"
+#: templates/socialaccount/login.html:9
+msgid "Back to login"
+msgstr ""
+
+#: templates/socialaccount/login.html:11
+msgid "Use your Google account to sign in."
+msgstr ""
+
+#: templates/socialaccount/login.html:16
+msgid "You are about to connect a new third-party account."
+msgstr ""
+
+#: templates/socialaccount/login.html:18
+msgid "You are about to sign in using your Google account."
+msgstr ""
+
+#: templates/socialaccount/login.html:29
+msgid "Continue with Google"
+msgstr ""
 
 #: templates/socialaccount/snippets/login.html:11
 msgid "Or use a third-party"

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Submit an image" %}{% endblock title %}
+{% block title_h1 %}{% trans "Submit an image" %}{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+{% endblock bloc1 %}
+{% block bloc2 %}
+<strong>{% trans "submit_an_image_info1" %}</strong><br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info2" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info3" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info4" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info5" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info6" %}<br><br>
+<span style="font-size:1.2em;">🔸</span> {% trans "submit_an_image_info7" %}<br><br>
+{% trans "submit_an_image_info8" %}
+{% endblock bloc2 %}
+
+{% block content %}
+{% trans "Background image is correctly submitted." %}
+{% endblock content %}

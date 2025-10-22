@@ -326,7 +326,7 @@ def goto_song(request, song_id):
         song.verse_max_lines = song_params['verse_max_lines']
         song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
         song.get_verses()
-        song_lyrics = song.get_lyrics()
+        song_lyrics = song.get_lyrics_to_display(display_the_chorus_once=True, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
         song.get_bands_and_artists()
     else:
         request.session['error'] = '[ERR16]'

@@ -70,14 +70,11 @@ function showSlide(index, updateCurrentSlide = true) {
         displayWindow.document.getElementById('slideContent').style.fontSize = fontSize + 'px';
         displayWindow.document.getElementById('slideContent').style.fontFamily = font;
         displayWindow.document.getElementById('slideContent').style.color = color_rgba;
-        if (bg_rgba == "image_scout" || bg_rgba == "image_scout_inversee") {
+        
+        if (bg_rgba.startsWith('backgrounds/validated')) {
             displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
             const sc = displayWindow.document.getElementById('slideContent');
-            if (bg_rgba == "image_scout") {
-                sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_50.png')";
-            } else {
-                sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_vives_inversees.png')";
-            }
+            sc.style.backgroundImage = "url('/media/" + bg_rgba + "')";
             // sc.style.backgroundSize = 'cover';
             sc.style.backgroundSize = '100% 100%';
             sc.style.backgroundPosition = 'center center';
@@ -216,14 +213,11 @@ function blackMode() {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
-            if (last_bg_rgba == "image_scout" || last_bg_rgba == "image_scout_inversee") {
+
+            if (last_bg_rgba.startsWith('backgrounds/validated')) {
                 displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
                 const sc = displayWindow.document.getElementById('slideContent');
-                if (last_bg_rgba == "image_scout") {
-                    sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_50.png')";
-                } else {
-                    sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_vives_inversees.png')";
-                }
+                sc.style.backgroundImage = "url('/media/" + last_bg_rgba + "')";
                 // sc.style.backgroundSize = 'cover';
                 sc.style.backgroundSize = '100% 100%';
                 sc.style.backgroundPosition = 'center center';
@@ -612,14 +606,11 @@ function qr_code() {
         if (displayWindow) {
             displayWindow.document.getElementById('slideContent').innerHTML = last_text;
             displayWindow.document.getElementById('slideContent').style.color = last_color_rgba;
-            if (last_bg_rgba == "image_scout" || last_bg_rgba == "image_scout_inversee") {
+
+            if (last_bg_rgba.startsWith('backgrounds/validated')) {
                 displayWindow.document.getElementById('slideContent').style.backgroundColor = 'black';
                 const sc = displayWindow.document.getElementById('slideContent');
-                if (last_bg_rgba == "image_scout_inversee") {
-                    sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_pastels_inversee_50.png')";
-                } else {
-                    sc.style.backgroundImage = "url('/static/images/image_scout/SLIDE-couleurs_vives_inversees.png')";
-                }
+                sc.style.backgroundImage = "url('/media/" + last_bg_rgba + "')";
                 // sc.style.backgroundSize = 'cover';
                 sc.style.backgroundSize = '100% 100%';
                 sc.style.backgroundPosition = 'center center';

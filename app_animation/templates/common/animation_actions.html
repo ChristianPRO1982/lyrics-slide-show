@@ -6,4 +6,6 @@
 {% if not "modify_animation" in request.path %}<a href="{% url "modify_animation" animation.animation_id %}">{% trans "Modify" %}</a><br>{% endif %}
 {% if not "delete_animation" in request.path %}<a href="{% url "delete_animation" animation.animation_id %}">{% trans "Delete" %}</a><br>{% endif %}
 <br>
-<a href="{% url "all_songs_all_lyrics" animation.animation_id %}">📱 {% trans "All lyrics" %}</a><br>
+📱 <a href="{% url "all_songs_all_lyrics" animation.animation_id %}">{% trans "All lyrics" %}</a><br>
+<br>
+🌄 <a href="{% url "submit_image" %}">{% trans "Submit a background image" %}</a>{% comment %} 🌄 🌅 🌇 🌆 🌃 🌌 🌉 🌊 🌳 🌲 ⛰️ 🏞️ {% endcomment %}

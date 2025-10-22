@@ -6,6 +6,15 @@
 {% block title_h1 %}{% trans "animations_title" %}{% endblock title_h1 %}
 {% block bloc1 %}
 {% include "common/group_selected.html" %}
+<hr>
+🌄 <a href="{% url "submit_image" %}">{% trans "Submit a background image" %}</a>
+{% if ismoderator %}
+<br>
+{% if pending_submissions_count > 0 %}
+✅ <a href="{% url "get_submissions" %}">{% trans "Submission moderation" %}</a><br>
+{% endif %}
+🟢/🔴 <a href="{% url "moderate_images" %}">{% trans "Moderate images" %}</a><br>
+{% endif %}
 {% endblock bloc1 %}
 {% block bloc2 %}
 <button id="togglePassedBtn" onclick="togglePassedAnimations()">{% trans "Show past animations" %}</button>
