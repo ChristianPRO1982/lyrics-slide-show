@@ -167,6 +167,9 @@ def modify_animation(request, animation_id):
                 if 'chk_delete_colors' in request.POST:
                     for song in animation.songs:
                         animation.update_animation_song_colors(song['animation_song_id'], None, None)
+                        for verse in animation.verses:
+                            if verse['animation_song_id'] == song['animation_song_id']:
+                                animation.update_animation_verse_colors(verse['animation_song_id'], verse['verse_id'], None, None)
 
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
                 return redirect('lyrics_slide_show', animation_id=animation_id)
