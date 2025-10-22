@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 13:05+0200\n"
+"POT-Creation-Date: 2025-10-22 13:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: app_animation/templates/app_animation/all_lyrics.html:242
-msgid "Copy link"
-msgstr "Copier le lien"
 
 #: app_animation/templates/app_animation/animations.html:5
 #: app_animation/templates/app_animation/animations.html:6
@@ -426,7 +422,7 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_animation.html:131
 #: app_animation/templates/app_animation/modify_animation.html:385
 #: app_animation/templates/app_animation/modify_colors.html:62
-#: app_group/templates/app_group/modify_group.html:94
+#: app_group/templates/app_group/modify_group.html:95
 #: app_main/templates/app_main/homepage.html:98
 #: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
@@ -856,7 +852,13 @@ msgstr "Suppression du groupe"
 msgid "Confirm group deletion"
 msgstr "Confirmer la suppression du groupe "
 
-#: app_group/templates/app_group/modify_group.html:95
+#: app_group/templates/app_group/modify_group.html:80
+msgid ""
+"Deleting a group means deleting the animations associated with that group. "
+"It is not possible to recover or transfer them."
+msgstr "La suppression d'un groupe implique la suppression des animations liées à ce groupe. Il n'est pas possible de les récupérer ni de les transférer."
+
+#: app_group/templates/app_group/modify_group.html:96
 msgid "cancel"
 msgstr "annuler"
 
@@ -3405,6 +3407,9 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Copy link"
+#~ msgstr "Copier le lien"
 
 #~ msgid "Modify background image"
 #~ msgstr "Modifier l'image de fond"

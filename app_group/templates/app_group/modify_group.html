@@ -76,7 +76,10 @@
         <input onclick="if(this.checked) {return confirm('{% trans "Confirm group deletion" %}?');}"
         class="w-4 h-4" id="box_group_delete_confirm" type="checkbox" name="box_group_delete_confirm" />
         <label class="text-red-500 dark:text-red-500" for="box_group_delete_confirm">{% trans "Confirm group deletion" %}</label>
-        coucou ici le message des dangers
+        <br>
+        <span class="L_ERROR" style="color:white;">
+            {% trans "Deleting a group means deleting the animations associated with that group. It is not possible to recover or transfer them." %}
+        </span>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
