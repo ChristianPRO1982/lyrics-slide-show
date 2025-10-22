@@ -164,6 +164,10 @@ def modify_animation(request, animation_id):
                 animation.new_song_verses_all()
                 animation = Animation.get_animation_by_id(animation_id, group_id)
 
+                if 'chk_delete_colors' in request.POST:
+                    for song in animation.songs:
+                        animation.update_animation_song_colors(song['animation_song_id'], None, None)
+
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
                 return redirect('lyrics_slide_show', animation_id=animation_id)
         

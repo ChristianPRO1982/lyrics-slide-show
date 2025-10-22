@@ -125,7 +125,9 @@
     {% endfor %}<br><br>
     </div>
     
-    🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br><br>
+    🎨 <a href="{% url "modify_colors_animation" animation.animation_id %}">{% trans "Modifiy animation's colors" %}</a><br>
+    <label><input type="checkbox" name="chk_delete_colors" style="width: 1em;"> {% trans "Delete all colors and background images for song and verses" %}</label>
+    <br><br>
     <input name="btn_save" value="{% trans "save" %}" type="submit" />
     <input name="btn_save_exit" value="{% trans "animation_save_exit" %}" type="submit" />
     <br><br><hr><br>
@@ -205,7 +207,7 @@
                                 {% for color in animation.colors %}
                                     {% if color.color_rgba != None %}
                                         {% if color.bg_rgba|slice:":21" == "backgrounds/validated" %}
-                                            <label for="animation_{{ forloop.counter }}"
+                                            <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
                                             style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
                                             border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
                                             background-image: url('/media/{{ color.bg_rgba }}');
@@ -214,8 +216,8 @@
                                             background-repeat: no-repeat;
                                             color: {{ color.color_rgba }};" class="slide border">
                                                 <small><small>{% trans "Sel" %}</small></small>
-                                                <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
-                                                id="animation_{{ forloop.counter }}" style="width: 25%;">
+                                                <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
+                                                id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
                                             </label>
                                         {% else %}
                                             <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
@@ -320,7 +322,7 @@
                             {% for color in animation.colors %}
                                 {% if color.color_rgba != None %}
                                     {% if color.bg_rgba|slice:":21" == "backgrounds/validated" %}
-                                        <label for="animation_{{ forloop.counter }}"
+                                        <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
                                         style="display: inline-block; width: 2vw; height: 2vw; text-align: center; line-height: 2vw; font-weight: bold;
                                         border-top-left-radius: 33%; border-bottom-right-radius: 33%; border-top-right-radius: 10%; border-bottom-left-radius: 10%;
                                         background-image: url('/media/{{ color.bg_rgba }}');
@@ -329,8 +331,8 @@
                                         background-repeat: no-repeat;
                                         color: {{ color.color_rgba }};" class="slide border">
                                             <small><small>{% trans "Sel" %}</small></small>
-                                            <input type="radio" name="rad_animation_colors" value="{{ color.color_rgba }}|{{ color.bg_rgba }}"
-                                            id="animation_{{ forloop.counter }}" style="width: 25%;">
+                                            <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
+                                            id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
                                         </label>
                                     {% else %}
                                         <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
