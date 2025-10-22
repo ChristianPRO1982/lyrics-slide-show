@@ -75,6 +75,7 @@ services:
              gunicorn lyrics_slide_show.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - ./staticfiles:/app/staticfiles
+      - media_data:/app/media
     env_file:
       - .env
     depends_on:
@@ -87,6 +88,8 @@ services:
       - "traefik.http.routers.django.rule=Host(`www.carthographie.fr`) && PathPrefix(`/`)"
       - "traefik.http.routers.django.entrypoints=websecure"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.django.priority=1"
+      - "traefik.http.routers.django.service=django"
       - "traefik.http.services.django.loadbalancer.server.port=8000"
       - "traefik.http.routers.django.middlewares=add-slash"
       - "traefik.http.middlewares.add-slash.redirectregex.regex=^([^\\.]*)[^/]$"
@@ -101,16 +104,29 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./staticfiles:/static:ro
       - ./letsencrypt:/etc/letsencrypt:ro
+      - media_data:/media:ro
     depends_on:
       - web
     networks:
       - netcartho
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.static.rule=Host(`www.carthographie.fr`) && PathPrefix(`/static`)"
-      - "traefik.http.routers.static.entrypoints=websecure"
-      - "traefik.http.routers.static.tls.certresolver=letsencrypt"
-      - "traefik.http.services.static.loadbalancer.server.port=80"
+
+      # STATIC -> Nginx (port 80), priorité haute
+      - traefik.http.routers.static.rule=(Host(`www.carthographie.fr`) || Host(`carthographie.fr`)) && PathPrefix(`/static`)
+      - traefik.http.routers.static.entrypoints=websecure
+      - traefik.http.routers.static.tls.certresolver=letsencrypt
+      - traefik.http.routers.static.priority=200
+      - traefik.http.routers.static.service=static
+      - traefik.http.services.static.loadbalancer.server.port=80
+      
+      # MEDIA -> Nginx (port 80), priorité haute
+      - traefik.http.routers.media.rule=(Host(`www.carthographie.fr`) || Host(`carthographie.fr`)) && PathPrefix(`/media`)
+      - traefik.http.routers.media.entrypoints=websecure
+      - traefik.http.routers.media.tls.certresolver=letsencrypt
+      - traefik.http.routers.media.priority=200
+      - traefik.http.routers.media.service=media
+      - traefik.http.services.media.loadbalancer.server.port=80
 
   api:
     container_name: api
@@ -162,3 +178,4 @@ networks:
 volumes:
   letsencrypt:
   mysql_data: {}
+  media_data: {}
