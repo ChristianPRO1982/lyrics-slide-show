@@ -136,6 +136,31 @@ docker compose down && docker compose up -d --remove-orphans
 ```bash
 docker compose pull && docker compose up -d && docker image prune -f
 ```
+1) (Re)générer les fichiers statics
+```bash
+docker compose exec web python manage.py collectstatic --noinput
+```
+2) Recréer web + nginx pour prendre les volumes/labels
+```bash
+docker compose up -d --force-recreate web nginx
+```
+3) Vérifs côté Nginx : les dossiers existent et contiennent des fichiers
+```bash
+docker compose exec nginx sh -c 'ls -l /static | head -n 20'
+docker compose exec nginx sh -c 'ls -l /media  | head -n 20'
+docker compose exec nginx sh -lc 'wget -S -O - http://127.0.0.1/static/css/normal.css | head -n 15'
+docker compose exec nginx sh -lc 'wget -S -O - http://127.0.0.1/media/$(ls /media | head -n1) >/dev/null || true'
+curl -I https://www.carthographie.fr/static/css/normal.css
+```
+# 4) (optionnel une fois) réaligner les droits si besoin
+```bash
+docker compose exec web sh -c 'chown -R $(id -u):$(id -g) /app/media'
+```
+# 5) Sanity checks
+```bash
+#   - /static/* doit répondre 200 via Nginx
+#   - /media/* doit répondre 200 via Nginx
+```
 
 ## Tailwind
 
