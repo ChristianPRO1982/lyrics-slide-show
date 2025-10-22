@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.27.0...v2.0.0) (2025-10-22)
+
+
+### Features
+
+* taking into account forgotten slashes in the URL ([cb9a151](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cb9a151de099f5c2af663121aa084e46069d7071))
+
+
+### BREAKING CHANGES
+
+* backgrounds images are available
+
 # [1.27.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.3...v1.27.0) (2025-10-22)
 
 
