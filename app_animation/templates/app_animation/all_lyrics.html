@@ -239,7 +239,7 @@
         input.setSelectionRange(0, 99999);
         document.execCommand('copy');
         this.textContent = 'OK!';
-        setTimeout(()=>{ this.textContent = 'Copier le lien'; }, 1500);
+        setTimeout(()=>{ this.textContent = '{% trans "Copy link" %}'; }, 1500);
       };
     }
 
