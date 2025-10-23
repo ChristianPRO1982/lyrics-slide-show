@@ -12,17 +12,13 @@ from .SQL_main import User, Site, Songs, Band, Artist, DB
 import hashlib
 import secrets
 
+
+# 404 error handler
 from typing import Any
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
-import logging
-
-logger = logging.getLogger(__name__)
-
 def error_404(request: HttpRequest, exception: Exception, *args: Any, **kwargs: Any) -> HttpResponse:
     """Return the custom 404 page when DEBUG=False."""
-    logger.info("404 raised for path=%s", request.path)
-    return render(request, "root/404.html", status=404)
+    return render(request, "root/404.html", context={'error': ''}, status=404)
 
 
 def homepage(request):
