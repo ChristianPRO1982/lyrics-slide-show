@@ -89,8 +89,14 @@
             {% endfor %}
         </select>
     </div>
-    <div style="background: {{ animation.bg_rgba }}; color: {{ animation.color_rgba }};"
-    class="text-center {% for font in list_fonts %}{% if animation.font == font.name %}{{ font.class }}{% endif %}{% endfor %}">
+    <div
+        {% if animation.bg_rgba|slice:":21" == "backgrounds/validated" %}
+            style="background-image: url('/media/{{ animation.bg_rgba }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; color: {{ animation.color_rgba }};"
+        {% else %}
+            style="background: {{ animation.bg_rgba }}; color: {{ animation.color_rgba }};"
+        {% endif %}
+        class="text-center {% for font in list_fonts %}{% if animation.font == font.name %}{{ font.class }}{% endif %}{% endfor %}"
+    >
         <br>{% trans "Animation's colors" %}
     
     <input type="radio" name="rad_animation_colors" value="no_change" id="no_change_animation" style="width: 5%;" checked="checked">
@@ -196,7 +202,11 @@
                                         {% endfor %}
                                     </optgroup>
                                 </select><br>
+                                {% if verse.bg_rgba|slice:":21" == "backgrounds/validated" %}
+                                <span style="background-image: url('/media/{{ verse.bg_rgba }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; color: {{ verse.color_rgba }};"
+                                {% else %}
                                 <span style="background: {{ verse.bg_rgba }}; color: {{ verse.color_rgba }};"
+                                {% endif %}
                                 class="{% for font in list_fonts %}
                                 {% if verse.final_font == font.name %}
                                     {{ font.class }}
@@ -217,7 +227,7 @@
                                             color: {{ color.color_rgba }};" class="slide border">
                                                 <small><small>{% trans "Sel" %}</small></small>
                                                 <input type="radio" name="rad_verse_colors_{{ verse.animation_song_id }}_{{ verse.verse_id }}"
-                                                id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                                value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}" style="width: 25%;">
                                             </label>
                                         {% else %}
                                             <label for="verse_{{ verse.animation_song_id }}_{{ verse.verse_id }}_{{ forloop.counter }}"
@@ -310,12 +320,14 @@
                                 {% endfor %}
                             </optgroup>
                         </select>
-                        <div style="background: {{ song.bg_rgba }}; color: {{ song.color_rgba }};"
-                        class="text-center {% for font in list_fonts %}
-                        {% if song.final_font == font.name %}
-                            {{ font.class }}
-                        {% endif %}
-                        {% endfor %}">
+                        <div
+                            {% if song.bg_rgba|slice:":21" == "backgrounds/validated" %}
+                                style="background-image: url('/media/{{ song.bg_rgba }}'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; color: {{ song.color_rgba }};"
+                            {% else %}
+                                style="background: {{ song.bg_rgba }}; color: {{ song.color_rgba }};"
+                            {% endif %}
+                            class="text-center {% for font in list_fonts %}{% if song.font == font.name %}{{ font.class }}{% endif %}{% endfor %}"
+                        >
                             <br>{% trans "Song's colors" %}<br>
                             <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}" value="no_change" id="no_change_song_{{ song.animation_song_id }}" style="width: 5%;" checked="checked">
                             <label for="no_change_song_{{ song.animation_song_id }}"><small>{% trans "No change" %}</small></label><br>
@@ -332,7 +344,7 @@
                                         color: {{ color.color_rgba }};" class="slide border">
                                             <small><small>{% trans "Sel" %}</small></small>
                                             <input type="radio" name="rad_song_colors_{{ song.animation_song_id }}"
-                                            id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
+                                            value="{{ color.color_rgba }}|{{ color.bg_rgba }}" id="song_{{ song.animation_song_id }}_{{ forloop.counter }}" style="width: 25%;">
                                         </label>
                                     {% else %}
                                         <label for="song_{{ song.animation_song_id }}_{{ forloop.counter }}"
