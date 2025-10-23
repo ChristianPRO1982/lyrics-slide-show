@@ -12,11 +12,17 @@ from .SQL_main import User, Site, Songs, Band, Artist, DB
 import hashlib
 import secrets
 
+from typing import Any
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
+import logging
 
-def error_404(request, exception):
-    no_loader = is_no_loader(request)
+logger = logging.getLogger(__name__)
 
-    return render(request, 'root/404.html', status=404)
+def error_404(request: HttpRequest, exception: Exception, *args: Any, **kwargs: Any) -> HttpResponse:
+    """Return the custom 404 page when DEBUG=False."""
+    logger.info("404 raised for path=%s", request.path)
+    return render(request, "root/404.html", status=404)
 
 
 def homepage(request):
