@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-23 09:16+0200\n"
+"POT-Creation-Date: 2025-10-23 11:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1304,8 +1304,8 @@ msgstr ""
 
 #: app_main/templates/root/404.html:14
 msgid ""
-"More informations <a href='https://fr.wikipedia.org/wiki/"
-"Erreur_HTTP_404'>here</a>."
+"More informations on <a href='https://fr.wikipedia.org/wiki/"
+"Erreur_HTTP_404'>Wikipedia</a>."
 msgstr ""
 
 #: app_main/templates/root/404.html:20
