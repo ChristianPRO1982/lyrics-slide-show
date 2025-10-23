@@ -1,14 +1,23 @@
-<!doctype html>
-<html lang="fr">
-<meta charset="utf-8">
-<title>Page introuvable – 404</title>
-<style>
-  body { font-family: system-ui, sans-serif; margin: 6vh auto; max-width: 680px; line-height: 1.5; padding: 0 16px; }
-  h1 { margin: 0 0 8px; }
-  p { margin: 0 0 12px; }
-  a { text-decoration: none; }
-</style>
-<h1>Page introuvable (404)</h1>
-<p>Désolé, la ressource demandée n’existe pas ou a été déplacée.</p>
-<p><a href="/">⟵ Revenir à l’accueil</a></p>
-</html>
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Page not found" %}{% endblock title %}
+{% block title_h1 %}{% trans "Error 404" %}{% endblock title_h1 %}
+
+{% block bloc1 %}
+<a href="/">{% trans "Return to homepage" %}</a>
+{% endblock bloc1 %}
+
+{% block bloc2 %}
+<p>{% trans "Sorry, the requested page does not exist or has been moved." %}</p>
+<p>{% trans "More informations <a href='https://fr.wikipedia.org/wiki/Erreur_HTTP_404'>here</a>." %}</p>
+{% endblock bloc2 %}
+
+{% block content %}
+<div class="text-center mt-8">
+  <img src="{% static 'images/404.png' %}" alt="404" style="max-width: 300px;">
+  <p class="mt-4 text-gray-600">{% trans "You can return to the homepage or use the menu above." %}</p>
+  <a href="/" class="btn btn-primary mt-4">{% trans "Return to homepage" %}</a>
+</div>
+{% endblock content %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 13:22+0200\n"
+"POT-Creation-Date: 2025-10-23 09:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -408,7 +408,7 @@ msgstr ""
 #: app_animation/templates/app_animation/modify_animation.html:131
 #: app_animation/templates/app_animation/modify_animation.html:385
 #: app_animation/templates/app_animation/modify_colors.html:62
-#: app_group/templates/app_group/modify_group.html:95
+#: app_group/templates/app_group/modify_group.html:97
 #: app_main/templates/app_main/homepage.html:98
 #: app_main/templates/app_main/homepage.html:177
 #: app_song/templates/app_song/moderator_song.html:39
@@ -830,13 +830,13 @@ msgstr ""
 msgid "Confirm group deletion"
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:80
+#: app_group/templates/app_group/modify_group.html:81
 msgid ""
 "Deleting a group means deleting the animations associated with that group. "
 "It is not possible to recover or transfer them."
 msgstr ""
 
-#: app_group/templates/app_group/modify_group.html:96
+#: app_group/templates/app_group/modify_group.html:98
 msgid "cancel"
 msgstr ""
 
@@ -1284,6 +1284,32 @@ msgstr ""
 
 #: app_main/templates/app_main/profile.html:108
 msgid "Contact the administrator to change your role."
+msgstr ""
+
+#: app_main/templates/root/404.html:5
+msgid "Page not found"
+msgstr ""
+
+#: app_main/templates/root/404.html:6
+msgid "Error 404"
+msgstr ""
+
+#: app_main/templates/root/404.html:9 app_main/templates/root/404.html:21
+msgid "Return to homepage"
+msgstr ""
+
+#: app_main/templates/root/404.html:13
+msgid "Sorry, the requested page does not exist or has been moved."
+msgstr ""
+
+#: app_main/templates/root/404.html:14
+msgid ""
+"More informations <a href='https://fr.wikipedia.org/wiki/"
+"Erreur_HTTP_404'>here</a>."
+msgstr ""
+
+#: app_main/templates/root/404.html:20
+msgid "You can return to the homepage or use the menu above."
 msgstr ""
 
 #: app_song/templates/app_song/delete_song.html:5
