@@ -23,6 +23,7 @@ class User:
         self.search_bands = None
         self.search_artists = None
         self.search_song_approved = None
+        self.search_favorites = None
         self.first_name = None
         self.last_name = None
         self.email = None
@@ -38,7 +39,7 @@ class User:
         request = """
     SELECT cu.theme, cu.search_txt, cu.search_everywhere, cu.search_logic,
            cu.search_genres, cu.search_bands, cu.search_artists,
-           cu.search_song_approved,
+           cu.search_song_approved, cu.search_favorites,
            au.first_name, au.last_name, au.email, au.is_superuser, au.is_staff
       FROM c_users cu
 RIGHT JOIN auth_user au ON au.username = cu.username
@@ -60,11 +61,12 @@ RIGHT JOIN auth_user au ON au.username = cu.username
             self.search_bands = row[5]
             self.search_artists = row[6]
             self.search_song_approved = row[7]
-            self.first_name = row[8]
-            self.last_name = row[9]
-            self.email = row[10]
-            self.is_superuser = row[11]
-            self.is_staff = row[12]
+            self.search_favorites = row[8]
+            self.first_name = row[9]
+            self.last_name = row[10]
+            self.email = row[11]
+            self.is_superuser = row[12]
+            self.is_staff = row[13]
 
 
     def init_c_user(self):
@@ -89,7 +91,8 @@ UPDATE c_users
        search_genres = %s,
        search_bands = %s,
        search_artists = %s,
-       search_song_approved = %s
+       search_song_approved = %s,
+       search_favorites = %s
  WHERE username = %s
 """
         params = [
@@ -101,6 +104,7 @@ UPDATE c_users
             self.search_bands,
             self.search_artists,
             self.search_song_approved,
+            self.search_favorites,
             self.username
             ]
 

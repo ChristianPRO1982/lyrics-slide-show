@@ -89,6 +89,10 @@ def songs(request):
             if request.POST.get('chk_search_song_not_approved', 'off') == 'on':
                 search_song_approved = 2
 
+            search_favorites = 0
+            if request.POST.get('chk_search_favorites', 'off') == 'on':
+                search_favorites = 1
+
             add_search_params(
                 request,
                 request.POST.get('txt_search', '').strip(),
@@ -97,7 +101,8 @@ def songs(request):
                 search_genres,
                 search_bands,
                 search_artists,
-                search_song_approved
+                search_song_approved,
+                search_favorites
             )
 
         if 'btn_reset_search' in request.POST:
@@ -111,7 +116,9 @@ def songs(request):
                                search_params['search_genres'],
                                search_params['search_bands'],
                                search_params['search_artists'],
-                               search_params['search_song_approved'])
+                               search_params['search_song_approved'],
+                               search_params['search_favorites']
+                               )
     
     # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
     search_genres_list = []
@@ -138,6 +145,7 @@ def songs(request):
         'search_bands': search_bands_list,
         'search_artists': search_artists_list,
         'search_song_approved': search_params['search_song_approved'],
+        'search_favorites': search_params['search_favorites'],
         'total_search_songs': len(songs),
         'total_songs': Song.get_total_songs(),
         'moderator': moderator,
@@ -351,15 +359,13 @@ def goto_song(request, song_id):
 
 @login_required
 def song_add_favorite(request, song_id):
-    Song.add_favorite(song_id, request.user.is_authenticated, request.user.username)
+    Song.add_favorite(song_id, request.user.username)
     return redirect('goto_song', song_id=song_id)
 
 
 @login_required
 def song_remove_favorite(request, song_id):
-    song = Song.get_song_by_id(song_id, request.user.is_authenticated, request.user.username)
-    if song:
-        song.remove_favorite(request.user.username)
+    Song.remove_favorite(song_id, request.user.username)
     return redirect('goto_song', song_id=song_id)
 
 
@@ -637,7 +643,9 @@ def filter_genre(request, genre_str):
             search_genres,
             get_search_params(request)['search_bands'],
             get_search_params(request)['search_artists'],
-            get_search_params(request)['search_song_approved'])
+            get_search_params(request)['search_song_approved'],
+            get_search_params(request)['search_favorites']
+        )
     return redirect('songs')
 
 
@@ -658,7 +666,9 @@ def filter_band(request, band_str):
             get_search_params(request)['search_genres'],
             search_bands,
             get_search_params(request)['search_artists'],
-            get_search_params(request)['search_song_approved'])
+            get_search_params(request)['search_song_approved'],
+            get_search_params(request)['search_favorites']
+        )
     return redirect('songs')
 
 
@@ -679,5 +689,7 @@ def filter_artist(request, artist_str):
             get_search_params(request)['search_genres'],
             get_search_params(request)['search_bands'],
             search_artists,
-            get_search_params(request)['search_song_approved'])
+            get_search_params(request)['search_song_approved'],
+            get_search_params(request)['search_favorites']
+        )
     return redirect('songs')
