@@ -55,7 +55,7 @@ ARTIST_EMOJIS = [
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, licensed=None, full_title=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, licensed=None, full_title=None, favorite=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
@@ -68,6 +68,7 @@ class Song:
         self.links = []
         self.bands = []
         self.artists = []
+        self.favorite = favorite
 
         self.get_links()
         self.get_genres()
@@ -292,26 +293,28 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
     
 
     @classmethod
-    def get_song_by_id(cls, song_id, is_authenticated: bool):
+    def get_song_by_id(cls, song_id, is_authenticated: bool, username: str = ""):
         with connection.cursor() as cursor:
             request = """
-SELECT *, CONCAT(title,
-                 CASE
-                     WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN status = 1 THEN ' ✔️'
-                     WHEN status = 2 THEN ' ✔️⁉️'
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN licensed IS TRUE THEN ' 📄'
-                     ELSE ''
-                 END) AS full_title
-  FROM l_songs
- WHERE song_id = %s
-   AND (licensed IS FALSE OR %s IS TRUE)
+   SELECT ls.*, CONCAT(ls.title,
+                       CASE
+                           WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                           ELSE ''
+                       END,
+                       CASE
+                           WHEN ls.status = 1 THEN ' ✔️'
+                           WHEN ls.status = 2 THEN ' ✔️⁉️'
+                           ELSE ''
+                       END,
+                       CASE
+                           WHEN ls.licensed IS TRUE THEN ' 📄'
+                           ELSE ''
+                       END) AS full_title,
+          lsf.song_id favorite
+     FROM l_songs ls
+LEFT JOIN l_song_favorite lsf ON lsf.song_id = ls.song_id
+    WHERE ls.song_id = %s
+      AND (ls.licensed IS FALSE OR %s IS TRUE)
 """
             params = [song_id, is_authenticated]
 
@@ -326,7 +329,9 @@ SELECT *, CONCAT(title,
                 description=row[3],
                 status=row[4],
                 licensed=row[5],
-                full_title=row[6])
+                full_title=row[6],
+                favorite=row[7]
+            )
         return None
     
 
@@ -867,6 +872,41 @@ INSERT INTO l_song_artists (song_id, artist_id)
                 return ''
             except Exception as e:
                 return '[ERR49]'
+
+
+    @staticmethod
+    def add_favorite(song_id: int, username: str):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_favorite (song_id, username)
+     VALUES (%s, %s)
+"""
+            params = [song_id, username]
+
+            create_SQL_log(code_file, "Song.add_favorite", "INSERT_10", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR]'
+
+
+    @staticmethod
+    def remove_favorite(song_id: int, username: str):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_favorite
+      WHERE song_id = %s
+        AND username = %s
+"""
+            params = [song_id, username]
+
+            create_SQL_log(code_file, "Song.remove_favorite", "DELETE_10", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR]'
 
 
 ######################################################

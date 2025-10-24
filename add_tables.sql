@@ -281,3 +281,10 @@ CREATE TABLE `l_image_backgrounds` (
   PRIMARY KEY (`image_id`),
   KEY `l_image_backgrounds_created_at_IDX` (`created_at`,`status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_favorite` (
+  `song_id` mediumint NOT NULL,
+  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`song_id`,`username`),
+  KEY `l_song_favorite_username_IDX` (`username`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

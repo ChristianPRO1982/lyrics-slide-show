@@ -319,8 +319,8 @@ def goto_song(request, song_id):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
-
-    song = Song.get_song_by_id(song_id, request.user.is_authenticated)
+    
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated, request.user.username)
     if song:
         song_params = get_song_params(request)
         song.verse_max_lines = song_params['verse_max_lines']
@@ -328,6 +328,7 @@ def goto_song(request, song_id):
         song.get_verses()
         song_lyrics = song.get_lyrics_to_display(display_the_chorus_once=True, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
         song.get_bands_and_artists()
+        print(">>>>> song.favorite:", song.favorite)
     else:
         request.session['error'] = '[ERR16]'
         return redirect('songs')
@@ -346,6 +347,21 @@ def goto_song(request, song_id):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+@login_required
+def song_add_favorite(request, song_id):
+    Song.add_favorite(song_id, request.user.is_authenticated, request.user.username)
+    return redirect('goto_song', song_id=song_id)
+
+
+@login_required
+def song_remove_favorite(request, song_id):
+    song = Song.get_song_by_id(song_id, request.user.is_authenticated, request.user.username)
+    if song:
+        song.remove_favorite(request.user.username)
+    return redirect('goto_song', song_id=song_id)
+
 
 def moderator_song(request, song_id):
     error = ''
