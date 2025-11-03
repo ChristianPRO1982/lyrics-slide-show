@@ -106,7 +106,7 @@ def songs(request):
             )
 
         if 'btn_reset_search' in request.POST:
-            add_search_params(request, '', 0, 0, '', '', '', 0)
+            add_search_params(request, '', 0, 0, '', '', '', 0, False)
             
     search_params = get_search_params(request)
     songs = Song.get_all_songs(request.user.is_authenticated,
