@@ -809,13 +809,14 @@ def animation_playlist(request, animation_id):
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
             return redirect('animations')
-
-    playlist = animation.get_playlist()
+        
+    all_songs = Song.get_all_songs(request.user.is_authenticated)
+    print(">>>>>", all_songs)
 
     return render(request, 'app_animation/animation_playlist.html', {
         'animation': animation,
+        'all_songs': all_songs,
         'group_selected': group_selected,
-        'playlist': playlist,
         'error': error,
         'l_site_messages': site_messages(request),
         'css': css,
