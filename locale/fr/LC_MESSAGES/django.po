@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-24 08:56+0200\n"
+"POT-Creation-Date: 2025-11-04 08:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,7 @@ msgid "animations_title"
 msgstr "Liste des animations"
 
 #: app_animation/templates/app_animation/animations.html:10
-#: app_animation/templates/common/animation_actions.html:11
+#: app_animation/templates/common/animation_actions.html:12
 msgid "Submit a background image"
 msgstr "Proposer une image de fond"
 
@@ -88,7 +88,7 @@ msgstr "Modifier"
 #: app_animation/templates/app_animation/animations.html:64
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:367
-#: app_animation/templates/common/animation_actions.html:7
+#: app_animation/templates/common/animation_actions.html:8
 #: app_main/templates/app_main/artists.html:25
 #: app_main/templates/app_main/bands.html:25
 #: app_song/templates/app_song/song_metadata.html:43
@@ -652,7 +652,11 @@ msgstr "Diaporama"
 msgid "Modify"
 msgstr "Modifier"
 
-#: app_animation/templates/common/animation_actions.html:9
+#: app_animation/templates/common/animation_actions.html:7
+msgid "Playlist"
+msgstr ""
+
+#: app_animation/templates/common/animation_actions.html:10
 msgid "All lyrics"
 msgstr "Toutes les paroles des chants"
 
@@ -706,7 +710,7 @@ msgid "new_group"
 msgstr "Nouveau groupe"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:140
+#: app_song/templates/app_song/songs.html:144
 msgid "add"
 msgstr "ajouter"
 
@@ -1449,7 +1453,7 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:51
 #: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/songs.html:80
+#: app_song/templates/app_song/songs.html:84
 msgid "Song approved"
 msgstr "Chant validé"
 
@@ -1672,63 +1676,69 @@ msgid "🖨️1️⃣: Print song lyric - with only one chorus"
 msgstr "🖨️1️⃣ : Impression du chant - avec un seul refrain"
 
 #: app_song/templates/app_song/songs.html:67
-#: app_song/templates/app_song/songs.html:132
+#: app_song/templates/app_song/songs.html:136
 msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
 #: app_song/templates/app_song/songs.html:71
+#, fuzzy
+#| msgid "Favorite song"
+msgid "Favorites"
+msgstr "Chant favori"
+
+#: app_song/templates/app_song/songs.html:75
 msgid "Search in description and lyrics"
 msgstr "Recherche dans les descriptions et le texte des chants"
 
-#: app_song/templates/app_song/songs.html:73
+#: app_song/templates/app_song/songs.html:77
 msgid "Advanced search"
 msgstr "Recherche avancée"
 
-#: app_song/templates/app_song/songs.html:87
+#: app_song/templates/app_song/songs.html:91
 msgid "Song not approved"
 msgstr "Chant non validé"
 
-#: app_song/templates/app_song/songs.html:90
+#: app_song/templates/app_song/songs.html:94
 msgid "Logic by:"
 msgstr "Logique par&nbsp;:"
 
-#: app_song/templates/app_song/songs.html:93
+#: app_song/templates/app_song/songs.html:97
 msgid "OR"
 msgstr "OU"
 
-#: app_song/templates/app_song/songs.html:97
+#: app_song/templates/app_song/songs.html:101
 msgid "AND"
 msgstr "ET"
 
-#: app_song/templates/app_song/songs.html:100
+#: app_song/templates/app_song/songs.html:104
 msgid "find genre or band or artist"
 msgstr "Trouver le genre ou le groupe ou l'artiste"
 
-#: app_song/templates/app_song/songs.html:123
+#: app_song/templates/app_song/songs.html:127
 msgid "genre"
 msgstr "Genre"
 
-#: app_song/templates/app_song/songs.html:123
+#: app_song/templates/app_song/songs.html:127
 msgid "band"
 msgstr "Groupe"
 
-#: app_song/templates/app_song/songs.html:123
+#: app_song/templates/app_song/songs.html:127
 msgid "artist"
 msgstr "Artiste"
 
-#: app_song/templates/app_song/songs.html:126
+#: app_song/templates/app_song/songs.html:130
 msgid "save and search"
 msgstr "sauvegarder et rechercher"
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:131
 msgid "reset"
 msgstr "réinitialiser"
 
-#: app_song/templates/app_song/songs.html:128
+#: app_song/templates/app_song/songs.html:132
 msgid "help on ‘advanced search’"
 msgstr "Aide sur la ‘Recherche avancée’"
 
-#: app_song/templates/app_song/songs.html:129
+#: app_song/templates/app_song/songs.html:133
 msgid "help_save_search"
 msgstr ""
 "Vous pouvez sauvegarder votre recherche. Cliquer sur “réinitialiser” pour "
@@ -1736,15 +1746,15 @@ msgstr ""
 "la description des chants ainsi que dans le texte des chants. Plus "
 "d'information sur le wiki (voir ‘❓’ en bas de page)."
 
-#: app_song/templates/app_song/songs.html:138
+#: app_song/templates/app_song/songs.html:142
 msgid "New song"
 msgstr "Nouveau chant"
 
-#: app_song/templates/app_song/songs.html:139
+#: app_song/templates/app_song/songs.html:143
 msgid "New sub title"
 msgstr "Nouveau sous-titre"
 
-#: app_song/templates/app_song/songs.html:229
+#: app_song/templates/app_song/songs.html:238
 #: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr "Contacter les modérateurs"

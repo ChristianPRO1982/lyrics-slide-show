@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}Animation : {{ animation.name }}{% endblock title %}
+{% block title_h1 %}{{ animation.name }}{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+<hr>
+{% include "common/animation_actions.html" %}
+<hr>
+{% endblock bloc1 %}
+{% block bloc2 %}{% endblock bloc2 %}
+
+{% block content %}
+<p>{% trans "confirm_delete_animation_2dot" %}<i>{{ animation.name }}</i></p>
+<form method="post" action="{% url "delete_animation" animation.animation_id %}">
+    {% csrf_token %}
+    <hr>
+    <div class="text-center">
+        <input style="width: 45%;" name="btn_delete" value="{% trans "Delete" %}" type="submit" />
+        <input style="width: 45%;" name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
+    </div>
+</form>  
+{% endblock content %}

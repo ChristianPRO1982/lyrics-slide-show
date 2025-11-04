@@ -789,3 +789,35 @@ def moderate_images(request):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+@login_required
+def animation_playlist(request, animation_id):
+    error = ''
+    css = request.session.get('css', 'normal.css')
+    no_loader = is_no_loader(request)
+
+    animation = None
+    group_selected = ''
+    group_id = request.session.get('group_id', '')
+    url_token = request.session.get('url_token', '')
+    if group_id != '':
+        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+        group_selected = group.name
+    
+    if group_selected:
+        animation = Animation.get_animation_by_id(animation_id, group_id)
+        if not animation:
+            return redirect('animations')
+
+    playlist = animation.get_playlist()
+
+    return render(request, 'app_animation/animation_playlist.html', {
+        'animation': animation,
+        'group_selected': group_selected,
+        'playlist': playlist,
+        'error': error,
+        'l_site_messages': site_messages(request),
+        'css': css,
+        'no_loader': no_loader,
+    })
