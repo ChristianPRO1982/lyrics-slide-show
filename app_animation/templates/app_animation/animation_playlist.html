@@ -11,14 +11,23 @@
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
+<nav id="add-songs">
 {% for song in all_songs %}
-  <li>{{ song.full_title }}</li>
+  <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">{{ song.full_title }}</li>
 {% endfor %}
+</nav>
 {% endblock bloc2 %}
 
 {% block content %}
 <form method="post" action="{% url 'animation_playlist' animation.animation_id %}">
   {% csrf_token %}
+
+  <div class="toolbar">
+    <input name="btn_save" value="{% trans "Save" %}" type="submit"/>
+    <input name="btn_save_exit" value="{% trans "Save & back" %}" type="submit"/>
+  </div>
+  
+  <br><hr><br>
 
   <style>
     /* léger style sans framework */
