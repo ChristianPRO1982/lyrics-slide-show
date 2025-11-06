@@ -1,3 +1,4 @@
+from __future__ import annotations
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import translation
@@ -24,6 +25,12 @@ from django.views.decorators.http import require_http_methods
 from app_main.params import get_image_params
 from . import utils
 import shutil
+
+# playlist
+from dataclasses import dataclass
+from typing import List, Tuple
+import re
+# from django.http import HttpRequest, HttpResponse
 
 
 def animations(request):
@@ -791,33 +798,103 @@ def moderate_images(request):
     })
 
 
+# playlist
+@dataclass
+class PlaylistChanges:
+    existing_order: List[int]
+    deletions: List[int]
+    new_song_ids: List[int]
+    reorder_ops: List[Tuple[int, int]]   # (animation_song_id, new_position)
+    add_ops: List[Tuple[int, int]]       # (song_id, new_position)
+
+def _parse_int_list_csv(value: str) -> List[int]:
+    return [int(x) for x in value.split(",") if x.strip().isdigit()]
+
+def _parse_pipe_list(value: str) -> List[int]:
+    return [int(x) for x in value.split("|") if x.strip().isdigit()]
+
+def _extract_deletions(post_dict) -> List[int]:
+    ids: List[int] = []
+    rx = re.compile(r"^box_delete_song_(\d+)$")
+    for key, val in post_dict.items():
+        m = rx.match(key)
+        if m and str(val).lower() in {"on", "true", "1"}:
+            ids.append(int(m.group(1)))
+    return ids
+
+def _compute_changes(existing_order: List[int],
+                     deletions: List[int],
+                     new_song_ids: List[int]) -> PlaylistChanges:
+    kept_existing = [asid for asid in existing_order if asid not in deletions]
+    reorder_ops = [(asid, idx + 1) for idx, asid in enumerate(kept_existing)]
+    start_pos = len(kept_existing)
+    add_ops = [(sid, start_pos + i + 1) for i, sid in enumerate(new_song_ids)]
+    return PlaylistChanges(
+        existing_order=existing_order,
+        deletions=sorted(set(deletions)),
+        new_song_ids=new_song_ids,
+        reorder_ops=reorder_ops,
+        add_ops=add_ops,
+    )
+
 @login_required
-def animation_playlist(request, animation_id):
-    error = ''
-    css = request.session.get('css', 'normal.css')
+def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
+    error = ""
+    css = request.session.get("css", "normal.css")
     no_loader = is_no_loader(request)
 
     animation = None
-    group_selected = ''
-    group_id = request.session.get('group_id', '')
-    url_token = request.session.get('url_token', '')
-    if group_id != '':
-        group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
+    group_selected = ""
+    group_id = request.session.get("group_id", "")
+    url_token = request.session.get("url_token", "")
+    if group_id != "":
+        group = Group.get_group_by_id(
+            group_id, url_token, request.user.username, is_moderator(request)
+        )
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
-            return redirect('animations')
-        
+            return redirect("animations")
+
     all_songs = Song.get_all_songs(request.user.is_authenticated)
 
-    return render(request, 'app_animation/animation_playlist.html', {
-        'animation': animation,
-        'all_songs': all_songs,
-        'group_selected': group_selected,
-        'error': error,
-        'l_site_messages': site_messages(request),
-        'css': css,
-        'no_loader': no_loader,
-    })
+    if request.method == "POST":
+        ordered_ids_raw = request.POST.get("ordered_ids", "")
+        print(">>>>> ordered_ids_raw:", ordered_ids_raw)
+        new_songs_raw = request.POST.get("txt_new_songs", "")
+        print(">>>>> new_songs_raw:", new_songs_raw)
+        deletions = _extract_deletions(request.POST)
+
+        existing_order = _parse_int_list_csv(ordered_ids_raw)
+        new_song_ids = _parse_pipe_list(new_songs_raw)
+
+        changes = _compute_changes(existing_order, deletions, new_song_ids)
+
+        # TODO SQL: apply changes.reorder_ops, changes.add_ops, changes.deletions
+        # For now, expose for debugging/inspection
+        request.session["playlist_changes"] = {
+            "reorder_ops": changes.reorder_ops,
+            "add_ops": changes.add_ops,
+            "deletions": changes.deletions,
+        }
+        print(">>>>>",changes)
+
+        if "btn_save_exit" in request.POST:
+            return redirect('modify_animation', animation_id=animation_id)
+        return redirect("animation_playlist", animation_id=animation_id)
+
+    return render(
+        request,
+        "app_animation/animation_playlist.html",
+        {
+            "animation": animation,
+            "all_songs": all_songs,
+            "group_selected": group_selected,
+            "error": error,
+            "l_site_messages": site_messages(request),
+            "css": css,
+            "no_loader": no_loader,
+        },
+    )
