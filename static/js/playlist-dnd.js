@@ -68,6 +68,12 @@
     return li;
   }
 
+  function extractTitle(li) {
+    const titleEl = li.querySelector(".dnd-title");
+    if (titleEl) return titleEl.textContent.trim();
+    return li.textContent.trim();
+  }
+
   function updateNewSongsInput(listEl, inputEl) {
     if (!inputEl) return;
     const ids = $all(".dnd-item", listEl)
@@ -220,7 +226,7 @@
       const li = e.target.closest(".dnd-item");
       if (!li) return;
       const sid = li.getAttribute("data-asid");
-      const title = li.textContent.trim();
+      const title = extractTitle(li);
       stageNew(sid, title);
     });
 
@@ -228,7 +234,7 @@
       const li = e.target.closest(".dnd-item");
       if (!li) return;
       const songId = li.getAttribute("data-asid");
-      const title = li.textContent.trim();
+      const title = extractTitle(li);
       sourceDragData = { songId, title };
       e.dataTransfer.setData("text/plain", JSON.stringify({
         type: "song",
