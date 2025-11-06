@@ -134,6 +134,7 @@
     // Drag & drop (all items participate)
     let draggingEl = null;
     let indicator = null;
+    let sourceDragData = null;
 
     function ensureIndicator() {
       if (!indicator) {
@@ -186,7 +187,7 @@
 
     targetList.addEventListener("dragover", (e) => {
       e.preventDefault();
-      if (!draggingEl) return;
+      if (!draggingEl && !sourceDragData) return;
       const y = e.clientY;
       const after = getAfter(targetList, y);
       const ind = ensureIndicator();
@@ -196,19 +197,22 @@
 
     targetList.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (!draggingEl) {
-        // Source → Target drop (copy)
-        try {
-          const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
-          if (data && data.type === "song" && data.id) stageNew(String(data.id), data.title);
-        } catch (_err) { /* noop */ }
-        return;
-      }
       const y = e.clientY;
       const after = getAfter(targetList, y);
-      if (after == null) targetList.appendChild(draggingEl);
-      else targetList.insertBefore(draggingEl, after);
-      updateNewSongsInput(targetList, inputNewSongs);
+      if (!draggingEl && sourceDragData) {
+        stageNew(sourceDragData.songId, sourceDragData.title, after);
+        sourceDragData = null;
+      } else if (draggingEl) {
+        if (after == null) targetList.appendChild(draggingEl);
+        else targetList.insertBefore(draggingEl, after);
+        updateNewSongsInput(targetList, inputNewSongs);
+      } else if (!draggingEl) {
+        try {
+          const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
+          if (data && data.type === "song" && data.id) stageNew(String(data.id), data.title, after);
+        } catch (_err) { /* noop */ }
+      }
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
     });
 
     // Add: double-click source or drag from source
@@ -223,17 +227,29 @@
     sourceList.addEventListener("dragstart", (e) => {
       const li = e.target.closest(".dnd-item");
       if (!li) return;
+      const songId = li.getAttribute("data-asid");
+      const title = li.textContent.trim();
+      sourceDragData = { songId, title };
       e.dataTransfer.setData("text/plain", JSON.stringify({
         type: "song",
-        id: li.getAttribute("data-asid"),
-        title: li.textContent.trim()
+        id: songId,
+        title
       }));
       e.dataTransfer.effectAllowed = "copy";
     });
 
-    targetList.addEventListener("dragover", (e) => { e.preventDefault(); }); // allow drop from source
+    sourceList.addEventListener("dragend", () => {
+      sourceDragData = null;
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+    });
 
-    function stageNew(songId, title) {
+    targetList.addEventListener("dragleave", (e) => {
+      if (!targetList.contains(e.relatedTarget)) {
+        if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      }
+    });
+
+    function stageNew(songId, title, beforeNode = null) {
       const ids = splitPipe(inputNewSongs.value);
       const sid = String(songId);
       if (!ids.includes(sid)) ids.push(sid);
@@ -241,11 +257,14 @@
 
       const li = createNewDraggableItem(songId, title);
       li.tabIndex = 0;
-      targetList.appendChild(li);
+      if (beforeNode) targetList.insertBefore(li, beforeNode);
+      else targetList.appendChild(li);
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      return li;
     }
 
     // Keyboard fallback
