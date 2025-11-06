@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load i18n %}
+{% load static i18n %}
 
 {% block title %}Animation : {{ animation.name }}{% endblock title %}
 {% block title_h1 %}{% trans "Playlist" %} - {{ animation.name }}{% endblock title_h1 %}
@@ -11,10 +11,12 @@
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
-<nav id="add-songs">
-{% for song in all_songs %}
-  <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">{{ song.full_title }}</li>
-{% endfor %}
+<nav id="add-songs" class="max-h-screen overflow-y-auto">
+  <ul>
+  {% for song in all_songs %}
+    <li class="L_GENRE_BADGE dnd-item" data-asid="{{ song.song_id }}" draggable="true">{{ song.full_title }}</li>
+  {% endfor %}
+  </ul>
 </nav>
 {% endblock bloc2 %}
 
@@ -29,47 +31,16 @@
   
   <br><hr><br>
 
-  <style>
-    /* léger style sans framework */
-    .dnd-list { list-style: none; margin: 0; padding: 0; }
-    .dnd-item {
-      display: flex; align-items: center; gap: .75rem;
-      border: 1px solid var(--L_BORDER, #ddd); border-radius: .5rem;
-      padding: .5rem .75rem; margin-bottom: .5rem; background: #fff;
-      box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    }
-    .dnd-item.dragging { opacity: .6; }
-    .dnd-handle {
-      cursor: grab; user-select: none; font-weight: 700;
-      padding: .25rem .5rem; border: 1px dashed #bbb; border-radius: .375rem;
-    }
-    .dnd-title { flex: 1 1 auto; }
-    .dnd-delete { white-space: nowrap; }
-    .strike { text-decoration: line-through; color: #a00; }
-    .drop-indicator { height: .25rem; background: #4a90e2; border-radius: 2px; margin: -.25rem 0 .25rem; }
-    .toolbar { display:flex; align-items:center; gap:.5rem; flex-wrap: wrap; }
-    .muted { color:#666; font-size:.9rem; }
-  </style>
-
   <input type="hidden" name="ordered_ids" id="ordered_ids" value="">
+  <input type="hidden" name="txt_new_songs" id="txt_new_songs" value="">
+
   <ul id="dndList" class="dnd-list" aria-label="{% trans 'Reorder songs' %}">
     {% for song in animation.songs %}
-    <li class="dnd-item" data-asid="{{ song.animation_song_id }}" draggable="true">
+    <li class="L_DIV_BORDER dnd-item" data-asid="{{ song.animation_song_id }}" draggable="true">
       <span class="dnd-handle" aria-hidden="true">⠿</span>
       <span class="dnd-index" style="width:2ch; text-align:right;">{{ forloop.counter }}</span>
-      <div class="dnd-title" id="songtitle-{{ song.animation_song_id }}">
-        {{ song.full_title }}
-      </div>
-      <div class="dnd-delete">
-        <input type="checkbox"
-               name="box_delete_song_{{ song.animation_song_id }}"
-               id="box_delete_song_{{ song.animation_song_id }}"
-               onchange="
-                 const t=document.getElementById('songtitle-{{ song.animation_song_id }}');
-                 this.checked ? t.classList.add('strike') : t.classList.remove('strike');
-               ">
-        <label for="box_delete_song_{{ song.animation_song_id }}">{% trans "Delete" %}</label>
-      </div>
+      <div class="dnd-title">{{ song.full_title }}</div>
+      <button type="button" class="dnd-x" aria-label="{% trans 'Delete' %}">×</button>
     </li>
     {% empty %}
       <p><em>{% trans "No song yet in this animation." %}</em></p>
@@ -83,148 +54,16 @@
     <input name="btn_save_exit" value="{% trans "Save & back" %}" type="submit"/>
   </div>
 
+  <script src="{% static 'js/playlist-dnd.js' %}"></script>
   <script>
-    // --- Add songs (reprise, compact) ---
-    const songs = [
-      {% for s in all_songs %}
-        { id: {{ s.song_id }}, name: "{% if s.song_id in songs_already_in %}# {% endif %}{{ s.full_title|escapejs }}" },
-      {% endfor %}
-    ];
-    const searchInput = document.getElementById('search');
-    const songList = document.getElementById('song-list');
-    const txtAddSongsId = document.getElementById('txt_add_songs_id');
-    const txtAddSongsName = document.getElementById('txt_add_songs_name');
-
-    function updateSongList(query) {
-      songList.innerHTML = '';
-      const filtered = query.length >= 3
-        ? songs.filter(s => s.name.toLowerCase().includes(query.toLowerCase()))
-        : songs.slice(0, 50);
-      filtered.forEach(s => {
-        const li = document.createElement('li');
-        li.textContent = s.name + ' — ';
-        const a = document.createElement('a');
-        a.href = 'javascript:void(0);';
-        a.textContent = '{{ _("Add") }}';
-        a.addEventListener('click', () => addSong(s.id, s.name));
-        li.appendChild(a);
-        songList.appendChild(li);
-      });
-    }
-    function addSong(id, name) {
-      const ids = txtAddSongsId.value ? txtAddSongsId.value.split('|') : [];
-      const names = txtAddSongsName.value ? txtAddSongsName.value.split(' / ') : [];
-      ids.push(id); names.push(name);
-      txtAddSongsId.value = ids.join('|');
-      txtAddSongsName.value = names.join(' / ');
-    }
-    searchInput.addEventListener('input', (e) => updateSongList(e.target.value));
-    updateSongList('');
-
-    // --- Drag & Drop ordering ---
-    const dndList = document.getElementById('dndList');
-    const orderedInput = document.getElementById('ordered_ids');
-
-    let dragEl = null;
-    let dropIndicator = null;
-
-    function serializeOrder() {
-      const ids = Array.from(dndList.querySelectorAll('.dnd-item'))
-        .map(li => li.getAttribute('data-asid'));
-      orderedInput.value = ids.join(',');
-      // Renumérotation visuelle
-      Array.from(dndList.querySelectorAll('.dnd-item .dnd-index'))
-        .forEach((el, i) => el.textContent = (i + 1).toString());
-    }
-
-    function createIndicator() {
-      if (!dropIndicator) {
-        dropIndicator = document.createElement('div');
-        dropIndicator.className = 'drop-indicator';
-      }
-      return dropIndicator;
-    }
-
-    dndList.addEventListener('dragstart', (e) => {
-      const li = e.target.closest('.dnd-item');
-      if (!li) return;
-      dragEl = li;
-      li.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      // Firefox needs some data
-      e.dataTransfer.setData('text/plain', li.getAttribute('data-asid'));
-    });
-
-    dndList.addEventListener('dragend', () => {
-      if (dragEl) dragEl.classList.remove('dragging');
-      if (dropIndicator && dropIndicator.parentNode) {
-        dropIndicator.parentNode.removeChild(dropIndicator);
-      }
-      dragEl = null;
-      serializeOrder();
-    });
-
-    dndList.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const after = getDragAfterElement(dndList, e.clientY);
-      const indicator = createIndicator();
-      if (after == null) {
-        dndList.appendChild(indicator);
-      } else {
-        dndList.insertBefore(indicator, after);
-      }
-    });
-
-    dndList.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const after = getDragAfterElement(dndList, e.clientY);
-      if (!dragEl) return;
-      if (after == null) {
-        dndList.appendChild(dragEl);
-      } else {
-        dndList.insertBefore(dragEl, after);
-      }
-    });
-
-    function getDragAfterElement(container, y) {
-      const els = [...container.querySelectorAll('.dnd-item:not(.dragging)')];
-      return els.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    // Initial serialize at load
-    serializeOrder();
-
-    // Keyboard fallback (↑/↓)
-    dndList.addEventListener('keydown', (e) => {
-      const li = e.target.closest('.dnd-item');
-      if (!li) return;
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        const prev = li.previousElementSibling;
-        if (prev) dndList.insertBefore(li, prev);
-        serializeOrder();
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        const next = li.nextElementSibling;
-        if (next) dndList.insertBefore(next, li);
-        serializeOrder();
-      }
-    });
-
-    // Rendre les items focusables pour le fallback clavier
-    Array.from(dndList.querySelectorAll('.dnd-item')).forEach(li => {
-      li.tabIndex = 0;
-      li.querySelector('.dnd-handle').addEventListener('dblclick', () => {
-        // double-clic = sélection clavier
-        li.focus();
+    window.addEventListener('DOMContentLoaded', () => {
+      const formEl = document.querySelector('form[action*="animation_playlist"]');
+      window.initPlaylistDnd({
+        sourceList: document.getElementById('add-songs'),
+        targetList: document.getElementById('dndList'),
+        formEl: formEl,
+        inputOrderedIds: document.getElementById('ordered_ids'),
+        inputNewSongs: document.getElementById('txt_new_songs'),
       });
     });
   </script>

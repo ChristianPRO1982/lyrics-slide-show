@@ -811,7 +811,6 @@ def animation_playlist(request, animation_id):
             return redirect('animations')
         
     all_songs = Song.get_all_songs(request.user.is_authenticated)
-    print(">>>>>", all_songs)
 
     return render(request, 'app_animation/animation_playlist.html', {
         'animation': animation,
