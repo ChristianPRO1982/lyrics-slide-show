@@ -79,6 +79,15 @@
 
     if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs) return;
 
+    // track whether the drag was initiated from the handle so we do not start
+    // dragging when the user simply clicks the row to focus / select text.
+    let activeHandleItem = null;
+    targetList.addEventListener("pointerdown", (e) => {
+      const handle = e.target.closest(".dnd-handle");
+      activeHandleItem = handle ? handle.closest(".dnd-item") : null;
+    });
+    window.addEventListener("pointerup", () => { activeHandleItem = null; });
+
     // Delete (×)
     targetList.addEventListener("click", (e) => {
       const btn = e.target.closest(".dnd-x");
@@ -125,11 +134,19 @@
 
     // Limit drag start to the handle for better UX (optional: remove the guard if you want full-row drag)
     targetList.addEventListener("dragstart", (e) => {
-      const handle = e.target.closest(".dnd-handle");
-      if (!handle) return;
-      const li = handle.closest(".dnd-item");
+      const li = e.target.closest(".dnd-item");
       if (!li) return;
+      if (activeHandleItem && activeHandleItem !== li) {
+        activeHandleItem = null;
+        e.preventDefault();
+        return;
+      }
+      if (!activeHandleItem) {
+        e.preventDefault();
+        return;
+      }
       draggingEl = li;
+      activeHandleItem = null;
       li.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", li.dataset.kind === "new"
@@ -205,10 +222,12 @@
 
     function stageNew(songId, title) {
       const ids = splitPipe(inputNewSongs.value);
-      ids.push(String(songId));
+      const sid = String(songId);
+      if (!ids.includes(sid)) ids.push(sid);
       inputNewSongs.value = joinPipe(ids);
 
       const li = createNewDraggableItem(songId, title);
+      li.tabIndex = 0;
       targetList.appendChild(li);
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
