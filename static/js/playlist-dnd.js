@@ -68,6 +68,16 @@
     return li;
   }
 
+  function updateNewSongsInput(listEl, inputEl) {
+    if (!inputEl) return;
+    const ids = $all(".dnd-item", listEl)
+      .filter(li => li.dataset.kind === "new")
+      .filter(li => !li.classList.contains("is-deleted"))
+      .map(li => li.dataset.songId)
+      .filter(Boolean);
+    inputEl.value = joinPipe(ids);
+  }
+
   function initPlaylistDnd(opts) {
     const {
       sourceList,            // #add-songs
@@ -95,29 +105,30 @@
       const li = btn.closest(".dnd-item");
       if (!li) return;
 
+      const shouldDelete = !li.classList.contains("is-deleted");
+      if (shouldDelete) {
+        li.classList.add("is-deleted", "strike");
+      } else {
+        li.classList.remove("is-deleted", "strike");
+      }
+
       if (li.dataset.kind === "new") {
-        const sid = li.dataset.songId;
-        const ids = splitPipe(inputNewSongs.value);
-        const idx = ids.indexOf(String(sid));
-        if (idx >= 0) ids.splice(idx, 1);
-        inputNewSongs.value = joinPipe(ids);
-        li.remove();
+        updateNewSongsInput(targetList, inputNewSongs);
       } else {
         const asid = li.getAttribute("data-asid");
         if (!asid) return;
         const delHiddenName = `box_delete_song_${asid}`;
         const existingHidden = formEl.querySelector(`input[name="${delHiddenName}"]`);
-        if (li.classList.toggle("is-deleted")) {
+        if (shouldDelete) {
           if (!existingHidden) formEl.appendChild(mkHiddenDelete(asid));
-          li.classList.add("strike");
         } else {
           existingHidden?.remove();
-          li.classList.remove("strike");
         }
       }
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     // Drag & drop (all items participate)
@@ -160,6 +171,7 @@
       draggingEl = null;
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     function getAfter(container, y) {
@@ -196,6 +208,7 @@
       const after = getAfter(targetList, y);
       if (after == null) targetList.appendChild(draggingEl);
       else targetList.insertBefore(draggingEl, after);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     // Add: double-click source or drag from source
@@ -232,6 +245,7 @@
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     }
 
     // Keyboard fallback
@@ -249,6 +263,7 @@
       }
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     // Focusable items
@@ -257,6 +272,7 @@
     // Initial state
     inputOrderedIds.value = serializeExistingOrder(targetList);
     renumberAll(targetList);
+    updateNewSongsInput(targetList, inputNewSongs);
   }
 
   window.initPlaylistDnd = initPlaylistDnd;
