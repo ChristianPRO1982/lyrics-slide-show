@@ -1,8 +1,14 @@
+.MAIN_BLOC {
+    @media (min-width: 1024px) {
+        min-height: 700px;
+    }
+}
+
 .L_TEXT {
     color: #1C4E4A;
 }
 .L_BG{
-    background-color: #E6F0ED;
+    background-color: #bde7db;
 }
 
 a {
@@ -28,9 +34,13 @@ a.NAV:hover {
 }
 
 hr {
-    margin: 0.5rem auto !important;
-    border: 1 !important;
-    border-color: solid #54e7db !important;
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, #54e7db, #fd9153, #54e7db);
+    margin: 1em auto;
+    width: 80%;
+    border-radius: 1px;
+    opacity: 0.8;
 }
 
 .L_TABLE_TR {
@@ -65,11 +75,12 @@ hr {
     font-size: 0.875rem;
     font-weight: 500;
     border: 1px solid #54e7db;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .L_GENRE_BADGE:hover {
-    background-color: #d2e6e2;
+    transform: scale(1.1);
+    background-color: #b5c7c3;
 }
 
 .L_BUTTON_LIKE_A_LINK {
@@ -112,15 +123,42 @@ hr {
 
 .L_ERROR {
     color: #dd0000;
+    background-color: #ff5555;
 }
 
 .L_ERROR_OTHER {
-    color: #aa0000;
+    color: #700;
+    background-color: #f77;
+}
+
+.L_HIGHLIGHT_GREEN {
+    color: #D2F5E3;
+    background-color: #18bb67;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.group-badge {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  font-size: 1em;
+  font-weight: 600;
+  border-radius: 2em;
+  border: 2px solid var(--badge-border);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  box-shadow: 0 1px 5px #143835;
+  transition: all 0.2s ease-in-out;
+}
+
+.group-badge:hover {
+  transform: scale(1.05);
+  background-color: var(--badge-bg-hover);
 }
 
 .L_BOX_TOP {
     color: #6b1f1f;
-    background-color: #eea78e;
+    background-color: #1C4E4A;
 }
 
 .L_BOX_HEADER {
@@ -136,7 +174,7 @@ hr {
     /* color: #6b1f1f; */
     /* background-color: #eea78e; */
     border: 0px solid #774205;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 .slide {
@@ -144,14 +182,19 @@ hr {
 }
 
 .active {
-    border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
     border-width: 5px !important;
+    border-color: #18bb67 !important;
+}
+
+.active_background {
+    background-color: #18bb67 !important;
 }
 
 .chorus_active {
-    border-color: rgb(180, 94, 13) !important;
     border-radius: 0% !important;
+    border-color: #2f7c76 !important;
+    background-color: rgba(24, 187, 103, 0.25) !important;
 }
 
 .next_active {
@@ -161,7 +204,8 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H2, .L_H3, .L_H4 {
-        color: #3d5a4b;
+        color: #68947d;
+        /* 3d5a4b > 68947d */
     }
     .L_H1 {
         color: #85b4a4;
@@ -170,30 +214,30 @@ hr {
         background-color: #0B1F26;
     }
     a {
-        color: #3d5a4b;
+        color: #68947d;
     }
     a:hover {
         color: #fd9153;
     }
     hr {
-        border-color: solid #3d5a4b !important;
+        background: linear-gradient(to right, #fd9153, #54e7db, #fd9153);
     }
     .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
-        border: 1px solid #3d5a4b;
-        color: #3d5a4b;
+        border: 1px solid #68947d;
+        color: #68947d;
     }
     .L_GENRE_BADGE {
         background-color: #2d1b1b;
-        color: #3d5a4b;
-        border: 1px solid #3d5a4b;
+        color: #68947d;
+        border: 1px solid #68947d;
     }
 
     .L_GENRE_BADGE:hover {
         background-color: #1a1a1a;
     }
     .L_BUTTON_LIKE_A_LINK {
-        color: #3d5a4b;
+        color: #68947d;
     }
 
     .L_BUTTON_LIKE_A_LINK:hover {
@@ -201,26 +245,35 @@ hr {
     }
     .L_LI {
         background-color: #2d1b1b;
-        border: 1px solid #3d5a4b;
-        color: #3d5a4b;
+        border: 1px solid #68947d;
+        color: #68947d;
     }
     .L_ERROR {
         color: #bb0000;
     }
     .L_ERROR_OTHER {
-        color: #ee0000;
+        color: #f22;
+        background-color: #200;
+    }
+    .L_HIGHLIGHT_GREEN {
+        color: #68947d;
+        background-color: #18bb67;
     }
     .slide {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(160, 75, 19) !important;
         border-radius: 0% !important;
         border-width: 5px !important;
+        border-color: #14403D !important;
+    }
+    .active_background {
+        background-color: #14403D !important;
     }
     .chorus_active {
-        border-color: rgb(160, 75, 19) !important;
         border-radius: 0% !important;
+        border-color: #14403D !important;
+        background-color: rgba(20, 64, 61, 0.3) !important;
     }
     .next_active {
         border-color: rgb(248, 11, 82) !important;
@@ -229,7 +282,7 @@ hr {
 
     .L_BOX_TOP {
         color: #b82b08;
-        background-color: #33241e;
+        background-color: #02141D;
     }
     
     .L_BOX_HEADER {
