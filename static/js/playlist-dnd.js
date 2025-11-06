@@ -68,6 +68,22 @@
     return li;
   }
 
+  function extractTitle(li) {
+    const titleEl = li.querySelector(".dnd-title");
+    if (titleEl) return titleEl.textContent.trim();
+    return li.textContent.trim();
+  }
+
+  function updateNewSongsInput(listEl, inputEl) {
+    if (!inputEl) return;
+    const ids = $all(".dnd-item", listEl)
+      .filter(li => li.dataset.kind === "new")
+      .filter(li => !li.classList.contains("is-deleted"))
+      .map(li => li.dataset.songId)
+      .filter(Boolean);
+    inputEl.value = joinPipe(ids);
+  }
+
   function initPlaylistDnd(opts) {
     const {
       sourceList,            // #add-songs
@@ -79,6 +95,15 @@
 
     if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs) return;
 
+    // track whether the drag was initiated from the handle so we do not start
+    // dragging when the user simply clicks the row to focus / select text.
+    let activeHandleItem = null;
+    targetList.addEventListener("pointerdown", (e) => {
+      const handle = e.target.closest(".dnd-handle");
+      activeHandleItem = handle ? handle.closest(".dnd-item") : null;
+    });
+    window.addEventListener("pointerup", () => { activeHandleItem = null; });
+
     // Delete (×)
     targetList.addEventListener("click", (e) => {
       const btn = e.target.closest(".dnd-x");
@@ -86,34 +111,36 @@
       const li = btn.closest(".dnd-item");
       if (!li) return;
 
+      const shouldDelete = !li.classList.contains("is-deleted");
+      if (shouldDelete) {
+        li.classList.add("is-deleted", "strike");
+      } else {
+        li.classList.remove("is-deleted", "strike");
+      }
+
       if (li.dataset.kind === "new") {
-        const sid = li.dataset.songId;
-        const ids = splitPipe(inputNewSongs.value);
-        const idx = ids.indexOf(String(sid));
-        if (idx >= 0) ids.splice(idx, 1);
-        inputNewSongs.value = joinPipe(ids);
-        li.remove();
+        updateNewSongsInput(targetList, inputNewSongs);
       } else {
         const asid = li.getAttribute("data-asid");
         if (!asid) return;
         const delHiddenName = `box_delete_song_${asid}`;
         const existingHidden = formEl.querySelector(`input[name="${delHiddenName}"]`);
-        if (li.classList.toggle("is-deleted")) {
+        if (shouldDelete) {
           if (!existingHidden) formEl.appendChild(mkHiddenDelete(asid));
-          li.classList.add("strike");
         } else {
           existingHidden?.remove();
-          li.classList.remove("strike");
         }
       }
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     // Drag & drop (all items participate)
     let draggingEl = null;
     let indicator = null;
+    let sourceDragData = null;
 
     function ensureIndicator() {
       if (!indicator) {
@@ -125,11 +152,19 @@
 
     // Limit drag start to the handle for better UX (optional: remove the guard if you want full-row drag)
     targetList.addEventListener("dragstart", (e) => {
-      const handle = e.target.closest(".dnd-handle");
-      if (!handle) return;
-      const li = handle.closest(".dnd-item");
+      const li = e.target.closest(".dnd-item");
       if (!li) return;
+      if (activeHandleItem && activeHandleItem !== li) {
+        activeHandleItem = null;
+        e.preventDefault();
+        return;
+      }
+      if (!activeHandleItem) {
+        e.preventDefault();
+        return;
+      }
       draggingEl = li;
+      activeHandleItem = null;
       li.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", li.dataset.kind === "new"
@@ -143,6 +178,7 @@
       draggingEl = null;
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     function getAfter(container, y) {
@@ -157,7 +193,7 @@
 
     targetList.addEventListener("dragover", (e) => {
       e.preventDefault();
-      if (!draggingEl) return;
+      if (!draggingEl && !sourceDragData) return;
       const y = e.clientY;
       const after = getAfter(targetList, y);
       const ind = ensureIndicator();
@@ -167,18 +203,22 @@
 
     targetList.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (!draggingEl) {
-        // Source → Target drop (copy)
-        try {
-          const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
-          if (data && data.type === "song" && data.id) stageNew(String(data.id), data.title);
-        } catch (_err) { /* noop */ }
-        return;
-      }
       const y = e.clientY;
       const after = getAfter(targetList, y);
-      if (after == null) targetList.appendChild(draggingEl);
-      else targetList.insertBefore(draggingEl, after);
+      if (!draggingEl && sourceDragData) {
+        stageNew(sourceDragData.songId, sourceDragData.title, after);
+        sourceDragData = null;
+      } else if (draggingEl) {
+        if (after == null) targetList.appendChild(draggingEl);
+        else targetList.insertBefore(draggingEl, after);
+        updateNewSongsInput(targetList, inputNewSongs);
+      } else if (!draggingEl) {
+        try {
+          const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
+          if (data && data.type === "song" && data.id) stageNew(String(data.id), data.title, after);
+        } catch (_err) { /* noop */ }
+      }
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
     });
 
     // Add: double-click source or drag from source
@@ -186,33 +226,51 @@
       const li = e.target.closest(".dnd-item");
       if (!li) return;
       const sid = li.getAttribute("data-asid");
-      const title = li.textContent.trim();
+      const title = extractTitle(li);
       stageNew(sid, title);
     });
 
     sourceList.addEventListener("dragstart", (e) => {
       const li = e.target.closest(".dnd-item");
       if (!li) return;
+      const songId = li.getAttribute("data-asid");
+      const title = extractTitle(li);
+      sourceDragData = { songId, title };
       e.dataTransfer.setData("text/plain", JSON.stringify({
         type: "song",
-        id: li.getAttribute("data-asid"),
-        title: li.textContent.trim()
+        id: songId,
+        title
       }));
       e.dataTransfer.effectAllowed = "copy";
     });
 
-    targetList.addEventListener("dragover", (e) => { e.preventDefault(); }); // allow drop from source
+    sourceList.addEventListener("dragend", () => {
+      sourceDragData = null;
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+    });
 
-    function stageNew(songId, title) {
+    targetList.addEventListener("dragleave", (e) => {
+      if (!targetList.contains(e.relatedTarget)) {
+        if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      }
+    });
+
+    function stageNew(songId, title, beforeNode = null) {
       const ids = splitPipe(inputNewSongs.value);
-      ids.push(String(songId));
+      const sid = String(songId);
+      if (!ids.includes(sid)) ids.push(sid);
       inputNewSongs.value = joinPipe(ids);
 
       const li = createNewDraggableItem(songId, title);
-      targetList.appendChild(li);
+      li.tabIndex = 0;
+      if (beforeNode) targetList.insertBefore(li, beforeNode);
+      else targetList.appendChild(li);
 
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
+      if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      return li;
     }
 
     // Keyboard fallback
@@ -230,6 +288,7 @@
       }
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
+      updateNewSongsInput(targetList, inputNewSongs);
     });
 
     // Focusable items
@@ -238,6 +297,7 @@
     // Initial state
     inputOrderedIds.value = serializeExistingOrder(targetList);
     renumberAll(targetList);
+    updateNewSongsInput(targetList, inputNewSongs);
   }
 
   window.initPlaylistDnd = initPlaylistDnd;
