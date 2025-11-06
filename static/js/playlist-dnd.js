@@ -17,6 +17,20 @@
       .join(",");
   }
 
+  function serializeOrderedMix(listEl) {
+    return $all(".dnd-item", listEl)
+      .filter(li => !li.classList.contains("is-deleted"))
+      .map((li) => {
+        const isNew = li.dataset.kind === "new";
+        const id = isNew ? li.dataset.songId : li.getAttribute("data-asid");
+        if (!id) return null;
+        const prefix = isNew ? "sid" : "asid";
+        return `${prefix}:${id}`;
+      })
+      .filter(Boolean)
+      .join("|");
+  }
+
   function renumberAll(listEl) {
     $all(".dnd-item .dnd-index", listEl)
       .forEach((el, i) => { el.textContent = String(i + 1); });
@@ -84,6 +98,11 @@
     inputEl.value = joinPipe(ids);
   }
 
+  function updateOrderedMixInput(listEl, inputEl) {
+    if (!inputEl) return;
+    inputEl.value = serializeOrderedMix(listEl);
+  }
+
   function initPlaylistDnd(opts) {
     const {
       sourceList,            // #add-songs
@@ -91,9 +110,10 @@
       formEl,                // <form>
       inputOrderedIds,       // #ordered_ids
       inputNewSongs,         // #txt_new_songs
+      orderedMixInput,       // #ordered_mix
     } = opts;
 
-    if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs) return;
+    if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs || !orderedMixInput) return;
 
     // track whether the drag was initiated from the handle so we do not start
     // dragging when the user simply clicks the row to focus / select text.
@@ -135,6 +155,7 @@
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
+      updateOrderedMixInput(targetList, orderedMixInput);
     });
 
     // Drag & drop (all items participate)
@@ -179,6 +200,7 @@
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
+      updateOrderedMixInput(targetList, orderedMixInput);
     });
 
     function getAfter(container, y) {
@@ -212,6 +234,7 @@
         if (after == null) targetList.appendChild(draggingEl);
         else targetList.insertBefore(draggingEl, after);
         updateNewSongsInput(targetList, inputNewSongs);
+        updateOrderedMixInput(targetList, orderedMixInput);
       } else if (!draggingEl) {
         try {
           const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
@@ -269,6 +292,7 @@
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
+      updateOrderedMixInput(targetList, orderedMixInput);
       if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
       return li;
     }
@@ -289,6 +313,7 @@
       inputOrderedIds.value = serializeExistingOrder(targetList);
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
+      updateOrderedMixInput(targetList, orderedMixInput);
     });
 
     // Focusable items
@@ -298,6 +323,7 @@
     inputOrderedIds.value = serializeExistingOrder(targetList);
     renumberAll(targetList);
     updateNewSongsInput(targetList, inputNewSongs);
+    updateOrderedMixInput(targetList, orderedMixInput);
   }
 
   window.initPlaylistDnd = initPlaylistDnd;
