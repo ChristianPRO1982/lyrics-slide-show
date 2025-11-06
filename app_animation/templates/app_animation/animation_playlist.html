@@ -71,7 +71,7 @@
 
   <ul id="dndList" class="dnd-list" aria-label="{% trans 'Reorder songs' %}">
     {% for song in animation.songs %}
-    <li class="L_DIV_BORDER dnd-item" data-asid="{{ song.animation_song_id }}" draggable="true">
+    <li class="L_DIV_BORDER dnd-item" data-kind="existing" data-asid="{{ song.animation_song_id }}" draggable="true">
       <span class="dnd-handle-num">
         <span class="dnd-handle" aria-hidden="true">⠿</span>
         <span class="dnd-index">{{ forloop.counter }}</span>

@@ -801,17 +801,38 @@ def moderate_images(request):
 # playlist
 @dataclass
 class PlaylistChanges:
-    existing_order: List[int]
+    final_order: List[Tuple[str, int]]
     deletions: List[int]
-    new_song_ids: List[int]
     reorder_ops: List[Tuple[int, int]]   # (animation_song_id, new_position)
     add_ops: List[Tuple[int, int]]       # (song_id, new_position)
+
+    @property
+    def existing_order(self) -> List[int]:
+        return [item_id for kind, item_id in self.final_order if kind == "asid"]
+
+    @property
+    def new_song_ids(self) -> List[int]:
+        return [item_id for kind, item_id in self.final_order if kind == "sid"]
 
 def _parse_int_list_csv(value: str) -> List[int]:
     return [int(x) for x in value.split(",") if x.strip().isdigit()]
 
 def _parse_pipe_list(value: str) -> List[int]:
     return [int(x) for x in value.split("|") if x.strip().isdigit()]
+
+def _parse_mixed_order(value: str) -> List[Tuple[str, int]]:
+    items: List[Tuple[str, int]] = []
+    for chunk in value.split("|"):
+        chunk = chunk.strip()
+        if not chunk or ":" not in chunk:
+            continue
+        kind, raw_id = chunk.split(":", 1)
+        kind = kind.strip().lower()
+        raw_id = raw_id.strip()
+        if kind not in {"asid", "sid"} or not raw_id.isdigit():
+            continue
+        items.append((kind, int(raw_id)))
+    return items
 
 def _extract_deletions(post_dict) -> List[int]:
     ids: List[int] = []
@@ -822,20 +843,30 @@ def _extract_deletions(post_dict) -> List[int]:
             ids.append(int(m.group(1)))
     return ids
 
-def _compute_changes(existing_order: List[int],
-                     deletions: List[int],
-                     new_song_ids: List[int]) -> PlaylistChanges:
-    kept_existing = [asid for asid in existing_order if asid not in deletions]
-    reorder_ops = [(asid, idx + 1) for idx, asid in enumerate(kept_existing)]
-    start_pos = len(kept_existing)
-    add_ops = [(sid, start_pos + i + 1) for i, sid in enumerate(new_song_ids)]
+def _compute_changes(mixed_order: List[Tuple[str, int]],
+                     deletions: List[int]) -> PlaylistChanges:
+    filtered_order: List[Tuple[str, int]] = []
+    for kind, item_id in mixed_order:
+        if kind == "asid" and item_id in deletions:
+            continue
+        filtered_order.append((kind, item_id))
+
+    reorder_ops: List[Tuple[int, int]] = []
+    add_ops: List[Tuple[int, int]] = []
+    for idx, (kind, item_id) in enumerate(filtered_order):
+        position = idx + 1
+        if kind == "asid":
+            reorder_ops.append((item_id, position))
+        elif kind == "sid":
+            add_ops.append((item_id, position))
+
     return PlaylistChanges(
-        existing_order=existing_order,
+        final_order=filtered_order,
         deletions=sorted(set(deletions)),
-        new_song_ids=new_song_ids,
         reorder_ops=reorder_ops,
         add_ops=add_ops,
     )
+
 
 @login_required
 def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
@@ -865,21 +896,35 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
         print(">>>>> ordered_ids_raw:", ordered_ids_raw)
         new_songs_raw = request.POST.get("txt_new_songs", "")
         print(">>>>> new_songs_raw:", new_songs_raw)
+        ordered_mix_raw = request.POST.get("ordered_mix", "")
+        print(">>>>> ordered_mix_raw:", ordered_mix_raw)
         deletions = _extract_deletions(request.POST)
 
-        existing_order = _parse_int_list_csv(ordered_ids_raw)
-        new_song_ids = _parse_pipe_list(new_songs_raw)
+        mixed_order = _parse_mixed_order(ordered_mix_raw)
+        if not mixed_order:
+            existing_order = _parse_int_list_csv(ordered_ids_raw)
+            new_song_ids = _parse_pipe_list(new_songs_raw)
+            mixed_order = [
+                ("asid", asid) for asid in existing_order
+            ] + [
+                ("sid", sid) for sid in new_song_ids
+            ]
 
-        changes = _compute_changes(existing_order, deletions, new_song_ids)
+        changes = _compute_changes(mixed_order, deletions)
 
         # TODO SQL: apply changes.reorder_ops, changes.add_ops, changes.deletions
         # For now, expose for debugging/inspection
         request.session["playlist_changes"] = {
+            "ordered_mix": ordered_mix_raw,
+            "final_order": [
+                {"kind": kind, "id": item_id}
+                for kind, item_id in changes.final_order
+            ],
             "reorder_ops": changes.reorder_ops,
             "add_ops": changes.add_ops,
             "deletions": changes.deletions,
         }
-        print(">>>>>",changes)
+        print(">>>>>", changes)
 
         if "btn_save_exit" in request.POST:
             return redirect('modify_animation', animation_id=animation_id)
