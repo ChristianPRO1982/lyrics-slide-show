@@ -1681,10 +1681,8 @@ msgid "Minimum 3 characters"
 msgstr "Minimum 3 caractères"
 
 #: app_song/templates/app_song/songs.html:71
-#, fuzzy
-#| msgid "Favorite song"
 msgid "Favorites"
-msgstr "Chant favori"
+msgstr "Chants favoris"
 
 #: app_song/templates/app_song/songs.html:75
 msgid "Search in description and lyrics"
