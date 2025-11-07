@@ -380,7 +380,7 @@
         </div>
     {% endfor %}
 
-    <br><hr><br>
+    {% comment %} <br><hr><br>
 
     <div>
         {% trans "Song research" %}
@@ -390,7 +390,7 @@
         </ul>
         <input type="text" id="txt_add_songs_name" placeholder="{% trans "Selected song will appear here..." %}" readonly><br>
         <input class="hidden" type="text" id="txt_add_songs_id" name="txt_new_songs" readonly>
-    </div>
+    </div> {% endcomment %}
     
     <br><hr><br>
     
@@ -399,7 +399,7 @@
     <input name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
 </form>
 
-<script>
+{% comment %} <script>
     const songs = [
     {% for song in all_songs %}
         { id: {{ song.song_id }}, name: "{% if song.song_id in songs_already_in %}# {% endif %}{{ song.full_title|escapejs }}" },
@@ -449,5 +449,5 @@
     });
   
     updateSongList('');
-</script>
+</script> {% endcomment %}
 {% endblock content %}
