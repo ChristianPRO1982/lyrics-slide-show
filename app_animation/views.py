@@ -1,3 +1,4 @@
+from __future__ import annotations
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import translation
@@ -24,6 +25,12 @@ from django.views.decorators.http import require_http_methods
 from app_main.params import get_image_params
 from . import utils
 import shutil
+
+# playlist
+from dataclasses import dataclass
+from typing import List, Tuple
+import re
+# from django.http import HttpRequest, HttpResponse
 
 
 def animations(request):
@@ -789,3 +796,154 @@ def moderate_images(request):
         'css': css,
         'no_loader': no_loader,
     })
+
+
+# playlist
+@dataclass
+class PlaylistChanges:
+    final_order: List[Tuple[str, int]]
+    deletions: List[int]
+    reorder_ops: List[Tuple[int, int]]   # (animation_song_id, new_position)
+    add_ops: List[Tuple[int, int]]       # (song_id, new_position)
+
+    @property
+    def existing_order(self) -> List[int]:
+        return [item_id for kind, item_id in self.final_order if kind == "asid"]
+
+    @property
+    def new_song_ids(self) -> List[int]:
+        return [item_id for kind, item_id in self.final_order if kind == "sid"]
+
+def _parse_int_list_csv(value: str) -> List[int]:
+    return [int(x) for x in value.split(",") if x.strip().isdigit()]
+
+def _parse_pipe_list(value: str) -> List[int]:
+    return [int(x) for x in value.split("|") if x.strip().isdigit()]
+
+def _parse_mixed_order(value: str) -> List[Tuple[str, int]]:
+    items: List[Tuple[str, int]] = []
+    for chunk in value.split("|"):
+        chunk = chunk.strip()
+        if not chunk or ":" not in chunk:
+            continue
+        kind, raw_id = chunk.split(":", 1)
+        kind = kind.strip().lower()
+        raw_id = raw_id.strip()
+        if kind not in {"asid", "sid"} or not raw_id.isdigit():
+            continue
+        items.append((kind, int(raw_id)))
+    return items
+
+def _extract_deletions(post_dict) -> List[int]:
+    ids: List[int] = []
+    rx = re.compile(r"^box_delete_song_(\d+)$")
+    for key, val in post_dict.items():
+        m = rx.match(key)
+        if m and str(val).lower() in {"on", "true", "1"}:
+            ids.append(int(m.group(1)))
+    return ids
+
+def _compute_changes(mixed_order: List[Tuple[str, int]],
+                     deletions: List[int]) -> PlaylistChanges:
+    filtered_order: List[Tuple[str, int]] = []
+    for kind, item_id in mixed_order:
+        if kind == "asid" and item_id in deletions:
+            continue
+        filtered_order.append((kind, item_id))
+
+    reorder_ops: List[Tuple[int, int]] = []
+    add_ops: List[Tuple[int, int]] = []
+    for idx, (kind, item_id) in enumerate(filtered_order):
+        position = idx + 1
+        if kind == "asid":
+            reorder_ops.append((item_id, position))
+        elif kind == "sid":
+            add_ops.append((item_id, position))
+
+    return PlaylistChanges(
+        final_order=filtered_order,
+        deletions=sorted(set(deletions)),
+        reorder_ops=reorder_ops,
+        add_ops=add_ops,
+    )
+
+
+@login_required
+def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
+    error = ""
+    css = request.session.get("css", "normal.css")
+    no_loader = is_no_loader(request)
+
+    animation = None
+    group_selected = ""
+    group_id = request.session.get("group_id", "")
+    url_token = request.session.get("url_token", "")
+    if group_id != "":
+        group = Group.get_group_by_id(
+            group_id, url_token, request.user.username, is_moderator(request)
+        )
+        group_selected = group.name
+
+    if group_selected:
+        animation = Animation.get_animation_by_id(animation_id, group_id)
+        if not animation:
+            return redirect("animations")
+
+    all_songs = Song.get_all_songs(request.user.is_authenticated)
+
+    if request.method == "POST":
+        ordered_ids_raw = request.POST.get("ordered_ids", "")
+        new_songs_raw = request.POST.get("txt_new_songs", "")
+        ordered_mix_raw = request.POST.get("ordered_mix", "")
+        deletions = _extract_deletions(request.POST)
+
+        mixed_order = _parse_mixed_order(ordered_mix_raw)
+        if not mixed_order:
+            existing_order = _parse_int_list_csv(ordered_ids_raw)
+            new_song_ids = _parse_pipe_list(new_songs_raw)
+            mixed_order = [
+                ("asid", asid) for asid in existing_order
+            ] + [
+                ("sid", sid) for sid in new_song_ids
+            ]
+
+        changes = _compute_changes(mixed_order, deletions)
+
+        # MAKE CHANGES TO DB
+        for asid in changes.deletions:
+            animation.delete_song(asid)
+        for song_id, position in changes.add_ops:
+            animation.new_song_verses(song_id, position * 2)
+        for asid, position in changes.reorder_ops:
+            animation.update_song_num(asid, position * 2)
+        
+        # For now, expose for debugging/inspection
+        request.session["playlist_changes"] = {
+            "ordered_mix": ordered_mix_raw,
+            "final_order": [
+                {"kind": kind, "id": item_id}
+                for kind, item_id in changes.final_order
+            ],
+            "reorder_ops": changes.reorder_ops,
+            "add_ops": changes.add_ops,
+            "deletions": changes.deletions,
+        }
+        # print(">>>>>", request.session["playlist_changes"])
+
+        if "btn_save_exit" in request.POST:
+            return redirect('modify_animation', animation_id=animation_id)
+        return redirect("animation_playlist", animation_id=animation_id)
+
+    return render(
+        request,
+        "app_animation/animation_playlist.html",
+        {
+            "animation": animation,
+            "all_songs": all_songs,
+            "group_selected": group_selected,
+            "error": error,
+            "l_site_messages": site_messages(request),
+            "css": css,
+            "no_loader": no_loader,
+        },
+    )

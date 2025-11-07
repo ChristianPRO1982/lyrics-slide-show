@@ -54,7 +54,8 @@ def add_search_params(
         search_genres,
         search_bands,
         search_artists,
-        search_song_approved
+        search_song_approved,
+        search_favorites
         ):
     
     search_genres = ','.join(sorted(set(filter(None, search_genres.split(','))), key=int)) if search_genres else ''
@@ -70,6 +71,7 @@ def add_search_params(
         user.search_bands = search_bands
         user.search_artists = search_artists
         user.search_song_approved = search_song_approved
+        user.search_favorites = search_favorites
         user.save()
 
 def delete_genre_in_search_params(request, genre_id):
@@ -104,6 +106,7 @@ def get_search_params(request):
             'search_bands': user.search_bands,
             'search_artists': user.search_artists,
             'search_song_approved': user.search_song_approved,
+            'search_favorites': user.search_favorites,
         }
     else:
         return {
@@ -114,6 +117,7 @@ def get_search_params(request):
             'search_bands': '',
             'search_artists': '',
             'search_song_approved': 0,
+            'search_favorites': 0,
         }
 
 def strip_html(html_text):

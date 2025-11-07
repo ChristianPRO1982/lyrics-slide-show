@@ -255,18 +255,25 @@ ORDER BY lv.num
                     } for row in rows]
     
 
-    def new_song_verses(self, song_id=None):
+    def new_song_verses(self, song_id=None, num=None):
         if not self.animation_id:
             raise ValueError("L'ID de l'animation est requis pour ajouter un chant.")
         if not song_id:
             raise ValueError("L'ID du chant est requis pour ajouter un chant.")
 
         with connection.cursor() as cursor:
-            request = """
+            if num is None:
+                request = """
 INSERT INTO l_animation_song (animation_id, song_id)
      VALUES (%s, %s)
 """
-            params = [self.animation_id, song_id]
+                params = [self.animation_id, song_id]
+            else:
+                request = """
+INSERT INTO l_animation_song (animation_id, song_id, num)
+     VALUES (%s, %s, %s)
+"""
+                params = [self.animation_id, song_id, num]
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_2", request, params)
             cursor.execute(request, params)

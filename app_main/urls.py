@@ -17,4 +17,5 @@ urlpatterns = [
     path('email_check', views.email_check, name='email_check'),
     path('delete_profile', views.delete_profile, name='delete_profile'),
     path('clean_db', views.clean_db, name='clean_db'),
+    path('404', views.debug_error_404, name='error_404'),
 ]

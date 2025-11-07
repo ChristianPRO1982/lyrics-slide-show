@@ -202,6 +202,32 @@ hr {
     border-width: 3px !important;
 }
 
+.dnd-list{list-style:none;margin:0;padding:0}
+.dnd-item{
+display:flex;align-items:center;gap:.75rem;
+padding:.25rem .5rem;margin-bottom:.35rem;background:#E6F0ED;
+border:1px solid var(--L_BORDER,#143835);border-radius:.5rem;
+min-height:42px;line-height:1.1
+}
+.dnd-handle-num{
+display:flex;align-items:center;gap:.35rem;
+font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+user-select:none;min-width:4.5rem
+}
+.dnd-handle{cursor:grab;font-size:1.3rem;line-height:1}
+.dnd-index{font-variant-numeric:tabular-nums}
+.dnd-title{
+flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.dnd-x{
+font-size:1.4rem;width:2.1rem;height:2.1rem;line-height:2rem;
+text-align:center;border-radius:.5rem;border:1px solid #070;
+background:#E6F0ED;cursor:pointer
+}
+.dnd-item.dragging{opacity:.6}
+.dnd-item.strike .dnd-title{text-decoration:line-through;color:#070}
+.drop-indicator{height:.25rem;background:#070;border-radius:2px;margin:-.25rem 0 .25rem}
+
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H2, .L_H3, .L_H4 {
         color: #68947d;
@@ -299,6 +325,32 @@ hr {
         /* background-color: #eea78e; */
         border: 0px solid #3a2003;
     }
+
+    .dnd-list{list-style:none;margin:0;padding:0}
+    .dnd-item{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.25rem .5rem;margin-bottom:.35rem;background:#02141D;
+    border:1px solid var(--L_BORDER,#143835);border-radius:.5rem;
+    min-height:42px;line-height:1.1
+    }
+    .dnd-handle-num{
+    display:flex;align-items:center;gap:.35rem;
+    font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+    user-select:none;min-width:4.5rem
+    }
+    .dnd-handle{cursor:grab;font-size:1.3rem;line-height:1}
+    .dnd-index{font-variant-numeric:tabular-nums}
+    .dnd-title{
+    flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+    }
+    .dnd-x{
+    font-size:1.4rem;width:2.1rem;height:2.1rem;line-height:2rem;
+    text-align:center;border-radius:.5rem;border:1px solid #050;
+    background:#02141D;cursor:pointer
+    }
+    .dnd-item.dragging{opacity:.6}
+    .dnd-item.strike .dnd-title{text-decoration:line-through;color:#050}
+    .drop-indicator{height:.25rem;background:#050;border-radius:2px;margin:-.25rem 0 .25rem}
 }
 
 

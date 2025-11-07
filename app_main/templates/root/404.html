@@ -11,12 +11,12 @@
 
 {% block bloc2 %}
 <p>{% trans "Sorry, the requested page does not exist or has been moved." %}</p>
-<p>{% trans "More informations <a href='https://fr.wikipedia.org/wiki/Erreur_HTTP_404'>here</a>." %}</p>
+<p>{% trans "More informations on <a href='https://fr.wikipedia.org/wiki/Erreur_HTTP_404'>Wikipedia</a>." %}</p>
 {% endblock bloc2 %}
 
 {% block content %}
 <div class="text-center mt-8">
-  <img src="{% static 'images/404.png' %}" alt="404" style="max-width: 300px;">
+  <img src="{% static 'images/404.png' %}" alt="404" class="mx-auto d-block" style="max-width: 300px;">
   <p class="mt-4 text-gray-600">{% trans "You can return to the homepage or use the menu above." %}</p>
   <a href="/" class="btn btn-primary mt-4">{% trans "Return to homepage" %}</a>
 </div>

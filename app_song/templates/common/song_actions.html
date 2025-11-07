@@ -12,6 +12,17 @@
 
 <hr>
 
+<h3 class="L_H3">{% trans "Favorite song" %}</h3>
+{% if user.is_authenticated %}
+{% if song.favorite %}
+⭐ <a href="{% url "goto_song_remove_favorite" song.song_id %}">{% trans "This song is in your favorites" %}</a>
+{% else %}
+☆ <a href="{% url "goto_song_add_favorite" song.song_id %}">{% trans "This song is not in your favorites" %}</a>
+{% endif %}
+{% endif %}
+
+<hr>
+
 <a href="{% url "smartphone_view" song.song_id %}">📱 {% trans "Smartphone view" %}</a><br><br>
 <h3 class="L_H3">{% trans "Print" %}</h3>
 <a href="{% url "print_lyrics" song.song_id %}">🖨️💯 - {% trans "Print song lyric" %}</a><br>
