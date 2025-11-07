@@ -49,10 +49,10 @@ def songs(request):
                 request.POST = request.POST.copy()
                 request.POST['txt_new_title'] = ''
                 request.POST['txt_new_sub_title'] = ''
-                add_search_params(request, '', 0, 0, '', '', '', 0)
+                add_search_params(request, '', 0, 0, '', '', '', 0, False)
             elif status == 1:
                 new_song_title = new_song.title
-                add_search_params(request, '', 0, 0, '', '', '', 0)
+                add_search_params(request, '', 0, 0, '', '', '', 0, False)
                 error = '[ERR23]'
             else:
                 error = '[ERR12]'
