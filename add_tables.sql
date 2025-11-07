@@ -25,6 +25,7 @@ CREATE TABLE `c_users` (
   `search_bands` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_artists` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_song_approved` tinyint(1) NOT NULL DEFAULT '0',
+  `search_favorites` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `c_users_auth_user_FK` (`username`),
   CONSTRAINT `c_users_auth_user_FK` FOREIGN KEY (`username`) REFERENCES `auth_user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
