@@ -34,7 +34,7 @@
   {% endfor %}
   </ul>
   <ul class="tab-panel" data-tab="favorites" role="tabpanel" aria-labelledby="tab-favorites" hidden>
-    coco
+    in comming soon...
   {% comment %} {% for song in all_songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
       <span class="dnd-handle-num">
@@ -45,7 +45,8 @@
   {% endfor %} {% endcomment %}
   </ul>
   <ul class="tab-panel" data-tab="all" role="tabpanel" aria-labelledby="tab-all" hidden>
-  {% for song in all_songs %}
+    in comming soon...
+  {% comment %} {% for song in all_songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
       <span class="dnd-handle-num">
         <span class="dnd-handle" aria-hidden="true">⠿</span>
@@ -53,7 +54,7 @@
       <span class="dnd-title">{{ song.full_title }}</span>
     </li>
   {% endfor %}
-  </ul>
+  </ul> {% endcomment %}
 </nav>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
