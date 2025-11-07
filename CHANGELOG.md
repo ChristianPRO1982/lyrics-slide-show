@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.1...v2.1.2) (2025-11-07)
+
+
+### Bug Fixes
+
+* **songs:** create new song: add favorit param ([ed297cd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ed297cd035b43aa3f341023b3da69abd483458de))
+
 ## [2.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.0...v2.1.1) (2025-11-07)
 
 
