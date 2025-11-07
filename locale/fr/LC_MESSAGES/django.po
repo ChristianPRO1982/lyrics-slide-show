@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 16:19+0100\n"
+"POT-Creation-Date: 2025-11-07 17:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -151,7 +151,6 @@ msgid "confirm_delete_animation_2dot"
 msgstr "Confirmer la suppression de cette animation&nbsp;: "
 
 #: app_animation/templates/app_animation/delete_animation.html:22
-#: app_animation/templates/app_animation/modify_animation.html:400
 #: app_main/templates/app_main/homepage.html:99
 #: app_main/templates/app_main/homepage.html:178
 #: app_song/templates/app_song/moderator_song.html:43
@@ -454,7 +453,6 @@ msgstr ""
 "couplets"
 
 #: app_animation/templates/app_animation/modify_animation.html:137
-#: app_animation/templates/app_animation/modify_animation.html:398
 #: app_animation/templates/app_animation/modify_colors.html:62
 #: app_group/templates/app_group/modify_group.html:97
 #: app_main/templates/app_main/homepage.html:98
@@ -466,7 +464,6 @@ msgid "save"
 msgstr "Enregistrer"
 
 #: app_animation/templates/app_animation/modify_animation.html:138
-#: app_animation/templates/app_animation/modify_animation.html:399
 msgid "animation_save_exit"
 msgstr "Enregistrer + revenir à l'animation"
 
