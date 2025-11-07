@@ -11,7 +11,7 @@
 <hr>
 {% endblock bloc1 %}
 {% block bloc2 %}
-<nav id="add-songs" class="max-h-screen overflow-y-auto">
+<nav id="add-songs" class="overflow-y-auto" style="height:75vh;">
   <ul>
   {% for song in all_songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
