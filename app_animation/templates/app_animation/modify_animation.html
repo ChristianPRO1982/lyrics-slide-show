@@ -425,7 +425,7 @@
 
         <input type="text" id="txt_add_songs_name" placeholder="{% trans "Selected song will appear here..." %}" readonly><br>
         <input class="hidden" type="text" id="txt_add_songs_id" name="txt_new_songs" readonly>
-    </section>
+    </section>{% endcomment %}
     
     <br><hr><br>
     
@@ -530,5 +530,5 @@
     populateStaticLists();
     updateSongList('');
     activateTab('search');
-</script>
+</script>{% endcomment %}
 {% endblock content %}

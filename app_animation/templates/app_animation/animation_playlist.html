@@ -34,14 +34,15 @@
   {% endfor %}
   </ul>
   <ul class="tab-panel" data-tab="favorites" role="tabpanel" aria-labelledby="tab-favorites" hidden>
-  {% for song in all_songs %}
+    coco
+  {% comment %} {% for song in all_songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
       <span class="dnd-handle-num">
         <span class="dnd-handle" aria-hidden="true">⠿</span>
       </span>
       <span class="dnd-title">{{ song.full_title }}</span>
     </li>
-  {% endfor %}
+  {% endfor %} {% endcomment %}
   </ul>
   <ul class="tab-panel" data-tab="all" role="tabpanel" aria-labelledby="tab-all" hidden>
   {% for song in all_songs %}
