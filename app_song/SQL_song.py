@@ -55,7 +55,7 @@ ARTIST_EMOJIS = [
 ##############################################
 ##############################################
 class Song:
-    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, licensed=None, full_title=None):
+    def __init__(self, song_id=None, title=None, sub_title=None, description=None, status=None, licensed=None, full_title=None, favorite=None):
         self.song_id = song_id
         self.title = title
         self.sub_title = sub_title
@@ -68,6 +68,7 @@ class Song:
         self.links = []
         self.bands = []
         self.artists = []
+        self.favorite = favorite
 
         self.get_links()
         self.get_genres()
@@ -83,7 +84,8 @@ class Song:
         search_genres: str = '',
         search_bands: str = '',
         search_artists: str = '',
-        search_song_approved: int = 0) -> list[dict[str, Any]]:
+        search_song_approved: int = 0,
+        search_favorites: int = 0) -> list[dict[str, Any]]:
 
         search_txt = build_like_pattern(search_txt, accent_insensitive=True)
 
@@ -136,7 +138,8 @@ class Song:
                  END) AS full_title,
           CONCAT('[', GROUP_CONCAT(CONCAT(lg.`group`, '|', lg.name)), ']') AS genres,
           CONCAT('[', GROUP_CONCAT(CONCAT(cb.name)), ']') AS bands,
-          CONCAT('[', GROUP_CONCAT(CONCAT(ca.name)), ']') AS artists
+          CONCAT('[', GROUP_CONCAT(CONCAT(ca.name)), ']') AS artists,
+          COUNT(lsf.song_id) AS favorite
      FROM l_songs ls1
 LEFT JOIN l_song_genre lsg ON lsg.song_id = ls1.song_id
 LEFT JOIN l_genres lg ON lg.genre_id = lsg.genre_id
@@ -144,6 +147,7 @@ LEFT JOIN l_song_bands lsb ON lsb.song_id = ls1.song_id
 LEFT JOIN c_bands cb ON cb.band_id = lsb.band_id
 LEFT JOIN l_song_artists lsa ON lsa.song_id = ls1.song_id
 LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
+LEFT JOIN l_song_favorite lsf ON lsf.song_id = ls1.song_id
     WHERE (ls1.licensed IS FALSE OR {is_authenticated} IS TRUE)
       AND ({search_everywhere} IS FALSE
            AND (ls1.title LIKE '%{search_txt}%'
@@ -169,6 +173,8 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
       AND ({search_song_approved} = 0
            OR {search_song_approved} = 1 AND ls1.status > 0
            OR {search_song_approved} = 2 AND ls1.status = 0)
+      AND ({search_favorites} = 0
+           OR {search_favorites} = 1 AND lsf.song_id IS NOT NULL)
  GROUP BY ls1.song_id, ls1.title, ls1.sub_title, ls1.description, ls1.status,
           CONCAT(ls1.title,
                  CASE
@@ -201,7 +207,8 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
                  'full_title': row[6],
                  'genres': row[7],
                  'bands': row[8],
-                 'artists': row[9]
+                 'artists': row[9],
+                 'favorite': row[10]
                  } for row in rows]
     
 
@@ -292,26 +299,28 @@ LEFT JOIN c_artists ca ON ca.artist_id = lsa.artist_id
     
 
     @classmethod
-    def get_song_by_id(cls, song_id, is_authenticated: bool):
+    def get_song_by_id(cls, song_id, is_authenticated: bool, username: str = ""):
         with connection.cursor() as cursor:
             request = """
-SELECT *, CONCAT(title,
-                 CASE
-                     WHEN sub_title != '' THEN CONCAT(' - ', sub_title)
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN status = 1 THEN ' ✔️'
-                     WHEN status = 2 THEN ' ✔️⁉️'
-                     ELSE ''
-                 END,
-                 CASE
-                     WHEN licensed IS TRUE THEN ' 📄'
-                     ELSE ''
-                 END) AS full_title
-  FROM l_songs
- WHERE song_id = %s
-   AND (licensed IS FALSE OR %s IS TRUE)
+   SELECT ls.*, CONCAT(ls.title,
+                       CASE
+                           WHEN ls.sub_title != '' THEN CONCAT(' - ', ls.sub_title)
+                           ELSE ''
+                       END,
+                       CASE
+                           WHEN ls.status = 1 THEN ' ✔️'
+                           WHEN ls.status = 2 THEN ' ✔️⁉️'
+                           ELSE ''
+                       END,
+                       CASE
+                           WHEN ls.licensed IS TRUE THEN ' 📄'
+                           ELSE ''
+                       END) AS full_title,
+          lsf.song_id favorite
+     FROM l_songs ls
+LEFT JOIN l_song_favorite lsf ON lsf.song_id = ls.song_id
+    WHERE ls.song_id = %s
+      AND (ls.licensed IS FALSE OR %s IS TRUE)
 """
             params = [song_id, is_authenticated]
 
@@ -326,7 +335,9 @@ SELECT *, CONCAT(title,
                 description=row[3],
                 status=row[4],
                 licensed=row[5],
-                full_title=row[6])
+                full_title=row[6],
+                favorite=row[7]
+            )
         return None
     
 
@@ -867,6 +878,41 @@ INSERT INTO l_song_artists (song_id, artist_id)
                 return ''
             except Exception as e:
                 return '[ERR49]'
+
+
+    @staticmethod
+    def add_favorite(song_id: int, username: str):
+        with connection.cursor() as cursor:
+            request = """
+INSERT INTO l_song_favorite (song_id, username)
+     VALUES (%s, %s)
+"""
+            params = [song_id, username]
+
+            create_SQL_log(code_file, "Song.add_favorite", "INSERT_10", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR]'
+
+
+    @staticmethod
+    def remove_favorite(song_id: int, username: str):
+        with connection.cursor() as cursor:
+            request = """
+DELETE FROM l_song_favorite
+      WHERE song_id = %s
+        AND username = %s
+"""
+            params = [song_id, username]
+
+            create_SQL_log(code_file, "Song.remove_favorite", "DELETE_10", request, params)
+            try:
+                cursor.execute(request, params)
+                return ''
+            except Exception as e:
+                return '[ERR]'
 
 
 ######################################################

@@ -25,6 +25,7 @@ CREATE TABLE `c_users` (
   `search_bands` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_artists` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `search_song_approved` tinyint(1) NOT NULL DEFAULT '0',
+  `search_favorites` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `c_users_auth_user_FK` (`username`),
   CONSTRAINT `c_users_auth_user_FK` FOREIGN KEY (`username`) REFERENCES `auth_user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -280,4 +281,11 @@ CREATE TABLE `l_image_backgrounds` (
   `status` enum('ACTIVED','UNACTIVED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVED',
   PRIMARY KEY (`image_id`),
   KEY `l_image_backgrounds_created_at_IDX` (`created_at`,`status`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `l_song_favorite` (
+  `song_id` mediumint NOT NULL,
+  `username` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`song_id`,`username`),
+  KEY `l_song_favorite_username_IDX` (`username`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

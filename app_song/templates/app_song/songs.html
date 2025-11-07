@@ -67,6 +67,10 @@
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
         <label>
+            <input type="checkbox" name="chk_search_favorites" style="width: 10%;" {% if search_favorites %}checked{% endif %}>
+            {% trans "Favorites" %} ⭐
+        </label><br>
+        <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
         </label><br>
@@ -153,6 +157,7 @@
             genres: "{{ song.genres }}",
             bands: "{{ song.bands }}",
             artists: "{{ song.artists }}",
+            favorite: {{ song.favorite }},
         },
     {% endfor %}
     ];
@@ -174,7 +179,11 @@
         filteredSongs.forEach(song => {
             const li = document.createElement('li');
             li.classList.add('L_LI');
-            li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a><br>';
+            li.innerHTML = '<a href="/songs/song/' + song.song_id + '/">' + song.full_title + '</a>';
+            {% if user.is_authenticated %}
+            li.innerHTML += ' ' + (song.favorite ? '⭐' : '☆');
+            {% endif %}
+            li.innerHTML += '<br>';
             
             br = '';
             if (song.genres) {

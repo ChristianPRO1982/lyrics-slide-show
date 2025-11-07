@@ -20,6 +20,13 @@ def error_404(request: HttpRequest, exception: Exception, *args: Any, **kwargs: 
     """Return the custom 404 page when DEBUG=False."""
     return render(request, "root/404.html", context={'error': ''}, status=404)
 
+def debug_error_404(request):
+    """View to test the 404 error page when DEBUG=True."""
+    if settings.DEBUG:
+        return render(request, "root/404.html", context={'error': ''}, status=404)
+    else:
+        return redirect('homepage')
+
 
 def homepage(request):
     print("LANG ACTIVE (request.LANGUAGE_CODE):", getattr(request, "LANGUAGE_CODE", None))

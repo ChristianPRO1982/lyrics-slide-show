@@ -1,12 +1,18 @@
+.MAIN_BLOC {
+    @media (min-width: 1024px) {
+        min-height: 700px;
+    }
+}
+
 .L_TEXT {
     color: #5a2b1f;
 }
 .L_BG{
-    background-color: #fef8f4;
+    background-color: #fdb;
 }
 
 a {
-    color: #795107;
+    color: #5a2b1f;
     text-decoration: underline dotted !important;
 }
 
@@ -28,9 +34,13 @@ a.NAV:hover {
 }
 
 hr {
-    margin: 0.5rem auto !important;
-    border: 1 !important;
-    border-color: solid #8b1e1e !important;
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, #ffc7a7, #fd9153, #ffc7a7);
+    margin: 1em auto;
+    width: 80%;
+    border-radius: 1px;
+    opacity: 0.8;
 }
 
 .L_TABLE_TR {
@@ -65,11 +75,12 @@ hr {
     font-size: 0.875rem;
     font-weight: 500;
     border: 1px solid #8b1e1e;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 .L_GENRE_BADGE:hover {
-    background-color: #fff4f0;
+    transform: scale(1.1);
+    background-color: rgb(206, 197, 194);
 }
 
 .L_BUTTON_LIKE_A_LINK {
@@ -116,26 +127,54 @@ hr {
 }
 
 .L_ERROR_OTHER {
-    color: #aa0000;
-    background-color: #ff5555;
+    color: #700;
+    background-color: #f77;
+}
+
+.L_HIGHLIGHT_GREEN {
+    color: #D2F5E3;
+    background-color: #18bb67;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.group-badge {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  font-size: 1em;
+  font-weight: 600;
+  border-radius: 2em;
+  border: 2px solid var(--badge-border);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  box-shadow: 0 1px 5px #b32626;
+  transition: all 0.2s ease-in-out;
+}
+
+.group-badge:hover {
+  transform: scale(1.05);
+  background-color: var(--badge-bg-hover);
 }
 
 .L_BOX_TOP {
     color: #6b1f1f;
-    background-color: #eea78e;
+    background-color: #B7410E;
 }
 
 .L_BOX_HEADER {
-    color: #fff;
     background-color: #B7410E;
     border: 3px solid #8b1e1e;
+}
+
+.L_LINK_HEADER {
+    color: #fff;
 }
 
 .L_BOX_FOOTER {
     /* color: #6b1f1f; */
     /* background-color: #eea78e; */
     border: 0px solid #8b1e1e;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 .slide {
@@ -143,14 +182,19 @@ hr {
 }
 
 .active {
-    border-color: rgb(240, 23, 23) !important;
     border-radius: 0% !important;
     border-width: 5px !important;
+    border-color: rgb(240, 23, 23) !important;
+}
+
+.active_background {
+    background-color: rgb(240, 23, 23) !important;
 }
 
 .chorus_active {
-    border-color: rgb(240, 23, 23) !important;
     border-radius: 0% !important;
+    border-color: rgb(240, 23, 23) !important;
+    background-color: rgba(240, 23, 23, 0.12) !important;;
 }
 
 .next_active {
@@ -160,62 +204,72 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H1, .L_H2, .L_H3, .L_H4 {
-        color: #776b66;
+        color: #b17054;
+        /* 776b66 > b17054*/
     }
     .L_BG {
         background-color: #1C0F0A;
     }
     a {
-        color: #aa6339;
+        color: #b17054;
     }
     a:hover {
         color: #fd9153;
     }
     hr {
-        border-color: solid #776b66 !important;
+        background: linear-gradient(to right, #fd9153, #8b1e1e, #fd9153);
     }
     .L_TABLE_TR, .L_DIV_BORDER {
         background-color: #2d1b1b;
-        border: 1px solid #776b66;
-        color: #776b66;
+        border: 1px solid #b17054;
+        color: #b17054;
     }
     .L_GENRE_BADGE {
         background-color: #2d1b1b;
-        color: #776b66;
-        border: 1px solid #776b66;
+        color: #b17054;
+        border: 1px solid #b17054;
     }
 
     .L_GENRE_BADGE:hover {
-        background-color: #3b2323;
+        background-color: #502f2f;
     }
     .L_BUTTON_LIKE_A_LINK {
-        color: #776b66;
+        color: #b17054;
     }
     .L_BUTTON_LIKE_A_LINK:hover {
         color: #fd9153;
     }
     .L_LI {
         background-color: #2d1b1b;
-        border: 1px solid #776b66;
-        color: #776b66;
+        border: 1px solid #b17054;
+        color: #b17054;
     }
     .L_ERROR {
         color: #bb0000;
     }
     .L_ERROR_OTHER {
-        color: #ee0000;
+        color: #f22;
+        background-color: #200;
+    }
+    .L_HIGHLIGHT_GREEN {
+        color: #3d5a4b;
+        background-color: #18bb67;
     }
     .slide {
         border-color: rgb(128, 9, 45);
     }
     .active {
-        border-color: rgb(128, 9, 9) !important;
         border-radius: 0% !important;
         border-width: 5px !important;
+        border-color: rgb(128, 9, 9) !important;
+    }
+    .active_background {
+        background-color: rgb(128, 9, 9) !important;
     }
     .chorus_active {
-        border-color: rgb(128, 9, 9) !important;
         border-radius: 0% !important;
+        border-color: rgb(128, 9, 9) !important;
+        background-color: rgba(128, 9, 9, 0.25) !important;
     }
     .next_active {
         border-color: rgb(128, 50, 74) !important;
@@ -224,13 +278,16 @@ hr {
 
     .L_BOX_TOP {
         color: #b82b08;
-        background-color: #33241e;
+        background-color: #5C1210;
     }
     
     .L_BOX_HEADER {
-        color: #776b66;
         background-color: #5C1210;
         border: 0px solid #8b1e1e;
+    }
+
+    .L_LINK_HEADER {
+        color: #b17054;
     }
     
     .L_BOX_FOOTER {
@@ -244,10 +301,10 @@ hr {
 /* FORMULAIRE */
 input, textarea, select {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0px;
     border: 1px solid #8b1e1e;
     border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    margin: 0px;
     background-color: rgba(255, 255, 255, 0.5);
     color: #5a2b1f;
 }
@@ -292,7 +349,7 @@ input[type=submit]:hover {
 
 @media (prefers-color-scheme: dark) {
     input[type=submit] {
-        color: #776b66;
+        color: #b17054;
         background-color: #5e1414;
     }
 }

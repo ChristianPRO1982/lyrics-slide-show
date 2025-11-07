@@ -79,6 +79,7 @@ module.exports = {
     'max-w-screen',
     'h-96',
     'max-h-screen',
+    'overflow-y-auto',
     'object-contain',
     'cursor-pointer',
     'text-justify',
