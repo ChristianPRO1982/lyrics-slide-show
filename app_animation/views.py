@@ -893,11 +893,8 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
 
     if request.method == "POST":
         ordered_ids_raw = request.POST.get("ordered_ids", "")
-        print(">>>>> ordered_ids_raw:", ordered_ids_raw)
         new_songs_raw = request.POST.get("txt_new_songs", "")
-        print(">>>>> new_songs_raw:", new_songs_raw)
         ordered_mix_raw = request.POST.get("ordered_mix", "")
-        print(">>>>> ordered_mix_raw:", ordered_mix_raw)
         deletions = _extract_deletions(request.POST)
 
         mixed_order = _parse_mixed_order(ordered_mix_raw)
@@ -912,7 +909,14 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
 
         changes = _compute_changes(mixed_order, deletions)
 
-        # TODO SQL: apply changes.reorder_ops, changes.add_ops, changes.deletions
+        # MAKE CHANGES TO DB
+        for asid in changes.deletions:
+            animation.delete_song(asid)
+        for song_id, position in changes.add_ops:
+            animation.new_song_verses(song_id, position * 2)
+        for asid, position in changes.reorder_ops:
+            animation.update_song_num(asid, position * 2)
+        
         # For now, expose for debugging/inspection
         request.session["playlist_changes"] = {
             "ordered_mix": ordered_mix_raw,
@@ -924,7 +928,7 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
             "add_ops": changes.add_ops,
             "deletions": changes.deletions,
         }
-        print(">>>>>", changes)
+        # print(">>>>>", request.session["playlist_changes"])
 
         if "btn_save_exit" in request.POST:
             return redirect('modify_animation', animation_id=animation_id)
