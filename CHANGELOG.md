@@ -1,3 +1,35 @@
+# [2.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.0.0...v2.1.0) (2025-11-07)
+
+
+### Bug Fixes
+
+* **animation_playlist:** CSS into normal.css file + SQL ([0b8fd88](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0b8fd8883c0ddb1c1fe61d067fe1c4d7b0d88948))
+* **animation_playlist:** height of songs list ([6c6ef25](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6c6ef25b3d7a00a903567d5ba43f9a9825c646e3))
+* **animation_playlist:** in modify_animation.html > code for new song is commented ([6177ed6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6177ed61434ac16eb4beec2d24796189e04be1a8))
+* **animation_playlist:** update back with request.POST from songs ([37b23ca](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/37b23ca857b2cc9b981137b6bce43cff7eb5b3f6))
+* **animation_playlist:** update tailwind CSS ([9497d97](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9497d970127fc3aed1b62fbaae7815898f34e3d7))
+* collecstatics ([f8beb36](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f8beb3634acdcb4ad8fc2b64a6977c7609d9e596))
+* collecstatics ([c9468d0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c9468d0dba704aa410c03f63a2f88d46521c3715))
+* **favorites:** update add_tables.sql ([324e817](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/324e8176d5a20eaacb74ef9661c018dfa255b11b))
+* firest try ([ddc7c0f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ddc7c0f7a36f0e0cd2b7d9bca1dd49ba60be103c))
+* **footer:** add "YOUTUBE" but not the link ([e9ae67e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e9ae67ed3c68b9928cd27a8a4a49c75c89221d22))
+* **header.html:** add right padding ([b645c3b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b645c3b65562b722cfcda443bd0c6677eb461fcd)), closes [#131](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/131)
+* **modify_animation:** debug select color radio ([37c2ccd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/37c2ccda3c3cf0d4d207f3b3b2619e816bf56d9b))
+* n9n ([ef42ba8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ef42ba8df48cf98961d7cc04b5c9ea3161fda03b))
+* new drag and drop ([084bd09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/084bd09afa1940e229b2b3728d978089d53f36fe))
+* pending ([39cb5af](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/39cb5af1664233054c47456950bd91add820ba5d))
+* small fix ([bd3ece0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bd3ece01aaf69e991110b1488c31b8883ab9932d))
+* **songs:** add star and btn_reset_search debuged ([9438e11](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9438e111ed80e6c2a2995a3236cc905727d719fb))
+* **songs:** translate "Favorites" ([cb09f4b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cb09f4b2526b999bdc66be0978bdc331e90ed448))
+* translate ([3bdbf15](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3bdbf156038098d9f1eb6237d12410aed3a9dcef))
+
+
+### Features
+
+* **animation_playlist:** transfert functions: add, delete and reorder songs are in a new page > modify_animation is only for colors and select verses (reorder yet) ([481f332](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/481f332fc492311b0d221a4221e23e3624dc2ff3))
+* **animation:** add tabbed song lists to modify animation ([c19c8ca](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c19c8ca23fb9b3f5d4a0d17324cc60e0df6dd60d))
+* **songs:** add favorites ([df85f22](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/df85f22d494a1b608df617706d5f75f2e7c4fec7))
+
 # [2.0.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.27.0...v2.0.0) (2025-10-22)
 
 
