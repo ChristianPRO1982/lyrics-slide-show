@@ -382,15 +382,50 @@
 
     {% comment %} <br><hr><br>
 
-    <div>
-        {% trans "Song research" %}
-        <input type="text" id="search" placeholder="{% trans "Type the name of a song..." %}">
-        <ul id="song-list" style="max-height: 200px; overflow-y: auto;">
-            <!-- Songs will be dynamically filtered here -->
-        </ul>
+    <section aria-labelledby="add-songs-title">
+        <h3 id="add-songs-title" class="font-bold text-lg mb-2">{% trans "Song research" %}</h3>
+        <nav id="add-songs" class="overflow-y-auto" style="height:75vh;">
+            <div class="flex gap-2 mb-4" role="tablist" aria-label="{% trans "Song categories" %}">
+                <button type="button" class="px-3 py-1 border rounded active" data-tab-target="search" role="tab" aria-selected="true">
+                    🔍 {% trans "Search" %}
+                </button>
+                <button type="button" class="px-3 py-1 border rounded" data-tab-target="favorites" role="tab" aria-selected="false">
+                    ⭐ {% trans "Favorites" %}
+                </button>
+                <button type="button" class="px-3 py-1 border rounded" data-tab-target="all" role="tab" aria-selected="false">
+                    🎵 {% trans "All songs" %}
+                </button>
+            </div>
+
+            <div data-tab-panel="search" role="tabpanel">
+                <label for="search" class="block mb-1 text-sm font-semibold">{% trans "Type the name of a song..." %}</label>
+                <input type="text" id="search" class="w-full mb-3" placeholder="{% trans "Type the name of a song..." %}">
+                <ul id="search-results" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Songs will be dynamically filtered here -->
+                </ul>
+            </div>
+
+            <div data-tab-panel="favorites" role="tabpanel" hidden>
+                <h4 class="font-semibold mb-2">{% trans "Favorites" %}</h4>
+                <ul id="favorites-list" style="max-height: 200px; overflow-y: auto;"></ul>
+            </div>
+
+            <div data-tab-panel="all" role="tabpanel" hidden>
+                <h4 class="font-semibold mb-2">{% trans "All songs" %}</h4>
+                <ul id="all-songs-list" style="max-height: 200px; overflow-y: auto;"></ul>
+            </div>
+        </nav>
+
+        <style>
+            #add-songs [role="tab"] { transition: background-color 0.2s ease, color 0.2s ease; }
+            #add-songs [role="tab"].active { background-color: rgba(59, 130, 246, 0.15); color: #1d4ed8; }
+            #add-songs [data-tab-panel] { display: none; }
+            #add-songs [data-tab-panel].active { display: block; }
+        </style>
+
         <input type="text" id="txt_add_songs_name" placeholder="{% trans "Selected song will appear here..." %}" readonly><br>
         <input class="hidden" type="text" id="txt_add_songs_id" name="txt_new_songs" readonly>
-    </div> {% endcomment %}
+    </section>
     
     <br><hr><br>
     
@@ -407,30 +442,48 @@
     ];
   
     const searchInput = document.getElementById('search');
-    const songList = document.getElementById('song-list');
+    const songList = document.getElementById('search-results');
+    const favoritesList = document.getElementById('favorites-list');
+    const allSongsList = document.getElementById('all-songs-list');
+    const tabs = document.querySelectorAll('#add-songs [data-tab-target]');
+    const panels = document.querySelectorAll('#add-songs [data-tab-panel]');
     const txtAddSongsId = document.getElementById('txt_add_songs_id');
     const txtAddSongsName = document.getElementById('txt_add_songs_name');
   
+    function createListItem(song) {
+      const li = document.createElement('li');
+      li.textContent = song.name + ' - ';
+
+      const link = document.createElement('a');
+      link.href = 'javascript:void(0);';
+      link.textContent = txt_Add;
+      link.addEventListener('click', () => {
+        addSong(song.id, song.name);
+      });
+
+      li.appendChild(link);
+      return li;
+    }
+
+    function renderList(container, items) {
+      if (!container) { return; }
+      container.innerHTML = '';
+      items.forEach(song => {
+        container.appendChild(createListItem(song));
+      });
+    }
+
     function updateSongList(query) {
-      songList.innerHTML = '';
       const filteredSongs = query.length >= 3
         ? songs.filter(song => song.name.toLowerCase().includes(query.toLowerCase()))
         : songs;
-  
-      filteredSongs.forEach(song => {
-        const li = document.createElement('li');
-        li.textContent = song.name + ' - ';
-  
-        const link = document.createElement('a');
-        link.href = 'javascript:void(0);';
-        link.textContent = txt_Add;
-        link.addEventListener('click', () => {
-          addSong(song.id, song.name);
-        });
-      
-        li.appendChild(link);
-        songList.appendChild(li);
-      });
+
+      renderList(songList, filteredSongs);
+    }
+
+    function populateStaticLists() {
+      renderList(favoritesList, songs);
+      renderList(allSongsList, songs);
     }
   
     function addSong(songId, songName) {
@@ -444,10 +497,38 @@
       txtAddSongsName.value = currentNames.join('|');
     }
   
-    searchInput.addEventListener('input', (e) => {
-      updateSongList(e.target.value);
+    function activateTab(target) {
+      tabs.forEach(tab => {
+        const isActive = tab.dataset.tabTarget === target;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      panels.forEach(panel => {
+        const isActive = panel.getAttribute('data-tab-panel') === target;
+        panel.classList.toggle('active', isActive);
+        panel.toggleAttribute('hidden', !isActive);
+      });
+
+      if (target === 'search' && searchInput) {
+        searchInput.focus();
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        activateTab(tab.dataset.tabTarget);
+      });
     });
-  
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        updateSongList(e.target.value);
+      });
+    }
+
+    populateStaticLists();
     updateSongList('');
-</script> {% endcomment %}
+    activateTab('search');
+</script>
 {% endblock content %}

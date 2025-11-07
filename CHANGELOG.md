@@ -1,3 +1,109 @@
+# [2.0.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.27.0...v2.0.0) (2025-10-22)
+
+
+### Features
+
+* taking into account forgotten slashes in the URL ([cb9a151](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cb9a151de099f5c2af663121aa084e46069d7071))
+
+
+### BREAKING CHANGES
+
+* backgrounds images are available
+
+# [1.27.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.3...v1.27.0) (2025-10-22)
+
+
+### Bug Fixes
+
+* base.py ([17a1247](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/17a1247186888ae90fcd3597b32c6f090a536eed))
+* bg image save ([7afa0ae](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7afa0ae08dc27a85aa96c74a6892a1658288f53b))
+* delete all colors and BG images ([540fbc5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/540fbc54cb71f0c6db2c38e6c79a59f48f12743b))
+* dev background image ([a882bf2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a882bf2473d9fa3eec329cc3c51c173481286bc3))
+* error > tmp saved in background file ([1364c49](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1364c49739f4155329890aa892bcb0dc891ff289))
+* form to validate BG image ([710ee07](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/710ee07c4429baab3aeb0f3164b581d3b3a5d261))
+* **goto song:** display one chorus on "goto song" page ([639667a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/639667a01faf8564d8a077085da1bdad9953c861)), closes [#120](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/120)
+* **header+nav:** debog ([0130008](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0130008982ceeec9217510842c68f8bfced1d1f6))
+* import bg into bg color ([561de9e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/561de9e013049ea81548f75cec252b4df7116c5a))
+* login ([1d96389](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1d96389b8ef7154717d9b001523c0a85dc8d16fe))
+* **modify group:** alert message before to delete a group ([5e0fd78](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5e0fd78ac69873fda5ca616aff1b1fc12c9dbf3d)), closes [#118](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/118)
+* **modify_song:** clic on 💬 & 💭 not double clic ([2754266](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/27542661c4912891a860005a23ff86e6691920c2))
+* need to create new class ([ee417e8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ee417e8784181a575cd2fbf945a48a80283f4cbd))
+* new class ([997ed34](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/997ed3440e17b7d3e2072322e2c6caec9dc3a59d))
+* **nginx:** media DEV and PROD ([7a978a1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7a978a1041d860a542ffe7e7e9835d53dae17ebb))
+* save BG for all type ([eab7f69](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/eab7f695ea4dee29c38bb12b0da2339b13121c3c))
+* **smartphone view:** change english copy message ([112893c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/112893c561c2cb17ba4fbe76bc955871c04e74f5)), closes [#122](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/122)
+* **smartphone view:** change ext of buttons image ([11e0510](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/11e05109a339630efb9e257256c227ccd8512f31)), closes [#123](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/123)
+* **smartphone view:** delete old button images and add new one ([3564a10](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3564a1051d7b9ad8d6765fa8ddc92b3afdb94c77))
+* start _sync_images_with_db ([a5c1dd1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a5c1dd19a7a7d1af3e3db1c667dcaca05ae2fdec))
+* start delete db images ([27f104f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/27f104fd289179c6232361ad99acecb08d277935))
+* **submit_image:** form to upload ([e2ffd47](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e2ffd472044f03a86e2d339d21c7ebbae9d5b8f1))
+* tmp OK ([f861060](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f861060254166912078d753039e13617f22bb0f0))
+* validation submission BG ([88d7bcc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/88d7bcc0d47f3ce1cb8ab48e52e491022606e56f))
+
+
+### Features
+
+* add status BG image ([35a1b67](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/35a1b674095e84ce0b1e4fd7d0e9fe3273f9ceb7))
+* delete all colors and BG images ([3acb959](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3acb959046505f8f90906322f466924e2d03d5c8))
+* new page to select bg image ([51abf5e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/51abf5e345e6a9b96f4ad3b3f375243fa1b56285))
+* preload BG images ([a47fe73](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a47fe731ae79e6b1ff32941edab113c002af223d))
+* **submit_image:** first step ok. submit image is done ([3765cd6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3765cd6b002bc3bc22f9be95cd04085caa0ce076))
+* **submit_image:** start moderator page ([92d34ac](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/92d34accdd8ef44e226fdc630df589e704afb6e8))
+
+## [1.26.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.2...v1.26.3) (2025-10-07)
+
+
+### Bug Fixes
+
+* **all_lyrics.html:** QR code bigger ([959eefd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/959eefdb29d4639363afc3078e18ee46b12a182e))
+* **song_actions:** replace 🖨️ by 🖨️💯 and 🖨️1️⃣ ([0ede9a5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0ede9a5a97248c5389e28fb4ff76b6e47bee6ed7))
+* **songs:** create a new song disconnected is forbiden now ([daa507c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/daa507c04e2973b9b880a4a6c2eea4c37baf9eb2))
+
+## [1.26.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.1...v1.26.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **modify_song:** replace 👀 by 💬 ([ea68d22](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ea68d229458fe49f0b3bc78cddb4329f246e39c1))
+* **translate:** refrai > refrain ([92853a0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/92853a06c73c7df9c17444ee14d8de95383492f9))
+
+## [1.26.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.26.0...v1.26.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **footer:** color of WIKI link with class:L_LINK_HEADER ([190374f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/190374ff87e54e85f1a24f71e387a5d8b6f9c42f))
+
+# [1.26.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.5...v1.26.0) (2025-10-07)
+
+
+### Bug Fixes
+
+* button wiki hidden ([ed188c4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ed188c48740533405610751152ef77f6d8b9fc65))
+* **header:** connection links on right in the nav bar ([b41e0ea](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b41e0ea0098f3cc8e7217bf8102b904809600e68))
+* **profil.html:** link to disconnect ([436cf6e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/436cf6e6d106f33706e2e7633ddd8d227355c320))
+* **song_meta.html:** quick search can use link with slashes ([63bd890](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/63bd890a8e9a3804b8a5f3e7f67122f75c6406ad))
+* **song_metadata:** add save and return button ([618bc58](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/618bc58e5bd5ce353fe45d40d0db7dce24b351ee))
+
+
+### Features
+
+* **songs:** new links fosmart view and print ([dcf3f13](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dcf3f13f2fc228133498c4ea29a4f6f1bc7545da))
+
+## [1.25.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.4...v1.25.5) (2025-10-06)
+
+
+### Bug Fixes
+
+* all_lyrics V2 ([b871ce0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b871ce0f5a0de8c8d0c72b97896eead3dacb5672))
+
+## [1.25.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.3...v1.25.4) (2025-10-05)
+
+
+### Bug Fixes
+
+* new design of smartphone view ([8d8c03a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8d8c03ae46aa4df033e1dc234cb6f82cd698eaea))
+
 ## [1.25.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v1.25.2...v1.25.3) (2025-10-05)
 
 
