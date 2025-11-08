@@ -1,3 +1,17 @@
+# [2.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.2...v2.2.0) (2025-11-08)
+
+
+### Bug Fixes
+
+* **animation_aplylist:** delete L_DIV_BORDER class ([32e8603](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/32e8603f0a379b93b67dd1aa5ec876163bbca4be))
+* **animation_playlist:** add 3 lists: search list / favorites songs / all songs ([3daabda](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3daabda12fc30bdadb82baa6b6d840fe3288e9f3))
+* **animation_playlist:** drop L_DIV_BORDER class from  playlist-dnd.js ([660addb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/660addb0b717639f84f81d8fbfd00b28d18ddcc8))
+
+
+### Features
+
+* **playlist:** allow full-row drag on playlist items ([b0ce6ef](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b0ce6ef48ba5d989bc12f2a4de37b5d6d0681778))
+
 ## [2.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.1...v2.1.2) (2025-11-07)
 
 
