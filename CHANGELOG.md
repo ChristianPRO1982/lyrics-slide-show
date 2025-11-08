@@ -1,3 +1,23 @@
+## [2.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.1...v2.1.2) (2025-11-07)
+
+
+### Bug Fixes
+
+* **songs:** create new song: add favorit param ([ed297cd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ed297cd035b43aa3f341023b3da69abd483458de))
+
+## [2.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.0...v2.1.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* some debugs ([91e22b4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/91e22b4117bb1e29d4d3de5fe0eaad364db548d4))
+* translate ([4de41bc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4de41bca396c1aac4a7fd506b54751e59757a05f))
+
+
+### Reverts
+
+* Revert "fix(animation_playlist): update back with request.POST from songs" ([3c89797](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3c897978142f0cbba92eeea66b3243ccea55a93f))
+
 # [2.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.0.0...v2.1.0) (2025-11-07)
 
 
