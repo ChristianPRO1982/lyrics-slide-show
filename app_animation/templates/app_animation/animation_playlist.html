@@ -24,7 +24,7 @@
 </div>
 <nav id="add-songs" class="overflow-y-auto" style="height:75vh;">
   <ul class="tab-panel" data-tab="search" role="tabpanel" aria-labelledby="tab-search">
-  {% for song in all_songs %}
+  {% for song in songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
       <span class="dnd-handle-num">
         <span class="dnd-handle" aria-hidden="true">⠿</span>
@@ -35,18 +35,7 @@
   </ul>
   <ul class="tab-panel" data-tab="favorites" role="tabpanel" aria-labelledby="tab-favorites" hidden>
     in comming soon...
-  {% comment %} {% for song in all_songs %}
-    <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
-      <span class="dnd-handle-num">
-        <span class="dnd-handle" aria-hidden="true">⠿</span>
-      </span>
-      <span class="dnd-title">{{ song.full_title }}</span>
-    </li>
-  {% endfor %} {% endcomment %}
-  </ul>
-  <ul class="tab-panel" data-tab="all" role="tabpanel" aria-labelledby="tab-all" hidden>
-    in comming soon...
-  {% comment %} {% for song in all_songs %}
+  {% for song in favorite_songs %}
     <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
       <span class="dnd-handle-num">
         <span class="dnd-handle" aria-hidden="true">⠿</span>
@@ -54,7 +43,17 @@
       <span class="dnd-title">{{ song.full_title }}</span>
     </li>
   {% endfor %}
-  </ul> {% endcomment %}
+  </ul>
+  <ul class="tab-panel" data-tab="all" role="tabpanel" aria-labelledby="tab-all" hidden>
+  {% for song in all_songs %}
+    <li class="dnd-item" data-asid="{{ song.song_id }}" draggable="true">
+      <span class="dnd-handle-num">
+        <span class="dnd-handle" aria-hidden="true">⠿</span>
+      </span>
+      <span class="dnd-title">{{ song.full_title }}</span>
+    </li>
+  {% endfor %}
+  </ul>
 </nav>
 <script>
   document.addEventListener('DOMContentLoaded', () => {

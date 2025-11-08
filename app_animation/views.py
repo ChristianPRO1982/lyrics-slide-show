@@ -30,7 +30,9 @@ import shutil
 from dataclasses import dataclass
 from typing import List, Tuple
 import re
-# from django.http import HttpRequest, HttpResponse
+from app_main.utils import (
+    get_search_params,
+)
 
 
 def animations(request):
@@ -891,6 +893,28 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
 
     all_songs = Song.get_all_songs(request.user.is_authenticated)
 
+    search_params = get_search_params(request)
+    songs = Song.get_all_songs(request.user.is_authenticated,
+                                search_params['search_txt'],
+                                search_params['search_everywhere'],
+                                search_params['search_logic'],
+                                search_params['search_genres'],
+                                search_params['search_bands'],
+                                search_params['search_artists'],
+                                search_params['search_song_approved'],
+                                search_params['search_favorites']
+                               )
+    favorite_songs = Song.get_all_songs(request.user.is_authenticated,
+                                        '',
+                                        0,
+                                        0,
+                                        '',
+                                        '',
+                                        '',
+                                        0,
+                                        True,
+                                       )
+
     if request.method == "POST":
         ordered_ids_raw = request.POST.get("ordered_ids", "")
         new_songs_raw = request.POST.get("txt_new_songs", "")
@@ -939,6 +963,8 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
         "app_animation/animation_playlist.html",
         {
             "animation": animation,
+            "songs": songs,
+            "favorite_songs": favorite_songs,
             "all_songs": all_songs,
             "group_selected": group_selected,
             "error": error,
