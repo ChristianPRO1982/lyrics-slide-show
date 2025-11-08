@@ -115,12 +115,16 @@
 
     if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs || !orderedMixInput) return;
 
-    // track whether the drag was initiated from the handle so we do not start
-    // dragging when the user simply clicks the row to focus / select text.
+    // Track whether the drag was initiated from within a list item so we can
+    // prevent drags when interacting with other controls such as the delete
+    // button.
     let activeHandleItem = null;
     targetList.addEventListener("pointerdown", (e) => {
-      const handle = e.target.closest(".dnd-handle");
-      activeHandleItem = handle ? handle.closest(".dnd-item") : null;
+      if (e.target.closest(".dnd-x")) {
+        activeHandleItem = null;
+        return;
+      }
+      activeHandleItem = e.target.closest(".dnd-item");
     });
     window.addEventListener("pointerup", () => { activeHandleItem = null; });
 
@@ -171,7 +175,6 @@
       return indicator;
     }
 
-    // Limit drag start to the handle for better UX (optional: remove the guard if you want full-row drag)
     targetList.addEventListener("dragstart", (e) => {
       const li = e.target.closest(".dnd-item");
       if (!li) return;
@@ -181,8 +184,7 @@
         return;
       }
       if (!activeHandleItem) {
-        e.preventDefault();
-        return;
+        activeHandleItem = li;
       }
       draggingEl = li;
       activeHandleItem = null;
