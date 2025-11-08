@@ -52,7 +52,7 @@
 
   function createNewDraggableItem(songId, title) {
     const li = document.createElement("li");
-    li.className = "L_DIV_BORDER dnd-item";
+    li.className = "dnd-item";
     li.draggable = true;
     li.dataset.kind = "new";
     li.dataset.songId = String(songId);
