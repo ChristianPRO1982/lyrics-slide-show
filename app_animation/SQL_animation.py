@@ -295,6 +295,22 @@ LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
             cursor.execute(request, params)
 
 
+    @staticmethod
+    def get_animations_by_song_id(song_id):
+        with connection.cursor() as cursor:
+            request = """
+SELECT DISTINCT animation_id
+  FROM l_animation_song
+ WHERE song_id = %s
+"""
+            params = [song_id]
+
+            create_SQL_log(code_file, "Animations.get_animations_by_song_id", "SELECT_20", request, params)
+            cursor.execute(request, params)
+            rows = cursor.fetchall()
+            return [row[0] for row in rows]
+        
+
     def update_song_num(self, animation_song_id, num):
         with connection.cursor() as cursor:
             request = """

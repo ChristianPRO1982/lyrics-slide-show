@@ -16,6 +16,7 @@ from app_main.utils import (
     site_messages,
 )
 from app_main.SQL_main import Site
+from app_animation.SQL_animation import Animation
 
 
 def songs(request, display_my_favorites=False):
@@ -237,6 +238,14 @@ def modify_song(request, song_id):
                         for message_id in message_ids:
                             if message_id:
                                 song.moderator_message_done(message_id)
+                    
+                    # update animations using this song
+                    animations_id = Animation.get_animations_by_song_id(song.song_id)
+                    for animation_id in animations_id:
+                        animation = Animation(animation_id=animation_id)
+                        animation.new_song_verses_all()
+                        break
+                    #     print("Updating animation:", animation.name)
 
                 else:
                     if Song.song_already_exists(song.title, song.sub_title):
