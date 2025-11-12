@@ -83,6 +83,13 @@ hr {
     background-color: #b5c7c3;
 }
 
+.L_LINE_THROUGH:hover {
+    text-decoration: line-through !important;
+    text-decoration-color: #54e7db;
+    text-decoration-thickness: 2px;
+    text-decoration-skip-ink: none;
+}
+
 .L_BUTTON_LIKE_A_LINK {
     color: #1C4E4A;
     text-decoration: underline dotted !important;
