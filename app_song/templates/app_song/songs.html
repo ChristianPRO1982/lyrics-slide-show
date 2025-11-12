@@ -20,7 +20,11 @@
     <span>{{ total_songs }}</span><br>
     <span id="info2" class="hidden text-xs">{% trans 'Total songs in DB' %}</span>
     
-    <br>
+    <hr>
+
+    💫 <a href="{% url "display_my_favorites" %}">{% trans "Display my favorites" %}</a>
+
+    <hr>
 
     {% trans "✔️: Song valided" %}<br>
     {% trans "✔️⁉️: Song valided with messages" %}<br>
@@ -62,13 +66,13 @@
     {% endif %}
     <h3 class="L_H3">{% trans "Song research" %}</h3>
     {% if user.is_authenticated %}
-    <form method="post">
+    <form method="post" action="{% url 'songs' %}">
         {% csrf_token %}
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
         <label>
             <input type="checkbox" name="chk_search_favorites" style="width: 10%;" {% if search_favorites %}checked{% endif %}>
-            {% trans "Favorites" %} ⭐ 💫
+            {% trans "Favorites" %} ⭐
         </label><br>
         <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>

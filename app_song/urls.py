@@ -5,6 +5,7 @@ from app_song import views
 
 urlpatterns = [
     path('', views.songs, name='songs'),
+    path('display_my_favorites', views.songs, {'display_my_favorites': True}, name='display_my_favorites'),
     path('delete_genre/<int:genre_id>/', views.delete_genre, name='delete_genre'),
     path('delete_band/<int:band_id>/', views.delete_band, name='delete_band'),
     path('delete_artist/<int:artist_id>/', views.delete_artist, name='delete_artist'),
