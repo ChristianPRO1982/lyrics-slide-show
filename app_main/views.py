@@ -29,7 +29,7 @@ def debug_error_404(request):
 
 
 def homepage(request):
-    print("LANG ACTIVE (request.LANGUAGE_CODE):", getattr(request, "LANGUAGE_CODE", None))
+    # print("LANG ACTIVE (request.LANGUAGE_CODE):", getattr(request, "LANGUAGE_CODE", None))
     # print("LANG ACTIVE (translation.get_language):", translation.get_language())
     # print("LANG COOKIE:", request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME))
     # print("LANG SESSION (django_language):", request.session.get('django_language'))

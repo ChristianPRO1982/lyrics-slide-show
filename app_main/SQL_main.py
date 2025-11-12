@@ -223,7 +223,7 @@ SELECT song_id,
 SELECT SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) AS active_count,
        COUNT(*) AS total_count,
        ROUND(CASE WHEN COUNT(*) = 0 THEN 0
-                  ELSE SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) / COUNT(*) * 100.0
+                  ELSE SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) / COUNT(*) * 100.0
              END, 2) AS active_percent
   FROM l_songs
 """
