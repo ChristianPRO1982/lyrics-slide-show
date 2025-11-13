@@ -7,7 +7,7 @@
 {% block bloc1 %}
     {% if song.status != 0 and not moderator %}
         {% trans "contact_moderators_info_gen" %}
-        <br><br><hr><br>
+        <hr>
     {% endif %}
 
     <span>{% trans "Songs:" %}</span> <span id="nb_song"></span><br>
@@ -20,9 +20,11 @@
     <span>{{ total_songs }}</span><br>
     <span id="info2" class="hidden text-xs">{% trans 'Total songs in DB' %}</span>
     
+    {% if user.is_authenticated %}
     <hr>
 
     💫 <a href="{% url "display_my_favorites" %}">{% trans "Display my favorites" %}</a>
+    {% endif %}
 
     <hr>
 
