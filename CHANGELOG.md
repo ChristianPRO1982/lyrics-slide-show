@@ -1,3 +1,13 @@
+## [2.3.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.0...v2.3.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* **animation.new_song_verses_all:** method is optimized ([8cf4dbc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8cf4dbc1d00ad9675b18998f8824fb7690a7e8c2))
+* **songs:** checkbox for favorites in advancedSearch ([109302f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/109302fa2308780b8b00404fb818d9dd25b8e404))
+* **songs:** link 💫 Display my favorites only used by connected user - back views.py ([dc0e582](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dc0e58222293e80d49c689bf1aef07cb10382ab8))
+* **songs:** link 💫 is enable only for connected user ([071bd2b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/071bd2bea91db57db51e430b0bc5d56553e40a65))
+
 # [2.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.2.0...v2.3.0) (2025-11-13)
 
 
