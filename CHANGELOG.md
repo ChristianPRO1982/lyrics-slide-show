@@ -1,3 +1,19 @@
+# [2.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.2.0...v2.3.0) (2025-11-13)
+
+
+### Bug Fixes
+
+* **animation_playlist:** drop "in comming soon..." text ([627bc32](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/627bc3248d90cef1ea79599c310a2e8aac03090f))
+* **CSS:** add class L_LINE_THROUGH:hover ([4f4f136](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4f4f136e6f27b97e168ca599de079f067d027620))
+* **homepage:** def get_approved_songs_stats fixed for display the correct % ([d14c6a9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d14c6a99e9affb29e44f52950bc58ef4746e55de))
+
+
+### Features
+
+* **animations:** animation can be copied ([1bb53d3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1bb53d36f680041df1548c42186aa1cf091732cd))
+* **modify_song:** all animations are updated after a modification ([45ea0d5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/45ea0d5742b280fd09ed3654064f3fe921934c62))
+* **songs:** add possibilty to search juste in my favorites without saving search params on my profil > just one shot ([00cd7b6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/00cd7b650c361836662a2e7aa1de0b7fcdbe4cd0))
+
 # [2.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.2...v2.2.0) (2025-11-08)
 
 
