@@ -71,16 +71,17 @@
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
         <label>
-            <input type="checkbox" name="chk_search_favorites" style="width: 10%;" {% if search_favorites %}checked{% endif %}>
-            {% trans "Favorites" %} ⭐
-        </label><br>
-        <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
             {% trans "Search in description and lyrics" %}
         </label><br>
         <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('advancedSearch')">{% trans "Advanced search" %}</button>
         <div id="advancedSearch" style="display: none; max-height: 20em; overflow-y: auto;">
             <br>
+            <label>
+                <input type="checkbox" name="chk_search_favorites" style="width: 10%;" {% if search_favorites %}checked{% endif %}>
+                {% trans "Favorites" %} ⭐
+            </label>
+            <br><br>
             <label>
                 <input type="checkbox" id="chk_search_song_approved" name="chk_search_song_approved"
                 onclick="if(this.checked){document.getElementById('chk_search_song_not_approved').checked=false;}"
