@@ -16,9 +16,10 @@ from app_main.utils import (
     site_messages,
 )
 from app_main.SQL_main import Site
+from app_animation.SQL_animation import Animation
 
 
-def songs(request):
+def songs(request, display_my_favorites=False):
     error = ''
     css = request.session.get('css', 'normal.css')
     no_loader = is_no_loader(request)
@@ -109,16 +110,28 @@ def songs(request):
             add_search_params(request, '', 0, 0, '', '', '', 0, False)
             
     search_params = get_search_params(request)
-    songs = Song.get_all_songs(request.user.is_authenticated,
-                               search_params['search_txt'],
-                               search_params['search_everywhere'],
-                               search_params['search_logic'],
-                               search_params['search_genres'],
-                               search_params['search_bands'],
-                               search_params['search_artists'],
-                               search_params['search_song_approved'],
-                               search_params['search_favorites']
-                               )
+    if not display_my_favorites:
+        songs = Song.get_all_songs(request.user.is_authenticated,
+                                search_params['search_txt'],
+                                search_params['search_everywhere'],
+                                search_params['search_logic'],
+                                search_params['search_genres'],
+                                search_params['search_bands'],
+                                search_params['search_artists'],
+                                search_params['search_song_approved'],
+                                search_params['search_favorites']
+                                )
+    else:
+        songs = Song.get_all_songs(request.user.is_authenticated,
+                                '',
+                                0,
+                                0,
+                                '',
+                                '',
+                                '',
+                                0,
+                                1,  # search_favorites = 1
+                                )
     
     # Transforme search_params['search_genres'] de "68,72,88" en liste d'entiers [68, 72, 88]
     search_genres_list = []
@@ -225,6 +238,14 @@ def modify_song(request, song_id):
                         for message_id in message_ids:
                             if message_id:
                                 song.moderator_message_done(message_id)
+                    
+                    # update animations using this song
+                    animations_id = Animation.get_animations_by_song_id(song.song_id)
+                    for animation_id in animations_id:
+                        animation = Animation(animation_id=animation_id)
+                        animation.new_song_verses_all()
+                        break
+                    #     print("Updating animation:", animation.name)
 
                 else:
                     if Song.song_already_exists(song.title, song.sub_title):

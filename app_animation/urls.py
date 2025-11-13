@@ -6,6 +6,7 @@ from app_animation import views
 urlpatterns = [
     path('', views.animations, name='animations'),
     path('modify_animation/<int:animation_id>/', views.modify_animation, name='modify_animation'),
+    path('copy_animation/<int:animation_id>/', views.copy_animation, name='copy_animation'),
     path('animation_playlist/<int:animation_id>/', views.animation_playlist, name='animation_playlist'),
     path('modify_colors_animation/<int:xxx_id>/', views.modify_colors, name='modify_colors_animation'),
     path('modify_colors_song/<int:xxx_id>/', views.modify_colors, name='modify_colors_song'),

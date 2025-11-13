@@ -20,7 +20,11 @@
     <span>{{ total_songs }}</span><br>
     <span id="info2" class="hidden text-xs">{% trans 'Total songs in DB' %}</span>
     
-    <br>
+    <hr>
+
+    💫 <a href="{% url "display_my_favorites" %}">{% trans "Display my favorites" %}</a>
+
+    <hr>
 
     {% trans "✔️: Song valided" %}<br>
     {% trans "✔️⁉️: Song valided with messages" %}<br>
@@ -37,7 +41,7 @@
     {% for search_genre in search_genres %}
     {% for genre in genres %}
     {% if genre.genre_id == search_genre %}
-    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE">❌ 🎼 {{ genre.name }}</a>
+    <a href="{% url 'delete_genre' genre.genre_id %}" class="L_GENRE_BADGE L_LINE_THROUGH">❌ 🎼 {{ genre.name }}</a>
     {% endif %}
     {% endfor %}
     {% endfor %}
@@ -46,7 +50,7 @@
     {% for search_band in search_bands %}
     {% for band in bands %}
     {% if band.band_id == search_band %}
-    <a href="{% url 'delete_band' band.band_id %}" class="L_GENRE_BADGE">❌ 👥 {{ band.name }}</a>
+    <a href="{% url 'delete_band' band.band_id %}" class="L_GENRE_BADGE L_LINE_THROUGH">❌ 👥 {{ band.name }}</a>
     {% endif %}
     {% endfor %}
     {% endfor %}
@@ -55,20 +59,20 @@
     {% for search_artist in search_artists %}
     {% for artist in artists %}
     {% if artist.artist_id == search_artist %}
-    <a href="{% url 'delete_artist' artist.artist_id %}" class="L_GENRE_BADGE">❌ 👤 {{ artist.name }}</a>
+    <a href="{% url 'delete_artist' artist.artist_id %}" class="L_GENRE_BADGE L_LINE_THROUGH">❌ 👤 {{ artist.name }}</a>
     {% endif %}
     {% endfor %}
     {% endfor %}
     {% endif %}
     <h3 class="L_H3">{% trans "Song research" %}</h3>
     {% if user.is_authenticated %}
-    <form method="post">
+    <form method="post" action="{% url 'songs' %}">
         {% csrf_token %}
         <input type="text" id="search" name="txt_search" placeholder="{% trans "Minimum 3 characters" %}"
         value="{{ search_txt }}" /><br>
         <label>
             <input type="checkbox" name="chk_search_favorites" style="width: 10%;" {% if search_favorites %}checked{% endif %}>
-            {% trans "Favorites" %} ⭐ 💫
+            {% trans "Favorites" %} ⭐
         </label><br>
         <label>
             <input type="checkbox" name="chk_search_everywhere" style="width: 10%;" {% if search_everywhere %}checked{% endif %}>
