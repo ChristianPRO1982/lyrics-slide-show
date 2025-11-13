@@ -244,8 +244,6 @@ def modify_song(request, song_id):
                     for animation_id in animations_id:
                         animation = Animation(animation_id=animation_id)
                         animation.new_song_verses_all()
-                        break
-                    #     print("Updating animation:", animation.name)
 
                 else:
                     if Song.song_already_exists(song.title, song.sub_title):

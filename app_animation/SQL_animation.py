@@ -38,7 +38,7 @@ class Animation:
         request = """
   SELECT animation_id, group_id, name, description, date,
          CASE
-              WHEN DATEDIFF(date, SYSDATE()) >= 0 THEN TRUE
+              WHEN DATEDIFF(date, CURDATE()) >= 0 THEN TRUE
               ELSE FALSE
          END AS future
     FROM l_animations
@@ -285,11 +285,12 @@ INSERT INTO l_animation_song (animation_id, song_id, num)
         with connection.cursor() as cursor:
             request = """
 INSERT IGNORE INTO l_animation_song_verse (animation_song_id, verse_id)
-         SELECT las.animation_song_id, lv.verse_id
-           FROM l_animation_song las 
-LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
+            SELECT las.animation_song_id, lv.verse_id
+              FROM l_animation_song las 
+   LEFT OUTER JOIN l_verses lv ON lv.song_id = las.song_id
+             WHERE las.animation_id = %s
 """
-            params = []
+            params = [self.animation_id]
 
             create_SQL_log(code_file, "Animations.new_song", "INSERT_3", request, params)
             cursor.execute(request, params)
@@ -649,7 +650,7 @@ UPDATE l_image_submissions
                 # If no row was updated, do an insert
                 request_insert = """
 INSERT INTO l_image_submissions (stored_path, original_name, mime, size_bytes, width, height, description, created_at)
-     VALUES (%s, %s, %s, %s, %s, %s, %s, SYSDATE())
+     VALUES (%s, %s, %s, %s, %s, %s, %s, CURDATE())
 """
                 params_insert = [self.stored_path, self.original_name, self.mime, self.size_bytes, self.width, self.height, self.description]
                 create_SQL_log(code_file, "BackgroundImageSubmission.save", "INSERT_4", request_insert, params_insert)
@@ -789,7 +790,7 @@ UPDATE l_image_backgrounds
                 # If no row was updated, do an insert
                 request_insert = """
 INSERT INTO l_image_backgrounds (stored_path, mime, size_bytes, width, height, description, created_at)
-     VALUES (%s, %s, %s, %s, %s, %s, SYSDATE())
+     VALUES (%s, %s, %s, %s, %s, %s, CURDATE())
 """
                 params_insert = [self.stored_path, self.mime, self.size_bytes, self.width, self.height, self.description]
                 create_SQL_log(code_file, "BackgroundImage.save", "INSERT_5", request_insert, params_insert)
