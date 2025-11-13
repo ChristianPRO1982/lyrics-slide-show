@@ -61,6 +61,7 @@ function togglePassedAnimations() {
             <td>{{ animation.date }}</td>
             <td>
                 <a href="{% url 'modify_animation' animation.animation_id %}">{% trans "Update" %}</a> |
+                <a href="{% url 'copy_animation' animation.animation_id %}">{% trans "Copy" %}</a> |
                 <a href="{% url 'delete_animation' animation.animation_id %}">{% trans "Delete" %}</a>
             </td>
         </tr>

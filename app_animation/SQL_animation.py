@@ -598,6 +598,18 @@ SELECT lasv.bg_rgba
                 return []
             
 
+    @staticmethod
+    def copy_animation(original_animation_id, new_date):
+        with connection.cursor() as cursor:
+            request = """
+CALL sp_copy_animation(%s, %s, @new_animation_id);
+"""
+            params = [original_animation_id, new_date]
+
+            create_SQL_log(code_file, "Animations.copy_animation", "CALL_1", request, params)
+            cursor.execute(request, params)
+            
+
 ###################################################
 ###################################################
 ############### BACKGROUNDS IMAGES ################

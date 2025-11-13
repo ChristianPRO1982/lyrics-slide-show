@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "copy_animation" %}{% endblock title %}
+{% block title_h1 %}{% trans "Copy of:" %} <i>{{ animation.name }}</i>{% endblock title_h1 %}
+{% block bloc1 %}
+{% include "common/group_selected.html" %}
+<hr>
+{% include "common/animation_actions.html" %}
+<hr>
+{% endblock bloc1 %}
+{% block bloc2 %}{% endblock bloc2 %}
+
+{% block content %}
+<form method="post" action="{% url "copy_animation" animation.animation_id %}">
+    {% csrf_token %}
+    <hr>
+    <label>
+        {% trans "New date:" %}
+        <input type="date" id="dt_new_date" name="dt_new_date"
+        style="width: 50%;" placeholder="AAAA-MM-JJ" {% if date != '' %}value="{{ date }}"{% endif %} required />
+    </label>
+    <hr>
+    <div class="text-center">
+        <input style="width: 45%;" name="btn_copy" value="{% trans "Copy" %}" type="submit" />
+        <input onclick="document.getElementById('dt_new_date').value='2025-01-01';"
+        style="width: 45%;" name="btn_cancel" value="{% trans "Cancel" %}" type="submit" />
+    </div>
+</form>  
+{% endblock content %}
