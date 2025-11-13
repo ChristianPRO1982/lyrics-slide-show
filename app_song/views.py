@@ -110,7 +110,7 @@ def songs(request, display_my_favorites=False):
             add_search_params(request, '', 0, 0, '', '', '', 0, False)
             
     search_params = get_search_params(request)
-    if not display_my_favorites:
+    if not display_my_favorites or not request.user.is_authenticated:
         songs = Song.get_all_songs(request.user.is_authenticated,
                                 search_params['search_txt'],
                                 search_params['search_everywhere'],
