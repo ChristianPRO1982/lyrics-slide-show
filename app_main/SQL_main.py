@@ -346,10 +346,17 @@ UPDATE l_site_params
 
 
     def get_site_messages(self, moderator):
-        messages = self.admin_message
+        messages = []
+        if self.admin_message:
+            messages.append({
+                "type": "admin",
+                "content": self.admin_message,
+            })
         if moderator and self.moderator_message:
-            if messages: messages += '<hr>'
-            messages += self.moderator_message
+            messages.append({
+                "type": "moderator",
+                "content": self.moderator_message,
+            })
         return messages
 
 
