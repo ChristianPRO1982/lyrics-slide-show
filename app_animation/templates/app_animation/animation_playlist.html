@@ -89,7 +89,8 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url 'animation_playlist' animation.animation_id %}">
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" data-protect-leave="true" action="{% url 'animation_playlist' animation.animation_id %}">
   {% csrf_token %}
 
   <div class="toolbar">

@@ -19,7 +19,10 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data" style="max-width: 600px; margin: 0 auto;">
+
+{% load static %}
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" enctype="multipart/form-data" style="max-width: 600px; margin: 0 auto;" data-protect-leave="true">
     {% csrf_token %}
     <div id="drop-area" style="border: 2px dashed #aaa; padding: 40px; text-align: center; margin-bottom: 20px; background: #f9f9f9;">
         <p>{% trans "Drag &amp; drop your image here (.jpg or .png)" %}</p>

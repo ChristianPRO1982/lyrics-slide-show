@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 17:06+0100\n"
+"POT-Creation-Date: 2025-11-14 14:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,26 @@ msgstr ""
 msgid "Playlist"
 msgstr ""
 
-#: app_animation/templates/app_animation/animation_playlist.html:33
-#: app_animation/templates/app_animation/animation_playlist.html:61
+#: app_animation/templates/app_animation/animation_playlist.html:14
+#, fuzzy
+#| msgid "songs_list"
+msgid "Song lists"
+msgstr "Songs list"
+
+#: app_animation/templates/app_animation/animation_playlist.html:16
+msgid "Recherche"
+msgstr ""
+
+#: app_animation/templates/app_animation/animation_playlist.html:19
+msgid "Favoris"
+msgstr ""
+
+#: app_animation/templates/app_animation/animation_playlist.html:22
+msgid "Tous les chants"
+msgstr ""
+
+#: app_animation/templates/app_animation/animation_playlist.html:96
+#: app_animation/templates/app_animation/animation_playlist.html:124
 #: app_animation/templates/app_animation/submit_image.html:32
 #: app_main/templates/app_main/artists.html:20
 #: app_main/templates/app_main/artists.html:29
@@ -36,17 +54,17 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: app_animation/templates/app_animation/animation_playlist.html:34
-#: app_animation/templates/app_animation/animation_playlist.html:62
+#: app_animation/templates/app_animation/animation_playlist.html:97
+#: app_animation/templates/app_animation/animation_playlist.html:125
 msgid "Save & back"
 msgstr ""
 
-#: app_animation/templates/app_animation/animation_playlist.html:43
+#: app_animation/templates/app_animation/animation_playlist.html:106
 msgid "Reorder songs"
 msgstr ""
 
-#: app_animation/templates/app_animation/animation_playlist.html:51
-#: app_animation/templates/app_animation/animations.html:64
+#: app_animation/templates/app_animation/animation_playlist.html:114
+#: app_animation/templates/app_animation/animations.html:65
 #: app_animation/templates/app_animation/delete_animation.html:21
 #: app_animation/templates/app_animation/modify_animation.html:367
 #: app_animation/templates/common/animation_actions.html:8
@@ -59,7 +77,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app_animation/templates/app_animation/animation_playlist.html:54
+#: app_animation/templates/app_animation/animation_playlist.html:117
 msgid "No song yet in this animation."
 msgstr ""
 
@@ -93,7 +111,7 @@ msgid "Hide past animations"
 msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:47
-#: app_animation/templates/app_animation/animations.html:82
+#: app_animation/templates/app_animation/animations.html:83
 #: app_animation/templates/app_animation/modify_animation.html:50
 #: app_song/templates/app_song/song_metadata.html:165
 #: app_song/templates/app_song/song_metadata.html:192
@@ -101,8 +119,8 @@ msgid "Name"
 msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:48
-#: app_animation/templates/app_animation/animations.html:73
-#: app_animation/templates/app_animation/animations.html:83
+#: app_animation/templates/app_animation/animations.html:74
+#: app_animation/templates/app_animation/animations.html:84
 #: app_animation/templates/app_animation/modify_animation.html:54
 #: app_group/templates/app_group/add_group.html:16
 #: app_group/templates/app_group/modify_group.html:56
@@ -110,13 +128,13 @@ msgid "Description"
 msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:49
-#: app_animation/templates/app_animation/animations.html:84
+#: app_animation/templates/app_animation/animations.html:85
 #: app_animation/templates/app_animation/modify_animation.html:58
 msgid "Date"
 msgstr ""
 
 #: app_animation/templates/app_animation/animations.html:50
-#: app_animation/templates/app_animation/animations.html:85
+#: app_animation/templates/app_animation/animations.html:86
 #: app_animation/templates/common/animation_actions.html:3
 #: app_song/templates/app_song/song_metadata.html:33
 #: app_song/templates/app_song/song_metadata.html:58
@@ -130,13 +148,41 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:72
+#: app_animation/templates/app_animation/animations.html:64
+#: app_animation/templates/app_animation/copy_animation.html:26
+msgid "Copy"
+msgstr ""
+
+#: app_animation/templates/app_animation/animations.html:73
 msgid "new_animation"
 msgstr ""
 
-#: app_animation/templates/app_animation/animations.html:75
+#: app_animation/templates/app_animation/animations.html:76
 #: app_group/templates/app_group/add_group.html:21
 msgid "Add"
+msgstr ""
+
+#: app_animation/templates/app_animation/copy_animation.html:5
+#, fuzzy
+#| msgid "nav_animations_list"
+msgid "copy_animation"
+msgstr "Animations list"
+
+#: app_animation/templates/app_animation/copy_animation.html:6
+msgid "Copy of:"
+msgstr ""
+
+#: app_animation/templates/app_animation/copy_animation.html:20
+msgid "New date:"
+msgstr ""
+
+#: app_animation/templates/app_animation/copy_animation.html:28
+#: app_animation/templates/app_animation/delete_animation.html:22
+#: app_animation/templates/app_animation/modify_animation.html:435
+#: app_main/templates/app_main/homepage.html:99
+#: app_main/templates/app_main/homepage.html:178
+#: app_song/templates/app_song/moderator_song.html:43
+msgid "Cancel"
 msgstr ""
 
 #: app_animation/templates/app_animation/delete_animation.html:5
@@ -146,13 +192,6 @@ msgstr ""
 
 #: app_animation/templates/app_animation/delete_animation.html:16
 msgid "confirm_delete_animation_2dot"
-msgstr ""
-
-#: app_animation/templates/app_animation/delete_animation.html:22
-#: app_main/templates/app_main/homepage.html:99
-#: app_main/templates/app_main/homepage.html:178
-#: app_song/templates/app_song/moderator_song.html:43
-msgid "Cancel"
 msgstr ""
 
 #: app_animation/templates/app_animation/get_submissions.html:10
@@ -437,6 +476,7 @@ msgid "Delete all colors and background images for song and verses"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:137
+#: app_animation/templates/app_animation/modify_animation.html:433
 #: app_animation/templates/app_animation/modify_colors.html:62
 #: app_group/templates/app_group/modify_group.html:97
 #: app_main/templates/app_main/homepage.html:98
@@ -448,6 +488,7 @@ msgid "save"
 msgstr ""
 
 #: app_animation/templates/app_animation/modify_animation.html:138
+#: app_animation/templates/app_animation/modify_animation.html:434
 #, fuzzy
 #| msgid "animations_title"
 msgid "animation_save_exit"
@@ -689,7 +730,7 @@ msgid "new_group"
 msgstr "New group"
 
 #: app_group/templates/app_group/groups.html:18
-#: app_song/templates/app_song/songs.html:144
+#: app_song/templates/app_song/songs.html:151
 msgid "add"
 msgstr ""
 
@@ -1094,13 +1135,16 @@ msgstr "2. Finalité du traitement"
 #: app_main/templates/app_main/privacy_policy.html:21
 msgid "privacy_policy_article_2_content"
 msgstr ""
-"These data are used only for:<ul><li style=\"list-style-type: "
-"disc; margin-left: 2em;\">Allowing you to sign in.<li><li "
-"style=\"list-style-type: disc; margin-left: 2em;\">Identifying you within "
-"your groups. Only username is displayed.<li><li style=\"list-style-type: disc; margin-left: 2em;\">"
-"Sending you two reminder emails before your account is deleted (see section 5).</li></ul><br>"
-"No data is used for commercial, advertising, statistical or analytical purposes, internally and externally."
-"<br><br>Only site administrators have access to all your data. Moderators have access to no data. Finally, group administrators have access to the usernames of members who requested access to the relevant group."
+"These data are used only for:<ul><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">Allowing you to sign in.<li><li style=\"list-style-type: disc; "
+"margin-left: 2em;\">Identifying you within your groups. Only username is "
+"displayed.<li><li style=\"list-style-type: disc; margin-left: 2em;\">Sending "
+"you two reminder emails before your account is deleted (see section 5).</"
+"li></ul><br>No data is used for commercial, advertising, statistical or "
+"analytical purposes, internally and externally.<br><br>Only site "
+"administrators have access to all your data. Moderators have access to no "
+"data. Finally, group administrators have access to the usernames of members "
+"who requested access to the relevant group."
 
 #: app_main/templates/app_main/privacy_policy.html:22
 msgid "privacy_policy_article_3_title"
@@ -1203,7 +1247,7 @@ msgid "privacy_policy_article_10_content"
 msgstr ""
 "The site applies a strict policy of non-nuisance by e-mail. Messages sent "
 "are limited to cases strictly necessary for the proper functioning of the "
-"service:<br>✅ <b>E-mails you may receive:</b><ul><li style=\"list-style-"
+"service:<br><br>✅ <b>E-mails you may receive:</b><ul><li style=\"list-style-"
 "type: disc; margin-left: 2em;\">When creating your account.</li><ul><li "
 "style=\"list-style-type: disc; margin-left: 2em;\">To retrieve your password."
 "</li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">In the event "
@@ -1211,15 +1255,16 @@ msgstr ""
 "section 5).</li><ul><li style=\"list-style-type: disc; margin-left: 2em;"
 "\">When your account is automatically deleted (see section 5).</li><ul><li "
 "style=\"list-style-type: disc; margin-left: 2em;\">If the privacy policy "
-"changes significantly.</li>"
-"<li style=\"list-style-type: disc; margin-left: 2em;\">If an attack has occurred and the data have been affected.</li><li style=\"list-style-type: disc; margin-left: 2em;\">If inappropriate behavior by a member on the site is reported.</li></ul>"
-"<b>❌ No e-mail is sent to :</b><ul><li "
-"style=\"list-style-type: disc; margin-left: 2em;\">Announcing new features</"
-"li><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Offering "
-"advertising</li><ul><li style=\"list-style-type: disc; margin-left: 2em;"
-"\">Sending newsletters, invitations, or commercial communications.</li></"
-"ul><br>You will therefore receive no unnecessary or unsolicited e-mail, in "
-"line with our commitment to simplicity, respect and discretion."
+"changes significantly.</li><li style=\"list-style-type: disc; margin-left: "
+"2em;\">If an attack has occurred and the data have been affected.</li><li "
+"style=\"list-style-type: disc; margin-left: 2em;\">If inappropriate behavior "
+"by a member on the site is reported.</li></ul><br>❌ <b>No e-mail is sent to:</b></"
+"b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Announcing new "
+"features</li><ul><li style=\"list-style-type: disc; margin-left: 2em;"
+"\">Offering advertising</li><ul><li style=\"list-style-type: disc; margin-"
+"left: 2em;\">Sending newsletters, invitations, or commercial communications."
+"</li></ul><br>You will therefore receive no unnecessary or unsolicited e-"
+"mail, in line with our commitment to simplicity, respect and discretion."
 
 #: app_main/templates/app_main/profile.html:6
 #: app_main/templates/app_main/profile.html:7
@@ -1401,12 +1446,11 @@ msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:51
 #: app_song/templates/app_song/modify_song.html:55
-#: app_song/templates/app_song/songs.html:84
+#: app_song/templates/app_song/songs.html:91
 msgid "Song approved"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:62 chris/songs copy.html:17
-#: copy.html:47
+#: app_song/templates/app_song/modify_song.html:62
 msgid "title"
 msgstr ""
 
@@ -1414,8 +1458,7 @@ msgstr ""
 msgid "subtitle"
 msgstr ""
 
-#: app_song/templates/app_song/modify_song.html:70 chris/songs copy.html:18
-#: copy.html:48
+#: app_song/templates/app_song/modify_song.html:70
 msgid "description"
 msgstr ""
 
@@ -1479,7 +1522,7 @@ msgid "Are you sure you want to delete this verse?"
 msgstr ""
 
 #: app_song/templates/app_song/modify_song.html:181
-#: app_song/templates/app_song/modify_song.html:198 chris/songs copy.html:33
+#: app_song/templates/app_song/modify_song.html:198
 msgid "delete"
 msgstr ""
 
@@ -1579,7 +1622,7 @@ msgid "New genre"
 msgstr ""
 
 #: app_song/templates/app_song/songs.html:5
-#: app_song/templates/app_song/songs.html:6 chris/songs copy.html:5 copy.html:6
+#: app_song/templates/app_song/songs.html:6
 msgid "songs_list"
 msgstr "Songs list"
 
@@ -1603,109 +1646,113 @@ msgstr ""
 msgid "Total songs in DB"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:25
+#: app_song/templates/app_song/songs.html:26
+msgid "Display my favorites"
+msgstr ""
+
+#: app_song/templates/app_song/songs.html:31
 msgid "✔️: Song valided"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:26
+#: app_song/templates/app_song/songs.html:32
 msgid "✔️⁉️: Song valided with messages"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:27
+#: app_song/templates/app_song/songs.html:33
 msgid "📄: Licensed song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:28
+#: app_song/templates/app_song/songs.html:34
 msgid "📱: Smartphone view"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:29
+#: app_song/templates/app_song/songs.html:35
 msgid "🖨️💯: Print song lyric - with chorus between all verses"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:30
+#: app_song/templates/app_song/songs.html:36
 msgid "🖨️1️⃣: Print song lyric - with only one chorus"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:63
+#: app_song/templates/app_song/songs.html:69
 msgid "Song research"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:67
-#: app_song/templates/app_song/songs.html:136
+#: app_song/templates/app_song/songs.html:73
+#: app_song/templates/app_song/songs.html:143
 msgid "Minimum 3 characters"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:71
-msgid "Favorites"
-msgstr ""
-
-#: app_song/templates/app_song/songs.html:75
+#: app_song/templates/app_song/songs.html:77
 msgid "Search in description and lyrics"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:77
+#: app_song/templates/app_song/songs.html:79
 msgid "Advanced search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:91
+#: app_song/templates/app_song/songs.html:84
+msgid "Favorites"
+msgstr ""
+
+#: app_song/templates/app_song/songs.html:98
 msgid "Song not approved"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:94
+#: app_song/templates/app_song/songs.html:101
 msgid "Logic by:"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:97
+#: app_song/templates/app_song/songs.html:104
 msgid "OR"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:101
+#: app_song/templates/app_song/songs.html:108
 msgid "AND"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:104
+#: app_song/templates/app_song/songs.html:111
 msgid "find genre or band or artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:134
 msgid "genre"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:134
 msgid "band"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:127
+#: app_song/templates/app_song/songs.html:134
 msgid "artist"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:130
+#: app_song/templates/app_song/songs.html:137
 msgid "save and search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:131
+#: app_song/templates/app_song/songs.html:138
 msgid "reset"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:132
+#: app_song/templates/app_song/songs.html:139
 msgid "help on ‘advanced search’"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:133
+#: app_song/templates/app_song/songs.html:140
 msgid "help_save_search"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:142
+#: app_song/templates/app_song/songs.html:149
 msgid "New song"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:143
+#: app_song/templates/app_song/songs.html:150
 msgid "New sub title"
 msgstr ""
 
-#: app_song/templates/app_song/songs.html:238
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/app_song/songs.html:245
+#: app_song/templates/common/song_actions.html:10
 msgid "Contact moderators"
 msgstr ""
 
@@ -1713,7 +1760,7 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: app_song/templates/common/song_actions.html:10 chris/songs copy.html:36
+#: app_song/templates/common/song_actions.html:10
 msgid "contact_moderators_info"
 msgstr ""
 
@@ -1743,18 +1790,6 @@ msgstr ""
 
 #: app_song/templates/common/song_actions.html:29
 msgid "Print song lyric - one chorus"
-msgstr ""
-
-#: chris/songs copy.html:19 copy.html:49
-msgid "actions"
-msgstr ""
-
-#: chris/songs copy.html:32
-msgid "update"
-msgstr ""
-
-#: chris/songs copy.html:35
-msgid "Go to"
 msgstr ""
 
 #: templates/account/login.html:6 templates/account/login.html:7
@@ -2081,7 +2116,7 @@ msgstr "🇬🇧"
 msgid "close"
 msgstr ""
 
-#: templates/includes/l_site_messages.html:31
+#: templates/includes/l_site_messages.html:38
 msgid "Close"
 msgstr ""
 

@@ -4,7 +4,7 @@
 ### Bug Fixes
 
 * **.dockerignore:** .dockerignore updated ([ca77f1d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ca77f1d65e17157380a34681a5c4cceedcf51807))
-* **all_lyrics.html:** hidden <select> for song and display for animation ([2be1023](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2be1023d4afce588da1ef04cb500eac4ba7917ac))
+* **all_lyrics.html:** hidden < select > for song and display for animation ([2be1023](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2be1023d4afce588da1ef04cb500eac4ba7917ac))
 
 ## [2.3.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.1...v2.3.2) (2025-11-14)
 

@@ -47,7 +47,9 @@
         </ul>
       </div>
       <div class="px-4 pb-4">
-        <form method="post" action="{% url 'get_submissions' %}">
+        {% load static %}
+        <script src="{% static 'js/data_protect_leave.js' %}"></script>
+        <form method="post" data-protect-leave="true" action="{% url 'get_submissions' %}">
           {% csrf_token %}
           <input type="hidden" name="stored_path" value="{{ submission.stored_path }}">
           <label for="moderation_description">{% trans "Moderator description" %}</label>
