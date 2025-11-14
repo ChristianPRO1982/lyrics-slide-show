@@ -1,3 +1,50 @@
+## [2.3.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.1...v2.3.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* pytest app_main ([a9c3a5c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a9c3a5cfebf737feeab96bc32e66568cd16b5d31))
+
+## [2.3.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.0...v2.3.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* **animation.new_song_verses_all:** method is optimized ([8cf4dbc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8cf4dbc1d00ad9675b18998f8824fb7690a7e8c2))
+* **songs:** checkbox for favorites in advancedSearch ([109302f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/109302fa2308780b8b00404fb818d9dd25b8e404))
+* **songs:** link 💫 Display my favorites only used by connected user - back views.py ([dc0e582](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/dc0e58222293e80d49c689bf1aef07cb10382ab8))
+* **songs:** link 💫 is enable only for connected user ([071bd2b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/071bd2bea91db57db51e430b0bc5d56553e40a65))
+
+# [2.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.2.0...v2.3.0) (2025-11-13)
+
+
+### Bug Fixes
+
+* **animation_playlist:** drop "in comming soon..." text ([627bc32](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/627bc3248d90cef1ea79599c310a2e8aac03090f))
+* **CSS:** add class L_LINE_THROUGH:hover ([4f4f136](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4f4f136e6f27b97e168ca599de079f067d027620))
+* **homepage:** def get_approved_songs_stats fixed for display the correct % ([d14c6a9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d14c6a99e9affb29e44f52950bc58ef4746e55de))
+
+
+### Features
+
+* **animations:** animation can be copied ([1bb53d3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1bb53d36f680041df1548c42186aa1cf091732cd))
+* **modify_song:** all animations are updated after a modification ([45ea0d5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/45ea0d5742b280fd09ed3654064f3fe921934c62))
+* **songs:** add possibilty to search juste in my favorites without saving search params on my profil > just one shot ([00cd7b6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/00cd7b650c361836662a2e7aa1de0b7fcdbe4cd0))
+
+# [2.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.2...v2.2.0) (2025-11-08)
+
+
+### Bug Fixes
+
+* **animation_aplylist:** delete L_DIV_BORDER class ([32e8603](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/32e8603f0a379b93b67dd1aa5ec876163bbca4be))
+* **animation_playlist:** add 3 lists: search list / favorites songs / all songs ([3daabda](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3daabda12fc30bdadb82baa6b6d840fe3288e9f3))
+* **animation_playlist:** drop L_DIV_BORDER class from  playlist-dnd.js ([660addb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/660addb0b717639f84f81d8fbfd00b28d18ddcc8))
+
+
+### Features
+
+* **playlist:** allow full-row drag on playlist items ([b0ce6ef](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b0ce6ef48ba5d989bc12f2a4de37b5d6d0681778))
+
 ## [2.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.1.1...v2.1.2) (2025-11-07)
 
 

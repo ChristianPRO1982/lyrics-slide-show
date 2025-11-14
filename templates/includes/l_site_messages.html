@@ -1,33 +1,110 @@
 {% load i18n %}
 {% if l_site_messages|length > 0 %}
-<div id="message-popup" style="
+<div id="message-popup-container" style="
     position: fixed;
     top: 50px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    padding: 16px 32px;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     z-index: 1000;
     min-width: 300px;
     max-width: 90vw;
-    text-align: center;
-    display: flex;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
 ">
-    <span style="flex:1;">{{ l_site_messages|safe }}</span>
-    <button onclick="document.getElementById('message-popup').style.display='none';" style="
-        background: none;
-        border: none;
+    {% for site_message in l_site_messages %}
+    <div class="site-message" data-message-type="{{ site_message.type }}" style="
+        background: rgba(0,0,0,0.75);
         color: #fff;
-        font-size: 20px;
-        cursor: pointer;
-        margin-left: 8px;
-        line-height: 1;
-    " aria-label="{% trans 'Close' %}">&#10006;</button>
+        padding: 16px 32px;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        text-align: center;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    ">
+        <span style="flex:1;">{{ site_message.content|safe }}</span>
+        <button type="button" class="site-message__close" style="
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 8px;
+            line-height: 1;
+        " aria-label="{% trans 'Close' %}">&#10006;</button>
+    </div>
+    {% endfor %}
 </div>
+<script>
+(function () {
+    const container = document.getElementById('message-popup-container');
+    if (!container) {
+        return;
+    }
+
+    const ttl = {
+        admin: 5 * 60 * 1000,
+        moderator: 60 * 60 * 1000,
+    };
+
+    let visibleCount = 0;
+    const now = Date.now();
+
+    function updateContainerVisibility() {
+        const anyVisible = Array.prototype.some.call(
+            container.querySelectorAll('.site-message'),
+            function (element) {
+                return element.style.display !== 'none';
+            }
+        );
+        container.style.display = anyVisible ? 'flex' : 'none';
+    }
+
+    container.querySelectorAll('.site-message').forEach(function (messageEl) {
+        const messageType = messageEl.dataset.messageType;
+        const storageKey = 'siteMessageDismissed-' + messageType;
+        let shouldDisplay = true;
+
+        try {
+            const storedValue = localStorage.getItem(storageKey);
+            if (storedValue) {
+                const storedTime = parseInt(storedValue, 10);
+                const maxAge = ttl[messageType];
+                if (!isNaN(storedTime) && typeof maxAge === 'number' && now - storedTime < maxAge) {
+                    shouldDisplay = false;
+                }
+            }
+        } catch (error) {
+            // localStorage not accessible; fall back to showing the message immediately
+        }
+
+        if (shouldDisplay) {
+            messageEl.style.display = 'flex';
+            visibleCount += 1;
+        }
+
+        const closeButton = messageEl.querySelector('.site-message__close');
+        if (closeButton) {
+            closeButton.addEventListener('click', function () {
+                messageEl.style.display = 'none';
+                try {
+                    localStorage.setItem(storageKey, Date.now().toString());
+                } catch (error) {
+                    // Ignore storage errors so the UI can still respond to the click
+                }
+                updateContainerVisibility();
+            });
+        }
+    });
+
+    if (visibleCount > 0) {
+        container.style.display = 'flex';
+    }
+    updateContainerVisibility();
+})();
+</script>
 {% endif %}
