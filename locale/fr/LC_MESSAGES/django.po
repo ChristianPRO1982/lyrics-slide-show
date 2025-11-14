@@ -1086,7 +1086,7 @@ msgstr "Politique de confidentialité"
 
 #: app_main/templates/app_main/privacy_policy.html:16
 msgid "privacy_policy_intro_title"
-msgstr "Dernière mise à jour&nbsp;: 8 juillet 2025"
+msgstr "Dernière mise à jour&nbsp;: 14 novembre 2025"
 
 #: app_main/templates/app_main/privacy_policy.html:17
 msgid "privacy_policy_intro_content"
@@ -1131,10 +1131,11 @@ msgstr ""
 "Ces données sont utilisées uniquement pour&nbsp;:<ul><li style=\"list-style-"
 "type: disc; margin-left: 2em;\">Vous permettre de vous connecter.</li><li "
 "style=\"list-style-type: disc; margin-left: 2em;\">Vous identifier au sein "
-"de vos groupes.</li><li style=\"list-style-type: disc; margin-left: 2em;"
+"de vos groupes. Seul votre username y est visible.</li><li style=\"list-style-type: disc; margin-left: 2em;"
 "\">Vous envoyer deux e-mails de rappel avant la suppression de votre compte "
 "(voir section 5).</li></ul><br>Aucune donnée n’est utilisée à des fins "
-"commerciales, publicitaires, statistiques ou analytiques."
+"commerciales, publicitaires, statistiques ou analytiques, en interne ou en externe."
+"<br><br>Seuls les administrateurs du site ont accès à l'ensemble de vos données. Les modérateurs n'ont accès à aucune données. Enfin, les responables de groupe ont accès aux username des membres ayant fait leur demande d'accès au groupe concerné."
 
 #: app_main/templates/app_main/privacy_policy.html:22
 msgid "privacy_policy_article_3_title"
@@ -1250,7 +1251,9 @@ msgstr ""
 "style=\"list-style-type: disc; margin-left: 2em;\">Lors de suppression "
 "automatique de votre compte (voir section 5).</li><li style=\"list-style-"
 "type: disc; margin-left: 2em;\">Si la politique de confidentialité évolue de "
-"manière significative.</li></lu>❌ <b>Aucun e-mail n’est envoyé pour&nbsp;:</"
+"manière significative.</li><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">Si une attaque est survenue et que les données sont impactées.</li><li style=\"list-style-"
+"type: disc; margin-left: 2em;\">Si un comportement inaproprié de la part d'un membre sur le site est signalé.</li></lu><b>❌ <b>Aucun e-mail n’est envoyé pour&nbsp;:</"
 "b><ul><li style=\"list-style-type: disc; margin-left: 2em;\">Annoncer de "
 "nouvelles fonctionnalités</li><li style=\"list-style-type: disc; margin-"
 "left: 2em;\">Proposer des publicités</li><li style=\"list-style-type: disc; "

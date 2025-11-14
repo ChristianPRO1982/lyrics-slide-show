@@ -598,6 +598,7 @@ def smartphone_view(request, song_id):
         'song_id': song_id,
         'full_title': song.title + (f" - {song.sub_title}" if song.sub_title else ''),
         'lyrics': lyrics,
+        'hidden': True,
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
     })

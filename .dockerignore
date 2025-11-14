@@ -36,5 +36,8 @@ chris/
 MySQL/
 Dockerfile
 docker-compose.yml
+docker-compose-n8n.yml
+docker-compose-n9n.yml
 LICENSE
 README.md
+CHANGELOG.md

@@ -110,7 +110,11 @@
 
   <!-- Barre top fixe : sélection de chant -->
   <div id="topBar" aria-label="Navigation (fixe)">
+    {% if hidden %}
+    <select id="songSelectTop" hidden aria-label="Choisir un chant (fixe)"></select>
+    {% else %}
     <select id="songSelectTop" aria-label="Choisir un chant (fixe)"></select>
+    {% endif %}
   </div>
 
   <!-- Tiroir : QR + lien + logo -->
