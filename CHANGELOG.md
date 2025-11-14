@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.1...v2.3.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* pytest app_main ([a9c3a5c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a9c3a5cfebf737feeab96bc32e66568cd16b5d31))
+
 ## [2.3.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.0...v2.3.1) (2025-11-13)
 
 
