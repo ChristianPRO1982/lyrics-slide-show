@@ -45,7 +45,10 @@
     
     {% if target != "animation" %}{% trans "Song:" %} {{ song_full_title }}{% endif %}
     {% if target == "verse" %}<br>{% trans "Verse:" %} {{ verse_preview }} [...]{% endif %}
-    <form method="post">
+    
+    {% load static %}
+    <script src="{% static 'js/data_protect_leave.js' %}"></script>
+    <form method="post" data-protect-leave="true">
         {% csrf_token %}
         <div class="picker-container">
             <label><h3 class="L_H3">{% trans "Text color:" %}</h3></label>

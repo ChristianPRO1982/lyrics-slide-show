@@ -17,7 +17,9 @@
 {% block content %}
 <h2 class="L_H2">{{ song.sub_title }}</h2>
 <h3 class="L_H3">{% trans "Metadata" %}</h3>
-<form method="post" action="{% url "song_metadata" song.song_id %}">
+{% load static %}
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" data-protect-leave="true" action="{% url "song_metadata" song.song_id %}">
     {% csrf_token %}
     <input name="btn_save_goto_modify" value="{% trans "Save and return to modify" %}" type="submit" />
 

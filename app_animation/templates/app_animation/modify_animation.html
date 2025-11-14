@@ -44,7 +44,9 @@
     }
 </script>
 
-<form method="post" action="{% url "modify_animation" animation.animation_id %}">
+{% load static %}
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" data-protect-leave="true" action="{% url "modify_animation" animation.animation_id %}">
     {% csrf_token %}
     <div>
         <label for="id_name">{% trans "Name" %}</label><br>

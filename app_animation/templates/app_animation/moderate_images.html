@@ -18,7 +18,10 @@
 {% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url 'moderate_images' %}">
+
+{% load static %}
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" data-protect-leave="true" action="{% url 'moderate_images' %}">
   {% csrf_token %}
   <div id="selected-image-preview">
     <div id="preview-img-wrap">

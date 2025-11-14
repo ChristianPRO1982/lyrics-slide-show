@@ -83,6 +83,13 @@ hr {
     background-color: rgb(206, 197, 194);
 }
 
+.L_LINE_THROUGH:hover {
+    text-decoration: line-through !important;
+    text-decoration-color: #8b1e1e;
+    text-decoration-thickness: 2px;
+    text-decoration-skip-ink: none;
+}
+
 .L_BUTTON_LIKE_A_LINK {
     color: #5a2b1f;
     text-decoration: underline dotted !important;
@@ -202,6 +209,32 @@ hr {
     border-width: 3px !important;
 }
 
+.dnd-list{list-style:none;margin:0;padding:0}
+.dnd-item{
+display:flex;align-items:center;gap:.75rem;
+padding:.25rem .5rem;margin-bottom:.35rem;background:#fef8f4;
+border:1px solid var(--L_BORDER,#b32626);border-radius:.5rem;
+min-height:42px;line-height:1.1
+}
+.dnd-handle-num{
+display:flex;align-items:center;gap:.35rem;
+font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+user-select:none;min-width:4.5rem
+}
+.dnd-handle{cursor:grab;font-size:1.3rem;line-height:1}
+.dnd-index{font-variant-numeric:tabular-nums}
+.dnd-title{
+flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.dnd-x{
+font-size:1.4rem;width:2.1rem;height:2.1rem;line-height:2rem;
+text-align:center;border-radius:.5rem;border:1px solid #a00;
+background:#fef8f4;cursor:pointer
+}
+.dnd-item.dragging{opacity:.6}
+.dnd-item.strike .dnd-title{text-decoration:line-through;color:#a00}
+.drop-indicator{height:.25rem;background:#a00;border-radius:2px;margin:-.25rem 0 .25rem}
+
 @media (prefers-color-scheme: dark) {
     .L_TEXT, .L_H1, .L_H2, .L_H3, .L_H4 {
         color: #b17054;
@@ -295,6 +328,32 @@ hr {
         /* background-color: #eea78e; */
         border: 0px solid #8b1e1e;
     }
+
+    .dnd-list{list-style:none;margin:0;padding:0}
+    .dnd-item{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.25rem .5rem;margin-bottom:.35rem;background:#5C1210;
+    border:1px solid var(--L_BORDER,#b32626);border-radius:.5rem;
+    min-height:42px;line-height:1.1
+    }
+    .dnd-handle-num{
+    display:flex;align-items:center;gap:.35rem;
+    font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+    user-select:none;min-width:4.5rem
+    }
+    .dnd-handle{cursor:grab;font-size:1.3rem;line-height:1}
+    .dnd-index{font-variant-numeric:tabular-nums}
+    .dnd-title{
+    flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+    }
+    .dnd-x{
+    font-size:1.4rem;width:2.1rem;height:2.1rem;line-height:2rem;
+    text-align:center;border-radius:.5rem;border:1px solid #a00;
+    background:#b32626;cursor:pointer
+    }
+    .dnd-item.dragging{opacity:.6}
+    .dnd-item.strike .dnd-title{text-decoration:line-through;color:#a00}
+    .drop-indicator{height:.25rem;background:#a00;border-radius:2px;margin:-.25rem 0 .25rem}
 }
 
 

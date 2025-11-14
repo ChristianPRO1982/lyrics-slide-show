@@ -41,7 +41,9 @@
 {% block bloc2 %}{% include "common/song_meta.html" %}{{ song_lyrics|safe }}{% endblock bloc2 %}
 
 {% block content %}
-<form method="post" action="{% url "modify_song" song.song_id %}#new_verse">
+{% load static %}
+<script src="{% static 'js/data_protect_leave.js' %}"></script>
+<form method="post" data-protect-leave="true" action="{% url "modify_song" song.song_id %}#new_verse">
     {% csrf_token %}
     {% if moderator %}
         <div>

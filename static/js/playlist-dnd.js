@@ -115,6 +115,12 @@
 
     if (!sourceList || !targetList || !formEl || !inputOrderedIds || !inputNewSongs || !orderedMixInput) return;
 
+    function markFormAsDirty() {
+      if (window.markFormDirty && typeof window.markFormDirty === "function") {
+        window.markFormDirty(formEl);
+      }
+    }
+
     // Track whether the drag was initiated from within a list item so we can
     // prevent drags when interacting with other controls such as the delete
     // button.
@@ -160,6 +166,7 @@
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
       updateOrderedMixInput(targetList, orderedMixInput);
+      markFormAsDirty();
     });
 
     // Drag & drop (all items participate)
@@ -203,6 +210,7 @@
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
       updateOrderedMixInput(targetList, orderedMixInput);
+      markFormAsDirty();
     });
 
     function getAfter(container, y) {
@@ -237,6 +245,7 @@
         else targetList.insertBefore(draggingEl, after);
         updateNewSongsInput(targetList, inputNewSongs);
         updateOrderedMixInput(targetList, orderedMixInput);
+        markFormAsDirty();
       } else if (!draggingEl) {
         try {
           const data = JSON.parse(e.dataTransfer.getData("text/plain") || "{}");
@@ -296,6 +305,7 @@
       updateNewSongsInput(targetList, inputNewSongs);
       updateOrderedMixInput(targetList, orderedMixInput);
       if (indicator && indicator.parentNode) indicator.parentNode.removeChild(indicator);
+      markFormAsDirty();
       return li;
     }
 
@@ -316,6 +326,7 @@
       renumberAll(targetList);
       updateNewSongsInput(targetList, inputNewSongs);
       updateOrderedMixInput(targetList, orderedMixInput);
+      markFormAsDirty();
     });
 
     // Focusable items
