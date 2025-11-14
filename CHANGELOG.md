@@ -1,3 +1,15 @@
+# [2.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.3...v2.4.0) (2025-11-14)
+
+
+### Bug Fixes
+
+* **translate:** fixed HTML bugs ([1007e9c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1007e9c40bed1016dbaa24acae83d608e7eaa6b3))
+
+
+### Features
+
+* an alert message is diaplayed when user leave a form modified ([a5d8596](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a5d8596b9ccb7ea73536b3f39f5c16d6fe77f8aa))
+
 ## [2.3.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.2...v2.3.3) (2025-11-14)
 
 
