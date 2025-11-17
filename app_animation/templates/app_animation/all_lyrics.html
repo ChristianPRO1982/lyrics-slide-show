@@ -106,6 +106,14 @@
     <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
       <img src="/static/images/all_lyrics-themes.webp" alt="🌙/☀️">
     </a>
+    <!-- 5. Chant précédent -->
+    <a href="#" id="prevSongLeft" aria-label="Chant précédent" title="Chant précédent">
+      <img src="/static/images/all_lyrics-previous_song.webp" alt="⏮">
+    </a>
+    <!-- 6. Chant suivant -->
+    <a href="#" id="nextSongLeft" aria-label="Chant suivant" title="Chant suivant">
+      <img src="/static/images/all_lyrics-next_song.webp" alt="⏭">
+    </a>
   </nav>
 
   <!-- Barre top fixe : sélection de chant -->
@@ -166,8 +174,13 @@
     const themeLeft  = document.getElementById('themeToggleLeft');
     const incLeft    = document.getElementById('increaseFontLeft');
     const decLeft    = document.getElementById('decreaseFontLeft');
+    const prevLeft   = document.getElementById('prevSongLeft');
+    const nextLeft   = document.getElementById('nextSongLeft');
 
     const sections = [...document.querySelectorAll('main > section')];
+    if (!sections.length) return;
+
+    let currentIndex = 0;
 
     // Construire la liste des chants (haut)
     const buildTopSelect = () => {
@@ -181,6 +194,18 @@
       });
     };
     buildTopSelect();
+
+    const updateSelectFromIndex = (idx) => {
+      const target = sections[idx];
+      if (!target || !topSelect) return;
+      topSelect.value = target.id;
+    };
+
+    const scrollToSection = (sectionEl) => {
+      if (!sectionEl) return;
+      const anchor = findScrollAnchor(sectionEl);
+      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    };
 
     // Helpers tiroir
     const isDrawerOpen = () => controlPanel.classList.contains('open');
@@ -210,10 +235,59 @@
     topSelect?.addEventListener('change', e => {
       const id = e.target.value;
       const sectionEl = document.getElementById(id);
-      const anchor = findScrollAnchor(sectionEl);
-      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      const idx = sections.indexOf(sectionEl);
+      if (idx >= 0) currentIndex = idx;
+      scrollToSection(sectionEl);
       closeDrawer();
     });
+
+    const goToIndex = (idx) => {
+      if (idx < 0 || idx >= sections.length) return;
+      currentIndex = idx;
+      updateSelectFromIndex(currentIndex);
+      scrollToSection(sections[currentIndex]);
+    };
+
+    updateSelectFromIndex(currentIndex);
+
+    const getTopOffset = () => {
+      const styleH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 0;
+      const barH = document.getElementById('topBar')?.offsetHeight || 0;
+      return (styleH || barH || 52) + 12;
+    };
+
+    const syncFromScroll = () => {
+      const offset = getTopOffset();
+      const scrollPos = window.scrollY + offset;
+      let idx = 0;
+      for (let i = 0; i < sections.length; i++) {
+        const top = sections[i].offsetTop;
+        if (top <= scrollPos) {
+          idx = i;
+        } else {
+          break;
+        }
+      }
+      if (idx !== currentIndex) {
+        currentIndex = idx;
+        updateSelectFromIndex(currentIndex);
+      }
+    };
+
+    prevLeft?.addEventListener('click', (e) => {
+      e.preventDefault();
+      goToIndex(currentIndex - 1);
+    });
+
+    nextLeft?.addEventListener('click', (e) => {
+      e.preventDefault();
+      goToIndex(currentIndex + 1);
+    });
+
+    window.addEventListener('scroll', () => {
+      window.requestAnimationFrame(syncFromScroll);
+    });
+    syncFromScroll();
 
     // QR icon : toggle tiroir (ouvre ou ferme)
     toggleQRDrawer?.addEventListener('click', (e) => {
