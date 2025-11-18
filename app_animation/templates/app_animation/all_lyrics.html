@@ -245,6 +245,11 @@
       return sectionEl;
     };
 
+    const anchors = sections.map((sectionEl) => {
+      const anchor = findScrollAnchor(sectionEl);
+      return anchor || sectionEl;
+    });
+
     // Navigation depuis la liste (utilise l’ancre calculée)
     topSelect?.addEventListener('change', e => {
       const id = e.target.value;
@@ -270,7 +275,7 @@
     const getTopOffset = () => {
       const styleH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 0;
       const barH = document.getElementById('topBar')?.offsetHeight || 0;
-      return (styleH || barH || 52) + 12;
+      return (styleH || barH || 52) + 120;
     };
 
     const syncFromScroll = () => {
@@ -280,7 +285,7 @@
       const scrollPos = window.scrollY + offset;
       let idx = 0;
       for (let i = 0; i < sections.length; i++) {
-        const top = sections[i].offsetTop;
+        const top = anchors[i].offsetTop;
         if (top <= scrollPos) {
           idx = i;
         } else {
