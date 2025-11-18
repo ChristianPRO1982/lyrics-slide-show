@@ -38,6 +38,13 @@
       padding-top:calc(var(--topbar-h) + 0.5rem);
     }
 
+    /* Laisser un espace de fin pour que le dernier chant reste détectable */
+    #lyrics::after{
+      content:"";
+      display:block;
+      height:50vh;
+    }
+
     /* Panneau coulissant (tiroir) — ne conserve que QR, lien, logo */
     #controlPanel{
       position:fixed;top:0;right:0;max-width:80vw;width:400px;height:100vh;padding:1rem;
@@ -181,6 +188,7 @@
     if (!sections.length) return;
 
     let currentIndex = 0;
+    let programmaticScroll = false;
 
     // Construire la liste des chants (haut)
     const buildTopSelect = () => {
@@ -199,6 +207,12 @@
       const target = sections[idx];
       if (!target || !topSelect) return;
       topSelect.value = target.id;
+    };
+
+    const setActiveIndex = (idx) => {
+      if (idx < 0 || idx >= sections.length) return;
+      currentIndex = idx;
+      updateSelectFromIndex(currentIndex);
     };
 
     const scrollToSection = (sectionEl) => {
@@ -236,16 +250,19 @@
       const id = e.target.value;
       const sectionEl = document.getElementById(id);
       const idx = sections.indexOf(sectionEl);
-      if (idx >= 0) currentIndex = idx;
+      if (idx >= 0) setActiveIndex(idx);
+      programmaticScroll = true;
       scrollToSection(sectionEl);
+      setTimeout(() => { programmaticScroll = false; syncFromScroll(); }, 400);
       closeDrawer();
     });
 
     const goToIndex = (idx) => {
       if (idx < 0 || idx >= sections.length) return;
-      currentIndex = idx;
-      updateSelectFromIndex(currentIndex);
+      setActiveIndex(idx);
+      programmaticScroll = true;
       scrollToSection(sections[currentIndex]);
+      setTimeout(() => { programmaticScroll = false; syncFromScroll(); }, 400);
     };
 
     updateSelectFromIndex(currentIndex);
@@ -257,6 +274,8 @@
     };
 
     const syncFromScroll = () => {
+      if (programmaticScroll) return;
+
       const offset = getTopOffset();
       const scrollPos = window.scrollY + offset;
       let idx = 0;
@@ -268,9 +287,15 @@
           break;
         }
       }
+
+      // Si on est près du bas de page, forcer le dernier chant
+      const nearBottom = (window.innerHeight + window.scrollY + 8) >= document.body.offsetHeight;
+      if (nearBottom) {
+        idx = sections.length - 1;
+      }
+
       if (idx !== currentIndex) {
-        currentIndex = idx;
-        updateSelectFromIndex(currentIndex);
+        setActiveIndex(idx);
       }
     };
 
