@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.0...v2.4.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **modify_song.html:** toggleVisibility of "done" button can be done with one clic ([62336c0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/62336c0e4942ac8a305bf093ea0f5e28b66a9ebf))
+
 # [2.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.3.3...v2.4.0) (2025-11-14)
 
 
