@@ -14,7 +14,7 @@
             {% for message in mod_new_messages %}
                 <p><strong>{{ message.date|date:"d/m/Y H:i" }}</strong></p>
                 <textarea readonly rows="4" style="width: 100%;">{{ message.message }}</textarea>
-                <div id="div_message_id_{{ message.id }}">
+                <div id="div_message_id_{{ message.id }}" style="display: inline-block;">
                 <button type="button" onclick="document.getElementById('txt_message_id_list').value += '{{ message.id }}|';
                 toggleVisibility('div_message_id_{{ message.id }}')">
                     {% trans "Done" %} 🫡</button>
