@@ -38,6 +38,13 @@
       padding-top:calc(var(--topbar-h) + 0.5rem);
     }
 
+    /* Laisser un espace de fin pour que le dernier chant reste détectable */
+    #lyrics::after{
+      content:"";
+      display:block;
+      height:50vh;
+    }
+
     /* Panneau coulissant (tiroir) — ne conserve que QR, lien, logo */
     #controlPanel{
       position:fixed;top:0;right:0;max-width:80vw;width:400px;height:100vh;padding:1rem;
@@ -106,6 +113,14 @@
     <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
       <img src="/static/images/all_lyrics-themes.webp" alt="🌙/☀️">
     </a>
+    <!-- 5. Chant précédent -->
+    <a href="#" id="prevSongLeft" aria-label="Chant précédent" title="Chant précédent">
+      <img src="/static/images/all_lyrics-previous_song.webp" alt="⏮">
+    </a>
+    <!-- 6. Chant suivant -->
+    <a href="#" id="nextSongLeft" aria-label="Chant suivant" title="Chant suivant">
+      <img src="/static/images/all_lyrics-next_song.webp" alt="⏭">
+    </a>
   </nav>
 
   <!-- Barre top fixe : sélection de chant -->
@@ -166,8 +181,14 @@
     const themeLeft  = document.getElementById('themeToggleLeft');
     const incLeft    = document.getElementById('increaseFontLeft');
     const decLeft    = document.getElementById('decreaseFontLeft');
+    const prevLeft   = document.getElementById('prevSongLeft');
+    const nextLeft   = document.getElementById('nextSongLeft');
 
     const sections = [...document.querySelectorAll('main > section')];
+    if (!sections.length) return;
+
+    let currentIndex = 0;
+    let programmaticScroll = false;
 
     // Construire la liste des chants (haut)
     const buildTopSelect = () => {
@@ -181,6 +202,24 @@
       });
     };
     buildTopSelect();
+
+    const updateSelectFromIndex = (idx) => {
+      const target = sections[idx];
+      if (!target || !topSelect) return;
+      topSelect.value = target.id;
+    };
+
+    const setActiveIndex = (idx) => {
+      if (idx < 0 || idx >= sections.length) return;
+      currentIndex = idx;
+      updateSelectFromIndex(currentIndex);
+    };
+
+    const scrollToSection = (sectionEl) => {
+      if (!sectionEl) return;
+      const anchor = findScrollAnchor(sectionEl);
+      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    };
 
     // Helpers tiroir
     const isDrawerOpen = () => controlPanel.classList.contains('open');
@@ -206,14 +245,79 @@
       return sectionEl;
     };
 
+    const anchors = sections.map((sectionEl) => {
+      const anchor = findScrollAnchor(sectionEl);
+      return anchor || sectionEl;
+    });
+
     // Navigation depuis la liste (utilise l’ancre calculée)
     topSelect?.addEventListener('change', e => {
       const id = e.target.value;
       const sectionEl = document.getElementById(id);
-      const anchor = findScrollAnchor(sectionEl);
-      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      const idx = sections.indexOf(sectionEl);
+      if (idx >= 0) setActiveIndex(idx);
+      programmaticScroll = true;
+      scrollToSection(sectionEl);
+      setTimeout(() => { programmaticScroll = false; syncFromScroll(); }, 400);
       closeDrawer();
     });
+
+    const goToIndex = (idx) => {
+      if (idx < 0 || idx >= sections.length) return;
+      setActiveIndex(idx);
+      programmaticScroll = true;
+      scrollToSection(sections[currentIndex]);
+      setTimeout(() => { programmaticScroll = false; syncFromScroll(); }, 400);
+    };
+
+    updateSelectFromIndex(currentIndex);
+
+    const getTopOffset = () => {
+      const styleH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 0;
+      const barH = document.getElementById('topBar')?.offsetHeight || 0;
+      return (styleH || barH || 52) + 120;
+    };
+
+    const syncFromScroll = () => {
+      if (programmaticScroll) return;
+
+      const offset = getTopOffset();
+      const scrollPos = window.scrollY + offset;
+      let idx = 0;
+      for (let i = 0; i < sections.length; i++) {
+        const top = anchors[i].offsetTop;
+        if (top <= scrollPos) {
+          idx = i;
+        } else {
+          break;
+        }
+      }
+
+      // Si on est près du bas de page, forcer le dernier chant
+      const nearBottom = (window.innerHeight + window.scrollY + 8) >= document.body.offsetHeight;
+      if (nearBottom) {
+        idx = sections.length - 1;
+      }
+
+      if (idx !== currentIndex) {
+        setActiveIndex(idx);
+      }
+    };
+
+    prevLeft?.addEventListener('click', (e) => {
+      e.preventDefault();
+      goToIndex(currentIndex - 1);
+    });
+
+    nextLeft?.addEventListener('click', (e) => {
+      e.preventDefault();
+      goToIndex(currentIndex + 1);
+    });
+
+    window.addEventListener('scroll', () => {
+      window.requestAnimationFrame(syncFromScroll);
+    });
+    syncFromScroll();
 
     // QR icon : toggle tiroir (ouvre ou ferme)
     toggleQRDrawer?.addEventListener('click', (e) => {
