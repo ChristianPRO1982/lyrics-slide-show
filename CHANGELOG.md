@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.1...v2.4.2) (2025-12-31)
+
+
+### Bug Fixes
+
+* getTopOffset at +120 ([2a770b4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2a770b4d0f5fd5bfcbab8f068ddbe13730162a1a))
+
 ## [2.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.0...v2.4.1) (2025-12-15)
 
 
