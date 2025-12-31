@@ -164,7 +164,7 @@ docker compose exec web sh -c 'chown -R $(id -u):$(id -g) /app/media'
 
 ## Tailwind
 
-### NPM 
+### NPM
 
 Add this files :
 * `./frontend/tailwind.config.js`
