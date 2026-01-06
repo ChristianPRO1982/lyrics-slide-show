@@ -147,7 +147,7 @@ services:
 
   n8n:
     container_name: n8n
-    image: n8nio/n8n:1.91.2
+    image: n8nio/n8n:1.122.4
     restart: always
     environment:
       - N8N_HOST=n8n.carthographie.fr
@@ -173,6 +173,8 @@ services:
 
   n9n:
     container_name: n9n
+    profiles:
+      - n9n
     image: n8nio/n8n
     environment:
       - N9N_HOST=n9n.carthographie.fr
@@ -217,3 +219,4 @@ volumes:
   letsencrypt:
   mysql_data: {}
   media_data: {}
+  
