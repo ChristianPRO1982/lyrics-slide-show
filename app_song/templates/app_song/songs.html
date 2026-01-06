@@ -15,10 +15,10 @@
     <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info1')">{% trans "Search ⓘ:" %}</button>
     <span>{{ total_search_songs }}</span><br>
     <span id="info1" class="hidden text-xs">{% trans 'Total songs in save search' %}</span>
-    {% endif %}
     <button class="L_BUTTON_LIKE_A_LINK" type="button" onclick="toggleVisibility('info2')">{% trans "Total ⓘ:" %}</button>
     <span>{{ total_songs }}</span><br>
     <span id="info2" class="hidden text-xs">{% trans 'Total songs in DB' %}</span>
+    {% endif %}
     
     {% if user.is_authenticated %}
     <hr>
