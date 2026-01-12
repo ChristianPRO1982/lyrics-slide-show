@@ -1,3 +1,13 @@
+## [2.4.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.2...v2.4.3) (2026-01-12)
+
+
+### Bug Fixes
+
+* **docker compose:** add profile in yml ([2c23fbb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2c23fbb80744fa7a0d2d57455aa48e3c1a90d1a9))
+* **songs:** if not authenficated, total_songs is hidden ([27f6718](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/27f671816066ce91707b1c111cc840fd524fddc6))
+* **song:** smartphone_view operates ([43a3c9a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/43a3c9a6cad7d95ae2651afb202792e8e374b8ed))
+* translate "displau my favortis" ([43903c5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/43903c5666d995d71dff54e9dc81db8b4469dcf8))
+
 ## [2.4.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.1...v2.4.2) (2025-12-31)
 
 
