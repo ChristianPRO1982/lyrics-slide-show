@@ -113,6 +113,7 @@
     <a href="#" id="themeToggleLeft" aria-label="Basculer le thème" title="Thème clair/sombre">
       <img src="/static/images/all_lyrics-themes.webp" alt="🌙/☀️">
     </a>
+    {% if not hidden %}
     <!-- 5. Chant précédent -->
     <a href="#" id="prevSongLeft" aria-label="Chant précédent" title="Chant précédent">
       <img src="/static/images/all_lyrics-previous_song.webp" alt="⏮">
@@ -121,6 +122,7 @@
     <a href="#" id="nextSongLeft" aria-label="Chant suivant" title="Chant suivant">
       <img src="/static/images/all_lyrics-next_song.webp" alt="⏭">
     </a>
+    {% endif %}
   </nav>
 
   <!-- Barre top fixe : sélection de chant -->

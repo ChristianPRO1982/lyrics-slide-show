@@ -578,6 +578,11 @@ def smartphone_view(request, song_id):
     song.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
     song.get_verses()
     lyrics = song.get_lyrics_to_display(display_the_chorus_once=False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))
+    lyrics_html = f'''
+    <section id="song-0">
+        <h2>{song.title + (f" - {song.sub_title}" if song.sub_title else '')}</h2>
+        <p>{lyrics}</p>
+    </section>'''
 
     # QR-CODE
     img_qr_code = ''
@@ -597,7 +602,7 @@ def smartphone_view(request, song_id):
     return render(request, 'app_animation/all_lyrics.html', {
         'song_id': song_id,
         'full_title': song.title + (f" - {song.sub_title}" if song.sub_title else ''),
-        'lyrics': lyrics,
+        'lyrics': lyrics_html,
         'hidden': True,
         'link_to_copy': link_to_copy,
         'img_qr_code': img_qr_code,
