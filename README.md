@@ -192,7 +192,7 @@ Add this files :
     ```
 * `./frontend/postcss.config.js`
     ```bash
-    module.exports = {
+    module.exports = { 
       plugins: {
         tailwindcss: {},
         autoprefixer: {},
