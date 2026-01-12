@@ -1711,8 +1711,6 @@ msgid "Total songs in DB"
 msgstr "Nombre total de chants en base de données"
 
 #: app_song/templates/app_song/songs.html:26
-#, fuzzy
-#| msgid "Display options"
 msgid "Display my favorites"
 msgstr "Afficher les options"
 
