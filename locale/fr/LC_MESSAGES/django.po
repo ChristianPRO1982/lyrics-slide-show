@@ -1712,7 +1712,7 @@ msgstr "Nombre total de chants en base de données"
 
 #: app_song/templates/app_song/songs.html:26
 msgid "Display my favorites"
-msgstr "Afficher les options"
+msgstr "Afficher mes favoris"
 
 #: app_song/templates/app_song/songs.html:31
 msgid "✔️: Song valided"
