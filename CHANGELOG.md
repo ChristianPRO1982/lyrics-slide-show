@@ -1,3 +1,10 @@
+## [2.4.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.3...v2.4.4) (2026-01-20)
+
+
+### Bug Fixes
+
+* **songs:** translate "Display my favorites" ([ae51146](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ae511463f9261dc5fb1837961ff24e4abaeb3f28))
+
 ## [2.4.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.2...v2.4.3) (2026-01-12)
 
 
