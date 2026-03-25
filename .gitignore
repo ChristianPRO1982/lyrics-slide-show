@@ -8,8 +8,8 @@ chris/
 
 
 
-# Created by https://www.toptal.com/developers/gitignore/api/linux,python,node,django
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,node,django
+# Created by https://www.toptal.com/developers/gitignore/api/linux,python,django,node
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,django,node
 
 ### Django ###
 *.log
@@ -425,4 +425,4 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-# End of https://www.toptal.com/developers/gitignore/api/linux,python,node,django
+# End of https://www.toptal.com/developers/gitignore/api/linux,python,django,node
