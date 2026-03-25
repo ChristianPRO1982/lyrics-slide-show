@@ -11,10 +11,12 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     default-libmysqlclient-dev \
+    libpq-dev \
     pkg-config \
     build-essential \
     libssl-dev \
     default-mysql-client \
+    postgresql-client \
     netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

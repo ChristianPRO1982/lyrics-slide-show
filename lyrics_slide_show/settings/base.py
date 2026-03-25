@@ -31,10 +31,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+OIDC_RP_CLIENT_ID = os.getenv('OIDC_RP_CLIENT_ID', '')
+OIDC_RP_CLIENT_SECRET = os.getenv('OIDC_RP_CLIENT_SECRET', '')
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv('OIDC_OP_AUTHORIZATION_ENDPOINT', '')
+OIDC_OP_TOKEN_ENDPOINT = os.getenv('OIDC_OP_TOKEN_ENDPOINT', '')
+OIDC_OP_USER_ENDPOINT = os.getenv('OIDC_OP_USER_ENDPOINT', '')
+OIDC_OP_JWKS_ENDPOINT = os.getenv('OIDC_OP_JWKS_ENDPOINT', '')
+OIDC_RP_SIGN_ALGO = os.getenv('OIDC_RP_SIGN_ALGO', 'RS256')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == '1'
 # DEBUG = '1'
+USE_OIDC = os.getenv("USE_OIDC", "0") == '1'
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,10 +68,16 @@ INSTALLED_APPS = [
     'app_logs',
 ]
 
+if USE_OIDC:
+    INSTALLED_APPS.append('mozilla_django_oidc')
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Nécessaire pour Django
     'allauth.account.auth_backends.AuthenticationBackend',  # Auth avec allauth
 ]
+
+if USE_OIDC:
+    AUTHENTICATION_BACKENDS.insert(0, 'mozilla_django_oidc.auth.OIDCAuthenticationBackend')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -124,15 +138,23 @@ DB_FUNCTIONAL_USER = os.getenv('DB_FUNCTIONAL_USER')
 DB_FUNCTIONAL_PASSWORD = os.getenv('DB_FUNCTIONAL_PASSWORD')
 DB_FUNCTIONAL_DATABASE = os.getenv('DB_FUNCTIONAL_DATABASE')
 DB_FUNCTIONAL_SSL = os.getenv('DB_FUNCTIONAL_SSL')
+DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.mysql')
+DB_PORT = os.getenv('DB_PORT', '5432' if 'postgresql' in DB_ENGINE else '3306')
+DB_SCHEMA_SEARCH_PATH = os.getenv('DB_SCHEMA_SEARCH_PATH', 'lss,common,users,public')
+
+DB_OPTIONS = {}
+if 'postgresql' in DB_ENGINE:
+    DB_OPTIONS['options'] = f"-c search_path={DB_SCHEMA_SEARCH_PATH}"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': DB_ENGINE,
         'NAME': DB_FUNCTIONAL_DATABASE,
         'USER': DB_FUNCTIONAL_USER,
         'PASSWORD': DB_FUNCTIONAL_PASSWORD,
         'HOST': DB_FUNCTIONAL_HOST,
-        'PORT': '3306', # port par défaut de MySQL
+        'PORT': DB_PORT,
+        'OPTIONS': DB_OPTIONS,
         # 'OPTIONS': {
         #     'ssl': {
         #         'ca': DB_FUNCTIONAL_SSL,  # Chemin vers le fichier du certificat CA
@@ -201,7 +223,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 APPEND_SLASH = True # If True, Django will append a slash at the end of URLs that do not have one.
 
 # LOGIN_URL = '/admin/login/?next=/admin/'
-LOGIN_URL = '/account/login/'
+LOGIN_URL = '/oidc/authenticate/' if USE_OIDC else '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 

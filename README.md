@@ -162,6 +162,29 @@ docker compose exec web sh -c 'chown -R $(id -u):$(id -g) /app/media'
 #   - /media/* doit répondre 200 via Nginx
 ```
 
+## DEV Docker (Postgres + Keycloak)
+
+1) Créer le fichier d'environnement DEV.
+```bash
+cp .env.dev.example .env.dev
+```
+
+2) Démarrer la stack locale.
+```bash
+docker compose -f docker-compose.dev.yml --env-file .env.dev up --build
+```
+
+3) Accès locaux.
+```text
+Django:   http://localhost:8000
+Keycloak: http://localhost:8080
+```
+
+4) Important.
+```text
+Le schéma Postgres cible est piloté par DB_SCHEMA_SEARCH_PATH=lss,common,users,public.
+```
+
 ## Tailwind
 
 ### NPM

@@ -1,0 +1,78 @@
+services:
+  postgres:
+    container_name: lss-postgres-dev
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pg-carthographie}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-pg-carthographie}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  keycloak:
+    container_name: lss-keycloak-dev
+    image: quay.io/keycloak/keycloak:25.0
+    restart: unless-stopped
+    command: start-dev --http-port=8080
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY_HEADERS: xforwarded
+    ports:
+      - "8080:8080"
+
+  web:
+    container_name: lss-web-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.dev
+    environment:
+      DEBUG: "1"
+      DB_ENGINE: django.db.backends.postgresql
+      DB_PORT: "5432"
+      DB_SCHEMA_SEARCH_PATH: lss,common,users,public
+      LOCAL_FUNCTIONAL_HOST: postgres
+      LOCAL_FUNCTIONAL_USER: ${POSTGRES_USER:-postgres}
+      LOCAL_FUNCTIONAL_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      LOCAL_FUNCTIONAL_DATABASE: ${POSTGRES_DB:-pg-carthographie}
+      LOCAL_FUNCTIONAL_SSL: ""
+      USE_OIDC: "1"
+      OIDC_RP_CLIENT_ID: ${OIDC_RP_CLIENT_ID:-lss-dev}
+      OIDC_RP_CLIENT_SECRET: ${OIDC_RP_CLIENT_SECRET:-change-me}
+      OIDC_OP_AUTHORIZATION_ENDPOINT: ${OIDC_OP_AUTHORIZATION_ENDPOINT:-http://keycloak:8080/realms/lss-dev/protocol/openid-connect/auth}
+      OIDC_OP_TOKEN_ENDPOINT: ${OIDC_OP_TOKEN_ENDPOINT:-http://keycloak:8080/realms/lss-dev/protocol/openid-connect/token}
+      OIDC_OP_USER_ENDPOINT: ${OIDC_OP_USER_ENDPOINT:-http://keycloak:8080/realms/lss-dev/protocol/openid-connect/userinfo}
+      OIDC_OP_JWKS_ENDPOINT: ${OIDC_OP_JWKS_ENDPOINT:-http://keycloak:8080/realms/lss-dev/protocol/openid-connect/certs}
+    command: >
+      sh -c "scripts/wait_for_db.sh &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - staticfiles_dev:/app/staticfiles
+      - media_dev:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
+volumes:
+  postgres_dev_data:
+  staticfiles_dev:
+  media_dev:

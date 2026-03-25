@@ -25,12 +25,16 @@ handler404 = 'app_main.views.error_404'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("account/", include("allauth.urls")),
     path('', include('app_main.urls')),
     path('groups/', include('app_group.urls')),
     path('songs/', include('app_song.urls')),
     path('animations/', include('app_animation.urls')),
 ]
+
+if settings.USE_OIDC:
+    urlpatterns.append(path('oidc/', include('mozilla_django_oidc.urls')))
+else:
+    urlpatterns.append(path('account/', include('allauth.urls')))
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
