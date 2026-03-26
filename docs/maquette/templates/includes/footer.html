@@ -1,0 +1,39 @@
+{% load i18n %}
+
+<footer style="height: 33px; margin-top: 0px; padding-top: 0px;" class="L_BOX_FOOTER py-4 w-full bottom-1">
+    <div class="pl-5 flex items-center space-x-2 lg:hidden">
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md" 
+            target="_blank" rel="noopener noreferrer" title="Github CHANGELOG.md">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+            alt="Latest Release" class="h-5">
+        </a>
+        <span>{{ company_name_small }}</span>
+        <small><a href="{% url 'privacy_policy' %}">{% trans "Privacy policy" %}</a></small>
+    </div>
+    
+    <div class="pl-5 hidden lg:flex lg:items-center space-x-2 w-1/3">
+        <a href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md" 
+            target="_blank" rel="noopener noreferrer" title="Github CHANGELOG.md" style="min-width: 5em;">
+            <img src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg" 
+            alt="Latest Release" class="h-6">
+        </a>
+        <span style="letter-spacing: 0.15em;" class="font-lobster">{{ company_name }}</span>
+        <small><a href="{% url 'privacy_policy' %}">{% trans "Privacy policy" %}</a></small>
+    </div>
+</footer>
+
+<div class="flex L_BOX_TOP p-1 md:p-2 fixed bottom-1 right-1 text-xl md:bottom-7 md:right-5 md:text-xl rounded-tl-lg rounded-br-lg">
+    <button id="help-icon" class="hidden" type="button"
+    onclick="toggleVisibility('help-icon');
+    toggleVisibility('help-youtube');
+    toggleVisibility('help-wiki');
+    toggleVisibilityAfterSeconds('help-icon', 3);
+    toggleVisibilityAfterSeconds('help-youtube', 3);
+    toggleVisibilityAfterSeconds('help-wiki', 3);">❓</button>&nbsp;&nbsp;&nbsp;&nbsp;
+    {% comment %} <span id="help-youtube" class="L_LINK_HEADER hidden">YOUTUBE&nbsp;&nbsp;</span> {% endcomment %}
+    <a id="help-wiki" href="https://github.com/ChristianPRO1982/lyrics-slide-show/wiki" class="L_LINK_HEADER hidden"
+    target="_blank" rel="noopener noreferrer" title="Wiki" style="text-decoration: none!important;">WIKI&nbsp;&nbsp;</a>
+    <a href="#" style="text-decoration: none!important;">⬆️</a>
+</div>
+
+<script>toggleVisibility('help-icon');</script>

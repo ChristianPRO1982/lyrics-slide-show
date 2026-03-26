@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load allauth socialaccount %}
+
+{% block title %}{% trans "Social Sign In" %}{% endblock title %}
+{% block title_h1 %}{% trans "Sign In with Google" %}{% endblock title_h1 %}
+{% block bloc1 %}
+    <a href="{% url 'account_login' %}">{% trans "Back to login" %}</a>
+{% endblock bloc1 %}
+{% block bloc2 %}{% trans "Use your Google account to sign in." %}{% endblock bloc2 %}
+
+{% block content %}
+    {% element p %}
+        {% if process == "connect" %}
+            {% blocktranslate %}You are about to connect a new third-party account.{% endblocktranslate %}
+        {% else %}
+            {% blocktranslate %}You are about to sign in using your Google account.{% endblocktranslate %}
+        {% endif %}
+    {% endelement %}
+
+    {% element form method="post" action=action_url tags="entrance,socialaccount,login" %}
+        {% slot body %}
+            {% csrf_token %}
+            <input type="hidden" name="process" value="{{ process }}">
+        {% endslot %}
+        {% slot actions %}
+            {% element button type="submit" tags="prominent,login" %}
+                {% trans "Continue with Google" %}
+            {% endelement %}
+        {% endslot %}
+    {% endelement %}
+{% endblock content %}
