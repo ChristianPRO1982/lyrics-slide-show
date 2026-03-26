@@ -155,6 +155,69 @@ Exemples de données utiles pour l'identité mockée:
 
 Le but n'est pas d'imiter tout `Keycloak`, mais de fournir juste assez d'information pour que l'application se comporte comme si une identité fiable avait été reçue.
 
+### Test local DEV
+
+Le flux local de développement validé est le suivant:
+
+1. `LSS` tourne en Docker
+2. `auth_mock` tourne en Docker
+3. `LSS` rejoint le réseau Docker externe `pg-carthographie_backend`
+4. `LSS` lit le PostgreSQL partagé existant
+5. l'utilisateur lance le login depuis `LSS`
+6. `auth_mock` renvoie vers `LSS`
+7. `LSS` ouvre une session Django locale
+8. `LSS` relit `users.users` en lecture seule via l'UUID `Keycloak`
+
+Pré-requis locaux:
+
+- le réseau Docker externe `pg-carthographie_backend` existe
+- le PostgreSQL partagé est démarré dans l'autre projet
+- `users.users` existe dans la base `carthographie`
+- l'utilisateur SQL donné à `LSS` a un accès en lecture à `users.users`
+- `AUTH_MOCK_USERS_JSON` contient au moins un utilisateur dont `external_id` correspond à un `users.users.id` réel
+
+Points de configuration utiles:
+
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+- `AUTH_MOCK_SHARED_SECRET`
+- `AUTH_MOCK_USERS_JSON`
+
+Pour le PostgreSQL partagé actuel:
+
+- `DB_HOST=postgres` si l'alias Docker est bien présent sur `pg-carthographie_backend`
+- sinon `DB_HOST=pg-carthographie`
+
+Lancement local:
+
+```bash
+cp .env.dev.example .env.dev
+docker compose up --build
+```
+
+Vérification manuelle:
+
+1. ouvrir `http://localhost:8000`
+2. vérifier l'état `Guest`
+3. cliquer sur `Login with mock auth`
+4. choisir un utilisateur dans `auth_mock`
+5. revenir sur `LSS`
+6. vérifier l'état `Connected`
+7. vérifier l'affichage de l'UUID, du username, de l'email, du prénom et du nom
+8. cliquer sur `Logout`
+9. vérifier le retour à l'état `Guest`
+
+Cas d'erreur à vérifier:
+
+- utilisateur inconnu dans `users.users`
+- utilisateur présent mais `enabled = false`
+- `auth_mock` indisponible
+- PostgreSQL partagé indisponible
+- signature de callback invalide
+
 ## Résultat attendu en PROD
 
 En `PROD`, l'application doit déléguer l'authentification à un `Keycloak` externe.
@@ -305,6 +368,43 @@ Le premier objectif "faire la connexion" sera considéré comme atteint quand:
 - la configuration `PROD` de `Keycloak` est prévue proprement,
 - aucune dépendance de développement n'impose un accès au `Keycloak` externe,
 - l'architecture choisie n'empêche pas l'ajout futur des rôles métier locaux.
+
+## Principes de durcissement
+
+Le projet n'a pas besoin d'une sécurité "enterprise", mais il doit éviter les erreurs classiques de confiance excessive dans le `SSO`.
+
+Le principe central est:
+
+- authentification externe != autorisation locale
+
+Cela signifie:
+
+- `Keycloak` authentifie l'utilisateur
+- `LSS` décide s'il accepte ou non cet utilisateur
+- `users.users` est la source locale de référence pour l'acceptation utilisateur
+
+Conséquences directes:
+
+- un login Google valide dans `Keycloak` ne doit pas donner automatiquement accès à `LSS`
+- l'UUID `Keycloak` reste l'unique identifiant principal de rattachement
+- `email` et `username` ne doivent pas être utilisés comme clé maîtresse d'autorisation
+- un utilisateur absent de `users.users` doit être refusé
+- un utilisateur présent mais `enabled = false` doit être refusé
+
+Les points de durcissement prioritaires sont:
+
+- validation stricte du retour du fournisseur d'identité
+- session Django locale proprement encadrée
+- séparation explicite entre identité externe et permissions métier locales
+- configuration `PROD` sans secrets en dur
+- paramètres Django `PROD` stricts (`DEBUG`, `ALLOWED_HOSTS`, cookies, HTTPS, `CSRF_TRUSTED_ORIGINS`)
+- journalisation minimale des succès et refus de connexion
+
+Le modèle cible de sécurité est donc:
+
+- `Keycloak` prouve l'identité
+- `users.users` dit si l'utilisateur existe localement
+- `LSS` ouvre ou refuse la session selon cette lecture locale
 
 ## Hors périmètre immédiat
 
