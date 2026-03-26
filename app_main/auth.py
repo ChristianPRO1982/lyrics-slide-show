@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import re
 import time
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -11,6 +12,7 @@ from django.db import connection
 
 SESSION_USER_KEY = "lss_user"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+MAX_TEXT_FIELD_LENGTH = 255
 
 
 class AuthError(Exception):
@@ -91,8 +93,17 @@ def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
     if not hmac.compare_digest(expected_sig, params["sig"]):
         raise InvalidCallbackError("Invalid callback signature.")
 
+    try:
+        normalized_uuid = str(uuid.UUID(params["external_id"]))
+    except (ValueError, TypeError) as exc:
+        raise InvalidCallbackError("Invalid external_id format.") from exc
+
+    for field in ("username", "email", "first_name", "last_name"):
+        if len(params[field]) > MAX_TEXT_FIELD_LENGTH:
+            raise InvalidCallbackError(f"Field too long: {field}.")
+
     return {
-        "external_id": params["external_id"],
+        "external_id": normalized_uuid,
         "username": params["username"],
         "email": params["email"],
         "first_name": params["first_name"],

@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -17,6 +18,8 @@ from app_main.auth import (
     validate_callback_payload,
 )
 
+logger = logging.getLogger("app_main.auth")
+
 
 def homepage(request: HttpRequest) -> HttpResponse:
     return render(
@@ -30,6 +33,11 @@ def homepage(request: HttpRequest) -> HttpResponse:
 
 
 def login(request: HttpRequest) -> HttpResponse:
+    if settings.AUTH_MODE != "mock":
+        messages.error(request, "Interactive login is not configured for this environment.")
+        logger.warning("login_refused auth_mode=%s reason=unsupported_auth_mode", settings.AUTH_MODE)
+        return redirect("homepage")
+
     callback_url = request.build_absolute_uri(reverse("auth_callback"))
     query_string = urlencode({"return_to": callback_url})
     return redirect(f"{settings.AUTH_MOCK_BASE_URL}/login?{query_string}")
@@ -40,24 +48,37 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         payload = validate_callback_payload(request.GET)
         user = get_directory_user(payload["external_id"])
     except InvalidCallbackError as exc:
+        logger.warning("login_refused reason=invalid_callback detail=%s", exc)
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
     except UnknownUserError as exc:
+        logger.warning("login_refused reason=unknown_user external_id=%s", request.GET.get("external_id", ""))
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
     except DisabledUserError as exc:
+        logger.warning("login_refused reason=disabled_user external_id=%s", request.GET.get("external_id", ""))
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
 
+    request.session.cycle_key()
     store_session_user(request.session, user)
+    logger.info("login_success external_id=%s username=%s", user.external_id, user.username)
     messages.success(request, f"Connected as {user.username}.")
     return redirect("homepage")
 
 
 def logout(request: HttpRequest) -> HttpResponse:
+    session_user = get_session_user(request.session)
+    if session_user:
+        logger.info(
+            "logout external_id=%s username=%s",
+            session_user.get("external_id", ""),
+            session_user.get("username", ""),
+        )
     clear_session_user(request.session)
+    request.session.cycle_key()
     messages.info(request, "Logged out.")
     return redirect("homepage")

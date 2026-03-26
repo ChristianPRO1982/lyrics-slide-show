@@ -47,6 +47,22 @@ class CallbackValidationTests(SimpleTestCase):
             with self.assertRaisesMessage(Exception, "Invalid callback signature."):
                 validate_callback_payload(payload)
 
+    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
+    def test_validate_callback_payload_rejects_invalid_uuid(self):
+        payload = {
+            "external_id": "not-a-uuid",
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+            "ts": "1700000000",
+        }
+
+        with patch("app_main.auth.time.time", return_value=1700000100):
+            payload["sig"] = sign_callback_data(payload, "shared-secret")
+            with self.assertRaisesMessage(Exception, "Invalid external_id format."):
+                validate_callback_payload(payload)
+
 
 class DirectoryUserLookupTests(TestCase):
     @patch("app_main.auth.connection.cursor")
@@ -158,6 +174,14 @@ class AuthFlowTests(TestCase):
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn("No matching user found in users.users.", messages)
         self.assertNotIn("lss_user", self.client.session)
+
+    @override_settings(AUTH_MODE="prod")
+    def test_login_refuses_unsupported_auth_mode(self):
+        response = self.client.get(reverse("login"), follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("Interactive login is not configured for this environment.", messages)
 
     def test_logout_clears_session(self):
         session = self.client.session
