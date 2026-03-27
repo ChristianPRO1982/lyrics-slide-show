@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>App Test | Recherche des chants</title>
+    <style>
+        :root {
+            --bg: #f3efe7;
+            --panel: rgba(255, 252, 246, 0.88);
+            --ink: #171717;
+            --muted: #6b665f;
+            --line: rgba(23, 23, 23, 0.12);
+            --accent: #b6542d;
+            --accent-2: #1f5c53;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(182, 84, 45, 0.18), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(31, 92, 83, 0.18), transparent 28%),
+                var(--bg);
+        }
+
+        main {
+            width: min(1120px, calc(100vw - 32px));
+            margin: 0 auto;
+            padding: 48px 0 64px;
+        }
+
+        .hero {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            padding: 36px;
+            box-shadow: 0 24px 80px rgba(31, 20, 11, 0.08);
+            backdrop-filter: blur(12px);
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            line-height: 0.95;
+        }
+
+        p {
+            max-width: 720px;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .mockups,
+        .songs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 18px;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 36px rgba(23, 23, 23, 0.08);
+        }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.72rem;
+            color: var(--accent);
+        }
+
+        .card strong {
+            display: block;
+            margin-top: 10px;
+            font-size: 1.15rem;
+        }
+
+        .song {
+            background: rgba(255, 255, 255, 0.64);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .song-title {
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .song-meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <section class="hero">
+        <div class="eyebrow">app_test</div>
+        <h1>5 maquettes pour la recherche des chants</h1>
+        <p>
+            Chaque proposition ci-dessous vit uniquement dans <code>app_test</code> et embarque son propre
+            CSS et son propre JavaScript. La base de demo contient {{ songs_total }} chants fictifs.
+        </p>
+
+        <div class="mockups">
+            <a class="card" href="{% url 'app_test:mockup_1' %}">
+                <div class="eyebrow">Maquette 1</div>
+                <strong>Editoriale lumineuse</strong>
+                <span>Cartes larges, ambiance ouverte et accueillante.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_2' %}">
+                <div class="eyebrow">Maquette 2</div>
+                <strong>Scene live</strong>
+                <span>Recherche dramatique avec fort contraste et notion de performance.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_3' %}">
+                <div class="eyebrow">Maquette 3</div>
+                <strong>Utilitaire dense</strong>
+                <span>Plus rationnelle, focalisee sur l'efficacite.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_4' %}">
+                <div class="eyebrow">Maquette 4</div>
+                <strong>Mobile-first</strong>
+                <span>Douce, compacte, lisible sur petit ecran.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_5' %}">
+                <div class="eyebrow">Maquette 5</div>
+                <strong>Split-view premium</strong>
+                <span>Filtres lateraux et focus detaille sur les chants.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_v1' %}">
+                <div class="eyebrow">V1</div>
+                <strong>Base generale avec menu rail</strong>
+                <span>Evolution fonctionnelle de la maquette 5 pour l'ossature du site.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_v2' %}">
+                <div class="eyebrow">V2</div>
+                <strong>Navigation de section + outils</strong>
+                <span>La colonne de gauche est decoupee en deux blocs fonctionnels.</span>
+            </a>
+            <a class="card" href="{% url 'app_test:mockup_v3' %}">
+                <div class="eyebrow">V3</div>
+                <strong>Base generique vide</strong>
+                <span>Structure neutre pour preparer le template general du site.</span>
+            </a>
+        </div>
+    </section>
+
+    <section>
+        <h2>Apercu des 10 chants de demo</h2>
+        <div class="songs">
+            {% for song in songs %}
+                <article class="song">
+                    <div class="song-title"><strong>{{ song.title }}</strong></div>
+                    <div class="song-meta">{{ song.subtitle }} • {{ song.language }} • {{ song.theme }}</div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+</body>
+</html>

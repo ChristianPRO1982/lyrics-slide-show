@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ mockup_name }} | Recherche des chants</title>
+    <style>
+        :root {
+            --bg: #ece5d8;
+            --panel: rgba(255, 251, 244, 0.82);
+            --panel-strong: rgba(255, 250, 242, 0.96);
+            --ink: #221b15;
+            --muted: #6c635b;
+            --line: rgba(34, 27, 21, 0.12);
+            --accent: #2f6d5d;
+            --accent-2: #d08c3f;
+            --rail-width: 44px;
+            --drawer-width: min(320px, calc(100vw - 24px));
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Palatino Linotype", serif;
+            color: var(--ink);
+            background:
+                linear-gradient(125deg, rgba(47,109,93,0.12), transparent 26%),
+                radial-gradient(circle at right top, rgba(208,140,63,0.16), transparent 24%),
+                var(--bg);
+        }
+
+        .app {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: var(--rail-width) 1fr;
+        }
+
+        .site-rail {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px solid var(--line);
+            background: rgba(34, 27, 21, 0.08);
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 6px;
+            z-index: 30;
+        }
+
+        .rail-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.62);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--ink);
+            font-size: 0.78rem;
+            text-decoration: none;
+        }
+
+        .rail-button.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border-color: transparent;
+        }
+
+        .hamburger {
+            position: relative;
+        }
+
+        .hamburger span,
+        .hamburger::before,
+        .hamburger::after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 2px;
+            background: currentColor;
+            border-radius: 999px;
+        }
+
+        .hamburger span { top: 50%; transform: translateY(-50%); }
+        .hamburger::before { top: 10px; }
+        .hamburger::after { bottom: 10px; }
+
+        .menu-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 10, 8, 0.24);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+            z-index: 50;
+        }
+
+        .menu-drawer {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            bottom: 12px;
+            width: var(--drawer-width);
+            max-width: calc(100vw - 24px);
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: var(--panel-strong);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 24px 60px rgba(34, 27, 21, 0.18);
+            transform: translateX(calc(-100% - 20px));
+            transition: transform 220ms ease;
+            z-index: 60;
+            overflow: auto;
+        }
+
+        body.menu-open .menu-backdrop {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        body.menu-open .menu-drawer {
+            transform: translateX(0);
+        }
+
+        .drawer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .close-drawer {
+            border: 1px solid var(--line);
+            background: white;
+            border-radius: 14px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .drawer-group {
+            border-top: 1px solid var(--line);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        .drawer-group strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .drawer-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.84);
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .drawer-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(47,109,93,0.14), rgba(208,140,63,0.22));
+        }
+
+        .workspace {
+            padding: 24px 20px 32px;
+        }
+
+        .frame {
+            width: min(1260px, 100%);
+            margin: 0 auto;
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            background: var(--panel);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 24px 72px rgba(53, 37, 18, 0.08);
+        }
+
+        .sidebar {
+            padding: 22px;
+            position: sticky;
+            top: 18px;
+            align-self: start;
+        }
+
+        .sidebar h1 {
+            margin: 8px 0 12px;
+            font-size: 2.1rem;
+            line-height: 0.96;
+        }
+
+        .sidebar p {
+            color: var(--muted);
+        }
+
+        .sidebar .filter {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: var(--muted);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .top-tools {
+            display: none;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .search {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+        }
+
+        .search input,
+        .search button {
+            font: inherit;
+            border-radius: 18px;
+            border: 1px solid var(--line);
+        }
+
+        .search input {
+            padding: 16px 18px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .search button {
+            padding: 0 22px;
+            border: 0;
+            color: white;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .hero-card {
+            padding: 22px;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.58);
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .song {
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.72);
+            cursor: pointer;
+            transition: transform 140ms ease;
+        }
+
+        .song:hover {
+            transform: translateY(-3px);
+        }
+
+        .song strong {
+            display: block;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .song p {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .detail {
+            margin-top: 16px;
+            padding: 22px;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: #fffefb;
+            min-height: 140px;
+        }
+
+        @media (max-width: 980px) {
+            .shell,
+            .hero,
+            .search {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .top-tools {
+                display: block;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .workspace {
+                padding: 16px 12px 24px;
+            }
+
+            .app {
+                grid-template-columns: 40px 1fr;
+            }
+
+            .site-rail {
+                padding: 8px 4px;
+            }
+
+            .rail-button {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+
+    <aside class="menu-drawer" id="menuDrawer" aria-hidden="true">
+        <div class="drawer-top">
+            <div>
+                <div style="text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-size: 0.76rem;">V1</div>
+                <strong>Menu du site</strong>
+            </div>
+            <button class="close-drawer" type="button" id="closeDrawer">Fermer</button>
+        </div>
+
+        <div class="drawer-group">
+            <strong>Navigation principale</strong>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">A</span>
+                <span>Animations</span>
+            </a>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">C</span>
+                <span>Chants</span>
+            </a>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">G</span>
+                <span>Groupes</span>
+            </a>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">P</span>
+                <span>Projection live</span>
+            </a>
+        </div>
+
+        <div class="drawer-group">
+            <strong>Secondaire</strong>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">H</span>
+                <span>Historique</span>
+            </a>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">R</span>
+                <span>References</span>
+            </a>
+            <a class="drawer-link" href="#">
+                <span class="drawer-icon">S</span>
+                <span>Parametres</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="app">
+        <nav class="site-rail" aria-label="Menu compact du site">
+            <button class="rail-button hamburger" type="button" id="openDrawer" aria-label="Ouvrir le menu">
+                <span></span>
+            </button>
+            <a class="rail-button" href="{% url 'app_test:index' %}" title="Retour">R</a>
+            <a class="rail-button" href="#" title="Animations">A</a>
+            <a class="rail-button active" href="#" title="Chants">C</a>
+            <a class="rail-button" href="#" title="Groupes">G</a>
+            <a class="rail-button" href="#" title="Projection">P</a>
+        </nav>
+
+        <section class="workspace">
+            <div class="frame">
+                <div class="shell">
+                    <aside class="panel sidebar">
+                        <a href="{% url 'app_test:mockup_5' %}">Base maquette 5</a>
+                        <h1>Recherche premium avec rail de site.</h1>
+                        <p>{{ description }}</p>
+
+                        <div class="filter">
+                            <strong>Outils de page</strong>
+                            <label class="check"><input type="checkbox" checked> FR</label>
+                            <label class="check"><input type="checkbox" checked> EN</label>
+                            <label class="check"><input type="checkbox"> Slow</label>
+                            <label class="check" ><input type="checkbox" checked> Medium</label>
+                            <label class="check"><input type="checkbox"> Fast</label>
+                        </div>
+                    </aside>
+
+                    <section class="panel content">
+                        <div class="panel top-tools">
+                            <strong>Outils de page</strong>
+                            <div class="filter">
+                                <label class="check"><input type="checkbox" checked> FR</label>
+                                <label class="check"><input type="checkbox" checked> EN</label>
+                                <label class="check"><input type="checkbox"> Slow</label>
+                                <label class="check"><input type="checkbox" checked> Medium</label>
+                                <label class="check"><input type="checkbox"> Fast</label>
+                            </div>
+                        </div>
+
+                        <form class="search" method="get">
+                            <input type="search" name="q" value="{{ query }}" placeholder="Recherche des chants, tags ou atmospheres" />
+                            <button type="submit">Explorer</button>
+                        </form>
+
+                        <div class="hero">
+                            <div class="hero-card">
+                                <div style="text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-size: 0.76rem;">{{ mockup_name }}</div>
+                                <h2 style="margin: 8px 0 10px; font-size: 2rem;">Une ossature plus proche du site final.</h2>
+                                <p style="color: var(--muted); margin: 0;">Le rail de gauche represente la navigation globale. La colonne suivante porte les outils de la page active. Le contenu principal reste a droite.</p>
+                            </div>
+                            <div class="hero-card">
+                                <strong>{{ results_count }}</strong>
+                                <p>resultats visibles</p>
+                                <strong>{{ songs_total }}</strong>
+                                <p>chants de demonstration</p>
+                            </div>
+                        </div>
+
+                        <section class="results">
+                            {% for song in songs %}
+                                <article class="song" data-song-title="{{ song.title }}" data-song-meta="{{ song.subtitle }} • {{ song.language }} • {{ song.theme }} • {{ song.tempo }}" data-song-tags="{{ song.tags|join:', ' }}">
+                                    <strong>{{ song.title }}</strong>
+                                    <p>{{ song.subtitle }}</p>
+                                    <p>{{ song.language }} • {{ song.theme }}</p>
+                                </article>
+                            {% empty %}
+                                <article class="song">
+                                    <strong>Aucun resultat</strong>
+                                    <p>Essaie une autre requete.</p>
+                                </article>
+                            {% endfor %}
+                        </section>
+
+                        <section class="detail" id="detailPanel">
+                            Clique un chant pour afficher un panneau de detail de demo.
+                        </section>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const body = document.body;
+        const openDrawer = document.getElementById("openDrawer");
+        const closeDrawer = document.getElementById("closeDrawer");
+        const menuBackdrop = document.getElementById("menuBackdrop");
+        const menuDrawer = document.getElementById("menuDrawer");
+        const detailPanel = document.getElementById("detailPanel");
+
+        function setMenuState(isOpen) {
+            body.classList.toggle("menu-open", isOpen);
+            menuDrawer.setAttribute("aria-hidden", String(!isOpen));
+        }
+
+        openDrawer.addEventListener("click", () => setMenuState(true));
+        closeDrawer.addEventListener("click", () => setMenuState(false));
+        menuBackdrop.addEventListener("click", () => setMenuState(false));
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                setMenuState(false);
+            }
+        });
+
+        document.querySelectorAll("[data-song-title]").forEach((card) => {
+            card.addEventListener("click", () => {
+                detailPanel.innerHTML = `
+                    <strong style="display:block;font-size:1.2rem;margin-bottom:8px;">${card.dataset.songTitle}</strong>
+                    <div style="color:#6c635b;margin-bottom:10px;">${card.dataset.songMeta}</div>
+                    <div style="color:#2f6d5d;">Tags: ${card.dataset.songTags}</div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

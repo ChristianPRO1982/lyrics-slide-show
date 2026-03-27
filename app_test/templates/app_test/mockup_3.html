@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ mockup_name }} | Recherche des chants</title>
+    <style>
+        :root {
+            --bg: #eef2f4;
+            --panel: #ffffff;
+            --ink: #172126;
+            --muted: #61727d;
+            --line: #d6dde2;
+            --accent: #1e6f63;
+            --accent-soft: #e1f0ec;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: var(--ink);
+            background:
+                linear-gradient(180deg, #f8fbfc 0, #eef2f4 220px);
+        }
+        .layout {
+            width: min(1240px, calc(100vw - 28px));
+            margin: 0 auto;
+            padding: 24px 0 34px;
+        }
+        .header,
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+        }
+        .header {
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+        }
+        .header h1 {
+            margin: 10px 0 8px;
+            font-size: clamp(2rem, 4.5vw, 3.8rem);
+            line-height: 0.96;
+        }
+        .search {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .search input, .search button, select {
+            font: inherit;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+        }
+        .search input { padding: 14px 16px; }
+        .search button {
+            padding: 0 18px;
+            border: 0;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            align-content: start;
+        }
+        .filters select { padding: 13px 12px; background: white; }
+        .content {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .sidebar, .table-panel { padding: 18px; }
+        .sidebar h2, .table-panel h2 {
+            margin-top: 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+        }
+        .pill {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+        @media (max-width: 920px) {
+            .header,
+            .content,
+            .filters,
+            .search { grid-template-columns: 1fr; }
+            table, thead, tbody, tr, td, th { display: block; }
+            thead { display: none; }
+            tr { border-bottom: 1px solid var(--line); }
+            td { padding: 10px 0; border: 0; }
+        }
+    </style>
+</head>
+<body>
+<main class="layout">
+    <section class="header">
+        <div>
+            <a href="{% url 'app_test:index' %}">Retour index</a>
+            <h1>Recherche utilitaire pour preparer vite.</h1>
+            <p style="color: var(--muted);">{{ description }}</p>
+            <form class="search" method="get">
+                <input type="search" name="q" value="{{ query }}" placeholder="Rechercher un titre, un tag, une langue..." />
+                <button type="submit">Recherche</button>
+            </form>
+        </div>
+        <div class="filters">
+            <select>
+                <option>Langue</option>
+                <option>FR</option>
+                <option>EN</option>
+            </select>
+            <select>
+                <option>Tempo</option>
+                <option>Slow</option>
+                <option>Medium</option>
+                <option>Fast</option>
+            </select>
+            <select>
+                <option>Theme</option>
+                <option>Grace</option>
+                <option>Joy</option>
+                <option>Praise</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="content">
+        <aside class="panel sidebar">
+            <h2>Repere rapide</h2>
+            <ul>
+                <li>{{ results_count }} resultats affiches</li>
+                <li>{{ songs_total }} chants de demo</li>
+                <li>Table dense pour usage bureau</li>
+                <li>Forte compatibilite desktop</li>
+            </ul>
+        </aside>
+
+        <section class="panel table-panel">
+            <h2>Recherche</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Infos</th>
+                        <th>Tags</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for song in songs %}
+                        <tr>
+                            <td>
+                                <strong>Recherche</strong><br>
+                                <span>{{ song.title }}</span>
+                            </td>
+                            <td>{{ song.subtitle }}<br><span style="color: var(--muted);">{{ song.language }} • {{ song.theme }} • {{ song.tempo }}</span></td>
+                            <td>{{ song.tags|join:", " }}</td>
+                            <td><span class="pill">{% cycle 'assemblee' 'intime' 'live' 'chorale' 'repetition' %}</span></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">Aucun resultat</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </section>
+</main>
+</body>
+</html>
