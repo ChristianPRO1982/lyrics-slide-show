@@ -1,0 +1,87 @@
+@import url("./normal.css");
+
+:root {
+    --site-bg: #bde7db;
+    --site-bg-soft: #e6f0ed;
+    --site-surface: rgba(236, 247, 243, 0.9);
+    --site-surface-strong: rgba(244, 251, 248, 0.96);
+    --site-surface-alt: #eef7f4;
+    --site-ink: #1c4e4a;
+    --site-ink-soft: #456964;
+    --site-line: #54e7db;
+    --site-line-strong: #54e7db;
+    --site-accent: #1c4e4a;
+    --site-accent-soft: #1c4e4a;
+    --site-accent-gold: #b3780b;
+    --site-shadow: 0 22px 64px rgba(28, 78, 74, 0.12);
+}
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(84, 231, 219, 0.22), transparent 24%),
+        radial-gradient(circle at top right, rgba(179, 120, 11, 0.12), transparent 18%),
+        linear-gradient(180deg, #d9f3ec 0%, var(--site-bg) 240px);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #002c2b;
+}
+
+.site-main-heading > p:first-child {
+    color: #1c4e4a;
+}
+
+.site-nav-rail {
+    background: linear-gradient(180deg, rgba(28, 78, 74, 0.92), rgba(12, 49, 46, 0.92));
+}
+
+.site-nav-backdrop {
+    background: rgba(11, 31, 38, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --site-bg: #0b1f26;
+        --site-bg-soft: #112b33;
+        --site-surface: rgba(21, 45, 52, 0.9);
+        --site-surface-strong: rgba(18, 41, 48, 0.96);
+        --site-surface-alt: #17333a;
+        --site-ink: #85b4a4;
+        --site-ink-soft: #68947d;
+        --site-line: rgba(104, 148, 125, 0.28);
+        --site-line-strong: rgba(104, 148, 125, 0.36);
+        --site-accent: #54e7db;
+        --site-accent-soft: #54e7db;
+        --site-accent-gold: #fd9153;
+        --site-shadow: 0 22px 64px rgba(0, 0, 0, 0.36);
+    }
+
+    body {
+        background:
+            radial-gradient(circle at top left, rgba(84, 231, 219, 0.12), transparent 24%),
+            radial-gradient(circle at top right, rgba(253, 145, 83, 0.1), transparent 18%),
+            linear-gradient(180deg, #0f242b 0%, var(--site-bg) 240px);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: #85b4a4;
+    }
+
+    .site-nav-rail {
+        background: linear-gradient(180deg, rgba(12, 49, 46, 0.96), rgba(7, 28, 33, 0.96));
+    }
+
+    .site-nav-backdrop {
+        background: rgba(3, 10, 12, 0.42);
+    }
+}

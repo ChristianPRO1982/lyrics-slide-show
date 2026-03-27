@@ -559,4 +559,17 @@ h6 {
         background: rgba(255, 248, 241, 0.06);
         color: var(--site-ink);
     }
+
+    .site-main-heading,
+    .site-main-aside {
+        background:
+            linear-gradient(180deg, rgba(255, 248, 241, 0.04), rgba(255, 248, 241, 0.08)),
+            var(--site-surface-alt);
+    }
+
+    .site-main-content > *,
+    .site-main-footer > * {
+        background: rgba(255, 248, 241, 0.06);
+        color: var(--site-ink);
+    }
 }
