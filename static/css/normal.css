@@ -136,32 +136,6 @@ h6 {
     padding: 22px;
 }
 
-.site-panel-hero {
-    margin-bottom: 18px;
-}
-
-.site-panel-hero-image {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-}
-
-.site-release-link-wrap {
-    margin-bottom: 18px;
-}
-
-.site-release-link {
-    display: inline-block;
-    text-decoration: none;
-}
-
-.site-release-badge {
-    display: block;
-    max-width: 100%;
-    height: auto;
-}
-
 .site-section-panel > :not(.site-panel-header):not(style),
 .site-tools-panel > :not(.site-panel-header):not(style) {
     display: grid;
