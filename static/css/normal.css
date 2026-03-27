@@ -296,7 +296,7 @@ h6 {
     border-top: 1px solid rgba(255, 232, 216, 0.45);
 }
 
-.site-nav-rail .site-nav-group > div {
+.site-nav-rail .site-nav-group > a {
     width: 42px;
     min-height: 42px;
     margin: 0 auto;
@@ -310,6 +310,7 @@ h6 {
     text-align: center;
     display: grid;
     place-items: center;
+    text-decoration: none;
 }
 
 .site-nav-backdrop {
@@ -390,12 +391,30 @@ h6 {
     font-size: 1rem;
 }
 
-.site-nav-drawer .site-nav-group > div {
+.site-nav-drawer .site-nav-group > a {
     margin-bottom: 8px;
     padding: 12px 14px;
     border: 1px solid var(--site-line);
     border-radius: var(--site-radius-md);
     background: rgba(255, 255, 255, 0.78);
+    color: var(--site-ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.site-nav-drawer .site-nav-group > a span:first-child {
+    width: 1.6rem;
+    flex: 0 0 1.6rem;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.site-nav-drawer .site-nav-group > a:hover,
+.site-nav-rail .site-nav-group > a:hover {
+    background: rgba(255, 238, 224, 0.96);
+    color: var(--site-accent-gold);
 }
 
 @media (max-width: 1200px) {
@@ -497,7 +516,7 @@ h6 {
     }
 
     .site-nav-rail > button,
-    .site-nav-rail .site-nav-group > div,
+    .site-nav-rail .site-nav-group > a,
     .site-nav-drawer-header button,
     .site-section-panel > :not(.site-panel-header):not(style) > *,
     .site-tools-panel > :not(.site-panel-header):not(style) > *,

@@ -5,47 +5,53 @@
 <aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
     <header class="site-nav-drawer-header">
         <div>
-            <p>{% trans "Menu" %}</p>
-            <strong>{% trans "General Navigation" %}</strong>
+            <p>LSS</p>
+            <strong>Lyrics Slide Show</strong>
         </div>
         <button type="button" data-nav-close>{% trans "Close" %}</button>
     </header>
 
     <section class="site-nav-group">
         <h2>{% trans "Main Links" %}</h2>
-        <div>{% trans "Home" %}</div>
-        <div>{% trans "Groups" %}</div>
-        <div>{% trans "Songs" %}</div>
-        <div>{% trans "Animations" %}</div>
-        <div>{% trans "Projection" %}</div>
+        <a href="{% url 'homepage' %}" title="homepage"><span>🏠</span><span>{% trans "Accueil" %}</span></a>
+        <a href="#" title="groups" data-django-alias="groups"><span>👥</span><span>{% trans "Liste des groupes" %}</span></a>
+        <a href="#" title="songs" data-django-alias="songs"><span>🎼</span><span>{% trans "Liste des chants" %}</span></a>
+        <a href="#" title="animations" data-django-alias="animations"><span>🗣️</span><span>{% trans "Liste des animations" %}</span></a>
     </section>
 
     <section class="site-nav-group">
         <h2>{% trans "Profile and Preferences" %}</h2>
-        <div>{% trans "Sign in" %}</div>
-        <div>{% trans "Sign out" %}</div>
-        <div>{% trans "Profile" %}</div>
-        <div>{% trans "Theme" %}</div>
-        <div>{% trans "Language" %}</div>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}" title="logout"><span>👋</span><span>{% trans "Déconnexion" %}</span></a>
+            <a href="#" title="account" data-django-alias="account"><span>👤</span><span>{% firstof request.user.username "<username>" %}</span></a>
+        {% else %}
+            <a href="{% url 'login' %}" title="login"><span>🔑</span><span>{% trans "Connexion" %}</span></a>
+            <a href="#" title="signup" data-django-alias="signup"><span>🆕</span><span>{% trans "Créer un compte" %}</span></a>
+        {% endif %}
+        <a href="#" title="theme" data-django-alias="theme"><span>🎨</span><span>{% trans "Thèmes" %}</span></a>
+        <a href="#" title="language" data-django-alias="language"><span>🇫🇷</span><span>{% trans "Français" %}</span></a>
     </section>
 </aside>
 
 <nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
-    <button type="button" aria-label="{% trans 'Open menu' %}" data-nav-open>{% trans "Menu" %}</button>
+    <button type="button" aria-label="Lyrics Slide Show" data-nav-open>LSS</button>
 
     <section class="site-nav-group">
-        <div>{% trans "Home" %}</div>
-        <div>{% trans "Groups" %}</div>
-        <div>{% trans "Songs" %}</div>
-        <div>{% trans "Animations" %}</div>
-        <div>{% trans "Projection" %}</div>
+        <a href="{% url 'homepage' %}" title="{% trans 'Accueil' %}" data-django-alias="homepage">🏠</a>
+        <a href="#" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">👥</a>
+        <a href="#" title="{% trans 'Liste des chants' %}" data-django-alias="songs">🎼</a>
+        <a href="#" title="{% trans 'Liste des animations' %}" data-django-alias="animations">🗣️</a>
     </section>
 
     <section class="site-nav-group">
-        <div>{% trans "Sign in" %}</div>
-        <div>{% trans "Sign out" %}</div>
-        <div>{% trans "Profile" %}</div>
-        <div>{% trans "Theme" %}</div>
-        <div>{% trans "Language" %}</div>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}" title="{% trans 'Déconnexion' %}" data-django-alias="logout">👋</a>
+            <a href="#" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">👤</a>
+        {% else %}
+            <a href="{% url 'login' %}" title="{% trans 'Connexion' %}" data-django-alias="login">🔑</a>
+            <a href="#" title="{% trans 'Créer un compte' %}" data-django-alias="signup">🆕</a>
+        {% endif %}
+        <a href="#" title="{% trans 'Thèmes' %}" data-django-alias="theme">🎨</a>
+        <a href="#" title="{% trans 'Français' %}" data-django-alias="language">🇫🇷</a>
     </section>
 </nav>
