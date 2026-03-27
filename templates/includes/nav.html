@@ -1,14 +1,14 @@
 {% load i18n %}
 
-<div class="site-nav-backdrop" hidden></div>
+<div class="site-nav-backdrop" hidden data-nav-backdrop></div>
 
-<aside class="site-nav-drawer" aria-hidden="true">
+<aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
     <header class="site-nav-drawer-header">
         <div>
             <p>{% trans "Menu" %}</p>
             <strong>{% trans "General Navigation" %}</strong>
         </div>
-        <button type="button">{% trans "Close" %}</button>
+        <button type="button" data-nav-close>{% trans "Close" %}</button>
     </header>
 
     <section class="site-nav-group">
@@ -31,7 +31,7 @@
 </aside>
 
 <nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
-    <button type="button" aria-label="{% trans 'Open menu' %}">{% trans "Menu" %}</button>
+    <button type="button" aria-label="{% trans 'Open menu' %}" data-nav-open>{% trans "Menu" %}</button>
 
     <section class="site-nav-group">
         <div>{% trans "Home" %}</div>

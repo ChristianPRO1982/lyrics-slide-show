@@ -1,13 +1,13 @@
 :root {
-    --site-bg: #f6ecdf;
-    --site-bg-soft: #fbf5ee;
-    --site-surface: rgba(255, 250, 243, 0.88);
-    --site-surface-strong: rgba(255, 248, 240, 0.96);
-    --site-surface-alt: #fff7ef;
+    --site-bg: #fdb;
+    --site-bg-soft: #fff1e8;
+    --site-surface: rgba(255, 244, 236, 0.9);
+    --site-surface-strong: rgba(255, 247, 241, 0.96);
+    --site-surface-alt: #fff4f0;
     --site-ink: #5a2b1f;
     --site-ink-soft: #7a5443;
-    --site-line: rgba(125, 55, 27, 0.16);
-    --site-line-strong: rgba(125, 55, 27, 0.28);
+    --site-line: #8b1e1e;
+    --site-line-strong: #8b1e1e;
     --site-accent: #8b1e1e;
     --site-accent-soft: #b7410e;
     --site-accent-gold: #b3780b;
@@ -40,7 +40,7 @@ body {
     background:
         radial-gradient(circle at top left, rgba(183, 65, 14, 0.18), transparent 24%),
         radial-gradient(circle at top right, rgba(179, 120, 11, 0.16), transparent 18%),
-        linear-gradient(180deg, #fcf6ef 0%, var(--site-bg) 240px);
+        linear-gradient(180deg, #ffe9db 0%, var(--site-bg) 240px);
 }
 
 a {
@@ -155,6 +155,12 @@ h6 {
     min-width: 0;
 }
 
+@media (min-width: 1024px) {
+    .site-main-panel {
+        min-height: 700px;
+    }
+}
+
 .site-mobile-side {
     display: none;
     margin-bottom: 16px;
@@ -255,7 +261,7 @@ h6 {
     height: 100vh;
     padding: 10px 6px;
     border-right: 1px solid var(--site-line);
-    background: rgba(113, 47, 29, 0.08);
+    background: linear-gradient(180deg, rgba(183, 65, 14, 0.9), rgba(139, 30, 30, 0.88));
     backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
@@ -267,9 +273,9 @@ h6 {
     width: 42px;
     min-height: 42px;
     padding: 0.5rem;
-    border: 1px solid var(--site-line-strong);
+    border: 1px solid #f6c7a8;
     border-radius: 14px;
-    background: linear-gradient(180deg, #fbf1e7, #f3e1cf);
+    background: rgba(255, 244, 236, 0.9);
     color: var(--site-ink);
     font-family: var(--site-font-ui);
     font-size: 0.72rem;
@@ -287,7 +293,7 @@ h6 {
 .site-nav-rail .site-nav-group:last-child {
     margin-top: auto;
     padding-top: 10px;
-    border-top: 1px solid var(--site-line);
+    border-top: 1px solid rgba(255, 232, 216, 0.45);
 }
 
 .site-nav-rail .site-nav-group > div {
@@ -295,9 +301,9 @@ h6 {
     min-height: 42px;
     margin: 0 auto;
     padding: 0.4rem;
-    border: 1px solid rgba(255, 255, 255, 0.36);
+    border: 1px solid rgba(255, 232, 216, 0.42);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.58);
+    background: rgba(255, 244, 236, 0.85);
     color: var(--site-ink);
     font-family: var(--site-font-ui);
     font-size: 0.68rem;
@@ -307,7 +313,14 @@ h6 {
 }
 
 .site-nav-backdrop {
-    display: none;
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(53, 20, 10, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+    z-index: 70;
 }
 
 .site-nav-drawer {
@@ -322,6 +335,18 @@ h6 {
     background: var(--site-surface-strong);
     box-shadow: 0 26px 72px rgba(66, 24, 11, 0.22);
     overflow: auto;
+    transform: translateX(calc(-100% - 24px));
+    transition: transform 220ms ease;
+    z-index: 80;
+}
+
+.site-nav-open .site-nav-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.site-nav-open .site-nav-drawer {
+    transform: translateX(0);
 }
 
 .site-nav-drawer-header {
