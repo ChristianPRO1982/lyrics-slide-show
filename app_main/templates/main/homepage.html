@@ -1,15 +1,35 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Lyrics Slide Show{% endblock %}
 {% block meta_description %}{% endblock %}
 
 {% block section_title %}{% endblock %}
 {% block section_intro %}{% endblock %}
-{% block section_nav %}{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <img src="{% static 'images/lss.png' %}" alt="Lyrics Slide Show">
+    </div>
+{% endblock %}
 
 {% block tools_title %}{% endblock %}
 {% block tools_intro %}{% endblock %}
-{% block page_tools %}{% endblock %}
+{% block page_tools %}
+    <div class="site-home-media">
+        <img src="{% static 'images/cARThographie.gif' %}" alt="cARThographie">
+    </div>
+    <div>
+        <a class="site-home-release-link"
+           href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+           target="_blank"
+           rel="noopener noreferrer"
+           title="Github CHANGELOG.md">
+            <img class="site-home-release-badge"
+                 src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                 alt="Latest Release">
+        </a>
+    </div>
+{% endblock %}
 
 {% block mobile_side_title %}{% endblock %}
 {% block mobile_side_intro %}{% endblock %}

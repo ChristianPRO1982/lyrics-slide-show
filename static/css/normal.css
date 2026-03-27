@@ -150,6 +150,11 @@ h6 {
     background: rgba(255, 255, 255, 0.62);
 }
 
+.site-section-panel > :not(.site-panel-header):not(style) + :not(.site-panel-header):not(style),
+.site-tools-panel > :not(.site-panel-header):not(style) + :not(.site-panel-header):not(style) {
+    margin-top: 10px;
+}
+
 .site-main-panel {
     padding: 20px;
     min-width: 0;
@@ -253,6 +258,28 @@ h6 {
     border: 1px solid var(--site-line);
     border-radius: var(--site-radius-lg);
     background: rgba(255, 251, 246, 0.92);
+}
+
+.site-home-media {
+    padding: 0;
+}
+
+.site-home-media img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.site-home-release-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.site-home-release-badge {
+    display: block;
+    max-width: 100%;
+    height: 20px;
 }
 
 .site-nav-rail {
@@ -366,6 +393,8 @@ h6 {
     background: var(--site-surface-strong);
     box-shadow: 0 26px 72px rgba(66, 24, 11, 0.22);
     overflow: auto;
+    display: flex;
+    flex-direction: column;
     transform: translateX(calc(-100% - 24px));
     transition: transform 220ms ease;
     z-index: 80;
@@ -444,6 +473,11 @@ h6 {
 .site-nav-drawer .site-nav-group > a span:last-child {
     flex: 1;
     min-width: 0;
+}
+
+.site-nav-drawer-footer {
+    margin-top: auto;
+    padding-top: 18px;
 }
 
 .site-nav-drawer .site-nav-group > a:hover,
