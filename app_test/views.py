@@ -216,3 +216,14 @@ def mockup_v3(request):
             "description": "Base generique vide pour construire le template principal du site.",
         },
     )
+
+
+def mockup_v4(request):
+    return render(
+        request,
+        "app_test/mockup_v4.html",
+        {
+            "mockup_name": "V4",
+            "description": "Validation du nouveau base.html via heritage de template.",
+        },
+    )

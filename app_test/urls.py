@@ -16,4 +16,5 @@ urlpatterns = [
     path("v1/", views.mockup_v1, name="mockup_v1"),
     path("v2/", views.mockup_v2, name="mockup_v2"),
     path("v3/", views.mockup_v3, name="mockup_v3"),
+    path("v4/", views.mockup_v4, name="mockup_v4"),
 ]

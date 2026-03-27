@@ -1,0 +1,51 @@
+{% load i18n %}
+
+<div class="site-nav-backdrop" hidden></div>
+
+<aside class="site-nav-drawer" aria-hidden="true">
+    <header class="site-nav-drawer-header">
+        <div>
+            <p>{% trans "Menu" %}</p>
+            <strong>{% trans "General Navigation" %}</strong>
+        </div>
+        <button type="button">{% trans "Close" %}</button>
+    </header>
+
+    <section class="site-nav-group">
+        <h2>{% trans "Main Links" %}</h2>
+        <div>{% trans "Home" %}</div>
+        <div>{% trans "Groups" %}</div>
+        <div>{% trans "Songs" %}</div>
+        <div>{% trans "Animations" %}</div>
+        <div>{% trans "Projection" %}</div>
+    </section>
+
+    <section class="site-nav-group">
+        <h2>{% trans "Profile and Preferences" %}</h2>
+        <div>{% trans "Sign in" %}</div>
+        <div>{% trans "Sign out" %}</div>
+        <div>{% trans "Profile" %}</div>
+        <div>{% trans "Theme" %}</div>
+        <div>{% trans "Language" %}</div>
+    </section>
+</aside>
+
+<nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
+    <button type="button" aria-label="{% trans 'Open menu' %}">{% trans "Menu" %}</button>
+
+    <section class="site-nav-group">
+        <div>{% trans "Home" %}</div>
+        <div>{% trans "Groups" %}</div>
+        <div>{% trans "Songs" %}</div>
+        <div>{% trans "Animations" %}</div>
+        <div>{% trans "Projection" %}</div>
+    </section>
+
+    <section class="site-nav-group">
+        <div>{% trans "Sign in" %}</div>
+        <div>{% trans "Sign out" %}</div>
+        <div>{% trans "Profile" %}</div>
+        <div>{% trans "Theme" %}</div>
+        <div>{% trans "Language" %}</div>
+    </section>
+</nav>

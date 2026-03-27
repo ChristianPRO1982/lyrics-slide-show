@@ -22,11 +22,17 @@ class AppTestPagesTests(TestCase):
             "app_test:mockup_v1",
             "app_test:mockup_v2",
             "app_test:mockup_v3",
+            "app_test:mockup_v4",
         ]:
             with self.subTest(route_name=route_name):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
-                expected = "Base generique" if route_name == "app_test:mockup_v3" else "Recherche"
+                if route_name == "app_test:mockup_v3":
+                    expected = "Base generique"
+                elif route_name == "app_test:mockup_v4":
+                    expected = "Validation du template"
+                else:
+                    expected = "Recherche"
                 self.assertContains(response, expected)
 
     def test_query_filters_song_list(self):
