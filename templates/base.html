@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <link rel="icon" sizes="192x192" href="{% static 'images/lss.png' %}" type="image/png"/>
     <link rel="stylesheet" href="{% static 'css/normal.css' %}">
 </head>
 <body>
@@ -19,6 +20,9 @@
                 <div class="site-layout">
                     <aside class="site-side-stack">
                         <section class="site-panel site-section-panel">
+                            <div class="site-panel-hero">
+                                <img src="{% static 'images/lss.png' %}" alt="Lyrics Slide Show" class="site-panel-hero-image">
+                            </div>
                             <header class="site-panel-header">
                                 <h2>{% block section_title %}{% trans "Section" %}{% endblock %}</h2>
                                 {% block section_intro %}{% endblock %}
@@ -27,6 +31,24 @@
                         </section>
 
                         <section class="site-panel site-tools-panel">
+                            <div class="site-panel-hero">
+                                <img src="{% static 'images/cARThographie.gif' %}" alt="cARThographie" class="site-panel-hero-image">
+                            </div>
+                            <div class="site-release-link-wrap">
+                                <a
+                                    class="site-release-link"
+                                    href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Github CHANGELOG.md"
+                                >
+                                    <img
+                                        src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                                        alt="Latest Release"
+                                        class="site-release-badge"
+                                    >
+                                </a>
+                            </div>
                             <header class="site-panel-header">
                                 <h2>{% block tools_title %}{% trans "Tools" %}{% endblock %}</h2>
                                 {% block tools_intro %}{% endblock %}

@@ -1,151 +1,27 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyrics Slide Show</title>
-    <style>
-        body {
-            font-family: Georgia, serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background:
-                radial-gradient(circle at top, rgba(242, 191, 120, 0.35), transparent 40%),
-                linear-gradient(135deg, #14213d 0%, #274c77 45%, #8b5e34 100%);
-        }
-        .container {
-            width: min(42rem, calc(100vw - 3rem));
-            background: rgba(255, 251, 245, 0.95);
-            padding: 2.5rem;
-            border-radius: 18px;
-            box-shadow: 0 18px 40px rgba(7, 13, 24, 0.28);
-            border: 1px solid rgba(94, 60, 26, 0.2);
-        }
-        h1 {
-            color: #1b263b;
-            margin: 0 0 0.5rem;
-            font-size: clamp(2rem, 4vw, 3rem);
-        }
-        p,
-        li,
-        dt,
-        dd {
-            color: #32415a;
-        }
-        .lead {
-            margin: 0 0 1.5rem;
-            font-size: 1.05rem;
-        }
-        .card {
-            background: #fff;
-            border: 1px solid #eadfce;
-            border-radius: 14px;
-            padding: 1.25rem;
-            margin-top: 1.5rem;
-        }
-        .actions {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            margin-top: 1.25rem;
-        }
-        a.button {
-            display: inline-block;
-            padding: 0.8rem 1.2rem;
-            background-color: #0f766e;
-            color: white;
-            text-decoration: none;
-            border-radius: 999px;
-            transition: background-color 0.3s;
-            font-weight: 700;
-        }
-        a.button:hover {
-            background-color: #115e59;
-        }
-        .button.secondary {
-            background-color: #8b5e34;
-        }
-        .button.secondary:hover {
-            background-color: #724824;
-        }
-        .messages {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 1rem;
-        }
-        .messages li {
-            padding: 0.85rem 1rem;
-            border-radius: 10px;
-            margin-bottom: 0.75rem;
-            background: #e8f1ef;
-            border: 1px solid #bdd5cf;
-        }
-        .messages li.error {
-            background: #fbe7e7;
-            border-color: #f0b4b4;
-        }
-        .messages li.success {
-            background: #e7f6eb;
-            border-color: #bce0c4;
-        }
-        dl {
-            display: grid;
-            grid-template-columns: max-content 1fr;
-            gap: 0.5rem 1rem;
-            margin: 0;
-        }
-        dt {
-            font-weight: 700;
-        }
-        dd {
-            margin: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Lyrics Slide Show</h1>
-        <p class="lead">Local DEV authentication flow with Docker, mock SSO, and read-only user lookup in <code>users.users</code>.</p>
+{% extends "base.html" %}
 
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+{% block title %}Lyrics Slide Show{% endblock %}
+{% block meta_description %}{% endblock %}
 
-        <div class="card">
-            {% if session_user %}
-                <p><strong>Status:</strong> Connected</p>
-                <dl>
-                    <dt>UUID</dt>
-                    <dd>{{ session_user.external_id }}</dd>
-                    <dt>Username</dt>
-                    <dd>{{ session_user.username }}</dd>
-                    <dt>Email</dt>
-                    <dd>{{ session_user.email|default:"-" }}</dd>
-                    <dt>First name</dt>
-                    <dd>{{ session_user.first_name|default:"-" }}</dd>
-                    <dt>Last name</dt>
-                    <dd>{{ session_user.last_name|default:"-" }}</dd>
-                    <dt>Auth mode</dt>
-                    <dd>{{ auth_mode }}</dd>
-                </dl>
-                <div class="actions">
-                    <a class="button secondary" href="{% url 'logout' %}">Logout</a>
-                </div>
-            {% else %}
-                <p><strong>Status:</strong> Guest</p>
-                <p>No active Django session. Start the mock SSO flow to test a login.</p>
-                <div class="actions">
-                    <a class="button" href="{% url 'login' %}">Login with mock auth</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</body>
-</html>
+{% block section_title %}{% endblock %}
+{% block section_intro %}{% endblock %}
+{% block section_nav %}{% endblock %}
+
+{% block tools_title %}{% endblock %}
+{% block tools_intro %}{% endblock %}
+{% block page_tools %}{% endblock %}
+
+{% block mobile_side_title %}{% endblock %}
+{% block mobile_side_intro %}{% endblock %}
+{% block mobile_side_content %}{% endblock %}
+
+{% block page_kicker %}{% endblock %}
+{% block page_title %}{% endblock %}
+{% block page_intro %}{% endblock %}
+{% block page_summary %}{% endblock %}
+
+{% block content %}{% endblock %}
+
+{% block content_footer %}
+    <section></section>
+{% endblock %}

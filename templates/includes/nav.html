@@ -7,8 +7,8 @@
     <header class="site-nav-drawer-header">
         <div>
             <picture class="site-nav-brand-picture">
-                <source srcset="{% static 'images/menu/lss-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-brand-icon" src="{% static 'images/menu/lss.png' %}" alt="LSS">
+                <source srcset="{% static 'images/lss-dark.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-brand-icon" src="{% static 'images/lss.png' %}" alt="LSS">
             </picture>
             <strong>Lyrics Slide Show</strong>
         </div>
@@ -29,21 +29,21 @@
             </picture>
             <span>{% trans "Accueil" %}</span>
         </a>
-        <a href="#" title="groups" data-django-alias="groups">
+        <a href="{% url 'groups' %}" title="groups" data-django-alias="groups">
             <picture class="site-nav-link-picture">
                 <source srcset="{% static 'images/menu/groups-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-link-icon" src="{% static 'images/menu/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
             </picture>
             <span>{% trans "Liste des groupes" %}</span>
         </a>
-        <a href="#" title="songs" data-django-alias="songs">
+        <a href="{% url 'songs' %}" title="songs" data-django-alias="songs">
             <picture class="site-nav-link-picture">
                 <source srcset="{% static 'images/menu/songs-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-link-icon" src="{% static 'images/menu/songs.png' %}" alt="{% trans 'Liste des chants' %}">
             </picture>
             <span>{% trans "Liste des chants" %}</span>
         </a>
-        <a href="#" title="animations" data-django-alias="animations">
+        <a href="{% url 'animations' %}" title="animations" data-django-alias="animations">
             <picture class="site-nav-link-picture">
                 <source srcset="{% static 'images/menu/animations-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-link-icon" src="{% static 'images/menu/animations.png' %}" alt="{% trans 'Liste des animations' %}">
@@ -117,19 +117,19 @@
                 <img class="site-nav-button-icon" src="{% static 'images/menu/home.png' %}" alt="{% trans 'Accueil' %}">
             </picture>
         </a>
-        <a href="#" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
+        <a href="{% url 'groups' %}" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
             <picture class="site-nav-button-picture">
                 <source srcset="{% static 'images/menu/groups-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-button-icon" src="{% static 'images/menu/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
             </picture>
         </a>
-        <a href="#" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
+        <a href="{% url 'songs' %}" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
             <picture class="site-nav-button-picture">
                 <source srcset="{% static 'images/menu/songs-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-button-icon" src="{% static 'images/menu/songs.png' %}" alt="{% trans 'Liste des chants' %}">
             </picture>
         </a>
-        <a href="#" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
+        <a href="{% url 'animations' %}" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
             <picture class="site-nav-button-picture">
                 <source srcset="{% static 'images/menu/animations-dark.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-button-icon" src="{% static 'images/menu/animations.png' %}" alt="{% trans 'Liste des animations' %}">
