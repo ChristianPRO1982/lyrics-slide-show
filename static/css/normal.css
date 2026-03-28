@@ -252,6 +252,10 @@ h6 {
     margin-top: 16px;
 }
 
+.site-main-footer:empty {
+    display: none;
+}
+
 .site-main-footer > * {
     min-height: 180px;
     padding: 22px;
