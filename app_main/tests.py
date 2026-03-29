@@ -116,15 +116,23 @@ class AuthFlowTests(TestCase):
     def test_homepage_shows_guest_state(self):
         response = self.client.get(reverse("homepage"))
 
-        self.assertContains(response, "Status:</strong> Guest")
         self.assertContains(response, reverse("login"))
+        self.assertContains(response, 'data-django-alias="login"')
+        self.assertContains(response, 'data-django-alias="signup"')
 
     @override_settings(AUTH_MOCK_BASE_URL="http://localhost:8001")
     def test_login_redirects_to_auth_mock(self):
-        response = self.client.get(reverse("login"))
+        response = self.client.get(reverse("login") + "?start=1")
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response["Location"].startswith("http://localhost:8001/login?return_to="))
+
+    def test_login_page_shows_mock_entrypoint(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "mock SSO")
+        self.assertContains(response, reverse("login") + "?start=1")
 
     @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
     @patch("app_main.views.get_directory_user")
@@ -152,8 +160,12 @@ class AuthFlowTests(TestCase):
             response = self.client.get(reverse("auth_callback"), params, follow=True)
 
         self.assertRedirects(response, reverse("homepage"))
-        self.assertContains(response, "Status:</strong> Connected")
+        self.assertContains(response, "Connected as known.user.")
         self.assertContains(response, "known.user")
+        self.assertContains(response, 'data-django-alias="logout"')
+        self.assertContains(response, 'data-django-alias="account"')
+        self.assertNotContains(response, 'data-django-alias="login"')
+        self.assertNotContains(response, 'data-django-alias="signup"')
 
     @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
     @patch("app_main.views.get_directory_user", side_effect=UnknownUserError("No matching user found in users.users."))
@@ -195,3 +207,25 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         self.assertNotIn("lss_user", self.client.session)
+
+    def test_account_page_requires_authenticated_session(self):
+        response = self.client.get(reverse("account"))
+
+        self.assertRedirects(response, reverse("login"))
+
+    def test_account_page_uses_session_user_identity(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": "11111111-1111-1111-1111-111111111111",
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+        }
+        session.save()
+
+        response = self.client.get(reverse("account"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Compte de known.user")
+        self.assertContains(response, "11111111-1111-1111-1111-111111111111")

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.db import connection
 
 
@@ -48,6 +49,26 @@ class DirectoryUser:
             "first_name": self.first_name,
             "last_name": self.last_name,
         }
+
+
+@dataclass(frozen=True)
+class SessionUser:
+    external_id: str
+    username: str
+    email: str | None
+    first_name: str | None
+    last_name: str | None
+
+    @property
+    def is_authenticated(self) -> bool:
+        return True
+
+    @property
+    def is_anonymous(self) -> bool:
+        return False
+
+    def get_username(self) -> str:
+        return self.username
 
 
 def _validate_identifier(value: str) -> str:
@@ -156,3 +177,17 @@ def clear_session_user(session) -> None:
 
 def get_session_user(session) -> dict[str, Any] | None:
     return session.get(SESSION_USER_KEY)
+
+
+def get_request_user(session) -> SessionUser | AnonymousUser:
+    session_user = get_session_user(session)
+    if not session_user:
+        return AnonymousUser()
+
+    return SessionUser(
+        external_id=session_user["external_id"],
+        username=session_user["username"],
+        email=session_user.get("email"),
+        first_name=session_user.get("first_name"),
+        last_name=session_user.get("last_name"),
+    )

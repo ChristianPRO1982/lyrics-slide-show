@@ -93,6 +93,37 @@ h6 {
     margin: 0 auto;
 }
 
+.site-global-messages {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.site-global-message {
+    padding: 14px 18px;
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-md);
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: var(--site-shadow);
+}
+
+.site-global-message-success {
+    border-color: #286246;
+    background: rgba(230, 247, 236, 0.95);
+}
+
+.site-global-message-error {
+    border-color: #9a2b2b;
+    background: rgba(255, 232, 232, 0.95);
+}
+
+.site-global-message-info {
+    border-color: #8b5e34;
+    background: rgba(255, 247, 235, 0.95);
+}
+
 .site-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -609,5 +640,21 @@ h6 {
     .site-main-footer > * {
         background: rgba(255, 248, 241, 0.06);
         color: var(--site-ink);
+    }
+
+    .site-global-message {
+        background: rgba(255, 248, 241, 0.08);
+    }
+
+    .site-global-message-success {
+        background: rgba(37, 89, 63, 0.34);
+    }
+
+    .site-global-message-error {
+        background: rgba(117, 38, 38, 0.38);
+    }
+
+    .site-global-message-info {
+        background: rgba(114, 78, 36, 0.36);
     }
 }

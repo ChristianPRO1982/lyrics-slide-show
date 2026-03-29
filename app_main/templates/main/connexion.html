@@ -1,151 +1,241 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyrics Slide Show</title>
-    <style>
-        body {
-            font-family: Georgia, serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background:
-                radial-gradient(circle at top, rgba(242, 191, 120, 0.35), transparent 40%),
-                linear-gradient(135deg, #14213d 0%, #274c77 45%, #8b5e34 100%);
-        }
-        .container {
-            width: min(42rem, calc(100vw - 3rem));
-            background: rgba(255, 251, 245, 0.95);
-            padding: 2.5rem;
-            border-radius: 18px;
-            box-shadow: 0 18px 40px rgba(7, 13, 24, 0.28);
-            border: 1px solid rgba(94, 60, 26, 0.2);
-        }
-        h1 {
-            color: #1b263b;
-            margin: 0 0 0.5rem;
-            font-size: clamp(2rem, 4vw, 3rem);
-        }
-        p,
-        li,
-        dt,
-        dd {
-            color: #32415a;
-        }
-        .lead {
-            margin: 0 0 1.5rem;
-            font-size: 1.05rem;
-        }
-        .card {
-            background: #fff;
-            border: 1px solid #eadfce;
-            border-radius: 14px;
-            padding: 1.25rem;
-            margin-top: 1.5rem;
-        }
-        .actions {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            margin-top: 1.25rem;
-        }
-        a.button {
-            display: inline-block;
-            padding: 0.8rem 1.2rem;
-            background-color: #0f766e;
-            color: white;
-            text-decoration: none;
-            border-radius: 999px;
-            transition: background-color 0.3s;
-            font-weight: 700;
-        }
-        a.button:hover {
-            background-color: #115e59;
-        }
-        .button.secondary {
-            background-color: #8b5e34;
-        }
-        .button.secondary:hover {
-            background-color: #724824;
-        }
-        .messages {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 1rem;
-        }
-        .messages li {
-            padding: 0.85rem 1rem;
-            border-radius: 10px;
-            margin-bottom: 0.75rem;
-            background: #e8f1ef;
-            border: 1px solid #bdd5cf;
-        }
-        .messages li.error {
-            background: #fbe7e7;
-            border-color: #f0b4b4;
-        }
-        .messages li.success {
-            background: #e7f6eb;
-            border-color: #bce0c4;
-        }
-        dl {
-            display: grid;
-            grid-template-columns: max-content 1fr;
-            gap: 0.5rem 1rem;
-            margin: 0;
-        }
-        dt {
-            font-weight: 700;
-        }
-        dd {
-            margin: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Lyrics Slide Show</h1>
-        <p class="lead">Local DEV authentication flow with Docker, mock SSO, and read-only user lookup in <code>users.users</code>.</p>
+{% extends "base.html" %}
+{% load i18n %}
 
+{% block title %}
+    {% if page_mode == "account" %}
+        {{ request.user.username }} | Lyrics Slide Show
+    {% else %}
+        {% trans "Connexion" %} | Lyrics Slide Show
+    {% endif %}
+{% endblock %}
+
+{% block section_title %}
+    {% if page_mode == "account" %}
+        {% trans "Compte" %}
+    {% else %}
+        {% trans "Connexion" %}
+    {% endif %}
+{% endblock %}
+
+{% block section_intro %}
+    <p>
+        {% if page_mode == "account" %}
+            {% trans "Votre session Django locale est ouverte à partir de l'identité validée par le mock SSO." %}
+        {% else %}
+            {% trans "Le mock Keycloak sert ici d'entrée SSO avant ouverture de la session Django locale." %}
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block section_nav %}
+    <div>
+        {% if page_mode == "account" %}
+            <a href="{% url 'homepage' %}">{% trans "Retour à l'accueil" %}</a>
+        {% else %}
+            <a href="{% url 'login' %}?start=1">{% trans "Ouvrir le mock SSO" %}</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block tools_title %}{% trans "Session" %}{% endblock %}
+
+{% block tools_intro %}
+    <p>{% trans "LSS reste maître de la session locale et des autorisations métier après authentification." %}</p>
+{% endblock %}
+
+{% block page_tools %}
+    <div class="site-auth-stack">
+        <div class="site-auth-note">
+            <strong>{% trans "Mode" %}</strong>
+            <span>{{ auth_mode }}</span>
+        </div>
+        {% if request.user.is_authenticated %}
+            <div class="site-auth-note">
+                <strong>{% trans "Utilisateur" %}</strong>
+                <span>{% firstof request.user.username request.user.email request.user.external_id %}</span>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block mobile_side_title %}{% trans "Actions" %}{% endblock %}
+
+{% block mobile_side_content %}
+    <div class="site-auth-actions">
+        {% if request.user.is_authenticated %}
+            <a class="site-auth-button site-auth-button-secondary" href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
+        {% else %}
+            <a class="site-auth-button" href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block page_kicker %}SSO{% endblock %}
+
+{% block page_title %}
+    {% if page_mode == "account" %}
+        {% blocktrans with username=request.user.username %}Compte de {{ username }}{% endblocktrans %}
+    {% else %}
+        {% trans "Connexion à Lyrics Slide Show" %}
+    {% endif %}
+{% endblock %}
+
+{% block page_intro %}
+    <p>
+        {% if page_mode == "account" %}
+            {% trans "Django reconnaît maintenant la session active et l'identité utilisée pour se connecter." %}
+        {% else %}
+            {% trans "Commencez ici le flux mock Keycloak, puis laissez Django ouvrir la session locale si l'utilisateur existe dans users.users." %}
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block page_summary %}
+    <p>
+        {% if request.user.is_authenticated %}
+            {% trans "Statut" %}: {% trans "connecté" %}
+        {% else %}
+            {% trans "Statut" %}: {% trans "invité" %}
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block content %}
+    <section class="site-auth-card">
+        <h2>{% trans "État de la session" %}</h2>
         {% if messages %}
-            <ul class="messages">
+            <ul class="site-auth-messages">
                 {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
+                    <li class="site-auth-message site-auth-message-{{ message.tags|default:'info' }}">{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
 
-        <div class="card">
-            {% if session_user %}
-                <p><strong>Status:</strong> Connected</p>
-                <dl>
-                    <dt>UUID</dt>
-                    <dd>{{ session_user.external_id }}</dd>
-                    <dt>Username</dt>
-                    <dd>{{ session_user.username }}</dd>
-                    <dt>Email</dt>
-                    <dd>{{ session_user.email|default:"-" }}</dd>
-                    <dt>First name</dt>
-                    <dd>{{ session_user.first_name|default:"-" }}</dd>
-                    <dt>Last name</dt>
-                    <dd>{{ session_user.last_name|default:"-" }}</dd>
-                    <dt>Auth mode</dt>
-                    <dd>{{ auth_mode }}</dd>
-                </dl>
-                <div class="actions">
-                    <a class="button secondary" href="{% url 'logout' %}">Logout</a>
-                </div>
-            {% else %}
-                <p><strong>Status:</strong> Guest</p>
-                <p>No active Django session. Start the mock SSO flow to test a login.</p>
-                <div class="actions">
-                    <a class="button" href="{% url 'login' %}">Login with mock auth</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</body>
-</html>
+        {% if request.user.is_authenticated and session_user %}
+            <dl class="site-auth-details">
+                <dt>UUID</dt>
+                <dd>{{ session_user.external_id }}</dd>
+                <dt>{% trans "Nom d'utilisateur" %}</dt>
+                <dd>{{ session_user.username }}</dd>
+                <dt>Email</dt>
+                <dd>{{ session_user.email|default:"-" }}</dd>
+                <dt>{% trans "Prénom" %}</dt>
+                <dd>{{ session_user.first_name|default:"-" }}</dd>
+                <dt>{% trans "Nom" %}</dt>
+                <dd>{{ session_user.last_name|default:"-" }}</dd>
+            </dl>
+
+            <div class="site-auth-actions">
+                <a class="site-auth-button site-auth-button-secondary" href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
+            </div>
+        {% else %}
+            <p>{% trans "Aucune session Django active pour le moment." %}</p>
+            <p>{% trans "Le bouton ci-dessous ouvre le mock Keycloak puis revient sur LSS pour vérifier l'utilisateur et ouvrir la session locale." %}</p>
+
+            <div class="site-auth-actions">
+                <a class="site-auth-button" href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="site-auth-card">
+        <h2>{% trans "Règle d'accès" %}</h2>
+        <p>{% trans "Une identité externe valide ne suffit pas : LSS vérifie aussi la présence de l'utilisateur dans users.users avant d'ouvrir la session locale." %}</p>
+    </section>
+{% endblock %}
+
+{% block content_footer %}
+    <style>
+        .site-auth-stack,
+        .site-auth-actions {
+            display: grid;
+            gap: 12px;
+        }
+
+        .site-auth-note {
+            display: grid;
+            gap: 4px;
+        }
+
+        .site-auth-card {
+            display: grid;
+            gap: 16px;
+        }
+
+        .site-auth-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid var(--site-line);
+            border-radius: 999px;
+            background: var(--site-accent);
+            color: #fff8f3;
+            font-family: var(--site-font-ui);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .site-auth-button:hover {
+            color: #fff8f3;
+            background: var(--site-accent-soft);
+        }
+
+        .site-auth-button-secondary {
+            background: transparent;
+            color: var(--site-accent);
+        }
+
+        .site-auth-button-secondary:hover {
+            color: var(--site-accent-gold);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .site-auth-messages {
+            display: grid;
+            gap: 10px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .site-auth-message {
+            padding: 12px 14px;
+            border: 1px solid var(--site-line);
+            border-radius: var(--site-radius-md);
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .site-auth-message-error {
+            border-color: #9a2b2b;
+            background: rgba(255, 232, 232, 0.92);
+        }
+
+        .site-auth-message-success {
+            border-color: #286246;
+            background: rgba(230, 247, 236, 0.92);
+        }
+
+        .site-auth-message-info {
+            border-color: #8b5e34;
+            background: rgba(255, 247, 235, 0.92);
+        }
+
+        .site-auth-details {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 8px 14px;
+            margin: 0;
+        }
+
+        .site-auth-details dt {
+            font-weight: 700;
+        }
+
+        .site-auth-details dd {
+            margin: 0;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+    </style>
+{% endblock %}

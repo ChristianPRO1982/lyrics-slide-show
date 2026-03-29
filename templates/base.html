@@ -17,6 +17,14 @@
 
         <div class="site-workspace">
             <div class="site-frame">
+                {% if messages %}
+                    <ul class="site-global-messages" aria-label="{% trans 'Messages' %}">
+                        {% for message in messages %}
+                            <li class="site-global-message site-global-message-{{ message.tags|default:'info' }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
                 <div class="site-layout">
                     <aside class="site-side-stack">
                         <section class="site-panel site-section-panel">

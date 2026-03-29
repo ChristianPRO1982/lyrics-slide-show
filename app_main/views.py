@@ -25,22 +25,33 @@ def homepage(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "main/homepage.html",
-        {
-            "session_user": get_session_user(request.session),
-            "auth_mode": settings.AUTH_MODE,
-        },
+        {"auth_mode": settings.AUTH_MODE},
     )
 
 
 def login(request: HttpRequest) -> HttpResponse:
+    if request.user.is_authenticated:
+        return redirect("account")
+
     if settings.AUTH_MODE != "mock":
         messages.error(request, "Interactive login is not configured for this environment.")
         logger.warning("login_refused auth_mode=%s reason=unsupported_auth_mode", settings.AUTH_MODE)
         return redirect("homepage")
 
-    callback_url = request.build_absolute_uri(reverse("auth_callback"))
-    query_string = urlencode({"return_to": callback_url})
-    return redirect(f"{settings.AUTH_MOCK_BASE_URL}/login?{query_string}")
+    if request.GET.get("start") == "1":
+        callback_url = request.build_absolute_uri(reverse("auth_callback"))
+        query_string = urlencode({"return_to": callback_url})
+        return redirect(f"{settings.AUTH_MOCK_BASE_URL}/login?{query_string}")
+
+    return render(
+        request,
+        "main/connexion.html",
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "session_user": get_session_user(request.session),
+            "page_mode": "login",
+        },
+    )
 
 
 def auth_callback(request: HttpRequest) -> HttpResponse:
@@ -82,3 +93,18 @@ def logout(request: HttpRequest) -> HttpResponse:
     request.session.cycle_key()
     messages.info(request, "Logged out.")
     return redirect("homepage")
+
+
+def account(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    return render(
+        request,
+        "main/connexion.html",
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "session_user": get_session_user(request.session),
+            "page_mode": "account",
+        },
+    )

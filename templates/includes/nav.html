@@ -62,7 +62,7 @@
                 </picture>
                 <span>{% trans "Déconnexion" %}</span>
             </a>
-            <a href="#" title="account" data-django-alias="account">
+            <a href="{% url 'account' %}" title="account" data-django-alias="account">
                 <picture class="site-nav-link-picture">
                     <source srcset="{% static 'images/menu/account-dark.png' %}" media="(prefers-color-scheme: dark)">
                     <img class="site-nav-link-icon" src="{% static 'images/menu/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
@@ -157,7 +157,7 @@
                     <img class="site-nav-button-icon" src="{% static 'images/menu/logout.png' %}" alt="{% trans 'Déconnexion' %}">
                 </picture>
             </a>
-            <a href="#" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
+            <a href="{% url 'account' %}" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
                 <picture class="site-nav-button-picture">
                     <source srcset="{% static 'images/menu/account-dark.png' %}" media="(prefers-color-scheme: dark)">
                     <img class="site-nav-button-icon" src="{% static 'images/menu/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
