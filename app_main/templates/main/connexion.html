@@ -10,232 +10,56 @@
 {% endblock %}
 
 {% block section_title %}
-    {% if page_mode == "account" %}
-        {% trans "Compte" %}
-    {% else %}
-        {% trans "Connexion" %}
-    {% endif %}
+    {% trans "DEV MODE" %}
 {% endblock %}
 
 {% block section_intro %}
-    <p>
-        {% if page_mode == "account" %}
-            {% trans "Votre session Django locale est ouverte à partir de l'identité validée par le mock SSO." %}
-        {% else %}
-            {% trans "Le mock Keycloak sert ici d'entrée SSO avant ouverture de la session Django locale." %}
-        {% endif %}
-    </p>
+    <p>{% trans "Keycloak Mock" %}</p>
 {% endblock %}
 
 {% block section_nav %}
-    <div>
-        {% if page_mode == "account" %}
-            <a href="{% url 'homepage' %}">{% trans "Retour à l'accueil" %}</a>
-        {% else %}
-            <a href="{% url 'login' %}?start=1">{% trans "Ouvrir le mock SSO" %}</a>
-        {% endif %}
-    </div>
 {% endblock %}
 
-{% block tools_title %}{% trans "Session" %}{% endblock %}
+{% block tools_title %}{% trans "Mock" %}{% endblock %}
 
-{% block tools_intro %}
-    <p>{% trans "LSS reste maître de la session locale et des autorisations métier après authentification." %}</p>
-{% endblock %}
+{% block tools_intro %}{% endblock %}
 
 {% block page_tools %}
-    <div class="site-auth-stack">
-        <div class="site-auth-note">
-            <strong>{% trans "Mode" %}</strong>
-            <span>{{ auth_mode }}</span>
-        </div>
-        {% if request.user.is_authenticated %}
-            <div class="site-auth-note">
-                <strong>{% trans "Utilisateur" %}</strong>
-                <span>{% firstof request.user.username request.user.email request.user.external_id %}</span>
-            </div>
-        {% endif %}
+    <div>
+        <a href="{% url 'login' %}?start=1">{% trans "Ouvrir le Mock" %}</a>
     </div>
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Actions" %}{% endblock %}
 
 {% block mobile_side_content %}
-    <div class="site-auth-actions">
+    <div>
         {% if request.user.is_authenticated %}
-            <a class="site-auth-button site-auth-button-secondary" href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
+            <a href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
         {% else %}
-            <a class="site-auth-button" href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
+            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
         {% endif %}
     </div>
 {% endblock %}
 
-{% block page_kicker %}SSO{% endblock %}
+{% block page_kicker %}cARThographie{% endblock %}
 
 {% block page_title %}
-    {% if page_mode == "account" %}
-        {% blocktrans with username=request.user.username %}Compte de {{ username }}{% endblocktrans %}
-    {% else %}
-        {% trans "Connexion à Lyrics Slide Show" %}
-    {% endif %}
+    {% trans "Connexion" %}
 {% endblock %}
 
-{% block page_intro %}
-    <p>
-        {% if page_mode == "account" %}
-            {% trans "Django reconnaît maintenant la session active et l'identité utilisée pour se connecter." %}
-        {% else %}
-            {% trans "Commencez ici le flux mock Keycloak, puis laissez Django ouvrir la session locale si l'utilisateur existe dans users.users." %}
-        {% endif %}
-    </p>
-{% endblock %}
+{% block page_intro %}{% endblock %}
 
 {% block page_summary %}
-    <p>
-        {% if request.user.is_authenticated %}
-            {% trans "Statut" %}: {% trans "connecté" %}
-        {% else %}
-            {% trans "Statut" %}: {% trans "invité" %}
-        {% endif %}
-    </p>
+    <p>{% trans "La connexion passe par la structure mère cARThographie, qui fournit l'identité utilisée ensuite dans l'application avec simplicité et continuité." %}</p>
 {% endblock %}
 
 {% block content %}
-    <section class="site-auth-card">
-        <h2>{% trans "État de la session" %}</h2>
-        {% if messages %}
-            <ul class="site-auth-messages">
-                {% for message in messages %}
-                    <li class="site-auth-message site-auth-message-{{ message.tags|default:'info' }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if request.user.is_authenticated and session_user %}
-            <dl class="site-auth-details">
-                <dt>UUID</dt>
-                <dd>{{ session_user.external_id }}</dd>
-                <dt>{% trans "Nom d'utilisateur" %}</dt>
-                <dd>{{ session_user.username }}</dd>
-                <dt>Email</dt>
-                <dd>{{ session_user.email|default:"-" }}</dd>
-                <dt>{% trans "Prénom" %}</dt>
-                <dd>{{ session_user.first_name|default:"-" }}</dd>
-                <dt>{% trans "Nom" %}</dt>
-                <dd>{{ session_user.last_name|default:"-" }}</dd>
-            </dl>
-
-            <div class="site-auth-actions">
-                <a class="site-auth-button site-auth-button-secondary" href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
-            </div>
-        {% else %}
-            <p>{% trans "Aucune session Django active pour le moment." %}</p>
-            <p>{% trans "Le bouton ci-dessous ouvre le mock Keycloak puis revient sur LSS pour vérifier l'utilisateur et ouvrir la session locale." %}</p>
-
-            <div class="site-auth-actions">
-                <a class="site-auth-button" href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
-            </div>
-        {% endif %}
-    </section>
-
-    <section class="site-auth-card">
-        <h2>{% trans "Règle d'accès" %}</h2>
-        <p>{% trans "Une identité externe valide ne suffit pas : LSS vérifie aussi la présence de l'utilisateur dans users.users avant d'ouvrir la session locale." %}</p>
-    </section>
 {% endblock %}
 
 {% block content_footer %}
-    <style>
-        .site-auth-stack,
-        .site-auth-actions {
-            display: grid;
-            gap: 12px;
-        }
-
-        .site-auth-note {
-            display: grid;
-            gap: 4px;
-        }
-
-        .site-auth-card {
-            display: grid;
-            gap: 16px;
-        }
-
-        .site-auth-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 44px;
-            padding: 0.8rem 1.2rem;
-            border: 1px solid var(--site-line);
-            border-radius: 999px;
-            background: var(--site-accent);
-            color: #fff8f3;
-            font-family: var(--site-font-ui);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .site-auth-button:hover {
-            color: #fff8f3;
-            background: var(--site-accent-soft);
-        }
-
-        .site-auth-button-secondary {
-            background: transparent;
-            color: var(--site-accent);
-        }
-
-        .site-auth-button-secondary:hover {
-            color: var(--site-accent-gold);
-            background: rgba(255, 255, 255, 0.7);
-        }
-
-        .site-auth-messages {
-            display: grid;
-            gap: 10px;
-            padding: 0;
-            list-style: none;
-        }
-
-        .site-auth-message {
-            padding: 12px 14px;
-            border: 1px solid var(--site-line);
-            border-radius: var(--site-radius-md);
-            background: rgba(255, 255, 255, 0.75);
-        }
-
-        .site-auth-message-error {
-            border-color: #9a2b2b;
-            background: rgba(255, 232, 232, 0.92);
-        }
-
-        .site-auth-message-success {
-            border-color: #286246;
-            background: rgba(230, 247, 236, 0.92);
-        }
-
-        .site-auth-message-info {
-            border-color: #8b5e34;
-            background: rgba(255, 247, 235, 0.92);
-        }
-
-        .site-auth-details {
-            display: grid;
-            grid-template-columns: max-content 1fr;
-            gap: 8px 14px;
-            margin: 0;
-        }
-
-        .site-auth-details dt {
-            font-weight: 700;
-        }
-
-        .site-auth-details dd {
-            margin: 0;
-            min-width: 0;
-            overflow-wrap: anywhere;
-        }
-    </style>
+    <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
+    <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
+    <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
+    <p><a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a></p>
 {% endblock %}

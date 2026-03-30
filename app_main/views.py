@@ -108,3 +108,11 @@ def account(request: HttpRequest) -> HttpResponse:
             "page_mode": "account",
         },
     )
+
+
+def privacy_policy(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "main/privacy_policy.html",
+        {"auth_mode": settings.AUTH_MODE},
+    )
