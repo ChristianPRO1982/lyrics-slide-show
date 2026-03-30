@@ -1,5 +1,94 @@
 (() => {
     const root = document.documentElement;
+    const themeConfig = window.LSS_THEME_CONFIG || null;
+    const themeStylesheet = document.querySelector("#site-theme-stylesheet");
+    const themeButtons = document.querySelectorAll("[data-theme-select]");
+
+    const getStoredTheme = () => {
+        if (!themeConfig) {
+            return "normal";
+        }
+
+        try {
+            const savedTheme = window.localStorage.getItem(themeConfig.storageKey);
+            return themeConfig.themeStylesheets[savedTheme] ? savedTheme : themeConfig.defaultTheme;
+        } catch (error) {
+            return themeConfig.defaultTheme;
+        }
+    };
+
+    const buildThemeIconPath = (theme, mode, iconName) => {
+        return `${themeConfig.iconBasePath}/${theme}/${mode}/${iconName}.png`;
+    };
+
+    const applyThemeIcons = (theme) => {
+        if (!themeConfig) {
+            return;
+        }
+
+        document.querySelectorAll("[data-theme-icon]").forEach((picture) => {
+            const iconName = picture.dataset.themeIcon;
+            const iconAlt = picture.dataset.themeAlt || "";
+            const source = picture.querySelector("source");
+            const image = picture.querySelector("img");
+
+            if (source) {
+                source.srcset = buildThemeIconPath(theme, "dark", iconName);
+            }
+
+            if (image) {
+                image.src = buildThemeIconPath(theme, "light", iconName);
+                image.alt = iconAlt;
+            }
+        });
+    };
+
+    const applyThemeSelectionState = (theme) => {
+        document.querySelectorAll("[data-theme-option]").forEach((card) => {
+            const isActive = card.dataset.themeOption === theme;
+            card.classList.toggle("is-active", isActive);
+        });
+
+        themeButtons.forEach((button) => {
+            const isActive = button.dataset.themeSelect === theme;
+            button.disabled = isActive;
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+    };
+
+    const applyTheme = (theme, persist = false) => {
+        if (!themeConfig || !themeConfig.themeStylesheets[theme]) {
+            return;
+        }
+
+        root.dataset.theme = theme;
+
+        if (themeStylesheet) {
+            themeStylesheet.href = themeConfig.themeStylesheets[theme];
+        }
+
+        applyThemeIcons(theme);
+        applyThemeSelectionState(theme);
+
+        if (persist) {
+            try {
+                window.localStorage.setItem(themeConfig.storageKey, theme);
+            } catch (error) {
+                // Ignore storage failures and keep the theme only for the current page.
+            }
+        }
+    };
+
+    if (themeConfig) {
+        applyTheme(getStoredTheme());
+
+        themeButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                applyTheme(button.dataset.themeSelect, true);
+            });
+        });
+    }
+
     const drawer = document.querySelector("[data-nav-drawer]");
     const backdrop = document.querySelector("[data-nav-backdrop]");
     const openButton = document.querySelector("[data-nav-open]");

@@ -20,6 +20,17 @@ from app_main.auth import (
 
 logger = logging.getLogger("app_main.auth")
 
+AVAILABLE_THEMES = [
+    {
+        "slug": "normal",
+        "label": "Normal",
+    },
+    {
+        "slug": "scout",
+        "label": "Scout",
+    },
+]
+
 
 def homepage(request: HttpRequest) -> HttpResponse:
     return render(
@@ -115,4 +126,16 @@ def privacy_policy(request: HttpRequest) -> HttpResponse:
         request,
         "main/privacy_policy.html",
         {"auth_mode": settings.AUTH_MODE},
+    )
+
+
+def theme_preferences(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "main/theme_preferences.html",
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "available_themes": AVAILABLE_THEMES,
+            "default_theme": AVAILABLE_THEMES[0]["slug"],
+        },
     )

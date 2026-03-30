@@ -62,5 +62,11 @@
     <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
     <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
     <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
-    <p><img src="{% static 'icons/ui/normal/light/cookies.png' %}" alt=""> <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a></p>
+    <p>
+        <picture class="site-nav-link-picture" data-theme-icon="cookies" data-theme-alt="{% trans 'Politique de confidentialité' %}">
+            <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
+            <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Politique de confidentialité' %}">
+        </picture>
+        <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
+    </p>
 {% endblock %}

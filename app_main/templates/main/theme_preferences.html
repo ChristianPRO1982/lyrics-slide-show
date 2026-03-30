@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Thèmes" %} | Lyrics Slide Show{% endblock %}
+
+{% block section_title %}{% trans "Apparence" %}{% endblock %}
+
+{% block section_intro %}
+    <p>{% trans "Choisissez le thème visuel du site. Le mode clair ou sombre reste piloté par le navigateur." %}</p>
+{% endblock %}
+
+{% block section_nav %}
+    <div class="site-theme-help">
+        <p>{% trans "Le choix du thème est retenu dans ce navigateur même sans connexion." %}</p>
+        <p>{% trans "Plus tard, ce choix sera aussi synchronisé avec les préférences du compte." %}</p>
+    </div>
+{% endblock %}
+
+{% block tools_title %}{% trans "Rendu" %}{% endblock %}
+
+{% block tools_intro %}
+    <p>{% trans "Le thème change les feuilles CSS et les icônes. Le navigateur décide ensuite entre light et dark." %}</p>
+{% endblock %}
+
+{% block page_tools %}
+    <div class="site-theme-mode-note">
+        <strong>{% trans "Mode navigateur" %}</strong>
+        <p>{% trans "Le mode clair ou sombre suit automatiquement la préférence système du navigateur." %}</p>
+    </div>
+    <div class="site-theme-mode-note">
+        <strong>{% trans "Persistance locale" %}</strong>
+        <p>{% trans "Le thème reste mémorisé tant que ce navigateur conserve le stockage local." %}</p>
+    </div>
+{% endblock %}
+
+{% block mobile_side_title %}{% trans "Aide" %}{% endblock %}
+
+{% block mobile_side_content %}
+    <div class="site-theme-help">
+        <p>{% trans "Le thème visuel est indépendant du mode light/dark." %}</p>
+    </div>
+{% endblock %}
+
+{% block page_kicker %}Lyrics Slide Show{% endblock %}
+
+{% block page_title %}{% trans "Choix du thème" %}{% endblock %}
+
+{% block page_intro %}
+    <p>{% trans "Sélectionnez un habillage visuel. L'application chargera automatiquement la bonne feuille CSS et les bonnes icônes pour ce thème." %}</p>
+{% endblock %}
+
+{% block page_summary %}
+    <p>{% trans "Le thème actif est appliqué immédiatement dans tout le site. Le mode clair ou sombre reste déterminé uniquement par les préférences du navigateur." %}</p>
+{% endblock %}
+
+{% block content %}
+    <section class="site-theme-selection" aria-label="{% trans 'Liste des thèmes' %}">
+        {% for theme in available_themes %}
+            <article class="site-theme-card" data-theme-option="{{ theme.slug }}">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{{ theme.label }}</h2>
+                        {% if theme.slug == "normal" %}
+                            <p>{% trans "Palette chaude et classique pour l'habillage principal." %}</p>
+                        {% elif theme.slug == "scout" %}
+                            <p>{% trans "Palette plus fraîche, plus nette, avec une ambiance vert-bleu." %}</p>
+                        {% endif %}
+                    </div>
+                    <picture class="site-theme-card-icon" data-theme-icon="theme" data-theme-alt="{% trans 'Icône du thème' %}">
+                        <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
+                        <img src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Icône du thème' %}">
+                    </picture>
+                </header>
+                <div class="site-theme-preview site-theme-preview-{{ theme.slug }}" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <button
+                    class="site-theme-select-button"
+                    type="button"
+                    data-theme-select="{{ theme.slug }}"
+                >
+                    {% trans "Activer ce thème" %}
+                </button>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}

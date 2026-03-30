@@ -2,14 +2,51 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html lang="{{ language_code|default:'fr' }}">
+<html lang="{{ language_code|default:'fr' }}" data-theme="normal">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{% endblock %}">
     <link rel="icon" sizes="192x192" href="{% static 'images/lss.png' %}" type="image/png"/>
-    <link rel="stylesheet" href="{% static 'css/normal.css' %}">
+    <script>
+        window.LSS_THEME_CONFIG = {
+            storageKey: "lss-theme",
+            defaultTheme: "normal",
+            themeStylesheets: {
+                normal: "{% static 'css/normal.css' %}",
+                scout: "{% static 'css/scout.css' %}"
+            },
+            iconBasePath: "{% static 'icons/ui' %}"
+        };
+
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            let savedTheme = null;
+
+            try {
+                savedTheme = window.localStorage ? window.localStorage.getItem(config.storageKey) : null;
+            } catch (error) {
+                savedTheme = null;
+            }
+
+            const selectedTheme = config.themeStylesheets[savedTheme] ? savedTheme : config.defaultTheme;
+
+            document.documentElement.dataset.theme = selectedTheme;
+        })();
+    </script>
+    <link id="site-theme-stylesheet" rel="stylesheet" href="{% static 'css/normal.css' %}">
+    <script>
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            const theme = document.documentElement.dataset.theme || config.defaultTheme;
+            const stylesheet = document.getElementById("site-theme-stylesheet");
+
+            if (stylesheet && config.themeStylesheets[theme]) {
+                stylesheet.href = config.themeStylesheets[theme];
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="site-shell">
