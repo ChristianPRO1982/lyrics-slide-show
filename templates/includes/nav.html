@@ -101,7 +101,7 @@
         </a>
         <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'icons/ui/normal/dark/cookies-dark.png' %}" media="(prefers-color-scheme: dark)">
+                <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Cookies et politique de confidentialité' %}">
             </picture>
             <span>{% trans "Cookies et politique de confidentialité" %}</span>
@@ -109,6 +109,15 @@
     </section>
 
     <div class="site-nav-drawer-footer">
+        <a class="site-nav-drawer-partner-link"
+           href="https://www.carthographie.fr/"
+           target="_blank"
+           rel="noopener noreferrer"
+           title="cARThographie">
+            <img class="site-nav-drawer-partner-image"
+                 src="{% static 'images/cARThographie.gif' %}"
+                 alt="cARThographie">
+        </a>
         <a class="site-home-release-link"
            href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
            target="_blank"
@@ -198,7 +207,7 @@
         </a>
         <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'icons/ui/normal/dark/cookies-dark.png' %}" media="(prefers-color-scheme: dark)">
+                <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
                 <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Cookies et politique de confidentialité' %}">
             </picture>
         </a>

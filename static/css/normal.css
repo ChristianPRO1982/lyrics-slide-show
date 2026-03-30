@@ -515,6 +515,18 @@ h6 {
     padding-top: 18px;
 }
 
+.site-nav-drawer-partner-link {
+    display: inline-flex;
+    margin-bottom: 14px;
+    text-decoration: none;
+}
+
+.site-nav-drawer-partner-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
 .site-nav-drawer .site-nav-group > a:hover,
 .site-nav-rail .site-nav-group > a:hover {
     color: var(--site-accent-gold);
