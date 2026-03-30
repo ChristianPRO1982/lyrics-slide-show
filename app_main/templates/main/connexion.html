@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
 
 {% block title %}
@@ -61,5 +62,5 @@
     <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
     <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
     <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
-    <p><a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a></p>
+    <p><img src="{% static 'icons/ui/normal/light/cookies.png' %}" alt=""> <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a></p>
 {% endblock %}
