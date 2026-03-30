@@ -65,30 +65,38 @@ class CallbackValidationTests(SimpleTestCase):
 
 
 class DirectoryUserLookupTests(TestCase):
+    def _patch_cursor(self, cursor_factory, fetchone_values):
+        cursor = MagicMock()
+        cursor.fetchone.side_effect = fetchone_values
+        cursor_factory.return_value.__enter__.return_value = cursor
+        return cursor
+
     @patch("app_main.auth.connection.cursor")
     def test_get_directory_user_returns_enabled_user(self, cursor_factory):
-        cursor = MagicMock()
-        cursor.fetchone.return_value = (
-            "11111111-1111-1111-1111-111111111111",
-            "known.user",
-            "known.user@example.test",
-            "Known",
-            "User",
-            True,
+        cursor = self._patch_cursor(
+            cursor_factory,
+            [
+                (1,),
+                (
+                    "11111111-1111-1111-1111-111111111111",
+                    "known.user",
+                    "known.user@example.test",
+                    "Known",
+                    "User",
+                    True,
+                ),
+            ],
         )
-        cursor_factory.return_value.__enter__.return_value = cursor
 
         with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
             user = get_directory_user("11111111-1111-1111-1111-111111111111")
 
         self.assertEqual(user.username, "known.user")
-        cursor.execute.assert_called_once()
+        self.assertEqual(cursor.execute.call_count, 2)
 
     @patch("app_main.auth.connection.cursor")
     def test_get_directory_user_raises_unknown_user(self, cursor_factory):
-        cursor = MagicMock()
-        cursor.fetchone.return_value = None
-        cursor_factory.return_value.__enter__.return_value = cursor
+        self._patch_cursor(cursor_factory, [(1,), None])
 
         with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
             with self.assertRaises(UnknownUserError):
@@ -96,20 +104,46 @@ class DirectoryUserLookupTests(TestCase):
 
     @patch("app_main.auth.connection.cursor")
     def test_get_directory_user_raises_disabled_user(self, cursor_factory):
-        cursor = MagicMock()
-        cursor.fetchone.return_value = (
-            "22222222-2222-2222-2222-222222222222",
-            "disabled.user",
-            "disabled.user@example.test",
-            "Disabled",
-            "User",
-            False,
+        self._patch_cursor(
+            cursor_factory,
+            [
+                (1,),
+                (
+                    "22222222-2222-2222-2222-222222222222",
+                    "disabled.user",
+                    "disabled.user@example.test",
+                    "Disabled",
+                    "User",
+                    False,
+                ),
+            ],
         )
-        cursor_factory.return_value.__enter__.return_value = cursor
 
         with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
             with self.assertRaises(DisabledUserError):
                 get_directory_user("22222222-2222-2222-2222-222222222222")
+
+    @patch("app_main.auth.connection.cursor")
+    def test_get_directory_user_defaults_to_enabled_when_column_is_missing(self, cursor_factory):
+        self._patch_cursor(
+            cursor_factory,
+            [
+                None,
+                (
+                    "11111111-1111-1111-1111-111111111111",
+                    "known.user",
+                    "known.user@example.test",
+                    "Known",
+                    "User",
+                    True,
+                ),
+            ],
+        )
+
+        with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
+            user = get_directory_user("11111111-1111-1111-1111-111111111111")
+
+        self.assertEqual(user.username, "known.user")
 
 
 class AuthFlowTests(TestCase):

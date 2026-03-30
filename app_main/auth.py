@@ -135,11 +135,32 @@ def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
 def _user_lookup_sql() -> str:
     schema = _validate_identifier(settings.USER_SCHEMA)
     table = _validate_identifier(settings.USER_TABLE)
+    enabled_expr = "enabled" if _user_table_has_column("enabled") else "TRUE AS enabled"
     return (
-        f'SELECT id::text, username, email, first_name, last_name, enabled '
+        f"SELECT id::text, username, email, first_name, last_name, {enabled_expr} "
         f'FROM "{schema}"."{table}" '
         f"WHERE id = %s"
     )
+
+
+def _user_table_has_column(column_name: str) -> bool:
+    schema = _validate_identifier(settings.USER_SCHEMA)
+    table = _validate_identifier(settings.USER_TABLE)
+    column = _validate_identifier(column_name)
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = %s
+              AND table_name = %s
+              AND column_name = %s
+            LIMIT 1
+            """,
+            [schema, table, column],
+        )
+        return cursor.fetchone() is not None
 
 
 def get_directory_user(external_id: str) -> DirectoryUser:
