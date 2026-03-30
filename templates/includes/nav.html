@@ -7,15 +7,15 @@
     <header class="site-nav-drawer-header">
         <div>
             <picture class="site-nav-brand-picture">
-                <source srcset="{% static 'images/lss-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-brand-icon" src="{% static 'images/lss.png' %}" alt="LSS">
+                <source srcset="{% static 'icons/ui/normal/dark/lss.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-brand-icon" src="{% static 'icons/ui/normal/light/lss.png' %}" alt="LSS">
             </picture>
             <strong>Lyrics Slide Show</strong>
         </div>
         <button class="site-nav-image-button" type="button" data-nav-close aria-label="{% trans 'Close' %}">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/close-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/close.png' %}" alt="{% trans 'Close' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/close.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/close.png' %}" alt="{% trans 'Close' %}">
             </picture>
         </button>
     </header>
@@ -24,29 +24,29 @@
         <h2>{% trans "Main Links" %}</h2>
         <a href="{% url 'homepage' %}" title="homepage">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/home-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/home.png' %}" alt="{% trans 'Accueil' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/home.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/home.png' %}" alt="{% trans 'Accueil' %}">
             </picture>
             <span>{% trans "Accueil" %}</span>
         </a>
         <a href="{% url 'groups' %}" title="groups" data-django-alias="groups">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/groups-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
             </picture>
             <span>{% trans "Liste des groupes" %}</span>
         </a>
         <a href="{% url 'songs' %}" title="songs" data-django-alias="songs">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/songs-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/songs.png' %}" alt="{% trans 'Liste des chants' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/songs.png' %}" alt="{% trans 'Liste des chants' %}">
             </picture>
             <span>{% trans "Liste des chants" %}</span>
         </a>
         <a href="{% url 'animations' %}" title="animations" data-django-alias="animations">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/animations-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/animations.png' %}" alt="{% trans 'Liste des animations' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/animations.png' %}" alt="{% trans 'Liste des animations' %}">
             </picture>
             <span>{% trans "Liste des animations" %}</span>
         </a>
@@ -57,45 +57,45 @@
         {% if request.user.is_authenticated %}
             <a href="{% url 'logout' %}" title="logout">
                 <picture class="site-nav-link-picture">
-                    <source srcset="{% static 'images/menu/logout-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'images/menu/logout.png' %}" alt="{% trans 'Déconnexion' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/logout.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/logout.png' %}" alt="{% trans 'Déconnexion' %}">
                 </picture>
                 <span>{% trans "Déconnexion" %}</span>
             </a>
             <a href="{% url 'account' %}" title="account" data-django-alias="account">
                 <picture class="site-nav-link-picture">
-                    <source srcset="{% static 'images/menu/account-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'images/menu/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/account.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
                 </picture>
                 <span>{% firstof request.user.username "<username>" %}</span>
             </a>
         {% else %}
             <a href="{% url 'login' %}" title="login">
                 <picture class="site-nav-link-picture">
-                    <source srcset="{% static 'images/menu/login-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'images/menu/login.png' %}" alt="{% trans 'Connexion' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/login.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/login.png' %}" alt="{% trans 'Connexion' %}">
                 </picture>
                 <span>{% trans "Connexion" %}</span>
             </a>
             <a href="#" title="signup" data-django-alias="signup">
                 <picture class="site-nav-link-picture">
-                    <source srcset="{% static 'images/menu/signup-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'images/menu/signup.png' %}" alt="{% trans 'Créer un compte' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/signup.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/signup.png' %}" alt="{% trans 'Créer un compte' %}">
                 </picture>
                 <span>{% trans "Créer un compte" %}</span>
             </a>
         {% endif %}
         <a href="#" title="theme" data-django-alias="theme">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/theme-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/theme.png' %}" alt="{% trans 'Thèmes' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Thèmes' %}">
             </picture>
             <span>{% trans "Thèmes" %}</span>
         </a>
         <a href="#" title="language" data-django-alias="language">
             <picture class="site-nav-link-picture">
-                <source srcset="{% static 'images/menu/button-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'images/menu/button.png' %}" alt="{% trans 'Français' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/language.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/language.png' %}" alt="{% trans 'Français' %}">
             </picture>
             <span>{% trans "Français" %}</span>
         </a>
@@ -133,34 +133,34 @@
 <nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
     <button class="site-nav-image-button" type="button" aria-label="Lyrics Slide Show" data-nav-open>
         <picture class="site-nav-button-picture">
-            <source srcset="{% static 'images/menu/hamburger-dark.png' %}" media="(prefers-color-scheme: dark)">
-            <img class="site-nav-button-icon" src="{% static 'images/menu/hamburger.png' %}" alt="Lyrics Slide Show">
+            <source srcset="{% static 'icons/ui/normal/dark/hamburger.png' %}" media="(prefers-color-scheme: dark)">
+            <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/hamburger.png' %}" alt="Lyrics Slide Show">
         </picture>
     </button>
 
     <section class="site-nav-group">
         <a href="{% url 'homepage' %}" title="{% trans 'Accueil' %}" data-django-alias="homepage">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/home-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/home.png' %}" alt="{% trans 'Accueil' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/home.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/home.png' %}" alt="{% trans 'Accueil' %}">
             </picture>
         </a>
         <a href="{% url 'groups' %}" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/groups-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
             </picture>
         </a>
         <a href="{% url 'songs' %}" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/songs-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/songs.png' %}" alt="{% trans 'Liste des chants' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/songs.png' %}" alt="{% trans 'Liste des chants' %}">
             </picture>
         </a>
         <a href="{% url 'animations' %}" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/animations-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/animations.png' %}" alt="{% trans 'Liste des animations' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/animations.png' %}" alt="{% trans 'Liste des animations' %}">
             </picture>
         </a>
     </section>
@@ -169,40 +169,40 @@
         {% if request.user.is_authenticated %}
             <a href="{% url 'logout' %}" title="{% trans 'Déconnexion' %}" data-django-alias="logout">
                 <picture class="site-nav-button-picture">
-                    <source srcset="{% static 'images/menu/logout-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'images/menu/logout.png' %}" alt="{% trans 'Déconnexion' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/logout.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/logout.png' %}" alt="{% trans 'Déconnexion' %}">
                 </picture>
             </a>
             <a href="{% url 'account' %}" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
                 <picture class="site-nav-button-picture">
-                    <source srcset="{% static 'images/menu/account-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'images/menu/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/account.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
                 </picture>
             </a>
         {% else %}
             <a href="{% url 'login' %}" title="{% trans 'Connexion' %}" data-django-alias="login">
                 <picture class="site-nav-button-picture">
-                    <source srcset="{% static 'images/menu/login-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'images/menu/login.png' %}" alt="{% trans 'Connexion' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/login.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/login.png' %}" alt="{% trans 'Connexion' %}">
                 </picture>
             </a>
             <a href="#" title="{% trans 'Créer un compte' %}" data-django-alias="signup">
                 <picture class="site-nav-button-picture">
-                    <source srcset="{% static 'images/menu/signup-dark.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'images/menu/signup.png' %}" alt="{% trans 'Créer un compte' %}">
+                    <source srcset="{% static 'icons/ui/normal/dark/signup.png' %}" media="(prefers-color-scheme: dark)">
+                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/signup.png' %}" alt="{% trans 'Créer un compte' %}">
                 </picture>
             </a>
         {% endif %}
         <a href="#" title="{% trans 'Thèmes' %}" data-django-alias="theme">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/theme-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/theme.png' %}" alt="{% trans 'Thèmes' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Thèmes' %}">
             </picture>
         </a>
         <a href="#" title="{% trans 'Français' %}" data-django-alias="language">
             <picture class="site-nav-button-picture">
-                <source srcset="{% static 'images/menu/button-dark.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'images/menu/button.png' %}" alt="{% trans 'Français' %}">
+                <source srcset="{% static 'icons/ui/normal/dark/language.png' %}" media="(prefers-color-scheme: dark)">
+                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/language.png' %}" alt="{% trans 'Français' %}">
             </picture>
         </a>
         <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
