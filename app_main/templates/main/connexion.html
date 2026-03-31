@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% load static %}
 {% load i18n %}
+{% trans "Politique de confidentialité" as privacy_label %}
 
 {% block title %}
     {% if page_mode == "account" %}
@@ -63,10 +63,7 @@
     <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
     <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
     <p>
-        <picture class="site-nav-link-picture" data-theme-icon="cookies" data-theme-alt="{% trans 'Politique de confidentialité' %}">
-            <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
-            <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Politique de confidentialité' %}">
-        </picture>
+        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=privacy_label %}
         <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
     </p>
 {% endblock %}

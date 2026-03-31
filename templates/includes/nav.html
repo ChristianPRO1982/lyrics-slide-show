@@ -1,215 +1,310 @@
 {% load static %}
 {% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% trans "Close" as nav_close_label %}
+{% trans "Accueil" as nav_home_label %}
+{% trans "Liste des groupes" as nav_groups_label %}
+{% trans "Liste des chants" as nav_songs_label %}
+{% trans "Liste des animations" as nav_animations_label %}
+{% trans "Déconnexion" as nav_logout_label %}
+{% trans "Connexion" as nav_login_label %}
+{% trans "Créer un compte" as nav_signup_label %}
+{% trans "Thèmes" as nav_theme_label %}
+{% trans "Cookies et politique de confidentialité" as nav_cookies_label %}
+{% with current_lang=CURRENT_LANGUAGE|default:'fr'|slice:':2'|lower %}
+    {% if current_lang == "en" %}
+        {% trans "English" as nav_language_label %}
+        {% with "🇬🇧" as nav_language_flag %}
+            <div class="site-nav-backdrop" hidden data-nav-backdrop></div>
 
-<div class="site-nav-backdrop" hidden data-nav-backdrop></div>
+            <aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
+                <header class="site-nav-drawer-header">
+                    <div>
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-brand-picture" img_class="site-nav-brand-icon" icon_name="lss" icon_alt="LSS" %}
+                        <strong>Lyrics Slide Show</strong>
+                    </div>
+                    <button class="site-nav-image-button" type="button" data-nav-close aria-label="{% trans 'Close' %}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="close" icon_alt=nav_close_label %}
+                    </button>
+                </header>
 
-<aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
-    <header class="site-nav-drawer-header">
-        <div>
-            <picture class="site-nav-brand-picture" data-theme-icon="lss" data-theme-alt="LSS">
-                <source srcset="{% static 'icons/ui/normal/dark/lss.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-brand-icon" src="{% static 'icons/ui/normal/light/lss.png' %}" alt="LSS">
-            </picture>
-            <strong>Lyrics Slide Show</strong>
-        </div>
-        <button class="site-nav-image-button" type="button" data-nav-close aria-label="{% trans 'Close' %}">
-            <picture class="site-nav-button-picture" data-theme-icon="close" data-theme-alt="{% trans 'Close' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/close.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/close.png' %}" alt="{% trans 'Close' %}">
-            </picture>
-        </button>
-    </header>
+                <section class="site-nav-group">
+                    <h2>{% trans "Main Links" %}</h2>
+                    <a href="{% url 'homepage' %}" title="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
+                        <span>{% trans "Accueil" %}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="groups" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{% trans "Liste des groupes" %}</span>
+                    </a>
+                    <a href="{% url 'songs' %}" title="songs" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                        <span>{% trans "Liste des chants" %}</span>
+                    </a>
+                    <a href="{% url 'animations' %}" title="animations" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                        <span>{% trans "Liste des animations" %}</span>
+                    </a>
+                </section>
 
-    <section class="site-nav-group">
-        <h2>{% trans "Main Links" %}</h2>
-        <a href="{% url 'homepage' %}" title="homepage">
-            <picture class="site-nav-link-picture" data-theme-icon="home" data-theme-alt="{% trans 'Accueil' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/home.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/home.png' %}" alt="{% trans 'Accueil' %}">
-            </picture>
-            <span>{% trans "Accueil" %}</span>
-        </a>
-        <a href="{% url 'groups' %}" title="groups" data-django-alias="groups">
-            <picture class="site-nav-link-picture" data-theme-icon="groups" data-theme-alt="{% trans 'Liste des groupes' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
-            </picture>
-            <span>{% trans "Liste des groupes" %}</span>
-        </a>
-        <a href="{% url 'songs' %}" title="songs" data-django-alias="songs">
-            <picture class="site-nav-link-picture" data-theme-icon="songs" data-theme-alt="{% trans 'Liste des chants' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/songs.png' %}" alt="{% trans 'Liste des chants' %}">
-            </picture>
-            <span>{% trans "Liste des chants" %}</span>
-        </a>
-        <a href="{% url 'animations' %}" title="animations" data-django-alias="animations">
-            <picture class="site-nav-link-picture" data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/animations.png' %}" alt="{% trans 'Liste des animations' %}">
-            </picture>
-            <span>{% trans "Liste des animations" %}</span>
-        </a>
-    </section>
+                <section class="site-nav-group">
+                    <h2>{% trans "Profile and Preferences" %}</h2>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="logout">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                            <span>{% trans "Déconnexion" %}</span>
+                        </a>
+                        <a href="{% url 'account' %}" title="account" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=request.user.username|default:'<username>' %}
+                            <span>{% firstof request.user.username "<username>" %}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
+                            <span>{% trans "Connexion" %}</span>
+                        </a>
+                        <a href="#" title="signup" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                            <span>{% trans "Créer un compte" %}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="theme" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                        <span>{% trans "Thèmes" %}</span>
+                    </a>
+                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                        <span>{{ nav_language_label }}</span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                        <span>{% trans "Cookies et politique de confidentialité" %}</span>
+                    </a>
+                </section>
 
-    <section class="site-nav-group">
-        <h2>{% trans "Profile and Preferences" %}</h2>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}" title="logout">
-                <picture class="site-nav-link-picture" data-theme-icon="logout" data-theme-alt="{% trans 'Déconnexion' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/logout.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/logout.png' %}" alt="{% trans 'Déconnexion' %}">
-                </picture>
-                <span>{% trans "Déconnexion" %}</span>
-            </a>
-            <a href="{% url 'account' %}" title="account" data-django-alias="account">
-                <picture class="site-nav-link-picture" data-theme-icon="account" data-theme-alt="{% firstof request.user.username '<username>' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/account.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
-                </picture>
-                <span>{% firstof request.user.username "<username>" %}</span>
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" title="login">
-                <picture class="site-nav-link-picture" data-theme-icon="login" data-theme-alt="{% trans 'Connexion' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/login.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/login.png' %}" alt="{% trans 'Connexion' %}">
-                </picture>
-                <span>{% trans "Connexion" %}</span>
-            </a>
-            <a href="#" title="signup" data-django-alias="signup">
-                <picture class="site-nav-link-picture" data-theme-icon="signup" data-theme-alt="{% trans 'Créer un compte' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/signup.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/signup.png' %}" alt="{% trans 'Créer un compte' %}">
-                </picture>
-                <span>{% trans "Créer un compte" %}</span>
-            </a>
-        {% endif %}
-        <a href="{% url 'theme_preferences' %}" title="theme" data-django-alias="theme">
-            <picture class="site-nav-link-picture" data-theme-icon="theme" data-theme-alt="{% trans 'Thèmes' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Thèmes' %}">
-            </picture>
-            <span>{% trans "Thèmes" %}</span>
-        </a>
-        <a href="#" title="language" data-django-alias="language">
-            <picture class="site-nav-link-picture" data-theme-icon="language" data-theme-alt="{% trans 'Français' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/language.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/language.png' %}" alt="{% trans 'Français' %}">
-            </picture>
-            <span>{% trans "Français" %}</span>
-        </a>
-        <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
-            <picture class="site-nav-link-picture" data-theme-icon="cookies" data-theme-alt="{% trans 'Cookies et politique de confidentialité' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-link-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Cookies et politique de confidentialité' %}">
-            </picture>
-            <span>{% trans "Cookies et politique de confidentialité" %}</span>
-        </a>
-    </section>
+                <div class="site-nav-drawer-footer">
+                    <a class="site-nav-drawer-partner-link"
+                       href="https://www.carthographie.fr/"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="cARThographie">
+                        <img class="site-nav-drawer-partner-image"
+                             src="{% static 'images/cARThographie.gif' %}"
+                             alt="cARThographie">
+                    </a>
+                    <a class="site-home-release-link"
+                       href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="Github CHANGELOG.md">
+                        <img class="site-home-release-badge"
+                             src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                             alt="Latest Release">
+                    </a>
+                </div>
+            </aside>
 
-    <div class="site-nav-drawer-footer">
-        <a class="site-nav-drawer-partner-link"
-           href="https://www.carthographie.fr/"
-           target="_blank"
-           rel="noopener noreferrer"
-           title="cARThographie">
-            <img class="site-nav-drawer-partner-image"
-                 src="{% static 'images/cARThographie.gif' %}"
-                 alt="cARThographie">
-        </a>
-        <a class="site-home-release-link"
-           href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
-           target="_blank"
-           rel="noopener noreferrer"
-           title="Github CHANGELOG.md">
-            <img class="site-home-release-badge"
-                 src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
-                 alt="Latest Release">
-        </a>
-    </div>
-</aside>
+            <nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
+                <button class="site-nav-image-button" type="button" aria-label="Lyrics Slide Show" data-nav-open>
+                    {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="hamburger" icon_alt="Lyrics Slide Show" %}
+                </button>
 
-<nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
-    <button class="site-nav-image-button" type="button" aria-label="Lyrics Slide Show" data-nav-open>
-        <picture class="site-nav-button-picture" data-theme-icon="hamburger" data-theme-alt="Lyrics Slide Show">
-            <source srcset="{% static 'icons/ui/normal/dark/hamburger.png' %}" media="(prefers-color-scheme: dark)">
-            <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/hamburger.png' %}" alt="Lyrics Slide Show">
-        </picture>
-    </button>
+                <section class="site-nav-group">
+                    <a href="{% url 'homepage' %}" title="{% trans 'Accueil' %}" data-django-alias="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                    </a>
+                    <a href="{% url 'songs' %}" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                    </a>
+                    <a href="{% url 'animations' %}" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                </section>
 
-    <section class="site-nav-group">
-        <a href="{% url 'homepage' %}" title="{% trans 'Accueil' %}" data-django-alias="homepage">
-            <picture class="site-nav-button-picture" data-theme-icon="home" data-theme-alt="{% trans 'Accueil' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/home.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/home.png' %}" alt="{% trans 'Accueil' %}">
-            </picture>
-        </a>
-        <a href="{% url 'groups' %}" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
-            <picture class="site-nav-button-picture" data-theme-icon="groups" data-theme-alt="{% trans 'Liste des groupes' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/groups.png' %}" alt="{% trans 'Liste des groupes' %}">
-            </picture>
-        </a>
-        <a href="{% url 'songs' %}" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
-            <picture class="site-nav-button-picture" data-theme-icon="songs" data-theme-alt="{% trans 'Liste des chants' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/songs.png' %}" alt="{% trans 'Liste des chants' %}">
-            </picture>
-        </a>
-        <a href="{% url 'animations' %}" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
-            <picture class="site-nav-button-picture" data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/animations.png' %}" alt="{% trans 'Liste des animations' %}">
-            </picture>
-        </a>
-    </section>
+                <section class="site-nav-group">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{% trans 'Déconnexion' %}" data-django-alias="logout">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                        </a>
+                        <a href="{% url 'account' %}" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=request.user.username|default:'<username>' %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{% trans 'Connexion' %}" data-django-alias="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
+                        </a>
+                        <a href="#" title="{% trans 'Créer un compte' %}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="{% trans 'Thèmes' %}" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                    </a>
+                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                    </a>
+                </section>
+            </nav>
+        {% endwith %}
+    {% else %}
+        {% trans "Français" as nav_language_label %}
+        {% with "🇫🇷" as nav_language_flag %}
+            <div class="site-nav-backdrop" hidden data-nav-backdrop></div>
 
-    <section class="site-nav-group">
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}" title="{% trans 'Déconnexion' %}" data-django-alias="logout">
-                <picture class="site-nav-button-picture" data-theme-icon="logout" data-theme-alt="{% trans 'Déconnexion' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/logout.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/logout.png' %}" alt="{% trans 'Déconnexion' %}">
-                </picture>
-            </a>
-            <a href="{% url 'account' %}" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
-                <picture class="site-nav-button-picture" data-theme-icon="account" data-theme-alt="{% firstof request.user.username '<username>' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/account.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/account.png' %}" alt="{% firstof request.user.username '<username>' %}">
-                </picture>
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" title="{% trans 'Connexion' %}" data-django-alias="login">
-                <picture class="site-nav-button-picture" data-theme-icon="login" data-theme-alt="{% trans 'Connexion' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/login.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/login.png' %}" alt="{% trans 'Connexion' %}">
-                </picture>
-            </a>
-            <a href="#" title="{% trans 'Créer un compte' %}" data-django-alias="signup">
-                <picture class="site-nav-button-picture" data-theme-icon="signup" data-theme-alt="{% trans 'Créer un compte' %}">
-                    <source srcset="{% static 'icons/ui/normal/dark/signup.png' %}" media="(prefers-color-scheme: dark)">
-                    <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/signup.png' %}" alt="{% trans 'Créer un compte' %}">
-                </picture>
-            </a>
-        {% endif %}
-        <a href="{% url 'theme_preferences' %}" title="{% trans 'Thèmes' %}" data-django-alias="theme">
-            <picture class="site-nav-button-picture" data-theme-icon="theme" data-theme-alt="{% trans 'Thèmes' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Thèmes' %}">
-            </picture>
-        </a>
-        <a href="#" title="{% trans 'Français' %}" data-django-alias="language">
-            <picture class="site-nav-button-picture" data-theme-icon="language" data-theme-alt="{% trans 'Français' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/language.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/language.png' %}" alt="{% trans 'Français' %}">
-            </picture>
-        </a>
-        <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
-            <picture class="site-nav-button-picture" data-theme-icon="cookies" data-theme-alt="{% trans 'Cookies et politique de confidentialité' %}">
-                <source srcset="{% static 'icons/ui/normal/dark/cookies.png' %}" media="(prefers-color-scheme: dark)">
-                <img class="site-nav-button-icon" src="{% static 'icons/ui/normal/light/cookies.png' %}" alt="{% trans 'Cookies et politique de confidentialité' %}">
-            </picture>
-        </a>
-    </section>
-</nav>
+            <aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
+                <header class="site-nav-drawer-header">
+                    <div>
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-brand-picture" img_class="site-nav-brand-icon" icon_name="lss" icon_alt="LSS" %}
+                        <strong>Lyrics Slide Show</strong>
+                    </div>
+                    <button class="site-nav-image-button" type="button" data-nav-close aria-label="{% trans 'Close' %}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="close" icon_alt=nav_close_label %}
+                    </button>
+                </header>
+
+                <section class="site-nav-group">
+                    <h2>{% trans "Main Links" %}</h2>
+                    <a href="{% url 'homepage' %}" title="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
+                        <span>{% trans "Accueil" %}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="groups" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{% trans "Liste des groupes" %}</span>
+                    </a>
+                    <a href="{% url 'songs' %}" title="songs" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                        <span>{% trans "Liste des chants" %}</span>
+                    </a>
+                    <a href="{% url 'animations' %}" title="animations" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                        <span>{% trans "Liste des animations" %}</span>
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    <h2>{% trans "Profile and Preferences" %}</h2>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="logout">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                            <span>{% trans "Déconnexion" %}</span>
+                        </a>
+                        <a href="{% url 'account' %}" title="account" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=request.user.username|default:'<username>' %}
+                            <span>{% firstof request.user.username "<username>" %}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
+                            <span>{% trans "Connexion" %}</span>
+                        </a>
+                        <a href="#" title="signup" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                            <span>{% trans "Créer un compte" %}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="theme" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                        <span>{% trans "Thèmes" %}</span>
+                    </a>
+                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                        <span>{{ nav_language_label }}</span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                        <span>{% trans "Cookies et politique de confidentialité" %}</span>
+                    </a>
+                </section>
+
+                <div class="site-nav-drawer-footer">
+                    <a class="site-nav-drawer-partner-link"
+                       href="https://www.carthographie.fr/"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="cARThographie">
+                        <img class="site-nav-drawer-partner-image"
+                             src="{% static 'images/cARThographie.gif' %}"
+                             alt="cARThographie">
+                    </a>
+                    <a class="site-home-release-link"
+                       href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="Github CHANGELOG.md">
+                        <img class="site-home-release-badge"
+                             src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                             alt="Latest Release">
+                    </a>
+                </div>
+            </aside>
+
+            <nav class="site-nav-rail" aria-label="{% trans 'General Navigation' %}">
+                <button class="site-nav-image-button" type="button" aria-label="Lyrics Slide Show" data-nav-open>
+                    {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="hamburger" icon_alt="Lyrics Slide Show" %}
+                </button>
+
+                <section class="site-nav-group">
+                    <a href="{% url 'homepage' %}" title="{% trans 'Accueil' %}" data-django-alias="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{% trans 'Liste des groupes' %}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                    </a>
+                    <a href="{% url 'songs' %}" title="{% trans 'Liste des chants' %}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                    </a>
+                    <a href="{% url 'animations' %}" title="{% trans 'Liste des animations' %}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{% trans 'Déconnexion' %}" data-django-alias="logout">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                        </a>
+                        <a href="{% url 'account' %}" title="{% firstof request.user.username '<username>' %}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=request.user.username|default:'<username>' %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{% trans 'Connexion' %}" data-django-alias="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
+                        </a>
+                        <a href="#" title="{% trans 'Créer un compte' %}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="{% trans 'Thèmes' %}" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                    </a>
+                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{% trans 'Cookies et politique de confidentialité' %}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                    </a>
+                </section>
+            </nav>
+        {% endwith %}
+    {% endif %}
+{% endwith %}

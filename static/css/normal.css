@@ -519,6 +519,25 @@ h6 {
     border-radius: 8px;
 }
 
+.site-nav-flag-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.site-nav-flag-badge {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
 .site-nav-rail .site-nav-group {
     width: 100%;
     display: grid;
@@ -558,7 +577,7 @@ h6 {
     left: 12px;
     bottom: 12px;
     width: min(340px, calc(100vw - 24px));
-    padding: 18px;
+    padding: 16px;
     border: 1px solid var(--site-line);
     border-radius: var(--site-radius-xl);
     background: var(--site-surface-strong);
@@ -584,8 +603,8 @@ h6 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 18px;
+    gap: 12px;
+    margin-bottom: 14px;
 }
 
 .site-nav-drawer-header p {
@@ -605,7 +624,7 @@ h6 {
 .site-nav-drawer-header > div {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .site-nav-drawer-header button {
@@ -616,24 +635,24 @@ h6 {
 }
 
 .site-nav-drawer .site-nav-group + .site-nav-group {
-    margin-top: 18px;
-    padding-top: 18px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 1px solid var(--site-line);
 }
 
 .site-nav-drawer .site-nav-group h2 {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 1rem;
 }
 
 .site-nav-drawer .site-nav-group > a {
-    margin-bottom: 8px;
-    padding: 6px 0;
+    margin-bottom: 4px;
+    padding: 4px 0;
     color: var(--site-ink);
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .site-nav-drawer .site-nav-group > a .site-nav-link-picture {
@@ -648,12 +667,12 @@ h6 {
 
 .site-nav-drawer-footer {
     margin-top: auto;
-    padding-top: 18px;
+    padding-top: 12px;
 }
 
 .site-nav-drawer-partner-link {
     display: inline-flex;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     text-decoration: none;
 }
 
@@ -667,6 +686,101 @@ h6 {
 .site-nav-rail .site-nav-group > a:hover {
     color: var(--site-accent-gold);
     text-decoration: none;
+}
+
+@media (min-width: 1025px) {
+    :root {
+        --site-rail-width: 84px;
+    }
+
+    .site-nav-rail {
+        padding: 15px 9px;
+        gap: 15px;
+    }
+
+    .site-nav-rail > button {
+        width: 63px;
+        min-height: 63px;
+    }
+
+    .site-nav-button-icon {
+        width: 63px;
+        height: 63px;
+        border-radius: 15px;
+    }
+
+    .site-nav-link-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+    }
+
+    .site-nav-brand-icon {
+        width: 51px;
+        height: 51px;
+        border-radius: 12px;
+    }
+
+    .site-nav-flag-badge {
+        font-size: 1.5rem;
+    }
+
+    .site-nav-rail .site-nav-group {
+        gap: 12px;
+    }
+
+    .site-nav-rail .site-nav-group:last-child {
+        padding-top: 15px;
+    }
+
+    .site-nav-rail .site-nav-group > a {
+        width: 63px;
+        min-height: 63px;
+    }
+
+    .site-nav-drawer {
+        width: min(510px, calc(100vw - 36px));
+        padding: 20px 22px;
+    }
+
+    .site-nav-drawer-header {
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .site-nav-drawer-header > div {
+        gap: 12px;
+    }
+
+    .site-nav-drawer-header strong {
+        font-size: 1.325rem;
+    }
+
+    .site-nav-drawer-header button {
+        width: 63px;
+        height: 63px;
+    }
+
+    .site-nav-drawer .site-nav-group + .site-nav-group {
+        margin-top: 16px;
+        padding-top: 16px;
+    }
+
+    .site-nav-drawer .site-nav-group h2 {
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+    }
+
+    .site-nav-drawer .site-nav-group > a {
+        margin-bottom: 6px;
+        padding: 4px 0;
+        gap: 18px;
+    }
+
+    .site-nav-drawer .site-nav-group > a .site-nav-link-picture {
+        width: 2.4rem;
+        flex: 0 0 2.4rem;
+    }
 }
 
 @media (max-width: 1200px) {
