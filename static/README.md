@@ -55,7 +55,7 @@ Current responsive usage:
 
 - desktop PC: `128`
 - smartphone and tablet: `64`
-- `512` exists but is not used yet
+- `512` is used for dedicated page illustrations, but not for navigation menus
 
 Templates do not hardcode one final icon path anymore. They render responsive `<picture>` blocks, and `static/js/base.js` rewrites icon paths according to the active theme.
 
