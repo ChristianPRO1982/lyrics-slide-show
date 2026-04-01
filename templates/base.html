@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{% endblock %}">
-    <link rel="icon" sizes="192x192" href="{% static 'images/lss.png' %}" type="image/png"/>
+    <link id="site-favicon" rel="icon" sizes="64x64" href="{% static 'icons/favicon.png' %}" type="image/png"/>
     <script>
         window.LSS_THEME_CONFIG = {
             storageKey: "lss-theme",
@@ -17,7 +17,8 @@
                 normal: "{% static 'css/normal.css' %}",
                 scout: "{% static 'css/scout.css' %}"
             },
-            iconBasePath: "{% static 'icons/ui' %}"
+            iconBasePath: "{% static 'icons/ui' %}",
+            faviconFallbackPath: "{% static 'icons/favicon.png' %}"
         };
 
         (() => {
