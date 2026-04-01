@@ -759,6 +759,24 @@
         }
 
         if (!(target instanceof HTMLElement)) {
+            if (state.form) {
+                target = state.form.querySelector("[data-field-id]");
+            }
+        }
+
+        if (!(target instanceof HTMLElement)) {
+            const enterButtonId = getDefaultEnterButtonId(state.config);
+
+            if (enterButtonId) {
+                target = state.panel.querySelector(`[data-button-id="${escapeSelectorValue(enterButtonId)}"]`);
+            }
+        }
+
+        if (!(target instanceof HTMLElement) && state.closeButton) {
+            target = state.closeButton;
+        }
+
+        if (!(target instanceof HTMLElement)) {
             target = getFocusableElements(state.panel)[0] || state.panel;
         }
 

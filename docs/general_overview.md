@@ -402,3 +402,7 @@ The following business terms should be used consistently in the project:
 The `docs/` directory is the source of truth for the project documentation.
 
 The GitHub `README.md` is intended for external presentation and must stay aligned with the documentation stored in `docs/`.
+
+Popup interactions are documented only in `docs/popup_messagebox.md`.
+
+That file defines the dedicated popup/message box contract used by the project for user interactions that require a popup-style dialog. It is the single documentation entry point for that UI mechanism and must be updated whenever that popup contract changes.
