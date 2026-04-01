@@ -156,6 +156,24 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, 'data-django-alias="login"')
         self.assertContains(response, 'data-django-alias="signup"')
 
+    def test_homepage_shows_expected_marketing_content(self):
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, "Lyrics Slide Show")
+        self.assertContains(response, "propulsé par cARThographie !")
+        self.assertContains(
+            response,
+            "Si vous avez des suggestions d'amélioration du site ou des bugs à remonter, merci de le faire ici : déposer un message",
+        )
+        self.assertContains(response, "Projetez. Chantez. Kiffez.")
+        self.assertContains(response, "Pourquoi c’est cool ?")
+        self.assertContains(response, "Comment ça marche ?")
+        self.assertContains(response, "Ce que tu y gagnes")
+        self.assertContains(
+            response,
+            "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la vibe.",
+        )
+
     @override_settings(AUTH_MOCK_BASE_URL="http://localhost:8001")
     def test_login_redirects_to_auth_mock(self):
         response = self.client.get(reverse("login") + "?start=1")
