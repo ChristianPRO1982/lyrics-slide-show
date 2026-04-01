@@ -1,11 +1,42 @@
+# Git and local tooling
 .git
-.venv
-__pycache__
+.gitignore
+.github/
+.codex
+.python-version
+
+# Local Python environments and caches
+.venv/
+.uv-cache/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-.pytest_cache
-node_modules
-db.sqlite3
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Frontend dependencies
+node_modules/
+
+# Local environment files
+.env
+.env.*
+
+# Local databases and generated runtime data
+*.sqlite*
+logs/
+media/
+staticfiles/
+
+# Documentation and local workspace files
 docs/
+chris/
+README_chris.md
+compose.yaml
+
+# Legacy local assets
 LSS/
