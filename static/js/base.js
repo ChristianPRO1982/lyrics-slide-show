@@ -39,7 +39,9 @@
             });
 
             if (image) {
-                image.src = buildThemeIconPath(theme, "64", "light", iconName);
+                const imageSize = image.dataset.themeSize || "64";
+                const imageMode = image.dataset.themeMode || "light";
+                image.src = buildThemeIconPath(theme, imageSize, imageMode, iconName);
                 image.alt = iconAlt;
             }
         });

@@ -9,7 +9,26 @@
 {% block section_intro %}{% endblock %}
 {% block section_nav %}
     <div class="site-home-media">
-        <img src="{% static 'images/lss.png' %}" alt="Lyrics Slide Show">
+        <picture data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                alt="Lyrics Slide Show"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
     </div>
 {% endblock %}
 
