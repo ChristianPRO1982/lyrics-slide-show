@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load static %}
+{% trans "Icône du thème" as theme_icon_label %}
 
 {% block title %}{% trans "Thèmes" %} | Lyrics Slide Show{% endblock %}
 
@@ -67,10 +67,7 @@
                             <p>{% trans "Palette plus fraîche, plus nette, avec une ambiance vert-bleu." %}</p>
                         {% endif %}
                     </div>
-                    <picture class="site-theme-card-icon" data-theme-icon="theme" data-theme-alt="{% trans 'Icône du thème' %}">
-                        <source srcset="{% static 'icons/ui/normal/dark/theme.png' %}" media="(prefers-color-scheme: dark)">
-                        <img src="{% static 'icons/ui/normal/light/theme.png' %}" alt="{% trans 'Icône du thème' %}">
-                    </picture>
+                    {% include "includes/themed_icon.html" with picture_class="site-theme-card-icon" icon_name="theme" icon_alt=theme_icon_label %}
                 </header>
                 <div class="site-theme-preview site-theme-preview-{{ theme.slug }}" aria-hidden="true">
                     <span></span>

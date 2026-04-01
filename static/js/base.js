@@ -17,8 +17,8 @@
         }
     };
 
-    const buildThemeIconPath = (theme, mode, iconName) => {
-        return `${themeConfig.iconBasePath}/${theme}/${mode}/${iconName}.png`;
+    const buildThemeIconPath = (theme, size, mode, iconName) => {
+        return `${themeConfig.iconBasePath}/${theme}/${size}/${mode}/${iconName}.png`;
     };
 
     const applyThemeIcons = (theme) => {
@@ -29,15 +29,17 @@
         document.querySelectorAll("[data-theme-icon]").forEach((picture) => {
             const iconName = picture.dataset.themeIcon;
             const iconAlt = picture.dataset.themeAlt || "";
-            const source = picture.querySelector("source");
             const image = picture.querySelector("img");
+            const sources = picture.querySelectorAll("source[data-theme-size][data-theme-mode]");
 
-            if (source) {
-                source.srcset = buildThemeIconPath(theme, "dark", iconName);
-            }
+            sources.forEach((source) => {
+                const size = source.dataset.themeSize;
+                const mode = source.dataset.themeMode;
+                source.srcset = buildThemeIconPath(theme, size, mode, iconName);
+            });
 
             if (image) {
-                image.src = buildThemeIconPath(theme, "light", iconName);
+                image.src = buildThemeIconPath(theme, "64", "light", iconName);
                 image.alt = iconAlt;
             }
         });
