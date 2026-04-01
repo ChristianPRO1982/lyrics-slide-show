@@ -136,8 +136,34 @@ Basic local run:
 
 ```bash
 cp .env.dev.example .env.dev
-docker compose up --build
+docker compose -f compose.yaml -f compose.dev.yaml up --build
 ```
+
+## PROD Docker Preparation
+
+Current production Docker preparation is split the same way as development:
+
+- `compose.yaml`: shared base
+- `compose.prod.yaml`: production override
+- `.env.prod`: production environment file, untracked
+- `.env.prod.example`: tracked example template
+
+Basic production start:
+
+```bash
+cp .env.prod.example .env.prod
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml up -d --build
+```
+
+Important note:
+
+- `--env-file .env.prod` is required because Compose itself must read values such as `SHARED_DB_NETWORK` and `LSS_BIND_PORT`
+- `env_file: .env.prod` only injects variables inside the container, it does not drive Compose interpolation
+
+Current limitation:
+
+- this production override removes `auth_mock` and prepares hardened Django/container settings
+- the real interactive `Keycloak` login flow still requires the Django authentication code to be completed
 
 Manual verification:
 
