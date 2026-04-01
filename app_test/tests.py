@@ -1,6 +1,6 @@
 from django.test import TestCase
-from django.urls import reverse
 from django.test import override_settings
+from django.urls import reverse
 
 
 @override_settings(ROOT_URLCONF="app_test.test_urls")
@@ -9,35 +9,24 @@ class AppTestPagesTests(TestCase):
         response = self.client.get(reverse("app_test:index"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "5 maquettes")
-        self.assertContains(response, "Lumiere Sur Nos Pas")
+        self.assertContains(response, "Démo des popups")
+        self.assertContains(response, 'data-popup-demo="simple"')
+        self.assertContains(response, 'data-popup-demo="long"')
+        self.assertContains(response, "Popup sans bouton")
+        self.assertContains(response, "Popup longue avec 4 boutons")
 
-    def test_mockup_pages_render(self):
-        for route_name in [
-            "app_test:mockup_1",
-            "app_test:mockup_2",
-            "app_test:mockup_3",
-            "app_test:mockup_4",
-            "app_test:mockup_5",
-            "app_test:mockup_v1",
-            "app_test:mockup_v2",
-            "app_test:mockup_v3",
-            "app_test:mockup_v4",
+    def test_removed_mockup_routes_return_404(self):
+        for path in [
+            "/maquette-1/",
+            "/maquette-2/",
+            "/maquette-3/",
+            "/maquette-4/",
+            "/maquette-5/",
+            "/v1/",
+            "/v2/",
+            "/v3/",
+            "/v4/",
         ]:
-            with self.subTest(route_name=route_name):
-                response = self.client.get(reverse(route_name))
-                self.assertEqual(response.status_code, 200)
-                if route_name == "app_test:mockup_v3":
-                    expected = "Base generique"
-                elif route_name == "app_test:mockup_v4":
-                    expected = "Validation du template"
-                else:
-                    expected = "Recherche"
-                self.assertContains(response, expected)
-
-    def test_query_filters_song_list(self):
-        response = self.client.get(reverse("app_test:mockup_3"), {"q": "harbor"})
-
-        self.assertContains(response, "Anchor Over Tides")
-        self.assertContains(response, "Silent Harbor Hymn")
-        self.assertNotContains(response, "Lumiere Sur Nos Pas")
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 404)

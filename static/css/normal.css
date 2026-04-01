@@ -159,7 +159,7 @@ body.lss-messagebox-open {
     display: grid;
     justify-items: center;
     align-items: start;
-    padding: clamp(48px, 10vh, 96px) 16px 16px;
+    padding: 12.5vh 16px;
     background: var(--site-popup-overlay);
 }
 
@@ -167,7 +167,7 @@ body.lss-messagebox-open {
     width: min(var(--lss-messagebox-max-width, 680px), calc(100vw - 32px));
     min-width: min(var(--lss-messagebox-min-width, 320px), calc(100vw - 32px));
     min-height: var(--lss-messagebox-min-height, 200px);
-    max-height: min(var(--lss-messagebox-max-height, calc(100vh - 32px)), calc(100vh - 32px));
+    max-height: min(var(--lss-messagebox-max-height, 75vh), 75vh);
     display: flex;
     flex-direction: column;
     border: 1px solid var(--site-popup-border);
