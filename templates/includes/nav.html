@@ -16,6 +16,7 @@
 {% trans "Navigation générale" as nav_general_navigation_label %}
 {% trans "Ouvrir la navigation" as nav_open_navigation_label %}
 {% trans "Compte" as nav_account_label %}
+{% trans "Voir mon profil" as nav_view_profile_label %}
 {% trans "Journal des versions sur GitHub" as nav_changelog_label %}
 {% trans "Dernière version publiée" as nav_latest_release_label %}
 {% with current_lang=CURRENT_LANGUAGE|default:'fr'|slice:':2'|lower %}
@@ -62,9 +63,9 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
                             <span>{{ nav_logout_label }}</span>
                         </a>
-                        <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">
-                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=request.user.username|default:nav_account_label %}
-                            <span>{% firstof request.user.username nav_account_label %}</span>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            <span>{{ nav_view_profile_label }}</span>
                         </a>
                     {% else %}
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}">
@@ -140,8 +141,8 @@
                         <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
                         </a>
-                        <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">
-                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=request.user.username|default:nav_account_label %}
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                         </a>
                     {% else %}
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
@@ -209,9 +210,9 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
                             <span>{{ nav_logout_label }}</span>
                         </a>
-                        <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">
-                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=request.user.username|default:nav_account_label %}
-                            <span>{% firstof request.user.username nav_account_label %}</span>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            <span>{{ nav_view_profile_label }}</span>
                         </a>
                     {% else %}
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}">
@@ -287,8 +288,8 @@
                         <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
                         </a>
-                        <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">
-                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=request.user.username|default:nav_account_label %}
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                         </a>
                     {% else %}
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
