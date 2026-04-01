@@ -36,6 +36,21 @@
             document.documentElement.dataset.theme = selectedTheme;
         })();
     </script>
+    <script>
+        window.LSS_MESSAGE_BOX_CONFIG = {
+            i18n: {
+                closeLabel: "{% trans 'Fermer la fenêtre' %}",
+                okLabel: "{% trans 'OK' %}",
+                yesLabel: "{% trans 'Oui' %}",
+                noLabel: "{% trans 'Non' %}",
+                cancelLabel: "{% trans 'Annuler' %}",
+                confirmLabel: "{% trans 'Confirmer' %}",
+                fieldRequiredLabel: "{% trans 'Ce champ est obligatoire.' %}",
+                invalidEmailLabel: "{% trans 'Veuillez saisir une adresse e-mail valide.' %}",
+                dialogLabel: "{% trans 'Fenêtre de dialogue' %}"
+            }
+        };
+    </script>
     <link id="site-theme-stylesheet" rel="stylesheet" href="{% static 'css/normal.css' %}">
     <script>
         (() => {
@@ -114,6 +129,9 @@
             </div>
         </div>
     </div>
+    <div id="lss-messagebox-root" hidden></div>
     <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/message_box.js' %}"></script>
+    {% block page_scripts %}{% endblock %}
 </body>
 </html>

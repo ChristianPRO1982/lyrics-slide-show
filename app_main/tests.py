@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock, patch
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
-from django.test import SimpleTestCase, TestCase, override_settings
+from django.template import engines
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from app_main.auth import (
@@ -263,3 +265,46 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Compte de known.user")
         self.assertContains(response, "11111111-1111-1111-1111-111111111111")
+
+
+class BaseTemplatePopupTests(SimpleTestCase):
+    def test_homepage_loads_message_box_root_and_script(self):
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, 'id="lss-messagebox-root"')
+        self.assertContains(response, "window.LSS_MESSAGE_BOX_CONFIG")
+        self.assertContains(response, "/static/js/message_box.js")
+
+    def test_base_template_exposes_page_scripts_block_after_shared_popup_script(self):
+        request = RequestFactory().get("/")
+        request.user = AnonymousUser()
+
+        template = engines["django"].from_string(
+            """
+            {% extends "base.html" %}
+            {% block page_title %}Popup test{% endblock %}
+            {% block page_scripts %}<script src="/static/js/page-popup-test.js"></script>{% endblock %}
+            """
+        )
+
+        rendered = template.render({"request": request, "language_code": "fr"})
+
+        self.assertIn('/static/js/message_box.js', rendered)
+        self.assertIn('/static/js/page-popup-test.js', rendered)
+        self.assertLess(rendered.index('/static/js/message_box.js'), rendered.index('/static/js/page-popup-test.js'))
+
+    def test_navigation_marks_logout_links_for_popup_confirmation(self):
+        request = RequestFactory().get("/")
+        request.user = type(
+            "AuthenticatedUserStub",
+            (),
+            {
+                "is_authenticated": True,
+                "username": "known.user",
+            },
+        )()
+
+        template = engines["django"].get_template("includes/nav.html")
+        rendered = template.render({"request": request})
+
+        self.assertIn('data-lss-logout-confirm="true"', rendered)

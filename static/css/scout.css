@@ -14,6 +14,25 @@
     --site-accent-soft: #1c4e4a;
     --site-accent-gold: #b3780b;
     --site-shadow: 0 22px 64px rgba(28, 78, 74, 0.12);
+    --site-focus-ring: 0 0 0 3px rgba(84, 231, 219, 0.22);
+    --site-popup-overlay: rgba(11, 31, 38, 0.34);
+    --site-popup-surface: rgba(244, 251, 248, 0.98);
+    --site-popup-surface-alt: rgba(255, 255, 255, 0.72);
+    --site-popup-border: rgba(28, 78, 74, 0.24);
+    --site-popup-shadow: 0 30px 80px rgba(12, 49, 46, 0.22);
+    --site-popup-field-bg: rgba(255, 255, 255, 0.92);
+    --site-popup-neutral-bg: rgba(236, 247, 243, 0.96);
+    --site-popup-neutral-border: rgba(28, 78, 74, 0.24);
+    --site-popup-neutral-ink: #1c4e4a;
+    --site-popup-success-bg: rgba(225, 246, 236, 0.96);
+    --site-popup-success-border: #2c7a56;
+    --site-popup-success-ink: #1d5a41;
+    --site-popup-warning-bg: rgba(255, 241, 222, 0.96);
+    --site-popup-warning-border: #b3780b;
+    --site-popup-warning-ink: #7b5200;
+    --site-popup-danger-bg: rgba(255, 231, 231, 0.96);
+    --site-popup-danger-border: #b84d4d;
+    --site-popup-danger-ink: #7a2424;
 }
 
 body {
@@ -59,6 +78,25 @@ h6 {
         --site-accent-soft: #54e7db;
         --site-accent-gold: #fd9153;
         --site-shadow: 0 22px 64px rgba(0, 0, 0, 0.36);
+        --site-focus-ring: 0 0 0 3px rgba(84, 231, 219, 0.24);
+        --site-popup-overlay: rgba(3, 10, 12, 0.56);
+        --site-popup-surface: rgba(18, 41, 48, 0.98);
+        --site-popup-surface-alt: rgba(133, 180, 164, 0.04);
+        --site-popup-border: rgba(104, 148, 125, 0.28);
+        --site-popup-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        --site-popup-field-bg: rgba(133, 180, 164, 0.08);
+        --site-popup-neutral-bg: linear-gradient(180deg, rgba(21, 45, 52, 0.96), rgba(12, 30, 34, 0.94));
+        --site-popup-neutral-border: rgba(104, 148, 125, 0.28);
+        --site-popup-neutral-ink: #85b4a4;
+        --site-popup-success-bg: rgba(27, 82, 63, 0.42);
+        --site-popup-success-border: rgba(84, 231, 175, 0.52);
+        --site-popup-success-ink: #a3dec5;
+        --site-popup-warning-bg: rgba(111, 74, 27, 0.42);
+        --site-popup-warning-border: rgba(253, 145, 83, 0.58);
+        --site-popup-warning-ink: #ffd3af;
+        --site-popup-danger-bg: rgba(102, 42, 42, 0.42);
+        --site-popup-danger-border: rgba(255, 150, 150, 0.48);
+        --site-popup-danger-ink: #ffc2c2;
     }
 
     body {

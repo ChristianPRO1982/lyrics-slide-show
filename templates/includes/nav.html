@@ -58,7 +58,7 @@
                 <section class="site-nav-group">
                     <h2>{{ nav_profile_label }}</h2>
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}">
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
                             <span>{{ nav_logout_label }}</span>
                         </a>
@@ -137,7 +137,7 @@
 
                 <section class="site-nav-group">
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout">
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
                         </a>
                         <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">
@@ -205,7 +205,7 @@
                 <section class="site-nav-group">
                     <h2>{{ nav_profile_label }}</h2>
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}">
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
                             <span>{{ nav_logout_label }}</span>
                         </a>
@@ -284,7 +284,7 @@
 
                 <section class="site-nav-group">
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout">
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
                         </a>
                         <a href="{% url 'account' %}" title="{% firstof request.user.username nav_account_label %}" data-django-alias="account">

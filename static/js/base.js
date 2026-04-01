@@ -161,4 +161,35 @@
     });
 
     closeMenu();
+
+    document.querySelectorAll("[data-lss-logout-confirm='true']").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+            if (!window.LSSMessageBox || typeof window.LSSMessageBox.show !== "function") {
+                return;
+            }
+
+            event.preventDefault();
+
+            const result = await window.LSSMessageBox.show({
+                title: "Déconnexion",
+                messageMarkdown: "Voulez-vous vraiement vous déconnecter du site ?",
+                buttons: [
+                    {
+                        id: "yes",
+                        label: "Oui",
+                        tone: "success",
+                    },
+                    {
+                        id: "no",
+                        label: "Non",
+                        tone: "danger",
+                    },
+                ],
+            });
+
+            if (result.buttonId === "yes") {
+                window.location.assign(link.href);
+            }
+        });
+    });
 })();
