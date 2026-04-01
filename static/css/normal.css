@@ -688,6 +688,28 @@ h6 {
     text-decoration: none;
 }
 
+@media (min-width: 721px) {
+    .site-nav-drawer {
+        width: min(500px, calc(100vw - 32px));
+    }
+
+    .site-nav-drawer .site-nav-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 18px;
+        align-items: start;
+    }
+
+    .site-nav-drawer .site-nav-group h2 {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .site-nav-drawer .site-nav-group > a {
+        margin-bottom: 0;
+    }
+}
+
 @media (min-width: 1025px) {
     :root {
         --site-rail-width: 84px;
@@ -769,6 +791,10 @@ h6 {
     .site-nav-drawer .site-nav-group h2 {
         margin-bottom: 10px;
         font-size: 1.05rem;
+    }
+
+    .site-nav-drawer .site-nav-group {
+        gap: 10px 22px;
     }
 
     .site-nav-drawer .site-nav-group > a {
