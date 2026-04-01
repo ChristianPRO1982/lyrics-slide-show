@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -23,11 +24,13 @@ logger = logging.getLogger("app_main.auth")
 AVAILABLE_THEMES = [
     {
         "slug": "normal",
-        "label": "Normal",
+        "label": _("Normal"),
+        "description": _("Palette chaude et classique pour l'habillage principal."),
     },
     {
         "slug": "scout",
-        "label": "Scout",
+        "label": _("Scout"),
+        "description": _("Palette plus fraîche, plus nette, avec une ambiance vert-bleu."),
     },
 ]
 

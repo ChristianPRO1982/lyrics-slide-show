@@ -1,37 +1,71 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
 {% trans "Icône du thème" as theme_icon_label %}
+{% trans "Logo du thème" as theme_logo_label %}
 
 {% block title %}{% trans "Thèmes" %} | Lyrics Slide Show{% endblock %}
 
 {% block section_title %}{% trans "Apparence" %}{% endblock %}
 
-{% block section_intro %}
-    <p>{% trans "Choisissez le thème visuel du site. Le mode clair ou sombre reste piloté par le navigateur." %}</p>
-{% endblock %}
+{% block section_intro %}{% endblock %}
 
 {% block section_nav %}
-    <div class="site-theme-help">
-        <p>{% trans "Le choix du thème est retenu dans ce navigateur même sans connexion." %}</p>
-        <p>{% trans "Plus tard, ce choix sera aussi synchronisé avec les préférences du compte." %}</p>
+    <div class="site-home-media">
+        <picture data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                alt="Lyrics Slide Show"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
     </div>
 {% endblock %}
 
-{% block tools_title %}{% trans "Rendu" %}{% endblock %}
+{% block tools_title %}{% trans "Les thèmes" %}{% endblock %}
 
-{% block tools_intro %}
-    <p>{% trans "Le thème change les feuilles CSS et les icônes. Le navigateur décide ensuite entre light et dark." %}</p>
-{% endblock %}
+{% block tools_intro %}{% endblock %}
 
 {% block page_tools %}
-    <div class="site-theme-mode-note">
-        <strong>{% trans "Mode navigateur" %}</strong>
-        <p>{% trans "Le mode clair ou sombre suit automatiquement la préférence système du navigateur." %}</p>
-    </div>
-    <div class="site-theme-mode-note">
-        <strong>{% trans "Persistance locale" %}</strong>
-        <p>{% trans "Le thème reste mémorisé tant que ce navigateur conserve le stockage local." %}</p>
-    </div>
+    {% for theme in available_themes %}
+        <div>
+            <picture>
+                <source
+                    srcset="{% static 'icons/ui/'|add:theme.slug|add:'/128/dark/lss.png' %}"
+                    media="(min-width: 1025px) and (prefers-color-scheme: dark)"
+                >
+                <source
+                    srcset="{% static 'icons/ui/'|add:theme.slug|add:'/128/light/lss.png' %}"
+                    media="(min-width: 1025px) and (prefers-color-scheme: light)"
+                >
+                <source
+                    srcset="{% static 'icons/ui/'|add:theme.slug|add:'/64/dark/lss.png' %}"
+                    media="(max-width: 1024px) and (prefers-color-scheme: dark)"
+                >
+                <source
+                    srcset="{% static 'icons/ui/'|add:theme.slug|add:'/64/light/lss.png' %}"
+                    media="(max-width: 1024px) and (prefers-color-scheme: light)"
+                >
+                <img
+                    src="{% static 'icons/ui/'|add:theme.slug|add:'/64/light/lss.png' %}"
+                    alt="{{ theme_logo_label }}"
+                >
+            </picture>
+        </div>
+    {% endfor %}
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Aide" %}{% endblock %}
@@ -46,12 +80,11 @@
 
 {% block page_title %}{% trans "Choix du thème" %}{% endblock %}
 
-{% block page_intro %}
-    <p>{% trans "Sélectionnez un habillage visuel. L'application chargera automatiquement la bonne feuille CSS et les bonnes icônes pour ce thème." %}</p>
-{% endblock %}
+{% block page_intro %}{% endblock %}
 
 {% block page_summary %}
-    <p>{% trans "Le thème actif est appliqué immédiatement dans tout le site. Le mode clair ou sombre reste déterminé uniquement par les préférences du navigateur." %}</p>
+    <p>{% trans "Le thème agit uniquement sur l’aspect visuel du site, en modifiant les couleurs, les icônes et le style général, sans en changer le fonctionnement." %}</p>
+    <p>{% trans "Les changements sont appliqués immédiatement dès la sélection." %}</p>
 {% endblock %}
 
 {% block content %}
@@ -61,13 +94,30 @@
                 <header class="site-theme-card-header">
                     <div>
                         <h2>{{ theme.label }}</h2>
-                        {% if theme.slug == "normal" %}
-                            <p>{% trans "Palette chaude et classique pour l'habillage principal." %}</p>
-                        {% elif theme.slug == "scout" %}
-                            <p>{% trans "Palette plus fraîche, plus nette, avec une ambiance vert-bleu." %}</p>
-                        {% endif %}
+                        <p>{{ theme.description }}</p>
                     </div>
-                    {% include "includes/themed_icon.html" with picture_class="site-theme-card-icon" icon_name="theme" icon_alt=theme_icon_label %}
+                    <picture class="site-theme-card-icon">
+                        <source
+                            srcset="{% static 'icons/ui/'|add:theme.slug|add:'/128/dark/theme.png' %}"
+                            media="(min-width: 1025px) and (prefers-color-scheme: dark)"
+                        >
+                        <source
+                            srcset="{% static 'icons/ui/'|add:theme.slug|add:'/128/light/theme.png' %}"
+                            media="(min-width: 1025px) and (prefers-color-scheme: light)"
+                        >
+                        <source
+                            srcset="{% static 'icons/ui/'|add:theme.slug|add:'/64/dark/theme.png' %}"
+                            media="(max-width: 1024px) and (prefers-color-scheme: dark)"
+                        >
+                        <source
+                            srcset="{% static 'icons/ui/'|add:theme.slug|add:'/64/light/theme.png' %}"
+                            media="(max-width: 1024px) and (prefers-color-scheme: light)"
+                        >
+                        <img
+                            src="{% static 'icons/ui/'|add:theme.slug|add:'/64/light/theme.png' %}"
+                            alt="{{ theme_icon_label }}"
+                        >
+                    </picture>
                 </header>
                 <div class="site-theme-preview site-theme-preview-{{ theme.slug }}" aria-hidden="true">
                     <span></span>
