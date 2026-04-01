@@ -657,6 +657,55 @@ body.lss-messagebox-open {
     object-fit: contain;
 }
 
+.site-home-dropcap-copy::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.site-home-dropcap-lead {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+}
+
+.site-home-dropcap {
+    float: left;
+    width: 64px;
+    margin: 2px 16px 8px 0;
+    shape-outside: circle(50%);
+    shape-margin: 8px;
+}
+
+.site-home-dropcap-image {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.site-home-clear-below {
+    clear: both;
+}
+
+@media (min-width: 1025px) {
+    .site-home-dropcap-lead {
+        min-height: 85px;
+    }
+
+    .site-home-dropcap {
+        width: 85px;
+        margin-right: 18px;
+        margin-bottom: 10px;
+    }
+
+    .site-home-dropcap-image {
+        width: 85px;
+        height: 85px;
+    }
+}
+
 .site-theme-preview {
     min-height: 138px;
     padding: 16px;
