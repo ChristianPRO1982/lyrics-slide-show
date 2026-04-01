@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
+{% trans "Journal des versions sur GitHub" as homepage_changelog_label %}
+{% trans "Dernière version publiée" as homepage_latest_release_label %}
 
 {% block title %}Lyrics Slide Show{% endblock %}
 {% block meta_description %}{% endblock %}
@@ -51,13 +53,13 @@
            href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
            target="_blank"
            rel="noopener noreferrer"
-           title="Github CHANGELOG.md">
+           title="{{ homepage_changelog_label }}">
             <img class="site-home-release-badge"
                  src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
-                 alt="Latest Release">
+                 alt="{{ homepage_latest_release_label }}">
         </a>
         <a href="{% url 'privacy_policy' %}" title="{% trans 'Politique de confidentialité' %}">
-            {% trans "Privacy policy" %}
+            {% trans "Politique de confidentialité" %}
         </a>
     </div>
 {% endblock %}

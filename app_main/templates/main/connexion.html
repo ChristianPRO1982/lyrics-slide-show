@@ -11,23 +11,23 @@
 {% endblock %}
 
 {% block section_title %}
-    {% trans "DEV MODE" %}
+    {% trans "Mode dev" %}
 {% endblock %}
 
 {% block section_intro %}
-    <p>{% trans "Keycloak Mock" %}</p>
+    <p>{% trans "Simulation Keycloak" %}</p>
 {% endblock %}
 
 {% block section_nav %}
 {% endblock %}
 
-{% block tools_title %}{% trans "Mock" %}{% endblock %}
+{% block tools_title %}{% trans "Simulation" %}{% endblock %}
 
 {% block tools_intro %}{% endblock %}
 
 {% block page_tools %}
     <div>
-        <a href="{% url 'login' %}?start=1">{% trans "Ouvrir le Mock" %}</a>
+        <a href="{% url 'login' %}?start=1">{% trans "Ouvrir la simulation" %}</a>
     </div>
 {% endblock %}
 
@@ -38,7 +38,7 @@
         {% if request.user.is_authenticated %}
             <a href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
         {% else %}
-            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
+            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec la simulation SSO" %}</a>
         {% endif %}
     </div>
 {% endblock %}

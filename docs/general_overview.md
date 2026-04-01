@@ -47,7 +47,7 @@ The product structure is organized around four major business areas:
 - animations,
 - projection and remote control.
 
-The project must also rely on Django internationalization features. The codebase is written in English, the default language is French, and labels must not be hardcoded. Translations must be handled with Django i18n mechanisms.
+The project must also rely on Django internationalization features. The codebase is written in English, the default language is French, user-facing text must remain translatable, and labels must not be hardcoded. Translations must be handled with Django i18n mechanisms.
 
 ## Access Philosophy
 
@@ -350,9 +350,24 @@ The default language is French, but the interface must support language switchin
 Technical implications:
 
 - source code stays in English,
+- user-facing text is written in French first,
 - UI labels must not be hardcoded,
 - Django translation dictionaries are required,
 - Django i18n must be used consistently.
+
+## Language Discipline
+
+The project follows a strict language discipline.
+
+For anything visible to the end user, French is the source language. This includes labels, titles, help text, placeholders, navigation text, accessible labels such as `aria-label`, meaningful `title` attributes, image `alt` text, and visible runtime messages.
+
+Those strings must be passed through Django internationalization mechanisms. They must not be left as raw hardcoded text in templates, JavaScript-generated UI, or other presentation layers when they belong to the product interface.
+
+Technical code remains English-only. This applies to Python, HTML structure, CSS classes, JavaScript identifiers, Django block names, template variable names, slugs, route names, aliases, and other implementation-facing identifiers.
+
+`Lyrics Slide Show` remains a product name and brand marker. It may appear as-is in the UI and documentation and does not need to be translated.
+
+Temporary or exploratory templates may be tolerated outside the full discipline only when they are explicitly identified as out of product scope. Stable product-facing templates must follow the discipline completely.
 
 ## Non-Goals
 
