@@ -33,6 +33,33 @@
     --site-popup-danger-bg: rgba(255, 231, 231, 0.96);
     --site-popup-danger-border: #b84d4d;
     --site-popup-danger-ink: #7a2424;
+    --site-radius-xl: 0;
+    --site-radius-lg: 0;
+    --site-radius-md: 0;
+    --site-radius-sm: 0;
+    --site-leaf-radius-lg: 28px;
+    --site-leaf-radius-sm: 10px;
+}
+
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+}
+
+.site-section-panel > :not(.site-panel-header):not(style) > *,
+.site-tools-panel > :not(.site-panel-header):not(style) > *,
+.site-mobile-side > :not(.site-panel-header):not(style) > *,
+.site-main-heading,
+.site-main-aside,
+.site-main-content > *,
+.site-main-footer > *,
+.site-theme-card,
+.site-theme-preview,
+.site-floating-help-toggle,
+.site-floating-help-link,
+.site-floating-top-link {
+    border-radius: var(--site-leaf-radius-lg) var(--site-leaf-radius-sm) var(--site-leaf-radius-lg) var(--site-leaf-radius-sm) !important;
 }
 
 body {

@@ -4,6 +4,22 @@
     }
 }
 
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+}
+
+.L_LI,
+.L_DIV_BORDER {
+    border-radius: 1.75rem 0.625rem 1.75rem 0.625rem !important;
+}
+
+.L_BOX_TOP > a,
+.L_BOX_TOP > button {
+    border-radius: 1.75rem 0.625rem 1.75rem 0.625rem !important;
+}
+
 .L_TEXT {
     color: #1C4E4A;
 }
