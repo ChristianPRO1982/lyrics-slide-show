@@ -2,9 +2,9 @@ services:
   web:
     networks:
       - default
-      - pg_carthographie_backend
+      - shared_backend
 
 networks:
-  pg_carthographie_backend:
+  shared_backend:
     external: true
-    name: ${SHARED_DB_NETWORK:-pg-carthographie_backend}
+    name: ${SHARED_DB_NETWORK:-backend}

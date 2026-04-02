@@ -103,12 +103,12 @@ Current validated local setup:
 
 - `LSS` runs in Docker
 - `auth_mock` runs in Docker
-- `LSS` joins external Docker network `pg-carthographie_backend`
+- `LSS` joins the shared external Docker backend network
 - `LSS` reads the shared PostgreSQL instance from the other project
 
 Prerequisites:
 
-- external network `pg-carthographie_backend` exists
+- external backend network exists
 - shared PostgreSQL is running
 - `users.users` exists in database `carthographie`
 - the SQL user configured for `LSS` can read `users.users`
@@ -128,7 +128,7 @@ Useful local variables:
 
 Notes for the current shared PostgreSQL setup:
 
-- use `pg-carthographie_backend` as the external Docker network
+- use `backend` as the shared external Docker network by default
 - use `DB_HOST=postgres` if that alias exists on the network
 - otherwise use `DB_HOST=pg-carthographie`
 
