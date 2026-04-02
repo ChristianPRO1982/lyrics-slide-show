@@ -64,7 +64,12 @@
         })();
     </script>
 </head>
-<body>
+<body id="site-top">
+    <script>
+        window.LSS_FLOATING_HELP_CONFIG = {
+            collapseDelayMs: 3000
+        };
+    </script>
     <div class="site-shell">
         {% include "includes/nav.html" %}
 
@@ -129,6 +134,7 @@
             </div>
         </div>
     </div>
+    {% include "includes/footer.html" %}
     <div id="lss-messagebox-root" hidden></div>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/message_box.js' %}"></script>

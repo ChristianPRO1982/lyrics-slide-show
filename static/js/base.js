@@ -1,6 +1,7 @@
 (() => {
     const root = document.documentElement;
     const themeConfig = window.LSS_THEME_CONFIG || null;
+    const floatingHelpConfig = window.LSS_FLOATING_HELP_CONFIG || {};
     const themeStylesheet = document.querySelector("#site-theme-stylesheet");
     const faviconLink = document.querySelector("#site-favicon");
     const themeButtons = document.querySelectorAll("[data-theme-select]");
@@ -132,35 +133,33 @@
     const openButton = document.querySelector("[data-nav-open]");
     const closeButton = document.querySelector("[data-nav-close]");
 
-    if (!drawer || !backdrop || !openButton || !closeButton) {
-        return;
+    if (drawer && backdrop && openButton && closeButton) {
+        const openMenu = () => {
+            root.classList.add("site-nav-open");
+            drawer.setAttribute("aria-hidden", "false");
+            backdrop.hidden = false;
+            openButton.setAttribute("aria-expanded", "true");
+        };
+
+        const closeMenu = () => {
+            root.classList.remove("site-nav-open");
+            drawer.setAttribute("aria-hidden", "true");
+            backdrop.hidden = true;
+            openButton.setAttribute("aria-expanded", "false");
+        };
+
+        openButton.addEventListener("click", openMenu);
+        closeButton.addEventListener("click", closeMenu);
+        backdrop.addEventListener("click", closeMenu);
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closeMenu();
+            }
+        });
+
+        closeMenu();
     }
-
-    const openMenu = () => {
-        root.classList.add("site-nav-open");
-        drawer.setAttribute("aria-hidden", "false");
-        backdrop.hidden = false;
-        openButton.setAttribute("aria-expanded", "true");
-    };
-
-    const closeMenu = () => {
-        root.classList.remove("site-nav-open");
-        drawer.setAttribute("aria-hidden", "true");
-        backdrop.hidden = true;
-        openButton.setAttribute("aria-expanded", "false");
-    };
-
-    openButton.addEventListener("click", openMenu);
-    closeButton.addEventListener("click", closeMenu);
-    backdrop.addEventListener("click", closeMenu);
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeMenu();
-        }
-    });
-
-    closeMenu();
 
     document.querySelectorAll("[data-lss-logout-confirm='true']").forEach((link) => {
         link.addEventListener("click", async (event) => {
@@ -192,4 +191,49 @@
             }
         });
     });
+
+    const floatingHelp = document.querySelector("[data-floating-help]");
+    const floatingHelpToggle = document.querySelector("[data-floating-help-toggle]");
+    const floatingHelpPanel = document.querySelector("[data-floating-help-panel]");
+    const floatingHelpCollapseDelayMs = Number(floatingHelpConfig.collapseDelayMs) || 3000;
+    let floatingHelpTimeoutId = null;
+
+    if (floatingHelp && floatingHelpToggle && floatingHelpPanel) {
+        const closeFloatingHelp = () => {
+            if (floatingHelpTimeoutId) {
+                window.clearTimeout(floatingHelpTimeoutId);
+                floatingHelpTimeoutId = null;
+            }
+
+            floatingHelp.dataset.state = "collapsed";
+            floatingHelpToggle.hidden = false;
+            floatingHelpToggle.setAttribute("aria-expanded", "false");
+            floatingHelpPanel.hidden = true;
+        };
+
+        const openFloatingHelp = () => {
+            if (floatingHelpTimeoutId) {
+                window.clearTimeout(floatingHelpTimeoutId);
+            }
+
+            floatingHelp.dataset.state = "expanded";
+            floatingHelpToggle.hidden = true;
+            floatingHelpToggle.setAttribute("aria-expanded", "true");
+            floatingHelpPanel.hidden = false;
+            floatingHelpTimeoutId = window.setTimeout(closeFloatingHelp, floatingHelpCollapseDelayMs);
+        };
+
+        floatingHelpToggle.addEventListener("click", openFloatingHelp);
+        floatingHelpPanel.addEventListener("mouseenter", () => {
+            if (floatingHelpTimeoutId) {
+                window.clearTimeout(floatingHelpTimeoutId);
+                floatingHelpTimeoutId = null;
+            }
+        });
+        floatingHelpPanel.addEventListener("mouseleave", () => {
+            floatingHelpTimeoutId = window.setTimeout(closeFloatingHelp, floatingHelpCollapseDelayMs);
+        });
+
+        closeFloatingHelp();
+    }
 })();
