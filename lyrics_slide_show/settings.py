@@ -4,6 +4,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_value(name: str, default: str | None = None) -> str | None:
+    file_path = os.environ.get(f"{name}_FILE", "").strip()
+    if file_path:
+        return Path(file_path).read_text(encoding="utf-8").strip()
+    return os.environ.get(name, default)
+
+
 def env_bool(name: str, default: bool) -> bool:
     return os.environ.get(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -13,7 +20,7 @@ def env_list(name: str, default: str) -> list[str]:
     return [item.strip() for item in raw_value.split(",") if item.strip()]
 
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-only")
+SECRET_KEY = env_value("DJANGO_SECRET_KEY", "django-insecure-dev-only")
 DEBUG = env_bool("DJANGO_DEBUG", True)
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "*")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "")
@@ -27,8 +34,15 @@ SECURE_PROXY_SSL_HEADER = (
 
 AUTH_MODE = os.environ.get("AUTH_MODE", "mock")
 AUTH_MOCK_BASE_URL = os.environ.get("AUTH_MOCK_BASE_URL", "http://localhost:8001")
-AUTH_MOCK_SHARED_SECRET = os.environ.get("AUTH_MOCK_SHARED_SECRET", "change-me")
+AUTH_MOCK_SHARED_SECRET = env_value("AUTH_MOCK_SHARED_SECRET", "change-me")
 AUTH_MOCK_MAX_AGE_SECONDS = int(os.environ.get("AUTH_MOCK_MAX_AGE_SECONDS", "300"))
+KEYCLOAK_SERVER_URL = os.environ.get("KEYCLOAK_SERVER_URL", "").rstrip("/")
+KEYCLOAK_REALM = os.environ.get("KEYCLOAK_REALM", "")
+KEYCLOAK_CLIENT_ID = os.environ.get("KEYCLOAK_CLIENT_ID", "")
+KEYCLOAK_CLIENT_SECRET = env_value("KEYCLOAK_CLIENT_SECRET", "")
+KEYCLOAK_REDIRECT_URI = os.environ.get("KEYCLOAK_REDIRECT_URI", "")
+KEYCLOAK_LOGOUT_REDIRECT_URI = os.environ.get("KEYCLOAK_LOGOUT_REDIRECT_URI", "")
+KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid profile email")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
 
@@ -50,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,7 +99,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", ""),
         "USER": os.environ.get("DB_USER", ""),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+        "PASSWORD": env_value("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", ""),
         "PORT": os.environ.get("DB_PORT", ""),
         "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "60")),
@@ -129,6 +144,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", not DEBUG)
