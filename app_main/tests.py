@@ -8,9 +8,12 @@ from django.urls import reverse
 
 from app_main.auth import (
     DisabledUserError,
+    KeycloakAuthError,
     UnknownUserError,
+    build_keycloak_logout_url,
     get_directory_user,
     sign_callback_data,
+    validate_keycloak_callback,
     validate_callback_payload,
 )
 
@@ -64,6 +67,38 @@ class CallbackValidationTests(SimpleTestCase):
             payload["sig"] = sign_callback_data(payload, "shared-secret")
             with self.assertRaisesMessage(Exception, "Invalid external_id format."):
                 validate_callback_payload(payload)
+
+    @override_settings(
+        KEYCLOAK_SERVER_URL="https://auth.example.com",
+        KEYCLOAK_REALM="carthographie",
+        KEYCLOAK_CLIENT_ID="app_lss",
+        KEYCLOAK_CLIENT_SECRET="secret",
+        KEYCLOAK_REDIRECT_URI="https://lss.example.com/auth/callback/",
+    )
+    @patch("app_main.auth._fetch_keycloak_userinfo")
+    @patch("app_main.auth._exchange_keycloak_code")
+    def test_validate_keycloak_callback_accepts_valid_userinfo(self, exchange_mock, userinfo_mock):
+        exchange_mock.return_value = {"access_token": "access-token"}
+        userinfo_mock.return_value = {
+            "sub": "11111111-1111-1111-1111-111111111111",
+            "preferred_username": "known.user",
+            "email": "known.user@example.test",
+            "given_name": "Known",
+            "family_name": "User",
+        }
+        session = {"lss_keycloak_state": "expected-state"}
+
+        payload = validate_keycloak_callback({"code": "auth-code", "state": "expected-state"}, session)
+
+        self.assertEqual(payload["external_id"], "11111111-1111-1111-1111-111111111111")
+        self.assertEqual(payload["username"], "known.user")
+        self.assertNotIn("lss_keycloak_state", session)
+
+    def test_validate_keycloak_callback_rejects_invalid_state(self):
+        session = {"lss_keycloak_state": "expected-state"}
+
+        with self.assertRaisesMessage(KeycloakAuthError, "Invalid Keycloak state."):
+            validate_keycloak_callback({"code": "auth-code", "state": "wrong-state"}, session)
 
 
 class DirectoryUserLookupTests(TestCase):
@@ -188,6 +223,25 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "mock SSO")
         self.assertContains(response, reverse("login") + "?start=1")
 
+    @override_settings(AUTH_MODE="keycloak")
+    @patch("app_main.views.build_keycloak_login_url", return_value="https://auth.example.com/realms/carthographie/protocol/openid-connect/auth?x=1")
+    def test_login_redirects_to_keycloak(self, _build_keycloak_login_url_mock):
+        response = self.client.get(reverse("login") + "?start=1")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response["Location"],
+            "https://auth.example.com/realms/carthographie/protocol/openid-connect/auth?x=1",
+        )
+
+    @override_settings(AUTH_MODE="keycloak")
+    def test_login_page_shows_keycloak_entrypoint(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Connexion sécurisée via Keycloak")
+        self.assertContains(response, "Continuer avec Keycloak")
+
     @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
     @patch("app_main.views.get_directory_user")
     def test_callback_creates_session_for_known_user(self, get_directory_user_mock):
@@ -241,13 +295,53 @@ class AuthFlowTests(TestCase):
         self.assertIn("No matching user found in users.users.", messages)
         self.assertNotIn("lss_user", self.client.session)
 
-    @override_settings(AUTH_MODE="prod")
+    @override_settings(AUTH_MODE="unsupported")
     def test_login_refuses_unsupported_auth_mode(self):
         response = self.client.get(reverse("login"), follow=True)
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn("Interactive login is not configured for this environment.", messages)
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch("app_main.views.get_directory_user")
+    @patch("app_main.views.validate_keycloak_callback")
+    def test_keycloak_callback_creates_session_for_known_user(
+        self,
+        validate_keycloak_callback_mock,
+        get_directory_user_mock,
+    ):
+        validate_keycloak_callback_mock.return_value = {
+            "external_id": "11111111-1111-1111-1111-111111111111",
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+        }
+        get_directory_user_mock.return_value.to_session_dict.return_value = {
+            "external_id": "11111111-1111-1111-1111-111111111111",
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+        }
+        get_directory_user_mock.return_value.username = "known.user"
+        get_directory_user_mock.return_value.external_id = "11111111-1111-1111-1111-111111111111"
+
+        response = self.client.get(reverse("auth_callback"), {"code": "auth-code", "state": "state"}, follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        self.assertContains(response, "Connected as known.user.")
+        self.assertContains(response, 'data-django-alias="logout"')
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch("app_main.views.validate_keycloak_callback", side_effect=KeycloakAuthError("Invalid Keycloak state."))
+    def test_keycloak_callback_rejects_invalid_state(self, _validate_keycloak_callback_mock):
+        response = self.client.get(reverse("auth_callback"), {"code": "auth-code", "state": "bad"}, follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("Invalid Keycloak state.", messages)
 
     def test_logout_clears_session(self):
         session = self.client.session
@@ -260,6 +354,26 @@ class AuthFlowTests(TestCase):
         response = self.client.get(reverse("logout"))
 
         self.assertRedirects(response, reverse("homepage"))
+        self.assertNotIn("lss_user", self.client.session)
+
+    @override_settings(
+        AUTH_MODE="keycloak",
+        KEYCLOAK_SERVER_URL="https://auth.example.com",
+        KEYCLOAK_REALM="carthographie",
+        KEYCLOAK_CLIENT_ID="app_lss",
+        KEYCLOAK_LOGOUT_REDIRECT_URI="https://lss.example.com/",
+    )
+    def test_logout_redirects_to_keycloak_when_enabled(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": "11111111-1111-1111-1111-111111111111",
+            "username": "known.user",
+        }
+        session.save()
+
+        response = self.client.get(reverse("logout"))
+
+        self.assertRedirects(response, build_keycloak_logout_url(), fetch_redirect_response=False)
         self.assertNotIn("lss_user", self.client.session)
 
     def test_account_page_requires_authenticated_session(self):

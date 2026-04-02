@@ -1,7 +1,12 @@
 import hashlib
 import hmac
+import json
 import re
+import secrets
 import time
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 import uuid
 from dataclasses import dataclass
 from typing import Any
@@ -12,6 +17,7 @@ from django.db import connection
 
 
 SESSION_USER_KEY = "lss_user"
+KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
 
@@ -29,6 +35,10 @@ class UnknownUserError(AuthError):
 
 
 class DisabledUserError(AuthError):
+    pass
+
+
+class KeycloakAuthError(AuthError):
     pass
 
 
@@ -75,6 +85,11 @@ def _validate_identifier(value: str) -> str:
     if not VALID_IDENTIFIER_RE.match(value):
         raise ValueError(f"Invalid SQL identifier: {value}")
     return value
+
+
+def _mark_session_modified(session) -> None:
+    if hasattr(session, "modified"):
+        session.modified = True
 
 
 def _signature_payload(data: dict[str, str]) -> str:
@@ -129,6 +144,126 @@ def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
         "email": params["email"],
         "first_name": params["first_name"],
         "last_name": params["last_name"],
+    }
+
+
+def _keycloak_oidc_base_url() -> str:
+    if not settings.KEYCLOAK_SERVER_URL or not settings.KEYCLOAK_REALM:
+        raise KeycloakAuthError("Keycloak is not configured for this environment.")
+    return f"{settings.KEYCLOAK_SERVER_URL}/realms/{settings.KEYCLOAK_REALM}/protocol/openid-connect"
+
+
+def build_keycloak_login_url(session) -> str:
+    state = secrets.token_urlsafe(32)
+    session[KEYCLOAK_STATE_SESSION_KEY] = state
+    _mark_session_modified(session)
+    query_string = urlencode(
+        {
+            "client_id": settings.KEYCLOAK_CLIENT_ID,
+            "response_type": "code",
+            "scope": settings.KEYCLOAK_SCOPES,
+            "redirect_uri": settings.KEYCLOAK_REDIRECT_URI,
+            "state": state,
+        }
+    )
+    return f"{_keycloak_oidc_base_url()}/auth?{query_string}"
+
+
+def build_keycloak_logout_url() -> str:
+    query_string = urlencode(
+        {
+            "client_id": settings.KEYCLOAK_CLIENT_ID,
+            "post_logout_redirect_uri": settings.KEYCLOAK_LOGOUT_REDIRECT_URI,
+        }
+    )
+    return f"{_keycloak_oidc_base_url()}/logout?{query_string}"
+
+
+def _load_json_response(request: Request) -> dict[str, Any]:
+    try:
+        with urlopen(request, timeout=10) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+        raise KeycloakAuthError("Keycloak request failed.") from exc
+
+
+def _exchange_keycloak_code(code: str) -> dict[str, Any]:
+    body = urlencode(
+        {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": settings.KEYCLOAK_REDIRECT_URI,
+            "client_id": settings.KEYCLOAK_CLIENT_ID,
+            "client_secret": settings.KEYCLOAK_CLIENT_SECRET,
+        }
+    ).encode("utf-8")
+    request = Request(
+        f"{_keycloak_oidc_base_url()}/token",
+        data=body,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    payload = _load_json_response(request)
+    if not payload.get("access_token"):
+        raise KeycloakAuthError("Keycloak did not return an access token.")
+    return payload
+
+
+def _fetch_keycloak_userinfo(access_token: str) -> dict[str, Any]:
+    request = Request(
+        f"{_keycloak_oidc_base_url()}/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+        method="GET",
+    )
+    return _load_json_response(request)
+
+
+def validate_keycloak_callback(params: dict[str, str], session) -> dict[str, str]:
+    if params.get("error"):
+        raise KeycloakAuthError(f"Keycloak login failed: {params['error']}.")
+
+    code = params.get("code", "")
+    state = params.get("state", "")
+    expected_state = session.get(KEYCLOAK_STATE_SESSION_KEY, "")
+    session.pop(KEYCLOAK_STATE_SESSION_KEY, None)
+    _mark_session_modified(session)
+
+    if not code or not state:
+        raise KeycloakAuthError("Missing Keycloak callback fields.")
+    if not expected_state or not secrets.compare_digest(state, expected_state):
+        raise KeycloakAuthError("Invalid Keycloak state.")
+
+    token_payload = _exchange_keycloak_code(code)
+    userinfo = _fetch_keycloak_userinfo(token_payload["access_token"])
+
+    try:
+        external_id = str(uuid.UUID(str(userinfo.get("sub", "")).strip()))
+    except (TypeError, ValueError) as exc:
+        raise KeycloakAuthError("Invalid Keycloak subject format.") from exc
+
+    username = str(userinfo.get("preferred_username", "")).strip()
+    if not username:
+        raise KeycloakAuthError("Missing Keycloak username.")
+
+    email = str(userinfo.get("email", "")).strip()
+    first_name = str(userinfo.get("given_name", "")).strip()
+    last_name = str(userinfo.get("family_name", "")).strip()
+
+    for field_name, field_value in (
+        ("username", username),
+        ("email", email),
+        ("first_name", first_name),
+        ("last_name", last_name),
+    ):
+        if len(field_value) > MAX_TEXT_FIELD_LENGTH:
+            raise KeycloakAuthError(f"Field too long: {field_name}.")
+
+    return {
+        "external_id": external_id,
+        "username": username,
+        "email": email or None,
+        "first_name": first_name or None,
+        "last_name": last_name or None,
     }
 
 

@@ -11,23 +11,41 @@
 {% endblock %}
 
 {% block section_title %}
-    {% trans "Mode dev" %}
+    {% if auth_mode == "mock" %}
+        {% trans "Mode dev" %}
+    {% else %}
+        {% trans "Connexion" %}
+    {% endif %}
 {% endblock %}
 
 {% block section_intro %}
-    <p>{% trans "Simulation Keycloak" %}</p>
+    {% if auth_mode == "mock" %}
+        <p>{% trans "Simulation Keycloak" %}</p>
+    {% else %}
+        <p>{% trans "Connexion sécurisée via Keycloak" %}</p>
+    {% endif %}
 {% endblock %}
 
 {% block section_nav %}
 {% endblock %}
 
-{% block tools_title %}{% trans "Simulation" %}{% endblock %}
+{% block tools_title %}
+    {% if auth_mode == "mock" %}
+        {% trans "Simulation" %}
+    {% else %}
+        {% trans "Connexion" %}
+    {% endif %}
+{% endblock %}
 
 {% block tools_intro %}{% endblock %}
 
 {% block page_tools %}
     <div>
-        <a href="{% url 'login' %}?start=1">{% trans "Ouvrir la simulation" %}</a>
+        {% if auth_mode == "mock" %}
+            <a href="{% url 'login' %}?start=1">{% trans "Ouvrir la simulation" %}</a>
+        {% else %}
+            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec Keycloak" %}</a>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -38,7 +56,11 @@
         {% if request.user.is_authenticated %}
             <a href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
         {% else %}
-            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec la simulation SSO" %}</a>
+            {% if auth_mode == "mock" %}
+                <a href="{% url 'login' %}?start=1">{% trans "Continuer avec la simulation SSO" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}?start=1">{% trans "Continuer avec Keycloak" %}</a>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

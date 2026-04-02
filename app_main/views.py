@@ -11,12 +11,16 @@ from django.urls import reverse
 from app_main.auth import (
     DisabledUserError,
     InvalidCallbackError,
+    KeycloakAuthError,
     UnknownUserError,
+    build_keycloak_login_url,
+    build_keycloak_logout_url,
     clear_session_user,
     get_directory_user,
     get_session_user,
     store_session_user,
     validate_callback_payload,
+    validate_keycloak_callback,
 )
 
 logger = logging.getLogger("app_main.auth")
@@ -47,15 +51,22 @@ def login(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         return redirect("account")
 
-    if settings.AUTH_MODE != "mock":
+    if request.GET.get("start") == "1":
+        if settings.AUTH_MODE == "mock":
+            callback_url = request.build_absolute_uri(reverse("auth_callback"))
+            query_string = urlencode({"return_to": callback_url})
+            return redirect(f"{settings.AUTH_MOCK_BASE_URL}/login?{query_string}")
+        if settings.AUTH_MODE == "keycloak":
+            try:
+                return redirect(build_keycloak_login_url(request.session))
+            except KeycloakAuthError as exc:
+                messages.error(request, str(exc))
+                logger.warning("login_refused auth_mode=keycloak reason=configuration detail=%s", exc)
+                return redirect("homepage")
+
         messages.error(request, "Interactive login is not configured for this environment.")
         logger.warning("login_refused auth_mode=%s reason=unsupported_auth_mode", settings.AUTH_MODE)
         return redirect("homepage")
-
-    if request.GET.get("start") == "1":
-        callback_url = request.build_absolute_uri(reverse("auth_callback"))
-        query_string = urlencode({"return_to": callback_url})
-        return redirect(f"{settings.AUTH_MOCK_BASE_URL}/login?{query_string}")
 
     return render(
         request,
@@ -70,10 +81,20 @@ def login(request: HttpRequest) -> HttpResponse:
 
 def auth_callback(request: HttpRequest) -> HttpResponse:
     try:
-        payload = validate_callback_payload(request.GET)
+        if settings.AUTH_MODE == "mock":
+            payload = validate_callback_payload(request.GET)
+        elif settings.AUTH_MODE == "keycloak":
+            payload = validate_keycloak_callback(request.GET, request.session)
+        else:
+            raise KeycloakAuthError("Unsupported authentication mode.")
         user = get_directory_user(payload["external_id"])
     except InvalidCallbackError as exc:
         logger.warning("login_refused reason=invalid_callback detail=%s", exc)
+        messages.error(request, str(exc))
+        clear_session_user(request.session)
+        return redirect("homepage")
+    except KeycloakAuthError as exc:
+        logger.warning("login_refused reason=keycloak_callback detail=%s", exc)
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
@@ -106,6 +127,11 @@ def logout(request: HttpRequest) -> HttpResponse:
     clear_session_user(request.session)
     request.session.cycle_key()
     messages.info(request, "Logged out.")
+    if settings.AUTH_MODE == "keycloak":
+        try:
+            return redirect(build_keycloak_logout_url())
+        except KeycloakAuthError as exc:
+            logger.warning("logout_keycloak_redirect_failed detail=%s", exc)
     return redirect("homepage")
 
 
