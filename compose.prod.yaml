@@ -10,4 +10,24 @@ services:
       - "${LSS_BIND_PORT:-8000}:8000"
     volumes:
       - "${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:ro"
+    networks:
+      - default
+      - shared_backend
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_PROXY_NETWORK:-proxy}"
+      - "traefik.http.routers.lss.rule=Host(`${LSS_DOMAIN:-lss.animation-messe.fr}`)"
+      - "traefik.http.routers.lss.entrypoints=websecure"
+      - "traefik.http.routers.lss.tls=true"
+      - "traefik.http.routers.lss.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lss.loadbalancer.server.port=8000"
     restart: unless-stopped
+
+networks:
+  shared_backend:
+    external: true
+    name: ${SHARED_DB_NETWORK:-backend}
+  proxy:
+    external: true
+    name: ${TRAEFIK_PROXY_NETWORK:-proxy}
