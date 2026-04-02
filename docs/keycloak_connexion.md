@@ -152,18 +152,20 @@ Basic production start:
 
 ```bash
 cp .env.prod.example .env.prod
-docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml up -d --build
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml pull
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml up -d
 ```
 
 Important note:
 
-- `--env-file .env.prod` is required because Compose itself must read values such as `SHARED_DB_NETWORK` and `LSS_BIND_PORT`
+- `--env-file .env.prod` is required because Compose itself must read values such as `COMPOSE_PROJECT_NAME`, `SHARED_DB_NETWORK`, and `LSS_BIND_PORT`
 - `env_file: .env.prod` only injects variables inside the container, it does not drive Compose interpolation
+- the production Compose project should be named `lss`, typically through `COMPOSE_PROJECT_NAME=lss`
 
 Current limitation:
 
 - this production override removes `auth_mock` and prepares hardened Django/container settings
-- the real interactive `Keycloak` login flow still requires the Django authentication code to be completed
+- the real interactive `Keycloak` login flow requires the production Keycloak client and secrets to be configured correctly
 
 Manual verification:
 
