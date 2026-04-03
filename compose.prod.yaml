@@ -3,6 +3,7 @@ name: ${COMPOSE_PROJECT_NAME:-lss}
 services:
   web:
     image: carthographie/lyrics-slide-show:latest
+    container_name: app_lss
     command: sh /app/scripts/start-web-prod.sh
     env_file:
       - .env.prod
