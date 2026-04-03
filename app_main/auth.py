@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import logging
 import re
 import secrets
 import time
@@ -20,6 +21,7 @@ SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
+logger = logging.getLogger("app_main.auth")
 
 
 class AuthError(Exception):
@@ -187,7 +189,28 @@ def _load_json_response(request: Request) -> dict[str, Any]:
     try:
         with urlopen(request, timeout=10) as response:
             return json.loads(response.read().decode("utf-8"))
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+    except HTTPError as exc:
+        response_body = ""
+        try:
+            response_body = exc.read().decode("utf-8", errors="replace").strip()
+        except Exception:
+            response_body = ""
+        logger.warning(
+            "keycloak_http_error url=%s status=%s reason=%s body=%s",
+            request.full_url,
+            exc.code,
+            exc.reason,
+            response_body[:500],
+        )
+        raise KeycloakAuthError(f"Keycloak request failed with HTTP {exc.code}.") from exc
+    except URLError as exc:
+        logger.warning("keycloak_url_error url=%s reason=%s", request.full_url, exc.reason)
+        raise KeycloakAuthError("Keycloak request failed.") from exc
+    except TimeoutError as exc:
+        logger.warning("keycloak_timeout url=%s", request.full_url)
+        raise KeycloakAuthError("Keycloak request timed out.") from exc
+    except json.JSONDecodeError as exc:
+        logger.warning("keycloak_invalid_json url=%s", request.full_url)
         raise KeycloakAuthError("Keycloak request failed.") from exc
 
 
