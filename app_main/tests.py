@@ -81,17 +81,13 @@ class CallbackValidationTests(SimpleTestCase):
         exchange_mock.return_value = {"access_token": "access-token"}
         userinfo_mock.return_value = {
             "sub": "11111111-1111-1111-1111-111111111111",
-            "preferred_username": "known.user",
-            "email": "known.user@example.test",
-            "given_name": "Known",
-            "family_name": "User",
         }
         session = {"lss_keycloak_state": "expected-state"}
 
         payload = validate_keycloak_callback({"code": "auth-code", "state": "expected-state"}, session)
 
         self.assertEqual(payload["external_id"], "11111111-1111-1111-1111-111111111111")
-        self.assertEqual(payload["username"], "known.user")
+        self.assertIsNone(payload["username"])
         self.assertNotIn("lss_keycloak_state", session)
 
     def test_validate_keycloak_callback_rejects_invalid_state(self):

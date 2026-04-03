@@ -42,7 +42,7 @@ KEYCLOAK_CLIENT_ID = os.environ.get("KEYCLOAK_CLIENT_ID", "")
 KEYCLOAK_CLIENT_SECRET = env_value("KEYCLOAK_CLIENT_SECRET", "")
 KEYCLOAK_REDIRECT_URI = os.environ.get("KEYCLOAK_REDIRECT_URI", "")
 KEYCLOAK_LOGOUT_REDIRECT_URI = os.environ.get("KEYCLOAK_LOGOUT_REDIRECT_URI", "")
-KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid profile email")
+KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
 
