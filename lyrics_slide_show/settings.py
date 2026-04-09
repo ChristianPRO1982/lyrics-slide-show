@@ -42,7 +42,7 @@ KEYCLOAK_CLIENT_ID = os.environ.get("KEYCLOAK_CLIENT_ID", "")
 KEYCLOAK_CLIENT_SECRET = env_value("KEYCLOAK_CLIENT_SECRET", "")
 KEYCLOAK_REDIRECT_URI = os.environ.get("KEYCLOAK_REDIRECT_URI", "")
 KEYCLOAK_LOGOUT_REDIRECT_URI = os.environ.get("KEYCLOAK_LOGOUT_REDIRECT_URI", "")
-KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid profile email")
+KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
 
@@ -145,6 +145,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", not DEBUG)

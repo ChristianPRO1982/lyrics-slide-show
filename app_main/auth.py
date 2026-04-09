@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import logging
 import re
 import secrets
 import time
@@ -20,6 +21,7 @@ SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
+logger = logging.getLogger("app_main.auth")
 
 
 class AuthError(Exception):
@@ -154,6 +156,8 @@ def _keycloak_oidc_base_url() -> str:
 
 
 def build_keycloak_login_url(session) -> str:
+    if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_REDIRECT_URI:
+        raise KeycloakAuthError("Keycloak client configuration is incomplete.")
     state = secrets.token_urlsafe(32)
     session[KEYCLOAK_STATE_SESSION_KEY] = state
     _mark_session_modified(session)
@@ -170,6 +174,8 @@ def build_keycloak_login_url(session) -> str:
 
 
 def build_keycloak_logout_url() -> str:
+    if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_LOGOUT_REDIRECT_URI:
+        raise KeycloakAuthError("Keycloak logout configuration is incomplete.")
     query_string = urlencode(
         {
             "client_id": settings.KEYCLOAK_CLIENT_ID,
@@ -183,11 +189,34 @@ def _load_json_response(request: Request) -> dict[str, Any]:
     try:
         with urlopen(request, timeout=10) as response:
             return json.loads(response.read().decode("utf-8"))
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+    except HTTPError as exc:
+        response_body = ""
+        try:
+            response_body = exc.read().decode("utf-8", errors="replace").strip()
+        except Exception:
+            response_body = ""
+        logger.warning(
+            "keycloak_http_error url=%s status=%s reason=%s body=%s",
+            request.full_url,
+            exc.code,
+            exc.reason,
+            response_body[:500],
+        )
+        raise KeycloakAuthError(f"Keycloak request failed with HTTP {exc.code}.") from exc
+    except URLError as exc:
+        logger.warning("keycloak_url_error url=%s reason=%s", request.full_url, exc.reason)
+        raise KeycloakAuthError("Keycloak request failed.") from exc
+    except TimeoutError as exc:
+        logger.warning("keycloak_timeout url=%s", request.full_url)
+        raise KeycloakAuthError("Keycloak request timed out.") from exc
+    except json.JSONDecodeError as exc:
+        logger.warning("keycloak_invalid_json url=%s", request.full_url)
         raise KeycloakAuthError("Keycloak request failed.") from exc
 
 
 def _exchange_keycloak_code(code: str) -> dict[str, Any]:
+    if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_CLIENT_SECRET or not settings.KEYCLOAK_REDIRECT_URI:
+        raise KeycloakAuthError("Keycloak token exchange configuration is incomplete.")
     body = urlencode(
         {
             "grant_type": "authorization_code",
@@ -241,29 +270,12 @@ def validate_keycloak_callback(params: dict[str, str], session) -> dict[str, str
     except (TypeError, ValueError) as exc:
         raise KeycloakAuthError("Invalid Keycloak subject format.") from exc
 
-    username = str(userinfo.get("preferred_username", "")).strip()
-    if not username:
-        raise KeycloakAuthError("Missing Keycloak username.")
-
-    email = str(userinfo.get("email", "")).strip()
-    first_name = str(userinfo.get("given_name", "")).strip()
-    last_name = str(userinfo.get("family_name", "")).strip()
-
-    for field_name, field_value in (
-        ("username", username),
-        ("email", email),
-        ("first_name", first_name),
-        ("last_name", last_name),
-    ):
-        if len(field_value) > MAX_TEXT_FIELD_LENGTH:
-            raise KeycloakAuthError(f"Field too long: {field_name}.")
-
     return {
         "external_id": external_id,
-        "username": username,
-        "email": email or None,
-        "first_name": first_name or None,
-        "last_name": last_name or None,
+        "username": None,
+        "email": None,
+        "first_name": None,
+        "last_name": None,
     }
 
 

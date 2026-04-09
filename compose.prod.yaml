@@ -3,6 +3,7 @@ name: ${COMPOSE_PROJECT_NAME:-lss}
 services:
   web:
     image: carthographie/lyrics-slide-show:latest
+    container_name: app_lss
     command: sh /app/scripts/start-web-prod.sh
     env_file:
       - .env.prod
@@ -10,6 +11,8 @@ services:
       - "${LSS_BIND_PORT:-8000}:8000"
     volumes:
       - "${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:ro"
+      - "lss_static:/app/staticfiles"
+      - "lss_media:/app/media"
     networks:
       - default
       - shared_backend
@@ -31,3 +34,11 @@ networks:
   proxy:
     external: true
     name: ${TRAEFIK_PROXY_NETWORK:-proxy}
+
+volumes:
+  lss_static:
+    external: true
+    name: lss_static
+  lss_media:
+    external: true
+    name: lss_media
