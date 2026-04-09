@@ -24,3 +24,8 @@ services:
       - .:/app
     networks:
       - default
+
+networks:
+  shared_backend:
+    external: true
+    name: ${SHARED_DB_NETWORK:-pg-carthographie_backend}

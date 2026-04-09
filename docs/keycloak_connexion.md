@@ -131,6 +131,9 @@ Notes for the current shared PostgreSQL setup:
 - use `backend` as the shared external Docker network by default
 - use `DB_HOST=postgres` if that alias exists on the network
 - otherwise use `DB_HOST=pg-carthographie`
+- the current `compose.dev.yaml` defaults the shared DB network to `pg-carthographie_backend`
+  so local `docker compose -f compose.yaml -f compose.dev.yaml up --build` works with the
+  existing `pg-carthographie` container without changing production settings
 
 Basic local run:
 
