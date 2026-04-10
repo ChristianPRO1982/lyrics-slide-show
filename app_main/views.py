@@ -168,3 +168,11 @@ def theme_preferences(request: HttpRequest) -> HttpResponse:
             "default_theme": AVAILABLE_THEMES[0]["slug"],
         },
     )
+
+
+def language_preferences(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "main/language.html",
+        {"auth_mode": settings.AUTH_MODE},
+    )

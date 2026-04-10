@@ -184,6 +184,7 @@ class AuthFlowTests(TestCase):
         response = self.client.get(reverse("homepage"))
 
         self.assertContains(response, reverse("login"))
+        self.assertContains(response, reverse("language"))
         self.assertContains(response, 'data-django-alias="login"')
         self.assertContains(response, 'data-django-alias="signup"')
 
@@ -237,6 +238,24 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Connexion sécurisée via Keycloak")
         self.assertContains(response, "Continuer avec Keycloak")
+
+    def test_language_page_shows_fr_and_en_choices(self):
+        response = self.client.get(reverse("language"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Choix de la langue")
+        self.assertContains(response, "🇫🇷 Français")
+        self.assertContains(response, "🇬🇧 English")
+        self.assertContains(response, reverse("set_language"))
+
+    def test_set_language_redirects_back_to_language_page(self):
+        response = self.client.post(
+            reverse("set_language"),
+            {"language": "en", "next": reverse("language")},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("language"))
 
     @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
     @patch("app_main.views.get_directory_user")

@@ -81,7 +81,7 @@
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
                         <span>{{ nav_theme_label }}</span>
                     </a>
-                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
@@ -155,7 +155,7 @@
                     <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
                     </a>
-                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
@@ -228,7 +228,7 @@
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
                         <span>{{ nav_theme_label }}</span>
                     </a>
-                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
@@ -302,7 +302,7 @@
                     <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
                     </a>
-                    <a href="#" title="{{ nav_language_label }}" data-django-alias="language">
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
