@@ -17,6 +17,7 @@ Dans les prompts, nommer les blocs par leur rôle fonctionnel.
 - `bloc class="site-panel site-section-panel"`
 - `bloc class="site-panel site-tools-panel"`
 - `bloc class="site-panel site-main-panel"`
+- `bloc class="site-panel site-mobile-side"`
 - `bloc class="site-main-heading"`
 - `bloc class="site-main-aside"`
 - `bloc class="site-main-footer"`
@@ -27,6 +28,7 @@ Préférer :
 - `panneau section`
 - `panneau outils`
 - `panneau principal`
+- `panneau mobile`
 - `en-tête principal`
 - `encadré résumé`
 - `pied de contenu`
@@ -39,6 +41,7 @@ Préférer :
 | `panneau section` | panneau latéral | oui | `section_title`, `section_intro`, `section_nav` | `<section class="site-panel site-section-panel">` | navigation ou structure de la section courante |
 | `panneau outils` | panneau latéral | oui | `tools_title`, `tools_intro`, `page_tools` | `<section class="site-panel site-tools-panel">` | actions, raccourcis, outils, liens pratiques |
 | `panneau principal` | conteneur principal | oui | englobe `page_kicker`, `page_title`, `page_intro`, `page_summary`, `content`, `content_footer` | `<main class="site-panel site-main-panel">` | zone centrale complète de la page |
+| `panneau mobile` | panneau latéral mobile | oui | `mobile_title`, `mobile_intro`, `mobile_nav` | `<section class="site-panel site-mobile-side">` | navigation et actions condensées pour la mise en page mobile |
 | `en-tête principal` | sous-bloc du panneau principal | oui | `page_kicker`, `page_title`, `page_intro` | `<div class="site-main-heading">` | sur-titre, titre principal, texte d’introduction |
 | `encadré résumé` | sous-bloc du panneau principal | oui | `page_summary` | `<div class="site-main-aside">` | résumé, aide courte, mémo, informations secondaires |
 | `contenu principal` | zone de contenu | oui | `content` | `<section class="site-main-content">` | corps principal de la page |
@@ -100,6 +103,25 @@ Exemples :
 - ajouter un nouveau bloc dans le panneau principal ;
 - réorganiser les blocs du panneau principal ;
 - alléger la structure du panneau principal.
+
+### Panneau mobile
+
+Nom à utiliser :
+
+- `panneau mobile`
+
+Sous-parties nommables :
+
+- `titre du panneau mobile` pour `mobile_title`
+- `intro du panneau mobile` pour `mobile_intro`
+- `contenu du panneau mobile` pour `mobile_nav`
+
+Usages typiques :
+
+- navigation compacte sur mobile ;
+- actions prioritaires en petit écran ;
+- rappel de contexte dans une mise en page resserrée ;
+- liens utiles destinés à la version mobile.
 
 ### En-tête principal
 
@@ -202,6 +224,7 @@ Formulations simples recommandées :
 - `Ajoute ce texte dans l’en-tête principal.`
 - `Remplace le texte d’introduction dans l’en-tête principal.`
 - `Mets cette liste dans le panneau outils.`
+- `Ajoute ce lien dans le panneau mobile.`
 - `Réécris le résumé dans l’encadré résumé.`
 - `Ajoute une note dans le pied de contenu.`
 - `Change le texte de la carte de thème Clair.`
@@ -215,6 +238,7 @@ Formulations encore plus précises :
 - `Réécris le texte d’introduction.`
 - `Change le titre du panneau section.`
 - `Ajoute une phrase dans l’intro du panneau outils.`
+- `Remplace le contenu du panneau mobile.`
 - `Remplace le contenu du panneau section.`
 - `Ajoute une carte dans le contenu principal.`
 
