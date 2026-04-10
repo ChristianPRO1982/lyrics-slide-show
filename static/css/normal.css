@@ -691,6 +691,12 @@ body.lss-messagebox-open {
     height: auto;
 }
 
+.site-home-mobile-logo {
+    display: block;
+    max-width: 220px;
+    margin-inline: auto;
+}
+
 .site-home-release-link {
     display: inline-flex;
     align-items: center;
