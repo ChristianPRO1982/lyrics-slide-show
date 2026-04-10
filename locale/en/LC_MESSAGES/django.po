@@ -1,0 +1,121 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Lyrics Slide Show\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-10 00:00+0000\n"
+"PO-Revision-Date: 2026-04-10 00:00+0000\n"
+"Last-Translator: Codex\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Fermer"
+msgstr "Close"
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "Liste des groupes"
+msgstr "Groups"
+
+msgid "Liste des chants"
+msgstr "Songs"
+
+msgid "Liste des animations"
+msgstr "Animations"
+
+msgid "Déconnexion"
+msgstr "Log out"
+
+msgid "Connexion"
+msgstr "Log in"
+
+msgid "Créer un compte"
+msgstr "Create an account"
+
+msgid "Thèmes"
+msgstr "Themes"
+
+msgid "Cookies et politique de confidentialité"
+msgstr "Cookies and privacy policy"
+
+msgid "Navigation principale"
+msgstr "Main navigation"
+
+msgid "Profil et préférences"
+msgstr "Profile and preferences"
+
+msgid "Navigation générale"
+msgstr "General navigation"
+
+msgid "Ouvrir la navigation"
+msgstr "Open navigation"
+
+msgid "Compte"
+msgstr "Account"
+
+msgid "Voir mon profil"
+msgstr "View my profile"
+
+msgid "Journal des versions sur GitHub"
+msgstr "Version log on GitHub"
+
+msgid "Dernière version publiée"
+msgstr "Latest release"
+
+msgid "Anglais"
+msgstr "English"
+
+msgid "Français"
+msgstr "French"
+
+msgid "Langue"
+msgstr "Language"
+
+msgid "Choisissez la langue de l’interface."
+msgstr "Choose the interface language."
+
+msgid "Choix de la langue"
+msgstr "Language selection"
+
+msgid "Portée"
+msgstr "Scope"
+
+msgid "Ce choix change la langue de Lyrics Slide Show sur cet appareil et dans ce navigateur."
+msgstr "This choice changes the language of Lyrics Slide Show on this device and in this browser."
+
+msgid "Ce n’est pas un réglage du profil utilisateur."
+msgstr "This is not a user profile setting."
+
+msgid "Réglage LSS"
+msgstr "LSS setting"
+
+msgid "La langue s’applique à toute l’interface LSS."
+msgstr "The language applies to the entire LSS interface."
+
+msgid "Passez simplement du français à l’anglais pour toute l’interface du site."
+msgstr "Switch the entire site interface between French and English."
+
+msgid "Langue actuelle :"
+msgstr "Current language:"
+
+msgid "Choix de la langue de l’interface"
+msgstr "Interface language selection"
+
+msgid "Langue principale de Lyrics Slide Show."
+msgstr "Main language of Lyrics Slide Show."
+
+msgid "Langue active"
+msgstr "Active language"
+
+msgid "Choisir le français"
+msgstr "Choose French"
+
+msgid "Version anglaise de l’interface de Lyrics Slide Show."
+msgstr "English version of the Lyrics Slide Show interface."
+
+msgid "Choisir l’anglais"
+msgstr "Choose English"

@@ -135,6 +135,7 @@ LANGUAGES = [
     ('fr', 'Français'),
     ('en', 'English'),
 ]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = os.environ.get("DJANGO_TIME_ZONE", "Europe/Paris")
 

@@ -13,26 +13,31 @@
 
 {% block section_nav %}
     <div class="site-home-media">
-        <picture class="site-home-mobile-logo" data-theme-icon="theme" data-theme-alt="{% trans 'Choix de la langue' %}">
-            <source
-                data-theme-size="512"
-                data-theme-mode="dark"
-                srcset="{% static 'icons/ui/normal/512/dark/theme.png' %}"
-                media="(prefers-color-scheme: dark)"
-            >
-            <source
-                data-theme-size="512"
-                data-theme-mode="light"
-                srcset="{% static 'icons/ui/normal/512/light/theme.png' %}"
-                media="(prefers-color-scheme: light)"
-            >
-            <img
-                src="{% static 'icons/ui/normal/512/light/theme.png' %}"
-                alt="{% trans 'Choix de la langue' %}"
-                data-theme-size="512"
-                data-theme-mode="light"
-            >
-        </picture>
+        <span class="site-language-hero">
+            <picture class="site-home-mobile-logo" data-theme-icon="button" data-theme-alt="{% trans 'Choix de la langue' %}">
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="dark"
+                    srcset="{% static 'icons/ui/normal/512/dark/button.png' %}"
+                    media="(prefers-color-scheme: dark)"
+                >
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                    srcset="{% static 'icons/ui/normal/512/light/button.png' %}"
+                    media="(prefers-color-scheme: light)"
+                >
+                <img
+                    src="{% static 'icons/ui/normal/512/light/button.png' %}"
+                    alt="{% trans 'Choix de la langue' %}"
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                >
+            </picture>
+            <span class="site-language-hero-flag" aria-hidden="true">
+                {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
+            </span>
+        </span>
     </div>
 {% endblock %}
 
