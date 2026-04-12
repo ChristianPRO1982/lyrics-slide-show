@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:21+0200\n"
+"POT-Creation-Date: 2026-04-12 19:20+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -38,7 +38,7 @@ msgstr ""
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:78
 #: app_main/templates/main/connexion.html:156
-#: app_main/templates/main/connexion.html:250
+#: app_main/templates/main/connexion.html:255
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
@@ -117,6 +117,7 @@ msgstr ""
 "identity then used throughout the app for a smooth, consistent experience."
 
 #: app_main/templates/main/connexion.html:136
+#: app_main/templates/main/connexion.html:245
 msgid "Informations du profil"
 msgstr "Profile information"
 
@@ -125,19 +126,19 @@ msgid "Données personnelles"
 msgstr "Personal information"
 
 #: app_main/templates/main/connexion.html:143
-#: app_main/templates/main/connexion.html:245
+#: app_main/templates/main/connexion.html:247
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr "Personal data is used only for sign-in and group management."
 
 #: app_main/templates/main/connexion.html:144
-#: app_main/templates/main/connexion.html:246
+#: app_main/templates/main/connexion.html:248
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr "It is never displayed publicly."
 
 #: app_main/templates/main/connexion.html:145
-#: app_main/templates/main/connexion.html:247
+#: app_main/templates/main/connexion.html:249
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -279,21 +280,21 @@ msgid ""
 "vibe."
 msgstr "Ready? Start a new session, paste in your lyrics, and lift the room."
 
-#: app_main/templates/main/language.html:6
+#: app_main/templates/main/language.html:5
 msgid "Langue"
 msgstr "Language"
 
-#: app_main/templates/main/language.html:15
-#: app_main/templates/main/language.html:30
-#: app_main/templates/main/language.html:63
+#: app_main/templates/main/language.html:14
+#: app_main/templates/main/language.html:29
+#: app_main/templates/main/language.html:62
 msgid "Choix de la langue"
 msgstr "Language selection"
 
-#: app_main/templates/main/language.html:42
+#: app_main/templates/main/language.html:41
 msgid "Portée"
 msgstr "Scope"
 
-#: app_main/templates/main/language.html:46
+#: app_main/templates/main/language.html:45
 msgid ""
 "Ce choix change la langue de Lyrics Slide Show sur cet appareil et dans ce "
 "navigateur."
@@ -301,53 +302,53 @@ msgstr ""
 "This choice changes the language of Lyrics Slide Show on this device and in "
 "this browser."
 
-#: app_main/templates/main/language.html:49
+#: app_main/templates/main/language.html:48
 msgid "Ce n’est pas un réglage du profil utilisateur."
 msgstr "This is not a user profile setting."
 
-#: app_main/templates/main/language.html:53
+#: app_main/templates/main/language.html:52
 msgid "Réglage LSS"
 msgstr "LSS setting"
 
-#: app_main/templates/main/language.html:57
+#: app_main/templates/main/language.html:56
 msgid "La langue s’applique à toute l’interface LSS."
 msgstr "The language applies to the entire LSS interface."
 
-#: app_main/templates/main/language.html:66
+#: app_main/templates/main/language.html:65
 msgid ""
 "Passez simplement du français à l’anglais pour toute l’interface du site."
 msgstr "Switch the entire site interface between French and English."
 
-#: app_main/templates/main/language.html:70
+#: app_main/templates/main/language.html:69
 msgid "Langue actuelle :"
 msgstr "Current language:"
 
-#: app_main/templates/main/language.html:74
+#: app_main/templates/main/language.html:73
 msgid "Choix de la langue de l’interface"
 msgstr "Interface language selection"
 
-#: app_main/templates/main/language.html:78 templates/includes/nav.html:171
+#: app_main/templates/main/language.html:77 templates/includes/nav.html:171
 msgid "Français"
 msgstr "French"
 
-#: app_main/templates/main/language.html:79
+#: app_main/templates/main/language.html:78
 msgid "Langue principale de Lyrics Slide Show."
 msgstr "Main language of Lyrics Slide Show."
 
-#: app_main/templates/main/language.html:88
-#: app_main/templates/main/language.html:109
+#: app_main/templates/main/language.html:87
+#: app_main/templates/main/language.html:108
 msgid "Langue active"
 msgstr "Active language"
 
-#: app_main/templates/main/language.html:90
+#: app_main/templates/main/language.html:89
 msgid "Choisir le français"
 msgstr "Choose French"
 
-#: app_main/templates/main/language.html:100
+#: app_main/templates/main/language.html:99
 msgid "Version anglaise de l’interface de Lyrics Slide Show."
 msgstr "English version of the Lyrics Slide Show interface."
 
-#: app_main/templates/main/language.html:111
+#: app_main/templates/main/language.html:110
 msgid "Choisir l’anglais"
 msgstr "Choose English"
 
@@ -361,16 +362,28 @@ msgid "Politique de confidentialité détaillée"
 msgstr "Detailed privacy policy"
 
 #: app_main/templates/main/privacy_policy.html:49
-msgid "Bienvenue sur ce site dédié à la création et à la projection de chants en diaporama “Lyrics Slide Show”."
-msgstr "Welcome to this website dedicated to creating and projecting song lyrics as slideshows with “Lyrics Slide Show”."
+msgid ""
+"Bienvenue sur ce site dédié à la création et à la projection de chants en "
+"diaporama “Lyrics Slide Show”."
+msgstr ""
+"Welcome to this website dedicated to creating and projecting song lyrics as "
+"slideshows with “Lyrics Slide Show”."
 
 #: app_main/templates/main/privacy_policy.html:50
-msgid "Nous avons à cœur de respecter votre vie privée et de ne collecter que les données strictement nécessaires au fonctionnement du service."
-msgstr "We are committed to respecting your privacy and collecting only the data strictly necessary for the operation of the service."
+msgid ""
+"Nous avons à cœur de respecter votre vie privée et de ne collecter que les "
+"données strictement nécessaires au fonctionnement du service."
+msgstr ""
+"We are committed to respecting your privacy and collecting only the data "
+"strictly necessary for the operation of the service."
 
 #: app_main/templates/main/privacy_policy.html:51
-msgid "Ce document vise à vous expliquer clairement quelles données sont collectées, dans quel but, et comment elles sont traitées."
-msgstr "This document is intended to explain clearly which data are collected, for what purposes, and how they are processed."
+msgid ""
+"Ce document vise à vous expliquer clairement quelles données sont "
+"collectées, dans quel but, et comment elles sont traitées."
+msgstr ""
+"This document is intended to explain clearly which data are collected, for "
+"what purposes, and how they are processed."
 
 #: app_main/templates/main/privacy_policy.html:53
 msgid "Source CNIL :"
@@ -385,24 +398,41 @@ msgid "1. Données collectées"
 msgstr "1. Data collected"
 
 #: app_main/templates/main/privacy_policy.html:60
-msgid "Lors de la création d’un compte, nous collectons les données suivantes :"
+msgid ""
+"Lors de la création d’un compte, nous collectons les données suivantes :"
 msgstr "When an account is created, we collect the following data:"
 
 #: app_main/templates/main/privacy_policy.html:62
-msgid "<b>Adresse e-mail :</b> nécessaire pour la création du compte, la connexion et les relances en cas d’inactivité."
-msgstr "<b>Email address:</b> required for account creation, sign-in, and follow-up reminders in the event of inactivity."
+msgid ""
+"<b>Adresse e-mail :</b> nécessaire pour la création du compte, la connexion "
+"et les relances en cas d’inactivité."
+msgstr ""
+"<b>Email address:</b> required for account creation, sign-in, and follow-up "
+"reminders in the event of inactivity."
 
 #: app_main/templates/main/privacy_policy.html:63
-msgid "<b>Mot de passe :</b> stocké de manière cryptée (hachée et salée), jamais en clair."
-msgstr "<b>Password:</b> stored in encrypted form (hashed and salted), never in plain text."
+msgid ""
+"<b>Mot de passe :</b> stocké de manière cryptée (hachée et salée), jamais en "
+"clair."
+msgstr ""
+"<b>Password:</b> stored in encrypted form (hashed and salted), never in "
+"plain text."
 
 #: app_main/templates/main/privacy_policy.html:64
-msgid "<b>Nom et prénom :</b> affichés uniquement dans les groupes auxquels vous participez."
-msgstr "<b>First and last name:</b> displayed only within the groups in which you participate."
+msgid ""
+"<b>Nom et prénom :</b> affichés uniquement dans les groupes auxquels vous "
+"participez."
+msgstr ""
+"<b>First and last name:</b> displayed only within the groups in which you "
+"participate."
 
 #: app_main/templates/main/privacy_policy.html:65
-msgid "<b>Dernière connexion :</b> pour gérer la suppression automatique des comptes (voir section 5)."
-msgstr "<b>Last sign-in:</b> used to manage automatic account deletion (see section 5)."
+msgid ""
+"<b>Dernière connexion :</b> pour gérer la suppression automatique des "
+"comptes (voir section 5)."
+msgstr ""
+"<b>Last sign-in:</b> used to manage automatic account deletion (see section "
+"5)."
 
 #: app_main/templates/main/privacy_policy.html:67
 msgid "Aucune autre donnée personnelle n’est demandée ni enregistrée."
@@ -421,28 +451,47 @@ msgid "Vous permettre de vous connecter."
 msgstr "Allow you to sign in."
 
 #: app_main/templates/main/privacy_policy.html:75
-msgid "Vous identifier au sein de vos groupes. Seul votre username y est visible."
+msgid ""
+"Vous identifier au sein de vos groupes. Seul votre username y est visible."
 msgstr "Identify you within your groups. Only your username is visible there."
 
 #: app_main/templates/main/privacy_policy.html:76
-msgid "Vous envoyer deux e-mails de rappel avant la suppression de votre compte (voir section 5)."
-msgstr "Send you two reminder emails before your account is deleted (see section 5)."
+msgid ""
+"Vous envoyer deux e-mails de rappel avant la suppression de votre compte "
+"(voir section 5)."
+msgstr ""
+"Send you two reminder emails before your account is deleted (see section 5)."
 
 #: app_main/templates/main/privacy_policy.html:78
-msgid "Aucune donnée n’est utilisée à des fins commerciales, publicitaires, statistiques ou analytiques, en interne ou en externe."
-msgstr "No data are used for commercial, advertising, statistical, or analytical purposes, whether internally or externally."
+msgid ""
+"Aucune donnée n’est utilisée à des fins commerciales, publicitaires, "
+"statistiques ou analytiques, en interne ou en externe."
+msgstr ""
+"No data are used for commercial, advertising, statistical, or analytical "
+"purposes, whether internally or externally."
 
 #: app_main/templates/main/privacy_policy.html:79
-msgid "Seuls les administrateurs du site ont accès à l'ensemble de vos données. Les modérateurs n'ont accès à aucune données. Enfin, les responables de groupe ont accès aux username des membres ayant fait leur demande d'accès au groupe concerné."
-msgstr "Only site administrators have access to all of your data. Moderators do not have access to any personal data. Group administrators have access only to the usernames of members who have requested access to the relevant group."
+msgid ""
+"Seuls les administrateurs du site ont accès à l'ensemble de vos données. Les "
+"modérateurs n'ont accès à aucune données. Enfin, les responables de groupe "
+"ont accès aux username des membres ayant fait leur demande d'accès au groupe "
+"concerné."
+msgstr ""
+"Only site administrators have access to all of your data. Moderators do not "
+"have access to any personal data. Group administrators have access only to "
+"the usernames of members who have requested access to the relevant group."
 
 #: app_main/templates/main/privacy_policy.html:83
 msgid "3. Cookies"
 msgstr "3. Cookies"
 
 #: app_main/templates/main/privacy_policy.html:84
-msgid "Le site utilise uniquement des cookies strictement nécessaires au bon fonctionnement du service :"
-msgstr "The site uses only cookies that are strictly necessary for the proper operation of the service:"
+msgid ""
+"Le site utilise uniquement des cookies strictement nécessaires au bon "
+"fonctionnement du service :"
+msgstr ""
+"The site uses only cookies that are strictly necessary for the proper "
+"operation of the service:"
 
 #: app_main/templates/main/privacy_policy.html:86
 msgid "Connexion sécurisée."
@@ -453,8 +502,14 @@ msgid "Session utilisateur."
 msgstr "User session."
 
 #: app_main/templates/main/privacy_policy.html:89
-msgid "Aucun cookie tiers, cookie de suivi, cookie publicitaire ni analyse de fréquentation n’est mis en place. En conformité avec la réglementation en vigueur (CNIL / RGPD), aucun bandeau de consentement n’est requis."
-msgstr "No third-party cookies, tracking cookies, advertising cookies, or traffic analytics are used. In accordance with the applicable regulations (CNIL / GDPR), no consent banner is required."
+msgid ""
+"Aucun cookie tiers, cookie de suivi, cookie publicitaire ni analyse de "
+"fréquentation n’est mis en place. En conformité avec la réglementation en "
+"vigueur (CNIL / RGPD), aucun bandeau de consentement n’est requis."
+msgstr ""
+"No third-party cookies, tracking cookies, advertising cookies, or traffic "
+"analytics are used. In accordance with the applicable regulations (CNIL / "
+"GDPR), no consent banner is required."
 
 #: app_main/templates/main/privacy_policy.html:93
 msgid "4. Partage des données"
@@ -465,16 +520,26 @@ msgid "Vos données ne sont transmises à aucun tiers."
 msgstr "Your data are not disclosed to any third party."
 
 #: app_main/templates/main/privacy_policy.html:95
-msgid "Elles sont hébergées sur un serveur sécurisé et ne sont utilisées que dans le cadre du fonctionnement technique du site."
-msgstr "They are hosted on a secure server and are used solely for the technical operation of the site."
+msgid ""
+"Elles sont hébergées sur un serveur sécurisé et ne sont utilisées que dans "
+"le cadre du fonctionnement technique du site."
+msgstr ""
+"They are hosted on a secure server and are used solely for the technical "
+"operation of the site."
 
 #: app_main/templates/main/privacy_policy.html:99
 msgid "5. Durée de conservation et suppression automatique"
 msgstr "5. Retention period and automatic deletion"
 
 #: app_main/templates/main/privacy_policy.html:100
-msgid "Votre compte et ses données associées (email, nom, prénom, mot de passe crypté, date de la dernière connexion) sont supprimés automatiquement après 14 mois d’inactivité."
-msgstr "Your account and its associated data (email address, first name, last name, encrypted password, and date of last sign-in) are automatically deleted after 14 months of inactivity."
+msgid ""
+"Votre compte et ses données associées (email, nom, prénom, mot de passe "
+"crypté, date de la dernière connexion) sont supprimés automatiquement après "
+"14 mois d’inactivité."
+msgstr ""
+"Your account and its associated data (email address, first name, last name, "
+"encrypted password, and date of last sign-in) are automatically deleted "
+"after 14 months of inactivity."
 
 #: app_main/templates/main/privacy_policy.html:101
 msgid "Un e-mail de rappel est envoyé :"
@@ -489,20 +554,32 @@ msgid "à 13 mois d’inactivité."
 msgstr "after 13 months of inactivity."
 
 #: app_main/templates/main/privacy_policy.html:106
-msgid "Si aucune action n’est effectuée suite à ces relances, le compte est définitivement supprimé et un email est envoyé pour confirmer cette action."
-msgstr "If no action is taken following these reminders, the account is permanently deleted and an email is sent to confirm that action."
+msgid ""
+"Si aucune action n’est effectuée suite à ces relances, le compte est "
+"définitivement supprimé et un email est envoyé pour confirmer cette action."
+msgstr ""
+"If no action is taken following these reminders, the account is permanently "
+"deleted and an email is sent to confirm that action."
 
 #: app_main/templates/main/privacy_policy.html:107
-msgid "Les groupes et animations associés à ce compte peuvent également être archivés s’ils ne sont plus liés à aucun utilisateur actif."
-msgstr "Groups and animations associated with that account may also be archived if they are no longer linked to any active user."
+msgid ""
+"Les groupes et animations associés à ce compte peuvent également être "
+"archivés s’ils ne sont plus liés à aucun utilisateur actif."
+msgstr ""
+"Groups and animations associated with that account may also be archived if "
+"they are no longer linked to any active user."
 
 #: app_main/templates/main/privacy_policy.html:111
 msgid "6. Droit d’accès, de rectification et de suppression"
 msgstr "6. Right of access, rectification, and deletion"
 
 #: app_main/templates/main/privacy_policy.html:112
-msgid "Conformément au Règlement Général sur la Protection des Données (RGPD), vous avez le droit :"
-msgstr "In accordance with the General Data Protection Regulation (GDPR), you have the right to:"
+msgid ""
+"Conformément au Règlement Général sur la Protection des Données (RGPD), vous "
+"avez le droit :"
+msgstr ""
+"In accordance with the General Data Protection Regulation (GDPR), you have "
+"the right to:"
 
 #: app_main/templates/main/privacy_policy.html:114
 msgid "D’accéder à vos données."
@@ -517,48 +594,83 @@ msgid "De demander leur suppression à tout moment."
 msgstr "Request their deletion at any time."
 
 #: app_main/templates/main/privacy_policy.html:118
-msgid "Vous pouvez exercer ces droits en vous connectant ou en nous contactant à l’adresse suivante : 📧 <i>carthographie@outlook.fr</i>"
-msgstr "You may exercise these rights by signing in or by contacting us at the following address: 📧 <i>carthographie@outlook.fr</i>"
+msgid ""
+"Vous pouvez exercer ces droits en vous connectant ou en nous contactant à "
+"l’adresse suivante : 📧 <i>carthographie@outlook.fr</i>"
+msgstr ""
+"You may exercise these rights by signing in or by contacting us at the "
+"following address: 📧 <i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/main/privacy_policy.html:122
 msgid "7. Analyse des données collectives (sans suivi individuel)"
 msgstr "7. Analysis of collective data (without individual tracking)"
 
 #: app_main/templates/main/privacy_policy.html:123
-msgid "Le site peut procéder à une analyse ponctuelle des chants et des groupes créés (par exemple pour archiver les contenus anciens ou inutilisés), sans jamais analyser l’activité des utilisateurs individuellement."
-msgstr "The site may carry out occasional analysis of created songs and groups (for example, to archive old or unused content), without ever analyzing user activity on an individual basis."
+msgid ""
+"Le site peut procéder à une analyse ponctuelle des chants et des groupes "
+"créés (par exemple pour archiver les contenus anciens ou inutilisés), sans "
+"jamais analyser l’activité des utilisateurs individuellement."
+msgstr ""
+"The site may carry out occasional analysis of created songs and groups (for "
+"example, to archive old or unused content), without ever analyzing user "
+"activity on an individual basis."
 
 #: app_main/templates/main/privacy_policy.html:124
-msgid "Ces opérations sont réalisées uniquement à des fins d’amélioration du service, sans impact sur votre vie privée."
-msgstr "These operations are carried out solely for service improvement purposes and have no impact on your privacy."
+msgid ""
+"Ces opérations sont réalisées uniquement à des fins d’amélioration du "
+"service, sans impact sur votre vie privée."
+msgstr ""
+"These operations are carried out solely for service improvement purposes and "
+"have no impact on your privacy."
 
 #: app_main/templates/main/privacy_policy.html:128
 msgid "8. Contact"
 msgstr "8. Contact"
 
 #: app_main/templates/main/privacy_policy.html:129
-msgid "Pour toute question concernant la protection de vos données personnelles, vous pouvez écrire à : 📧 <i>carthographie@outlook.fr</i>"
-msgstr "For any question regarding the protection of your personal data, you may write to: 📧 <i>carthographie@outlook.fr</i>"
+msgid ""
+"Pour toute question concernant la protection de vos données personnelles, "
+"vous pouvez écrire à : 📧 <i>carthographie@outlook.fr</i>"
+msgstr ""
+"For any question regarding the protection of your personal data, you may "
+"write to: 📧 <i>carthographie@outlook.fr</i>"
 
 #: app_main/templates/main/privacy_policy.html:133
 msgid "9. Modification de la politique de confidentialité"
 msgstr "9. Changes to the privacy policy"
 
 #: app_main/templates/main/privacy_policy.html:134
-msgid "En cas de modification significative de la présente politique de confidentialité (par exemple : changement de la durée de conservation, ajout de nouvelles données collectées, etc.), vous recevrez un e-mail d’information à l’adresse associée à votre compte."
-msgstr "In the event of a significant change to this privacy policy (for example, a change in the retention period or the addition of new categories of data collected), you will receive an informational email at the address associated with your account."
+msgid ""
+"En cas de modification significative de la présente politique de "
+"confidentialité (par exemple : changement de la durée de conservation, ajout "
+"de nouvelles données collectées, etc.), vous recevrez un e-mail "
+"d’information à l’adresse associée à votre compte."
+msgstr ""
+"In the event of a significant change to this privacy policy (for example, a "
+"change in the retention period or the addition of new categories of data "
+"collected), you will receive an informational email at the address "
+"associated with your account."
 
 #: app_main/templates/main/privacy_policy.html:135
-msgid "Vous pourrez alors, si vous le souhaitez, supprimer votre compte avant l’entrée en vigueur des modifications."
-msgstr "You may then, if you wish, delete your account before those changes take effect."
+msgid ""
+"Vous pourrez alors, si vous le souhaitez, supprimer votre compte avant "
+"l’entrée en vigueur des modifications."
+msgstr ""
+"You may then, if you wish, delete your account before those changes take "
+"effect."
 
 #: app_main/templates/main/privacy_policy.html:139
 msgid "10. Politique d’envoi des e-mails"
 msgstr "10. Email policy"
 
 #: app_main/templates/main/privacy_policy.html:140
-msgid "Le site applique une politique stricte de non-nuisance par e-mail. Les messages envoyés sont limités aux cas strictement nécessaires au bon fonctionnement du service :"
-msgstr "The site applies a strict no-spam email policy. Messages sent are limited to cases that are strictly necessary for the proper operation of the service:"
+msgid ""
+"Le site applique une politique stricte de non-nuisance par e-mail. Les "
+"messages envoyés sont limités aux cas strictement nécessaires au bon "
+"fonctionnement du service :"
+msgstr ""
+"The site applies a strict no-spam email policy. Messages sent are limited to "
+"cases that are strictly necessary for the proper operation of the service:"
 
 #: app_main/templates/main/privacy_policy.html:141
 msgid "✅ <b>E-mails que vous pouvez recevoir :</b>"
@@ -573,8 +685,12 @@ msgid "Pour récupérer votre mot de passe."
 msgstr "To recover your password."
 
 #: app_main/templates/main/privacy_policy.html:145
-msgid "En cas de longue période d’inactivité (rappels à 12 mois et 13 mois, voir section 5)."
-msgstr "In the event of a prolonged period of inactivity (reminders at 12 and 13 months; see section 5)."
+msgid ""
+"En cas de longue période d’inactivité (rappels à 12 mois et 13 mois, voir "
+"section 5)."
+msgstr ""
+"In the event of a prolonged period of inactivity (reminders at 12 and 13 "
+"months; see section 5)."
 
 #: app_main/templates/main/privacy_policy.html:146
 msgid "Lors de suppression automatique de votre compte (voir section 5)."
@@ -589,7 +705,8 @@ msgid "Si une attaque est survenue et que les données sont impactées."
 msgstr "If a security incident has occurred and data are affected."
 
 #: app_main/templates/main/privacy_policy.html:149
-msgid "Si un comportement inaproprié de la part d'un membre sur le site est signalé."
+msgid ""
+"Si un comportement inaproprié de la part d'un membre sur le site est signalé."
 msgstr "If inappropriate behavior by a member on the site is reported."
 
 #: app_main/templates/main/privacy_policy.html:151
@@ -609,8 +726,12 @@ msgid "Envoyer des newsletters, invitations, ou communications commerciales"
 msgstr "Sending newsletters, invitations, or commercial communications"
 
 #: app_main/templates/main/privacy_policy.html:157
-msgid "Vous ne recevrez donc aucun e-mail inutile ou non sollicité, conformément à notre engagement de simplicité, de respect et de discrétion."
-msgstr "You will therefore receive no unnecessary or unsolicited emails, in keeping with our commitment to simplicity, respect, and discretion."
+msgid ""
+"Vous ne recevrez donc aucun e-mail inutile ou non sollicité, conformément à "
+"notre engagement de simplicité, de respect et de discrétion."
+msgstr ""
+"You will therefore receive no unnecessary or unsolicited emails, in keeping "
+"with our commitment to simplicity, respect, and discretion."
 
 #: app_main/templates/main/theme_preferences.html:4
 msgid "Icône du thème"
@@ -666,36 +787,36 @@ msgstr "Theme list"
 msgid "Activer ce thème"
 msgstr "Activate this theme"
 
-#: app_main/views.py:31
+#: app_main/views.py:32
 msgid "Normal"
 msgstr "Default"
 
-#: app_main/views.py:32
+#: app_main/views.py:33
 msgid "Palette chaude et classique pour l'habillage principal."
 msgstr "A warm, classic palette for the main interface."
 
-#: app_main/views.py:36
+#: app_main/views.py:37
 msgid "Scout"
 msgstr "Scout"
 
-#: app_main/views.py:37
+#: app_main/views.py:38
 msgid "Palette plus fraîche, plus nette, avec une ambiance vert-bleu."
 msgstr "A fresher, crisper palette with a teal-blue feel."
 
-#: app_main/views.py:41
+#: app_main/views.py:42
 msgid "Taizé"
 msgstr ""
 
-#: app_main/views.py:42
+#: app_main/views.py:43
 msgid ""
 "Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."
 msgstr "A red and ochre palette inspired by parchment and candlelight."
 
-#: app_main/views.py:46
+#: app_main/views.py:47
 msgid "Me†al"
 msgstr ""
 
-#: app_main/views.py:47
+#: app_main/views.py:48
 msgid "Palette métal avec des néons de couleurs"
 msgstr "A metallic palette with colorful neon accents."
 

@@ -163,7 +163,7 @@
 {% block content_footer %}
     {% if page_mode == "account" %}
         <section class="site-theme-selection" aria-label="{% trans 'Paramètres du profil' %}">
-            {% with current_lang=request.LANGUAGE_CODE|default:"fr"|slice:":2"|lower %}
+            {% with current_lang=current_language|default:"fr"|slice:":2"|lower %}
             <article class="site-theme-card">
                 <header class="site-theme-card-header">
                     <div>
@@ -242,13 +242,20 @@
             </article>
         </section>
     {% else %}
-        <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
-        <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
-        <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
-        <p>
-            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=privacy_label %}
-            <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
-        </p>
+        <section class="site-theme-selection" aria-label="{% trans 'Informations du profil' %}">
+            <article class="site-theme-card">
+                <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}</p>
+                <p>{% trans "Elles ne sont jamais affichées au grand public." %}</p>
+                <p>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
+            </article>
+
+            <article class="site-theme-card">
+                <p>
+                    {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=privacy_label %}
+                    <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
+                </p>
+            </article>
+        </section>
     {% endif %}
 {% endblock %}
 

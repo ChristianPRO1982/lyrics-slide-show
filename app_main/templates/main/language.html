@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% load i18n %}
-{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block title %}{% trans "Langue" %} | Lyrics Slide Show{% endblock %}
 
@@ -33,7 +32,7 @@
                 >
             </picture>
             <span class="site-language-hero-flag" aria-hidden="true">
-                {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
+                {% if current_language|default:"fr"|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
             </span>
         </span>
     </div>
@@ -67,12 +66,12 @@
 {% endblock %}
 
 {% block page_summary %}
-    <p>{% trans "Langue actuelle :" %} {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}🇬🇧 English{% else %}🇫🇷 Français{% endif %}</p>
+    <p>{% trans "Langue actuelle :" %} {% if current_language|default:"fr"|slice:":2"|lower == "en" %}🇬🇧 English{% else %}🇫🇷 Français{% endif %}</p>
 {% endblock %}
 
 {% block content %}
     <section class="site-theme-selection" aria-label="{% trans 'Choix de la langue de l’interface' %}">
-        <article class="site-theme-card{% if CURRENT_LANGUAGE|slice:':2'|lower == 'fr' %} is-active{% endif %}">
+        <article class="site-theme-card{% if current_language|default:'fr'|slice:':2'|lower == 'fr' %} is-active{% endif %}">
             <header class="site-theme-card-header">
                 <div>
                     <h2>🇫🇷 {% trans "Français" %}</h2>
@@ -83,8 +82,8 @@
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{% url 'language' %}">
                 <input type="hidden" name="language" value="fr">
-                <button class="site-theme-select-button" type="submit"{% if CURRENT_LANGUAGE|slice:':2'|lower == 'fr' %} disabled{% endif %}>
-                    {% if CURRENT_LANGUAGE|slice:':2'|lower == 'fr' %}
+                <button class="site-theme-select-button" type="submit"{% if current_language|default:'fr'|slice:':2'|lower == 'fr' %} disabled{% endif %}>
+                    {% if current_language|default:'fr'|slice:':2'|lower == 'fr' %}
                         {% trans "Langue active" %}
                     {% else %}
                         {% trans "Choisir le français" %}
@@ -93,7 +92,7 @@
             </form>
         </article>
 
-        <article class="site-theme-card{% if CURRENT_LANGUAGE|slice:':2'|lower == 'en' %} is-active{% endif %}">
+        <article class="site-theme-card{% if current_language|default:'fr'|slice:':2'|lower == 'en' %} is-active{% endif %}">
             <header class="site-theme-card-header">
                 <div>
                     <h2>🇬🇧 English</h2>
@@ -104,8 +103,8 @@
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{% url 'language' %}">
                 <input type="hidden" name="language" value="en">
-                <button class="site-theme-select-button" type="submit"{% if CURRENT_LANGUAGE|slice:':2'|lower == 'en' %} disabled{% endif %}>
-                    {% if CURRENT_LANGUAGE|slice:':2'|lower == 'en' %}
+                <button class="site-theme-select-button" type="submit"{% if current_language|default:'fr'|slice:':2'|lower == 'en' %} disabled{% endif %}>
+                    {% if current_language|default:'fr'|slice:':2'|lower == 'en' %}
                         {% trans "Langue active" %}
                     {% else %}
                         {% trans "Choisir l’anglais" %}

@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -158,6 +159,7 @@ def account(request: HttpRequest) -> HttpResponse:
             "page_mode": "account",
             "available_themes": AVAILABLE_THEMES,
             "default_theme": AVAILABLE_THEMES[0]["slug"],
+            "current_language": getattr(request, "LANGUAGE_CODE", None) or get_language() or settings.LANGUAGE_CODE,
         },
     )
 
@@ -186,5 +188,8 @@ def language_preferences(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "main/language.html",
-        {"auth_mode": settings.AUTH_MODE},
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "current_language": getattr(request, "LANGUAGE_CODE", None) or get_language() or settings.LANGUAGE_CODE,
+        },
     )

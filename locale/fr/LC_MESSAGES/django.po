@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:39+0200\n"
+"POT-Creation-Date: 2026-04-12 19:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr ""
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:78
 #: app_main/templates/main/connexion.html:156
-#: app_main/templates/main/connexion.html:250
+#: app_main/templates/main/connexion.html:255
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
@@ -121,6 +121,7 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/connexion.html:136
+#: app_main/templates/main/connexion.html:245
 msgid "Informations du profil"
 msgstr ""
 
@@ -129,19 +130,19 @@ msgid "Données personnelles"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:143
-#: app_main/templates/main/connexion.html:245
+#: app_main/templates/main/connexion.html:247
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr ""
 
 #: app_main/templates/main/connexion.html:144
-#: app_main/templates/main/connexion.html:246
+#: app_main/templates/main/connexion.html:248
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr ""
 
 #: app_main/templates/main/connexion.html:145
-#: app_main/templates/main/connexion.html:247
+#: app_main/templates/main/connexion.html:249
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -268,73 +269,73 @@ msgid ""
 "vibe."
 msgstr ""
 
-#: app_main/templates/main/language.html:6
+#: app_main/templates/main/language.html:5
 msgid "Langue"
 msgstr ""
 
-#: app_main/templates/main/language.html:15
-#: app_main/templates/main/language.html:30
-#: app_main/templates/main/language.html:63
+#: app_main/templates/main/language.html:14
+#: app_main/templates/main/language.html:29
+#: app_main/templates/main/language.html:62
 msgid "Choix de la langue"
 msgstr ""
 
-#: app_main/templates/main/language.html:42
+#: app_main/templates/main/language.html:41
 msgid "Portée"
 msgstr ""
 
-#: app_main/templates/main/language.html:46
+#: app_main/templates/main/language.html:45
 msgid ""
 "Ce choix change la langue de Lyrics Slide Show sur cet appareil et dans ce "
 "navigateur."
 msgstr ""
 
-#: app_main/templates/main/language.html:49
+#: app_main/templates/main/language.html:48
 msgid "Ce n’est pas un réglage du profil utilisateur."
 msgstr ""
 
-#: app_main/templates/main/language.html:53
+#: app_main/templates/main/language.html:52
 msgid "Réglage LSS"
 msgstr ""
 
-#: app_main/templates/main/language.html:57
+#: app_main/templates/main/language.html:56
 msgid "La langue s’applique à toute l’interface LSS."
 msgstr ""
 
-#: app_main/templates/main/language.html:66
+#: app_main/templates/main/language.html:65
 msgid ""
 "Passez simplement du français à l’anglais pour toute l’interface du site."
 msgstr ""
 
-#: app_main/templates/main/language.html:70
+#: app_main/templates/main/language.html:69
 msgid "Langue actuelle :"
 msgstr ""
 
-#: app_main/templates/main/language.html:74
+#: app_main/templates/main/language.html:73
 msgid "Choix de la langue de l’interface"
 msgstr ""
 
-#: app_main/templates/main/language.html:78 templates/includes/nav.html:171
+#: app_main/templates/main/language.html:77 templates/includes/nav.html:171
 msgid "Français"
 msgstr ""
 
-#: app_main/templates/main/language.html:79
+#: app_main/templates/main/language.html:78
 msgid "Langue principale de Lyrics Slide Show."
 msgstr ""
 
-#: app_main/templates/main/language.html:88
-#: app_main/templates/main/language.html:109
+#: app_main/templates/main/language.html:87
+#: app_main/templates/main/language.html:108
 msgid "Langue active"
 msgstr ""
 
-#: app_main/templates/main/language.html:90
+#: app_main/templates/main/language.html:89
 msgid "Choisir le français"
 msgstr ""
 
-#: app_main/templates/main/language.html:100
+#: app_main/templates/main/language.html:99
 msgid "Version anglaise de l’interface de Lyrics Slide Show."
 msgstr ""
 
-#: app_main/templates/main/language.html:111
+#: app_main/templates/main/language.html:110
 msgid "Choisir l’anglais"
 msgstr ""
 
@@ -714,36 +715,36 @@ msgstr ""
 msgid "Activer ce thème"
 msgstr ""
 
-#: app_main/views.py:31
+#: app_main/views.py:32
 msgid "Normal"
 msgstr ""
 
-#: app_main/views.py:32
+#: app_main/views.py:33
 msgid "Palette chaude et classique pour l'habillage principal."
 msgstr ""
 
-#: app_main/views.py:36
+#: app_main/views.py:37
 msgid "Scout"
 msgstr ""
 
-#: app_main/views.py:37
+#: app_main/views.py:38
 msgid "Palette plus fraîche, plus nette, avec une ambiance vert-bleu."
 msgstr ""
 
-#: app_main/views.py:41
+#: app_main/views.py:42
 msgid "Taizé"
 msgstr ""
 
-#: app_main/views.py:42
+#: app_main/views.py:43
 msgid ""
 "Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."
 msgstr ""
 
-#: app_main/views.py:46
+#: app_main/views.py:47
 msgid "Me†al"
 msgstr ""
 
-#: app_main/views.py:47
+#: app_main/views.py:48
 msgid "Palette métal avec des néons de couleurs"
 msgstr ""
 
