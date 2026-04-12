@@ -36,6 +36,11 @@ AVAILABLE_THEMES = [
         "label": _("Scout"),
         "description": _("Palette plus fraîche, plus nette, avec une ambiance vert-bleu."),
     },
+    {
+        "slug": "taize",
+        "label": _("Taizé"),
+        "description": _("Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."),
+    },
 ]
 
 

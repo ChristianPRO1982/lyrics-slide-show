@@ -15,6 +15,7 @@ Current themes:
 
 - `normal`
 - `scout`
+- `taize`
 
 ## CSS Rules
 
@@ -22,12 +23,13 @@ Theme stylesheets are:
 
 - [`css/normal.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/normal.css)
 - [`css/scout.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/scout.css)
+- [`css/taize.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/taize.css)
 
 Important rules:
 
 - `normal.css` is the base theme.
-- `scout.css` imports `normal.css` and overrides only what it needs.
-- A user selects the visual theme (`normal` or `scout`).
+- `scout.css` and `taize.css` import `normal.css` and override only what they need.
+- A user selects the visual theme (`normal`, `scout`, or `taize`).
 - The browser controls `light` or `dark` mode automatically through `prefers-color-scheme`.
 - Do not create separate user-selectable themes for `light` and `dark`.
 
@@ -47,7 +49,7 @@ static/icons/ui/normal/128/dark/home.png
 
 Where:
 
-- `<theme>` is `normal` or `scout`
+- `<theme>` is `normal`, `scout`, or `taize`
 - `<size>` is `64`, `128`, or `512`
 - `<mode>` is `light` or `dark`
 

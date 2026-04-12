@@ -284,7 +284,7 @@ This is not a full Markdown engine. The supported syntax is only the subset impl
 
 Explicit focus:
 
-- `initialFocus: "close"` focuses the close cross if it exists
+- `initialFocus: "close"` focuses the close button if it exists
 - `initialFocus: "first-field"` focuses the first field if fields exist
 - `initialFocus: "button:<id>"` focuses that button if it exists
 - `initialFocus: "field:<id>"` focuses that field if it exists
@@ -293,15 +293,15 @@ Default focus fallback order when `initialFocus` is missing or invalid:
 
 1. first field, if fields exist
 2. default `Enter` action button, if it exists
-3. close cross, if it exists
+3. close button, if it exists
 4. first remaining focusable element
 5. dialog panel itself
 
 Implications:
 
-- if the popup has action buttons, the close cross does not receive initial focus by default
-- the close cross remains reachable through `Tab`
-- if the popup has no buttons, the close cross may receive initial focus
+- if the popup has action buttons, the close button does not receive initial focus by default
+- the close button remains reachable through `Tab`
+- if the popup has no buttons, the close button may receive initial focus
 
 ## Keyboard Rules
 
@@ -313,7 +313,7 @@ Focus trap:
 Busy state:
 
 - while a button callback is running, non-Tab keyboard handling is blocked
-- buttons and the close cross are disabled during that busy state
+- buttons and the close button are disabled during that busy state
 
 Escape behavior:
 
@@ -345,7 +345,7 @@ Enter behavior:
 
 - clicking the backdrop does not close the popup
 - clicking the backdrop moves focus back into the popup according to the normal initial-focus logic
-- clicking the close cross closes the popup with:
+- clicking the close button closes the popup with:
 
 ```js
 { reason: "close", buttonId: null, values }
