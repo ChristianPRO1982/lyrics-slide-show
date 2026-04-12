@@ -1,16 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Lyrics Slide Show\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-12 10:15+0200\n"
-"PO-Revision-Date: 2026-04-10 00:00+0000\n"
-"Last-Translator: Codex\n"
-"Language-Team: English\n"
-"Language: en\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: app_main/templates/main/connexion.html:3
 #: app_main/templates/main/connexion.html:89
@@ -20,17 +26,15 @@ msgstr ""
 #: app_main/templates/main/homepage.html:94
 #: app_main/templates/main/privacy_policy.html:4
 #: app_main/templates/main/privacy_policy.html:8
-#, fuzzy
-#| msgid "Cookies et politique de confidentialité"
 msgid "Politique de confidentialité"
-msgstr "Cookies and privacy policy"
+msgstr ""
 
 #: app_main/templates/main/connexion.html:9
 #: app_main/templates/main/connexion.html:17
 #: app_main/templates/main/connexion.html:36
 #: app_main/templates/main/connexion.html:71 templates/includes/nav.html:10
 msgid "Connexion"
-msgstr "Log in"
+msgstr ""
 
 #: app_main/templates/main/connexion.html:15
 msgid "Mode dev"
@@ -49,10 +53,8 @@ msgid "Simulation"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:45
-#, fuzzy
-#| msgid "Ouvrir la navigation"
 msgid "Ouvrir la simulation"
-msgstr "Open navigation"
+msgstr ""
 
 #: app_main/templates/main/connexion.html:47
 #: app_main/templates/main/connexion.html:62
@@ -66,7 +68,7 @@ msgstr ""
 
 #: app_main/templates/main/connexion.html:57 templates/includes/nav.html:9
 msgid "Déconnexion"
-msgstr "Log out"
+msgstr ""
 
 #: app_main/templates/main/connexion.html:60
 msgid "Continuer avec la simulation SSO"
@@ -98,21 +100,19 @@ msgstr ""
 
 #: app_main/templates/main/homepage.html:4 templates/includes/nav.html:20
 msgid "Journal des versions sur GitHub"
-msgstr "Version log on GitHub"
+msgstr ""
 
 #: app_main/templates/main/homepage.html:5 templates/includes/nav.html:21
 msgid "Dernière version publiée"
-msgstr "Latest release"
+msgstr ""
 
 #: app_main/templates/main/homepage.html:99
 msgid "propulsé par cARThographie !"
 msgstr ""
 
 #: app_main/templates/main/homepage.html:101
-#, fuzzy
-#| msgid "Langue principale de Lyrics Slide Show."
 msgid "Lyrics Slide Show"
-msgstr "Main language of Lyrics Slide Show."
+msgstr ""
 
 #: app_main/templates/main/homepage.html:106
 msgid ""
@@ -121,10 +121,8 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/homepage.html:110
-#, fuzzy
-#| msgid "Langue principale de Lyrics Slide Show."
 msgid "Présentation de Lyrics Slide Show"
-msgstr "Main language of Lyrics Slide Show."
+msgstr ""
 
 #: app_main/templates/main/homepage.html:114
 msgid "Projetez. Chantez. Kiffez."
@@ -217,79 +215,77 @@ msgstr ""
 #: app_main/templates/main/language.html:6
 #: app_main/templates/main/language.html:8
 msgid "Langue"
-msgstr "Language"
+msgstr ""
 
 #: app_main/templates/main/language.html:11
 msgid "Choisissez la langue de l’interface."
-msgstr "Choose the interface language."
+msgstr ""
 
 #: app_main/templates/main/language.html:17
 #: app_main/templates/main/language.html:32
 #: app_main/templates/main/language.html:65
 msgid "Choix de la langue"
-msgstr "Language selection"
+msgstr ""
 
 #: app_main/templates/main/language.html:44
 msgid "Portée"
-msgstr "Scope"
+msgstr ""
 
 #: app_main/templates/main/language.html:48
 msgid ""
 "Ce choix change la langue de Lyrics Slide Show sur cet appareil et dans ce "
 "navigateur."
 msgstr ""
-"This choice changes the language of Lyrics Slide Show on this device and in "
-"this browser."
 
 #: app_main/templates/main/language.html:51
 msgid "Ce n’est pas un réglage du profil utilisateur."
-msgstr "This is not a user profile setting."
+msgstr ""
 
 #: app_main/templates/main/language.html:55
 msgid "Réglage LSS"
-msgstr "LSS setting"
+msgstr ""
 
 #: app_main/templates/main/language.html:59
 msgid "La langue s’applique à toute l’interface LSS."
-msgstr "The language applies to the entire LSS interface."
+msgstr ""
 
 #: app_main/templates/main/language.html:68
 msgid ""
 "Passez simplement du français à l’anglais pour toute l’interface du site."
-msgstr "Switch the entire site interface between French and English."
+msgstr ""
 
 #: app_main/templates/main/language.html:72
 msgid "Langue actuelle :"
-msgstr "Current language:"
+msgstr ""
 
 #: app_main/templates/main/language.html:76
 msgid "Choix de la langue de l’interface"
-msgstr "Interface language selection"
+msgstr ""
 
 #: app_main/templates/main/language.html:80 templates/includes/nav.html:171
 msgid "Français"
-msgstr "French"
+msgstr ""
 
 #: app_main/templates/main/language.html:81
 msgid "Langue principale de Lyrics Slide Show."
-msgstr "Main language of Lyrics Slide Show."
+msgstr ""
 
 #: app_main/templates/main/language.html:90
 #: app_main/templates/main/language.html:111
 msgid "Langue active"
-msgstr "Active language"
+msgstr ""
 
 #: app_main/templates/main/language.html:92
 msgid "Choisir le français"
-msgstr "Choose French"
+msgstr ""
 
 #: app_main/templates/main/language.html:102
 msgid "Version anglaise de l’interface de Lyrics Slide Show."
-msgstr "English version of the Lyrics Slide Show interface."
+msgstr ""
 
 #: app_main/templates/main/language.html:113
 msgid "Choisir l’anglais"
-msgstr "Choose English"
+msgstr ""
 
 #: app_main/templates/main/privacy_policy.html:6
 msgid "Informations"
@@ -306,17 +302,15 @@ msgstr ""
 #: app_main/templates/main/theme_preferences.html:7
 #: templates/includes/nav.html:12
 msgid "Thèmes"
-msgstr "Themes"
+msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:9
 msgid "Apparence"
 msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:38
-#, fuzzy
-#| msgid "Thèmes"
 msgid "Les thèmes"
-msgstr "Themes"
+msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:71
 #: app_test/templates/app_test/index.html:34
@@ -342,10 +336,8 @@ msgid "Les changements sont appliqués immédiatement dès la sélection."
 msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:91
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Liste des thèmes"
-msgstr "Songs"
+msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:132
 msgid "Activer ce thème"
@@ -498,10 +490,8 @@ msgid "Sign Up"
 msgstr ""
 
 #: docs/maquette/templates/account/signup.html:9
-#, fuzzy
-#| msgid "Connexion"
 msgid "Connection"
-msgstr "Log in"
+msgstr ""
 
 #: docs/maquette/templates/account/signup.html:25
 #, python-format
@@ -913,59 +903,59 @@ msgstr ""
 
 #: templates/includes/nav.html:4
 msgid "Fermer"
-msgstr "Close"
+msgstr ""
 
 #: templates/includes/nav.html:5
 msgid "Accueil"
-msgstr "Home"
+msgstr ""
 
 #: templates/includes/nav.html:6
 msgid "Liste des groupes"
-msgstr "Groups"
+msgstr ""
 
 #: templates/includes/nav.html:7
 msgid "Liste des chants"
-msgstr "Songs"
+msgstr ""
 
 #: templates/includes/nav.html:8
 msgid "Liste des animations"
-msgstr "Animations"
+msgstr ""
 
 #: templates/includes/nav.html:11
 msgid "Créer un compte"
-msgstr "Create an account"
+msgstr ""
 
 #: templates/includes/nav.html:13
 msgid "Cookies et politique de confidentialité"
-msgstr "Cookies and privacy policy"
+msgstr ""
 
 #: templates/includes/nav.html:14
 msgid "Navigation principale"
-msgstr "Main navigation"
+msgstr ""
 
 #: templates/includes/nav.html:15
 msgid "Profil et préférences"
-msgstr "Profile and preferences"
+msgstr ""
 
 #: templates/includes/nav.html:16
 msgid "Navigation générale"
-msgstr "General navigation"
+msgstr ""
 
 #: templates/includes/nav.html:17
 msgid "Ouvrir la navigation"
-msgstr "Open navigation"
+msgstr ""
 
 #: templates/includes/nav.html:18
 msgid "Compte"
-msgstr "Account"
+msgstr ""
 
 #: templates/includes/nav.html:19
 msgid "Voir mon profil"
-msgstr "View my profile"
+msgstr ""
 
 #: templates/includes/nav.html:24
 msgid "Anglais"
-msgstr "English"
+msgstr ""
 
 #: venv/lib/python3.12/site-packages/_pytest/config/argparsing.py:474
 #, python-format
