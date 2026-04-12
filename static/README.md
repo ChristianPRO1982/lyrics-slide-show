@@ -16,6 +16,7 @@ Current themes:
 - `normal`
 - `scout`
 - `taize`
+- `me†al`
 
 ## CSS Rules
 
@@ -24,12 +25,13 @@ Theme stylesheets are:
 - [`css/normal.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/normal.css)
 - [`css/scout.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/scout.css)
 - [`css/taize.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/taize.css)
+- [`css/me†al.css`](/home/utilisateur/Documents/projects/perso/cARThographie/lyrics-slide-show/static/css/me†al.css)
 
 Important rules:
 
 - `normal.css` is the base theme.
-- `scout.css` and `taize.css` import `normal.css` and override only what they need.
-- A user selects the visual theme (`normal`, `scout`, or `taize`).
+- `scout.css`, `taize.css`, and `me†al.css` import `normal.css` and override only what they need.
+- A user selects the visual theme (`normal`, `scout`, `taize`, or `me†al`).
 - The browser controls `light` or `dark` mode automatically through `prefers-color-scheme`.
 - Do not create separate user-selectable themes for `light` and `dark`.
 
@@ -49,7 +51,7 @@ static/icons/ui/normal/128/dark/home.png
 
 Where:
 
-- `<theme>` is `normal`, `scout`, or `taize`
+- `<theme>` is `normal`, `scout`, `taize`, or `me†al`
 - `<size>` is `64`, `128`, or `512`
 - `<mode>` is `light` or `dark`
 
@@ -106,7 +108,7 @@ When changing themes or icons:
 - keep the business theme choice separate from browser `light/dark`,
 - preserve the folder contract `ui/<theme>/<size>/<mode>/`,
 - avoid hardcoding `normal` inside templates except as a safe fallback,
-- update both `normal` and `scout` asset sets when required,
+- update all registered theme asset sets when required,
 - keep desktop/mobile icon sizes aligned with the current responsive rule.
 
 If this guide conflicts with `docs/`, the documentation in `docs/` remains the source of truth for product intent.

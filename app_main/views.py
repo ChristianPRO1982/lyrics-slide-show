@@ -41,6 +41,11 @@ AVAILABLE_THEMES = [
         "label": _("Taizé"),
         "description": _("Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."),
     },
+    {
+        "slug": "me†al",
+        "label": _("Me†al"),
+        "description": _("Palette métal rose clair avec accents néon bleu et vert, plus tranchée en mode sombre."),
+    },
 ]
 
 
