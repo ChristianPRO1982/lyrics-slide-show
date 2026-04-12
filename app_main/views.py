@@ -44,7 +44,7 @@ AVAILABLE_THEMES = [
     {
         "slug": "me†al",
         "label": _("Me†al"),
-        "description": _("Palette métal rose clair avec accents néon bleu et vert, plus tranchée en mode sombre."),
+        "description": _("Palette métal avec des néons de couleurs"),
     },
 ]
 
