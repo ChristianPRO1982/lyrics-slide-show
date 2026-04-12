@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 10:15+0200\n"
+"POT-Creation-Date: 2026-04-12 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,84 +18,154 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: app_main/templates/main/connexion.html:3
-#: app_main/templates/main/connexion.html:89
+#: app_animation/templates/animation/animations.html:5
+#: app_animation/templates/animation/animations.html:10
+#: app_animation/templates/animation/animations.html:25
+#: app_animation/templates/animation/animations.html:34
+#: templates/includes/nav.html:8
+msgid "Liste des animations"
+msgstr ""
+
+#: app_animation/templates/animation/animations.html:32
+msgid "Animations"
+msgstr ""
+
+#: app_group/templates/group/groups.html:5
+#: app_group/templates/group/groups.html:10
+#: app_group/templates/group/groups.html:25
+#: app_group/templates/group/groups.html:34 templates/includes/nav.html:6
+msgid "Liste des groupes"
+msgstr ""
+
+#: app_group/templates/group/groups.html:32
+msgid "Groupes"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:5
+#: app_main/templates/main/connexion.html:78
+#: app_main/templates/main/connexion.html:156
+#: app_main/templates/main/connexion.html:248
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
 #: app_main/templates/main/homepage.html:94
-#: app_main/templates/main/privacy_policy.html:4
-#: app_main/templates/main/privacy_policy.html:8
+#: app_main/templates/main/privacy_policy.html:5
+#: app_main/templates/main/privacy_policy.html:13
+#: app_main/templates/main/privacy_policy.html:28
+#: app_main/templates/main/privacy_policy.html:38
+#: app_main/templates/main/privacy_policy.html:44
+#: app_main/templates/main/privacy_policy.html:166
 msgid "Politique de confidentialité"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:9
-#: app_main/templates/main/connexion.html:17
-#: app_main/templates/main/connexion.html:36
-#: app_main/templates/main/connexion.html:71 templates/includes/nav.html:10
+#: app_main/templates/main/connexion.html:11
+#: app_main/templates/main/connexion.html:20
+#: app_main/templates/main/connexion.html:66
+#: app_main/templates/main/connexion.html:119 templates/includes/nav.html:10
 msgid "Connexion"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:15
+#: app_main/templates/main/connexion.html:18
 msgid "Mode dev"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:23
+#: app_main/templates/main/connexion.html:27
 msgid "Simulation Keycloak"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:25
+#: app_main/templates/main/connexion.html:29
 msgid "Connexion sécurisée via Keycloak"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:34
-msgid "Simulation"
-msgstr ""
-
-#: app_main/templates/main/connexion.html:45
-msgid "Ouvrir la simulation"
-msgstr ""
-
-#: app_main/templates/main/connexion.html:47
 #: app_main/templates/main/connexion.html:62
-msgid "Continuer avec Keycloak"
-msgstr ""
-
-#: app_main/templates/main/connexion.html:52
+#: app_main/templates/main/connexion.html:91
 #: app_test/templates/app_test/index.html:19
 msgid "Actions"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:57 templates/includes/nav.html:9
+#: app_main/templates/main/connexion.html:64
+msgid "Simulation"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:75
+#: app_main/templates/main/connexion.html:96 templates/includes/nav.html:9
 msgid "Déconnexion"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:60
+#: app_main/templates/main/connexion.html:83
+msgid "Ouvrir la simulation"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:85
+#: app_main/templates/main/connexion.html:101
+msgid "Continuer avec Keycloak"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:99
 msgid "Continuer avec la simulation SSO"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:77
+#: app_main/templates/main/connexion.html:109
+msgid "Paramétrage"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:117
+msgid "Mon profil"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:130
 msgid ""
 "La connexion passe par la structure mère cARThographie, qui fournit "
 "l'identité utilisée ensuite dans l'application avec simplicité et continuité."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:84
+#: app_main/templates/main/connexion.html:136
+msgid "Informations du profil"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:140
+msgid "Données personnelles"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:143
+#: app_main/templates/main/connexion.html:243
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:85
+#: app_main/templates/main/connexion.html:144
+#: app_main/templates/main/connexion.html:244
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:86
+#: app_main/templates/main/connexion.html:145
+#: app_main/templates/main/connexion.html:245
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
 "d'évolution des conditions générales d'utilisation, ou un avertissement "
 "avant suppression d'un compte inactif."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:151
+msgid "Confidentialité"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:165
+msgid "Paramètres du profil"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:169
+#: app_main/templates/main/connexion.html:179
+#: app_main/templates/main/connexion.html:194
+msgid "Langue utilisée"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:209
+#: app_main/templates/main/connexion.html:214
+#: app_main/templates/main/connexion.html:229
+msgid "Thème choisi"
 msgstr ""
 
 #: app_main/templates/main/homepage.html:4 templates/includes/nav.html:20
@@ -157,138 +227,122 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/homepage.html:140
-msgid "Comment ça marche ?"
-msgstr ""
-
-#: app_main/templates/main/homepage.html:143
-msgid "1. Colle tes paroles ou écris-les directement."
-msgstr ""
-
-#: app_main/templates/main/homepage.html:144
-msgid "2. Structure en couplets, refrains et ponts en un clin d’œil."
-msgstr ""
-
-#: app_main/templates/main/homepage.html:145
-msgid "3. Projette tout de suite, ajuste en live si besoin."
-msgstr ""
-
-#: app_main/templates/main/homepage.html:154
 msgid "Ce que tu y gagnes"
 msgstr ""
 
-#: app_main/templates/main/homepage.html:157
+#: app_main/templates/main/homepage.html:143
 msgid "🎤 Des slides propres, sans distractions."
 msgstr ""
 
-#: app_main/templates/main/homepage.html:158
+#: app_main/templates/main/homepage.html:144
 msgid "⚡ Une prise en main immédiate."
 msgstr ""
 
-#: app_main/templates/main/homepage.html:159
+#: app_main/templates/main/homepage.html:145
 msgid "🎶 Des transitions sans coupure dans l’ambiance."
 msgstr ""
 
-#: app_main/templates/main/homepage.html:160
+#: app_main/templates/main/homepage.html:146
 msgid "👥 Une salle qui suit et chante avec toi."
 msgstr ""
 
-#: app_main/templates/main/homepage.html:161
+#: app_main/templates/main/homepage.html:147
 msgid "🎛️ Pilotage au clavier ou pédalier, comme un \\"
 msgstr ""
 
-#: app_main/templates/main/homepage.html:170
+#: app_main/templates/main/homepage.html:156
 msgid "A vous !"
 msgstr ""
 
-#: app_main/templates/main/homepage.html:172
+#: app_main/templates/main/homepage.html:158
 msgid ""
 "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a "
 "jamais perdu le fil. »"
 msgstr ""
 
-#: app_main/templates/main/homepage.html:174
+#: app_main/templates/main/homepage.html:160
 msgid ""
 "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la "
 "vibe."
 msgstr ""
 
 #: app_main/templates/main/language.html:6
-#: app_main/templates/main/language.html:8
 msgid "Langue"
 msgstr ""
 
-#: app_main/templates/main/language.html:11
-msgid "Choisissez la langue de l’interface."
-msgstr ""
-
-#: app_main/templates/main/language.html:17
-#: app_main/templates/main/language.html:32
-#: app_main/templates/main/language.html:65
+#: app_main/templates/main/language.html:15
+#: app_main/templates/main/language.html:30
+#: app_main/templates/main/language.html:63
 msgid "Choix de la langue"
 msgstr ""
 
-#: app_main/templates/main/language.html:44
+#: app_main/templates/main/language.html:42
 msgid "Portée"
 msgstr ""
 
-#: app_main/templates/main/language.html:48
+#: app_main/templates/main/language.html:46
 msgid ""
 "Ce choix change la langue de Lyrics Slide Show sur cet appareil et dans ce "
 "navigateur."
 msgstr ""
 
-#: app_main/templates/main/language.html:51
+#: app_main/templates/main/language.html:49
 msgid "Ce n’est pas un réglage du profil utilisateur."
 msgstr ""
 
-#: app_main/templates/main/language.html:55
+#: app_main/templates/main/language.html:53
 msgid "Réglage LSS"
 msgstr ""
 
-#: app_main/templates/main/language.html:59
+#: app_main/templates/main/language.html:57
 msgid "La langue s’applique à toute l’interface LSS."
 msgstr ""
 
-#: app_main/templates/main/language.html:68
+#: app_main/templates/main/language.html:66
 msgid ""
 "Passez simplement du français à l’anglais pour toute l’interface du site."
 msgstr ""
 
-#: app_main/templates/main/language.html:72
+#: app_main/templates/main/language.html:70
 msgid "Langue actuelle :"
 msgstr ""
 
-#: app_main/templates/main/language.html:76
+#: app_main/templates/main/language.html:74
 msgid "Choix de la langue de l’interface"
 msgstr ""
 
-#: app_main/templates/main/language.html:80 templates/includes/nav.html:171
+#: app_main/templates/main/language.html:78 templates/includes/nav.html:171
 msgid "Français"
 msgstr ""
 
-#: app_main/templates/main/language.html:81
+#: app_main/templates/main/language.html:79
 msgid "Langue principale de Lyrics Slide Show."
 msgstr ""
 
-#: app_main/templates/main/language.html:90
-#: app_main/templates/main/language.html:111
+#: app_main/templates/main/language.html:88
+#: app_main/templates/main/language.html:109
 msgid "Langue active"
 msgstr ""
 
-#: app_main/templates/main/language.html:92
+#: app_main/templates/main/language.html:90
 msgid "Choisir le français"
 msgstr ""
 
-#: app_main/templates/main/language.html:102
+#: app_main/templates/main/language.html:100
 msgid "Version anglaise de l’interface de Lyrics Slide Show."
 msgstr ""
 
-#: app_main/templates/main/language.html:113
+#: app_main/templates/main/language.html:111
 msgid "Choisir l’anglais"
 msgstr ""
 
-#: app_main/templates/main/privacy_policy.html:6
-msgid "Informations"
+#: app_main/templates/main/privacy_policy.html:41
+#: app_main/templates/main/privacy_policy.html:161
+msgid "Dernière mise à jour : 14 novembre 2025"
+msgstr ""
+
+#: app_main/templates/main/privacy_policy.html:47
+msgid "Politique de confidentialité détaillée"
 msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:4
@@ -357,6 +411,35 @@ msgstr ""
 
 #: app_main/views.py:37
 msgid "Palette plus fraîche, plus nette, avec une ambiance vert-bleu."
+msgstr ""
+
+#: app_main/views.py:41
+msgid "Taizé"
+msgstr ""
+
+#: app_main/views.py:42
+msgid ""
+"Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."
+msgstr ""
+
+#: app_main/views.py:46
+msgid "Me†al"
+msgstr ""
+
+#: app_main/views.py:47
+msgid ""
+"Palette métal rose clair avec accents néon bleu et vert, plus tranchée en "
+"mode sombre."
+msgstr ""
+
+#: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:10
+#: app_song/templates/song/songs.html:25 app_song/templates/song/songs.html:34
+#: templates/includes/nav.html:7
+msgid "Liste des chants"
+msgstr ""
+
+#: app_song/templates/song/songs.html:32
+msgid "Chants"
 msgstr ""
 
 #: app_test/templates/app_test/index.html:4
@@ -832,56 +915,56 @@ msgstr ""
 msgid "Or use a third-party"
 msgstr ""
 
-#: templates/base.html:42
+#: templates/base.html:44
 msgid "Fermer la fenêtre"
 msgstr ""
 
-#: templates/base.html:43
+#: templates/base.html:45
 msgid "OK"
 msgstr ""
 
-#: templates/base.html:44
+#: templates/base.html:46
 msgid "Oui"
 msgstr ""
 
-#: templates/base.html:45
+#: templates/base.html:47
 msgid "Non"
 msgstr ""
 
-#: templates/base.html:46
+#: templates/base.html:48
 msgid "Annuler"
 msgstr ""
 
-#: templates/base.html:47
+#: templates/base.html:49
 msgid "Confirmer"
 msgstr ""
 
-#: templates/base.html:48
+#: templates/base.html:50
 msgid "Ce champ est obligatoire."
 msgstr ""
 
-#: templates/base.html:49
+#: templates/base.html:51
 msgid "Veuillez saisir une adresse e-mail valide."
 msgstr ""
 
-#: templates/base.html:50
+#: templates/base.html:52
 msgid "Fenêtre de dialogue"
 msgstr ""
 
-#: templates/base.html:79
+#: templates/base.html:81
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
 msgstr ""
 
-#: templates/base.html:90
+#: templates/base.html:92
 msgid "Section"
 msgstr ""
 
-#: templates/base.html:98
+#: templates/base.html:100
 msgid "Outils"
 msgstr ""
 
-#: templates/base.html:108
+#: templates/base.html:110
 msgid "Structure de la page"
 msgstr ""
 
@@ -907,18 +990,6 @@ msgstr ""
 
 #: templates/includes/nav.html:5
 msgid "Accueil"
-msgstr ""
-
-#: templates/includes/nav.html:6
-msgid "Liste des groupes"
-msgstr ""
-
-#: templates/includes/nav.html:7
-msgid "Liste des chants"
-msgstr ""
-
-#: templates/includes/nav.html:8
-msgid "Liste des animations"
 msgstr ""
 
 #: templates/includes/nav.html:11
