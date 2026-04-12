@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:08+0200\n"
+"POT-Creation-Date: 2026-04-12 18:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,7 +88,8 @@ msgid "Simulation"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:75
-#: app_main/templates/main/connexion.html:96 templates/includes/nav.html:9
+#: app_main/templates/main/connexion.html:96 templates/base.html:50
+#: templates/includes/nav.html:9
 msgid "Déconnexion"
 msgstr ""
 
@@ -939,32 +940,36 @@ msgstr ""
 msgid "Confirmer"
 msgstr ""
 
-#: templates/base.html:50
-msgid "Ce champ est obligatoire."
-msgstr ""
-
 #: templates/base.html:51
-msgid "Veuillez saisir une adresse e-mail valide."
+msgid "Voulez-vous vraiment vous déconnecter du site ?"
 msgstr ""
 
 #: templates/base.html:52
+msgid "Ce champ est obligatoire."
+msgstr ""
+
+#: templates/base.html:53
+msgid "Veuillez saisir une adresse e-mail valide."
+msgstr ""
+
+#: templates/base.html:54
 msgid "Fenêtre de dialogue"
 msgstr ""
 
-#: templates/base.html:81
+#: templates/base.html:83
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
 msgstr ""
 
-#: templates/base.html:92
+#: templates/base.html:94
 msgid "Section"
 msgstr ""
 
-#: templates/base.html:100
+#: templates/base.html:102
 msgid "Outils"
 msgstr ""
 
-#: templates/base.html:110
+#: templates/base.html:112
 msgid "Structure de la page"
 msgstr ""
 

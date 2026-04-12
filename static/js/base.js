@@ -1,6 +1,7 @@
 (() => {
     const root = document.documentElement;
     const themeConfig = window.LSS_THEME_CONFIG || null;
+    const messageBoxI18n = window.LSS_MESSAGE_BOX_CONFIG?.i18n || {};
     const floatingHelpConfig = window.LSS_FLOATING_HELP_CONFIG || {};
     const themeStylesheet = document.querySelector("#site-theme-stylesheet");
     const faviconLink = document.querySelector("#site-favicon");
@@ -170,17 +171,18 @@
             event.preventDefault();
 
             const result = await window.LSSMessageBox.show({
-                title: "Déconnexion",
-                messageMarkdown: "Voulez-vous vraiement vous déconnecter du site ?",
+                title: messageBoxI18n.logoutTitle || "Déconnexion",
+                messageMarkdown:
+                    messageBoxI18n.logoutMessage || "Voulez-vous vraiment vous déconnecter du site ?",
                 buttons: [
                     {
                         id: "yes",
-                        label: "Oui",
+                        label: messageBoxI18n.yesLabel || "Oui",
                         tone: "success",
                     },
                     {
                         id: "no",
-                        label: "Non",
+                        label: messageBoxI18n.noLabel || "Non",
                         tone: "danger",
                     },
                 ],

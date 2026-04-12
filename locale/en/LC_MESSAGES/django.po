@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:08+0200\n"
+"POT-Creation-Date: 2026-04-12 18:15+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -84,7 +84,8 @@ msgid "Simulation"
 msgstr "Demo"
 
 #: app_main/templates/main/connexion.html:75
-#: app_main/templates/main/connexion.html:96 templates/includes/nav.html:9
+#: app_main/templates/main/connexion.html:96 templates/base.html:50
+#: templates/includes/nav.html:9
 msgid "Déconnexion"
 msgstr "Log out"
 
@@ -978,32 +979,36 @@ msgstr "Cancel"
 msgid "Confirmer"
 msgstr "Confirm"
 
-#: templates/base.html:50
+#: templates/base.html:51
+msgid "Voulez-vous vraiment vous déconnecter du site ?"
+msgstr "Do you really want to log out of the site?"
+
+#: templates/base.html:52
 msgid "Ce champ est obligatoire."
 msgstr "This field is required."
 
-#: templates/base.html:51
+#: templates/base.html:53
 msgid "Veuillez saisir une adresse e-mail valide."
 msgstr "Please enter a valid email address."
 
-#: templates/base.html:52
+#: templates/base.html:54
 msgid "Fenêtre de dialogue"
 msgstr "Dialog window"
 
-#: templates/base.html:81
+#: templates/base.html:83
 #: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
 msgstr "Messages"
 
-#: templates/base.html:92
+#: templates/base.html:94
 msgid "Section"
 msgstr "Section"
 
-#: templates/base.html:100
+#: templates/base.html:102
 msgid "Outils"
 msgstr "Tools"
 
-#: templates/base.html:110
+#: templates/base.html:112
 msgid "Structure de la page"
 msgstr "Page structure"
 
