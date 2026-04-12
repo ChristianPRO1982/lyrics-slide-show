@@ -163,12 +163,13 @@
 {% block content_footer %}
     {% if page_mode == "account" %}
         <section class="site-theme-selection" aria-label="{% trans 'Paramètres du profil' %}">
+            {% with current_lang=request.LANGUAGE_CODE|default:"fr"|slice:":2"|lower %}
             <article class="site-theme-card">
                 <header class="site-theme-card-header">
                     <div>
                         <h2>{% trans "Langue utilisée" %}</h2>
                         <p>
-                            {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}
+                            {% if current_lang == "en" %}
                                 English
                             {% else %}
                                 Français
@@ -197,11 +198,12 @@
                             >
                         </picture>
                         <span class="site-language-hero-flag" aria-hidden="true" style="font-size: clamp(1rem, 3vw, 1.5rem);">
-                            {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
+                            {% if current_lang == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
                         </span>
                     </span>
                 </header>
             </article>
+            {% endwith %}
 
             <article class="site-theme-card">
                 <header class="site-theme-card-header">

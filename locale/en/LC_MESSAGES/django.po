@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:15+0200\n"
+"POT-Creation-Date: 2026-04-12 18:21+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -40,7 +40,7 @@ msgstr ""
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:78
 #: app_main/templates/main/connexion.html:156
-#: app_main/templates/main/connexion.html:248
+#: app_main/templates/main/connexion.html:250
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
@@ -104,13 +104,11 @@ msgstr "Continue with the SSO demo"
 
 #: app_main/templates/main/connexion.html:109
 msgid "Paramétrage"
-msgstr ""
+msgstr "Settings"
 
 #: app_main/templates/main/connexion.html:117
-#, fuzzy
-#| msgid "Voir mon profil"
 msgid "Mon profil"
-msgstr "View my profile"
+msgstr "My profile"
 
 #: app_main/templates/main/connexion.html:130
 msgid ""
@@ -121,29 +119,27 @@ msgstr ""
 "identity then used throughout the app for a smooth, consistent experience."
 
 #: app_main/templates/main/connexion.html:136
-#, fuzzy
-#| msgid "Informations"
 msgid "Informations du profil"
-msgstr "Information"
+msgstr "Profile information"
 
 #: app_main/templates/main/connexion.html:140
 msgid "Données personnelles"
-msgstr ""
+msgstr "Personal information"
 
 #: app_main/templates/main/connexion.html:143
-#: app_main/templates/main/connexion.html:243
+#: app_main/templates/main/connexion.html:245
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr "Personal data is used only for sign-in and group management."
 
 #: app_main/templates/main/connexion.html:144
-#: app_main/templates/main/connexion.html:244
+#: app_main/templates/main/connexion.html:246
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr "It is never displayed publicly."
 
 #: app_main/templates/main/connexion.html:145
-#: app_main/templates/main/connexion.html:245
+#: app_main/templates/main/connexion.html:247
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -155,30 +151,24 @@ msgstr ""
 "before an inactive account is deleted."
 
 #: app_main/templates/main/connexion.html:151
-#, fuzzy
-#| msgid "Politique de confidentialité"
 msgid "Confidentialité"
-msgstr "Privacy policy"
+msgstr "Privacy"
 
 #: app_main/templates/main/connexion.html:165
 msgid "Paramètres du profil"
-msgstr ""
+msgstr "Profile settings"
 
-#: app_main/templates/main/connexion.html:169
-#: app_main/templates/main/connexion.html:179
-#: app_main/templates/main/connexion.html:194
-#, fuzzy
-#| msgid "Langue active"
+#: app_main/templates/main/connexion.html:170
+#: app_main/templates/main/connexion.html:180
+#: app_main/templates/main/connexion.html:195
 msgid "Langue utilisée"
-msgstr "Active language"
+msgstr "Language in use"
 
-#: app_main/templates/main/connexion.html:209
-#: app_main/templates/main/connexion.html:214
-#: app_main/templates/main/connexion.html:229
-#, fuzzy
-#| msgid "Thèmes"
+#: app_main/templates/main/connexion.html:211
+#: app_main/templates/main/connexion.html:216
+#: app_main/templates/main/connexion.html:231
 msgid "Thème choisi"
-msgstr "Themes"
+msgstr "Selected theme"
 
 #: app_main/templates/main/homepage.html:4 templates/includes/nav.html:20
 msgid "Journal des versions sur GitHub"
@@ -267,12 +257,11 @@ msgid "👥 Une salle qui suit et chante avec toi."
 msgstr "👥 A room that can follow along and sing with you."
 
 #: app_main/templates/main/homepage.html:147
-#, fuzzy
-#| msgid ""
-#| "🎛️ Pilotage au clavier ou pédalier, comme un \"tourne-page\" pour "
-#| "musiciens 👢"
-msgid "🎛️ Pilotage au clavier ou pédalier, comme un \\"
-msgstr "🎛️ Keyboard or pedal control, like a page-turner for musicians 👢"
+msgid ""
+"🎛️ Pilotage au clavier ou pédalier, comme un \"tourne-page\" pour musiciens 👢"
+msgstr ""
+"🎛️ Control it from a keyboard or foot pedal, like a page-turner for musicians "
+"👢"
 
 #: app_main/templates/main/homepage.html:156
 msgid "A vous !"

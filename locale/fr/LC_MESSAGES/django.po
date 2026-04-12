@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 18:15+0200\n"
+"POT-Creation-Date: 2026-04-12 18:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr ""
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:78
 #: app_main/templates/main/connexion.html:156
-#: app_main/templates/main/connexion.html:248
+#: app_main/templates/main/connexion.html:250
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
@@ -129,19 +129,19 @@ msgid "Données personnelles"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:143
-#: app_main/templates/main/connexion.html:243
+#: app_main/templates/main/connexion.html:245
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr ""
 
 #: app_main/templates/main/connexion.html:144
-#: app_main/templates/main/connexion.html:244
+#: app_main/templates/main/connexion.html:246
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr ""
 
 #: app_main/templates/main/connexion.html:145
-#: app_main/templates/main/connexion.html:245
+#: app_main/templates/main/connexion.html:247
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -157,15 +157,15 @@ msgstr ""
 msgid "Paramètres du profil"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:169
-#: app_main/templates/main/connexion.html:179
-#: app_main/templates/main/connexion.html:194
+#: app_main/templates/main/connexion.html:170
+#: app_main/templates/main/connexion.html:180
+#: app_main/templates/main/connexion.html:195
 msgid "Langue utilisée"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:209
-#: app_main/templates/main/connexion.html:214
-#: app_main/templates/main/connexion.html:229
+#: app_main/templates/main/connexion.html:211
+#: app_main/templates/main/connexion.html:216
+#: app_main/templates/main/connexion.html:231
 msgid "Thème choisi"
 msgstr ""
 
@@ -248,7 +248,8 @@ msgid "👥 Une salle qui suit et chante avec toi."
 msgstr ""
 
 #: app_main/templates/main/homepage.html:147
-msgid "🎛️ Pilotage au clavier ou pédalier, comme un \\"
+msgid ""
+"🎛️ Pilotage au clavier ou pédalier, comme un \"tourne-page\" pour musiciens 👢"
 msgstr ""
 
 #: app_main/templates/main/homepage.html:156
