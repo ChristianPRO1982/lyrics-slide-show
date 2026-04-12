@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 {% trans "Politique de confidentialité" as privacy_label %}
 
 {% block title %}
@@ -11,7 +13,8 @@
 {% endblock %}
 
 {% block section_title %}
-    {% if auth_mode == "mock" %}
+    {% if page_mode == "account" %}
+    {% elif auth_mode == "mock" %}
         {% trans "Mode dev" %}
     {% else %}
         {% trans "Connexion" %}
@@ -19,7 +22,8 @@
 {% endblock %}
 
 {% block section_intro %}
-    {% if auth_mode == "mock" %}
+    {% if page_mode == "account" %}
+    {% elif auth_mode == "mock" %}
         <p>{% trans "Simulation Keycloak" %}</p>
     {% else %}
         <p>{% trans "Connexion sécurisée via Keycloak" %}</p>
@@ -27,10 +31,36 @@
 {% endblock %}
 
 {% block section_nav %}
+    {% if page_mode == "account" %}
+        <div class="site-home-media">
+            <picture data-theme-icon="account" data-theme-alt="{{ request.user.username }}">
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="dark"
+                    srcset="{% static 'icons/ui/normal/512/dark/account.png' %}"
+                    media="(prefers-color-scheme: dark)"
+                >
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                    srcset="{% static 'icons/ui/normal/512/light/account.png' %}"
+                    media="(prefers-color-scheme: light)"
+                >
+                <img
+                    src="{% static 'icons/ui/normal/512/light/account.png' %}"
+                    alt="{{ request.user.username }}"
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                >
+            </picture>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block tools_title %}
-    {% if auth_mode == "mock" %}
+    {% if page_mode == "account" %}
+        {% trans "Actions" %}
+    {% elif auth_mode == "mock" %}
         {% trans "Simulation" %}
     {% else %}
         {% trans "Connexion" %}
@@ -40,13 +70,22 @@
 {% block tools_intro %}{% endblock %}
 
 {% block page_tools %}
-    <div>
-        {% if auth_mode == "mock" %}
-            <a href="{% url 'login' %}?start=1">{% trans "Ouvrir la simulation" %}</a>
-        {% else %}
-            <a href="{% url 'login' %}?start=1">{% trans "Continuer avec Keycloak" %}</a>
-        {% endif %}
-    </div>
+    {% if page_mode == "account" %}
+        <div>
+            <a href="{% url 'logout' %}" data-lss-logout-confirm="true">{% trans "Déconnexion" %}</a>
+        </div>
+        <div>
+            <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
+        </div>
+    {% else %}
+        <div>
+            {% if auth_mode == "mock" %}
+                <a href="{% url 'login' %}?start=1">{% trans "Ouvrir la simulation" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}?start=1">{% trans "Continuer avec Keycloak" %}</a>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Actions" %}{% endblock %}
@@ -65,27 +104,170 @@
     </div>
 {% endblock %}
 
-{% block page_kicker %}cARThographie{% endblock %}
+{% block page_kicker %}
+    {% if page_mode == "account" %}
+        {% trans "Paramétrage" %}
+    {% else %}
+        cARThographie
+    {% endif %}
+{% endblock %}
 
 {% block page_title %}
-    {% trans "Connexion" %}
+    {% if page_mode == "account" %}
+        {% trans "Mon profil" %}
+    {% else %}
+        {% trans "Connexion" %}
+    {% endif %}
 {% endblock %}
 
 {% block page_intro %}{% endblock %}
 
 {% block page_summary %}
-    <p>{% trans "La connexion passe par la structure mère cARThographie, qui fournit l'identité utilisée ensuite dans l'application avec simplicité et continuité." %}</p>
+    {% if page_mode == "account" %}
+        <p><strong>{{ request.user.username }}</strong></p>
+        <p>{{ request.user.first_name }} {{ request.user.last_name }}</p>
+    {% else %}
+        <p>{% trans "La connexion passe par la structure mère cARThographie, qui fournit l'identité utilisée ensuite dans l'application avec simplicité et continuité." %}</p>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
+    {% if page_mode == "account" %}
+        <section class="site-theme-selection" aria-label="{% trans 'Informations du profil' %}">
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Données personnelles" %}</h2>
+                    </div>
+                </header>
+                <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}</p>
+                <p>{% trans "Elles ne sont jamais affichées au grand public." %}</p>
+                <p>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
+            </article>
+
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Confidentialité" %}</h2>
+                    </div>
+                    {% include "includes/themed_icon.html" with picture_class="site-theme-card-icon" img_class="" icon_name="cookies" icon_alt=privacy_label %}
+                </header>
+                <p>
+                    <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
+                </p>
+            </article>
+        </section>
+    {% endif %}
 {% endblock %}
 
 {% block content_footer %}
-    <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
-    <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
-    <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
-    <p>
-        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=privacy_label %}
-        <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
-    </p>
+    {% if page_mode == "account" %}
+        <section class="site-theme-selection" aria-label="{% trans 'Paramètres du profil' %}">
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Langue utilisée" %}</h2>
+                        <p>
+                            {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}
+                                English
+                            {% else %}
+                                Français
+                            {% endif %}
+                        </p>
+                    </div>
+                    <span class="site-language-hero" style="margin-inline: 0 0;">
+                        <picture class="site-theme-card-icon" data-theme-icon="button" data-theme-alt="{% trans 'Langue utilisée' %}">
+                            <source
+                                data-theme-size="128"
+                                data-theme-mode="dark"
+                                srcset="{% static 'icons/ui/normal/128/dark/button.png' %}"
+                                media="(prefers-color-scheme: dark)"
+                            >
+                            <source
+                                data-theme-size="128"
+                                data-theme-mode="light"
+                                srcset="{% static 'icons/ui/normal/128/light/button.png' %}"
+                                media="(prefers-color-scheme: light)"
+                            >
+                            <img
+                                src="{% static 'icons/ui/normal/128/light/button.png' %}"
+                                alt="{% trans 'Langue utilisée' %}"
+                                data-theme-size="128"
+                                data-theme-mode="light"
+                            >
+                        </picture>
+                        <span class="site-language-hero-flag" aria-hidden="true" style="font-size: clamp(1rem, 3vw, 1.5rem);">
+                            {% if CURRENT_LANGUAGE|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
+                        </span>
+                    </span>
+                </header>
+            </article>
+
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Thème choisi" %}</h2>
+                        <p id="account-theme-name" data-theme-default="{{ default_theme }}">
+                            {{ available_themes.0.label }}
+                        </p>
+                    </div>
+                    <picture class="site-theme-card-icon" data-theme-icon="theme" data-theme-alt="{% trans 'Thème choisi' %}">
+                        <source
+                            data-theme-size="128"
+                            data-theme-mode="dark"
+                            srcset="{% static 'icons/ui/normal/128/dark/theme.png' %}"
+                            media="(prefers-color-scheme: dark)"
+                        >
+                        <source
+                            data-theme-size="128"
+                            data-theme-mode="light"
+                            srcset="{% static 'icons/ui/normal/128/light/theme.png' %}"
+                            media="(prefers-color-scheme: light)"
+                        >
+                        <img
+                            src="{% static 'icons/ui/normal/128/light/theme.png' %}"
+                            alt="{% trans 'Thème choisi' %}"
+                            data-theme-size="128"
+                            data-theme-mode="light"
+                        >
+                    </picture>
+                </header>
+                <div hidden id="account-theme-labels">
+                    {% for theme in available_themes %}
+                        <span data-theme-slug="{{ theme.slug }}" data-theme-label="{{ theme.label }}"></span>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+    {% else %}
+        <p>{% trans "Les données personnelles demandées servent uniquement à la connexion et à la gestion des groupes." %}
+        <br><br>{% trans "Elles ne sont jamais affichées au grand public." %}
+        <br><br>{% trans "L'adresse e-mail est utilisée seulement pour la gestion du compte, par exemple pour la récupération du mot de passe, l'information en cas d'évolution des conditions générales d'utilisation, ou un avertissement avant suppression d'un compte inactif." %}</p>
+        <p>
+            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=privacy_label %}
+            <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
+        </p>
+    {% endif %}
+{% endblock %}
+
+{% block page_scripts %}
+    {% if page_mode == "account" %}
+        <script>
+            (() => {
+                const themeName = document.getElementById("account-theme-name");
+                const labelsRoot = document.getElementById("account-theme-labels");
+
+                if (!themeName || !labelsRoot) {
+                    return;
+                }
+
+                const activeTheme = document.documentElement.dataset.theme || themeName.dataset.themeDefault || "normal";
+                const labelNode = labelsRoot.querySelector(`[data-theme-slug="${activeTheme}"]`);
+
+                if (labelNode) {
+                    themeName.textContent = labelNode.dataset.themeLabel || activeTheme;
+                }
+            })();
+        </script>
+    {% endif %}
 {% endblock %}

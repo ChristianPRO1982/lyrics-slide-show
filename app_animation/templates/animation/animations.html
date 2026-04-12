@@ -1,10 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
+{% load i18n %}
 
-{% block title %}Animations{% endblock %}
-{% block section_title %}Animations{% endblock %}
-{% block tools_title %}Animations{% endblock %}
-{% block page_kicker %}Animations{% endblock %}
-{% block page_title %}Animations{% endblock %}
+{% block title %}{% trans "Liste des animations" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% endblock %}
+{% block section_intro %}{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/animations.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/animations.png' %}"
+                alt="{% trans 'Liste des animations' %}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_kicker %}Lyrics Slide Show{% endblock %}
+{% block page_title %}{% trans "Liste des animations" %}{% endblock %}
 {% block content %}
     <section>
         <h2>Animations</h2>

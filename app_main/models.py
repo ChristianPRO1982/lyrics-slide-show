@@ -27,3 +27,19 @@ class SiteParams(models.Model):
 
     class Meta:
         db_table = 'lss"."site_params'
+
+
+class DirectoryUserRecord(models.Model):
+    id = models.UUIDField(primary_key=True)
+    username = models.CharField(max_length=255, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=True, blank=True)
+    enabled = models.BooleanField(default=True)
+    email_verified = models.BooleanField(default=False)
+    synced_at = models.TimeField(null=True, blank=True)
+    last_login_at = models.TimeField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'users"."users'

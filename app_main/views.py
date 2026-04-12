@@ -156,6 +156,8 @@ def account(request: HttpRequest) -> HttpResponse:
             "auth_mode": settings.AUTH_MODE,
             "session_user": get_session_user(request.session),
             "page_mode": "account",
+            "available_themes": AVAILABLE_THEMES,
+            "default_theme": AVAILABLE_THEMES[0]["slug"],
         },
     )
 

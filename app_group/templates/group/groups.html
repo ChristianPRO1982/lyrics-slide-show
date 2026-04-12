@@ -1,10 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
+{% load i18n %}
 
-{% block title %}Groups{% endblock %}
-{% block section_title %}Groups{% endblock %}
-{% block tools_title %}Groups{% endblock %}
-{% block page_kicker %}Groups{% endblock %}
-{% block page_title %}Groups{% endblock %}
+{% block title %}{% trans "Liste des groupes" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% endblock %}
+{% block section_intro %}{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="groups" data-theme-alt="{% trans 'Liste des groupes' %}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/groups.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/groups.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/groups.png' %}"
+                alt="{% trans 'Liste des groupes' %}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Groupes" %}{% endblock %}
+{% block page_kicker %}Lyrics Slide Show{% endblock %}
+{% block page_title %}{% trans "Liste des groupes" %}{% endblock %}
 {% block content %}
     <section>
         <h2>Groups</h2>

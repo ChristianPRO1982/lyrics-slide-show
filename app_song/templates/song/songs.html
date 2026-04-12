@@ -1,10 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
+{% load i18n %}
 
-{% block title %}Songs{% endblock %}
-{% block section_title %}Songs{% endblock %}
-{% block tools_title %}Songs{% endblock %}
-{% block page_kicker %}Songs{% endblock %}
-{% block page_title %}Songs{% endblock %}
+{% block title %}{% trans "Liste des chants" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% endblock %}
+{% block section_intro %}{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Liste des chants' %}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/songs.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/songs.png' %}"
+                alt="{% trans 'Liste des chants' %}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Chants" %}{% endblock %}
+{% block page_kicker %}Lyrics Slide Show{% endblock %}
+{% block page_title %}{% trans "Liste des chants" %}{% endblock %}
 {% block content %}
     <section>
         <h2>Songs</h2>

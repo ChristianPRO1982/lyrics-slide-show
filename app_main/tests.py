@@ -12,10 +12,12 @@ from app_main.auth import (
     UnknownUserError,
     build_keycloak_logout_url,
     get_directory_user,
+    refresh_request_user,
     sign_callback_data,
     validate_keycloak_callback,
     validate_callback_payload,
 )
+from app_main.models import DirectoryUserRecord
 
 
 class CallbackValidationTests(SimpleTestCase):
@@ -98,6 +100,35 @@ class CallbackValidationTests(SimpleTestCase):
 
 
 class DirectoryUserLookupTests(TestCase):
+    @patch("app_main.auth.DirectoryUserRecord.objects.get")
+    def test_get_directory_user_returns_enabled_user(self, get_mock):
+        get_mock.return_value = type(
+            "DirectoryUserRecordStub",
+            (),
+            {
+                "id": "11111111-1111-1111-1111-111111111111",
+                "username": "known.user",
+                "email": "known.user@example.test",
+                "first_name": "Known",
+                "last_name": "User",
+                "enabled": True,
+            },
+        )()
+
+        user = get_directory_user("11111111-1111-1111-1111-111111111111")
+
+        self.assertEqual(user.username, "known.user")
+
+    @patch("app_main.auth.DirectoryUserRecord.objects.get", side_effect=Exception("boom"))
+    def test_get_directory_user_propagates_unexpected_orm_error(self, _get_mock):
+        with self.assertRaisesMessage(Exception, "boom"):
+            get_directory_user("11111111-1111-1111-1111-111111111111")
+
+    @patch("app_main.auth.DirectoryUserRecord.objects.get", side_effect=DirectoryUserRecord.DoesNotExist)
+    def test_get_directory_user_raises_unknown_user(self, _get_mock):
+        with self.assertRaises(UnknownUserError):
+            get_directory_user("11111111-1111-1111-1111-111111111111")
+
     def _patch_cursor(self, cursor_factory, fetchone_values):
         cursor = MagicMock()
         cursor.fetchone.side_effect = fetchone_values
@@ -105,7 +136,7 @@ class DirectoryUserLookupTests(TestCase):
         return cursor
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_returns_enabled_user(self, cursor_factory):
+    def test_get_directory_user_returns_enabled_user_with_sql_fallback(self, cursor_factory):
         cursor = self._patch_cursor(
             cursor_factory,
             [
@@ -121,22 +152,22 @@ class DirectoryUserLookupTests(TestCase):
             ],
         )
 
-        with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
+        with self.settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users"):
             user = get_directory_user("11111111-1111-1111-1111-111111111111")
 
         self.assertEqual(user.username, "known.user")
         self.assertEqual(cursor.execute.call_count, 2)
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_raises_unknown_user(self, cursor_factory):
+    def test_get_directory_user_raises_unknown_user_with_sql_fallback(self, cursor_factory):
         self._patch_cursor(cursor_factory, [(1,), None])
 
-        with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
+        with self.settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users"):
             with self.assertRaises(UnknownUserError):
                 get_directory_user("missing")
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_raises_disabled_user(self, cursor_factory):
+    def test_get_directory_user_raises_disabled_user_with_sql_fallback(self, cursor_factory):
         self._patch_cursor(
             cursor_factory,
             [
@@ -152,7 +183,7 @@ class DirectoryUserLookupTests(TestCase):
             ],
         )
 
-        with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
+        with self.settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users"):
             with self.assertRaises(DisabledUserError):
                 get_directory_user("22222222-2222-2222-2222-222222222222")
 
@@ -173,10 +204,49 @@ class DirectoryUserLookupTests(TestCase):
             ],
         )
 
-        with self.settings(USER_SCHEMA="users", USER_TABLE="users"):
+        with self.settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users"):
             user = get_directory_user("11111111-1111-1111-1111-111111111111")
 
         self.assertEqual(user.username, "known.user")
+
+
+class RequestUserRefreshTests(SimpleTestCase):
+    @patch("app_main.auth.get_directory_user")
+    def test_refresh_request_user_reloads_connected_user_from_directory(self, get_directory_user_mock):
+        get_directory_user_mock.return_value.to_session_dict.return_value = {
+            "external_id": "11111111-1111-1111-1111-111111111111",
+            "username": "fresh.user",
+            "email": "fresh.user@example.test",
+            "first_name": "Fresh",
+            "last_name": "User",
+        }
+
+        session = {
+            "lss_user": {
+                "external_id": "11111111-1111-1111-1111-111111111111",
+                "username": "stale.user",
+            }
+        }
+
+        user = refresh_request_user(session)
+
+        self.assertTrue(user.is_authenticated)
+        self.assertEqual(user.username, "fresh.user")
+        self.assertEqual(session["lss_user"]["username"], "fresh.user")
+
+    @patch("app_main.auth.get_directory_user", side_effect=DisabledUserError("This user is disabled in users.users."))
+    def test_refresh_request_user_clears_session_when_directory_user_is_disabled(self, _get_directory_user_mock):
+        session = {
+            "lss_user": {
+                "external_id": "11111111-1111-1111-1111-111111111111",
+                "username": "known.user",
+            }
+        }
+
+        user = refresh_request_user(session)
+
+        self.assertFalse(user.is_authenticated)
+        self.assertNotIn("lss_user", session)
 
 
 class AuthFlowTests(TestCase):

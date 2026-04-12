@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.db import connection
 
+from app_main.models import DirectoryUserRecord
 
 SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
@@ -310,21 +311,14 @@ def _user_table_has_column(column_name: str) -> bool:
         return cursor.fetchone() is not None
 
 
-def get_directory_user(external_id: str) -> DirectoryUser:
-    with connection.cursor() as cursor:
-        cursor.execute(_user_lookup_sql(), [external_id])
-        row = cursor.fetchone()
-
-    if row is None:
-        raise UnknownUserError("No matching user found in users.users.")
-
+def _directory_user_from_record(record: DirectoryUserRecord) -> DirectoryUser:
     user = DirectoryUser(
-        external_id=row[0],
-        username=row[1],
-        email=row[2],
-        first_name=row[3],
-        last_name=row[4],
-        enabled=row[5],
+        external_id=str(record.id),
+        username=record.username or "",
+        email=record.email,
+        first_name=record.first_name,
+        last_name=record.last_name,
+        enabled=record.enabled,
     )
 
     if not user.enabled:
@@ -333,14 +327,46 @@ def get_directory_user(external_id: str) -> DirectoryUser:
     return user
 
 
+def get_directory_user(external_id: str) -> DirectoryUser:
+    try:
+        normalized_id = uuid.UUID(str(external_id))
+    except (TypeError, ValueError) as exc:
+        raise UnknownUserError("No matching user found in users.users.") from exc
+
+    if settings.USER_SCHEMA == "users" and settings.USER_TABLE == "users":
+        try:
+            record = DirectoryUserRecord.objects.get(pk=normalized_id)
+        except DirectoryUserRecord.DoesNotExist as exc:
+            raise UnknownUserError("No matching user found in users.users.") from exc
+        return _directory_user_from_record(record)
+
+    with connection.cursor() as cursor:
+        cursor.execute(_user_lookup_sql(), [str(normalized_id)])
+        row = cursor.fetchone()
+
+    if row is None:
+        raise UnknownUserError("No matching user found in users.users.")
+
+    return _directory_user_from_record(
+        DirectoryUserRecord(
+            id=uuid.UUID(row[0]),
+            username=row[1],
+            email=row[2],
+            first_name=row[3],
+            last_name=row[4],
+            enabled=row[5],
+        )
+    )
+
+
 def store_session_user(session, user: DirectoryUser) -> None:
     session[SESSION_USER_KEY] = user.to_session_dict()
-    session.modified = True
+    _mark_session_modified(session)
 
 
 def clear_session_user(session) -> None:
     session.pop(SESSION_USER_KEY, None)
-    session.modified = True
+    _mark_session_modified(session)
 
 
 def get_session_user(session) -> dict[str, Any] | None:
@@ -359,3 +385,23 @@ def get_request_user(session) -> SessionUser | AnonymousUser:
         first_name=session_user.get("first_name"),
         last_name=session_user.get("last_name"),
     )
+
+
+def refresh_request_user(session) -> SessionUser | AnonymousUser:
+    session_user = get_session_user(session)
+    if not session_user:
+        return AnonymousUser()
+
+    external_id = session_user.get("external_id")
+    if not external_id:
+        clear_session_user(session)
+        return AnonymousUser()
+
+    try:
+        user = get_directory_user(external_id)
+    except (UnknownUserError, DisabledUserError):
+        clear_session_user(session)
+        return AnonymousUser()
+
+    store_session_user(session, user)
+    return get_request_user(session)
