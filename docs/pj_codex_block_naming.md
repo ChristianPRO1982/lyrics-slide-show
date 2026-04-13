@@ -41,7 +41,7 @@ Préférer :
 | `panneau section` | panneau latéral | oui | `section_title`, `section_intro`, `section_nav` | `<section class="site-panel site-section-panel">` | navigation ou structure de la section courante |
 | `panneau outils` | panneau latéral | oui | `tools_title`, `tools_intro`, `page_tools` | `<section class="site-panel site-tools-panel">` | actions, raccourcis, outils, liens pratiques |
 | `panneau principal` | conteneur principal | oui | englobe `page_kicker`, `page_title`, `page_intro`, `page_summary`, `content`, `content_footer` | `<main class="site-panel site-main-panel">` | zone centrale complète de la page |
-| `panneau mobile` | panneau latéral mobile | oui | `mobile_title`, `mobile_intro`, `mobile_nav` | `<section class="site-panel site-mobile-side">` | navigation et actions condensées pour la mise en page mobile |
+| `panneau mobile` | panneau latéral mobile | oui | `mobile_side_title`, `mobile_side_intro`, `mobile_side_content` | `<section class="site-panel site-mobile-side">` | navigation et actions condensées pour la mise en page mobile |
 | `en-tête principal` | sous-bloc du panneau principal | oui | `page_kicker`, `page_title`, `page_intro` | `<div class="site-main-heading">` | sur-titre, titre principal, texte d’introduction |
 | `encadré résumé` | sous-bloc du panneau principal | oui | `page_summary` | `<div class="site-main-aside">` | résumé, aide courte, mémo, informations secondaires |
 | `contenu principal` | zone de contenu | oui | `content` | `<section class="site-main-content">` | corps principal de la page |
@@ -112,9 +112,9 @@ Nom à utiliser :
 
 Sous-parties nommables :
 
-- `titre du panneau mobile` pour `mobile_title`
-- `intro du panneau mobile` pour `mobile_intro`
-- `contenu du panneau mobile` pour `mobile_nav`
+- `titre du panneau mobile` pour `mobile_side_title`
+- `intro du panneau mobile` pour `mobile_side_intro`
+- `contenu du panneau mobile` pour `mobile_side_content`
 
 Usages typiques :
 
@@ -196,7 +196,7 @@ Usages typiques :
 Règle :
 
 - ce bloc est optionnel ;
-- s’il est vide, il n’apparaît pas.
+- s’il est vide, il reste présent dans la structure mais sans contenu utile.
 
 ### Carte de thème
 

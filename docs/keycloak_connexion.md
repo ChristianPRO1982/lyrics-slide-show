@@ -180,7 +180,7 @@ Manual verification:
 
 1. open `http://localhost:8000`
 2. verify `Guest`
-3. click `Login with mock auth`
+3. click the mock login entrypoint currently labeled `Ouvrir la simulation`
 4. choose a user in `auth_mock`
 5. return to `LSS`
 6. verify `Connected` or a clear refusal

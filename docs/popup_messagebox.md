@@ -25,9 +25,11 @@ The promise resolves with:
   reason: "button" | "close" | "escape" | "programmatic",
   buttonId: string | null,
   values: { [fieldId]: string },
-  payload: unknown
+  payload?: unknown
 }
 ```
+
+`payload` is present only when the popup is closed through `close(payload)` inside a button callback or through `window.LSSMessageBox.close(result)`.
 
 ### `window.LSSMessageBox.alert(config)`
 
@@ -267,6 +269,7 @@ Security and sanitization rules:
   - `tel:`
   - local anchors starting with `#`
   - local paths starting with `/`, `./`, or `../`
+  - relative URLs that resolve safely against the current page
 - invalid links are rendered as plain escaped text
 
 This is not a full Markdown engine. The supported syntax is only the subset implemented in `static/js/message_box.js`.
