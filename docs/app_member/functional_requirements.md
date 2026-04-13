@@ -1,0 +1,292 @@
+# App Member Functional Requirements
+
+## Purpose
+
+This document defines the functional requirements for `app_member`.
+
+`app_member` is the Django app responsible for member-specific persistent preferences inside `Lyrics Slide Show`.
+
+It is written for implementation agents based on LLM tools such as `Codex`, `Claude Code`, `Codestral`, and similar coding assistants. It must be treated as a functional specification, not as a brainstorming note.
+
+## Functional Role Of `app_member`
+
+`app_member` is not an identity provider and is not a personal profile management app.
+
+Its role is limited to storing and serving persistent member preferences required for the use of `Lyrics Slide Show`.
+
+At this stage, the app covers:
+
+- the persistent visual theme chosen by an authenticated member,
+- the persistent state of the central `songs` search form for authenticated members.
+
+## Scope Boundaries
+
+### In Scope
+
+- persistent preferences for authenticated members only,
+- preferences that affect the whole `Lyrics Slide Show` service,
+- preferences related to the central `songs` search,
+- storage of those preferences in schema `lss`.
+
+### Out Of Scope
+
+- account creation,
+- account edition,
+- personal identity data management,
+- email, first name, last name, or other sensitive profile data,
+- write access to schema `users`,
+- write access to schema `common`,
+- CRUD ownership helpers coming from schema `common`,
+- guest preference persistence on the server.
+
+## Source Of Truth And Database Boundaries
+
+The Django project only manages tables that belong to its own perimeter in schema `lss`.
+
+`app_member` must never write to:
+
+- schema `users`,
+- schema `common`.
+
+`users.users` remains an external read-only reference table.
+
+The authenticated member identifier used by `app_member` is the `Keycloak` UUID stored in `users.users.id`.
+
+## Authentication Rule
+
+`app_member` concerns authenticated members only.
+
+There is no persistent server-side `app_member` data for guests.
+
+If a user is anonymous:
+
+- no persistent preference row is created,
+- no search state is saved to the database,
+- the central search behaves in guest mode only.
+
+## Data Sensitivity
+
+The data managed by `app_member` is intentionally low-sensitivity.
+
+It stores usage preferences for `Lyrics Slide Show` only.
+
+It does not store:
+
+- first name,
+- last name,
+- email,
+- external identity attributes beyond the UUID key,
+- sensitive personal data.
+
+## Main Persistence Model
+
+The preferred table name is:
+
+- `lss.m_preferences`
+
+The name `g_users` from the legacy MySQL application should not be kept.
+
+`m_preferences` is preferred because the table stores member preferences, not user identity data.
+
+## Target PostgreSQL Table
+
+The functional target is a PostgreSQL table equivalent to the following model:
+
+```sql
+CREATE TABLE lss.m_preferences (
+  member_id uuid PRIMARY KEY,
+  theme_slug varchar(32) NOT NULL DEFAULT 'normal',
+  song_search jsonb NOT NULL DEFAULT '{
+    "text": "",
+    "everywhere": false,
+    "match_all_selected_refs": false,
+    "genre_ids": [],
+    "band_ids": [],
+    "artist_ids": [],
+    "validation": "all",
+    "favorites_only": false
+  }'::jsonb,
+  CONSTRAINT m_preferences_user_fk
+    FOREIGN KEY (member_id)
+    REFERENCES users.users (id)
+    ON DELETE CASCADE
+);
+```
+
+## Table Design Rules
+
+- `member_id` is the `Keycloak` UUID and also the primary key,
+- the foreign key points to `users.users(id)`,
+- deleting the external user row deletes the corresponding preference row through `ON DELETE CASCADE`,
+- the theme is stored as a theme slug, not as a CSS filename,
+- the `songs` search state is stored as one JSON block,
+- the table must stay focused on member preferences only.
+
+## Theme Preference
+
+### Functional Meaning
+
+The theme is a member preference for the whole `Lyrics Slide Show` project, not for a single page or a single app.
+
+This preference applies across all Django apps in this repository.
+
+### Persistence Rule
+
+For authenticated members, the chosen theme must persist across sessions and future logins.
+
+For guests, theme persistence is outside the scope of `app_member`.
+
+### Stored Value
+
+The stored value must be the functional theme identifier, for example:
+
+- `normal`,
+- `scout`,
+- `taize`,
+- `me†al`
+
+The stored value must not be a legacy CSS filename such as `normal.css`.
+
+## Persistent `songs` Search
+
+### Functional Meaning
+
+The `songs` search is a central feature of the product.
+
+Its state must persist for authenticated members so they can leave the page, use another app, come back later, reconnect later, and recover the same search context.
+
+This persistence is intentionally stronger than the behavior of ordinary website search forms.
+
+### Search Scope
+
+The preferences stored by `app_member` concern the persistent central `songs` search state used by the product.
+
+`app_member` defines the persistence contract only.
+
+It does not define the full UI behavior of other apps that may read or update that state.
+
+### Stored Fields
+
+The full search form state must be persisted, not just a subset.
+
+The persisted search structure must support:
+
+- `text`: text entered by the member,
+- `everywhere`: whether the text search is limited to title and subtitle or extended to wider song content,
+- `match_all_selected_refs`: strict logic for selected reference filters,
+- `genre_ids`: selected genre identifiers,
+- `band_ids`: selected band identifiers,
+- `artist_ids`: selected artist identifiers,
+- `validation`: validation filter state,
+- `favorites_only`: favorite filter state.
+
+### Validation Filter Semantics
+
+The legacy field `search_song_approved` must not be modeled as a boolean because its functional meaning has three states:
+
+- `all`: all songs,
+- `validated_only`: only validated songs,
+- `non_validated_only`: only non-validated songs.
+
+Any implementation must preserve this three-state behavior.
+
+### Reference Filter Semantics
+
+`genre_ids`, `band_ids`, and `artist_ids` must store identifier lists, not free text labels.
+
+These identifiers refer to the related reference tables used by the song catalog.
+
+### Strict Reference Logic
+
+The legacy field `search_logic` does not mean a generic SQL `AND` over the whole form.
+
+Its functional meaning is:
+
+- when disabled, selected reference filters may match broadly,
+- when enabled, each selected genre, band, and artist must be individually present on the song.
+
+This behavior must be preserved conceptually, even if the implementation is modernized.
+
+## Search Friendliness Rules
+
+The text search must be as user-friendly as possible.
+
+It must support normalization and escaping suitable for real user input, including at least:
+
+- accent-insensitive matching,
+- safe handling of apostrophes,
+- safe handling of other special characters used in search input.
+
+The goal is to help users find songs naturally, not to expose raw database matching behavior.
+
+## Guest Mode Versus Authenticated Mode
+
+### Guest Mode
+
+When the user is not authenticated:
+
+- there is no database persistence for search,
+- only the `text` field is used,
+- that `text` field applies only to song title and subtitle,
+- navigation causes the search state to be lost,
+- other persistent member filters are not restored.
+
+### Authenticated Member Mode
+
+When the user is authenticated:
+
+- the member's last saved search state must be loaded,
+- this restored state replaces any transient guest-side state,
+- there is no merge between guest state and member persistent state,
+- the full persisted form becomes the active search context.
+
+## App Boundaries
+
+`app_member` is responsible for storing and returning persistent member preferences only.
+
+It is not responsible for defining complete search workflows, tabs, pages, or UI interactions in other apps.
+
+The following boundary rules apply:
+
+- the central persistent `songs` search state may be read and updated by other apps,
+- the exact search interface and reset workflow are outside the responsibility of `app_member`,
+- `app_member` must not define local non-persistent search modes that belong to another app,
+- if another app provides temporary in-memory search modes, those modes are outside the persistence contract of `app_member`.
+
+## Reset Responsibility
+
+Persistent search is a cross-app capability, but `app_member` only stores and returns the last known member search state.
+
+An explicit manual reset may exist elsewhere in the product, but the reset user experience itself is outside the scope of `app_member`.
+
+## Persistence Timing
+
+The persisted member search state represents the last saved known state for that member.
+
+The exact save trigger may be decided during implementation, but the functional result must be:
+
+- a member returns later and gets the same saved state,
+- a member can rely on that state across connections,
+- the product does not reset the form automatically on ordinary navigation.
+
+## Non-Goals
+
+`app_member` must not evolve into:
+
+- a local account system,
+- a duplicate of `users.users`,
+- a holder of profile identity fields,
+- a generic preference dumping ground without functional justification.
+
+Any new preference stored in `m_preferences` must be justified as a durable member-specific `Lyrics Slide Show` usage preference.
+
+## Vocabulary
+
+The following terms should be used consistently in implementation and documentation:
+
+- `member`: authenticated user accepted into `Lyrics Slide Show`,
+- `member preferences`: persistent low-sensitivity preferences stored in `lss`,
+- `theme_slug`: persistent theme identifier for the whole site,
+- `song_search`: persistent JSON search state for the central `songs` search,
+- `guest mode`: anonymous behavior without member persistence,
+- `authenticated member mode`: behavior with persistent member preferences loaded from `lss.m_preferences`.
