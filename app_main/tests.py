@@ -483,6 +483,11 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "Compte de known.user")
         self.assertContains(response, "11111111-1111-1111-1111-111111111111")
 
+    def test_removed_test_route_returns_404(self):
+        response = self.client.get("/test/")
+
+        self.assertEqual(response.status_code, 404)
+
 
 class BaseTemplatePopupTests(SimpleTestCase):
     def test_homepage_loads_message_box_root_and_script(self):

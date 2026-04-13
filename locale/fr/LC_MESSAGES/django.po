@@ -79,7 +79,6 @@ msgstr ""
 
 #: app_main/templates/main/connexion.html:62
 #: app_main/templates/main/connexion.html:91
-#: app_test/templates/app_test/index.html:19
 msgid "Actions"
 msgstr ""
 
@@ -685,7 +684,6 @@ msgid "Les thèmes"
 msgstr ""
 
 #: app_main/templates/main/theme_preferences.html:71
-#: app_test/templates/app_test/index.html:34
 msgid "Aide"
 msgstr ""
 
@@ -756,89 +754,6 @@ msgstr ""
 
 #: app_song/templates/song/songs.html:32
 msgid "Chants"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:4
-msgid "Démo popup"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:6
-msgid "App test"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:9
-msgid ""
-"Zone de démonstration rapide pour valider les popups du site avec la charte "
-"visuelle active."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:14
-msgid "Déclencheurs"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:15
-msgid ""
-"Deux exemples simples pour vérifier le rendu, la hauteur et les variantes de "
-"boutons."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:24
-msgid "Popup sans bouton"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:29
-msgid "Popup longue avec 4 boutons"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:38
-msgid "Les popups s’ouvrent via le composant global LSSMessageBox."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:39
-msgid "Cette page sert de terrain d’essai visuel et fonctionnel."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:45
-msgid "Démo des popups"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:48
-msgid ""
-"Cette page remplace les anciennes maquettes de app_test par une "
-"démonstration ciblée du nouveau socle popup."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:52
-msgid ""
-"Le rendu suit automatiquement le thème visuel actif ainsi que le mode clair "
-"ou sombre du navigateur."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:57
-msgid "Popup 1"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:58
-msgid ""
-"Message simple sans bouton, avec fermeture par la croix et la touche Échap."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:61
-msgid "Ouvrir la popup simple"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:67
-msgid "Popup 2"
-msgstr ""
-
-#: app_test/templates/app_test/index.html:68
-msgid ""
-"Message très long pour valider l’agrandissement vertical puis l’apparition "
-"du scroll interne, avec quatre variantes de boutons."
-msgstr ""
-
-#: app_test/templates/app_test/index.html:71
-msgid "Ouvrir la popup longue"
 msgstr ""
 
 #: docs/maquette/templates/account/login.html:6

@@ -73,7 +73,6 @@ msgstr "Secure sign-in with Keycloak"
 
 #: app_main/templates/main/connexion.html:62
 #: app_main/templates/main/connexion.html:91
-#: app_test/templates/app_test/index.html:19
 msgid "Actions"
 msgstr "Actions"
 
@@ -755,7 +754,6 @@ msgid "Les thèmes"
 msgstr "Themes"
 
 #: app_main/templates/main/theme_preferences.html:71
-#: app_test/templates/app_test/index.html:34
 msgid "Aide"
 msgstr "Help"
 
@@ -829,97 +827,6 @@ msgstr "Songs"
 #: app_song/templates/song/songs.html:32
 msgid "Chants"
 msgstr ""
-
-#: app_test/templates/app_test/index.html:4
-msgid "Démo popup"
-msgstr "Popup demo"
-
-#: app_test/templates/app_test/index.html:6
-msgid "App test"
-msgstr "Test app"
-
-#: app_test/templates/app_test/index.html:9
-msgid ""
-"Zone de démonstration rapide pour valider les popups du site avec la charte "
-"visuelle active."
-msgstr ""
-"A quick demo area for validating site popups with the active visual theme."
-
-#: app_test/templates/app_test/index.html:14
-msgid "Déclencheurs"
-msgstr "Triggers"
-
-#: app_test/templates/app_test/index.html:15
-msgid ""
-"Deux exemples simples pour vérifier le rendu, la hauteur et les variantes de "
-"boutons."
-msgstr ""
-"Two simple examples to check rendering, height behavior, and button variants."
-
-#: app_test/templates/app_test/index.html:24
-msgid "Popup sans bouton"
-msgstr "Popup without buttons"
-
-#: app_test/templates/app_test/index.html:29
-msgid "Popup longue avec 4 boutons"
-msgstr "Long popup with 4 buttons"
-
-#: app_test/templates/app_test/index.html:38
-msgid "Les popups s’ouvrent via le composant global LSSMessageBox."
-msgstr "Popups open through the global LSSMessageBox component."
-
-#: app_test/templates/app_test/index.html:39
-msgid "Cette page sert de terrain d’essai visuel et fonctionnel."
-msgstr "This page is used as a visual and functional test area."
-
-#: app_test/templates/app_test/index.html:45
-msgid "Démo des popups"
-msgstr "Popup demo"
-
-#: app_test/templates/app_test/index.html:48
-msgid ""
-"Cette page remplace les anciennes maquettes de app_test par une "
-"démonstration ciblée du nouveau socle popup."
-msgstr ""
-"This page replaces the old app_test mockups with a focused demo of the new "
-"popup foundation."
-
-#: app_test/templates/app_test/index.html:52
-msgid ""
-"Le rendu suit automatiquement le thème visuel actif ainsi que le mode clair "
-"ou sombre du navigateur."
-msgstr ""
-"Rendering automatically follows the active visual theme as well as the "
-"browser's light or dark mode."
-
-#: app_test/templates/app_test/index.html:57
-msgid "Popup 1"
-msgstr "Popup 1"
-
-#: app_test/templates/app_test/index.html:58
-msgid ""
-"Message simple sans bouton, avec fermeture par la croix et la touche Échap."
-msgstr "Simple message with no buttons, dismissible via the close icon or Esc."
-
-#: app_test/templates/app_test/index.html:61
-msgid "Ouvrir la popup simple"
-msgstr "Open the simple popup"
-
-#: app_test/templates/app_test/index.html:67
-msgid "Popup 2"
-msgstr "Popup 2"
-
-#: app_test/templates/app_test/index.html:68
-msgid ""
-"Message très long pour valider l’agrandissement vertical puis l’apparition "
-"du scroll interne, avec quatre variantes de boutons."
-msgstr ""
-"Very long message used to validate vertical expansion and then internal "
-"scrolling, with four button variants."
-
-#: app_test/templates/app_test/index.html:71
-msgid "Ouvrir la popup longue"
-msgstr "Open the long popup"
 
 #: docs/maquette/templates/account/login.html:6
 #: docs/maquette/templates/account/login.html:7

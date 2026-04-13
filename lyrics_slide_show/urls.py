@@ -24,5 +24,4 @@ urlpatterns = [
     path('groups/', include('app_group.urls')),
     path('songs/', include('app_song.urls')),
     path('animations/', include('app_animation.urls')),
-    path('test/', include('app_test.urls')),
 ]
