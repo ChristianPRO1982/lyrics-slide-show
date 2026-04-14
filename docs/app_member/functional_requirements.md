@@ -4,7 +4,7 @@
 
 This document defines the functional requirements for `app_member`.
 
-`app_member` is the Django app responsible for member-specific persistent preferences inside `Lyrics Slide Show`.
+`app_member` is the Django app responsible for member-specific persistent data inside `Lyrics Slide Show`.
 
 It is written for implementation agents based on LLM tools such as `Codex`, `Claude Code`, `Codestral`, and similar coding assistants. It must be treated as a functional specification, not as a brainstorming note.
 
@@ -12,21 +12,24 @@ It is written for implementation agents based on LLM tools such as `Codex`, `Cla
 
 `app_member` is not an identity provider and is not a personal profile management app.
 
-Its role is limited to storing and serving persistent member preferences required for the use of `Lyrics Slide Show`.
+Its role is to store and serve the local member-level data required by `Lyrics Slide Show` once identity has been established through `SSO`.
 
 At this stage, the app covers:
 
 - the persistent visual theme chosen by an authenticated member,
-- the persistent state of the central `songs` search form for authenticated members.
+- the persistent state of the central `songs` search form for authenticated members,
+- the privileged local roles `moderator` and `admin` for authenticated members.
 
 ## Scope Boundaries
 
 ### In Scope
 
 - persistent preferences for authenticated members only,
+- local business roles for authenticated members,
 - preferences that affect the whole `Lyrics Slide Show` service,
 - preferences related to the central `songs` search,
-- storage of those preferences in schema `lss`.
+- site-wide privileged permissions attached to `moderator` and `admin`,
+- storage of those member data in schema `lss`.
 
 ### Out Of Scope
 
@@ -37,7 +40,8 @@ At this stage, the app covers:
 - write access to schema `users`,
 - write access to schema `common`,
 - CRUD ownership helpers coming from schema `common`,
-- guest preference persistence on the server.
+- guest preference persistence on the server,
+- external role assignment in `Keycloak`.
 
 ## Source Of Truth And Database Boundaries
 
@@ -51,6 +55,8 @@ The Django project only manages tables that belong to its own perimeter in schem
 `users.users` remains an external read-only reference table.
 
 The authenticated member identifier used by `app_member` is the `Keycloak` UUID stored in `users.users.id`.
+
+`app_member` is also the local source of truth for site-wide privileged roles after authentication. Those roles are business roles of `Lyrics Slide Show`, not identity-provider roles.
 
 ## Authentication Rule
 
@@ -78,7 +84,63 @@ It does not store:
 - external identity attributes beyond the UUID key,
 - sensitive personal data.
 
-## Main Persistence Model
+## Site-Wide Privileged Roles
+
+### Functional Meaning
+
+`Lyrics Slide Show` distinguishes between ordinary authenticated members and privileged authenticated members.
+
+The privileged site-wide roles managed locally by the product are:
+
+- `moderator`,
+- `admin`.
+
+An `admin` is always and automatically a `moderator`.
+
+These roles are global to the whole service. They are not scoped to a single group, a single song, or a single Django app.
+
+### Ownership Boundary
+
+`app_member` is responsible for the local persistence and exposure of those roles.
+
+Other apps may enforce or consume those permissions, but the privileged site-wide member status itself belongs to `app_member`.
+
+`app_member` must not rely on a write path to `users.users` or on external `Keycloak` role management for those business permissions.
+
+### Moderator Capabilities
+
+A `moderator` must be able to:
+
+- validate songs so they become impossible to modify outside moderator or admin permissions,
+- modify a group with the same effective power as a group admin even when not a member of that group,
+- publish a popup message on the main pages of the site, meaning the homepage and the home page of each app,
+- see notifications related to requests for modifying a song.
+
+### Admin Capabilities
+
+An `admin` must be able to:
+
+- grant or revoke the `admin` role for a row in `users.users`,
+- grant or revoke the `moderator` role for a row in `users.users`,
+- modify the general site settings,
+- publish a popup message on all pages of the site,
+- inherit all moderator capabilities automatically.
+
+### Persistence Rule
+
+Privileged roles are persistent server-side data for authenticated members only.
+
+Guests never receive a persistent privileged role.
+
+The role data must remain in schema `lss`, with the authenticated member still referenced only by `users.users.id`.
+
+## Preference Persistence Model
+
+This section concerns member preferences only.
+
+Privileged roles are part of `app_member` scope, but they must use their own local persistence design in schema `lss`.
+
+They must not be folded into `m_preferences`.
 
 The preferred table name is:
 
@@ -88,7 +150,7 @@ The name `g_users` from the legacy MySQL application should not be kept.
 
 `m_preferences` is preferred because the table stores member preferences, not user identity data.
 
-## Target PostgreSQL Table
+## Target PostgreSQL Table For Preferences
 
 The functional target is a PostgreSQL table equivalent to the following model:
 
