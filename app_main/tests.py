@@ -1,12 +1,12 @@
 from unittest.mock import MagicMock, patch
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
 from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from app_main.auth import (
+    AnonymousSessionUser,
     DisabledUserError,
     KeycloakAuthError,
     UnknownUserError,
@@ -499,7 +499,7 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
     def test_base_template_exposes_page_scripts_block_after_shared_popup_script(self):
         request = RequestFactory().get("/")
-        request.user = AnonymousUser()
+        request.user = AnonymousSessionUser()
 
         template = engines["django"].from_string(
             """

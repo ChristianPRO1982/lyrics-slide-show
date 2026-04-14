@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
 from django.db import connection
 
 from app_main.models import DirectoryUserRecord
@@ -82,6 +81,22 @@ class SessionUser:
 
     def get_username(self) -> str:
         return self.username
+
+
+@dataclass(frozen=True)
+class AnonymousSessionUser:
+    username: str = ""
+
+    @property
+    def is_authenticated(self) -> bool:
+        return False
+
+    @property
+    def is_anonymous(self) -> bool:
+        return True
+
+    def get_username(self) -> str:
+        return ""
 
 
 def _validate_identifier(value: str) -> str:
@@ -373,10 +388,10 @@ def get_session_user(session) -> dict[str, Any] | None:
     return session.get(SESSION_USER_KEY)
 
 
-def get_request_user(session) -> SessionUser | AnonymousUser:
+def get_request_user(session) -> SessionUser | AnonymousSessionUser:
     session_user = get_session_user(session)
     if not session_user:
-        return AnonymousUser()
+        return AnonymousSessionUser()
 
     return SessionUser(
         external_id=session_user["external_id"],
@@ -387,21 +402,21 @@ def get_request_user(session) -> SessionUser | AnonymousUser:
     )
 
 
-def refresh_request_user(session) -> SessionUser | AnonymousUser:
+def refresh_request_user(session) -> SessionUser | AnonymousSessionUser:
     session_user = get_session_user(session)
     if not session_user:
-        return AnonymousUser()
+        return AnonymousSessionUser()
 
     external_id = session_user.get("external_id")
     if not external_id:
         clear_session_user(session)
-        return AnonymousUser()
+        return AnonymousSessionUser()
 
     try:
         user = get_directory_user(external_id)
     except (UnknownUserError, DisabledUserError):
         clear_session_user(session)
-        return AnonymousUser()
+        return AnonymousSessionUser()
 
     store_session_user(session, user)
     return get_request_user(session)
