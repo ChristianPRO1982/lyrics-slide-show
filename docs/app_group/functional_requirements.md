@@ -95,7 +95,10 @@ CREATE TABLE lss.g_group_user_ask_to_join (
 
 - `g_groups` replaces the legacy boolean `private` field with the explicit business field `status`,
 - the group name must be unique in a case-insensitive way,
+- the group name comparison must be done after trimming leading and trailing whitespace and collapsing repeated internal spaces,
 - `info` is optional plain text only, without markdown and without HTML,
+- when `info` is stored, HTML must be removed, leading and trailing whitespace must be trimmed, repeated spaces must be collapsed, and line breaks must be preserved,
+- line breaks from `info` are preserved in storage and may be rendered as visual separators such as `<hr>` when displayed, but never stored as HTML in the database,
 - the legacy MySQL `token` column becomes a stable group secret stored as `secret_ciphertext`,
 - `secret_ciphertext` should store the group secret in a form that can be decoded by the application when possible, using a key stored in `.env`,
 - if such encoding or encryption is not implemented, the secret may be stored visibly in the database,
@@ -183,6 +186,8 @@ Promoting a member as `group admin` must require a confirmation popup before the
 
 Demoting a `group admin` who is not the last remaining responsible member must also require a confirmation popup before the action is executed.
 
+A `group admin` may be removed from the group directly, exactly like a simple member, as long as that target is not the last remaining `group admin`.
+
 A group may have several `group admins`, but it must always keep at least one.
 
 Neither a `group admin`, nor a `moderator`, nor an `admin` may remove that role from the last remaining `group admin`.
@@ -258,6 +263,10 @@ Using the leave-group action must first open a confirmation popup.
 
 That popup must provide a yes / no choice, with no as the default action.
 
+The join-request list is visible to `group admins`, `moderators`, and `admins`.
+
+`moderators` and `admins` have the same group-governance powers as a `group admin`, even when they are not members of the group.
+
 ## Membership And Selection Rules
 
 Everyone may access the group list.
@@ -273,6 +282,8 @@ When secret-based access to a `private_with_secret` group is accepted, that grou
 
 ## Group List Requirements
 
+The main group list is rendered on `groups.html`.
+
 The group list page must allow:
 
 - displaying the group name,
@@ -287,6 +298,8 @@ The group list page must allow:
 - accessing group edition for `group admins`, `moderators`, and `admins`.
 
 If a group is `open` and the authenticated user is already a member, the group list must still show that member state and still allow the leave-group action.
+
+If an authenticated non-member accessed a closed group through its secret, the UI does not need to show a dedicated secret-access status distinct from ordinary access.
 
 The compact visual status must follow this style:
 
@@ -315,6 +328,8 @@ It may only indicate that secret-based access exists, and that indication is vis
 ## Group Edition Structure
 
 The group edition view must expose three distinct functional areas.
+
+The main group edition view is rendered on `modify_group.html`.
 
 ### Main Group Form
 
@@ -366,6 +381,8 @@ If the group currently has no simple members outside the responsible members, th
 
 Pending requests to become a member must be exposed as a dedicated list of actions or links, separate from the two previous forms.
 
+If pending requests exist, that dedicated list is displayed above the members area.
+
 ## Secret Display And Sharing
 
 The secret is meant to be communicated by the responsible members outside the site, for example by email or messaging.
@@ -374,10 +391,10 @@ Within the site, the secret may be displayed only in the group edition area rese
 
 When the secret is shown in that edition area, the site must display:
 
-- the complete link ready to use,
+- the complete link ready to use, pointing to the group list page with the secret prefilled in the URL,
 - a QR code image for that same link,
-- a copy action for the link,
-- a copy action for the QR code output.
+- a copy action for the link itself,
+- a copy action for the QR code image itself.
 
 ## Selected Group Persistence
 
@@ -409,7 +426,17 @@ No automatic fallback selection is required.
 
 The current selected group must remain visible to the user as part of the shared site experience.
 
-If the selected group is renamed, the visible selected-group label must be updated immediately without any extra user action.
+If the selected group is renamed, all visible occurrences of that group name in the current UI must be refreshed immediately without any extra user action.
+
+## Feedback Rules
+
+The global message bar is mainly intended for imperative feedback.
+
+It must not be treated as the mandatory success-feedback channel for every action in `app_group`.
+
+The validation error for a case-insensitive name collision is explicitly expected there.
+
+Other action feedback may be adjusted later during usage corrections.
 
 ## Relation To Animations
 
