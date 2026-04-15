@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-15 17:20+0200\n"
+"POT-Creation-Date: 2026-04-15 18:01+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: app_group/templates/group/groups.html:31
 #: app_group/templates/group/groups.html:45
-#: app_group/templates/group/modify_group.html:48
+#: app_group/templates/group/modify_group.html:55
 msgid "Groupes"
 msgstr ""
 
@@ -194,67 +194,67 @@ msgstr "Groups"
 msgid "Recherche à partir de 3 caractères"
 msgstr ""
 
-#: app_group/templates/group/groups.html:131
+#: app_group/templates/group/groups.html:126
 msgid "Responsables :"
 msgstr ""
 
-#: app_group/templates/group/groups.html:142
+#: app_group/templates/group/groups.html:143
 msgid "Voir la suite"
 msgstr ""
 
-#: app_group/templates/group/groups.html:142
+#: app_group/templates/group/groups.html:143
 msgid "Réduire"
 msgstr ""
 
-#: app_group/templates/group/groups.html:156
+#: app_group/templates/group/groups.html:157
 #, fuzzy
 #| msgid "Section"
 msgid "Sélectionner"
 msgstr "Section"
 
-#: app_group/templates/group/groups.html:164
+#: app_group/templates/group/groups.html:165
 msgid "Sélectionner avec secret"
 msgstr ""
 
-#: app_group/templates/group/groups.html:169
+#: app_group/templates/group/groups.html:170
 msgid "Envoyer la demande d’adhésion à ce groupe ?"
 msgstr ""
 
-#: app_group/templates/group/groups.html:173
+#: app_group/templates/group/groups.html:174
 msgid "Demander à rejoindre"
 msgstr ""
 
-#: app_group/templates/group/groups.html:176
+#: app_group/templates/group/groups.html:177
 msgid "Annuler cette demande d’adhésion ?"
 msgstr ""
 
-#: app_group/templates/group/groups.html:180
+#: app_group/templates/group/groups.html:181
 msgid "Annuler la demande"
 msgstr ""
 
-#: app_group/templates/group/groups.html:185
+#: app_group/templates/group/groups.html:186
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Quitter ce groupe ?"
 msgstr "Groups"
 
-#: app_group/templates/group/groups.html:189
+#: app_group/templates/group/groups.html:190
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Quitter le groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/groups.html:194
+#: app_group/templates/group/groups.html:195
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Modifier le groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/groups.html:199
+#: app_group/templates/group/groups.html:200
 msgid "Groupe actuellement sélectionné."
 msgstr ""
 
-#: app_group/templates/group/groups.html:204
+#: app_group/templates/group/groups.html:205
 msgid "Aucun groupe n'est encore disponible."
 msgstr ""
 
@@ -283,191 +283,197 @@ msgstr "Groups"
 msgid "Ce groupe est actuellement sélectionné."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:38
+#: app_group/templates/group/modify_group.html:40
+#, fuzzy
+#| msgid "Section"
+msgid "Sélectionner ce groupe"
+msgstr "Section"
+
+#: app_group/templates/group/modify_group.html:45
 #, fuzzy
 #| msgid "Outils"
 msgid "Outils groupe"
 msgstr "Tools"
 
-#: app_group/templates/group/modify_group.html:40
+#: app_group/templates/group/modify_group.html:47
 msgid "Résumé compact pour mobile."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:51
+#: app_group/templates/group/modify_group.html:58
 msgid "ouvert"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:52
+#: app_group/templates/group/modify_group.html:59
 #, fuzzy
 #| msgid "Fermer"
 msgid "fermé"
 msgstr "Close"
 
-#: app_group/templates/group/modify_group.html:53
+#: app_group/templates/group/modify_group.html:60
 msgid "fermé avec secret"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:54
+#: app_group/templates/group/modify_group.html:61
 msgid ""
 "Le dernier responsable ne peut ni être rétrogradé ni être retiré sans qu'un "
 "autre responsable existe déjà."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:60
+#: app_group/templates/group/modify_group.html:67
 #, fuzzy
 #| msgid "Paramètres du profil"
 msgid "Paramètres principaux"
 msgstr "Profile settings"
 
-#: app_group/templates/group/modify_group.html:76
+#: app_group/templates/group/modify_group.html:83
 msgid "Enregistrer les paramètres"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:83
+#: app_group/templates/group/modify_group.html:90
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Secret du groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/modify_group.html:84
+#: app_group/templates/group/modify_group.html:91
 msgid "Créer, remplacer ou supprimer le secret d'accès du groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:88
+#: app_group/templates/group/modify_group.html:95
 msgid "Un secret est actuellement enregistré pour ce groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:91
+#: app_group/templates/group/modify_group.html:98
 msgid "Lien complet"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:94
+#: app_group/templates/group/modify_group.html:101
 msgid "Copier le lien"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:99
+#: app_group/templates/group/modify_group.html:106
 msgid "QR code du lien secret"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:105
+#: app_group/templates/group/modify_group.html:112
 msgid "Copier le QR code"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:111
+#: app_group/templates/group/modify_group.html:118
 msgid "Aucun secret n'est actuellement enregistré pour ce groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:115
+#: app_group/templates/group/modify_group.html:122
 msgid "Générer ou remplacer le secret de groupe ?"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:120
+#: app_group/templates/group/modify_group.html:127
 msgid "Remplacer le secret"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:122
+#: app_group/templates/group/modify_group.html:129
 #, fuzzy
 #| msgid "Créer un compte"
 msgid "Créer un secret"
 msgstr "Create an account"
 
-#: app_group/templates/group/modify_group.html:127
+#: app_group/templates/group/modify_group.html:134
 msgid "Supprimer le secret de groupe ?"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:130
+#: app_group/templates/group/modify_group.html:137
 msgid "Supprimer le secret"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:141
+#: app_group/templates/group/modify_group.html:148
 msgid "Demandes d'adhésion"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:159
+#: app_group/templates/group/modify_group.html:166
 msgid "Accepter / refuser"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:171
+#: app_group/templates/group/modify_group.html:178
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Membres du groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/modify_group.html:183
+#: app_group/templates/group/modify_group.html:190
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Responsable du groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/modify_group.html:184
+#: app_group/templates/group/modify_group.html:191
 msgid "Dernier responsable du groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:190
+#: app_group/templates/group/modify_group.html:197
 #, fuzzy
 #| msgid "Dernière version publiée"
 msgid "Dernier responsable"
 msgstr "Latest release"
 
-#: app_group/templates/group/modify_group.html:192
+#: app_group/templates/group/modify_group.html:199
 msgid "Retirer le rôle de responsable à cette personne ?"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:196
+#: app_group/templates/group/modify_group.html:203
 msgid "Retirer responsable"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:200
+#: app_group/templates/group/modify_group.html:207
 msgid "Attribuer le rôle de responsable à cette personne ?"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:204
+#: app_group/templates/group/modify_group.html:211
 msgid "Nommer responsable"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:209
+#: app_group/templates/group/modify_group.html:216
 msgid "Retirer ce membre du groupe ?"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:213
+#: app_group/templates/group/modify_group.html:220
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Retirer du groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/modify_group.html:221
+#: app_group/templates/group/modify_group.html:228
 msgid "Aucun membre n'est actuellement rattaché à ce groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:228
-#: app_group/templates/group/modify_group.html:234
+#: app_group/templates/group/modify_group.html:235
+#: app_group/templates/group/modify_group.html:241
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Suppression du groupe"
 msgstr "Groups"
 
-#: app_group/templates/group/modify_group.html:229
+#: app_group/templates/group/modify_group.html:236
 msgid ""
 "La suppression efface aussi les données rattachées par cascade quand elles "
 "existent."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:232
+#: app_group/templates/group/modify_group.html:239
 msgid "Membres actuellement liés :"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:233
+#: app_group/templates/group/modify_group.html:240
 msgid "Animations planifiées connues dans cette version :"
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:234
+#: app_group/templates/group/modify_group.html:241
 #, python-format
 msgid ""
 "Tapez exactement %(word)s pour confirmer la suppression définitive de ce "
 "groupe."
 msgstr ""
 
-#: app_group/templates/group/modify_group.html:238
+#: app_group/templates/group/modify_group.html:245
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Supprimer le groupe"

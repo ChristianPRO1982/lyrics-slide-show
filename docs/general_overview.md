@@ -49,6 +49,12 @@ The product structure is organized around four major business areas:
 
 The project must also rely on Django internationalization features. The codebase is written in English, the default language is French, user-facing text must remain translatable, and labels must not be hardcoded. Translations must be handled with Django i18n mechanisms.
 
+This rule also applies to browser-side JavaScript.
+
+No user-facing text may be hardcoded directly inside front-end JavaScript files.
+
+If JavaScript needs translated text, that text must be provided through Django-rendered templates, localized data attributes, localized JSON payloads, or another application-controlled i18n bridge.
+
 ## Access Philosophy
 
 The service is intentionally open.
