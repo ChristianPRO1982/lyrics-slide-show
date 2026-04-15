@@ -56,7 +56,7 @@ CREATE TABLE lss.g_groups (
   status varchar(32) NOT NULL DEFAULT 'open',
   CONSTRAINT g_groups_name_unique UNIQUE (name),
   CONSTRAINT g_groups_status_check
-    CHECK (status IN ('open', 'private', 'private_with_secret'))
+    CHECK (status IN ('open', 'private'))
 );
 
 CREATE INDEX g_groups_status_idx ON lss.g_groups (status);
@@ -99,7 +99,9 @@ CREATE TABLE lss.g_group_user_ask_to_join (
 - the legacy MySQL `token` column becomes a stable group secret stored as `secret_ciphertext`,
 - `secret_ciphertext` should store the group secret in a form that can be decoded by the application when possible, using a key stored in `.env`,
 - if such encoding or encryption is not implemented, the secret may be stored visibly in the database,
-- `secret` is only meaningful when `status = private_with_secret`,
+- a stored secret is only meaningful when `status = private`,
+- the business notion `private_with_secret` is not a separate database value,
+- `private_with_secret` means a `private` group that currently has a secret,
 - `g_group_user` stores membership and the technical flag `is_group_admin`,
 - `g_group_user_ask_to_join` stores pending join requests keyed by `(group_id, member_id)`,
 - only one pending join request may exist for a given `(group_id, member_id)` pair,
@@ -115,11 +117,19 @@ The only official business statuses for a group are:
 
 `docs/general_overview.md` is authoritative for this terminology. `app_group` must not redefine groups as a simple `Open` / `Closed` pair.
 
+In persistence terms, `private_with_secret` is not a third stored status.
+
+It is the business interpretation of the combination:
+
+- `status = private`,
+- `secret_ciphertext` is present.
+
 A secret only makes sense for a `private_with_secret` group.
 
 - a `private` group never becomes accessible through a secret alone,
 - rotating the secret immediately invalidates the previous one,
-- if the group stops using the `private_with_secret` status, the previous secret must no longer grant access.
+- if a group returns to plain `private`, the stored secret must be deleted,
+- if secret-based access is re-enabled later, a new secret must be generated,
 - the secret is used only to select the group,
 - the secret never grants `group admin`, `moderator`, or `admin` powers,
 - knowing the secret does not make a guest equivalent to a group manager.
