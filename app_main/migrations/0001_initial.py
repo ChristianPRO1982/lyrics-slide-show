@@ -11,6 +11,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL(
+            sql="""
+            CREATE SCHEMA IF NOT EXISTS "lss";
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        ),
         migrations.CreateModel(
             name='SiteParams',
             fields=[

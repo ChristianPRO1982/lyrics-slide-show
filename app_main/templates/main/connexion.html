@@ -25,6 +25,7 @@
     {% if page_mode == "account" %}
     {% elif auth_mode == "mock" %}
         <p>{% trans "Simulation Keycloak" %}</p>
+        <p>mock SSO</p>
     {% else %}
         <p>{% trans "Connexion sécurisée via Keycloak" %}</p>
     {% endif %}
@@ -96,7 +97,7 @@
             <a href="{% url 'logout' %}">{% trans "Déconnexion" %}</a>
         {% else %}
             {% if auth_mode == "mock" %}
-                <a href="{% url 'login' %}?start=1">{% trans "Continuer avec la simulation SSO" %}</a>
+                <a href="{% url 'login' %}?start=1">{% trans "Continuer avec le mock SSO" %}</a>
             {% else %}
                 <a href="{% url 'login' %}?start=1">{% trans "Continuer avec Keycloak" %}</a>
             {% endif %}
@@ -124,6 +125,7 @@
 
 {% block page_summary %}
     {% if page_mode == "account" %}
+        <p><strong>{{ account_heading }}</strong></p>
         <p><strong>{{ request.user.username }}</strong></p>
         <p>{{ request.user.first_name }} {{ request.user.last_name }}</p>
     {% else %}
@@ -156,7 +158,181 @@
                     <a href="{% url 'privacy_policy' %}">{% trans "Politique de confidentialité" %}</a>
                 </p>
             </article>
+
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Rôles du site" %}</h2>
+                    </div>
+                </header>
+                <p><code>{{ request.user.external_id }}</code></p>
+                {% if is_admin %}
+                    <p>{% trans "Vous êtes administrateur du site. Vous disposez aussi automatiquement des droits de modération." %}</p>
+                {% elif is_moderator %}
+                    <p>{% trans "Vous êtes modérateur du site." %}</p>
+                {% else %}
+                    <p>{% trans "Vous êtes membre authentifié sans droit privilégié global." %}</p>
+                {% endif %}
+            </article>
         </section>
+
+        {% if is_moderator %}
+            <section class="site-theme-selection" aria-label="{% trans 'Outils de modération' %}">
+                <article class="site-theme-card">
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{% trans "Message de modération" %}</h2>
+                            <p>{% trans "Ce message est public sur la page d'accueil et sur les pages principales des apps." %}</p>
+                        </div>
+                    </header>
+                    {% if site_params_missing %}
+                        <p>{% trans "Les paramètres du site ne sont pas encore disponibles pour cette langue. L'édition du message de modération est temporairement indisponible." %}</p>
+                    {% elif moderator_form %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="save_moderation_settings">
+                            <input type="hidden" name="member_search" value="{{ member_search }}">
+                            {% for hidden in moderator_form.hidden_fields %}{{ hidden }}{% endfor %}
+                            {% for field in moderator_form.visible_fields %}
+                                <div>
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
+                                    {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                                </div>
+                            {% endfor %}
+                            {% for error in moderator_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                            <button type="submit">{% trans "Enregistrer la modération" %}</button>
+                        </form>
+                    {% endif %}
+                </article>
+
+                <article class="site-theme-card">
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{% trans "Notifications de modération" %}</h2>
+                        </div>
+                    </header>
+                    <p>{% trans "Cette zone prépare l'affichage des futures demandes de modification de chanson." %}</p>
+                    <p>{% trans "Le flux complet de notifications sera branché lorsque le module chanson exposera ses demandes de modification." %}</p>
+                </article>
+            </section>
+        {% endif %}
+
+        {% if is_admin %}
+            <section class="site-theme-selection" aria-label="{% trans 'Administration du site' %}">
+                <article class="site-theme-card">
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{% trans "Paramètres administrateur" %}</h2>
+                            <p>{% trans "Ces réglages pilotent le contenu et les contraintes globales du site pour la langue courante." %}</p>
+                        </div>
+                    </header>
+                    {% if admin_form %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="save_site_settings">
+                            <input type="hidden" name="member_search" value="{{ member_search }}">
+                            {% for hidden in admin_form.hidden_fields %}{{ hidden }}{% endfor %}
+                            {% for field in admin_form.visible_fields %}
+                                <div>
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
+                                    {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                                </div>
+                            {% endfor %}
+                            {% for error in admin_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                            <button type="submit">{% trans "Enregistrer l'administration" %}</button>
+                        </form>
+                    {% endif %}
+                </article>
+
+                <article class="site-theme-card">
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{% trans "Membres du site" %}</h2>
+                            <p>{% trans "La recherche lit uniquement `users.users` et la gestion des rôles reste locale à Lyrics Slide Show." %}</p>
+                        </div>
+                    </header>
+                    <form method="get">
+                        {% for hidden in member_search_form.hidden_fields %}{{ hidden }}{% endfor %}
+                        {% for field in member_search_form.visible_fields %}
+                            <div>
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit">{% trans "Rechercher" %}</button>
+                    </form>
+
+                    {% if member_search %}
+                        <p>{% blocktrans with search=member_search %}Résultats pour « {{ search }} »{% endblocktrans %}</p>
+                        {% if member_results %}
+                            {% for member in member_results %}
+                                <article class="site-theme-card" style="margin-top: 1rem;">
+                                    <p><strong>{{ member.username|default:"-" }}</strong></p>
+                                    <p>{{ member.first_name|default:"" }} {{ member.last_name|default:"" }}</p>
+                                    <p>{{ member.email|default:"" }}</p>
+                                    <p><code>{{ member.member_id }}</code></p>
+                                    <p>
+                                        {% if member.is_admin %}
+                                            {% trans "Rôle actuel : administrateur" %}
+                                        {% elif member.is_moderator %}
+                                            {% trans "Rôle actuel : modérateur" %}
+                                        {% else %}
+                                            {% trans "Rôle actuel : membre" %}
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        {% if member.enabled %}
+                                            {% trans "Compte actif dans users.users" %}
+                                        {% else %}
+                                            {% trans "Compte désactivé dans users.users" %}
+                                        {% endif %}
+                                    </p>
+
+                                    <form method="post" style="display: inline-block; margin-right: 0.5rem;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update_member_role">
+                                        <input type="hidden" name="member_search" value="{{ member_search }}">
+                                        <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                                        <input type="hidden" name="role_name" value="moderator">
+                                        <input type="hidden" name="enabled" value="{{ member.is_moderator|yesno:',on' }}">
+                                        <button type="submit">
+                                            {% if member.is_moderator %}
+                                                {% trans "Retirer modérateur" %}
+                                            {% else %}
+                                                {% trans "Attribuer modérateur" %}
+                                            {% endif %}
+                                        </button>
+                                    </form>
+
+                                    <form method="post" style="display: inline-block;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update_member_role">
+                                        <input type="hidden" name="member_search" value="{{ member_search }}">
+                                        <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                                        <input type="hidden" name="role_name" value="admin">
+                                        <input type="hidden" name="enabled" value="{{ member.is_admin|yesno:',on' }}">
+                                        <button type="submit">
+                                            {% if member.is_admin %}
+                                                {% trans "Retirer administrateur" %}
+                                            {% else %}
+                                                {% trans "Attribuer administrateur" %}
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </article>
+                            {% endfor %}
+                        {% else %}
+                            <p>{% trans "Aucun membre ne correspond à cette recherche." %}</p>
+                        {% endif %}
+                    {% endif %}
+                </article>
+            </section>
+    {% endif %}
     {% endif %}
 {% endblock %}
 

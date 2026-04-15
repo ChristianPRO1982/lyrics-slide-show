@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from app_main.auth import (
     AnonymousSessionUser,
+    DirectoryUser,
     DisabledUserError,
     KeycloakAuthError,
     UnknownUserError,
@@ -17,7 +18,46 @@ from app_main.auth import (
     validate_keycloak_callback,
     validate_callback_payload,
 )
-from app_main.models import DirectoryUserRecord
+from app_main.models import DirectoryUserRecord, SiteParams
+from app_member.models import MemberRole
+from app_member.services import MemberRoleFlags
+from app_main.views import account
+
+
+def create_site_params(**overrides):
+    defaults = {
+        "language": "fr",
+        "title": "Lyrics Slide Show",
+        "title_h1": "Lyrics Slide Show",
+        "home_text": "Bienvenue",
+        "bloc1_text": "Bloc 1",
+        "bloc2_text": "Bloc 2",
+        "verse_max_lines": 4,
+        "verse_max_characters_for_a_line": 42,
+        "chorus_prefix": "Ref.",
+        "verse_prefix1": "C",
+        "verse_prefix2": ".",
+        "admin_message": "",
+        "moderator_message": "",
+        "admin_message_cooldown_minutes": 5,
+        "moderator_message_cooldown_minutes": 60,
+    }
+    defaults.update(overrides)
+    return SiteParams.objects.create(**defaults)
+
+
+def create_directory_user(**overrides):
+    defaults = {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "username": "known.user",
+        "first_name": "Known",
+        "last_name": "User",
+        "email": "known.user@example.test",
+        "enabled": True,
+        "email_verified": False,
+    }
+    defaults.update(overrides)
+    return DirectoryUserRecord.objects.create(**defaults)
 
 
 class CallbackValidationTests(SimpleTestCase):
@@ -211,15 +251,22 @@ class DirectoryUserLookupTests(TestCase):
 
 
 class RequestUserRefreshTests(SimpleTestCase):
+    @patch("app_main.auth.get_member_role_flags_safe")
     @patch("app_main.auth.get_directory_user")
-    def test_refresh_request_user_reloads_connected_user_from_directory(self, get_directory_user_mock):
-        get_directory_user_mock.return_value.to_session_dict.return_value = {
-            "external_id": "11111111-1111-1111-1111-111111111111",
-            "username": "fresh.user",
-            "email": "fresh.user@example.test",
-            "first_name": "Fresh",
-            "last_name": "User",
-        }
+    def test_refresh_request_user_reloads_connected_user_from_directory(
+        self,
+        get_directory_user_mock,
+        get_member_role_flags_safe_mock,
+    ):
+        get_directory_user_mock.return_value = DirectoryUser(
+            external_id="11111111-1111-1111-1111-111111111111",
+            username="fresh.user",
+            email="fresh.user@example.test",
+            first_name="Fresh",
+            last_name="User",
+            enabled=True,
+        )
+        get_member_role_flags_safe_mock.return_value = MemberRoleFlags(is_moderator=True, is_admin=False)
 
         session = {
             "lss_user": {
@@ -232,10 +279,17 @@ class RequestUserRefreshTests(SimpleTestCase):
 
         self.assertTrue(user.is_authenticated)
         self.assertEqual(user.username, "fresh.user")
+        self.assertTrue(user.is_moderator)
+        self.assertFalse(user.is_admin)
         self.assertEqual(session["lss_user"]["username"], "fresh.user")
 
+    @patch("app_main.auth.get_member_role_flags_safe")
     @patch("app_main.auth.get_directory_user", side_effect=DisabledUserError("This user is disabled in users.users."))
-    def test_refresh_request_user_clears_session_when_directory_user_is_disabled(self, _get_directory_user_mock):
+    def test_refresh_request_user_clears_session_when_directory_user_is_disabled(
+        self,
+        _get_directory_user_mock,
+        _get_member_role_flags_safe_mock,
+    ):
         session = {
             "lss_user": {
                 "external_id": "11111111-1111-1111-1111-111111111111",
@@ -330,6 +384,7 @@ class AuthFlowTests(TestCase):
     @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
     @patch("app_main.views.get_directory_user")
     def test_callback_creates_session_for_known_user(self, get_directory_user_mock):
+        create_directory_user()
         get_directory_user_mock.return_value.to_session_dict.return_value = {
             "external_id": "11111111-1111-1111-1111-111111111111",
             "username": "known.user",
@@ -396,6 +451,7 @@ class AuthFlowTests(TestCase):
         validate_keycloak_callback_mock,
         get_directory_user_mock,
     ):
+        create_directory_user()
         validate_keycloak_callback_mock.return_value = {
             "external_id": "11111111-1111-1111-1111-111111111111",
             "username": "known.user",
@@ -467,17 +523,33 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("login"))
 
     def test_account_page_uses_session_user_identity(self):
-        session = self.client.session
-        session["lss_user"] = {
-            "external_id": "11111111-1111-1111-1111-111111111111",
-            "username": "known.user",
-            "email": "known.user@example.test",
-            "first_name": "Known",
-            "last_name": "User",
+        request = RequestFactory().get(reverse("account"))
+        request.session = {
+            "lss_user": {
+                "external_id": "11111111-1111-1111-1111-111111111111",
+                "username": "known.user",
+                "email": "known.user@example.test",
+                "first_name": "Known",
+                "last_name": "User",
+            }
         }
-        session.save()
+        request.user = type(
+            "AuthenticatedUserStub",
+            (),
+            {
+                "is_authenticated": True,
+                "username": "known.user",
+                "email": "known.user@example.test",
+                "first_name": "Known",
+                "last_name": "User",
+                "external_id": "11111111-1111-1111-1111-111111111111",
+                "is_moderator": False,
+                "is_admin": False,
+            },
+        )()
+        request.LANGUAGE_CODE = "fr"
 
-        response = self.client.get(reverse("account"))
+        response = account(request)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Compte de known.user")
@@ -487,6 +559,99 @@ class AuthFlowTests(TestCase):
         response = self.client.get("/test/")
 
         self.assertEqual(response.status_code, 404)
+
+
+class AccountRoleTests(TestCase):
+    member_id = "11111111-1111-1111-1111-111111111111"
+
+    def _build_request(self, method: str = "get", data=None, *, is_moderator=False, is_admin=False):
+        factory = RequestFactory()
+        request = getattr(factory, method)(reverse("account"), data=data or {})
+        request.session = {
+            "lss_user": {
+                "external_id": self.member_id,
+                "username": "known.user",
+                "email": "known.user@example.test",
+                "first_name": "Known",
+                "last_name": "User",
+            }
+        }
+        request.user = type(
+            "AuthenticatedUserStub",
+            (),
+            {
+                "is_authenticated": True,
+                "username": "known.user",
+                "email": "known.user@example.test",
+                "first_name": "Known",
+                "last_name": "User",
+                "external_id": self.member_id,
+                "is_moderator": is_moderator,
+                "is_admin": is_admin,
+            },
+        )()
+        request.LANGUAGE_CODE = "fr"
+        return request
+
+    def test_account_page_shows_moderation_section_for_moderator(self):
+        create_site_params(moderator_message="Message moderation")
+        create_directory_user(id=self.member_id)
+        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=False)
+        request = self._build_request(is_moderator=True, is_admin=False)
+
+        response = account(request)
+
+        self.assertContains(response, "Message de modération")
+        self.assertNotContains(response, "Paramètres administrateur")
+
+    def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
+        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+        create_directory_user(id=self.member_id)
+        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=True)
+        request = self._build_request(is_moderator=True, is_admin=True)
+
+        response = account(request)
+
+        self.assertContains(response, "Message de modération")
+        self.assertContains(response, "Paramètres administrateur")
+        self.assertContains(response, "Membres du site")
+
+    @patch("app_main.views.messages.success")
+    def test_admin_can_update_member_role_from_account_page(self, _messages_success_mock):
+        create_site_params()
+        create_directory_user(id=self.member_id)
+        create_directory_user(
+            id="22222222-2222-2222-2222-222222222222",
+            username="future.user",
+            email="future.user@example.test",
+            first_name="Future",
+            last_name="User",
+        )
+        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=True)
+        request = self._build_request(
+            method="post",
+            data={
+                "action": "update_member_role",
+                "member_search": "future.user",
+                "member_id": "22222222-2222-2222-2222-222222222222",
+                "role_name": "moderator",
+                "enabled": "on",
+            },
+            is_moderator=True,
+            is_admin=True,
+        )
+
+        response = account(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("account") + "?member_search=future.user")
+        self.assertTrue(
+            MemberRole.objects.filter(
+                member_id="22222222-2222-2222-2222-222222222222",
+                is_moderator=True,
+                is_admin=False,
+            ).exists()
+        )
 
 
 class BaseTemplatePopupTests(SimpleTestCase):
@@ -530,3 +695,22 @@ class BaseTemplatePopupTests(SimpleTestCase):
         rendered = template.render({"request": request})
 
         self.assertIn('data-lss-logout-confirm="true"', rendered)
+
+
+class SitePopupContextTests(TestCase):
+    def test_homepage_includes_admin_and_moderator_popup_sections(self):
+        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, "lss-site-popup-config")
+        self.assertContains(response, "Message admin")
+        self.assertContains(response, "Message moderation")
+
+    def test_non_main_page_excludes_moderator_popup_message(self):
+        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+
+        response = self.client.get(reverse("privacy_policy"))
+
+        self.assertContains(response, "Message admin")
+        self.assertNotContains(response, "Message moderation")

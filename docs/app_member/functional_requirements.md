@@ -18,7 +18,8 @@ At this stage, the app covers:
 
 - the persistent visual theme chosen by an authenticated member,
 - the persistent state of the central `songs` search form for authenticated members,
-- the privileged local roles `moderator` and `admin` for authenticated members.
+- the privileged local roles `moderator` and `admin` for authenticated members,
+- the local services that expose those roles and permissions to the rest of the Django project.
 
 ## Scope Boundaries
 
@@ -113,7 +114,7 @@ A `moderator` must be able to:
 
 - validate songs so they become impossible to modify outside moderator or admin permissions,
 - modify a group with the same effective power as a group admin even when not a member of that group,
-- publish a popup message on the main pages of the site, meaning the homepage and the home page of each app,
+- publish a popup message on the main pages of the site, currently `homepage`, `groups`, `songs`, and `animations`,
 - see notifications related to requests for modifying a song.
 
 ### Admin Capabilities
@@ -134,6 +135,19 @@ Guests never receive a persistent privileged role.
 
 The role data must remain in schema `lss`, with the authenticated member still referenced only by `users.users.id`.
 
+## Administrative Member Search
+
+`app_member` must provide the local service used by administrators to search members in the external directory.
+
+This search:
+
+- reads from `users.users` only,
+- never writes to `users.users`,
+- searches by `username`, `first_name`, `last_name`, and `email`,
+- merges the external identity data with the local role state stored in `lss.m_member_roles`.
+
+The search result is an application-level view model, not a duplicated local identity record.
+
 ## Preference Persistence Model
 
 This section concerns member preferences only.
@@ -145,6 +159,10 @@ They must not be folded into `m_preferences`.
 The preferred table name is:
 
 - `lss.m_preferences`
+
+The privileged role table is:
+
+- `lss.m_member_roles`
 
 The name `g_users` from the legacy MySQL application should not be kept.
 
@@ -183,6 +201,62 @@ CREATE TABLE lss.m_preferences (
 - the theme is stored as a theme slug, not as a CSS filename,
 - the `songs` search state is stored as one JSON block,
 - the table must stay focused on member preferences only.
+
+## Target PostgreSQL Table For Roles
+
+The functional target for privileged roles is a PostgreSQL table equivalent to the following model:
+
+```sql
+CREATE TABLE lss.m_member_roles (
+  member_id uuid PRIMARY KEY,
+  is_moderator boolean NOT NULL DEFAULT false,
+  is_admin boolean NOT NULL DEFAULT false,
+  CONSTRAINT m_member_roles_user_fk
+    FOREIGN KEY (member_id)
+    REFERENCES users.users (id)
+    ON DELETE CASCADE,
+  CONSTRAINT m_member_roles_admin_requires_moderator
+    CHECK (NOT is_admin OR is_moderator)
+);
+```
+
+## Role Table Design Rules
+
+- `member_id` is the same authenticated UUID as in `m_preferences`,
+- the foreign key points to `users.users(id)`,
+- deleting the external user row deletes the corresponding role row through `ON DELETE CASCADE`,
+- `is_admin` implies `is_moderator`,
+- removing `moderator` from a member must also remove `admin`,
+- if both role flags become false, the role row should be removed instead of being kept as an all-false record.
+
+## Runtime Role Exposure
+
+`app_member` must expose the local privileged roles to the rest of the Django project through dedicated services.
+
+The effective runtime flags consumed by other apps are:
+
+- `is_moderator`,
+- `is_admin`.
+
+Those flags must come from local `lss` business data, not from `Keycloak` role claims and not from writes to `users.users`.
+
+When a member is `admin`, the effective runtime contract must always expose both:
+
+- `is_admin = true`,
+- `is_moderator = true`.
+
+## Permission Helpers
+
+`app_member` is also responsible for providing reusable permission helpers for the rest of the project.
+
+At minimum, the app must expose helpers for:
+
+- managing site members,
+- managing site settings,
+- managing the global administrator popup,
+- managing the moderator popup,
+- validating songs,
+- managing groups globally with moderator authority.
 
 ## Theme Preference
 
@@ -226,6 +300,8 @@ The preferences stored by `app_member` concern the persistent central `songs` se
 `app_member` defines the persistence contract only.
 
 It does not define the full UI behavior of other apps that may read or update that state.
+
+The stored preference contract is global to the authenticated member and is not split by group, app, or browser session.
 
 ### Stored Fields
 

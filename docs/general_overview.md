@@ -120,12 +120,30 @@ The following rules describe the current functional intent.
 
 ### Moderation and Administration
 
-- Moderators can manage the moderators' message.
-- Moderators can update the home page content.
-- Moderators can manage the reference lists for artists, music bands, chorus-like prefixes, and song tags.
-- Admins can manage the administrators' global alert message.
-- Admins can manage site-level settings.
-- Admins can manage site members and grant moderator or admin privileges.
+- Moderators can manage the moderators' popup message displayed on the site's main pages.
+- Moderators can validate songs.
+- Moderators can act with global moderation power across the service where business rules require moderator authority.
+- Admins can manage site members and grant or revoke `moderator` or `admin` privileges.
+- Admins can manage site-level settings stored in `lss.site_params`, including home page content and global image constraints.
+- Admins can manage the administrators' popup message displayed on all pages.
+- Admins automatically inherit all moderator capabilities.
+
+### Account And Privileged UI
+
+- The authenticated account page is the single entry point for privileged member tools.
+- A simple `Member` sees identity and preference-oriented account information only.
+- A `Moderator` sees the moderation section on the account page.
+- An `Admin` sees both the moderation section and the administration section on the account page.
+- No dedicated admin navigation entry is required for these tools.
+
+### Site Popup Messages
+
+- The site supports two independent popup messages stored in `lss.site_params`.
+- The administrator message is eligible on all pages.
+- The moderator message is eligible only on the main pages: `homepage`, `groups`, `songs`, and `animations`.
+- If both messages are eligible on the current page, they are merged into one popup with two sections.
+- Popup dismissal is deferred locally in the browser with a configurable cooldown per message type.
+- Changing the message content invalidates the previous local defer state and makes the popup eligible again immediately.
 
 ## Groups
 

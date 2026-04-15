@@ -82,6 +82,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
+                'app_member.context_processors.site_popup',
             ],
         },
     },

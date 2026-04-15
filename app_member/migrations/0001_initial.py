@@ -12,6 +12,24 @@ class Migration(migrations.Migration):
     dependencies = []
 
     operations = [
+        migrations.RunSQL(
+            sql="""
+            CREATE SCHEMA IF NOT EXISTS "lss";
+            CREATE SCHEMA IF NOT EXISTS "users";
+            CREATE TABLE IF NOT EXISTS "users"."users" (
+                "id" uuid PRIMARY KEY,
+                "username" varchar(255),
+                "first_name" varchar(255),
+                "last_name" varchar(255),
+                "email" varchar(255),
+                "enabled" boolean DEFAULT TRUE,
+                "email_verified" boolean DEFAULT FALSE,
+                "synced_at" time,
+                "last_login_at" time
+            );
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        ),
         migrations.CreateModel(
             name="MemberPreferences",
             fields=[

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 
 SONG_SEARCH_VALIDATION_VALUES = {
@@ -64,9 +65,25 @@ def validate_song_search(value: object) -> None:
 
 
 class MemberPreferences(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)
+    member_id = models.UUIDField(primary_key=True, editable=False)
     theme_slug = models.CharField(max_length=32, default="normal")
     song_search = models.JSONField(default=default_song_search, validators=[validate_song_search])
 
     class Meta:
-        db_table = 'lss"."m_users'
+        db_table = 'lss"."m_preferences'
+
+
+class MemberRole(models.Model):
+    member_id = models.UUIDField(primary_key=True, editable=False)
+    is_moderator = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'lss"."m_member_roles'
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(is_admin=False) | Q(is_moderator=True),
+                name="m_member_roles_admin_requires_moderator",
+            ),
+        ]
+

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-12 19:20+0200\n"
+"POT-Creation-Date: 2026-04-15 10:52+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -36,9 +36,9 @@ msgid "Groupes"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:5
-#: app_main/templates/main/connexion.html:78
-#: app_main/templates/main/connexion.html:156
-#: app_main/templates/main/connexion.html:255
+#: app_main/templates/main/connexion.html:79
+#: app_main/templates/main/connexion.html:158
+#: app_main/templates/main/connexion.html:431
 #: app_main/templates/main/homepage.html:61
 #: app_main/templates/main/homepage.html:62
 #: app_main/templates/main/homepage.html:93
@@ -54,8 +54,8 @@ msgstr "Privacy policy"
 
 #: app_main/templates/main/connexion.html:11
 #: app_main/templates/main/connexion.html:20
-#: app_main/templates/main/connexion.html:66
-#: app_main/templates/main/connexion.html:119 templates/includes/nav.html:10
+#: app_main/templates/main/connexion.html:67
+#: app_main/templates/main/connexion.html:120 templates/includes/nav.html:10
 msgid "Connexion"
 msgstr "Log in"
 
@@ -67,47 +67,49 @@ msgstr "Dev mode"
 msgid "Simulation Keycloak"
 msgstr "Keycloak demo"
 
-#: app_main/templates/main/connexion.html:29
+#: app_main/templates/main/connexion.html:30
 msgid "Connexion sécurisée via Keycloak"
 msgstr "Secure sign-in with Keycloak"
 
-#: app_main/templates/main/connexion.html:62
-#: app_main/templates/main/connexion.html:91
+#: app_main/templates/main/connexion.html:63
+#: app_main/templates/main/connexion.html:92
 msgid "Actions"
 msgstr "Actions"
 
-#: app_main/templates/main/connexion.html:64
+#: app_main/templates/main/connexion.html:65
 msgid "Simulation"
 msgstr "Demo"
 
-#: app_main/templates/main/connexion.html:75
-#: app_main/templates/main/connexion.html:96 templates/base.html:50
+#: app_main/templates/main/connexion.html:76
+#: app_main/templates/main/connexion.html:97 templates/base.html:50
 #: templates/includes/nav.html:9
 msgid "Déconnexion"
 msgstr "Log out"
 
-#: app_main/templates/main/connexion.html:83
+#: app_main/templates/main/connexion.html:84
 msgid "Ouvrir la simulation"
 msgstr "Open the demo"
 
-#: app_main/templates/main/connexion.html:85
-#: app_main/templates/main/connexion.html:101
+#: app_main/templates/main/connexion.html:86
+#: app_main/templates/main/connexion.html:102
 msgid "Continuer avec Keycloak"
 msgstr "Continue with Keycloak"
 
-#: app_main/templates/main/connexion.html:99
-msgid "Continuer avec la simulation SSO"
+#: app_main/templates/main/connexion.html:100
+#, fuzzy
+#| msgid "Continuer avec la simulation SSO"
+msgid "Continuer avec le mock SSO"
 msgstr "Continue with the SSO demo"
 
-#: app_main/templates/main/connexion.html:109
+#: app_main/templates/main/connexion.html:110
 msgid "Paramétrage"
 msgstr "Settings"
 
-#: app_main/templates/main/connexion.html:117
+#: app_main/templates/main/connexion.html:118
 msgid "Mon profil"
 msgstr "My profile"
 
-#: app_main/templates/main/connexion.html:130
+#: app_main/templates/main/connexion.html:132
 msgid ""
 "La connexion passe par la structure mère cARThographie, qui fournit "
 "l'identité utilisée ensuite dans l'application avec simplicité et continuité."
@@ -115,29 +117,29 @@ msgstr ""
 "Sign-in is handled by the parent cARThographie platform, which provides the "
 "identity then used throughout the app for a smooth, consistent experience."
 
-#: app_main/templates/main/connexion.html:136
-#: app_main/templates/main/connexion.html:245
+#: app_main/templates/main/connexion.html:138
+#: app_main/templates/main/connexion.html:421
 msgid "Informations du profil"
 msgstr "Profile information"
 
-#: app_main/templates/main/connexion.html:140
+#: app_main/templates/main/connexion.html:142
 msgid "Données personnelles"
 msgstr "Personal information"
 
-#: app_main/templates/main/connexion.html:143
-#: app_main/templates/main/connexion.html:247
+#: app_main/templates/main/connexion.html:145
+#: app_main/templates/main/connexion.html:423
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr "Personal data is used only for sign-in and group management."
 
-#: app_main/templates/main/connexion.html:144
-#: app_main/templates/main/connexion.html:248
+#: app_main/templates/main/connexion.html:146
+#: app_main/templates/main/connexion.html:424
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr "It is never displayed publicly."
 
-#: app_main/templates/main/connexion.html:145
-#: app_main/templates/main/connexion.html:249
+#: app_main/templates/main/connexion.html:147
+#: app_main/templates/main/connexion.html:425
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -148,23 +150,163 @@ msgstr ""
 "recovery, notifications about changes to the terms of use, or warnings "
 "before an inactive account is deleted."
 
-#: app_main/templates/main/connexion.html:151
+#: app_main/templates/main/connexion.html:153
 msgid "Confidentialité"
 msgstr "Privacy"
 
 #: app_main/templates/main/connexion.html:165
+#, fuzzy
+#| msgid "Icône du thème"
+msgid "Rôles du site"
+msgstr "Theme icon"
+
+#: app_main/templates/main/connexion.html:170
+msgid ""
+"Vous êtes administrateur du site. Vous disposez aussi automatiquement des "
+"droits de modération."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:172
+msgid "Vous êtes modérateur du site."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:174
+msgid "Vous êtes membre authentifié sans droit privilégié global."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:180
+msgid "Outils de modération"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:184
+#: app_member/context_processors.py:46 app_member/forms.py:41
+msgid "Message de modération"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:185
+msgid ""
+"Ce message est public sur la page d'accueil et sur les pages principales des "
+"apps."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:189
+msgid ""
+"Les paramètres du site ne sont pas encore disponibles pour cette langue. "
+"L'édition du message de modération est temporairement indisponible."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:205
+msgid "Enregistrer la modération"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:213
+msgid "Notifications de modération"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:216
+msgid ""
+"Cette zone prépare l'affichage des futures demandes de modification de "
+"chanson."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:217
+msgid ""
+"Le flux complet de notifications sera branché lorsque le module chanson "
+"exposera ses demandes de modification."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:223
+msgid "Administration du site"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:227
+#, fuzzy
+#| msgid "Paramètres du profil"
+msgid "Paramètres administrateur"
+msgstr "Profile settings"
+
+#: app_main/templates/main/connexion.html:228
+msgid ""
+"Ces réglages pilotent le contenu et les contraintes globales du site pour la "
+"langue courante."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:246
+msgid "Enregistrer l'administration"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:254
+msgid "Membres du site"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:255
+msgid ""
+"La recherche lit uniquement `users.users` et la gestion des rôles reste "
+"locale à Lyrics Slide Show."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:267
+msgid "Rechercher"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:271
+#, python-format
+msgid "Résultats pour « %(search)s »"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:281
+msgid "Rôle actuel : administrateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:283
+msgid "Rôle actuel : modérateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:285
+msgid "Rôle actuel : membre"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:290
+msgid "Compte actif dans users.users"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:292
+msgid "Compte désactivé dans users.users"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:305
+msgid "Retirer modérateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:307
+msgid "Attribuer modérateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:321
+msgid "Retirer administrateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:323
+msgid "Attribuer administrateur"
+msgstr ""
+
+#: app_main/templates/main/connexion.html:330
+msgid "Aucun membre ne correspond à cette recherche."
+msgstr ""
+
+#: app_main/templates/main/connexion.html:341
 msgid "Paramètres du profil"
 msgstr "Profile settings"
 
-#: app_main/templates/main/connexion.html:170
-#: app_main/templates/main/connexion.html:180
-#: app_main/templates/main/connexion.html:195
+#: app_main/templates/main/connexion.html:346
+#: app_main/templates/main/connexion.html:356
+#: app_main/templates/main/connexion.html:371
 msgid "Langue utilisée"
 msgstr "Language in use"
 
-#: app_main/templates/main/connexion.html:211
-#: app_main/templates/main/connexion.html:216
-#: app_main/templates/main/connexion.html:231
+#: app_main/templates/main/connexion.html:387
+#: app_main/templates/main/connexion.html:392
+#: app_main/templates/main/connexion.html:407
 msgid "Thème choisi"
 msgstr "Selected theme"
 
@@ -262,10 +404,26 @@ msgstr ""
 "👢"
 
 #: app_main/templates/main/homepage.html:156
+msgid "Comment ça marche ?"
+msgstr "How it works"
+
+#: app_main/templates/main/homepage.html:159
+msgid ""
+"Ouvre une session, colle tes paroles, puis laisse Lyrics Slide Show découper "
+"le texte en écrans prêts à projeter."
+msgstr ""
+
+#: app_main/templates/main/homepage.html:160
+msgid ""
+"Tu ajustes ensuite le rythme, le thème et la navigation pour piloter la "
+"projection sans casser l'élan du chant."
+msgstr ""
+
+#: app_main/templates/main/homepage.html:169
 msgid "A vous !"
 msgstr "Your turn"
 
-#: app_main/templates/main/homepage.html:158
+#: app_main/templates/main/homepage.html:171
 msgid ""
 "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a "
 "jamais perdu le fil. »"
@@ -273,7 +431,7 @@ msgstr ""
 "“We had the session up and running in 2 minutes. Everyone joined in, and we "
 "never lost momentum.”"
 
-#: app_main/templates/main/homepage.html:160
+#: app_main/templates/main/homepage.html:173
 msgid ""
 "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la "
 "vibe."
@@ -745,10 +903,6 @@ msgstr "Theme logo"
 msgid "Thèmes"
 msgstr "Themes"
 
-#: app_main/templates/main/theme_preferences.html:9
-msgid "Apparence"
-msgstr "Appearance"
-
 #: app_main/templates/main/theme_preferences.html:38
 msgid "Les thèmes"
 msgstr "Themes"
@@ -785,38 +939,201 @@ msgstr "Theme list"
 msgid "Activer ce thème"
 msgstr "Activate this theme"
 
-#: app_main/views.py:32
+#: app_main/views.py:43
 msgid "Normal"
 msgstr "Default"
 
-#: app_main/views.py:33
+#: app_main/views.py:44
 msgid "Palette chaude et classique pour l'habillage principal."
 msgstr "A warm, classic palette for the main interface."
 
-#: app_main/views.py:37
+#: app_main/views.py:48
 msgid "Scout"
 msgstr "Scout"
 
-#: app_main/views.py:38
+#: app_main/views.py:49
 msgid "Palette plus fraîche, plus nette, avec une ambiance vert-bleu."
 msgstr "A fresher, crisper palette with a teal-blue feel."
 
-#: app_main/views.py:42
+#: app_main/views.py:53
 msgid "Taizé"
 msgstr ""
 
-#: app_main/views.py:43
+#: app_main/views.py:54
 msgid ""
 "Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."
 msgstr "A red and ochre palette inspired by parchment and candlelight."
 
-#: app_main/views.py:47
+#: app_main/views.py:58
 msgid "Me†al"
 msgstr ""
 
-#: app_main/views.py:48
+#: app_main/views.py:59
 msgid "Palette métal avec des néons de couleurs"
 msgstr "A metallic palette with colorful neon accents."
+
+#: app_main/views.py:126
+#, python-format
+msgid "Compte de %(username)s"
+msgstr ""
+
+#: app_main/views.py:234 app_main/views.py:261 app_main/views.py:287
+msgid "Accès refusé."
+msgstr ""
+
+#: app_main/views.py:237
+msgid "Les paramètres du site sont introuvables pour cette langue."
+msgstr ""
+
+#: app_main/views.py:243
+msgid "Les réglages de modération ont été enregistrés."
+msgstr ""
+
+#: app_main/views.py:269
+msgid "Les paramètres administrateur ont été enregistrés."
+msgstr ""
+
+#: app_main/views.py:297
+msgid "administrateur"
+msgstr ""
+
+#: app_main/views.py:297
+msgid "modérateur"
+msgstr ""
+
+#: app_main/views.py:299
+#, python-format
+msgid "Le rôle %(role)s a été attribué."
+msgstr ""
+
+#: app_main/views.py:301
+#, python-format
+msgid "Le rôle %(role)s a été retiré."
+msgstr ""
+
+#: app_main/views.py:306
+msgid "La demande de mise à jour des rôles est invalide."
+msgstr ""
+
+#: app_main/views.py:317
+msgid "Action de compte inconnue."
+msgstr ""
+
+#: app_member/context_processors.py:36
+msgid "Message des administrateurs"
+msgstr ""
+
+#: app_member/context_processors.py:56
+#, fuzzy
+#| msgid "Informations du profil"
+msgid "Informations du site"
+msgstr "Profile information"
+
+#: app_member/forms.py:9
+msgid "Recherche membre"
+msgstr ""
+
+#: app_member/forms.py:14
+msgid "Username, prénom, nom ou e-mail"
+msgstr ""
+
+#: app_member/forms.py:24
+msgid "Modérateur"
+msgstr ""
+
+#: app_member/forms.py:25
+msgid "Administrateur"
+msgstr ""
+
+#: app_member/forms.py:42
+msgid "Délai de réaffichage du message de modération (minutes)"
+msgstr ""
+
+#: app_member/forms.py:76
+msgid "Titre du site"
+msgstr ""
+
+#: app_member/forms.py:77
+#, fuzzy
+#| msgid "Navigation principale"
+msgid "Titre principal"
+msgstr "Main navigation"
+
+#: app_member/forms.py:78
+msgid "Texte d'accueil"
+msgstr ""
+
+#: app_member/forms.py:79
+msgid "Texte du bloc 1"
+msgstr ""
+
+#: app_member/forms.py:80
+msgid "Texte du bloc 2"
+msgstr ""
+
+#: app_member/forms.py:81
+msgid "Nombre maximal de lignes par couplet"
+msgstr ""
+
+#: app_member/forms.py:82
+msgid "Nombre maximal de caractères par ligne"
+msgstr ""
+
+#: app_member/forms.py:83
+msgid "Préfixe du refrain"
+msgstr ""
+
+#: app_member/forms.py:84
+msgid "Préfixe de couplet"
+msgstr ""
+
+#: app_member/forms.py:85
+msgid "Suffixe de couplet"
+msgstr ""
+
+#: app_member/forms.py:86
+msgid "Message global administrateur"
+msgstr ""
+
+#: app_member/forms.py:87
+msgid "Délai de réaffichage du message administrateur (minutes)"
+msgstr ""
+
+#: app_member/forms.py:88
+msgid "Taille maximale des images de fond (octets)"
+msgstr ""
+
+#: app_member/forms.py:89
+msgid "Largeur minimale des images de fond"
+msgstr ""
+
+#: app_member/forms.py:90
+msgid "Hauteur minimale des images de fond"
+msgstr ""
+
+#: app_member/forms.py:91
+msgid "Largeur maximale des images de fond"
+msgstr ""
+
+#: app_member/forms.py:92
+msgid "Hauteur maximale des images de fond"
+msgstr ""
+
+#: app_member/forms.py:93
+msgid "Ratio minimal des images de fond"
+msgstr ""
+
+#: app_member/forms.py:94
+msgid "Ratio maximal des images de fond"
+msgstr ""
+
+#: app_member/forms.py:95
+msgid "Extensions d'images autorisées"
+msgstr ""
+
+#: app_member/forms.py:96
+msgid "Types MIME d'images autorisés"
+msgstr ""
 
 #: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:10
 #: app_song/templates/song/songs.html:25 app_song/templates/song/songs.html:34
@@ -2560,8 +2877,8 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
-#~ msgid "Comment ça marche ?"
-#~ msgstr "How it works"
+#~ msgid "Apparence"
+#~ msgstr "Appearance"
 
 #~ msgid "1. Colle tes paroles ou écris-les directement."
 #~ msgstr "1. Paste in your lyrics or type them directly."

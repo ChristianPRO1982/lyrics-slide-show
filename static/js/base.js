@@ -3,10 +3,20 @@
     const themeConfig = window.LSS_THEME_CONFIG || null;
     const messageBoxI18n = window.LSS_MESSAGE_BOX_CONFIG?.i18n || {};
     const floatingHelpConfig = window.LSS_FLOATING_HELP_CONFIG || {};
+    const sitePopupConfigElement = document.getElementById("lss-site-popup-config");
     const themeStylesheet = document.querySelector("#site-theme-stylesheet");
     const faviconLink = document.querySelector("#site-favicon");
     const themeButtons = document.querySelectorAll("[data-theme-select]");
     const colorSchemeQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    let sitePopupConfig = {};
+
+    if (sitePopupConfigElement) {
+        try {
+            sitePopupConfig = JSON.parse(sitePopupConfigElement.textContent || "{}");
+        } catch (error) {
+            sitePopupConfig = {};
+        }
+    }
 
     const getStoredTheme = () => {
         if (!themeConfig) {
@@ -192,6 +202,82 @@
                 window.location.assign(link.href);
             }
         });
+    });
+
+    const getDeferredPopupSections = () => {
+        const sections = Array.isArray(sitePopupConfig.sections) ? sitePopupConfig.sections : [];
+        const now = Date.now();
+
+        return sections.filter((section) => {
+            const messageMarkdown = String(section.messageMarkdown || "").trim();
+            if (!messageMarkdown) {
+                return false;
+            }
+
+            const storageKey = `lss-site-popup:${section.id}:${section.version}`;
+            const cooldownMs = Math.max(Number(section.cooldownMinutes) || 0, 0) * 60 * 1000;
+
+            try {
+                const storedAt = Number(window.localStorage.getItem(storageKey));
+                if (Number.isFinite(storedAt) && cooldownMs > 0 && now - storedAt < cooldownMs) {
+                    return false;
+                }
+            } catch (error) {
+                // Ignore localStorage errors and display the popup immediately.
+            }
+
+            return true;
+        });
+    };
+
+    const rememberPopupSections = (sections) => {
+        const storedAt = Date.now().toString();
+
+        sections.forEach((section) => {
+            try {
+                window.localStorage.setItem(`lss-site-popup:${section.id}:${section.version}`, storedAt);
+            } catch (error) {
+                // Ignore localStorage errors to preserve the popup interaction.
+            }
+        });
+    };
+
+    const buildSitePopupMarkdown = (sections) => {
+        if (sections.length === 1) {
+            return sections[0].messageMarkdown;
+        }
+
+        return sections
+            .map((section) => `## ${section.title}\n\n${section.messageMarkdown}`)
+            .join("\n\n");
+    };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        if (!window.LSSMessageBox || typeof window.LSSMessageBox.alert !== "function") {
+            return;
+        }
+
+        const eligibleSections = getDeferredPopupSections();
+        if (!eligibleSections.length) {
+            return;
+        }
+
+        const result = await window.LSSMessageBox.alert({
+            title: sitePopupConfig.title || "Informations du site",
+            messageMarkdown: buildSitePopupMarkdown(eligibleSections),
+            size: eligibleSections.length > 1 ? "wide" : "default",
+            buttons: [
+                {
+                    id: "ok",
+                    label: messageBoxI18n.okLabel || "OK",
+                    tone: "neutral",
+                },
+            ],
+        });
+
+        if (result.buttonId === "ok") {
+            rememberPopupSections(eligibleSections);
+        }
     });
 
     const floatingHelp = document.querySelector("[data-floating-help]");

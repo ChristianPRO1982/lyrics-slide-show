@@ -5,17 +5,18 @@ import logging
 import re
 import secrets
 import time
+from dataclasses import dataclass, replace
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 import uuid
-from dataclasses import dataclass
 from typing import Any
 
 from django.conf import settings
 from django.db import connection
 
 from app_main.models import DirectoryUserRecord
+from app_member.services import get_member_role_flags_safe
 
 SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
@@ -52,6 +53,8 @@ class DirectoryUser:
     first_name: str | None
     last_name: str | None
     enabled: bool
+    is_moderator: bool = False
+    is_admin: bool = False
 
     def to_session_dict(self) -> dict[str, Any]:
         return {
@@ -60,6 +63,8 @@ class DirectoryUser:
             "email": self.email,
             "first_name": self.first_name,
             "last_name": self.last_name,
+            "is_moderator": self.is_moderator,
+            "is_admin": self.is_admin,
         }
 
 
@@ -70,6 +75,8 @@ class SessionUser:
     email: str | None
     first_name: str | None
     last_name: str | None
+    is_moderator: bool = False
+    is_admin: bool = False
 
     @property
     def is_authenticated(self) -> bool:
@@ -86,6 +93,8 @@ class SessionUser:
 @dataclass(frozen=True)
 class AnonymousSessionUser:
     username: str = ""
+    is_moderator: bool = False
+    is_admin: bool = False
 
     @property
     def is_authenticated(self) -> bool:
@@ -399,6 +408,8 @@ def get_request_user(session) -> SessionUser | AnonymousSessionUser:
         email=session_user.get("email"),
         first_name=session_user.get("first_name"),
         last_name=session_user.get("last_name"),
+        is_moderator=bool(session_user.get("is_moderator", False) or session_user.get("is_admin", False)),
+        is_admin=bool(session_user.get("is_admin", False)),
     )
 
 
@@ -418,5 +429,7 @@ def refresh_request_user(session) -> SessionUser | AnonymousSessionUser:
         clear_session_user(session)
         return AnonymousSessionUser()
 
+    roles = get_member_role_flags_safe(external_id)
+    user = replace(user, is_moderator=roles.is_moderator, is_admin=roles.is_admin)
     store_session_user(session, user)
     return get_request_user(session)

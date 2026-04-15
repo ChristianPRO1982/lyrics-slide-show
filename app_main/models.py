@@ -15,6 +15,8 @@ class SiteParams(models.Model):
     verse_prefix2 = models.CharField(max_length=3)
     admin_message = models.TextField()
     moderator_message = models.TextField()
+    admin_message_cooldown_minutes = models.IntegerField(default=5)
+    moderator_message_cooldown_minutes = models.IntegerField(default=60)
     bg_img_max_bytes = models.IntegerField(default=2097152)
     bg_img_min_w = models.IntegerField(default=800)
     bg_img_min_h = models.IntegerField(default=600)
