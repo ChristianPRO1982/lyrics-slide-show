@@ -35,6 +35,7 @@ from .services import (
     user_can_manage_group,
     user_can_select_group,
 )
+from app_member.services import can_manage_groups_globally
 
 
 def _duplicate_name_exists(name: str, exclude_group_id: int | None = None) -> bool:
@@ -48,7 +49,7 @@ def _duplicate_name_exists(name: str, exclude_group_id: int | None = None) -> bo
 def _build_group_share_link(request: HttpRequest, group: Group) -> str | None:
     if not group.secret_ciphertext:
         return None
-    query = urlencode({"select_group": group.group_id, "secret": group.secret_ciphertext})
+    query = urlencode({"secret": group.secret_ciphertext})
     return request.build_absolute_uri(f"{reverse('groups')}?{query}")
 
 
@@ -92,6 +93,7 @@ def _build_groups_page_context(request: HttpRequest, create_form: GroupCreateFor
         can_select = user_can_select_group(request.user, group, membership, active_secret)
         is_member = membership is not None
         is_group_admin = bool(membership and membership.is_group_admin)
+        can_view_admin_usernames = bool(is_member or can_manage_groups_globally(request.user))
         group_cards.append(
             {
                 "group": group,
@@ -99,11 +101,11 @@ def _build_groups_page_context(request: HttpRequest, create_form: GroupCreateFor
                 "status_label": get_status_label(group),
                 "business_status": business_status,
                 "has_secret": bool(group.secret_ciphertext and group.status == GroupStatus.PRIVATE),
-                "membership_marker": "🛞" if is_group_admin else "👥" if is_member else "📩" if group.group_id in pending_request_group_ids else "",
+                "membership_marker": "💪" if is_group_admin else "👥" if is_member else "📩" if group.group_id in pending_request_group_ids else "",
                 "membership_label": (
                     _("Responsable") if is_group_admin else _("Membre") if is_member else _("Demande en cours") if group.group_id in pending_request_group_ids else ""
                 ),
-                "admin_usernames": admin_usernames_by_group_id.get(group.group_id, []),
+                "admin_usernames": admin_usernames_by_group_id.get(group.group_id, []) if can_view_admin_usernames else [],
                 "can_manage": can_manage,
                 "can_select": can_select,
                 "can_request_join": bool(
@@ -134,10 +136,13 @@ def _build_groups_page_context(request: HttpRequest, create_form: GroupCreateFor
 def _handle_group_link_selection(request: HttpRequest) -> HttpResponse | None:
     selected_group_id = request.GET.get("select_group")
     provided_secret = request.GET.get("secret", "").strip()
-    if not selected_group_id:
+    if not selected_group_id and not provided_secret:
         return None
 
-    group = get_object_or_404(Group, group_id=selected_group_id)
+    if selected_group_id:
+        group = get_object_or_404(Group, group_id=selected_group_id)
+    else:
+        group = get_object_or_404(Group, secret_ciphertext=provided_secret, status=GroupStatus.PRIVATE)
     member_id = get_member_id_from_user(request.user)
     membership = None
     if member_id:
@@ -391,6 +396,11 @@ def modify_group(request: HttpRequest, group_id: int) -> HttpResponse:
 
     selected_group, selected_via_secret = get_selected_group_state(request)
     share_link = _build_group_share_link(request, group)
+    current_session_secret = (
+        request.session.get(SELECTED_GROUP_SECRET_SESSION_KEY)
+        if request.session.get(SELECTED_GROUP_ID_SESSION_KEY) == group.group_id
+        else None
+    )
     context = {
         "group": group,
         "settings_form": settings_form,
@@ -404,5 +414,6 @@ def modify_group(request: HttpRequest, group_id: int) -> HttpResponse:
         "join_request_cards": join_request_cards,
         "member_cards": member_cards,
         "upcoming_animations": [],
+        "can_select_current_group": user_can_select_group(request.user, group, membership, current_session_secret),
     }
     return render(request, "group/modify_group.html", context)

@@ -62,6 +62,39 @@
         });
     });
 
+    document.querySelectorAll("[data-copy-qr]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            const container = button.closest(".group-qr-panel");
+            const image = container?.querySelector("[data-group-qr-image]");
+            if (!(image instanceof HTMLImageElement) || !image.src) {
+                return;
+            }
+
+            try {
+                const response = await fetch(image.src, { mode: "cors" });
+                const blob = await response.blob();
+
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            [blob.type || "image/png"]: blob,
+                        }),
+                    ]);
+                    if (messageBox) {
+                        messageBox.alert({ title: "Copie", messageMarkdown: "Le QR code a été copié." });
+                    }
+                    return;
+                }
+
+                throw new Error("Clipboard image write not supported.");
+            } catch (_error) {
+                if (messageBox) {
+                    messageBox.alert({ title: "Copie", messageMarkdown: "La copie du QR code a échoué." });
+                }
+            }
+        });
+    });
+
     document.querySelectorAll("[data-group-secret-prompt]").forEach((button) => {
         button.addEventListener("click", async () => {
             const form = button.closest("[data-group-secret-form]");

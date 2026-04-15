@@ -116,24 +116,25 @@
         <div class="group-list" data-group-list>
             {% for item in group_cards %}
                 <article class="site-theme-card group-card" data-group-card data-group-search-text="{{ item.group.name }} {% for admin_username in item.admin_usernames %}{{ admin_username }} {% endfor %}">
-                    <header class="site-theme-card-header group-card-header">
-                        <div>
-                            <h2>{{ item.group.name }} <span class="group-status-pill">{{ item.status_icon }}</span></h2>
-                            <p>{{ item.status_label }}</p>
+
+                    <div class="group-card-summary-line">
+                        <div class="group-card-summary-main">
+                            <h2>{{ item.group.name }}</h2>
+                            <span class="group-status-pill">{{ item.status_icon }} {{ item.status_label }}</span>
+                            {% if item.admin_usernames %}
+                                <span class="group-admin-line">
+                                    {% trans "Responsables :" %}
+                                    {{ item.admin_usernames|join:", " }}
+                                </span>
+                            {% endif %}
                         </div>
                         {% if item.membership_marker %}
                             <span class="group-membership-pill">{{ item.membership_marker }} {{ item.membership_label }}</span>
                         {% endif %}
-                    </header>
-
-                    {% if item.admin_usernames %}
-                        <p class="group-admin-line">
-                            {% trans "Responsables :" %}
-                            {{ item.admin_usernames|join:", " }}
-                        </p>
-                    {% endif %}
+                    </div>
 
                     {% if item.group.info %}
+                        <hr>
                         <div class="group-info-block">
                             <p class="group-info-preview">
                                 {% if item.group.info|length > 50 %}

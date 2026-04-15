@@ -32,6 +32,13 @@
         <p>{{ group_status_icon }} {{ group_status_label }}</p>
         {% if selected_group and selected_group.group_id == group.group_id %}
             <p>{% trans "Ce groupe est actuellement sélectionné." %}</p>
+        {% elif can_select_current_group %}
+            <form method="post" action="{% url 'groups' %}" class="group-inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="select_group">
+                <input type="hidden" name="group_id" value="{{ group.group_id }}">
+                <button type="submit">{% trans "Sélectionner ce groupe" %}</button>
+            </form>
         {% endif %}
     </article>
 {% endblock %}
@@ -86,6 +93,27 @@
         </header>
         {% if group.secret_ciphertext %}
             <p>{% trans "Un secret est actuellement enregistré pour ce groupe." %}</p>
+            {% if share_link %}
+                <div class="group-share-panel">
+                    <label for="group-share-link">{% trans "Lien complet" %}</label>
+                    <input id="group-share-link" type="text" value="{{ share_link }}" readonly>
+                    <div class="group-card-actions">
+                        <button type="button" data-copy-text="{{ share_link }}">{% trans "Copier le lien" %}</button>
+                    </div>
+                    <div class="group-qr-panel">
+                        <img
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ share_link|urlencode }}"
+                            alt="{% trans 'QR code du lien secret' %}"
+                            class="group-qr-image"
+                            crossorigin="anonymous"
+                            data-group-qr-image
+                        >
+                        <div class="group-card-actions">
+                            <button type="button" data-copy-qr>{% trans "Copier le QR code" %}</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         {% else %}
             <p>{% trans "Aucun secret n'est actuellement enregistré pour ce groupe." %}</p>
         {% endif %}
@@ -123,11 +151,14 @@
             <div class="group-people-list">
                 {% for request_item in join_request_cards %}
                     <article class="group-person-row">
-                        <div>
-                            <p><strong>{{ request_item.username }}</strong></p>
-                            <p>{{ request_item.display_name }}</p>
+                        <div class="group-person-main">
+                            <p>
+                                <strong>{{ request_item.username }}</strong>
+                                {% if request_item.first_name %} {{ request_item.first_name }}{% endif %}
+                                {% if request_item.last_name %} {{ request_item.last_name }}{% endif %}
+                            </p>
                         </div>
-                        <div class="group-card-actions">
+                        <div class="group-person-actions group-card-actions">
                             <form method="post" class="group-inline-form" data-group-join-review-form>
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="">
@@ -151,17 +182,16 @@
             <div class="group-people-list">
                 {% for member in member_cards %}
                     <article class="group-person-row">
-                        <div>
-                            <p><strong>{{ member.username }}</strong></p>
-                            <p>{{ member.display_name }}</p>
-                            {% if member.is_group_admin %}
-                                <p>🛞 {% trans "Responsable du groupe" %}</p>
-                            {% endif %}
-                            {% if member.is_last_admin %}
-                                <p>{% trans "Dernier responsable du groupe." %}</p>
-                            {% endif %}
+                        <div class="group-person-main">
+                            <p>
+                                <strong>{{ member.username }}</strong>
+                                {% if member.first_name %} {{ member.first_name }}{% endif %}
+                                {% if member.last_name %} {{ member.last_name }}{% endif %}
+                                {% if member.is_group_admin %} | 💪 {% trans "Responsable du groupe" %}{% endif %}
+                                {% if member.is_last_admin %} | {% trans "Dernier responsable du groupe." %}{% endif %}
+                            </p>
                         </div>
-                        <div class="group-card-actions">
+                        <div class="group-person-actions group-card-actions">
                             {% if member.is_group_admin %}
                                 {% if member.is_last_admin %}
                                     <span class="group-disabled-action">{% trans "Dernier responsable" %}</span>
