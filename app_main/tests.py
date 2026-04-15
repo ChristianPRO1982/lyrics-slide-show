@@ -696,6 +696,46 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('data-lss-logout-confirm="true"', rendered)
 
+    def test_navigation_shows_admin_role_marker_on_account_link(self):
+        request = RequestFactory().get("/")
+        request.user = type(
+            "AuthenticatedAdminUserStub",
+            (),
+            {
+                "is_authenticated": True,
+                "username": "admin.user",
+                "is_admin": True,
+                "is_moderator": True,
+            },
+        )()
+
+        template = engines["django"].get_template("includes/nav.html")
+        rendered = template.render({"request": request})
+
+        self.assertIn('data-django-alias="account"', rendered)
+        self.assertIn("👑", rendered)
+        self.assertNotIn("⚖️", rendered)
+
+    def test_navigation_shows_moderator_role_marker_on_account_link(self):
+        request = RequestFactory().get("/")
+        request.user = type(
+            "AuthenticatedModeratorUserStub",
+            (),
+            {
+                "is_authenticated": True,
+                "username": "moderator.user",
+                "is_admin": False,
+                "is_moderator": True,
+            },
+        )()
+
+        template = engines["django"].get_template("includes/nav.html")
+        rendered = template.render({"request": request})
+
+        self.assertIn('data-django-alias="account"', rendered)
+        self.assertIn("⚖️", rendered)
+        self.assertNotIn("👑", rendered)
+
 
 class SitePopupContextTests(TestCase):
     def test_homepage_includes_admin_and_moderator_popup_sections(self):

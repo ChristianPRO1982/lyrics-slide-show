@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-15 10:52+0200\n"
+"POT-Creation-Date: 2026-04-15 16:21+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -16,7 +16,7 @@ msgstr ""
 #: app_animation/templates/animation/animations.html:10
 #: app_animation/templates/animation/animations.html:25
 #: app_animation/templates/animation/animations.html:34
-#: templates/includes/nav.html:8
+#: templates/includes/nav.html:10
 msgid "Liste des animations"
 msgstr "Animations"
 
@@ -24,15 +24,601 @@ msgstr "Animations"
 msgid "Animations"
 msgstr "Animations"
 
+#: app_group/forms.py:16 app_group/forms.py:53
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Nom du groupe"
+msgstr "Groups"
+
+#: app_group/forms.py:17 app_group/forms.py:54
+#, fuzzy
+#| msgid "Informations du profil"
+msgid "Informations"
+msgstr "Profile information"
+
+#: app_group/forms.py:20 app_group/forms.py:57
+msgid "Texte simple uniquement. Les retours à la ligne sont conservés."
+msgstr ""
+
+#: app_group/forms.py:26 app_group/forms.py:68
+#, fuzzy
+#| msgid "Ce champ est obligatoire."
+msgid "Le nom du groupe est obligatoire."
+msgstr "This field is required."
+
+#: app_group/forms.py:36
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Ouverture du groupe"
+msgstr "Groups"
+
+#: app_group/forms.py:38 app_group/services.py:64
+msgid "Ouvert"
+msgstr ""
+
+#: app_group/forms.py:39 app_group/services.py:67
+#, fuzzy
+#| msgid "Fermer"
+msgid "Fermé"
+msgstr "Close"
+
+#: app_group/models.py:28
+msgid "Open"
+msgstr ""
+
+#: app_group/models.py:29
+msgid "Private"
+msgstr ""
+
+#: app_group/services.py:66
+msgid "Fermé avec secret"
+msgstr ""
+
+#: app_group/services.py:186
+msgid "Un autre groupe utilise déjà ce nom, même avec une casse différente."
+msgstr ""
+
+#: app_group/services.py:198
+msgid "Le dernier responsable du groupe ne peut pas perdre ce rôle."
+msgstr ""
+
+#: app_group/services.py:223
+msgid "Ce membre n'appartient pas au groupe."
+msgstr ""
+
 #: app_group/templates/group/groups.html:5
-#: app_group/templates/group/groups.html:10
-#: app_group/templates/group/groups.html:25
-#: app_group/templates/group/groups.html:34 templates/includes/nav.html:6
+#: app_group/templates/group/groups.html:12
+#: app_group/templates/group/groups.html:15
+#: app_group/templates/group/groups.html:43 templates/includes/nav.html:8
 msgid "Liste des groupes"
 msgstr "Groups"
 
-#: app_group/templates/group/groups.html:32
+#: app_group/templates/group/groups.html:6
+#: app_group/templates/group/modify_group.html:6 templates/base.html:94
+msgid "Section"
+msgstr "Section"
+
+#: app_group/templates/group/groups.html:19
+#: app_group/templates/group/groups.html:28
+#: app_group/templates/group/groups.html:42
+#: app_group/templates/group/modify_group.html:82
 msgid "Groupes"
+msgstr ""
+
+#: app_group/templates/group/groups.html:21
+msgid "Groupe sélectionné"
+msgstr ""
+
+#: app_group/templates/group/groups.html:25
+#: app_group/templates/group/groups.html:38
+msgid "Pas de groupe sélectionné."
+msgstr ""
+
+#: app_group/templates/group/groups.html:30
+msgid "Résumé mobile des outils de groupe."
+msgstr ""
+
+#: app_group/templates/group/groups.html:36
+msgid "Sélection active"
+msgstr ""
+
+#: app_group/templates/group/groups.html:45
+msgid "groupe ouvert"
+msgstr ""
+
+#: app_group/templates/group/groups.html:46
+msgid "groupe fermé"
+msgstr ""
+
+#: app_group/templates/group/groups.html:47
+msgid "groupe fermé avec secret"
+msgstr ""
+
+#: app_group/templates/group/groups.html:50
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Recherche rapide"
+msgstr "Groups"
+
+#: app_group/templates/group/groups.html:54
+#: app_group/templates/group/groups.html:55
+msgid "Aller à la recherche"
+msgstr ""
+
+#: app_group/templates/group/groups.html:65
+#: app_group/templates/group/groups.html:89
+#, fuzzy
+#| msgid "Créer un compte"
+msgid "Créer un groupe"
+msgstr "Create an account"
+
+#: app_group/templates/group/groups.html:66
+msgid "Le nouveau groupe démarre ouvert et vous en devenez responsable."
+msgstr ""
+
+#: app_group/templates/group/groups.html:82
+#, fuzzy
+#| msgid "Créer un compte"
+msgid "Créer le groupe"
+msgstr "Create an account"
+
+#: app_group/templates/group/groups.html:92
+msgid "La création de groupe est réservée aux membres authentifiés."
+msgstr ""
+
+#: app_group/templates/group/groups.html:99
+msgid "Fonctionnement des accès"
+msgstr ""
+
+#: app_group/templates/group/groups.html:102
+msgid ""
+"Un groupe ouvert peut être sélectionné librement. Un groupe fermé reste "
+"réservé à ses membres. Lorsqu'un secret existe, il ouvre un accès de session "
+"sans donner de droit de gestion."
+msgstr ""
+
+#: app_group/templates/group/groups.html:103
+msgid ""
+"Les demandes d’adhésion ne concernent que les groupes fermés. Le secret ne "
+"remplace pas une adhésion formelle."
+msgstr ""
+
+#: app_group/templates/group/groups.html:109
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Rechercher un groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/groups.html:110
+msgid "Recherche à partir de 3 caractères"
+msgstr ""
+
+#: app_group/templates/group/groups.html:128
+msgid "Responsables :"
+msgstr ""
+
+#: app_group/templates/group/groups.html:139
+msgid "Voir la suite"
+msgstr ""
+
+#: app_group/templates/group/groups.html:139
+msgid "Réduire"
+msgstr ""
+
+#: app_group/templates/group/groups.html:153
+#, fuzzy
+#| msgid "Section"
+msgid "Sélectionner"
+msgstr "Section"
+
+#: app_group/templates/group/groups.html:161
+msgid "Sélectionner avec secret"
+msgstr ""
+
+#: app_group/templates/group/groups.html:166
+msgid "Envoyer la demande d’adhésion à ce groupe ?"
+msgstr ""
+
+#: app_group/templates/group/groups.html:170
+msgid "Demander à rejoindre"
+msgstr ""
+
+#: app_group/templates/group/groups.html:173
+msgid "Annuler cette demande d’adhésion ?"
+msgstr ""
+
+#: app_group/templates/group/groups.html:177
+msgid "Annuler la demande"
+msgstr ""
+
+#: app_group/templates/group/groups.html:182
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Quitter ce groupe ?"
+msgstr "Groups"
+
+#: app_group/templates/group/groups.html:186
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Quitter le groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/groups.html:191
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Modifier le groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/groups.html:196
+msgid "Groupe actuellement sélectionné."
+msgstr ""
+
+#: app_group/templates/group/groups.html:201
+msgid "Aucun groupe n'est encore disponible."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:12
+#: app_group/templates/group/modify_group.html:15
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Modifier un groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:19 templates/base.html:102
+msgid "Outils"
+msgstr "Tools"
+
+#: app_group/templates/group/modify_group.html:21
+msgid "État du groupe, partage et raccourcis."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:27
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "État du groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:33
+msgid "Ce groupe est actuellement sélectionné."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:35
+msgid "La sélection courante a été obtenue par secret."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:43
+msgid "Lien secret"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:44
+msgid "Visible uniquement pour la gestion du groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:49
+msgid "Lien prêt à partager"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:52
+msgid "Copier le lien"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:55
+msgid "Le QR code n'est pas encore généré localement dans cette version."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:59
+msgid "Aucun secret n'est enregistré pour ce groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:66
+#, fuzzy
+#| msgid "Navigation principale"
+msgid "Navigation"
+msgstr "Main navigation"
+
+#: app_group/templates/group/modify_group.html:69
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Retour à la liste des groupes"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:72
+#, fuzzy
+#| msgid "Outils"
+msgid "Outils groupe"
+msgstr "Tools"
+
+#: app_group/templates/group/modify_group.html:74
+msgid "Résumé compact pour mobile."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:85
+msgid ""
+"Cette page regroupe les paramètres, le secret, les demandes et la "
+"gouvernance du groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:88
+msgid "ouvert"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:89
+#, fuzzy
+#| msgid "Fermer"
+msgid "fermé"
+msgstr "Close"
+
+#: app_group/templates/group/modify_group.html:90
+msgid "fermé avec secret"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:91
+msgid ""
+"Le dernier responsable ne peut ni être rétrogradé ni être retiré sans qu'un "
+"autre responsable existe déjà."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:98
+#, fuzzy
+#| msgid "Paramètres du profil"
+msgid "Paramètres principaux"
+msgstr "Profile settings"
+
+#: app_group/templates/group/modify_group.html:99
+msgid "Nom, informations, ouverture et secret du groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:115
+msgid "Enregistrer les paramètres"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:119
+msgid "Générer ou remplacer le secret de groupe ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:124
+msgid "Remplacer le secret"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:126
+#, fuzzy
+#| msgid "Créer un compte"
+msgid "Créer un secret"
+msgstr "Create an account"
+
+#: app_group/templates/group/modify_group.html:131
+msgid "Supprimer le secret de groupe ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:134
+msgid "Supprimer le secret"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:146
+msgid "Demandes d'adhésion"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:157
+msgid "Accepter cette demande d’adhésion ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:161
+msgid "Accepter"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:163
+msgid "Refuser cette demande d’adhésion ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:167
+msgid "Refuser"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:179
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Membres du groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:190
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Responsable du groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:193
+msgid "Dernier responsable du groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:199
+#, fuzzy
+#| msgid "Dernière version publiée"
+msgid "Dernier responsable"
+msgstr "Latest release"
+
+#: app_group/templates/group/modify_group.html:201
+msgid "Retirer le rôle de responsable à cette personne ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:205
+msgid "Retirer responsable"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:209
+msgid "Attribuer le rôle de responsable à cette personne ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:213
+msgid "Nommer responsable"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:218
+msgid "Retirer ce membre du groupe ?"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:222
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Retirer du groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:230
+msgid "Aucun membre n'est actuellement rattaché à ce groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:237
+#: app_group/templates/group/modify_group.html:243
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Suppression du groupe"
+msgstr "Groups"
+
+#: app_group/templates/group/modify_group.html:238
+msgid ""
+"La suppression efface aussi les données rattachées par cascade quand elles "
+"existent."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:241
+msgid "Membres actuellement liés :"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:242
+msgid "Animations planifiées connues dans cette version :"
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:243
+#, python-format
+msgid ""
+"Tapez exactement %(word)s pour confirmer la suppression définitive de ce "
+"groupe."
+msgstr ""
+
+#: app_group/templates/group/modify_group.html:247
+#, fuzzy
+#| msgid "Liste des groupes"
+msgid "Supprimer le groupe"
+msgstr "Groups"
+
+#: app_group/views.py:104
+msgid "Responsable"
+msgstr ""
+
+#: app_group/views.py:104
+msgid "Membre"
+msgstr ""
+
+#: app_group/views.py:104
+msgid "Demande en cours"
+msgstr ""
+
+#: app_group/views.py:141 app_group/views.py:144 app_group/views.py:205
+msgid "Le groupe sélectionné a été mis à jour."
+msgstr ""
+
+#: app_group/views.py:147 app_group/views.py:208
+msgid "Le groupe sélectionné a été mis à jour grâce au secret."
+msgstr ""
+
+#: app_group/views.py:149
+msgid "Le secret de groupe fourni est invalide."
+msgstr ""
+
+#: app_group/views.py:170
+msgid "Vous devez être connecté pour créer un groupe."
+msgstr ""
+
+#: app_group/views.py:177 app_group/views.py:185 app_group/views.py:268
+#: app_group/views.py:274
+msgid "Ce nom de groupe existe déjà."
+msgstr ""
+
+#: app_group/views.py:193
+msgid "Le groupe a été créé et sélectionné."
+msgstr ""
+
+#: app_group/views.py:198
+msgid "Le groupe demandé est introuvable."
+msgstr ""
+
+#: app_group/views.py:210
+msgid "Ce groupe n'est pas accessible avec les informations fournies."
+msgstr ""
+
+#: app_group/views.py:215
+msgid "Vous devez être connecté pour demander à rejoindre un groupe."
+msgstr ""
+
+#: app_group/views.py:217
+msgid "Les demandes d'adhésion sont réservées aux groupes fermés."
+msgstr ""
+
+#: app_group/views.py:219
+msgid "Vous êtes déjà membre de ce groupe."
+msgstr ""
+
+#: app_group/views.py:222
+msgid "La demande d'adhésion a été enregistrée."
+msgstr ""
+
+#: app_group/views.py:227
+msgid "Vous devez être connecté pour annuler une demande."
+msgstr ""
+
+#: app_group/views.py:230
+msgid "La demande d'adhésion a été annulée."
+msgstr ""
+
+#: app_group/views.py:235
+msgid "Vous n'êtes pas membre de ce groupe."
+msgstr ""
+
+#: app_group/views.py:245
+msgid "Vous avez quitté le groupe."
+msgstr ""
+
+#: app_group/views.py:276
+msgid "Les paramètres du groupe ont été enregistrés."
+msgstr ""
+
+#: app_group/views.py:284
+msgid "Le secret du groupe a été généré ou remplacé."
+msgstr ""
+
+#: app_group/views.py:293
+msgid "Le secret du groupe a été supprimé."
+msgstr ""
+
+#: app_group/views.py:301
+msgid "La demande n'a pas pu être acceptée."
+msgstr ""
+
+#: app_group/views.py:303
+msgid "La demande d'adhésion a été acceptée."
+msgstr ""
+
+#: app_group/views.py:309
+msgid "La demande d'adhésion a été refusée."
+msgstr ""
+
+#: app_group/views.py:318
+msgid "Le rôle de responsable a été attribué."
+msgstr ""
+
+#: app_group/views.py:327
+msgid "Le rôle de responsable a été retiré."
+msgstr ""
+
+#: app_group/views.py:336
+msgid "Le membre a été retiré du groupe."
+msgstr ""
+
+#: app_group/views.py:343
+msgid "Le mot de confirmation est incorrect."
+msgstr ""
+
+#: app_group/views.py:348
+msgid "Le groupe a été supprimé."
 msgstr ""
 
 #: app_main/templates/main/connexion.html:5
@@ -55,7 +641,7 @@ msgstr "Privacy policy"
 #: app_main/templates/main/connexion.html:11
 #: app_main/templates/main/connexion.html:20
 #: app_main/templates/main/connexion.html:67
-#: app_main/templates/main/connexion.html:120 templates/includes/nav.html:10
+#: app_main/templates/main/connexion.html:120 templates/includes/nav.html:12
 msgid "Connexion"
 msgstr "Log in"
 
@@ -82,7 +668,7 @@ msgstr "Demo"
 
 #: app_main/templates/main/connexion.html:76
 #: app_main/templates/main/connexion.html:97 templates/base.html:50
-#: templates/includes/nav.html:9
+#: templates/includes/nav.html:11
 msgid "Déconnexion"
 msgstr "Log out"
 
@@ -310,11 +896,11 @@ msgstr "Language in use"
 msgid "Thème choisi"
 msgstr "Selected theme"
 
-#: app_main/templates/main/homepage.html:4 templates/includes/nav.html:20
+#: app_main/templates/main/homepage.html:4 templates/includes/nav.html:22
 msgid "Journal des versions sur GitHub"
 msgstr "GitHub changelog"
 
-#: app_main/templates/main/homepage.html:5 templates/includes/nav.html:21
+#: app_main/templates/main/homepage.html:5 templates/includes/nav.html:23
 msgid "Dernière version publiée"
 msgstr "Latest release"
 
@@ -484,7 +1070,7 @@ msgstr "Current language:"
 msgid "Choix de la langue de l’interface"
 msgstr "Interface language selection"
 
-#: app_main/templates/main/language.html:77 templates/includes/nav.html:171
+#: app_main/templates/main/language.html:77 templates/includes/nav.html:183
 msgid "Français"
 msgstr "French"
 
@@ -899,7 +1485,7 @@ msgid "Logo du thème"
 msgstr "Theme logo"
 
 #: app_main/templates/main/theme_preferences.html:7
-#: templates/includes/nav.html:12
+#: templates/includes/nav.html:14
 msgid "Thèmes"
 msgstr "Themes"
 
@@ -1137,7 +1723,7 @@ msgstr ""
 
 #: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:10
 #: app_song/templates/song/songs.html:25 app_song/templates/song/songs.html:34
-#: templates/includes/nav.html:7
+#: templates/includes/nav.html:9
 msgid "Liste des chants"
 msgstr "Songs"
 
@@ -1580,14 +2166,6 @@ msgstr "Dialog window"
 msgid "Messages"
 msgstr "Messages"
 
-#: templates/base.html:94
-msgid "Section"
-msgstr "Section"
-
-#: templates/base.html:102
-msgid "Outils"
-msgstr "Tools"
-
 #: templates/base.html:112
 msgid "Structure de la page"
 msgstr "Page structure"
@@ -1609,46 +2187,56 @@ msgid "Revenir en haut de la page"
 msgstr "Back to top"
 
 #: templates/includes/nav.html:4
+#, fuzzy
+#| msgid "Paramètres du profil"
+msgid "Rôle global administrateur"
+msgstr "Profile settings"
+
+#: templates/includes/nav.html:5
+msgid "Rôle global modérateur"
+msgstr ""
+
+#: templates/includes/nav.html:6
 msgid "Fermer"
 msgstr "Close"
 
-#: templates/includes/nav.html:5
+#: templates/includes/nav.html:7
 msgid "Accueil"
 msgstr "Home"
 
-#: templates/includes/nav.html:11
+#: templates/includes/nav.html:13
 msgid "Créer un compte"
 msgstr "Create an account"
 
-#: templates/includes/nav.html:13
+#: templates/includes/nav.html:15
 msgid "Cookies et politique de confidentialité"
 msgstr "Cookies and privacy policy"
 
-#: templates/includes/nav.html:14
+#: templates/includes/nav.html:16
 msgid "Navigation principale"
 msgstr "Main navigation"
 
-#: templates/includes/nav.html:15
+#: templates/includes/nav.html:17
 msgid "Profil et préférences"
 msgstr "Profile and preferences"
 
-#: templates/includes/nav.html:16
+#: templates/includes/nav.html:18
 msgid "Navigation générale"
 msgstr "General navigation"
 
-#: templates/includes/nav.html:17
+#: templates/includes/nav.html:19
 msgid "Ouvrir la navigation"
 msgstr "Open navigation"
 
-#: templates/includes/nav.html:18
+#: templates/includes/nav.html:20
 msgid "Compte"
 msgstr "Account"
 
-#: templates/includes/nav.html:19
+#: templates/includes/nav.html:21
 msgid "Voir mon profil"
 msgstr "View my profile"
 
-#: templates/includes/nav.html:24
+#: templates/includes/nav.html:26
 msgid "Anglais"
 msgstr "English"
 

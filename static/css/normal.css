@@ -1071,6 +1071,21 @@ body.lss-messagebox-open {
     line-height: 0;
 }
 
+.site-nav-role-marker {
+    display: block;
+    line-height: 1;
+}
+
+.site-nav-rail .site-nav-role-marker {
+    margin-top: -6px;
+    font-size: 0.9rem;
+}
+
+.site-nav-drawer .site-nav-role-marker {
+    flex: 0 0 auto;
+    font-size: 0.95rem;
+}
+
 .site-nav-backdrop {
     display: block;
     position: fixed;
@@ -1271,6 +1286,11 @@ body.lss-messagebox-open {
         min-height: 63px;
     }
 
+    .site-nav-rail .site-nav-role-marker {
+        margin-top: -9px;
+        font-size: 1rem;
+    }
+
     .site-nav-drawer {
         width: min(510px, calc(100vw - 36px));
         padding: 20px 22px;
@@ -1354,6 +1374,11 @@ body.lss-messagebox-open {
     .site-nav-rail .site-nav-group > a {
         width: 40px;
         min-height: 40px;
+    }
+
+    .site-nav-rail .site-nav-role-marker {
+        margin-top: -4px;
+        font-size: 0.78rem;
     }
 
     .site-nav-button-icon {

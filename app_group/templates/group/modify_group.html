@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ group.name }} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{{ selected_group.name }}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_group.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="groups" data-theme-alt="{% trans 'Modifier un groupe' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/groups.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/groups.png' %}" alt="{% trans 'Modifier un groupe' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+    {% include "common/group_actions.html" %}
+{% endblock %}
+{% block tools_title %}{% trans "Outils" %}{% endblock %}
+{% block tools_intro %}
+    <p>{% trans "État du groupe, partage et raccourcis." %}</p>
+{% endblock %}
+{% block page_tools %}
+    <article class="site-theme-card group-tool-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "État du groupe" %}</h2>
+            </div>
+        </header>
+        <p><strong>{{ group.name }}</strong></p>
+        <p>{{ group_status_icon }} {{ group_status_label }}</p>
+        {% if selected_group and selected_group.group_id == group.group_id %}
+            <p>{% trans "Ce groupe est actuellement sélectionné." %}</p>
+            {% if selected_via_secret %}
+                <p>{% trans "La sélection courante a été obtenue par secret." %}</p>
+            {% endif %}
+        {% endif %}
+    </article>
+
+    <article class="site-theme-card group-tool-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Lien secret" %}</h2>
+                    <p>{% trans "Visible uniquement pour la gestion du groupe." %}</p>
+            </div>
+        </header>
+        {% if share_link %}
+            <div class="group-share-panel">
+                <label for="group-share-link">{% trans "Lien prêt à partager" %}</label>
+                <input id="group-share-link" type="text" value="{{ share_link }}" readonly>
+                <div class="group-card-actions">
+                    <button type="button" data-copy-text="{{ share_link }}">{% trans "Copier le lien" %}</button>
+                </div>
+                <div class="group-qr-placeholder">
+                    <p>{% trans "Le QR code n'est pas encore généré localement dans cette version." %}</p>
+                </div>
+            </div>
+        {% else %}
+            <p>{% trans "Aucun secret n'est enregistré pour ce groupe." %}</p>
+        {% endif %}
+    </article>
+
+    <article class="site-theme-card group-tool-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Navigation" %}</h2>
+            </div>
+        </header>
+        <p><a class="group-action-link" href="{% url 'groups' %}">{% trans "Retour à la liste des groupes" %}</a></p>
+    </article>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Outils groupe" %}{% endblock %}
+{% block mobile_side_intro %}
+    <p>{% trans "Résumé compact pour mobile." %}</p>
+{% endblock %}
+{% block mobile_side_content %}
+    <div class="group-mobile-summary">
+        <p><strong>{{ group.name }}</strong></p>
+        <p>{{ group_status_icon }} {{ group_status_label }}</p>
+    </div>
+{% endblock %}
+{% block page_kicker %}{% trans "Groupes" %}{% endblock %}
+{% block page_title %}{{ group.name }}{% endblock %}
+{% block page_summary %}
+    <p><strong>🌐</strong> {% trans "ouvert" %}</p>
+    <p><strong>🔐</strong> {% trans "fermé" %}</p>
+    <p><strong>🔐📱</strong> {% trans "fermé avec secret" %}</p>
+    <p>{% trans "Le dernier responsable ne peut ni être rétrogradé ni être retiré sans qu'un autre responsable existe déjà." %}</p>
+{% endblock %}
+{% block content %}
+    <section class="group-page-section">
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Paramètres principaux" %}</h2>
+                </div>
+            </header>
+            <form method="post" class="group-stack-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_group_settings">
+                {% for hidden in settings_form.hidden_fields %}{{ hidden }}{% endfor %}
+                {% for field in settings_form.visible_fields %}
+                    <div class="group-form-row">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}<p class="group-field-help">{{ field.help_text }}</p>{% endif %}
+                        {% for error in field.errors %}<p class="group-field-error">{{ error }}</p>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% for error in settings_form.non_field_errors %}<p class="group-field-error">{{ error }}</p>{% endfor %}
+                <button type="submit">{% trans "Enregistrer les paramètres" %}</button>
+            </form>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Secret du groupe" %}</h2>
+                    <p>{% trans "Créer, remplacer ou supprimer le secret d'accès du groupe." %}</p>
+                </div>
+            </header>
+            {% if group.secret_ciphertext %}
+                <p>{% trans "Un secret est actuellement enregistré pour ce groupe." %}</p>
+            {% else %}
+                <p>{% trans "Aucun secret n'est actuellement enregistré pour ce groupe." %}</p>
+            {% endif %}
+
+            <div class="group-card-actions group-settings-actions">
+                <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Générer ou remplacer le secret de groupe ?' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="generate_secret">
+                    <button type="submit">
+                        {% if group.secret_ciphertext %}
+                            {% trans "Remplacer le secret" %}
+                        {% else %}
+                            {% trans "Créer un secret" %}
+                        {% endif %}
+                    </button>
+                </form>
+                {% if group.secret_ciphertext %}
+                    <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Supprimer le secret de groupe ?' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove_secret">
+                        <button type="submit">{% trans "Supprimer le secret" %}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+{% endblock %}
+{% block content_footer %}
+    {% if join_request_cards %}
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Demandes d'adhésion" %}</h2>
+                </div>
+            </header>
+            <div class="group-people-list">
+                {% for request_item in join_request_cards %}
+                    <article class="group-person-row">
+                        <div>
+                            <p><strong>{{ request_item.username }}</strong></p>
+                            <p>{{ request_item.display_name }}</p>
+                        </div>
+                        <div class="group-card-actions">
+                            <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Accepter cette demande d’adhésion ?' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="accept_join_request">
+                                <input type="hidden" name="member_id" value="{{ request_item.member_id }}">
+                                <button type="submit">{% trans "Accepter" %}</button>
+                            </form>
+                            <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Refuser cette demande d’adhésion ?' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject_join_request">
+                                <input type="hidden" name="member_id" value="{{ request_item.member_id }}">
+                                <button type="submit">{% trans "Refuser" %}</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </article>
+    {% endif %}
+
+    <article class="site-theme-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Membres du groupe" %}</h2>
+            </div>
+        </header>
+        {% if member_cards %}
+            <div class="group-people-list">
+                {% for member in member_cards %}
+                    <article class="group-person-row">
+                        <div>
+                            <p><strong>{{ member.username }}</strong></p>
+                            <p>{{ member.display_name }}</p>
+                            {% if member.is_group_admin %}
+                                <p>🛞 {% trans "Responsable du groupe" %}</p>
+                            {% endif %}
+                            {% if member.is_last_admin %}
+                                <p>{% trans "Dernier responsable du groupe." %}</p>
+                            {% endif %}
+                        </div>
+                        <div class="group-card-actions">
+                            {% if member.is_group_admin %}
+                                {% if member.is_last_admin %}
+                                    <span class="group-disabled-action">{% trans "Dernier responsable" %}</span>
+                                {% else %}
+                                    <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Retirer le rôle de responsable à cette personne ?' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="demote_member">
+                                        <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                                        <button type="submit">{% trans "Retirer responsable" %}</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Attribuer le rôle de responsable à cette personne ?' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="promote_member">
+                                    <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                                    <button type="submit">{% trans "Nommer responsable" %}</button>
+                                </form>
+                            {% endif %}
+
+                            {% if not member.is_last_admin %}
+                                <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Retirer ce membre du groupe ?' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove_member">
+                                    <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                                    <button type="submit">{% trans "Retirer du groupe" %}</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{% trans "Aucun membre n'est actuellement rattaché à ce groupe." %}</p>
+        {% endif %}
+    </article>
+
+    <article class="site-theme-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Suppression du groupe" %}</h2>
+                <p>{% trans "La suppression efface aussi les données rattachées par cascade quand elles existent." %}</p>
+            </div>
+        </header>
+        <p>{% trans "Membres actuellement liés :" %} {{ member_cards|length }}</p>
+        <p>{% trans "Animations planifiées connues dans cette version :" %} {{ upcoming_animations|length }}</p>
+        <form method="post" class="group-inline-form" data-group-delete-form data-confirm-word="{{ delete_confirmation_word }}" data-confirm-title="{% trans 'Suppression du groupe' %}" data-confirm-message="{% blocktrans with word=delete_confirmation_word %}Tapez exactement {{ word }} pour confirmer la suppression définitive de ce groupe.{% endblocktrans %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_group">
+            <input type="hidden" name="confirmation_word" value="">
+            <button type="submit">{% trans "Supprimer le groupe" %}</button>
+        </form>
+    </article>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{% static 'js/app_group.js' %}"></script>
+{% endblock %}
