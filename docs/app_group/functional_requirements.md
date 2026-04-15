@@ -145,9 +145,26 @@ The following actions are reserved to `group admins`, `moderators`, and `admins`
 - change the group status,
 - create, replace, or remove the secret of a `private_with_secret` group.
 
+Deleting a group must delete its related `animations` by cascade.
+
+Before confirming deletion, the interface must display the impact of that action, including:
+
+- the current members of the group,
+- the upcoming `animations` linked to that group.
+
+The deletion workflow must require an explicit textual confirmation with the exact input expected in the current interface language.
+
+The confirmation word must therefore be translated according to the active language of the UI.
+
 A group may have several `group admins`, but it must always keep at least one.
 
 Neither a `group admin`, nor a `moderator`, nor an `admin` may remove that role from the last remaining `group admin`.
+
+This is a golden rule of group governance.
+
+The last remaining `group admin` must not be allowed to leave the group while still being the only `group admin`.
+
+If they try to do so, the action must be refused and an explanatory popup must be displayed.
 
 Rare exception:
 
@@ -196,6 +213,12 @@ The selection contract is therefore:
 - secret-based access state is session-based,
 - no persistent browser-only cookie is the source of truth for group selection,
 - no database persistence is required just to remember the current selected group.
+
+For a guest selecting a `private_with_secret` group through its secret, access remains valid only for the current server-side session.
+
+If the browser is closed but the same session is still alive and resumed, access may continue.
+
+In every other case, the secret must be entered again to restore access.
 
 ## Relation To Animations
 
