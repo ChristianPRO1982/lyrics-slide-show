@@ -219,7 +219,7 @@ If they try to do so, the action must be refused and an explanatory popup must b
 
 When the target member is the last remaining `group admin`, the interface must not show a normal responsibility-removal action.
 
-It must instead display an explicit state indicating that this member is `le dernier responsable`.
+It must instead display an explicit state indicating that this member is the last remaining responsible member.
 
 Rare exception:
 
@@ -284,29 +284,35 @@ The group list page must allow:
 - indicating whether secret-based access is active only for closed groups,
 - selecting the group according to the rules above,
 - requesting to join a group when that makes sense,
-- replacing the usual join action with a visible `demande en cours` state when a request already exists,
-- replacing the usual join action with a visible `membre` state when the authenticated user already belongs to the group,
-- exposing a `quitter le groupe` action for an authenticated user who already belongs to the group,
-- exposing an `annuler` action while the request is pending,
+- replacing the usual join action with a visible pending-request state when a request already exists,
+- replacing the usual join action with a visible member state when the authenticated user already belongs to the group,
+- exposing a leave-group action for an authenticated user who already belongs to the group,
+- exposing a cancel-request action while the request is pending,
 - accessing group edition for `group admins`, `moderators`, and `admins`.
 
-If a group is `open` and the authenticated user is already a member, the group list must still show that member state and still allow `quitter le groupe`.
+If a group is `open` and the authenticated user is already a member, the group list must still show that member state and still allow the leave-group action.
 
 In the group list, the compact visual status must follow this style:
 
-- `groupe 1 🌐 <actions>` for an open group,
-- `groupe 2 📱 <actions>` for a closed group without secret-based access,
-- `groupe 3 🔐📱 <actions>` for a closed group with secret-based access.
+- `<group name> 🌐 <actions>` for an open group,
+- `<group name> 📱 <actions>` for a closed group without secret-based access,
+- `<group name> 🔐📱 <actions>` for a closed group with secret-based access.
 
 Membership-related visual markers must also be available in the list:
+
+- `🛞 group admin`,
+- `👥 member`,
+- `📩 pending request`.
+
+In the French UI, these markers may be translated for example as:
 
 - `🛞 responsable`,
 - `👥 membre`,
 - `📩 demande en cours`.
 
-When the authenticated user is `responsable`, only `🛞 responsable` is shown.
+When the authenticated user is `group admin`, only `🛞 group admin` is shown.
 
-It must not be combined with `👥 membre`.
+It must not be combined with `👥 member`.
 
 The group list must never display the secret itself.
 
@@ -322,8 +328,8 @@ When the secret is shown in that edition area, the site must display:
 
 - the complete link ready to use,
 - a QR code image for that same link,
-- a `copier` button for the link,
-- a `copier` button for the QR code output.
+- a copy action for the link,
+- a copy action for the QR code output.
 
 ## Group Edition Structure
 
@@ -379,11 +385,11 @@ If the group currently has no simple members outside the responsible members, th
 
 Pending requests to become a member must be exposed as a dedicated list of actions or links, separate from the two previous forms.
 
-Using `quitter le groupe` must first open a confirmation popup.
+Using the leave-group action must first open a confirmation popup.
 
-That popup must provide a `oui` / `non` choice, with `non` as the default action.
+That popup must provide a yes / no choice, with no as the default action.
 
-Using `annuler` on a pending join request must also open a confirmation popup.
+Using the cancel-request action on a pending join request must also open a confirmation popup.
 
 ## Selected Group Persistence
 
