@@ -150,6 +150,10 @@ Only an authenticated member may create a group.
 
 The creator of a group immediately becomes a `group admin` of that group.
 
+This also applies when the newly created group is `open`.
+
+After creation, the new group must become the currently selected group in the server-side session.
+
 The following actions are reserved to `group admins`, `moderators`, and `admins`:
 
 - modify group settings,
@@ -158,6 +162,10 @@ The following actions are reserved to `group admins`, `moderators`, and `admins`
 - promote or demote another member as `group admin`,
 - change the group status,
 - create, replace, or remove the secret of a `private_with_secret` group.
+
+Promoting a member as `group admin` must require a confirmation popup before the action is executed.
+
+Demoting a `group admin` who is not the last remaining responsible member must also require a confirmation popup before the action is executed.
 
 Deleting a group must delete its related `animations` by cascade.
 
@@ -184,6 +192,10 @@ The last remaining `group admin` must not be allowed to leave the group while st
 
 If they try to do so, the action must be refused and an explanatory popup must be displayed.
 
+When the target member is the last remaining `group admin`, the interface must not show a normal responsibility-removal action.
+
+It must instead display an explicit state indicating that this member is `le dernier responsable`.
+
 Rare exception:
 
 - if the last remaining `group admin` deletes their own account, the group may temporarily end up without any `group admin`,
@@ -199,6 +211,8 @@ The selection rules are:
 - only an authenticated user who belongs to the group may select a `private` group,
 - everyone may select a `private_with_secret` group if they know the current secret,
 - an authenticated member who already belongs to the group may also select that `private_with_secret` group without re-entering the secret.
+
+When secret-based access to a `private_with_secret` group is accepted, that group must immediately become the selected group in the current server-side session.
 
 Only authenticated members may request to join a group.
 
@@ -217,6 +231,8 @@ If the insert into `g_group_user` succeeds and the request row is then removed s
 When a join request is rejected or cancelled, the corresponding row must simply be removed from `g_group_user_ask_to_join`.
 
 No additional request status and no request history are required in the database model.
+
+If a member is removed from `g_group_user`, any residual row for the same `(group_id, member_id)` in `g_group_user_ask_to_join` must also be removed automatically.
 
 The group list page must allow:
 
