@@ -140,6 +140,10 @@ The join-request workflow must remain available so that a user can still be form
 
 This preserves the membership structure if the group later becomes `private` or `private_with_secret` again.
 
+Changing a group status has no effect by itself on existing group-member links.
+
+`g_group_user` remains unchanged when a group moves between `open`, `private`, and the business state `private_with_secret`.
+
 ## Administration Rules
 
 Only an authenticated member may create a group.
@@ -165,6 +169,10 @@ Before confirming deletion, the interface must display the impact of that action
 The deletion workflow must require an explicit textual confirmation with the exact input expected in the current interface language.
 
 The confirmation word must therefore be translated according to the active language of the UI.
+
+When a `moderator` or `admin` acts on a group without being a member of that group, they keep that strict moderation-only position.
+
+Their elevated power must not automatically create a membership row in `g_group_user`.
 
 A group may have several `group admins`, but it must always keep at least one.
 
@@ -198,6 +206,18 @@ A member cannot create multiple simultaneous join requests for the same group.
 
 There can be only one active request per `(group_id, member_id)` pair.
 
+When a join request is accepted, the membership row must first be created in `g_group_user`, then the corresponding request row must be removed from `g_group_user_ask_to_join`.
+
+This workflow must be executed atomically in one PostgreSQL transaction.
+
+If any step fails, the whole transaction must be rolled back.
+
+If the insert into `g_group_user` succeeds and the request row is then removed successfully, the transaction must be committed.
+
+When a join request is rejected or cancelled, the corresponding row must simply be removed from `g_group_user_ask_to_join`.
+
+No additional request status and no request history are required in the database model.
+
 The group list page must allow:
 
 - displaying the group name,
@@ -210,6 +230,10 @@ The group list page must allow:
 - exposing a `quitter le groupe` action for an authenticated user who already belongs to the group,
 - exposing an `annuler` action while the request is pending,
 - accessing group edition for `group admins`, `moderators`, and `admins`.
+
+Using `quitter le groupe` must first open a confirmation popup.
+
+That popup must provide a `oui` / `non` choice, with `non` as the default action.
 
 ## Selected Group Persistence
 
