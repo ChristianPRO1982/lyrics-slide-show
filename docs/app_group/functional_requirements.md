@@ -304,7 +304,7 @@ If an authenticated non-member accessed a closed group through its secret, the U
 The compact visual status must follow this style:
 
 - `<group name> 🌐 <actions>` for an open group,
-- `<group name> 📱 <actions>` for a closed group without secret-based access,
+- `<group name> 🔐 <actions>` for a closed group without secret-based access,
 - `<group name> 🔐📱 <actions>` for a closed group with secret-based access.
 
 Membership-related visual markers must also be available in the list:
