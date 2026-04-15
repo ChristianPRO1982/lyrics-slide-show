@@ -96,6 +96,8 @@ CREATE TABLE lss.g_group_user_ask_to_join (
 ## Data Model Notes
 
 - `g_groups` replaces the legacy boolean `private` field with the explicit business field `status`,
+- the group name must be unique in a case-insensitive way,
+- `info` is optional plain text only, without markdown and without HTML,
 - the legacy MySQL `token` column becomes a stable group secret stored as `secret_ciphertext`,
 - `secret_ciphertext` should store the group secret in a form that can be decoded by the application when possible, using a key stored in `.env`,
 - if such encoding or encryption is not implemented, the secret may be stored visibly in the database,
@@ -133,8 +135,10 @@ A secret only makes sense for a `private_with_secret` group.
 - a `private` group never becomes accessible through a secret alone,
 - rotating the secret immediately invalidates the previous one,
 - rotating the secret must also invalidate all active session-based accesses that were granted through the previous secret to non-members,
-- if a group returns to plain `private`, the stored secret must be deleted,
-- if secret-based access is re-enabled later, a new secret must be generated,
+- if a group becomes `open`, the stored secret is kept,
+- while the group is `open`, the secret has no access-control effect,
+- if the group later returns to `private`, the previously stored secret becomes valid again,
+- if the secret is removed while the group is closed, the group remains `private` but no longer offers secret-based access,
 - the secret is used only to select the group,
 - the secret never grants `group admin`, `moderator`, or `admin` powers,
 - knowing the secret does not make a guest equivalent to a group manager.
@@ -163,6 +167,16 @@ This also applies when the newly created group is `open`.
 
 After creation, the new group must become the currently selected group in the server-side session.
 
+A newly created group starts as `open`.
+
+There is no need to choose between `open` and `private` during the creation step.
+
+If form validation detects that the group name already exists with a different casing, the error feedback must be shown after form validation in the global message bar rendered as:
+
+- `<li class="site-global-message site-global-message-info">`
+
+The same rule applies when an existing group is renamed and the new name collides case-insensitively with another existing group name.
+
 The following actions are reserved to `group admins`, `moderators`, and `admins`:
 
 - modify group settings,
@@ -175,6 +189,8 @@ The following actions are reserved to `group admins`, `moderators`, and `admins`
 Promoting a member as `group admin` must require a confirmation popup before the action is executed.
 
 Demoting a `group admin` who is not the last remaining responsible member must also require a confirmation popup before the action is executed.
+
+A `group admin` is necessarily already a group member.
 
 Deleting a group must delete its related `animations` by cascade.
 
@@ -233,6 +249,8 @@ If a group is `open` and the authenticated user is not already a member, no memb
 
 If the authenticated user is already a member of the group, no join-request action is shown, regardless of whether the group is `open`, `private`, or in the business state `private_with_secret`.
 
+For a closed group with secret-based access, an authenticated non-member may still request formal membership.
+
 A member cannot create multiple simultaneous join requests for the same group.
 
 There can be only one active request per `(group_id, member_id)` pair.
@@ -240,6 +258,8 @@ There can be only one active request per `(group_id, member_id)` pair.
 When a join request is accepted, the membership row must first be created in `g_group_user`, then the corresponding request row must be removed from `g_group_user_ask_to_join`.
 
 The created membership row must use the default non-admin group role, meaning `is_group_admin = false`.
+
+Accepting a join request must require a confirmation popup before the transaction is executed.
 
 This workflow must be executed atomically in one PostgreSQL transaction.
 
@@ -251,13 +271,17 @@ When a join request is rejected or cancelled, the corresponding row must simply 
 
 No additional request status and no request history are required in the database model.
 
+Rejecting a join request must require a confirmation popup before the deletion is executed.
+
 If a member is removed from `g_group_user`, any residual row for the same `(group_id, member_id)` in `g_group_user_ask_to_join` must also be removed automatically.
+
+Removing a simple member from the group must require a confirmation popup before the deletion is executed.
 
 The group list page must allow:
 
 - displaying the group name,
 - displaying its official business status,
-- indicating whether secret-based access is active,
+- indicating whether secret-based access is active only for closed groups,
 - selecting the group according to the rules above,
 - requesting to join a group when that makes sense,
 - replacing the usual join action with a visible `demande en cours` state when a request already exists,
@@ -268,13 +292,92 @@ The group list page must allow:
 
 If a group is `open` and the authenticated user is already a member, the group list must still show that member state and still allow `quitter le groupe`.
 
+In the group list, the compact visual status must follow this style:
+
+- `groupe 1 🌐 <actions>` for an open group,
+- `groupe 2 📱 <actions>` for a closed group without secret-based access,
+- `groupe 3 🔐📱 <actions>` for a closed group with secret-based access.
+
+Membership-related visual markers must also be available in the list:
+
+- `🛞 responsable`,
+- `👥 membre`,
+- `📩 demande en cours`.
+
+When the authenticated user is `responsable`, only `🛞 responsable` is shown.
+
+It must not be combined with `👥 membre`.
+
 The group list must never display the secret itself.
 
 It may only indicate that secret-based access exists.
 
+That indication is visible only for closed groups.
+
 The secret is meant to be communicated by the responsible members outside the site, for example by email or messaging.
 
 Within the site, the secret may be displayed only in the group edition area reserved to `group admins`, `moderators`, and `admins`.
+
+When the secret is shown in that edition area, the site must display:
+
+- the complete link ready to use,
+- a QR code image for that same link,
+- a `copier` button for the link,
+- a `copier` button for the QR code output.
+
+## Group Edition Structure
+
+The group edition view must expose three distinct functional areas.
+
+### Main Group Form
+
+One main form is responsible for:
+
+- `name`,
+- `info`,
+- `open` / `closed`,
+- secret management.
+
+This is the single form used for the core editable properties of the group.
+
+In the front-end, `open` / `closed` is exposed as a boolean choice for the user.
+
+In persistence and backend specifications, the field remains an explicit written status so the model can evolve later if needed.
+
+Saving `name`, `info`, and `open` / `closed` in that main form does not require a confirmation popup.
+
+Closing a group does not automatically create a secret.
+
+Secret generation, rotation, display, and removal remain explicit actions handled separately within the same main group form.
+
+Secret generation is allowed regardless of whether the group is currently `open` or `private`.
+
+When the group is `open`, the stored secret has no access-control effect until the group becomes closed again.
+
+Generating or regenerating the secret must require a confirmation popup before replacing the current value.
+
+Removing the stored secret without generating a new one must also require a confirmation popup.
+
+### Members And Responsible Members
+
+A separate area and form must handle:
+
+- the member list,
+- the responsible member list,
+- promotions and demotions,
+- member removal.
+
+In the member list and in the join-request list, responsible members may see:
+
+- `username`,
+- `first_name`,
+- `last_name`.
+
+If the group currently has no simple members outside the responsible members, the members area must display an explicit empty state.
+
+### Join Requests
+
+Pending requests to become a member must be exposed as a dedicated list of actions or links, separate from the two previous forms.
 
 Using `quitter le groupe` must first open a confirmation popup.
 
@@ -310,6 +413,10 @@ If a deleted group was the selected group, the session must end up with no selec
 
 No automatic fallback selection is required.
 
+The current selected group must remain visible to the user as part of the shared site experience.
+
+If the selected group is renamed, the visible selected-group label must be updated immediately without any extra user action.
+
 ## Relation To Animations
 
 Selecting a group is used to access the features of `app_animation`.
@@ -320,6 +427,10 @@ Selecting a group is used to access the features of `app_animation`.
 - a guest may work inside an `open` group,
 - a guest may also work inside a `private_with_secret` group if they know the secret,
 - a `private` group remains restricted to authenticated members who belong to it.
+
+When no group is selected, `app_group` does not define the fallback behavior of `app_animation`.
+
+It only defines the shared selection state that other apps may consume.
 
 ## Vocabulary
 
