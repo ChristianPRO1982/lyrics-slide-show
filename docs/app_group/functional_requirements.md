@@ -1,11 +1,106 @@
 # App Group Functional Requirements
 
-`app_group` gère les groupes comme périmètres pratiques pour organiser et protéger les `animations` de `Lyrics Slide Show`. Ce n'est pas un forum, pas un réseau social, pas un outil de gestion d'une aumônerie, d'un groupe scout ou d'une communauté réelle. Même si un groupe correspond à un collectif existant, sa fonction dans le produit reste très limitée : rassembler les animations d'un même périmètre et empêcher que des utilisateurs extérieurs au groupe puissent les modifier ou les supprimer. Les règles métier globales de `docs/general_overview.md` s'appliquent, en particulier la possibilité pour un invité d'utiliser un groupe `Ouvert`, et la nécessité d'un groupe sélectionné pour travailler sur les animations.
+`app_group` manages groups as practical perimeters used to organize and protect the `animations` of `Lyrics Slide Show`.
 
-Du point de vue vie privée et RGPD, `app_group` doit rester extrêmement sobre. C'est pratiquement le seul endroit du produit où l'on accepte d'exposer un peu d'identité humaine, et encore de manière très limitée : les responsables d'un groupe peuvent voir les `username`, `first_name` et `last_name` des membres de leur groupe pour gérer ce groupe, tandis qu'un membre simple ne voit que les `username` des responsables du groupe. Il ne doit pas y avoir d'annuaire public, pas de visibilité large des membres, pas d'outil d'échange, pas de profil social, et aucune exposition inutile de données personnelles.
+A group is not a social space, not a directory, and not a community-management tool. Its function is intentionally narrow:
 
-Pour la base de données PostgreSQL, les tables de `app_group` sont `g_groups`, `g_group_user` et `g_group_user_ask_to_join`. Toutes les colonnes de relation vers un utilisateur authentifié doivent reposer uniquement sur `users.users.id`, en `UUID`, jamais sur `username`. Un groupe repose sur un booléen `private` et sur un champ `token`. Si `private = false`, le groupe est `Ouvert`. Si `private = true`, le groupe est `Fermé`. Le champ `token` est le seul token valide du groupe à un instant donné. S'il est modifié, les anciens liens avec l'ancien token ne sont plus valides. Si `private = false`, un token existant continue malgré tout à fonctionner pour les personnes qui ont déjà le lien.
+- group the animations of a shared perimeter,
+- control who can access that perimeter,
+- allow local collaboration without turning the product into a social network.
 
-Pour les actions sur les groupes, il faut être connecté pour faire `CREATE`, `UPDATE` ou `DELETE`. Une personne connectée qui crée un groupe devient immédiatement responsable de ce groupe. Pour modifier ou supprimer un groupe, il faut en être responsable, ou disposer d'un droit supérieur `admin` ou `modérateur` dans `Lyrics Slide Show`. Dans `app_group`, `admin` et `modérateur` ont les mêmes pouvoirs qu'un responsable de groupe, mais même eux ne peuvent jamais retirer le rôle du dernier responsable. Un groupe peut être supprimé même s'il contient déjà des membres. Un groupe doit toujours avoir au moins un responsable : le dernier responsable ne peut pas perdre ce rôle, y compris par une action sur lui-même. Une personne connectée peut demander à rejoindre un groupe. Un responsable de groupe, un `admin` ou un `modérateur` peut accepter ou refuser une demande, donner ou retirer le rôle de responsable à un membre du groupe, sauf si cela aboutit à retirer ce rôle au dernier responsable. Un responsable, un `admin` ou un `modérateur` peut aussi changer l'état du groupe entre `Ouvert` et `Fermé`, ainsi qu'ajouter ou modifier le token du groupe. Ce token permet, via un lien dédié, à une personne non connectée ou non membre de sélectionner ce groupe.
+The global rules from `docs/general_overview.md` apply. This document only defines the functional contract specific to `app_group`.
 
-La sélection d'un groupe sert à utiliser les fonctionnalités de la partie `animation`. Pour un groupe `Ouvert`, une personne connectée non membre ou une personne non connectée peut sélectionner le groupe. Pour un groupe `Fermé`, il faut être connecté et membre, sauf si le token courant du groupe est utilisé avec un lien valide. La page de liste des groupes doit afficher le nom du groupe, son état `Ouvert` ou `Fermé`, et si un accès par token est possible. Depuis cette page, il faut pouvoir sélectionner un groupe selon les règles établies, demander à rejoindre un groupe, voir qu'une demande est déjà en cours et l'annuler, et modifier le groupe si l'utilisateur en est l'un des responsables, ou s'il est `admin` ou `modérateur`. La philosophie générale reste la même : les comptes servent surtout à modérer et sécuriser les groupes, pas à rendre l'inscription obligatoire pour utiliser le site.
+## Privacy
+
+`app_group` is one of the rare places where a small part of human identity becomes visible, and that visibility must stay minimal.
+
+- `group admins` may view `username`, `first_name`, and `last_name` of the members of their group in order to manage it,
+- a simple member only sees the `username` values of the `group admins`,
+- there must be no public directory,
+- there must be no social profile, messaging tool, or broad exposure of members.
+
+## Source Of Truth And Data
+
+For PostgreSQL, the functional tables of `app_group` are `g_groups`, `g_group_user`, and `g_group_user_ask_to_join`.
+
+All relations to an authenticated user must rely only on `users.users.id`, as a `UUID`, never on `username`.
+
+## Official Group Statuses
+
+The only official business statuses for a group are:
+
+- `open`: accessible without authentication,
+- `private`: authentication and group membership are required,
+- `private_with_secret`: accessible through a secret even without authentication.
+
+`docs/general_overview.md` is authoritative for this terminology. `app_group` must not redefine groups as a simple `Open` / `Closed` pair.
+
+A secret only makes sense for a `private_with_secret` group.
+
+- a `private` group never becomes accessible through a secret alone,
+- rotating the secret immediately invalidates the previous one,
+- if the group stops using the `private_with_secret` status, the previous secret must no longer grant access.
+
+## Administration Rules
+
+Only an authenticated member may create a group.
+
+The creator of a group immediately becomes a `group admin` of that group.
+
+The following actions are reserved to `group admins`, `moderators`, and `admins`:
+
+- modify group settings,
+- delete the group,
+- accept or reject a join request,
+- promote or demote another member as `group admin`,
+- change the group status,
+- create, replace, or remove the secret of a `private_with_secret` group.
+
+A group may have several `group admins`, but it must always keep at least one.
+
+Neither a `group admin`, nor a `moderator`, nor an `admin` may remove that role from the last remaining `group admin`.
+
+## Membership And Selection
+
+Everyone may access the group list.
+
+The selection rules are:
+
+- everyone may select an `open` group,
+- only an authenticated user who belongs to the group may select a `private` group,
+- everyone may select a `private_with_secret` group if they know the current secret,
+- an authenticated member who already belongs to the group may also select that `private_with_secret` group without re-entering the secret.
+
+Only authenticated members may request to join a group.
+
+The group list page must allow:
+
+- displaying the group name,
+- displaying its official business status,
+- indicating whether secret-based access is active,
+- selecting the group according to the rules above,
+- requesting to join a group when that makes sense,
+- seeing that a request is already pending and cancelling it,
+- accessing group edition for `group admins`, `moderators`, and `admins`.
+
+## Relation To Animations
+
+Selecting a group is used to access the features of `app_animation`.
+
+`app_group` does not define the internal business rules of animations, but it must respect this global contract:
+
+- a selected group is a prerequisite for working on an animation,
+- a guest may work inside an `open` group,
+- a guest may also work inside a `private_with_secret` group if they know the secret,
+- a `private` group remains restricted to authenticated members who belong to it.
+
+## Vocabulary
+
+The following terms must be used consistently in documentation and implementation:
+
+- `group`,
+- `group admin`,
+- `open`,
+- `private`,
+- `private_with_secret`,
+- `group secret`.

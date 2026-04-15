@@ -88,6 +88,7 @@ The following rules describe the current functional intent.
 - Everyone can access the group list.
 - Everyone can select an `open` group.
 - Everyone can select a `private_with_secret` group if they know the secret.
+- An authenticated member who already belongs to a `private_with_secret` group can also select it without re-entering the secret.
 - Only authenticated users can select a `private` group, and they must belong to it.
 - Only members and above can join a group.
 - A member can create a group.

@@ -16,7 +16,6 @@ Its role is to store and serve the local member-level data required by `Lyrics S
 
 At this stage, the app covers:
 
-- the persistent visual theme chosen by an authenticated member,
 - the persistent state of the central `songs` search form for authenticated members,
 - the privileged local roles `moderator` and `admin` for authenticated members,
 - the local services that expose those roles and permissions to the rest of the Django project.
@@ -121,8 +120,8 @@ A `moderator` must be able to:
 
 An `admin` must be able to:
 
-- grant or revoke the `admin` role for a row in `users.users`,
-- grant or revoke the `moderator` role for a row in `users.users`,
+- grant or revoke the local `admin` role for an authenticated member identified through `users.users`,
+- grant or revoke the local `moderator` role for an authenticated member identified through `users.users`,
 - modify the general site settings,
 - publish a popup message on all pages of the site,
 - inherit all moderator capabilities automatically.
@@ -156,6 +155,10 @@ Privileged roles are part of `app_member` scope, but they must use their own loc
 
 They must not be folded into `m_preferences`.
 
+The active documented preference contract is currently centered on the persistent `songs` search state.
+
+The presence of a `theme_slug` column in the schema does not by itself make `app_member` the runtime source of truth for theme selection. That behavior must stay aligned with `docs/app_main/functional_requirements.md`.
+
 The preferred table name is:
 
 - `lss.m_preferences`
@@ -170,7 +173,7 @@ The name `g_users` from the legacy MySQL application should not be kept.
 
 ## Target PostgreSQL Table For Preferences
 
-The functional target is a PostgreSQL table equivalent to the following model:
+The current PostgreSQL table used for member preferences is equivalent to the following model:
 
 ```sql
 CREATE TABLE lss.m_preferences (
@@ -198,7 +201,7 @@ CREATE TABLE lss.m_preferences (
 - `member_id` is the `Keycloak` UUID and also the primary key,
 - the foreign key points to `users.users(id)`,
 - deleting the external user row deletes the corresponding preference row through `ON DELETE CASCADE`,
-- the theme is stored as a theme slug, not as a CSS filename,
+- if a theme slug is stored, it is stored as a theme slug, not as a CSS filename,
 - the `songs` search state is stored as one JSON block,
 - the table must stay focused on member preferences only.
 
@@ -258,23 +261,23 @@ At minimum, the app must expose helpers for:
 - validating songs,
 - managing groups globally with moderator authority.
 
-## Theme Preference
+## Theme Preference Boundary
 
-### Functional Meaning
+### Current Runtime Rule
 
-The theme is a member preference for the whole `Lyrics Slide Show` project, not for a single page or a single app.
+The current shared site shell applies the active visual theme from browser storage.
 
-This preference applies across all Django apps in this repository.
+That browser-level behavior is documented in `docs/app_main/functional_requirements.md` and in the shared front-end shell.
 
-### Persistence Rule
+`app_member` does not currently own the runtime source of truth for theme selection.
 
-For authenticated members, the chosen theme must persist across sessions and future logins.
+### Schema Boundary
 
-For guests, theme persistence is outside the scope of `app_member`.
+The `theme_slug` field may exist in `lss.m_preferences` as a low-sensitivity preference slot, but it must not be treated as the active theme contract unless both `app_main` and `app_member` are updated together to document a server-side synchronization flow.
 
-### Stored Value
+### Storage Rule
 
-The stored value must be the functional theme identifier, for example:
+If `theme_slug` is stored, the value must be the functional theme identifier, for example:
 
 - `normal`,
 - `scout`,
@@ -282,6 +285,8 @@ The stored value must be the functional theme identifier, for example:
 - `me†al`
 
 The stored value must not be a legacy CSS filename such as `normal.css`.
+
+For guests, theme handling remains outside the scope of `app_member`.
 
 ## Persistent `songs` Search
 
@@ -424,7 +429,7 @@ The following terms should be used consistently in implementation and documentat
 
 - `member`: authenticated user accepted into `Lyrics Slide Show`,
 - `member preferences`: persistent low-sensitivity preferences stored in `lss`,
-- `theme_slug`: persistent theme identifier for the whole site,
+- `theme_slug`: reserved theme identifier column in `m_preferences`, not the current runtime source of truth,
 - `song_search`: persistent JSON search state for the central `songs` search,
 - `guest mode`: anonymous behavior without member persistence,
-- `authenticated member mode`: behavior with persistent member preferences loaded from `lss.m_preferences`.
+- `authenticated member mode`: behavior with persistent member preferences loaded from `lss.m_preferences` when relevant.
