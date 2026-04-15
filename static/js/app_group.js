@@ -143,4 +143,48 @@
             form.submit();
         });
     });
+
+    document.querySelectorAll("[data-group-join-review]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            const form = button.closest("[data-group-join-review-form]");
+            if (!form || !messageBox) {
+                return;
+            }
+
+            const result = await messageBox.show({
+                title: "Confirmation",
+                messageMarkdown: "Accepter cette demande d’adhésion ?",
+                showCloseButton: true,
+                buttons: [
+                    {
+                        id: "accept",
+                        label: "Accepter",
+                        tone: "success",
+                    },
+                    {
+                        id: "cancel",
+                        label: "Abandonner",
+                        tone: "neutral",
+                    },
+                    {
+                        id: "reject",
+                        label: "Refuser",
+                        tone: "danger",
+                    },
+                ],
+            });
+
+            if (!["accept", "reject"].includes(result.buttonId || "")) {
+                return;
+            }
+
+            const actionInput = form.querySelector("input[name='action']");
+            if (!actionInput) {
+                return;
+            }
+
+            actionInput.value = result.buttonId === "accept" ? "accept_join_request" : "reject_join_request";
+            form.submit();
+        });
+    });
 })();
