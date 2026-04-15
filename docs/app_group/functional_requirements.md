@@ -260,6 +260,9 @@ This also applies to access granted through the secret of a `private_with_secret
 The selection contract is therefore:
 
 - the active selected group is session-based,
+- only one group may be selected at a time,
+- selecting another group replaces the previous selected group in session,
+- no selection history is required,
 - secret-based access state is session-based,
 - no persistent browser-only cookie is the source of truth for group selection,
 - no database persistence is required just to remember the current selected group.
@@ -269,6 +272,12 @@ For a guest selecting a `private_with_secret` group through its secret, access r
 If the browser is closed but the same session is still alive and resumed, access may continue.
 
 In every other case, the secret must be entered again to restore access.
+
+If the currently selected group becomes inaccessible for the current user or guest, the selected group must be cleared immediately from the session.
+
+If a deleted group was the selected group, the session must end up with no selected group.
+
+No automatic fallback selection is required.
 
 ## Relation To Animations
 
