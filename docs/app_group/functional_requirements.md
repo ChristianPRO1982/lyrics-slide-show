@@ -102,6 +102,7 @@ CREATE TABLE lss.g_group_user_ask_to_join (
 - `secret` is only meaningful when `status = private_with_secret`,
 - `g_group_user` stores membership and the technical flag `is_group_admin`,
 - `g_group_user_ask_to_join` stores pending join requests keyed by `(group_id, member_id)`,
+- only one pending join request may exist for a given `(group_id, member_id)` pair,
 - no relation in `app_group` may use `username` as a foreign key or stable identifier.
 
 ## Official Group Statuses
@@ -122,6 +123,12 @@ A secret only makes sense for a `private_with_secret` group.
 - the secret is used only to select the group,
 - the secret never grants `group admin`, `moderator`, or `admin` powers,
 - knowing the secret does not make a guest equivalent to a group manager.
+
+Changing a group status to `open` does not automatically remove pending join requests.
+
+The join-request workflow must remain available so that a user can still be formally integrated as a group member.
+
+This preserves the membership structure if the group later becomes `private` or `private_with_secret` again.
 
 ## Administration Rules
 
@@ -160,6 +167,10 @@ The selection rules are:
 
 Only authenticated members may request to join a group.
 
+A member cannot create multiple simultaneous join requests for the same group.
+
+There can be only one active request per `(group_id, member_id)` pair.
+
 The group list page must allow:
 
 - displaying the group name,
@@ -167,7 +178,10 @@ The group list page must allow:
 - indicating whether secret-based access is active,
 - selecting the group according to the rules above,
 - requesting to join a group when that makes sense,
-- seeing that a request is already pending and cancelling it,
+- replacing the usual join action with a visible `demande en cours` state when a request already exists,
+- replacing the usual join action with a visible `membre` state when the authenticated user already belongs to the group,
+- exposing a `quitter le groupe` action for an authenticated user who already belongs to the group,
+- exposing an `annuler` action while the request is pending,
 - accessing group edition for `group admins`, `moderators`, and `admins`.
 
 ## Selected Group Persistence
