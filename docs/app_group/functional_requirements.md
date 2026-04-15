@@ -14,6 +14,10 @@ The global rules from `docs/general_overview.md` apply. This document only defin
 
 `app_group` is one of the rare places where a small part of human identity becomes visible, and that visibility must stay minimal.
 
+In technical documentation and code-oriented specifications, the role name remains `group admin`.
+
+In the French user-facing interface, that same role is labeled `responsable de groupe`.
+
 - `group admins` may view `username`, `first_name`, and `last_name` of the members of their group in order to manage it,
 - a simple member only sees the `username` values of the `group admins`,
 - there must be no public directory,
@@ -60,6 +64,11 @@ A group may have several `group admins`, but it must always keep at least one.
 
 Neither a `group admin`, nor a `moderator`, nor an `admin` may remove that role from the last remaining `group admin`.
 
+Rare exception:
+
+- if the last remaining `group admin` deletes their own account, the group may temporarily end up without any `group admin`,
+- in that case, a `moderator` or `admin` must be able to appoint a new `group admin` to restore normal group governance.
+
 ## Membership And Selection
 
 Everyone may access the group list.
@@ -99,7 +108,7 @@ Selecting a group is used to access the features of `app_animation`.
 The following terms must be used consistently in documentation and implementation:
 
 - `group`,
-- `group admin`,
+- `group admin`: technical documentation term; French UI label `responsable de groupe`,
 - `open`,
 - `private`,
 - `private_with_secret`,

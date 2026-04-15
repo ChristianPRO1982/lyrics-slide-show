@@ -75,7 +75,7 @@ The main roles are:
 
 - `Guest`: non-authenticated user,
 - `Member`: authenticated user,
-- `Group Admin`: member with management rights inside a given group,
+- `Group Admin`: member with management rights inside a given group; the French user-facing label is `responsable de groupe`,
 - `Moderator`: authenticated user responsible for song quality and moderation data,
 - `Admin`: site administrator; an admin is also a moderator.
 
@@ -94,8 +94,10 @@ The following rules describe the current functional intent.
 - A member can create a group.
 - Group settings can be modified by group admins, moderators, and admins.
 - Group admins, moderators, and admins can validate a new member request for a group.
-- Group admins, moderators, and admins can grant group admin rights to a member of the same group.
+- Group admins, moderators, and admins can grant or revoke group admin rights for a member of the same group.
 - A group may have several group admins, but it must always have at least one.
+- The last remaining group admin cannot be revoked through ordinary role-management actions.
+- Rare exception: if the last remaining group admin deletes their own account, the group may temporarily have no group admin until a moderator or admin appoints a new one.
 
 ### Songs
 
@@ -411,6 +413,7 @@ The following business terms should be used consistently in the project:
 - `song`: a global lyrics resource,
 - `animation`: an ordered playlist of songs with projection settings,
 - `group`: a collaboration and storage perimeter for animations,
+- `group admin`: technical and documentation term for the role shown to French users as `responsable de groupe`,
 - `remote`: the operator page controlling projection,
 - `projected screen`: the fullscreen display page for the audience,
 - `validated song`: a moderator-approved song locked against regular edits,
