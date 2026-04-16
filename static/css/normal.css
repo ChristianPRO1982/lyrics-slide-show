@@ -227,6 +227,59 @@ body.lss-messagebox-open {
     display: none;
 }
 
+.lss-page-loading:not(.lss-page-ready) [data-page-content] {
+    visibility: hidden;
+}
+
+.lss-page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: none;
+    place-items: center;
+    padding: 24px;
+    color: var(--site-ink);
+    background: var(--site-popup-overlay);
+    backdrop-filter: blur(4px);
+}
+
+.lss-page-loader-visible:not(.lss-page-ready) .lss-page-loader {
+    display: grid;
+}
+
+.lss-page-loader-panel {
+    width: min(360px, calc(100vw - 40px));
+    min-height: 220px;
+    padding: 28px;
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-xl);
+    background: var(--site-popup-surface);
+    box-shadow: var(--site-popup-shadow);
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 14px;
+    text-align: center;
+    font-family: var(--site-font-ui);
+}
+
+.lss-page-loader-panel strong {
+    color: var(--site-accent);
+    font-size: 1.2rem;
+}
+
+.lss-page-loader-panel span:last-child {
+    color: var(--site-ink-soft);
+    font-size: 0.95rem;
+}
+
+.lss-page-loader-image {
+    width: min(220px, 70vw);
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+}
+
 .lss-messagebox-overlay {
     position: fixed;
     inset: 0;
@@ -962,6 +1015,42 @@ body.lss-messagebox-open {
     border-color: var(--site-accent-gold);
     color: var(--site-accent);
     background: rgba(255, 244, 236, 0.92);
+}
+
+.heavy-image-gallery {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.heavy-image-card {
+    min-height: 0;
+    gap: 12px;
+}
+
+.heavy-image-card .site-theme-card-header {
+    margin-bottom: 0;
+}
+
+.heavy-image-card h2,
+.heavy-image-card p {
+    overflow-wrap: anywhere;
+}
+
+.heavy-image-card h2 {
+    font-size: 1rem;
+}
+
+.heavy-image-card p {
+    color: var(--site-ink-soft);
+    font-size: 0.82rem;
+}
+
+.heavy-image-card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-md);
+    background: rgba(255, 255, 255, 0.52);
 }
 
 .site-nav-rail {

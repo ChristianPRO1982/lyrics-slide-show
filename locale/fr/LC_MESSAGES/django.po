@@ -1962,6 +1962,76 @@ msgstr ""
 msgid "Or use a third-party"
 msgstr ""
 
+#: templates/base.html:3
+msgid "Chargement..."
+msgstr ""
+
+#: templates/base.html:4
+msgid "Préparation de la page."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:4
+#: app_main/templates/main/heavy.html:36
+msgid "Page lourde"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:6
+#: app_main/templates/main/heavy.html:29
+msgid "Debug"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:8
+msgid "Page réservée aux tests de chargement."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:12
+msgid "Source"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:16
+msgid "Images"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:21
+msgid "Charge"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:23
+msgid "Cette page n'est accessible qu'en saisissant son URL directement en mode DEBUG."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:26
+msgid "Aucun lien de navigation ne pointe vers cette page."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:31
+#, python-format
+msgid "%(count)s images depuis %(source)s."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:35
+msgid "debug uniquement"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:38
+msgid ""
+"Cette page charge volontairement beaucoup d'images pour tester le loader "
+"global et le comportement visuel au chargement."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:41
+#, python-format
+msgid "%(count)s images listées depuis %(source)s."
+msgstr ""
+
+#: app_main/templates/main/heavy.html:45
+msgid "Images de test de charge"
+msgstr ""
+
+#: app_main/templates/main/heavy.html:59
+msgid "Aucune image accessible dans LSS ou static."
+msgstr ""
+
 #: templates/base.html:44
 msgid "Fermer la fenêtre"
 msgstr ""

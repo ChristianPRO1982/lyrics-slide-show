@@ -10,4 +10,6 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('auth/callback/', views.auth_callback, name='auth_callback'),
     path('logout/', views.logout, name='logout'),
+    path('heavy/', views.heavy, name='heavy'),
+    path('heavy/assets/<path:asset_path>', views.heavy_asset, name='heavy_asset'),
 ]

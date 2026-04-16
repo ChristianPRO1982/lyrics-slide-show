@@ -1,9 +1,12 @@
 import logging
+import mimetypes
+from pathlib import Path
 from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponseForbidden
+from django.http import FileResponse, Http404, HttpResponseForbidden
+from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language
 from django.http import HttpRequest, HttpResponse
@@ -60,6 +63,8 @@ AVAILABLE_THEMES = [
     },
 ]
 
+HEAVY_IMAGE_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
+
 
 def homepage(request: HttpRequest) -> HttpResponse:
     return render(
@@ -67,6 +72,82 @@ def homepage(request: HttpRequest) -> HttpResponse:
         "main/homepage.html",
         {"auth_mode": settings.AUTH_MODE},
     )
+
+
+def _collect_heavy_images(root: Path, *, source: str) -> list[dict[str, str]]:
+    try:
+        resolved_root = root.resolve(strict=True)
+        if not resolved_root.is_dir():
+            return []
+
+        image_paths = sorted(
+            (
+                path
+                for path in resolved_root.rglob("*")
+                if path.is_file() and path.suffix.lower() in HEAVY_IMAGE_EXTENSIONS
+            ),
+            key=lambda path: path.relative_to(resolved_root).as_posix().lower(),
+        )
+    except (OSError, RuntimeError):
+        return []
+
+    images = []
+    for path in image_paths:
+        relative_path = path.relative_to(resolved_root).as_posix()
+        if source == "lss":
+            image_url = reverse("heavy_asset", kwargs={"asset_path": relative_path})
+        else:
+            image_url = static(relative_path)
+
+        images.append(
+            {
+                "name": path.name,
+                "relative_path": relative_path,
+                "url": image_url,
+            }
+        )
+
+    return images
+
+
+def heavy(request: HttpRequest) -> HttpResponse:
+    if not settings.DEBUG:
+        raise Http404
+
+    images = _collect_heavy_images(settings.BASE_DIR / "LSS", source="lss")
+    image_source = "LSS"
+
+    if not images:
+        images = _collect_heavy_images(settings.BASE_DIR / "static", source="static")
+        image_source = "static"
+
+    return render(
+        request,
+        "main/heavy.html",
+        {
+            "images": images,
+            "image_source": image_source,
+        },
+    )
+
+
+def heavy_asset(request: HttpRequest, asset_path: str) -> FileResponse:
+    if not settings.DEBUG:
+        raise Http404
+
+    root = (settings.BASE_DIR / "LSS").resolve()
+    requested_path = (root / asset_path).resolve()
+
+    try:
+        requested_path.relative_to(root)
+    except ValueError as exc:
+        raise Http404 from exc
+
+    if not requested_path.is_file() or requested_path.suffix.lower() not in HEAVY_IMAGE_EXTENSIONS:
+        raise Http404
+
+    content_type, _encoding = mimetypes.guess_type(requested_path.name)
+    return FileResponse(requested_path.open("rb"), content_type=content_type or "application/octet-stream")
 
 
 def _current_language_code(request: HttpRequest) -> str:

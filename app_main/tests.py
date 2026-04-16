@@ -661,6 +661,10 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertContains(response, 'id="lss-messagebox-root"')
         self.assertContains(response, "window.LSS_MESSAGE_BOX_CONFIG")
         self.assertContains(response, "/static/js/message_box.js")
+        self.assertContains(response, "data-page-loader")
+        self.assertContains(response, "data-page-content")
+        self.assertContains(response, "window.LSS_PAGE_LOADER_CONFIG")
+        self.assertContains(response, "Chargement...")
 
     def test_base_template_exposes_page_scripts_block_after_shared_popup_script(self):
         request = RequestFactory().get("/")
@@ -678,7 +682,9 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('/static/js/message_box.js', rendered)
         self.assertIn('/static/js/page-popup-test.js', rendered)
+        self.assertIn('/static/js/page_loader.js', rendered)
         self.assertLess(rendered.index('/static/js/message_box.js'), rendered.index('/static/js/page-popup-test.js'))
+        self.assertLess(rendered.index('/static/js/page-popup-test.js'), rendered.index('/static/js/page_loader.js'))
 
     def test_navigation_marks_logout_links_for_popup_confirmation(self):
         request = RequestFactory().get("/")
@@ -735,6 +741,25 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("⚖️", rendered)
         self.assertNotIn("👑", rendered)
+
+
+class HeavyPageTests(SimpleTestCase):
+    @override_settings(DEBUG=True)
+    def test_heavy_page_is_available_in_debug_without_navigation_link(self):
+        response = self.client.get(reverse("heavy"))
+        homepage_response = self.client.get(reverse("homepage"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Page lourde")
+        self.assertContains(response, "heavy-image-gallery")
+        self.assertContains(response, "readyDelayMs: 2000")
+        self.assertNotContains(homepage_response, 'href="/heavy/"')
+
+    @override_settings(DEBUG=False)
+    def test_heavy_page_returns_404_when_debug_is_disabled(self):
+        response = self.client.get(reverse("heavy"))
+
+        self.assertEqual(response.status_code, 404)
 
 
 class SitePopupContextTests(TestCase):

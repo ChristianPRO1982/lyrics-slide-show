@@ -253,32 +253,46 @@
             .join("\n\n");
     };
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        if (!window.LSSMessageBox || typeof window.LSSMessageBox.alert !== "function") {
+    const runWhenPageReady = (callback) => {
+        const isPageLoaderActive = root.classList.contains("lss-page-loading")
+            && !root.classList.contains("lss-page-ready");
+
+        if (!isPageLoaderActive) {
+            callback();
             return;
         }
 
-        const eligibleSections = getDeferredPopupSections();
-        if (!eligibleSections.length) {
-            return;
-        }
+        document.addEventListener("lss:page-ready", callback, { once: true });
+    };
 
-        const result = await window.LSSMessageBox.alert({
-            title: sitePopupConfig.title || "Informations du site",
-            messageMarkdown: buildSitePopupMarkdown(eligibleSections),
-            size: eligibleSections.length > 1 ? "wide" : "default",
-            buttons: [
-                {
-                    id: "ok",
-                    label: messageBoxI18n.okLabel || "OK",
-                    tone: "neutral",
-                },
-            ],
+    document.addEventListener("DOMContentLoaded", () => {
+        runWhenPageReady(async () => {
+            if (!window.LSSMessageBox || typeof window.LSSMessageBox.alert !== "function") {
+                return;
+            }
+
+            const eligibleSections = getDeferredPopupSections();
+            if (!eligibleSections.length) {
+                return;
+            }
+
+            const result = await window.LSSMessageBox.alert({
+                title: sitePopupConfig.title || "Informations du site",
+                messageMarkdown: buildSitePopupMarkdown(eligibleSections),
+                size: eligibleSections.length > 1 ? "wide" : "default",
+                buttons: [
+                    {
+                        id: "ok",
+                        label: messageBoxI18n.okLabel || "OK",
+                        tone: "neutral",
+                    },
+                ],
+            });
+
+            if (result.buttonId === "ok") {
+                rememberPopupSections(eligibleSections);
+            }
         });
-
-        if (result.buttonId === "ok") {
-            rememberPopupSections(eligibleSections);
-        }
     });
 
     const floatingHelp = document.querySelector("[data-floating-help]");

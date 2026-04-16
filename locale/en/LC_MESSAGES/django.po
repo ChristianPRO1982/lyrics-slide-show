@@ -2100,6 +2100,78 @@ msgstr ""
 msgid "Or use a third-party"
 msgstr ""
 
+#: templates/base.html:3
+msgid "Chargement..."
+msgstr "Loading..."
+
+#: templates/base.html:4
+msgid "Préparation de la page."
+msgstr "Preparing the page."
+
+#: app_main/templates/main/heavy.html:4
+#: app_main/templates/main/heavy.html:36
+msgid "Page lourde"
+msgstr "Heavy page"
+
+#: app_main/templates/main/heavy.html:6
+#: app_main/templates/main/heavy.html:29
+msgid "Debug"
+msgstr "Debug"
+
+#: app_main/templates/main/heavy.html:8
+msgid "Page réservée aux tests de chargement."
+msgstr "Page reserved for loading tests."
+
+#: app_main/templates/main/heavy.html:12
+msgid "Source"
+msgstr "Source"
+
+#: app_main/templates/main/heavy.html:16
+msgid "Images"
+msgstr "Images"
+
+#: app_main/templates/main/heavy.html:21
+msgid "Charge"
+msgstr "Load"
+
+#: app_main/templates/main/heavy.html:23
+msgid "Cette page n'est accessible qu'en saisissant son URL directement en mode DEBUG."
+msgstr "This page is only accessible by typing its URL directly in DEBUG mode."
+
+#: app_main/templates/main/heavy.html:26
+msgid "Aucun lien de navigation ne pointe vers cette page."
+msgstr "No navigation link points to this page."
+
+#: app_main/templates/main/heavy.html:31
+#, python-format
+msgid "%(count)s images depuis %(source)s."
+msgstr "%(count)s images from %(source)s."
+
+#: app_main/templates/main/heavy.html:35
+msgid "debug uniquement"
+msgstr "debug only"
+
+#: app_main/templates/main/heavy.html:38
+msgid ""
+"Cette page charge volontairement beaucoup d'images pour tester le loader "
+"global et le comportement visuel au chargement."
+msgstr ""
+"This page deliberately loads many images to test the global loader and the "
+"visual loading behavior."
+
+#: app_main/templates/main/heavy.html:41
+#, python-format
+msgid "%(count)s images listées depuis %(source)s."
+msgstr "%(count)s images listed from %(source)s."
+
+#: app_main/templates/main/heavy.html:45
+msgid "Images de test de charge"
+msgstr "Load test images"
+
+#: app_main/templates/main/heavy.html:59
+msgid "Aucune image accessible dans LSS ou static."
+msgstr "No image accessible in LSS or static."
+
 #: templates/base.html:44
 msgid "Fermer la fenêtre"
 msgstr "Close window"

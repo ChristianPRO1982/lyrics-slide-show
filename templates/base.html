@@ -1,5 +1,7 @@
 {% load static %}
 {% load i18n %}
+{% trans "Chargement..." as page_loader_label %}
+{% trans "Préparation de la page." as page_loader_help %}
 
 <!DOCTYPE html>
 <html lang="{{ language_code|default:'fr' }}" data-theme="normal">
@@ -9,6 +11,58 @@
     <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{% endblock %}">
     <link id="site-favicon" rel="icon" sizes="64x64" href="{% static 'icons/favicon.png' %}" type="image/png"/>
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const now = () => (window.performance && typeof window.performance.now === "function")
+                ? window.performance.now()
+                : Date.now();
+            const config = {
+                revealDelayMs: 150,
+                minimumVisibleMs: 250,
+                failsafeMs: 5000,
+                loadingLabel: "{{ page_loader_label|escapejs }}",
+                loadingHelp: "{{ page_loader_help|escapejs }}"
+            };
+
+            window.LSS_PAGE_LOADER_CONFIG = config;
+            root.classList.add("lss-page-loading");
+
+            const dispatchReady = () => {
+                document.dispatchEvent(new CustomEvent("lss:page-ready"));
+            };
+
+            const markReady = () => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                root.classList.add("lss-page-ready");
+                root.classList.remove("lss-page-loading", "lss-page-loader-visible");
+                dispatchReady();
+            };
+
+            const state = {
+                startedAt: now(),
+                loaderShownAt: null,
+                revealTimerId: null,
+                failsafeTimerId: null,
+                markReady
+            };
+
+            state.revealTimerId = window.setTimeout(() => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                state.loaderShownAt = now();
+                root.classList.add("lss-page-loader-visible");
+            }, config.revealDelayMs);
+
+            state.failsafeTimerId = window.setTimeout(markReady, config.failsafeMs);
+            window.LSS_PAGE_LOADER_STATE = state;
+        })();
+    </script>
     <script>
         window.LSS_THEME_CONFIG = {
             storageKey: "lss-theme",
@@ -56,6 +110,18 @@
         };
     </script>
     <style>
+        [data-page-loader] {
+            display: none;
+        }
+
+        .lss-page-loading:not(.lss-page-ready) [data-page-content] {
+            visibility: hidden;
+        }
+
+        .lss-page-loader-visible:not(.lss-page-ready) [data-page-loader] {
+            display: grid;
+        }
+
         [data-nav-drawer]:not([data-nav-ready]) {
             display: none !important;
         }
@@ -74,6 +140,19 @@
     </script>
 </head>
 <body id="site-top">
+    <div class="lss-page-loader" data-page-loader role="status" aria-live="polite" aria-label="{{ page_loader_label }}">
+        <div class="lss-page-loader-panel">
+            <img
+                class="lss-page-loader-image"
+                src="{% static 'images/loading.gif' %}"
+                alt=""
+                aria-hidden="true"
+            >
+            <strong>{{ page_loader_label }}</strong>
+            <span>{{ page_loader_help }}</span>
+        </div>
+    </div>
+    <div data-page-content>
     <script>
         window.LSS_FLOATING_HELP_CONFIG = {
             collapseDelayMs: 3000
@@ -144,10 +223,12 @@
         </div>
     </div>
     {% include "includes/footer.html" %}
+    </div>
     <div id="lss-messagebox-root" hidden></div>
     <script id="lss-site-popup-config" type="application/json">{{ lss_site_popup_json|default:"{}"|safe }}</script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/message_box.js' %}"></script>
     {% block page_scripts %}{% endblock %}
+    <script src="{% static 'js/page_loader.js' %}"></script>
 </body>
 </html>

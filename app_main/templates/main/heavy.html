@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Page lourde" %}{% endblock %}
+
+{% block section_title %}{% trans "Debug" %}{% endblock %}
+{% block section_intro %}
+    <p>{% trans "Page réservée aux tests de chargement." %}</p>
+{% endblock %}
+{% block section_nav %}
+    <div>
+        <strong>{% trans "Source" %}</strong>
+        <span>{{ image_source }}</span>
+    </div>
+    <div>
+        <strong>{% trans "Images" %}</strong>
+        <span>{{ images|length }}</span>
+    </div>
+{% endblock %}
+
+{% block tools_title %}{% trans "Charge" %}{% endblock %}
+{% block tools_intro %}
+    <p>{% trans "Cette page n'est accessible qu'en saisissant son URL directement en mode DEBUG." %}</p>
+{% endblock %}
+{% block page_tools %}
+    <div>{% trans "Aucun lien de navigation ne pointe vers cette page." %}</div>
+{% endblock %}
+
+{% block mobile_side_title %}{% trans "Debug" %}{% endblock %}
+{% block mobile_side_content %}
+    <div>{% blocktrans with count=images|length source=image_source %}{{ count }} images depuis {{ source }}.{% endblocktrans %}</div>
+{% endblock %}
+
+{% block page_kicker %}{% trans "debug uniquement" %}{% endblock %}
+{% block page_title %}{% trans "Page lourde" %}{% endblock %}
+{% block page_intro %}
+    <p>{% trans "Cette page charge volontairement beaucoup d'images pour tester le loader global et le comportement visuel au chargement." %}</p>
+{% endblock %}
+{% block page_summary %}
+    <p>{% blocktrans with count=images|length source=image_source %}{{ count }} images listées depuis {{ source }}.{% endblocktrans %}</p>
+{% endblock %}
+
+{% block content %}
+    <section class="site-theme-selection heavy-image-gallery" aria-label="{% trans 'Images de test de charge' %}">
+        {% for image in images %}
+            <article class="site-theme-card heavy-image-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{{ image.name }}</h2>
+                        <p>{{ image.relative_path }}</p>
+                    </div>
+                </header>
+                <img
+                    src="{{ image.url }}"
+                    alt="{{ image.relative_path }}"
+                    loading="eager"
+                    decoding="sync"
+                >
+            </article>
+        {% empty %}
+            <article class="site-theme-card">
+                <p>{% trans "Aucune image accessible dans LSS ou static." %}</p>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}
+
+{% block page_scripts %}
+    <script>
+        window.LSS_PAGE_LOADER_CONFIG = {
+            ...(window.LSS_PAGE_LOADER_CONFIG || {}),
+            readyDelayMs: 2000,
+            minimumVisibleMs: 250
+        };
+    </script>
+{% endblock %}
