@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-16 12:12+0200\n"
+"POT-Creation-Date: 2026-04-16 17:44+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -1856,6 +1856,46 @@ msgstr ""
 
 #: app_member/services.py:100
 msgid "Rôle de membre non pris en charge."
+msgstr ""
+
+#: app_song/models.py:20
+msgid "Not validated"
+msgstr ""
+
+#: app_song/models.py:21
+msgid "Validated"
+msgstr ""
+
+#: app_song/models.py:22
+msgid "Validated with concern"
+msgstr ""
+
+#: app_song/models.py:26
+msgid "New"
+msgstr ""
+
+#: app_song/models.py:27
+msgid "Handled"
+msgstr ""
+
+#: app_song/models.py:28
+msgid "Rejected"
+msgstr ""
+
+#: app_song/models.py:32
+msgid "Internal"
+msgstr ""
+
+#: app_song/models.py:33
+msgid "Web"
+msgstr ""
+
+#: app_song/models.py:34
+msgid "Score"
+msgstr ""
+
+#: app_song/models.py:35
+msgid "Audio/video"
 msgstr ""
 
 #: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:10
