@@ -170,6 +170,7 @@
         });
 
         closeMenu();
+        drawer.dataset.navReady = "true";
     }
 
     document.querySelectorAll("[data-lss-logout-confirm='true']").forEach((link) => {

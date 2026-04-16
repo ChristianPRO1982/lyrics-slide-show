@@ -16,7 +16,7 @@
 ### `<ACTIONS>`
 
 * select if allowed, otherwise nothing
-* request membership / or member / or group admin / or pending request with `💪/👥/📩`
+* request membership / or member / or group admin / or pending request with `👩🏾‍🔧/👥/📩`
 * modify the group if allowed, otherwise nothing
 
 ## Design

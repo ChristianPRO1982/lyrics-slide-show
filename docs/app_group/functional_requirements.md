@@ -314,17 +314,17 @@ The compact visual status must follow this style:
 
 Membership-related visual markers must also be available in the list:
 
-- `💪 group admin`,
+- `👩🏾‍🔧 group admin`,
 - `👥 member`,
 - `📩 pending request`.
 
 In the French UI, these markers may be translated for example as:
 
-- `💪 responsable`,
+- `👩🏾‍🔧 responsable`,
 - `👥 membre`,
 - `📩 demande en cours`.
 
-When the authenticated user is `group admin`, only `💪 group admin` is shown. It must not be combined with `👥 member`.
+When the authenticated user is `group admin`, only `👩🏾‍🔧 group admin` is shown. It must not be combined with `👥 member`.
 
 The group list must never display the secret itself.
 

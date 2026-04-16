@@ -101,7 +101,7 @@ def _build_groups_page_context(request: HttpRequest, create_form: GroupCreateFor
                 "status_label": get_status_label(group),
                 "business_status": business_status,
                 "has_secret": bool(group.secret_ciphertext and group.status == GroupStatus.PRIVATE),
-                "membership_marker": "💪" if is_group_admin else "👥" if is_member else "📩" if group.group_id in pending_request_group_ids else "",
+                "membership_marker": "👩🏾‍🔧" if is_group_admin else "👥" if is_member else "📩" if group.group_id in pending_request_group_ids else "",
                 "membership_label": (
                     _("Responsable") if is_group_admin else _("Membre") if is_member else _("Demande en cours") if group.group_id in pending_request_group_ids else ""
                 ),
