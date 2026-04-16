@@ -129,6 +129,234 @@ The functional metadata scope of `app_song` is limited to those references.
 
 Metadata concepts such as language, theme, tempo, free tags, or source are not part of the current `app_song` scope unless they are introduced later through a separate product decision.
 
+## Database Reference
+
+This section documents database structures relevant to `app_song`.
+
+The schema is intentionally included in this functional document because database design is part of the controlled product contract for this project.
+
+### Shared `common` Schema
+
+The following tables belong to the shared `common` schema.
+
+They are not owned by this project, but `Lyrics Slide Show` has `CRUD` access to them.
+
+`app_song` uses these tables for song metadata and search filters.
+
+```sql
+CREATE TABLE common.genres (
+    genre_id int4 GENERATED ALWAYS AS IDENTITY(
+        INCREMENT BY 1
+        MINVALUE 1
+        MAXVALUE 2147483647
+        START 1
+        CACHE 1
+        NO CYCLE
+    ) NOT NULL,
+    "group" varchar(255) NOT NULL,
+    "name" varchar(255) NOT NULL,
+    CONSTRAINT genres_pkey PRIMARY KEY (genre_id),
+    CONSTRAINT genres_unique UNIQUE ("group", name)
+);
+
+CREATE TABLE common.bands (
+    band_id int4 GENERATED ALWAYS AS IDENTITY(
+        INCREMENT BY 1
+        MINVALUE 1
+        MAXVALUE 2147483647
+        START 1
+        CACHE 1
+        NO CYCLE
+    ) NOT NULL,
+    "name" varchar(255) NOT NULL,
+    CONSTRAINT bands_pkey PRIMARY KEY (band_id),
+    CONSTRAINT bands_unique UNIQUE (name)
+);
+
+CREATE TABLE common.band_links (
+    band_id int4 NOT NULL,
+    link varchar(255) NOT NULL,
+    CONSTRAINT band_links_pkey PRIMARY KEY (band_id, link),
+    CONSTRAINT band_links_bands_fk
+        FOREIGN KEY (band_id)
+        REFERENCES common.bands(band_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE common.artists (
+    artist_id int4 GENERATED ALWAYS AS IDENTITY(
+        INCREMENT BY 1
+        MINVALUE 1
+        MAXVALUE 2147483647
+        START 1
+        CACHE 1
+        NO CYCLE
+    ) NOT NULL,
+    "name" varchar(255) NOT NULL,
+    CONSTRAINT artists_pkey PRIMARY KEY (artist_id),
+    CONSTRAINT artists_unique UNIQUE (name)
+);
+
+CREATE TABLE common.artist_links (
+    artist_id int4 NOT NULL,
+    link varchar(255) NOT NULL,
+    CONSTRAINT artist_links_pkey PRIMARY KEY (artist_id, link),
+    CONSTRAINT artist_links_artists_fk
+        FOREIGN KEY (artist_id)
+        REFERENCES common.artists(artist_id)
+        ON DELETE CASCADE
+);
+```
+
+### `app_song` Schema
+
+The following tables are owned by this project and more specifically by `app_song`.
+
+All foreign keys controlled by `app_song` must use `ON DELETE CASCADE`.
+
+#### `s_songs`
+
+`s_songs` stores the main song identity and access fields.
+
+```sql
+CREATE TABLE s_songs (
+    song_id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    title varchar(255) NOT NULL,
+    sub_title varchar(255) NOT NULL,
+    description text,
+    status integer NOT NULL DEFAULT 0,
+    licensed boolean NOT NULL DEFAULT false,
+    CONSTRAINT s_songs_pkey PRIMARY KEY (song_id),
+    CONSTRAINT s_songs_unique UNIQUE (title, sub_title)
+);
+```
+
+Functional notes:
+
+- `sub_title` is the database column for the functional `subtitle` field.
+- `status` follows the validation status contract defined in this document.
+- `licensed` controls guest visibility.
+
+#### `s_song_messages`
+
+`s_song_messages` stores song change requests.
+
+```sql
+CREATE TABLE s_song_messages (
+    message_id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    song_id integer NOT NULL,
+    message text NOT NULL,
+    status integer NOT NULL DEFAULT 0,
+    date timestamp with time zone NOT NULL,
+    CONSTRAINT s_song_messages_pkey PRIMARY KEY (message_id),
+    CONSTRAINT s_song_messages_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE
+);
+```
+
+Functional notes:
+
+- `status = 0` means the request is new.
+- `status = 1` means the request has been handled.
+- `status = 2` means the request has been rejected.
+- `date` stores the request timestamp.
+
+#### `s_song_links`
+
+`s_song_links` stores links attached to songs.
+
+```sql
+CREATE TABLE s_song_links (
+    song_id integer NOT NULL,
+    link varchar(255) NOT NULL,
+    CONSTRAINT s_song_links_pkey PRIMARY KEY (song_id, link),
+    CONSTRAINT s_song_links_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE
+);
+```
+
+Functional notes:
+
+- The link type described in this document is a visual classification for users.
+- The physical storage of that type must remain compatible with this functional requirement.
+
+#### `s_verses`
+
+`s_verses` stores ordered lyric text blocks.
+
+```sql
+CREATE TABLE s_verses (
+    verse_id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    song_id integer NOT NULL,
+    num integer NOT NULL DEFAULT 1000,
+    num_verse integer NOT NULL DEFAULT 1000,
+    chorus boolean NOT NULL DEFAULT false,
+    followed boolean NOT NULL DEFAULT false,
+    notcontinuenumbering boolean NOT NULL DEFAULT false,
+    text text,
+    prefix varchar(50) DEFAULT NULL,
+    CONSTRAINT s_verses_pkey PRIMARY KEY (verse_id),
+    CONSTRAINT s_verses_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX s_verses_song_id_idx ON s_verses(song_id);
+CREATE INDEX s_verses_num_idx ON s_verses(num);
+CREATE INDEX s_verses_chorus_idx ON s_verses(chorus);
+```
+
+Functional notes:
+
+- `num` is the technical ordering position.
+- `num_verse` stores the display verse number.
+- `notcontinuenumbering` is the database column for the functional `not_c_num` behavior.
+- `prefix` supports custom or controlled display prefixes for sections such as bridges or pre-choruses.
+- The functional `chorus_like` behavior is handled through prefix/display behavior rather than a dedicated column in this table.
+- The functional `display_num` is represented by `num_verse`.
+
+#### `s_verse_prefixes`
+
+`s_verse_prefixes` stores controlled prefixes that can be used when editing verse-like blocks.
+
+```sql
+CREATE TABLE s_verse_prefixes (
+    prefix_id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    prefix varchar(15) NOT NULL,
+    comment varchar(100) DEFAULT NULL,
+    CONSTRAINT s_verse_prefixes_pkey PRIMARY KEY (prefix_id),
+    CONSTRAINT s_verse_prefixes_unique UNIQUE (prefix)
+);
+```
+
+Functional notes:
+
+- Prefixes are reusable helpers for song editing.
+- Moderators can use this reference data to normalize recurring section labels.
+
+#### Song Relation Tables
+
+`app_song` also owns relation tables between `s_songs` and shared or user-owned reference tables.
+
+Required relation targets are:
+
+- `common.genres.genre_id`,
+- `common.artists.artist_id`,
+- `common.bands.band_id`,
+- `users.users.id` for member favorites.
+
+Each relation table must:
+
+- reference `s_songs.song_id`,
+- reference the related target table,
+- use a composite primary key preventing duplicate relations,
+- use `ON DELETE CASCADE` on all foreign keys.
+
 ## Song Links
 
 Song links point to safe and legal external or internal sources.
