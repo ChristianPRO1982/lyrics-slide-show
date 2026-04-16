@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
@@ -96,7 +97,7 @@ def set_member_role(member_id: str, role_name: str, enabled: bool) -> MemberRole
     role_name = str(role_name).strip().lower()
 
     if role_name not in {ROLE_ADMIN, ROLE_MODERATOR}:
-        raise ValidationError("Unsupported member role.")
+        raise ValidationError(_("Rôle de membre non pris en charge."))
 
     role, _created = MemberRole.objects.get_or_create(member_id=normalized_id)
 

@@ -3,6 +3,11 @@
 {% load i18n %}
 {% trans "Journal des versions sur GitHub" as homepage_changelog_label %}
 {% trans "Dernière version publiée" as homepage_latest_release_label %}
+{% trans "Projetez. Chantez. Kiffez." as homepage_project_label %}
+{% trans "Pourquoi c’est cool ?" as homepage_why_label %}
+{% trans "Ce que tu y gagnes" as homepage_benefits_label %}
+{% trans "Comment ça marche ?" as homepage_how_label %}
+{% trans "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" as homepage_quote_label %}
 
 {% block title %}Lyrics Slide Show{% endblock %}
 {% block meta_description %}{% endblock %}
@@ -113,7 +118,7 @@
                 <div>
                     <h2>{% trans "Projetez. Chantez. Kiffez." %}</h2>
                     <div class="site-home-dropcap-copy">
-                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="animations" icon_alt="Projetez. Chantez. Kiffez." %}
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="animations" icon_alt=homepage_project_label %}
                         <p>{% blocktrans %}<strong>Lyrics Slide Show</strong> transforme tes paroles en slides claires et prêtes à projeter… en quelques secondes.{% endblocktrans %}</p>
                         <p>{% trans "Parfait pour une soirée louange, une animation musicale ou un concert improvisé." %}</p>
                     </div>
@@ -126,7 +131,7 @@
                 <div>
                     <h2>{% trans "Pourquoi c’est cool ?" %}</h2>
                     <div class="site-home-dropcap-copy">
-                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="lss" icon_alt="Pourquoi c’est cool ?" %}
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="lss" icon_alt=homepage_why_label %}
                         <p>{% trans "Tu te concentres sur la musique, pas sur la mise en page. Le texte est net, lisible de loin, et tes enchaînements restent fluides." %}</p>
                         <p>{% trans "Fini les bricolages sur PowerPoint, Google Slides ou Canva : ici tout est pensé pour chanter, pas pour faire des diapos." %}</p>
                     </div>
@@ -139,7 +144,7 @@
                 <div>
                     <h2>{% trans "Ce que tu y gagnes" %}</h2>
                     <div class="site-home-dropcap-copy">
-                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="groups" icon_alt="Ce que tu y gagnes" %}
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="groups" icon_alt=homepage_benefits_label %}
                         <p>{% trans "🎤 Des slides propres, sans distractions." %}</p>
                         <p>{% trans "⚡ Une prise en main immédiate." %}</p>
                         <p>{% trans "🎶 Des transitions sans coupure dans l’ambiance." %}</p>
@@ -155,7 +160,7 @@
                 <div>
                     <h2>{% trans "Comment ça marche ?" %}</h2>
                     <div class="site-home-dropcap-copy">
-                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="account" icon_alt="Comment ça marche ?" %}
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="account" icon_alt=homepage_how_label %}
                         <p>{% trans "Ouvre une session, colle tes paroles, puis laisse Lyrics Slide Show découper le texte en écrans prêts à projeter." %}</p>
                         <p>{% trans "Tu ajustes ensuite le rythme, le thème et la navigation pour piloter la projection sans casser l'élan du chant." %}</p>
                     </div>
@@ -165,7 +170,7 @@
 
         <article class="site-theme-card">
             <div class="site-home-dropcap-copy">
-                {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="songs" icon_alt="« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" %}
+                {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="songs" icon_alt=homepage_quote_label %}
                 <p class="site-home-dropcap-lead">{% trans "A vous !" %}</p>
                 <blockquote class="site-home-clear-below">
                     {% trans "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" %}

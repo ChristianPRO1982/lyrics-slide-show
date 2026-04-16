@@ -213,7 +213,7 @@ def login(request: HttpRequest) -> HttpResponse:
         return redirect("account")
 
     if settings.AUTH_MODE not in {"mock", "keycloak"}:
-        messages.error(request, "Interactive login is not configured for this environment.")
+        messages.error(request, _("La connexion interactive n'est pas configurée pour cet environnement."))
         logger.warning("login_refused auth_mode=%s reason=unsupported_auth_mode", settings.AUTH_MODE)
         return redirect("homepage")
 
@@ -274,7 +274,7 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
     request.session.cycle_key()
     store_session_user(request.session, user)
     logger.info("login_success external_id=%s username=%s", user.external_id, user.username)
-    messages.success(request, f"Connected as {user.username}.")
+    messages.success(request, _("Connecté en tant que %(username)s.") % {"username": user.username})
     return redirect("homepage")
 
 
@@ -288,7 +288,7 @@ def logout(request: HttpRequest) -> HttpResponse:
         )
     clear_session_user(request.session)
     request.session.cycle_key()
-    messages.info(request, "Logged out.")
+    messages.info(request, _("Vous êtes déconnecté."))
     if settings.AUTH_MODE == "keycloak":
         try:
             return redirect(build_keycloak_logout_url())

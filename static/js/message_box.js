@@ -6,15 +6,15 @@
     }
 
     const i18n = {
-        closeLabel: "Fermer la fenetre",
-        okLabel: "OK",
-        yesLabel: "Oui",
-        noLabel: "Non",
-        cancelLabel: "Annuler",
-        confirmLabel: "Confirmer",
-        fieldRequiredLabel: "Ce champ est obligatoire.",
-        invalidEmailLabel: "Veuillez saisir une adresse e-mail valide.",
-        dialogLabel: "Fenetre de dialogue",
+        closeLabel: "",
+        okLabel: "",
+        yesLabel: "",
+        noLabel: "",
+        cancelLabel: "",
+        confirmLabel: "",
+        fieldRequiredLabel: "",
+        invalidEmailLabel: "",
+        dialogLabel: "",
         ...(window.LSS_MESSAGE_BOX_CONFIG || {}).i18n,
     };
 

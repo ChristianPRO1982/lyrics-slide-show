@@ -209,5 +209,39 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
+    {% trans "Copie" as group_copy_title %}
+    {% trans "Confirmation" as group_confirmation_title %}
+    {% trans "Le lien a été copié." as group_link_copied_message %}
+    {% trans "La copie automatique a échoué." as group_copy_failed_message %}
+    {% trans "Le QR code a été copié." as group_qr_copied_message %}
+    {% trans "La copie du QR code a échoué." as group_qr_copy_failed_message %}
+    {% trans "Secret du groupe" as group_secret_title %}
+    {% trans "Saisissez le secret pour **{groupName}**." as group_secret_message_template %}
+    {% trans "Secret" as group_secret_label %}
+    {% trans "Confirmer cette action ?" as group_confirm_action_message %}
+    {% trans "Mot de confirmation" as group_delete_confirmation_label %}
+    {% trans "Accepter cette demande d’adhésion ?" as group_join_request_message %}
+    {% trans "Accepter" as group_accept_label %}
+    {% trans "Abandonner" as group_abandon_label %}
+    {% trans "Refuser" as group_reject_label %}
+    <script>
+        window.LSS_GROUP_I18N = {
+            copyTitle: "{{ group_copy_title|escapejs }}",
+            confirmationTitle: "{{ group_confirmation_title|escapejs }}",
+            linkCopiedMessage: "{{ group_link_copied_message|escapejs }}",
+            copyFailedMessage: "{{ group_copy_failed_message|escapejs }}",
+            qrCopiedMessage: "{{ group_qr_copied_message|escapejs }}",
+            qrCopyFailedMessage: "{{ group_qr_copy_failed_message|escapejs }}",
+            secretTitle: "{{ group_secret_title|escapejs }}",
+            secretMessageTemplate: "{{ group_secret_message_template|escapejs }}",
+            secretLabel: "{{ group_secret_label|escapejs }}",
+            confirmActionMessage: "{{ group_confirm_action_message|escapejs }}",
+            deleteConfirmationLabel: "{{ group_delete_confirmation_label|escapejs }}",
+            joinRequestMessage: "{{ group_join_request_message|escapejs }}",
+            acceptLabel: "{{ group_accept_label|escapejs }}",
+            abandonLabel: "{{ group_abandon_label|escapejs }}",
+            rejectLabel: "{{ group_reject_label|escapejs }}"
+        };
+    </script>
     <script src="{% static 'js/app_group.js' %}"></script>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 
 SONG_SEARCH_VALIDATION_VALUES = {
@@ -25,7 +26,7 @@ def default_song_search() -> dict[str, object]:
 
 def validate_song_search(value: object) -> None:
     if not isinstance(value, dict):
-        raise ValidationError("song_search must be a JSON object.")
+        raise ValidationError(_("song_search doit être un objet JSON."))
 
     expected_keys = {
         "text",
@@ -40,27 +41,30 @@ def validate_song_search(value: object) -> None:
     unexpected_keys = set(value) - expected_keys
     if unexpected_keys:
         raise ValidationError(
-            f"song_search contains unsupported keys: {', '.join(sorted(unexpected_keys))}."
+            _("song_search contient des clés non prises en charge : %(keys)s.")
+            % {"keys": ", ".join(sorted(unexpected_keys))}
         )
 
     if not isinstance(value.get("text", ""), str):
-        raise ValidationError("song_search.text must be a string.")
+        raise ValidationError(_("song_search.text doit être une chaîne de caractères."))
 
     for key in ("everywhere", "match_all_selected_refs", "favorites_only"):
         if not isinstance(value.get(key), bool):
-            raise ValidationError(f"song_search.{key} must be a boolean.")
+            raise ValidationError(_("song_search.%(key)s doit être un booléen.") % {"key": key})
 
     for key in ("genre_ids", "band_ids", "artist_ids"):
         ids = value.get(key)
         if not isinstance(ids, list):
-            raise ValidationError(f"song_search.{key} must be a list.")
+            raise ValidationError(_("song_search.%(key)s doit être une liste.") % {"key": key})
         if not all(isinstance(item, int) for item in ids):
-            raise ValidationError(f"song_search.{key} must contain integer identifiers only.")
+            raise ValidationError(
+                _("song_search.%(key)s doit contenir uniquement des identifiants entiers.") % {"key": key}
+            )
 
     validation = value.get("validation")
     if validation not in SONG_SEARCH_VALIDATION_VALUES:
         raise ValidationError(
-            "song_search.validation must be one of: all, validated_only, non_validated_only."
+            _("song_search.validation doit être l'une des valeurs suivantes : all, validated_only, non_validated_only.")
         )
 
 
@@ -86,4 +90,3 @@ class MemberRole(models.Model):
                 name="m_member_roles_admin_requires_moderator",
             ),
         ]
-

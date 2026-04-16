@@ -1,6 +1,8 @@
 (() => {
     const messageBox = window.LSSMessageBox;
+    const i18n = window.LSS_GROUP_I18N || {};
     const floatingSearch = document.querySelector("[data-group-search-floating]");
+    const label = (key) => String(i18n[key] || "");
 
     if (floatingSearch && document.body && floatingSearch.parentElement !== document.body) {
         document.body.appendChild(floatingSearch);
@@ -52,11 +54,11 @@
             try {
                 await navigator.clipboard.writeText(text);
                 if (messageBox) {
-                    messageBox.alert({ title: "Copie", messageMarkdown: "Le lien a été copié." });
+                    messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("linkCopiedMessage") });
                 }
             } catch (_error) {
                 if (messageBox) {
-                    messageBox.alert({ title: "Copie", messageMarkdown: "La copie automatique a échoué." });
+                    messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("copyFailedMessage") });
                 }
             }
         });
@@ -81,7 +83,7 @@
                         }),
                     ]);
                     if (messageBox) {
-                        messageBox.alert({ title: "Copie", messageMarkdown: "Le QR code a été copié." });
+                        messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("qrCopiedMessage") });
                     }
                     return;
                 }
@@ -89,7 +91,7 @@
                 throw new Error("Clipboard image write not supported.");
             } catch (_error) {
                 if (messageBox) {
-                    messageBox.alert({ title: "Copie", messageMarkdown: "La copie du QR code a échoué." });
+                    messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("qrCopyFailedMessage") });
                 }
             }
         });
@@ -104,12 +106,12 @@
 
             const groupName = button.getAttribute("data-group-name") || "";
             const result = await messageBox.prompt({
-                title: "Secret du groupe",
-                messageMarkdown: `Saisissez le secret pour **${groupName}**.`,
+                title: label("secretTitle"),
+                messageMarkdown: label("secretMessageTemplate").replace("{groupName}", groupName),
                 fields: [
                     {
                         id: "secret",
-                        label: "Secret",
+                        label: label("secretLabel"),
                         type: "text",
                         required: true,
                     },
@@ -134,9 +136,9 @@
                 return;
             }
             event.preventDefault();
-            const message = form.getAttribute("data-confirm-message") || "Confirmer cette action ?";
+            const message = form.getAttribute("data-confirm-message") || label("confirmActionMessage");
             const result = await messageBox.confirm({
-                title: "Confirmation",
+                title: label("confirmationTitle"),
                 messageMarkdown: message,
             });
             if (result.buttonId === "yes") {
@@ -153,12 +155,12 @@
             event.preventDefault();
 
             const result = await messageBox.prompt({
-                title: form.getAttribute("data-confirm-title") || "Confirmation",
+                title: form.getAttribute("data-confirm-title") || label("confirmationTitle"),
                 messageMarkdown: form.getAttribute("data-confirm-message") || "",
                 fields: [
                     {
                         id: "confirmation_word",
-                        label: form.getAttribute("data-confirm-word") || "DELETE",
+                        label: form.getAttribute("data-confirm-word") || label("deleteConfirmationLabel"),
                         type: "text",
                         required: true,
                     },
@@ -185,23 +187,23 @@
             }
 
             const result = await messageBox.show({
-                title: "Confirmation",
-                messageMarkdown: "Accepter cette demande d’adhésion ?",
+                title: label("confirmationTitle"),
+                messageMarkdown: label("joinRequestMessage"),
                 showCloseButton: true,
                 buttons: [
                     {
                         id: "accept",
-                        label: "Accepter",
+                        label: label("acceptLabel"),
                         tone: "success",
                     },
                     {
                         id: "cancel",
-                        label: "Abandonner",
+                        label: label("abandonLabel"),
                         tone: "neutral",
                     },
                     {
                         id: "reject",
-                        label: "Refuser",
+                        label: label("rejectLabel"),
                         tone: "danger",
                     },
                 ],

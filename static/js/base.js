@@ -182,18 +182,17 @@
             event.preventDefault();
 
             const result = await window.LSSMessageBox.show({
-                title: messageBoxI18n.logoutTitle || "Déconnexion",
-                messageMarkdown:
-                    messageBoxI18n.logoutMessage || "Voulez-vous vraiment vous déconnecter du site ?",
+                title: messageBoxI18n.logoutTitle || "",
+                messageMarkdown: messageBoxI18n.logoutMessage || "",
                 buttons: [
                     {
                         id: "yes",
-                        label: messageBoxI18n.yesLabel || "Oui",
+                        label: messageBoxI18n.yesLabel || "",
                         tone: "success",
                     },
                     {
                         id: "no",
-                        label: messageBoxI18n.noLabel || "Non",
+                        label: messageBoxI18n.noLabel || "",
                         tone: "danger",
                     },
                 ],

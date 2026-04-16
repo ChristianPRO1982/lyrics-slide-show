@@ -25,7 +25,7 @@
     {% if page_mode == "account" %}
     {% elif auth_mode == "mock" %}
         <p>{% trans "Simulation Keycloak" %}</p>
-        <p>mock SSO</p>
+        <p>{% trans "mock SSO" %}</p>
     {% else %}
         <p>{% trans "Connexion sécurisée via Keycloak" %}</p>
     {% endif %}
@@ -346,9 +346,9 @@
                         <h2>{% trans "Langue utilisée" %}</h2>
                         <p>
                             {% if current_lang == "en" %}
-                                English
+                                {% trans "English" %}
                             {% else %}
-                                Français
+                                {% trans "Français" %}
                             {% endif %}
                         </p>
                     </div>
