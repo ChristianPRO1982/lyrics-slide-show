@@ -208,6 +208,27 @@ When that option is enabled:
 - subsequent chorus insertion points are skipped,
 - the underlying song structure and numbering remain unchanged.
 
+### Final Chorus Variant
+
+When a song has a final chorus whose text differs from the regular repeated chorus, that final chorus must not be stored as a chorus source block.
+
+It must be stored as a normal flow block with:
+
+- `chorus = false`,
+- `chorus_like = true`,
+- `followed = true`,
+- a suitable `prefix`, for example `refrain final`.
+
+Functional consequences:
+
+- the final chorus variant is displayed like a chorus,
+- the final chorus variant is not included in the automatically repeated chorus group,
+- the final chorus variant does not cause the regular chorus to be repeated after it.
+
+If the previous verse must lead directly into the final chorus variant instead of triggering the regular repeated chorus, that previous verse must use:
+
+- `followed = true`.
+
 ## Reference Data
 
 Songs may be linked to supporting reference data:
