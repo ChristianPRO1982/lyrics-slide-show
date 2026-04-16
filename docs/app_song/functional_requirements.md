@@ -68,6 +68,12 @@ Only moderators and admins can change the validation status of a song.
 
 Validated and non-validated songs are both usable in animations.
 
+Recommended Python constants:
+
+- `SONG_STATUS_NOT_VALIDATED = 0`,
+- `SONG_STATUS_VALIDATED = 1`,
+- `SONG_STATUS_VALIDATED_WITH_CONCERN = 2`.
+
 ## Song Text Model
 
 The song text is structured as ordered text blocks.
@@ -109,6 +115,99 @@ Preview rendering must use the same chorus and verse logic as projection renderi
 - display numbering that respects `not_c_num`,
 - chorus-like visual treatment while preserving verse logic.
 
+### Lyrics Numbering Algorithm
+
+After editing lyric blocks, `app_song` must recalculate technical ordering and displayed verse numbering for all blocks of the song.
+
+The recalculation uses the ordered list of blocks as the source of truth.
+
+Pseudo-algorithm:
+
+```text
+display_number = 0
+
+for each block in ordered song blocks:
+    block.num = (block_position + 1) * 2
+
+    if block.chorus is false
+       and block.chorus_like is false
+       and block.not_c_num is false:
+        display_number += 1
+
+    block.display_num = display_number
+```
+
+Database mapping:
+
+- `block.num` is stored in `s_verses.num`,
+- `block.display_num` is stored in `s_verses.num_verse`,
+- `block.not_c_num` is stored in `s_verses.notcontinuenumbering`.
+
+Functional consequences:
+
+- chorus blocks do not increment verse numbering,
+- chorus-like blocks do not increment verse numbering,
+- blocks marked with `not_c_num` do not increment verse numbering,
+- blocks that do not increment numbering still receive the current `display_num` value.
+
+### Lyrics Rendering Algorithm
+
+The display rendering must first collect all chorus blocks in song order.
+
+Each chorus block is rendered as a chorus section.
+
+For projection rendering, the first rendered chorus block may receive the configured chorus prefix. Additional chorus blocks in the same repeated chorus group do not repeat that prefix.
+
+Then the renderer iterates over the ordered lyric blocks.
+
+Pseudo-algorithm:
+
+```text
+choruses = all blocks where chorus is true, in song order
+lyrics = []
+start_by_chorus = true
+
+for each block in ordered song blocks:
+    if block.chorus is false:
+        if block.text is not empty and block.chorus_like is false:
+            if block.not_c_num is false:
+                render the verse marker using block.display_num
+            render block.text as normal verse text
+
+        if block.text is not empty and block.chorus_like is true:
+            if block.prefix is not empty:
+                render block.prefix as the section label
+            render block.text with chorus-like visual treatment
+
+        if block.followed is false and choruses is not empty:
+            render all chorus blocks
+
+    else if start_by_chorus is true:
+        render all chorus blocks
+
+    start_by_chorus = false
+
+if lyrics is empty:
+    render all chorus blocks
+```
+
+Functional consequences:
+
+- chorus source blocks are not rendered as ordinary blocks during the main loop,
+- if the song starts with one or more chorus blocks, all chorus blocks are rendered first,
+- after each ordinary or chorus-like verse block, all chorus blocks are rendered unless `followed` is true,
+- `followed` means "do not render the chorus immediately after this block",
+- a song containing only chorus blocks still renders those chorus blocks,
+- chorus-like blocks use chorus-like visual treatment but remain verses for flow logic.
+
+Projection rendering may support an option to display the repeated chorus group only once.
+
+When that option is enabled:
+
+- the chorus group is rendered the first time it becomes eligible,
+- subsequent chorus insertion points are skipped,
+- the underlying song structure and numbering remain unchanged.
+
 ## Reference Data
 
 Songs may be linked to supporting reference data:
@@ -142,6 +241,16 @@ The following tables belong to the shared `common` schema.
 They are not owned by this project, but `Lyrics Slide Show` has `CRUD` access to them.
 
 `app_song` uses these tables for song metadata and search filters.
+
+Only moderators and admins can manage shared `common` reference data through `app_song`.
+
+This includes:
+
+- `common.genres`,
+- `common.artists`,
+- `common.artist_links`,
+- `common.bands`,
+- `common.band_links`.
 
 ```sql
 CREATE TABLE common.genres (
@@ -263,6 +372,12 @@ Functional notes:
 - `status = 2` means the request has been rejected.
 - `date` stores the request timestamp.
 
+Recommended Python constants:
+
+- `MESSAGE_STATUS_NEW = 0`,
+- `MESSAGE_STATUS_HANDLED = 1`,
+- `MESSAGE_STATUS_REJECTED = 2`.
+
 #### `s_song_links`
 
 `s_song_links` stores links attached to songs.
@@ -271,6 +386,7 @@ Functional notes:
 CREATE TABLE s_song_links (
     song_id integer NOT NULL,
     link varchar(255) NOT NULL,
+    type varchar(20) NOT NULL DEFAULT 'web',
     CONSTRAINT s_song_links_pkey PRIMARY KEY (song_id, link),
     CONSTRAINT s_song_links_songs_fk
         FOREIGN KEY (song_id)
@@ -281,8 +397,16 @@ CREATE TABLE s_song_links (
 
 Functional notes:
 
-- The link type described in this document is a visual classification for users.
-- The physical storage of that type must remain compatible with this functional requirement.
+- `type` stores the display-oriented link type.
+- The default type is `web`.
+- Supported type values are controlled by Python application code, not by SQL constraints, so link types can evolve without requiring a database schema change.
+
+Recommended Python constants:
+
+- `LINK_TYPE_INTERNAL = "internal"`,
+- `LINK_TYPE_WEB = "web"`,
+- `LINK_TYPE_SCORE = "score"`,
+- `LINK_TYPE_AUDIO_VIDEO = "audio-video"`.
 
 #### `s_verses`
 
@@ -295,6 +419,7 @@ CREATE TABLE s_verses (
     num integer NOT NULL DEFAULT 1000,
     num_verse integer NOT NULL DEFAULT 1000,
     chorus boolean NOT NULL DEFAULT false,
+    chorus_like boolean NOT NULL DEFAULT false,
     followed boolean NOT NULL DEFAULT false,
     notcontinuenumbering boolean NOT NULL DEFAULT false,
     text text,
@@ -317,7 +442,10 @@ Functional notes:
 - `num_verse` stores the display verse number.
 - `notcontinuenumbering` is the database column for the functional `not_c_num` behavior.
 - `prefix` supports custom or controlled display prefixes for sections such as bridges or pre-choruses.
-- The functional `chorus_like` behavior is handled through prefix/display behavior rather than a dedicated column in this table.
+- `chorus_like` is a boolean and defaults to `false`.
+- A chorus-like block is represented with `chorus = false` and `chorus_like = true`.
+- A chorus-like block remains functionally a verse for chorus repetition and numbering logic.
+- A chorus-like block can be displayed with a different visual treatment or title according to its `prefix`.
 - The functional `display_num` is represented by `num_verse`.
 
 #### `s_verse_prefixes`
@@ -343,19 +471,76 @@ Functional notes:
 
 `app_song` also owns relation tables between `s_songs` and shared or user-owned reference tables.
 
-Required relation targets are:
+The required relation tables are:
 
-- `common.genres.genre_id`,
-- `common.artists.artist_id`,
-- `common.bands.band_id`,
-- `users.users.id` for member favorites.
+- `s_song_genres`,
+- `s_song_artists`,
+- `s_song_bands`,
+- `s_song_favorites`.
 
-Each relation table must:
+```sql
+CREATE TABLE s_song_genres (
+    song_id integer NOT NULL,
+    genre_id integer NOT NULL,
+    CONSTRAINT s_song_genres_pkey PRIMARY KEY (song_id, genre_id),
+    CONSTRAINT s_song_genres_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE,
+    CONSTRAINT s_song_genres_genres_fk
+        FOREIGN KEY (genre_id)
+        REFERENCES common.genres(genre_id)
+        ON DELETE CASCADE
+);
 
-- reference `s_songs.song_id`,
-- reference the related target table,
-- use a composite primary key preventing duplicate relations,
-- use `ON DELETE CASCADE` on all foreign keys.
+CREATE TABLE s_song_artists (
+    song_id integer NOT NULL,
+    artist_id integer NOT NULL,
+    CONSTRAINT s_song_artists_pkey PRIMARY KEY (song_id, artist_id),
+    CONSTRAINT s_song_artists_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE,
+    CONSTRAINT s_song_artists_artists_fk
+        FOREIGN KEY (artist_id)
+        REFERENCES common.artists(artist_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE s_song_bands (
+    song_id integer NOT NULL,
+    band_id integer NOT NULL,
+    CONSTRAINT s_song_bands_pkey PRIMARY KEY (song_id, band_id),
+    CONSTRAINT s_song_bands_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE,
+    CONSTRAINT s_song_bands_bands_fk
+        FOREIGN KEY (band_id)
+        REFERENCES common.bands(band_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE s_song_favorites (
+    song_id integer NOT NULL,
+    user_id integer NOT NULL,
+    CONSTRAINT s_song_favorites_pkey PRIMARY KEY (song_id, user_id),
+    CONSTRAINT s_song_favorites_songs_fk
+        FOREIGN KEY (song_id)
+        REFERENCES s_songs(song_id)
+        ON DELETE CASCADE,
+    CONSTRAINT s_song_favorites_users_fk
+        FOREIGN KEY (user_id)
+        REFERENCES users.users(id)
+        ON DELETE CASCADE
+);
+```
+
+Functional notes:
+
+- Composite primary keys prevent duplicate relations.
+- All relation foreign keys use `ON DELETE CASCADE`.
+- `s_song_favorites` stores member-specific favorites.
 
 ## Song Links
 
@@ -477,6 +662,35 @@ The song catalog is meant to be searched and reused across many animations.
 - reusable global song entries instead of group-scoped duplicates,
 - compatibility with the member search-state persistence described in `docs/app_member/functional_requirements.md`.
 
+Search behavior depends on authentication.
+
+For unauthenticated users:
+
+- opening `root/songs/` always starts with an empty search state, even if a browser session already exists,
+- only songs that are not marked as `licensed` can be displayed or returned,
+- the local browser-side quick search only filters the currently loaded results by title and subtitle,
+- the local browser-side quick search starts only from the third typed character,
+- the local browser-side quick search must be case-insensitive and should be accent-insensitive when possible,
+- pressing Enter submits the search to the Python/PostgreSQL backend,
+- backend search may return a different or broader result set than local quick search because it uses the full server-side search capabilities,
+- navigating away loses the current search state.
+
+For authenticated users, regardless of role:
+
+- search can include all songs, including songs marked as `licensed`,
+- the local browser-side quick search filters the currently loaded results by title and subtitle,
+- the local browser-side quick search starts only from the third typed character,
+- the local browser-side quick search must be case-insensitive and should be accent-insensitive when possible,
+- authenticated users have access to advanced search criteria,
+- pressing Enter submits the search to the Python/PostgreSQL backend,
+- submitted backend search parameters are saved in the authenticated user's parameters,
+- only the latest saved search parameters are kept,
+- search persistence applies across browsers where the same user is authenticated,
+- navigating away, logging out, and logging back in restores the latest saved search parameters,
+- the user must explicitly reset the search to return to an empty search state and therefore show all accessible songs.
+
+When a submitted search returns no matching song, the user-facing behavior must make clear that no song matches the given criteria.
+
 The song search must support the following criteria:
 
 - text search,
@@ -499,6 +713,10 @@ When the user enables extended search, text search also applies to:
 - `description`,
 - text blocks containing the lyrics.
 
+An empty text search does not restrict results by text.
+
+With no text and no advanced filter, the backend search returns all songs accessible to the current user.
+
 The song catalog must enforce the visibility rule before returning search results:
 
 - unauthenticated users can only receive songs that are not marked as `licensed`,
@@ -506,16 +724,39 @@ The song catalog must enforce the visibility rule before returning search result
 
 Genre, band, and artist filters must support multiple selected values.
 
-The filter behavior must support two modes:
+The advanced search logic selector is a single `OR` / `AND` choice shared by the three metadata families: genres, artists, and bands.
 
-- default mode: a song matches when it belongs to at least one selected value for each active filter category,
-- strict logic mode: a song must match every selected genre, every selected band, and every selected artist.
+It controls how selected values are combined inside each metadata family:
+
+- `OR` mode is the default,
+- in `OR` mode, selected genres are combined with each other using `OR`,
+- in `OR` mode, selected artists are combined with each other using `OR`,
+- in `OR` mode, selected bands are combined with each other using `OR`,
+- in `AND` mode, selected genres are combined with each other using `AND`,
+- in `AND` mode, selected artists are combined with each other using `AND`,
+- in `AND` mode, selected bands are combined with each other using `AND`.
+
+The logic selector does not merge genres, artists, and bands into one shared pool.
+
+Active filter families are combined with the other active search criteria.
+
+For example:
+
+- selected genres constrain the song genre relations,
+- selected artists constrain the song artist relations,
+- selected bands constrain the song band relations,
+- validation status and favorites remain independent criteria.
 
 The validation status filter must support at least:
 
 - all songs,
 - validated songs,
 - non-validated songs.
+
+For this filter:
+
+- validated songs are songs with `status IN (1, 2)`,
+- non-validated songs are songs with `status = 0`.
 
 The favorites filter must support at least:
 
