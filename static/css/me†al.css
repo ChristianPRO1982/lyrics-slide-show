@@ -28,15 +28,15 @@
     --site-popup-neutral-bg: rgba(243, 231, 232, 0.94);
     --site-popup-neutral-border: rgba(87, 227, 176, 0.3);
     --site-popup-neutral-ink: #3c3134;
-    --site-popup-success-bg: rgba(233, 251, 244, 0.96);
-    --site-popup-success-border: #4fb99b;
-    --site-popup-success-ink: #245748;
-    --site-popup-warning-bg: rgba(255, 239, 239, 0.96);
-    --site-popup-warning-border: #c99fa2;
-    --site-popup-warning-ink: #7a585f;
-    --site-popup-danger-bg: rgba(255, 231, 231, 0.96);
-    --site-popup-danger-border: #c96a75;
-    --site-popup-danger-ink: #7b2d38;
+    --site-popup-success-bg: #cfe7dc;
+    --site-popup-success-border: #5d9b7b;
+    --site-popup-success-ink: #234f3b;
+    --site-popup-warning-bg: #edd6bd;
+    --site-popup-warning-border: #b4773d;
+    --site-popup-warning-ink: #6a3d16;
+    --site-popup-danger-bg: #e8c9cc;
+    --site-popup-danger-border: #ae5b63;
+    --site-popup-danger-ink: #6e2f37;
 }
 
 body {
@@ -183,15 +183,15 @@ h6 {
         --site-popup-neutral-bg: linear-gradient(180deg, rgba(10, 15, 23, 0.96), rgba(5, 8, 13, 0.94));
         --site-popup-neutral-border: rgba(95, 174, 157, 0.28);
         --site-popup-neutral-ink: #d8dee7;
-        --site-popup-success-bg: rgba(20, 48, 43, 0.72);
-        --site-popup-success-border: rgba(95, 174, 157, 0.52);
-        --site-popup-success-ink: #b7ebdc;
-        --site-popup-warning-bg: rgba(31, 41, 54, 0.72);
-        --site-popup-warning-border: rgba(79, 216, 255, 0.42);
-        --site-popup-warning-ink: #cdefff;
-        --site-popup-danger-bg: rgba(49, 23, 31, 0.78);
-        --site-popup-danger-border: rgba(214, 92, 124, 0.46);
-        --site-popup-danger-ink: #ffc2cf;
+        --site-popup-success-bg: #203f35;
+        --site-popup-success-border: #5d9b7b;
+        --site-popup-success-ink: #d8f2e5;
+        --site-popup-warning-bg: #4a3525;
+        --site-popup-warning-border: #b4773d;
+        --site-popup-warning-ink: #f2d7ba;
+        --site-popup-danger-bg: #4a2930;
+        --site-popup-danger-border: #ae5b63;
+        --site-popup-danger-ink: #f0cdd1;
     }
 
     *,

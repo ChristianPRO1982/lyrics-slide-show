@@ -825,6 +825,15 @@
         if (event.key === "Escape") {
             event.preventDefault();
 
+            if (state.closeButton) {
+                resolveAndClose(state, {
+                    reason: "escape",
+                    buttonId: null,
+                    values: getFieldValues(state),
+                });
+                return;
+            }
+
             const escapeButtonId = getDefaultEscapeButtonId(state.config);
 
             if (escapeButtonId) {

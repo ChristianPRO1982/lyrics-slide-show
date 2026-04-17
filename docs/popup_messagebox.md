@@ -320,16 +320,23 @@ Busy state:
 
 Escape behavior:
 
+- if the close button is present, `Escape` closes the popup with:
+
+```js
+{ reason: "escape", buttonId: null, values }
+```
+
+- when the close button is present, `escapeButtonId` is ignored
 - if there is no button, `Escape` closes the popup with:
 
 ```js
 { reason: "escape", buttonId: null, values }
 ```
 
-- if there is one button, `Escape` triggers that button
-- if there are at least two buttons, `Escape` triggers button 2 by default
-- if `escapeButtonId` is provided and matches an existing button, it overrides the default
-- if `escapeButtonId` is provided but does not match an existing button, the normal default fallback is used
+- if the close button is not present and there is one button, `Escape` triggers that button
+- if the close button is not present and there are at least two buttons, `Escape` triggers button 2 by default
+- if the close button is not present and `escapeButtonId` is provided and matches an existing button, it overrides the default
+- if the close button is not present and `escapeButtonId` is provided but does not match an existing button, the normal default fallback is used
 
 Enter behavior:
 
