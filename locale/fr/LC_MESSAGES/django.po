@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-16 17:44+0200\n"
+"POT-Creation-Date: 2026-04-17 10:46+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -134,11 +134,13 @@ msgid "groupe fermé avec secret"
 msgstr ""
 
 #: app_group/templates/group/groups.html:53
+#: app_song/templates/song/songs.html:53
 msgid "Recherche rapide"
 msgstr ""
 
 #: app_group/templates/group/groups.html:57
 #: app_group/templates/group/groups.html:58
+#: app_song/templates/song/songs.html:57 app_song/templates/song/songs.html:58
 msgid "Aller à la recherche"
 msgstr ""
 
@@ -920,6 +922,7 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/connexion.html:267
+#: app_song/templates/song/songs.html:81
 msgid "Rechercher"
 msgstr ""
 
@@ -1898,18 +1901,123 @@ msgstr ""
 msgid "Audio/video"
 msgstr ""
 
-#: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:10
-#: app_song/templates/song/songs.html:25 app_song/templates/song/songs.html:34
-#: templates/includes/nav.html:9
+#: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:12
+#: app_song/templates/song/songs.html:15 app_song/templates/song/songs.html:42
+#: app_song/templates/song/songs.html:129 templates/includes/nav.html:9
 msgid "Liste des chants"
 msgstr ""
 
-#: app_song/templates/song/songs.html:32 app_song/templates/song/songs.html:37
+#: app_song/templates/song/songs.html:6 app_song/templates/song/songs.html:19
+#: app_song/templates/song/songs.html:29 app_song/templates/song/songs.html:33
+#: app_song/templates/song/songs.html:36 app_song/templates/song/songs.html:41
 msgid "Chants"
 msgstr ""
 
+#: app_song/templates/song/songs.html:24
+msgid "💫 Afficher mes favoris"
+msgstr ""
+
+#: app_song/templates/song/songs.html:30
+msgid "Recherche ⓘ"
+msgstr ""
+
+#: app_song/templates/song/songs.html:31
+msgid "Total ⓘ"
+msgstr ""
+
+#: app_song/templates/song/songs.html:37 app_song/templates/song/songs.html:67
+#: app_song/templates/song/songs.html:72
+msgid "Recherche"
+msgstr ""
+
 #: app_song/templates/song/songs.html:38
-msgid "Accueil des chants."
+msgid "Total"
+msgstr ""
+
+#: app_song/templates/song/songs.html:45 app_song/views.py:87
+msgid "Chant validé"
+msgstr ""
+
+#: app_song/templates/song/songs.html:46 app_song/views.py:89
+msgid "Chant validé avec des messages"
+msgstr ""
+
+#: app_song/templates/song/songs.html:47 app_song/templates/song/songs.html:148
+msgid "Chant sous licence"
+msgstr ""
+
+#: app_song/templates/song/songs.html:48 app_song/templates/song/songs.html:157
+msgid "Smartphone view"
+msgstr ""
+
+#: app_song/templates/song/songs.html:49
+msgid "Impression du chant - avec un seul refrain ou tous les refrains"
+msgstr ""
+
+#: app_song/templates/song/songs.html:78
+msgid "Titre ou sous-titre"
+msgstr ""
+
+#: app_song/templates/song/songs.html:82
+msgid "Réinitialiser"
+msgstr ""
+
+#: app_song/templates/song/songs.html:86
+msgid "Recherche avancée"
+msgstr ""
+
+#: app_song/templates/song/songs.html:90
+msgid "Inclure description et paroles"
+msgstr ""
+
+#: app_song/templates/song/songs.html:94
+msgid "Validation"
+msgstr ""
+
+#: app_song/templates/song/songs.html:96
+msgid "Tous les chants"
+msgstr ""
+
+#: app_song/templates/song/songs.html:97
+msgid "Chants validés"
+msgstr ""
+
+#: app_song/templates/song/songs.html:98
+msgid "Chants non validés"
+msgstr ""
+
+#: app_song/templates/song/songs.html:105
+msgid "Favoris uniquement"
+msgstr ""
+
+#: app_song/templates/song/songs.html:116
+#: app_song/templates/song/songs.html:120
+msgid "Nouveau chant"
+msgstr ""
+
+#: app_song/templates/song/songs.html:122
+msgid "La création de chant est réservée aux membres authentifiés."
+msgstr ""
+
+#: app_song/templates/song/songs.html:131
+#, python-format
+msgid "Les %(limit)s premiers résultats sont affichés."
+msgstr ""
+
+#: app_song/templates/song/songs.html:146
+msgid "Favori"
+msgstr ""
+
+#: app_song/templates/song/songs.html:158
+msgid "Impression du chant - avec un refrain entre chaque couplet"
+msgstr ""
+
+#: app_song/templates/song/songs.html:159
+msgid "Impression du chant - avec un seul refrain"
+msgstr ""
+
+#: app_song/templates/song/songs.html:164
+msgid "Aucun chant ne correspond à la recherche."
 msgstr ""
 
 #: docs/maquette/templates/account/login.html:6

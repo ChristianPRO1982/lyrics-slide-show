@@ -1,0 +1,281 @@
+.song-tool-link,
+.song-secondary-action {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.song-search-floating-actions {
+    top: 100px;
+    right: 16px;
+    bottom: auto;
+    z-index: 1000;
+}
+
+.song-search-anchor {
+    text-decoration: none;
+    text-decoration: none !important;
+}
+
+.song-legend {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.song-legend p,
+.song-mobile-summary p {
+    margin: 0;
+}
+
+.song-search-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.song-search-main {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) auto auto;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+.song-search-main label {
+    grid-column: 1 / -1;
+    font-weight: 800;
+}
+
+.song-search-main input,
+.song-advanced-grid select {
+    min-height: 2.75rem;
+    width: 100%;
+}
+
+.song-search-main button,
+.song-create-card button,
+.song-card-actions button {
+    min-height: 2.75rem;
+}
+
+.song-secondary-action {
+    align-self: center;
+    white-space: nowrap;
+}
+
+.song-advanced-search {
+    border-top: 1px solid var(--site-line);
+    padding-top: 1rem;
+}
+
+.song-advanced-search summary {
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.song-advanced-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.song-advanced-grid label {
+    display: grid;
+    gap: 0.35rem;
+    font-weight: 700;
+}
+
+.song-checkbox-option {
+    align-content: center;
+    grid-template-columns: auto 1fr;
+}
+
+.song-checkbox-option input {
+    margin-top: 0.15rem;
+}
+
+.song-list-section {
+    display: grid;
+    gap: 1rem;
+}
+
+.song-list-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+}
+
+.song-list-header h2,
+.song-list-header p {
+    margin: 0;
+}
+
+.song-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.song-card {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.song-card-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+}
+
+.song-card h3,
+.song-subtitle,
+.song-description {
+    margin: 0;
+}
+
+.song-card h3 {
+    font-size: 1.2rem;
+}
+
+.song-subtitle,
+.song-description {
+    color: var(--site-ink-soft);
+}
+
+.song-description {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.song-description p,
+.song-description-rest p {
+    margin: 0;
+}
+
+.song-description-toggle {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--site-accent);
+    box-shadow: none;
+    font: inherit;
+    font-weight: 800;
+    text-decoration: underline dotted;
+    text-underline-offset: 0.18em;
+}
+
+.song-description-toggle:hover,
+.song-description-toggle:focus-visible {
+    color: var(--site-accent-gold);
+    outline: none;
+    text-decoration-style: solid;
+}
+
+.song-card-markers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.song-card-markers {
+    flex: 0 0 auto;
+    font-size: 1.2rem;
+    line-height: 1.2;
+}
+
+.song-card-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
+    border-top: 1px solid var(--site-line);
+    padding-top: 0.8rem;
+}
+
+.song-card-actions-left,
+.song-card-actions-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+}
+
+.song-card-actions button,
+.song-card-actions a {
+    min-height: 2.75rem;
+}
+
+.song-card-actions button,
+.song-icon-action,
+.song-action-link {
+    align-items: center;
+    justify-content: center;
+}
+
+.song-icon-action {
+    min-width: 3.25rem;
+    padding-inline: 0.7rem;
+}
+
+.song-action-link,
+.song-icon-action {
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-sm);
+    background: linear-gradient(180deg, var(--site-surface-strong), var(--site-surface));
+    color: var(--site-accent);
+    display: inline-flex;
+    font-family: var(--site-font-ui);
+    font-weight: 800;
+    padding: 0.55rem 0.85rem;
+    text-decoration: none;
+}
+
+.song-action-link:hover,
+.song-action-link:focus-visible,
+.song-icon-action:hover,
+.song-icon-action:focus-visible {
+    border-color: var(--site-accent-gold);
+    color: var(--site-accent-gold);
+    outline: none;
+}
+
+.song-delete-form {
+    margin: 0;
+}
+
+.song-danger-action {
+    border-color: #9a2b2b;
+    color: #6f1f1f;
+}
+
+@media (max-width: 760px) {
+    .song-search-floating-actions {
+        right: 12px;
+    }
+
+    .song-search-main,
+    .song-advanced-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .song-list-header,
+    .song-card-main {
+        display: grid;
+    }
+
+    .song-card-actions {
+        display: grid;
+    }
+
+    .song-card-actions-left,
+    .song-card-actions-right,
+    .song-card-actions-left > *,
+    .song-delete-form,
+    .song-delete-form button {
+        width: 100%;
+    }
+
+    .song-card-markers {
+        justify-content: start;
+    }
+}

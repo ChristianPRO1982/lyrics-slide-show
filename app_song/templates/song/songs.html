@@ -3,38 +3,248 @@
 {% load i18n %}
 
 {% block title %}{% trans "Liste des chants" %} | Lyrics Slide Show{% endblock %}
-{% block section_title %}{% endblock %}
-{% block section_intro %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_song.css' %}");</style>
+{% endblock %}
 {% block section_nav %}
     <div class="site-home-media">
         <picture data-theme-icon="songs" data-theme-alt="{% trans 'Liste des chants' %}">
-            <source
-                data-theme-size="512"
-                data-theme-mode="dark"
-                srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}"
-                media="(prefers-color-scheme: dark)"
-            >
-            <source
-                data-theme-size="512"
-                data-theme-mode="light"
-                srcset="{% static 'icons/ui/normal/512/light/songs.png' %}"
-                media="(prefers-color-scheme: light)"
-            >
-            <img
-                src="{% static 'icons/ui/normal/512/light/songs.png' %}"
-                alt="{% trans 'Liste des chants' %}"
-                data-theme-size="512"
-                data-theme-mode="light"
-            >
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Liste des chants' %}" data-theme-size="512" data-theme-mode="light">
         </picture>
     </div>
 {% endblock %}
 {% block tools_title %}{% trans "Chants" %}{% endblock %}
-{% block page_kicker %}Lyrics Slide Show{% endblock %}
+{% block page_tools %}
+    {% if can_use_favorites %}
+        <p>
+            <a class="song-tool-link" href="?favorites_only={% if search_params.favorites_only %}0{% else %}1{% endif %}{% if search_params.q %}&amp;q={{ search_params.q|urlencode }}{% endif %}{% if search_params.extended %}&amp;extended=1{% endif %}{% if search_params.validation != 'all' %}&amp;validation={{ search_params.validation }}{% endif %}">
+                {% trans "💫 Afficher mes favoris" %}
+            </a>
+        </p>
+    {% endif %}
+    <hr>
+    <p>{% trans "Chants" %} : <strong>{{ displayed_count }}</strong></p>
+    <p>{% trans "Recherche ⓘ" %} : <strong>{{ search_count }}</strong></p>
+    <p>{% trans "Total ⓘ" %} : <strong>{{ catalog_count }}</strong></p>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="song-mobile-summary">
+        <p>{% trans "Chants" %} : <strong>{{ displayed_count }}</strong></p>
+        <p>{% trans "Recherche" %} : <strong>{{ search_count }}</strong></p>
+        <p>{% trans "Total" %} : <strong>{{ catalog_count }}</strong></p>
+    </div>
+{% endblock %}
+{% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{% trans "Liste des chants" %}{% endblock %}
+{% block page_summary %}
+    <div class="song-legend">
+        <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
+        <p><strong>✔️⁉️</strong> {% trans "Chant validé avec des messages" %}</p>
+        <p><strong>📄</strong> {% trans "Chant sous licence" %}</p>
+        <p><strong>📱</strong> {% trans "Smartphone view" %}</p>
+        <p><strong>🖨️</strong> {% trans "Impression du chant - avec un seul refrain ou tous les refrains" %}</p>
+    </div>
+{% endblock %}
 {% block content %}
-    <section>
-        <h2>{% trans "Chants" %}</h2>
-        <p>{% trans "Accueil des chants." %}</p>
+    <nav class="site-floating-actions song-search-floating-actions" aria-label="{% trans 'Recherche rapide' %}" data-song-search-floating>
+        <a
+            href="#song-search"
+            class="site-floating-action song-search-anchor"
+            title="{% trans 'Aller à la recherche' %}"
+            aria-label="{% trans 'Aller à la recherche' %}"
+        >
+            🔎
+        </a>
+    </nav>
+
+    <article class="site-theme-card song-search-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Recherche" %}</h2>
+            </div>
+        </header>
+        <form method="get" class="song-search-form" id="song-search">
+            <div class="song-search-main">
+                <label for="song-q">{% trans "Recherche" %}</label>
+                <input
+                    id="song-q"
+                    name="q"
+                    type="search"
+                    value="{{ search_params.q }}"
+                    placeholder="{% trans 'Titre ou sous-titre' %}"
+                    data-song-local-search
+                >
+                <button type="submit">{% trans "Rechercher" %}</button>
+                <a class="song-secondary-action" href="{% url 'songs' %}">{% trans "Réinitialiser" %}</a>
+            </div>
+
+            <details class="song-advanced-search" {% if search_params.extended or search_params.validation != 'all' or search_params.favorites_only %}open{% endif %}>
+                <summary>{% trans "Recherche avancée" %}</summary>
+                <div class="song-advanced-grid">
+                    <label class="song-checkbox-option">
+                        <input type="checkbox" name="extended" value="1" {% if search_params.extended %}checked{% endif %}>
+                        <span>{% trans "Inclure description et paroles" %}</span>
+                    </label>
+
+                    <label>
+                        <span>{% trans "Validation" %}</span>
+                        <select name="validation">
+                            <option value="all" {% if search_params.validation == 'all' %}selected{% endif %}>{% trans "Tous les chants" %}</option>
+                            <option value="validated_only" {% if search_params.validation == 'validated_only' %}selected{% endif %}>{% trans "Chants validés" %}</option>
+                            <option value="non_validated_only" {% if search_params.validation == 'non_validated_only' %}selected{% endif %}>{% trans "Chants non validés" %}</option>
+                        </select>
+                    </label>
+
+                    {% if can_use_favorites %}
+                        <label class="song-checkbox-option">
+                            <input type="checkbox" name="favorites_only" value="1" {% if search_params.favorites_only %}checked{% endif %}>
+                            <span>{% trans "Favoris uniquement" %}</span>
+                        </label>
+                    {% endif %}
+                </div>
+            </details>
+        </form>
+    </article>
+
+    <article class="site-theme-card song-create-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Nouveau chant" %}</h2>
+            </div>
+        </header>
+        {% if can_create_song %}
+            <button type="button" disabled>{% trans "Nouveau chant" %}</button>
+        {% else %}
+            <p>{% trans "La création de chant est réservée aux membres authentifiés." %}</p>
+        {% endif %}
+    </article>
+{% endblock %}
+{% block content_footer %}
+    <section class="song-list-section">
+        <header class="song-list-header">
+            <h2>{% trans "Liste des chants" %}</h2>
+            {% if is_limited %}
+                <p>{% blocktrans with limit=result_limit %}Les {{ limit }} premiers résultats sont affichés.{% endblocktrans %}</p>
+            {% endif %}
+        </header>
+
+        <div class="song-list" data-song-list>
+            {% for item in song_cards %}
+                <article class="site-theme-card song-card" data-song-card data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
+                    <div class="song-card-main">
+                        <div>
+                            <h3>{{ item.song.title }}</h3>
+                            {% if item.song.subtitle %}
+                                <p class="song-subtitle">{{ item.song.subtitle }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="song-card-markers">
+                            {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">💫</span>{% endif %}
+                            {% if item.song.validation_marker %}<span title="{{ item.validation_label }}" aria-label="{{ item.validation_label }}">{{ item.song.validation_marker }}</span>{% endif %}
+                            {% if item.song.licensed %}<span title="{% trans 'Chant sous licence' %}" aria-label="{% trans 'Chant sous licence' %}">📄</span>{% endif %}
+                        </div>
+                    </div>
+
+                    {% if item.description_summary %}
+                        <div class="song-description" data-song-description>
+                            <p>
+                                {{ item.description_summary }}
+                                {% if item.description_rest %}
+                                    <button
+                                        type="button"
+                                        class="song-description-toggle"
+                                        data-song-description-toggle
+                                        data-open-label="{% trans '[...]' %}"
+                                        data-close-label="{% trans 'Réduire' %}"
+                                        aria-expanded="false"
+                                    >
+                                        {% trans "[...]" %}
+                                    </button>
+                                {% endif %}
+                            </p>
+                            {% if item.description_rest %}
+                                <div class="song-description-rest" data-song-description-rest hidden>
+                                    <p>{{ item.description_rest|linebreaksbr }}</p>
+                                    <button type="button" class="song-description-toggle" data-song-description-toggle aria-expanded="true">
+                                        {% trans "Réduire" %}
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="song-card-actions">
+                        <div class="song-card-actions-left">
+                            <a class="song-action-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
+                            {% if item.can_edit %}
+                                <button type="button" disabled>{% trans "Modifier" %}</button>
+                                <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.song.display_title }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete_song">
+                                    <input type="hidden" name="song_id" value="{{ item.song.song_id }}">
+                                    <button type="submit" class="song-danger-action">{% trans "Supprimer" %}</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <div class="song-card-actions-right">
+                            <a class="song-icon-action" href="{{ item.display_url }}" title="{% trans 'Smartphone view' %}" aria-label="{% trans 'Smartphone view' %}">📱</a>
+                            <button
+                                type="button"
+                                class="song-icon-action"
+                                title="{% trans 'Impression du chant' %}"
+                                aria-label="{% trans 'Impression du chant' %}"
+                                data-song-print-menu
+                                data-single-url="{{ item.print_single_url }}"
+                                data-full-url="{{ item.print_full_url }}"
+                                data-single-plain-url="{{ item.print_single_plain_url }}"
+                                data-full-plain-url="{{ item.print_full_plain_url }}"
+                            >🖨️</button>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <article class="site-theme-card">
+                    <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
+                </article>
+            {% endfor %}
+        </div>
     </section>
+{% endblock %}
+{% block page_scripts %}
+    {% trans "Suppression" as song_delete_title %}
+    {% trans "Supprimer ce chant ?" as song_delete_message %}
+    {% trans "Oui" as song_yes_label %}
+    {% trans "Non" as song_no_label %}
+    {% trans "Impression du chant" as song_print_title %}
+    {% trans "🖨️💯: Impression du chant - avec un refrain entre chaque couplet" as song_print_full_label %}
+    {% trans "🖨️1️⃣ : Impression du chant - avec un seul refrain" as song_print_single_label %}
+    {% trans "🖨️1️⃣ copier le texte" as song_copy_single_label %}
+    {% trans "🖨️💯 copier le texte" as song_copy_full_label %}
+    {% trans "🖨️1️⃣ afficher le texte" as song_show_single_label %}
+    {% trans "🖨️💯 afficher le texte" as song_show_full_label %}
+    {% trans "Copie" as song_copy_title %}
+    {% trans "Le texte a été copié." as song_copy_success %}
+    {% trans "La copie automatique a échoué." as song_copy_failed %}
+    <script>
+        window.LSS_SONG_I18N = {
+            deleteTitle: "{{ song_delete_title|escapejs }}",
+            deleteMessage: "{{ song_delete_message|escapejs }}",
+            yesLabel: "{{ song_yes_label|escapejs }}",
+            noLabel: "{{ song_no_label|escapejs }}",
+            printTitle: "{{ song_print_title|escapejs }}",
+            printMessage: "{{ song_print_full_label|escapejs }}\n{{ song_print_single_label|escapejs }}",
+            copySingleLabel: "{{ song_copy_single_label|escapejs }}",
+            copyFullLabel: "{{ song_copy_full_label|escapejs }}",
+            showSingleLabel: "{{ song_show_single_label|escapejs }}",
+            showFullLabel: "{{ song_show_full_label|escapejs }}",
+            copyTitle: "{{ song_copy_title|escapejs }}",
+            copySuccess: "{{ song_copy_success|escapejs }}",
+            copyFailed: "{{ song_copy_failed|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}
