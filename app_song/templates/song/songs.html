@@ -20,7 +20,7 @@
 {% block page_tools %}
     {% if can_use_favorites %}
         <p>
-            <a class="song-tool-link" href="?favorites_only={% if search_params.favorites_only %}0{% else %}1{% endif %}{% if search_params.q %}&amp;q={{ search_params.q|urlencode }}{% endif %}{% if search_params.extended %}&amp;extended=1{% endif %}{% if search_params.validation != 'all' %}&amp;validation={{ search_params.validation }}{% endif %}">
+            <a class="song-tool-link" href="{% url 'songs' %}{% if favorites_toggle_query %}?{{ favorites_toggle_query }}{% endif %}">
                 {% trans "💫 Afficher mes favoris" %}
             </a>
         </p>
@@ -72,41 +72,82 @@
                 <label for="song-q">{% trans "Recherche" %}</label>
                 <input
                     id="song-q"
-                    name="q"
+                    name="text"
                     type="search"
-                    value="{{ search_params.q }}"
+                    value="{{ search_params.text }}"
                     placeholder="{% trans 'Titre ou sous-titre' %}"
                     data-song-local-search
                 >
                 <button type="submit">{% trans "Rechercher" %}</button>
-                <a class="song-secondary-action" href="{% url 'songs' %}">{% trans "Réinitialiser" %}</a>
+                <a class="song-secondary-action" href="{% url 'songs' %}?reset_search=1">{% trans "Réinitialiser" %}</a>
             </div>
 
-            <details class="song-advanced-search" {% if search_params.extended or search_params.validation != 'all' or search_params.favorites_only %}open{% endif %}>
-                <summary>{% trans "Recherche avancée" %}</summary>
-                <div class="song-advanced-grid">
-                    <label class="song-checkbox-option">
-                        <input type="checkbox" name="extended" value="1" {% if search_params.extended %}checked{% endif %}>
-                        <span>{% trans "Inclure description et paroles" %}</span>
-                    </label>
+            {% if can_use_advanced_search %}
+                <details class="song-advanced-search" {% if search_params.everywhere or search_params.validation != 'all' or search_params.favorites_only or search_params.genre_ids or search_params.band_ids or search_params.artist_ids %}open{% endif %}>
+                    <summary>{% trans "Recherche avancée" %}</summary>
+                    <div class="song-advanced-grid">
+                        <label class="song-checkbox-option">
+                            <input type="checkbox" name="everywhere" value="1" {% if search_params.everywhere %}checked{% endif %}>
+                            <span>{% trans "Inclure description et paroles" %}</span>
+                        </label>
 
-                    <label>
-                        <span>{% trans "Validation" %}</span>
-                        <select name="validation">
-                            <option value="all" {% if search_params.validation == 'all' %}selected{% endif %}>{% trans "Tous les chants" %}</option>
-                            <option value="validated_only" {% if search_params.validation == 'validated_only' %}selected{% endif %}>{% trans "Chants validés" %}</option>
-                            <option value="non_validated_only" {% if search_params.validation == 'non_validated_only' %}selected{% endif %}>{% trans "Chants non validés" %}</option>
-                        </select>
-                    </label>
+                        <label class="song-checkbox-option">
+                            <input type="checkbox" name="match_all_selected_refs" value="1" {% if search_params.match_all_selected_refs %}checked{% endif %}>
+                            <span>{% trans "Exiger toutes les références sélectionnées" %}</span>
+                        </label>
 
-                    {% if can_use_favorites %}
+                        <label>
+                            <span>{% trans "Validation" %}</span>
+                            <select name="validation">
+                                <option value="all" {% if search_params.validation == 'all' %}selected{% endif %}>{% trans "Tous les chants" %}</option>
+                                <option value="validated_only" {% if search_params.validation == 'validated_only' %}selected{% endif %}>{% trans "Chants validés" %}</option>
+                                <option value="non_validated_only" {% if search_params.validation == 'non_validated_only' %}selected{% endif %}>{% trans "Chants non validés" %}</option>
+                            </select>
+                        </label>
+
                         <label class="song-checkbox-option">
                             <input type="checkbox" name="favorites_only" value="1" {% if search_params.favorites_only %}checked{% endif %}>
                             <span>{% trans "Favoris uniquement" %}</span>
                         </label>
-                    {% endif %}
-                </div>
-            </details>
+
+                        {% if reference_options.genres %}
+                            <fieldset class="song-reference-filter">
+                                <legend>{% trans "Genres" %}</legend>
+                                {% for option in reference_options.genres %}
+                                    <label class="song-checkbox-option">
+                                        <input type="checkbox" name="genre_ids" value="{{ option.id }}" {% if option.id in search_params.genre_ids %}checked{% endif %}>
+                                        <span>{{ option.label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </fieldset>
+                        {% endif %}
+
+                        {% if reference_options.bands %}
+                            <fieldset class="song-reference-filter">
+                                <legend>{% trans "Groupes" %}</legend>
+                                {% for option in reference_options.bands %}
+                                    <label class="song-checkbox-option">
+                                        <input type="checkbox" name="band_ids" value="{{ option.id }}" {% if option.id in search_params.band_ids %}checked{% endif %}>
+                                        <span>{{ option.label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </fieldset>
+                        {% endif %}
+
+                        {% if reference_options.artists %}
+                            <fieldset class="song-reference-filter">
+                                <legend>{% trans "Artistes" %}</legend>
+                                {% for option in reference_options.artists %}
+                                    <label class="song-checkbox-option">
+                                        <input type="checkbox" name="artist_ids" value="{{ option.id }}" {% if option.id in search_params.artist_ids %}checked{% endif %}>
+                                        <span>{{ option.label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </fieldset>
+                        {% endif %}
+                    </div>
+                </details>
+            {% endif %}
         </form>
     </article>
 
@@ -174,6 +215,14 @@
                                     </button>
                                 </div>
                             {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if item.genres or item.bands or item.artists %}
+                        <div class="song-card-metadata">
+                            {% if item.genres %}<p>{% trans "Genres" %} : {{ item.genres|join:", " }}</p>{% endif %}
+                            {% if item.bands %}<p>{% trans "Groupes" %} : {{ item.bands|join:", " }}</p>{% endif %}
+                            {% if item.artists %}<p>{% trans "Artistes" %} : {{ item.artists|join:", " }}</p>{% endif %}
                         </div>
                     {% endif %}
 

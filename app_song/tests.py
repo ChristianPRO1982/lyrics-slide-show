@@ -1,3 +1,236 @@
-from django.test import TestCase
+from django.test import RequestFactory, SimpleTestCase
 
-# Create your tests here.
+from .models import Song, Verse
+from .rendering import (
+    ChorusRenderMode,
+    RenderedSongBlockKind,
+    SongRenderSettings,
+    render_song_blocks,
+    render_song_text,
+)
+from .search import SongSearchParams, build_song_search_query, get_active_song_search
+
+
+class AnonymousUser:
+    is_authenticated = False
+
+
+def make_song() -> Song:
+    return Song(song_id=1, title="Gloire", subtitle="", status=0, licensed=False)
+
+
+def make_verse(
+    verse_id: int,
+    num: int,
+    text: str,
+    *,
+    num_verse: int = 1,
+    chorus: bool = False,
+    chorus_like: bool = False,
+    followed: bool = False,
+    notcontinuenumbering: bool = False,
+    prefix: str = "",
+) -> Verse:
+    return Verse(
+        verse_id=verse_id,
+        num=num,
+        num_verse=num_verse,
+        chorus=chorus,
+        chorus_like=chorus_like,
+        followed=followed,
+        notcontinuenumbering=notcontinuenumbering,
+        text=text,
+        prefix=prefix,
+    )
+
+
+class SongRenderingServiceTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_song_starting_with_chorus_renders_chorus_group_first(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Chante alleluia", chorus=True, num_verse=0),
+                make_verse(2, 4, "Premier couplet", num_verse=1),
+            ],
+        )
+
+        self.assertEqual([block.kind for block in blocks], [
+            RenderedSongBlockKind.CHORUS,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.CHORUS,
+        ])
+        self.assertEqual(blocks[0].label, "Refrain")
+        self.assertTrue(blocks[2].is_repeated_chorus)
+
+    def test_full_mode_repeats_chorus_after_each_eligible_verse(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet un", num_verse=1),
+                make_verse(3, 6, "Couplet deux", num_verse=2),
+            ],
+        )
+
+        self.assertEqual([block.kind for block in blocks], [
+            RenderedSongBlockKind.CHORUS,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.CHORUS,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.CHORUS,
+        ])
+
+    def test_single_mode_renders_chorus_only_once(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.SINGLE,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet un", num_verse=1),
+                make_verse(3, 6, "Couplet deux", num_verse=2),
+            ],
+        )
+
+        self.assertEqual([block.kind for block in blocks], [
+            RenderedSongBlockKind.CHORUS,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.VERSE,
+        ])
+
+    def test_followed_skips_next_chorus_insertion_point(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet un", num_verse=1, followed=True),
+                make_verse(3, 6, "Couplet deux", num_verse=2),
+            ],
+        )
+
+        self.assertEqual([block.kind for block in blocks], [
+            RenderedSongBlockKind.CHORUS,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.VERSE,
+            RenderedSongBlockKind.CHORUS,
+        ])
+
+    def test_song_with_only_choruses_still_renders_chorus_group(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain A", chorus=True, num_verse=0),
+                make_verse(2, 4, "Refrain B", chorus=True, num_verse=0),
+            ],
+        )
+
+        self.assertEqual([block.text for block in blocks], ["Refrain A", "Refrain B"])
+        self.assertEqual(blocks[0].label, "Refrain")
+        self.assertEqual(blocks[1].label, "")
+
+    def test_chorus_like_block_uses_prefix_without_joining_repeated_choruses(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Pont final", num_verse=1, chorus_like=True, prefix="Pont"),
+            ],
+        )
+
+        self.assertEqual(blocks[1].kind, RenderedSongBlockKind.CHORUS_LIKE)
+        self.assertEqual(blocks[1].label, "Pont")
+        self.assertEqual(blocks[2].kind, RenderedSongBlockKind.CHORUS)
+
+    def test_not_continue_numbering_removes_visible_verse_label(self):
+        text = render_song_text(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True),
+            ],
+        )
+
+        self.assertIn("Suite du couplet", text)
+        self.assertNotIn("Couplet 1", text)
+
+
+class SongSearchParamsTests(SimpleTestCase):
+    def test_guest_search_ignores_advanced_filters(self):
+        request = RequestFactory().get(
+            "/songs/",
+            {
+                "text": "été",
+                "everywhere": "1",
+                "validation": "validated_only",
+                "favorites_only": "1",
+                "genre_ids": ["1", "2"],
+            },
+        )
+        request.user = AnonymousUser()
+
+        params = get_active_song_search(request, member_id=None)
+
+        self.assertEqual(params, SongSearchParams(text="été"))
+
+    def test_params_from_mapping_normalizes_invalid_values(self):
+        params = SongSearchParams.from_mapping(
+            {
+                "text": " paix ",
+                "everywhere": True,
+                "match_all_selected_refs": True,
+                "genre_ids": [3, "bad", "5"],
+                "band_ids": "7,not-a-number,9",
+                "artist_ids": [],
+                "validation": "unknown",
+                "favorites_only": True,
+            }
+        )
+
+        self.assertEqual(params.text, "paix")
+        self.assertTrue(params.everywhere)
+        self.assertEqual(params.genre_ids, (3, 5))
+        self.assertEqual(params.band_ids, (7, 9))
+        self.assertEqual(params.validation, "all")
+
+    def test_build_search_query_serializes_multi_value_filters(self):
+        query = build_song_search_query(
+            SongSearchParams(
+                text="gloire",
+                everywhere=True,
+                match_all_selected_refs=True,
+                genre_ids=(1, 2),
+                band_ids=(4,),
+                artist_ids=(9,),
+                validation="validated_only",
+                favorites_only=True,
+            ),
+            favorites_only=False,
+        )
+
+        self.assertIn("text=gloire", query)
+        self.assertIn("everywhere=1", query)
+        self.assertIn("match_all_selected_refs=1", query)
+        self.assertIn("genre_ids=1", query)
+        self.assertIn("genre_ids=2", query)
+        self.assertIn("band_ids=4", query)
+        self.assertIn("artist_ids=9", query)
+        self.assertIn("validation=validated_only", query)
+        self.assertIn("favorites_only=0", query)
