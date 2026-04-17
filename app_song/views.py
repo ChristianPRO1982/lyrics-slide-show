@@ -139,7 +139,7 @@ def _build_song_cards(songs, user) -> list[dict[str, object]]:
                 "description_summary": description_summary,
                 "description_rest": description_rest,
                 "can_edit": _can_edit_unvalidated_song(user, song),
-                "display_url": reverse("song_text", args=[song.song_id, TEXT_MODE_FULL_CHORUS]),
+                "display_url": reverse("song", args=[song.song_id]),
                 "print_single_url": reverse("song_text", args=[song.song_id, TEXT_MODE_SINGLE_CHORUS]),
                 "print_full_url": reverse("song_text", args=[song.song_id, TEXT_MODE_FULL_CHORUS]),
                 "print_single_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain",
@@ -206,19 +206,23 @@ def _render_song_plain_text(song: Song, mode: str) -> str:
     return "\n".join(output).strip() + "\n"
 
 
+def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
+    action = request.POST.get("action")
+    song = get_object_or_404(Song, song_id=request.POST.get("song_id"))
+    if action == "delete_song":
+        if not _can_edit_unvalidated_song(request.user, song):
+            raise Http404
+        song.delete()
+        return redirect(redirect_url)
+    raise Http404
+
+
 def songs(request: HttpRequest) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
     member_id = get_member_id_from_user(request.user)
 
     if request.method == "POST":
-        action = request.POST.get("action")
-        song = get_object_or_404(Song, song_id=request.POST.get("song_id"))
-        if action == "delete_song":
-            if not _can_edit_unvalidated_song(request.user, song):
-                raise Http404
-            song.delete()
-            return redirect("songs")
-        raise Http404
+        return _handle_song_post(request, "songs")
 
     search_params = _get_search_params(request, member_id)
 
@@ -244,6 +248,60 @@ def songs(request: HttpRequest) -> HttpResponse:
             "is_limited": search_count > SONG_RESULT_LIMIT,
             "can_use_favorites": bool(member_id),
             "can_create_song": _is_authenticated(request.user),
+        },
+    )
+
+
+def song(request: HttpRequest, song_id: int) -> HttpResponse:
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    song_object = get_object_or_404(
+        Song.objects.prefetch_related("verses", "messages", "links"),
+        song_id=song_id,
+    )
+    if not _can_read_song(request.user, song_object):
+        raise Http404
+
+    if request.method == "POST":
+        return _handle_song_post(request, "songs")
+
+    description_summary, description_rest = _split_description_for_display(song_object.description)
+    validation_label = ""
+    if song_object.status == SongStatus.VALIDATED:
+        validation_label = _("Chant validé")
+    elif song_object.status == SongStatus.VALIDATED_WITH_CONCERN:
+        validation_label = _("Chant validé avec des messages")
+    else:
+        validation_label = _("Chant non validé")
+
+    member_id = get_member_id_from_user(request.user)
+    is_favorite = bool(
+        member_id
+        and SongFavorite.objects.filter(song_id=song_object.song_id, member_id=member_id).exists()
+    )
+    rendered_text = _render_song_plain_text(song_object, TEXT_MODE_FULL_CHORUS)
+
+    return render(
+        request,
+        "song/song.html",
+        {
+            "selected_group": selected_group,
+            "song": song_object,
+            "description_display": _normalize_display_linebreaks(song_object.description).strip(),
+            "description_summary": description_summary,
+            "description_rest": description_rest,
+            "validation_label": validation_label,
+            "is_favorite": is_favorite,
+            "can_edit": _can_edit_unvalidated_song(request.user, song_object),
+            "can_view_messages": bool(member_id),
+            "can_report_message": not _can_edit_unvalidated_song(request.user, song_object),
+            "messages_history": song_object.messages.all().order_by("-date", "-message_id"),
+            "links": song_object.links.all().order_by("link"),
+            "rendered_text": rendered_text,
+            "display_url": reverse("song", args=[song_object.song_id]),
+            "print_single_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS]),
+            "print_full_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_FULL_CHORUS]),
+            "print_single_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain",
+            "print_full_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain",
         },
     )
 

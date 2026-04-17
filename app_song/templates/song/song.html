@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ song.display_title }} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_song.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Chant' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Chant' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Chant" %}{% endblock %}
+{% block page_tools %}
+    <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "← Retour à la liste" %}</a></p>
+    <hr>
+    <p><a class="song-tool-link" href="#song-rendered-text">{% trans "Afficher" %}</a></p>
+    <p><a class="song-tool-link" href="{{ display_url }}">{% trans "📱 Smartphone view" %}</a></p>
+    <p><button type="button" class="song-tool-button" data-song-print-menu data-single-url="{{ print_single_url }}" data-full-url="{{ print_full_url }}" data-single-plain-url="{{ print_single_plain_url }}" data-full-plain-url="{{ print_full_plain_url }}">{% trans "🖨️ Impression" %}</button></p>
+    {% if can_edit %}
+        <hr>
+        <p><button type="button" disabled>{% trans "Modifier" %}</button></p>
+        <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ song.display_title }}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_song">
+            <input type="hidden" name="song_id" value="{{ song.song_id }}">
+            <button type="submit" class="song-danger-action">{% trans "Supprimer" %}</button>
+        </form>
+    {% endif %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="song-mobile-summary">
+        <p><strong>{{ song.title }}</strong></p>
+        {% if song.subtitle %}<p>{{ song.subtitle }}</p>{% endif %}
+        <p>{{ validation_label }}</p>
+    </div>
+{% endblock %}
+{% block page_kicker %}{% trans "Chant" %}{% endblock %}
+{% block page_title %}{{ song.display_title }}{% endblock %}
+{% block page_summary %}
+    {% if description_display %}
+        <p>{{ description_display|linebreaksbr }}</p>
+    {% endif %}
+{% endblock %}
+{% block content %}{% endblock %}
+{% block content_footer %}
+    <article class="site-theme-card song-text-card" id="song-rendered-text">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Texte du chant" %}</h2>
+            </div>
+        </header>
+        <pre class="song-rendered-text">{{ rendered_text }}</pre>
+    </article>
+{% endblock %}
+{% block page_scripts %}
+    {% include "song/song_page_i18n.html" %}
+    <script src="{% static 'js/app_song.js' %}"></script>
+{% endblock %}

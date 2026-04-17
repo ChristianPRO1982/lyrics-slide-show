@@ -137,7 +137,7 @@
                 <article class="site-theme-card song-card" data-song-card data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
                     <div class="song-card-main">
                         <div>
-                            <h3>{{ item.song.title }}</h3>
+                            <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.song.title }}</a></h3>
                             {% if item.song.subtitle %}
                                 <p class="song-subtitle">{{ item.song.subtitle }}</p>
                             {% endif %}
@@ -215,36 +215,6 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
-    {% trans "Suppression" as song_delete_title %}
-    {% trans "Supprimer ce chant ?" as song_delete_message %}
-    {% trans "Oui" as song_yes_label %}
-    {% trans "Non" as song_no_label %}
-    {% trans "Impression du chant" as song_print_title %}
-    {% trans "🖨️💯: Impression du chant - avec un refrain entre chaque couplet" as song_print_full_label %}
-    {% trans "🖨️1️⃣ : Impression du chant - avec un seul refrain" as song_print_single_label %}
-    {% trans "🖨️1️⃣ copier le texte" as song_copy_single_label %}
-    {% trans "🖨️💯 copier le texte" as song_copy_full_label %}
-    {% trans "🖨️1️⃣ afficher le texte" as song_show_single_label %}
-    {% trans "🖨️💯 afficher le texte" as song_show_full_label %}
-    {% trans "Copie" as song_copy_title %}
-    {% trans "Le texte a été copié." as song_copy_success %}
-    {% trans "La copie automatique a échoué." as song_copy_failed %}
-    <script>
-        window.LSS_SONG_I18N = {
-            deleteTitle: "{{ song_delete_title|escapejs }}",
-            deleteMessage: "{{ song_delete_message|escapejs }}",
-            yesLabel: "{{ song_yes_label|escapejs }}",
-            noLabel: "{{ song_no_label|escapejs }}",
-            printTitle: "{{ song_print_title|escapejs }}",
-            printMessage: "{{ song_print_full_label|escapejs }}\n{{ song_print_single_label|escapejs }}",
-            copySingleLabel: "{{ song_copy_single_label|escapejs }}",
-            copyFullLabel: "{{ song_copy_full_label|escapejs }}",
-            showSingleLabel: "{{ song_show_single_label|escapejs }}",
-            showFullLabel: "{{ song_show_full_label|escapejs }}",
-            copyTitle: "{{ song_copy_title|escapejs }}",
-            copySuccess: "{{ song_copy_success|escapejs }}",
-            copyFailed: "{{ song_copy_failed|escapejs }}"
-        };
-    </script>
+    {% include "song/song_page_i18n.html" %}
     <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}
