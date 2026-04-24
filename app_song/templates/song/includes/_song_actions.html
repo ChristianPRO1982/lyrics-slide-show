@@ -1,0 +1,15 @@
+{% load i18n %}
+<div class="song-actions-list">
+    <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "← Retour à la liste" %}</a></p>
+    <hr>
+    {% if request.resolver_match.url_name != "song" %}
+        <p><a class="song-tool-link" href="{% url 'song' song.song_id %}">{% trans "Afficher" %}</a></p>
+    {% endif %}
+    {% if request.resolver_match.url_name != "modify_song" %}
+        <p><a class="song-tool-link" href="{% url 'modify_song' song.song_id %}">{% trans "Modifier" %}</a></p>
+    {% endif %}
+    {% if request.resolver_match.url_name != "song_metadata" %}
+        <p><a class="song-tool-link" href="{% url 'song_metadata' song.song_id %}">{% trans "Métadonnées" %}</a></p>
+    {% endif %}
+    <p>{% trans "Supprimer" %}</p>
+</div>

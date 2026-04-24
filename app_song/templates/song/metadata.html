@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Métadonnées du chant" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
+{% block page_kicker %}{% trans "Chants" %}{% endblock %}
+{% block page_title %}{% trans "Métadonnées du chant" %}{% endblock %}
+{% block page_summary %}
+    <p>{% trans "Vue initialisée. Gestion des métadonnées à implémenter." %}</p>
+{% endblock %}

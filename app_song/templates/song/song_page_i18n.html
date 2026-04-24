@@ -13,6 +13,7 @@
 {% trans "Copie" as song_copy_title %}
 {% trans "Le texte a été copié." as song_copy_success %}
 {% trans "La copie automatique a échoué." as song_copy_failed %}
+{% trans "Description du chant" as song_summary_title %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -27,6 +28,7 @@
         showFullLabel: "{{ song_show_full_label|escapejs }}",
         copyTitle: "{{ song_copy_title|escapejs }}",
         copySuccess: "{{ song_copy_success|escapejs }}",
-        copyFailed: "{{ song_copy_failed|escapejs }}"
+        copyFailed: "{{ song_copy_failed|escapejs }}",
+        summaryTitle: "{{ song_summary_title|escapejs }}"
     };
 </script>

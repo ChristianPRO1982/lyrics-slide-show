@@ -55,6 +55,24 @@
         });
     });
 
+    document.querySelectorAll("[data-song-summary-popup]").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+            if (!messageBox) {
+                return;
+            }
+            event.preventDefault();
+            const fullSummary = String(link.getAttribute("data-full-summary") || "").trim();
+            if (!fullSummary) {
+                return;
+            }
+            await messageBox.alert({
+                title: label("summaryTitle"),
+                messageMarkdown: fullSummary,
+                showCloseButton: true,
+            });
+        });
+    });
+
     document.querySelectorAll("[data-song-delete-form]").forEach((form) => {
         form.addEventListener("submit", async (event) => {
             if (!messageBox) {

@@ -20,36 +20,49 @@
 {% block page_tools %}
     <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "← Retour à la liste" %}</a></p>
     <hr>
-    <p><a class="song-tool-link" href="#song-rendered-text">{% trans "Afficher" %}</a></p>
-    <p><a class="song-tool-link" href="{{ display_url }}">{% trans "📱 Smartphone view" %}</a></p>
-    <p><button type="button" class="song-tool-button" data-song-print-menu data-single-url="{{ print_single_url }}" data-full-url="{{ print_full_url }}" data-single-plain-url="{{ print_single_plain_url }}" data-full-plain-url="{{ print_full_plain_url }}">{% trans "🖨️ Impression" %}</button></p>
-    {% if can_edit %}
-        <hr>
-        <p><button type="button" disabled>{% trans "Modifier" %}</button></p>
-        <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ song.display_title }}">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="delete_song">
-            <input type="hidden" name="song_id" value="{{ song.song_id }}">
-            <button type="submit" class="song-danger-action">{% trans "Supprimer" %}</button>
-        </form>
-    {% endif %}
+    <p><a class="song-tool-link" href="{% url 'modify_song' song.song_id %}">{% trans "Modifier" %}</a></p>
+    <p><a class="song-tool-link" href="{% url 'song_metadata' song.song_id %}">{% trans "Métadonnées" %}</a></p>
+    <p>{% trans "Supprimer" %}</p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
 {% block mobile_side_content %}
     <div class="song-mobile-summary">
-        <p><strong>{{ song.title }}</strong></p>
-        {% if song.subtitle %}<p>{{ song.subtitle }}</p>{% endif %}
-        <p>{{ validation_label }}</p>
+        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
     </div>
+    {% include "song/includes/_song_actions.html" %}
 {% endblock %}
-{% block page_kicker %}{% trans "Chant" %}{% endblock %}
+{% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{{ song.display_title }}{% endblock %}
 {% block page_summary %}
-    {% if description_display %}
-        <p>{{ description_display|linebreaksbr }}</p>
+    {% if page_summary_text %}
+        <p>
+            {{ page_summary_text|linebreaksbr }}
+            {% if page_summary_truncated %}
+                <a href="#" data-song-summary-popup data-full-summary="{{ description_display|escape }}" aria-label="{% trans 'Afficher la description complète' %}">[...]</a>
+            {% endif %}
+        </p>
     {% endif %}
 {% endblock %}
-{% block content %}{% endblock %}
+{% block content %}
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2># tags</h2>
+            </div>
+        </header>
+        {% include "song/includes/_song_metadata.html" %}
+    </article>
+
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Liens associés" %}</h2>
+            </div>
+        </header>
+        {% include "song/includes/_song_links.html" %}
+    </article>
+
+{% endblock %}
 {% block content_footer %}
     <article class="site-theme-card song-text-card" id="song-rendered-text">
         <header class="site-theme-card-header">
@@ -59,6 +72,52 @@
         </header>
         <pre class="song-rendered-text">{{ rendered_text }}</pre>
     </article>
+
+    {% if can_report_message or can_view_messages %}
+        <article class="site-theme-card song-messages-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Messages de correction" %}</h2>
+                </div>
+            </header>
+
+            {% if can_report_message %}
+                <section>
+                    <h3>{% trans "Signaler une correction" %}</h3>
+                    {% if message_error %}
+                        <p>{% trans "Le message ne peut pas être vide." %}</p>
+                    {% endif %}
+                    <form method="post" class="song-message-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_message">
+                        <textarea name="message" rows="5" required placeholder="{% trans 'Expliquer la correction à apporter' %}"></textarea>
+                        <p>
+                            <button type="submit">{% trans "Envoyer" %}</button>
+                        </p>
+                    </form>
+                </section>
+            {% endif %}
+
+            {% if can_view_messages %}
+                <section>
+                    <h3>{% trans "Historique" %}</h3>
+                    {% if messages_with_status %}
+                        <div class="song-message-history">
+                            {% for row in messages_with_status %}
+                                <article class="song-message-item">
+                                    <p><strong>{{ row.status_label }}</strong></p>
+                                    <small>{{ row.item.date|date:"d/m/Y H:i" }}</small>
+                                    <p>{{ row.item.message|linebreaksbr }}</p>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>{% trans "Aucun message de correction pour ce chant." %}</p>
+                    {% endif %}
+                </section>
+            {% endif %}
+        </article>
+    {% endif %}
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}

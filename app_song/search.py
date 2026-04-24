@@ -26,6 +26,7 @@ from .models import (
     SongGenre,
     SongStatus,
 )
+from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
 
 
 SONG_SEARCH_VALIDATION_VALUES = {
@@ -450,9 +451,21 @@ def _build_result(song: Song, relation_maps) -> SongSearchResult:
         song=song,
         is_favorite=bool(getattr(song, "is_favorite", False)),
         validation_label=_validation_label(song),
-        genres=tuple(label for label in (genre_labels.get(item) for item in genre_map.get(song.song_id, [])) if label),
-        bands=tuple(label for label in (band_labels.get(item) for item in band_map.get(song.song_id, [])) if label),
-        artists=tuple(label for label in (artist_labels.get(item) for item in artist_map.get(song.song_id, [])) if label),
+        genres=tuple(
+            with_music_emoji(label)
+            for label in (genre_labels.get(item) for item in genre_map.get(song.song_id, []))
+            if label
+        ),
+        bands=tuple(
+            with_band_emoji(label)
+            for label in (band_labels.get(item) for item in band_map.get(song.song_id, []))
+            if label
+        ),
+        artists=tuple(
+            with_artist_emoji(label)
+            for label in (artist_labels.get(item) for item in artist_map.get(song.song_id, []))
+            if label
+        ),
         display_url=reverse("song", args=[song.song_id]),
         print_single_url=print_single_url,
         print_full_url=print_full_url,
