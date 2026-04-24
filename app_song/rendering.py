@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Iterable
@@ -155,82 +156,80 @@ def _format_html_text(value: str | None) -> str:
     return "<br>".join(escape(line) for line in normalized.split("\n"))
 
 
-def _append_with_gap(chunks: list[str], content: str) -> None:
-    if not content:
-        return
-    if chunks:
-        chunks.append("<br><br>")
-    chunks.append(content)
+def _render_table_row(
+    *,
+    label: str,
+    text_html: str,
+    kind: RenderedSongBlockKind,
+) -> str:
+    label_html = escape(label.strip()) if label else ""
+    kind_class = kind.value.replace("_", "-")
+    return (
+        f'<tr class="song-lyrics-row song-lyrics-row--{kind_class}">'
+        f"<th scope=\"row\">{label_html}</th>"
+        f"<td>{text_html}</td>"
+        "</tr>"
+    )
 
 
-def _build_chorus_html(ordered_verses: list[Verse], settings: SongRenderSettings) -> str:
-    chorus_chunks: list[str] = []
-    for verse in ordered_verses:
-        if not verse.chorus:
-            continue
-        verse_html = _format_html_text(verse.text)
-        if not verse_html:
-            continue
-        if not chorus_chunks:
-            prefix = str(settings.chorus_prefix or "").strip()
-            if prefix:
-                verse_html = f"<i>{escape(prefix)}</i> {verse_html}"
-        chorus_chunks.append(verse_html)
-
-    if not chorus_chunks:
-        return ""
-    return f"<b>{'<br><br>'.join(chorus_chunks)}</b>"
-
-
-def _render_non_chorus_verse_html(verse: Verse, settings: SongRenderSettings) -> str:
-    text_html = _format_html_text(verse.text)
-    if not text_html:
+def _render_blocks_table_html(blocks: list[RenderedSongBlock]) -> str:
+    if not blocks:
         return ""
 
-    if verse.chorus_like:
-        prefix = str(verse.prefix or "").strip()
-        prefix_html = f"<i>{escape(prefix)}</i><br>" if prefix else ""
-        return f"<b>{prefix_html}{text_html}</b>"
+    rows: list[str] = []
+    index = 0
+    while index < len(blocks):
+        block = blocks[index]
+        if block.kind == RenderedSongBlockKind.CHORUS:
+            chorus_chunks: list[str] = []
+            while (
+                index < len(blocks)
+                and blocks[index].kind == RenderedSongBlockKind.CHORUS
+                and blocks[index].is_repeated_chorus == block.is_repeated_chorus
+            ):
+                chorus_text_html = _format_html_text(blocks[index].text)
+                if chorus_text_html:
+                    chorus_chunks.append(chorus_text_html)
+                index += 1
+            if chorus_chunks:
+                rows.append(
+                    _render_table_row(
+                        label=block.label,
+                        text_html="<br><br>".join(chorus_chunks),
+                        kind=RenderedSongBlockKind.CHORUS,
+                    )
+                )
+            continue
 
-    if verse.notcontinuenumbering:
-        return text_html
+        text_html = _format_html_text(block.text)
+        if text_html:
+            rows.append(_render_table_row(label=block.label, text_html=text_html, kind=block.kind))
+        index += 1
 
-    label = settings.verse_label(verse.num_verse)
-    if not label:
-        return text_html
-    return f"<i>{escape(label)}</i> {text_html}"
+    if not rows:
+        return ""
+    return f"<table class=\"song-lyrics-table\"><tbody>{''.join(rows)}</tbody></table>"
 
 
 def _render_song_html(
-    ordered_verses: list[Verse],
-    chorus_html: str,
+    song: Song,
     mode: ChorusRenderMode,
     settings: SongRenderSettings,
+    verses: Iterable[Verse] | None = None,
 ) -> str:
-    if not ordered_verses:
-        return chorus_html
+    return _render_blocks_table_html(
+        render_song_blocks(song, mode, settings=settings, verses=verses)
+    )
 
-    rendered_chunks: list[str] = []
-    chorus_inserted = False
 
-    for index, verse in enumerate(ordered_verses):
-        if verse.chorus:
-            if index == 0 and chorus_html and _should_render_chorus_group(mode, chorus_inserted):
-                _append_with_gap(rendered_chunks, chorus_html)
-                chorus_inserted = True
-            continue
-
-        verse_html = _render_non_chorus_verse_html(verse, settings)
-        if verse_html:
-            _append_with_gap(rendered_chunks, verse_html)
-
-        if chorus_html and not verse.followed and _should_render_chorus_group(mode, chorus_inserted):
-            _append_with_gap(rendered_chunks, chorus_html)
-            chorus_inserted = True
-
-    if not rendered_chunks and chorus_html:
-        return chorus_html
-    return "".join(rendered_chunks)
+def _table_html_to_plain_text(text_html: str) -> str:
+    text = normalize_lyrics_linebreaks(text_html)
+    text = text.replace("<br><br>", "\n\n").replace("<br>", "\n")
+    text = text.replace("</th><td>", " ")
+    text = text.replace("</td></tr>", "\n\n")
+    text = re.sub(r"</?(table|tbody|tr|th|td)(?:\s[^>]*)?>", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
 
 
 def render_song_blocks(
@@ -295,12 +294,11 @@ def build_song_text_artifacts(
 ) -> SongTextArtifacts:
     render_settings = settings or SongRenderSettings.defaults()
     ordered_verses = _get_ordered_verses(song, verses)
-    chorus_html = _build_chorus_html(ordered_verses, render_settings)
     return SongTextArtifacts(
         full_title=build_song_full_title(song),
         full_title_with_tags=build_song_full_title_with_tags(song),
-        short_text_html=_render_song_html(ordered_verses, chorus_html, ChorusRenderMode.SINGLE, render_settings),
-        long_text_html=_render_song_html(ordered_verses, chorus_html, ChorusRenderMode.FULL, render_settings),
+        short_text_html=_render_song_html(song, ChorusRenderMode.SINGLE, render_settings, verses=ordered_verses),
+        long_text_html=_render_song_html(song, ChorusRenderMode.FULL, render_settings, verses=ordered_verses),
     )
 
 
@@ -313,13 +311,7 @@ def render_song_text(
 ) -> str:
     artifacts = build_song_text_artifacts(song, settings=settings, verses=verses)
     text_html = artifacts.short_text_html if ChorusRenderMode(mode) == ChorusRenderMode.SINGLE else artifacts.long_text_html
-    text = normalize_lyrics_linebreaks(text_html.replace("<br><br>", "\n\n").replace("<br>", "\n"))
-    text = (
-        text.replace("<i>", "")
-        .replace("</i>", "")
-        .replace("<b>", "")
-        .replace("</b>", "")
-    )
+    text = _table_html_to_plain_text(text_html)
 
     output = []
     if include_title:

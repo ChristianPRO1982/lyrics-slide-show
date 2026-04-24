@@ -274,8 +274,9 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(3, 6, "Couplet deux", num_verse=2),
             ],
         )
-        self.assertEqual(artifacts.short_text_html.count("<b><i>Refrain</i> Refrain</b>"), 1)
-        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 3)
+        self.assertIn("<table class=\"song-lyrics-table\">", artifacts.short_text_html)
+        self.assertEqual(artifacts.short_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 1)
+        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 3)
 
     def test_followed_skips_chorus_reinsertion(self):
         artifacts = build_song_text_artifacts(
@@ -286,7 +287,7 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(2, 4, "Couplet un", num_verse=1, followed=True),
             ],
         )
-        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 1)
+        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 1)
 
     def test_empty_non_chorus_block_still_triggers_chorus_reinsertion(self):
         artifacts = build_song_text_artifacts(
@@ -298,7 +299,7 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(3, 6, "Couplet deux", num_verse=2),
             ],
         )
-        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 3)
+        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 3)
 
     def test_chorus_like_uses_optional_prefix_and_bold(self):
         artifacts = build_song_text_artifacts(
@@ -306,14 +307,14 @@ class SongTextArtifactsTests(SimpleTestCase):
             settings=self.settings,
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="Pont")],
         )
-        self.assertIn("<b><i>Pont</i><br>Pont final</b>", artifacts.long_text_html)
+        self.assertIn("<th scope=\"row\">Pont</th><td>Pont final</td>", artifacts.long_text_html)
 
         artifacts_no_prefix = build_song_text_artifacts(
             make_song(),
             settings=self.settings,
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="")],
         )
-        self.assertIn("<b>Pont final</b>", artifacts_no_prefix.long_text_html)
+        self.assertIn("<th scope=\"row\">Refrain</th><td>Pont final</td>", artifacts_no_prefix.long_text_html)
 
     def test_not_continue_numbering_hides_verse_label(self):
         artifacts = build_song_text_artifacts(
@@ -327,7 +328,7 @@ class SongTextArtifactsTests(SimpleTestCase):
             verses=[make_verse(1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True)],
         )
         self.assertIn("Suite du couplet", artifacts.long_text_html)
-        self.assertNotIn("Couplet", artifacts.long_text_html)
+        self.assertIn("<th scope=\"row\"></th><td>Suite du couplet</td>", artifacts.long_text_html)
 
     def test_chorus_multi_blocks_are_joined_with_blank_line(self):
         artifacts = build_song_text_artifacts(
@@ -338,7 +339,7 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(2, 4, "Ligne B", chorus=True, num_verse=0),
             ],
         )
-        self.assertIn("<b><i>Refrain</i> Ligne A<br><br>Ligne B</b>", artifacts.long_text_html)
+        self.assertIn("<th scope=\"row\">Refrain</th><td>Ligne A<br><br>Ligne B</td>", artifacts.long_text_html)
 
     def test_html_output_escapes_dynamic_values(self):
         artifacts = build_song_text_artifacts(
@@ -392,12 +393,12 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
         self.assertContains(response, "<title>Le Sud - Nino Ferrer</title>", html=True)
-        self.assertContains(response, "<b><i>Refrain</i> On dirait le Sud</b>", html=False)
+        self.assertContains(response, "<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", html=False)
 
     def test_song_text_plain_endpoint_returns_html_fragment(self):
         response = self.client.get(reverse("song_text", args=[self.song.song_id, "single-chorus"]) + "?format=plain")
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
         body = response.content.decode("utf-8")
-        self.assertIn("<b><i>Refrain</i> On dirait le Sud</b>", body)
+        self.assertIn("<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
