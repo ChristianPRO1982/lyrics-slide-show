@@ -269,6 +269,11 @@
     margin: 0;
 }
 
+.song-message-form textarea,
+.song-message-form button {
+    width: 100%;
+}
+
 .song-subtitle,
 .song-description,
 .song-card-metadata {
