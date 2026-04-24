@@ -625,6 +625,22 @@ body.lss-messagebox-open {
     margin-top: 10px;
 }
 
+.site-tools-panel > :not(.site-panel-header):not(style) > hr,
+.site-mobile-side > :not(.site-panel-header):not(style) > hr,
+.site-tools-panel > :not(.site-panel-header):not(style) > * > hr,
+.site-mobile-side > :not(.site-panel-header):not(style) > * > hr {
+    display: block;
+    height: 1px;
+    min-height: 0;
+    margin: 0.35rem 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--site-line);
+    border-radius: 0;
+    background: transparent;
+    gap: 0;
+}
+
 .site-main-panel {
     padding: 20px;
     min-width: 0;

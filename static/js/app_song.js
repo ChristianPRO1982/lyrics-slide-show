@@ -73,6 +73,19 @@
         });
     });
 
+    const mobileActionsToggle = document.querySelector("[data-song-mobile-actions-toggle]");
+    const mobileActionsContainer = document.querySelector("[data-song-mobile-actions]");
+    if (mobileActionsToggle && mobileActionsContainer) {
+        mobileActionsToggle.addEventListener("click", () => {
+            const isHidden = mobileActionsContainer.hidden;
+            mobileActionsContainer.hidden = !isHidden;
+            mobileActionsToggle.setAttribute("aria-expanded", String(isHidden));
+            mobileActionsToggle.textContent = isHidden
+                ? String(mobileActionsToggle.getAttribute("data-close-label") || "")
+                : String(mobileActionsToggle.getAttribute("data-open-label") || "");
+        });
+    }
+
     document.querySelectorAll("[data-song-delete-form]").forEach((form) => {
         form.addEventListener("submit", async (event) => {
             if (!messageBox) {

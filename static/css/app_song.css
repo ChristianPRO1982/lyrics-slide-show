@@ -8,6 +8,10 @@
     width: 100%;
 }
 
+[data-song-mobile-actions][hidden] {
+    display: none !important;
+}
+
 .song-search-floating-actions {
     top: 100px;
     right: 16px;

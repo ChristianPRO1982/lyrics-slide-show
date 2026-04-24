@@ -29,7 +29,21 @@
     <div class="song-mobile-summary">
         <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
     </div>
-    {% include "song/includes/_song_actions.html" %}
+    <p>
+        <button
+            type="button"
+            class="song-tool-button"
+            data-song-mobile-actions-toggle
+            aria-expanded="false"
+            data-open-label="{% trans 'Afficher les actions' %}"
+            data-close-label="{% trans 'Masquer les actions' %}"
+        >
+            {% trans "Afficher les actions" %}
+        </button>
+    </p>
+    <div data-song-mobile-actions hidden>
+        {% include "song/includes/_song_actions.html" %}
+    </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{{ song.display_title }}{% endblock %}
