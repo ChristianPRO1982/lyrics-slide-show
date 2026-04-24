@@ -53,3 +53,27 @@ SELECT CONCAT(
 	"');"
 )
 FROM l_verses l
+
+SELECT CONCAT("INSERT INTO lss.s_verse_prefixes (prefix_id, prefix, comment) VALUES (", .prefix_id, ", '", l.prefix, "', '", l.comment, "');") FROM l_verse_prefixes l
+
+SELECT CONCAT(
+	"INSERT INTO lss.s_song_links (song_id, type, link) VALUES (",
+	l.song_id,
+	", '",
+	CASE
+        WHEN l.link LIKE '%emmanuelmusic%'
+             AND l.link NOT LIKE '%emmanuelmusic%mp3%' THEN 'partition'
+        WHEN l.link LIKE '%emmanuelmusic%mp3%' THEN 'audio'
+        WHEN l.link LIKE '%choralepolefontainebleau%' THEN 'audio'
+        WHEN l.link LIKE '%youtu%' THEN 'YouTube'
+        WHEN l.link LIKE '%carthographie%' THEN 'lien interne'
+        WHEN l.link LIKE '%topchretien%' THEN 'partition'
+        WHEN l.link LIKE '%bayardmusique%' THEN 'partition'
+        ELSE 'lien'
+    END,
+    "', '",
+	REPLACE(l.link, '''', ''''''),
+	"');"
+)
+FROM l_song_link l
+
