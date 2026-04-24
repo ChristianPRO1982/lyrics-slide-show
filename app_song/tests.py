@@ -288,6 +288,18 @@ class SongTextArtifactsTests(SimpleTestCase):
         )
         self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 1)
 
+    def test_empty_non_chorus_block_still_triggers_chorus_reinsertion(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "", num_verse=1, chorus=False, followed=False),
+                make_verse(3, 6, "Couplet deux", num_verse=2),
+            ],
+        )
+        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 3)
+
     def test_chorus_like_uses_optional_prefix_and_bold(self):
         artifacts = build_song_text_artifacts(
             make_song(),

@@ -221,10 +221,8 @@ def _render_song_html(
             continue
 
         verse_html = _render_non_chorus_verse_html(verse, settings)
-        if not verse_html:
-            continue
-
-        _append_with_gap(rendered_chunks, verse_html)
+        if verse_html:
+            _append_with_gap(rendered_chunks, verse_html)
 
         if chorus_html and not verse.followed and _should_render_chorus_group(mode, chorus_inserted):
             _append_with_gap(rendered_chunks, chorus_html)
