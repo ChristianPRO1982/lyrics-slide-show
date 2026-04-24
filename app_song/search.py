@@ -119,8 +119,6 @@ class SongSearchResults:
     displayed_count: int
     search_count: int
     catalog_count: int
-    result_limit: int
-    is_limited: bool
 
 
 @dataclass(frozen=True)
@@ -478,7 +476,6 @@ def search_songs(
     params: SongSearchParams,
     user,
     member_id: str | None,
-    limit: int = 200,
 ) -> SongSearchResults:
     active_params = params if _is_authenticated(user) else params.for_guest()
     if not member_id:
@@ -487,10 +484,10 @@ def search_songs(
     catalog_count = accessible_songs.count()
     filtered_songs = _apply_filters(accessible_songs, active_params, member_id)
     search_count = filtered_songs.count()
-    limited_songs = list(_with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle")[:limit])
-    song_ids = [song.song_id for song in limited_songs]
+    songs = list(_with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle"))
+    song_ids = [song.song_id for song in songs]
     relation_maps = _get_relation_maps(song_ids) if song_ids else ({}, {}, {}, {}, {}, {})
-    results = tuple(_build_result(song, relation_maps) for song in limited_songs)
+    results = tuple(_build_result(song, relation_maps) for song in songs)
 
     return SongSearchResults(
         params=active_params,
@@ -498,8 +495,6 @@ def search_songs(
         displayed_count=len(results),
         search_count=search_count,
         catalog_count=catalog_count,
-        result_limit=limit,
-        is_limited=search_count > limit,
     )
 
 

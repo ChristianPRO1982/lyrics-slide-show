@@ -17,7 +17,13 @@ from .models import (
     SongMessageStatus,
     SongStatus,
 )
-from .rendering import ChorusRenderMode, SongRenderSettings, normalize_lyrics_linebreaks, render_song_text
+from .rendering import (
+    ChorusRenderMode,
+    SongRenderSettings,
+    build_song_full_title_with_tags,
+    build_song_text_artifacts,
+    normalize_lyrics_linebreaks,
+)
 from .search import (
     TEXT_MODE_FULL_CHORUS,
     TEXT_MODE_SINGLE_CHORUS,
@@ -30,7 +36,6 @@ from .search import (
 from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
 
 
-SONG_RESULT_LIMIT = 200
 SONG_DESCRIPTION_SUMMARY_LENGTH = 180
 SONG_PAGE_SUMMARY_MAX_LENGTH = 100
 
@@ -96,11 +101,11 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
             {
                 "song": song,
                 "is_favorite": result.is_favorite,
-                "validation_label": result.validation_label,
                 "is_validated": song.is_validated,
                 "description_summary": description_summary,
                 "description_rest": description_rest,
                 "can_edit": _can_edit_unvalidated_song(user, song),
+                "title_complete_with_tags": build_song_full_title_with_tags(song),
                 "genres": result.genres,
                 "bands": result.bands,
                 "artists": result.artists,
@@ -214,7 +219,7 @@ def songs(request: HttpRequest) -> HttpResponse:
         return _handle_song_post(request, "songs")
 
     search_params = get_active_song_search(request, member_id)
-    search_results = search_songs(search_params, request.user, member_id, limit=SONG_RESULT_LIMIT)
+    search_results = search_songs(search_params, request.user, member_id)
     song_cards = _build_song_cards(search_results.results, request.user)
     reference_options = get_reference_options() if _is_authenticated(request.user) else _empty_reference_options()
 
@@ -229,8 +234,6 @@ def songs(request: HttpRequest) -> HttpResponse:
             "displayed_count": search_results.displayed_count,
             "search_count": search_results.search_count,
             "catalog_count": search_results.catalog_count,
-            "result_limit": search_results.result_limit,
-            "is_limited": search_results.is_limited,
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
             "can_create_song": _is_authenticated(request.user),
@@ -286,7 +289,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
     )
     can_report = _can_report_message(request.user, song_object)
     render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
-    rendered_text = render_song_text(song_object, ChorusRenderMode.FULL, settings=render_settings)
+    text_artifacts = build_song_text_artifacts(song_object, settings=render_settings)
     messages_history = song_object.messages.all().order_by("-date", "-message_id")
 
     return render(
@@ -319,7 +322,10 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "bands": bands,
             "artists": artists,
             "genre_groups": genre_groups,
-            "rendered_text": rendered_text,
+            "title_complete": text_artifacts.full_title,
+            "title_complete_with_tags": text_artifacts.full_title_with_tags,
+            "text_short_html": text_artifacts.short_text_html,
+            "text_long_html": text_artifacts.long_text_html,
             "display_url": reverse("song", args=[song_object.song_id]),
             "print_single_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS]),
             "print_full_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_FULL_CHORUS]),
@@ -370,9 +376,10 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
         raise Http404
 
     render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
-    rendered_text = render_song_text(song, render_mode, settings=render_settings)
+    text_artifacts = build_song_text_artifacts(song, settings=render_settings)
+    text_html = text_artifacts.short_text_html if render_mode == ChorusRenderMode.SINGLE else text_artifacts.long_text_html
     if request.GET.get("format") == "plain":
-        return HttpResponse(rendered_text, content_type="text/plain; charset=utf-8")
+        return HttpResponse(text_html, content_type="text/plain; charset=utf-8")
 
     return render(
         request,
@@ -380,6 +387,7 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
         {
             "song": song,
             "mode": mode,
-            "rendered_text": rendered_text,
+            "title_complete": text_artifacts.full_title,
+            "text_html": text_html,
         },
     )

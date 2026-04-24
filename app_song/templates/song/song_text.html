@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ song.display_title }}</title>
+    <title>{{ title_complete }}</title>
 </head>
 <body>
-<pre>{{ rendered_text }}</pre>
+<div>{{ text_html|safe }}</div>
 </body>
 </html>

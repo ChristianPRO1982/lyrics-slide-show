@@ -168,9 +168,6 @@
     <section class="song-list-section">
         <header class="song-list-header">
             <h2>{% trans "Liste des chants" %}</h2>
-            {% if is_limited %}
-                <p>{% blocktrans with limit=result_limit %}Les {{ limit }} premiers résultats sont affichés.{% endblocktrans %}</p>
-            {% endif %}
         </header>
 
         <div class="song-list" data-song-list>
@@ -178,15 +175,10 @@
                 <article class="site-theme-card song-card" data-song-card data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
                     <div class="song-card-main">
                         <div>
-                            <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.song.title }}</a></h3>
-                            {% if item.song.subtitle %}
-                                <p class="song-subtitle">{{ item.song.subtitle }}</p>
-                            {% endif %}
+                            <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a></h3>
                         </div>
                         <div class="song-card-markers">
                             {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">💫</span>{% endif %}
-                            {% if item.song.validation_marker %}<span title="{{ item.validation_label }}" aria-label="{{ item.validation_label }}">{{ item.song.validation_marker }}</span>{% endif %}
-                            {% if item.song.licensed %}<span title="{% trans 'Chant sous licence' %}" aria-label="{% trans 'Chant sous licence' %}">📄</span>{% endif %}
                         </div>
                     </div>
 
@@ -231,7 +223,7 @@
                             <a class="song-action-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                             {% if item.can_edit %}
                                 <button type="button" disabled>{% trans "Modifier" %}</button>
-                                <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.song.display_title }}">
+                                <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.title_complete_with_tags }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="delete_song">
                                     <input type="hidden" name="song_id" value="{{ item.song.song_id }}">

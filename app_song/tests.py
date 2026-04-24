@@ -1,10 +1,14 @@
-from django.test import RequestFactory, SimpleTestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.urls import reverse
 
 from .models import Song, Verse
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
     SongRenderSettings,
+    build_song_full_title,
+    build_song_full_title_with_tags,
+    build_song_text_artifacts,
     render_song_blocks,
     render_song_text,
 )
@@ -234,3 +238,154 @@ class SongSearchParamsTests(SimpleTestCase):
         self.assertIn("artist_ids=9", query)
         self.assertIn("validation=validated_only", query)
         self.assertIn("favorites_only=0", query)
+
+
+class SongTextArtifactsTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="",
+        verse_prefix2=".",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_full_title_and_title_with_tags(self):
+        song = Song(song_id=1, title="Gloire", subtitle="Louange", status=0, licensed=False)
+        self.assertEqual(build_song_full_title(song), "Gloire - Louange")
+        self.assertEqual(build_song_full_title_with_tags(song), "Gloire - Louange")
+
+        song.status = 1
+        self.assertEqual(build_song_full_title_with_tags(song), "Gloire - Louange ✔️")
+
+        song.status = 2
+        song.licensed = True
+        self.assertEqual(build_song_full_title_with_tags(song), "Gloire - Louange ✔️⁉️ 📄")
+
+    def test_full_title_without_subtitle_omits_separator(self):
+        song = Song(song_id=1, title="Gloire", subtitle="", status=0, licensed=False)
+        self.assertEqual(build_song_full_title(song), "Gloire")
+
+    def test_short_and_long_html_modes_follow_chorus_policy(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet un", num_verse=1),
+                make_verse(3, 6, "Couplet deux", num_verse=2),
+            ],
+        )
+        self.assertEqual(artifacts.short_text_html.count("<b><i>Refrain</i> Refrain</b>"), 1)
+        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 3)
+
+    def test_followed_skips_chorus_reinsertion(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet un", num_verse=1, followed=True),
+            ],
+        )
+        self.assertEqual(artifacts.long_text_html.count("<b><i>Refrain</i> Refrain</b>"), 1)
+
+    def test_chorus_like_uses_optional_prefix_and_bold(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="Pont")],
+        )
+        self.assertIn("<b><i>Pont</i><br>Pont final</b>", artifacts.long_text_html)
+
+        artifacts_no_prefix = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="")],
+        )
+        self.assertIn("<b>Pont final</b>", artifacts_no_prefix.long_text_html)
+
+    def test_not_continue_numbering_hides_verse_label(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=SongRenderSettings(
+                chorus_prefix="Refrain",
+                verse_prefix1="Couplet ",
+                verse_prefix2="",
+                chorus_like_default_prefix="Refrain",
+            ),
+            verses=[make_verse(1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True)],
+        )
+        self.assertIn("Suite du couplet", artifacts.long_text_html)
+        self.assertNotIn("Couplet", artifacts.long_text_html)
+
+    def test_chorus_multi_blocks_are_joined_with_blank_line(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Ligne A", chorus=True, num_verse=0),
+                make_verse(2, 4, "Ligne B", chorus=True, num_verse=0),
+            ],
+        )
+        self.assertIn("<b><i>Refrain</i> Ligne A<br><br>Ligne B</b>", artifacts.long_text_html)
+
+    def test_html_output_escapes_dynamic_values(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "<script>alert(1)</script>", chorus=True, num_verse=0),
+                make_verse(2, 4, "<em>Texte</em>", chorus_like=True, prefix="<tag>"),
+            ],
+        )
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", artifacts.long_text_html)
+        self.assertIn("&lt;tag&gt;", artifacts.long_text_html)
+        self.assertIn("&lt;em&gt;Texte&lt;/em&gt;", artifacts.long_text_html)
+        self.assertNotIn("<script>", artifacts.long_text_html)
+
+
+class SongViewsRenderingTests(TestCase):
+    def setUp(self):
+        self.song = Song.objects.create(
+            title="Le Sud",
+            subtitle="Nino Ferrer",
+            description="Description",
+            status=1,
+            licensed=True,
+        )
+        Verse.objects.create(
+            song=self.song,
+            num=2,
+            num_verse=0,
+            chorus=True,
+            text="On dirait le Sud",
+        )
+        Verse.objects.create(
+            song=self.song,
+            num=4,
+            num_verse=1,
+            chorus=False,
+            text="C'est un endroit",
+            followed=False,
+        )
+
+    def test_song_view_provides_tagged_navigation_title_and_text_without_title_duplication(self):
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
+        self.assertEqual(response.context["title_complete_with_tags"], "Le Sud - Nino Ferrer ✔️ 📄")
+        self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
+
+    def test_song_text_print_page_uses_full_title_without_tags(self):
+        response = self.client.get(reverse("song_text", args=[self.song.song_id, "full-chorus"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
+        self.assertContains(response, "<title>Le Sud - Nino Ferrer</title>", html=True)
+        self.assertContains(response, "<b><i>Refrain</i> On dirait le Sud</b>", html=False)
+
+    def test_song_text_plain_endpoint_returns_html_fragment(self):
+        response = self.client.get(reverse("song_text", args=[self.song.song_id, "single-chorus"]) + "?format=plain")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
+        body = response.content.decode("utf-8")
+        self.assertIn("<b><i>Refrain</i> On dirait le Sud</b>", body)
+        self.assertNotIn("Le Sud - Nino Ferrer", body)

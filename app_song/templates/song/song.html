@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{{ song.display_title }} | Lyrics Slide Show{% endblock %}
+{% block title %}{{ title_complete_with_tags }} | Lyrics Slide Show{% endblock %}
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
 {% block section_intro %}
     <style>@import url("{% static 'css/app_song.css' %}");</style>
@@ -42,7 +42,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ song.display_title }}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>
@@ -75,7 +75,7 @@
 {% endblock %}
 {% block content_footer %}
     <article class="site-theme-card song-text-card" id="song-rendered-text">
-        <pre class="song-rendered-text">{{ rendered_text }}</pre>
+        <div class="song-rendered-text">{{ text_long_html|safe }}</div>
     </article>
 {% endblock %}
 {% block page_scripts %}
