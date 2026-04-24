@@ -2,7 +2,7 @@ SELECT CONCAT("INSERT INTO common.artists VALUES (", artist_id, ", '", REPLACE(n
 
 SELECT CONCAT("INSERT INTO common.bands VALUES (", band_id, ", '", REPLACE(name, '''', ''''''), "');") FROM c_bands
 
-SELECT CONCAT("INSERT INTO common.genres VALUES (", genre_id, ", '", REPLACE(l.group, '''', ''''''), "', '", REPLACE(l.group, '''', ''''''), "');") FROM  l_genres l
+SELECT CONCAT("INSERT INTO common.genres VALUES (", genre_id, ", '", REPLACE(l.group, '''', ''''''), "', '", REPLACE(l.name, '''', ''''''), "');") FROM  l_genres l
 
 SELECT CONCAT(
 	"INSERT INTO lss.s_songs VALUES (",
@@ -76,4 +76,8 @@ SELECT CONCAT(
 	"');"
 )
 FROM l_song_link l
+
+SELECT CONCAT("INSERT INTO lss.s_song_bands (song_id, band_id) VALUES (", l.song_id, ", ", l.band_id, ");") FROM l_song_bands l
+
+SELECT CONCAT("INSERT INTO lss.s_song_artists (song_id, artist_id) VALUES (", l.song_id, ", ", l.artist_id, ");") FROM l_song_artists l
 
