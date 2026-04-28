@@ -7,178 +7,136 @@
 {% block section_intro %}
     <style>@import url("{% static 'css/app_song.css' %}");</style>
 {% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Chant' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Chant' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Chant" %}{% endblock %}
+{% block page_tools %}
+    {% include "song/includes/_song_actions.html" %}
+    <hr>
+    <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
+    <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
+    <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="song-mobile-summary">
+        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
+    </div>
+    <p>
+        <button
+            type="button"
+            class="song-tool-button"
+            data-song-mobile-actions-toggle
+            aria-expanded="false"
+            data-open-label="{% trans 'Afficher les actions' %}"
+            data-close-label="{% trans 'Masquer les actions' %}"
+        >
+            {% trans "Afficher les actions" %}
+        </button>
+    </p>
+    <div data-song-mobile-actions hidden>
+        {% include "song/includes/_song_actions.html" %}
+        <hr>
+        <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
+        <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
+        <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+    </div>
+{% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{% trans "Modifier le chant" %}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
 {% block page_summary %}
-    <p>{% trans "Prototype de test du module ESM de réordonnancement (sans logique métier)." %}</p>
+    {% if page_summary_text %}
+        <p>
+            {{ page_summary_text|linebreaksbr }}
+            {% if page_summary_truncated %}
+                <a href="#" data-song-summary-popup data-full-summary="{{ description_display|escape }}" aria-label="{% trans 'Afficher la description complète' %}">[...]</a>
+            {% endif %}
+        </p>
+    {% endif %}
 {% endblock %}
 {% block content %}
+    <form method="post" id="modify-song-form" data-song-edit-form data-preview-url="{{ preview_url }}">
+        {% csrf_token %}
+        <input type="hidden" name="next_url" value="" data-next-url-input>
+        <input type="hidden" name="title" value="{{ song.title }}">
+        <input type="hidden" name="subtitle" value="{{ song.subtitle }}">
+        <input type="hidden" name="description" value="{{ song.description|default:'' }}">
+
     <article class="site-theme-card song-detail-card">
-        <header class="site-theme-card-header">
-            <div>
-                <h2>{% trans "Test du module reorder-list" %}</h2>
-            </div>
-        </header>
+            <header class="site-theme-card-header">
+                <div>
+                    <h2># tags</h2>
+                </div>
+            </header>
+            {% include "song/includes/_song_metadata.html" %}
+        </article>
 
-        <form>
-            <p>
-                <button type="button" class="song-tool-button" data-reorder-toggle>
-                    {% trans "Activer le mode réordonnancement" %}
-                </button>
-            </p>
-            <p>
-                <button type="button" class="song-secondary-action" data-reorder-cancel hidden>
-                    {% trans "Annuler les changements" %}
-                </button>
-            </p>
-
-            <div data-reorder-list>
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-01">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 1 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 1 couplet 1 couplet 1 couplet 1 couplet 1<br>
-                        couplet 1 couplet 1 couplet 1 couplet 1 couplet 1<br>
-                        couplet 1 couplet 1 couplet 1 couplet 1 couplet 1<br>
-                        couplet 1 couplet 1 couplet 1 couplet 1 couplet 1
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[01][position]" value="2">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-02">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 2 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 2 couplet 2 couplet 2 couplet 2 couplet 2<br>
-                        couplet 2 couplet 2 couplet 2 couplet 2 couplet 2<br>
-                        couplet 2 couplet 2 couplet 2 couplet 2 couplet 2<br>
-                        couplet 2 couplet 2 couplet 2 couplet 2 couplet 2
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[02][position]" value="4">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-03">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 3 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 3 couplet 3 couplet 3 couplet 3 couplet 3<br>
-                        couplet 3 couplet 3 couplet 3 couplet 3 couplet 3<br>
-                        couplet 3 couplet 3 couplet 3 couplet 3 couplet 3<br>
-                        couplet 3 couplet 3 couplet 3 couplet 3 couplet 3
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[03][position]" value="6">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-04">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 4 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 4 couplet 4 couplet 4 couplet 4 couplet 4<br>
-                        couplet 4 couplet 4 couplet 4 couplet 4 couplet 4<br>
-                        couplet 4 couplet 4 couplet 4 couplet 4 couplet 4<br>
-                        couplet 4 couplet 4 couplet 4 couplet 4 couplet 4
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[04][position]" value="8">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-05">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 5 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 5 couplet 5 couplet 5 couplet 5 couplet 5<br>
-                        couplet 5 couplet 5 couplet 5 couplet 5 couplet 5<br>
-                        couplet 5 couplet 5 couplet 5 couplet 5 couplet 5<br>
-                        couplet 5 couplet 5 couplet 5 couplet 5 couplet 5
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[05][position]" value="10">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-06">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 6 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 6 couplet 6 couplet 6 couplet 6 couplet 6<br>
-                        couplet 6 couplet 6 couplet 6 couplet 6 couplet 6<br>
-                        couplet 6 couplet 6 couplet 6 couplet 6 couplet 6<br>
-                        couplet 6 couplet 6 couplet 6 couplet 6 couplet 6
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[06][position]" value="12">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-07">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 7 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 7 couplet 7 couplet 7 couplet 7 couplet 7<br>
-                        couplet 7 couplet 7 couplet 7 couplet 7 couplet 7<br>
-                        couplet 7 couplet 7 couplet 7 couplet 7 couplet 7<br>
-                        couplet 7 couplet 7 couplet 7 couplet 7 couplet 7
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[07][position]" value="14">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-08">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 8 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 8 couplet 8 couplet 8 couplet 8 couplet 8<br>
-                        couplet 8 couplet 8 couplet 8 couplet 8 couplet 8<br>
-                        couplet 8 couplet 8 couplet 8 couplet 8 couplet 8<br>
-                        couplet 8 couplet 8 couplet 8 couplet 8 couplet 8
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[08][position]" value="16">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-09">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 9 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 9 couplet 9 couplet 9 couplet 9 couplet 9<br>
-                        couplet 9 couplet 9 couplet 9 couplet 9 couplet 9<br>
-                        couplet 9 couplet 9 couplet 9 couplet 9 couplet 9<br>
-                        couplet 9 couplet 9 couplet 9 couplet 9 couplet 9
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[09][position]" value="18">
-                </article>
-
-                <article class="site-theme-card song-card" data-reorder-item data-id="verse-10">
-                    <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-                    <div data-reorder-drag-view hidden>{% trans "Couplet 10 (vue compacte)" %}</div>
-                    <div data-reorder-normal-view>
-                        couplet 10 couplet 10 couplet 10 couplet 10 couplet 10<br>
-                        couplet 10 couplet 10 couplet 10 couplet 10 couplet 10<br>
-                        couplet 10 couplet 10 couplet 10 couplet 10 couplet 10<br>
-                        couplet 10 couplet 10 couplet 10 couplet 10 couplet 10
-                    </div>
-                    <input type="hidden" data-reorder-position name="verses[10][position]" value="20">
-                </article>
-            </div>
-
-            <p>
-                <button type="submit" class="song-tool-button">{% trans "Simuler la sauvegarde" %}</button>
-            </p>
-        </form>
+    <article class="site-theme-card song-detail-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Liens associés" %}</h2>
+                </div>
+            </header>
+            {% include "song/includes/_song_links.html" %}
     </article>
+    
+{% endblock %}
+{% block content_footer %}
+        <section class="song-list-section" data-song-blocks-panel>
+            <header class="song-list-header">
+                <h2>{% trans "Couplets et refrains" %}</h2>
+            </header>
+
+            <div class="song-list" data-reorder-list>
+                {% for block in song_blocks %}
+                    <article class="site-theme-card song-card song-edit-block" data-reorder-item data-id="{{ block.row_key }}">
+                        <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
+
+                        <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
+                            <p><strong>{{ block.display_label }}</strong></p>
+                            <p>{{ block.drag_text }}</p>
+                        </div>
+
+                        <div data-reorder-normal-view>
+                            <header class="song-edit-block-header">
+                                <h3>{{ block.display_label }}</h3>
+                            </header>
+                            <div class="song-block-readonly">
+                                {% if block.display_text %}
+                                    <p>{{ block.display_text|linebreaksbr }}</p>
+                                {% else %}
+                                    <p><em>{% trans "Bloc vide" %}</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <input type="hidden" data-reorder-position name="blocks[{{ block.row_key }}][position]" value="{{ block.position }}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][id]" value="{{ block.id }}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][type]" value="{{ block.type }}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][text]" value="{{ block.text }}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][prefix]" value="{{ block.prefix }}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][followed]" value="{% if block.followed %}1{% else %}0{% endif %}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][not_c_num]" value="{% if block.not_c_num %}1{% else %}0{% endif %}">
+                        <input type="hidden" name="blocks[{{ block.row_key }}][delete]" value="0">
+                    </article>
+                {% empty %}
+                    <article class="site-theme-card song-card song-edit-empty">
+                        <p><strong>{% trans "Aucun bloc de paroles." %}</strong></p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </form>
 {% endblock %}
 {% block page_scripts %}
-    <script type="module">
-        import { init } from "{% static 'js/reorder-list.module.js' %}";
-
-        const list = document.querySelector("[data-reorder-list]");
-        if (list) {
-            window.reorderSongTestController = init({
-                list,
-                toggleButton: document.querySelector("[data-reorder-toggle]"),
-                cancelButton: document.querySelector("[data-reorder-cancel]"),
-                startPosition: 2,
-                positionStep: 2,
-                vibrateOnTargetChange: false,
-                scrollToMovedItemAfterDrop: true,
-                onStart: (payload) => console.log("reorder:start", payload),
-                onChange: (payload) => console.log("reorder:change", payload),
-                onEnd: (payload) => console.log("reorder:end", payload),
-                onCancel: (payload) => console.log("reorder:cancel", payload),
-            });
-        }
-    </script>
+    {% include "song/modify_song_page_i18n.html" %}
+    <script src="{% static 'js/app_song.js' %}"></script>
+    <script type="module" src="{% static 'js/modify_song.js' %}"></script>
 {% endblock %}

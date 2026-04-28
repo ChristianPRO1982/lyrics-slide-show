@@ -479,3 +479,129 @@
         justify-content: start;
     }
 }
+
+.song-reorder-actions {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.song-edit-block [data-reorder-handle] {
+    touch-action: none;
+}
+
+.song-edit-block-drag-view p,
+.song-block-readonly p,
+.song-block-warnings p,
+.song-insert-inline-action {
+    margin: 0;
+}
+
+.song-edit-block-header {
+    margin-bottom: 0.6rem;
+}
+
+.song-block-editor {
+    border-top: 1px solid var(--site-line);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.song-block-editor textarea,
+.song-block-editor input,
+.song-block-editor select {
+    width: 100%;
+}
+
+.song-block-warnings {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+    color: #8d3c14;
+    font-weight: 700;
+}
+
+.song-insert-separator {
+    margin: 0.75rem 0;
+    text-align: center;
+}
+
+.song-insert-inline-action {
+    margin-top: 0.9rem;
+}
+
+.song-edit-empty {
+    text-align: center;
+}
+
+.song-sticky-savebar {
+    position: sticky;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    align-items: center;
+    background: var(--site-surface-strong);
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-sm);
+    padding: 0.75rem;
+    margin-top: 1rem;
+    z-index: 20;
+}
+
+.song-sticky-savebar [data-dirty-status] {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-weight: 700;
+}
+
+.is-reorder-enabled [data-reorder-item] {
+    cursor: grab;
+}
+
+.is-reorder-dragging [data-reorder-item] {
+    transition: transform 160ms ease;
+}
+
+.is-reorder-compact [data-reorder-normal-view] {
+    display: none;
+}
+
+.is-reorder-dropzone {
+    height: 0.75rem;
+    margin: 0.25rem 0;
+    border-radius: 999px;
+    border: 1px dashed currentColor;
+    opacity: 0.45;
+}
+
+.is-reorder-dropzone-active {
+    opacity: 1;
+    border-style: solid;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+}
+
+.is-reorder-ghost {
+    opacity: 0.92;
+}
+
+@media (max-width: 760px) {
+    .song-reorder-actions,
+    .song-sticky-savebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+.song-metadata-two-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .song-metadata-two-cols {
+        grid-template-columns: 1fr;
+    }
+}

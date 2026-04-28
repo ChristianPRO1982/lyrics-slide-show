@@ -1,0 +1,40 @@
+{% load i18n %}
+{% trans "Description du chant" as song_summary_title %}
+{% trans "Suppression" as song_delete_title %}
+{% trans "Supprimer ce bloc ?" as song_delete_block_message %}
+{% trans "Aperçu du rendu" as song_preview_title %}
+{% trans "Aperçu indisponible." as song_preview_error %}
+{% trans "Quitter la page" as song_leave_title %}
+{% trans "Vous avez des modifications non enregistrées." as song_leave_message %}
+{% trans "Abandonner les modifications" as song_abandon_label %}
+{% trans "Enregistrer et quitter" as song_save_and_leave_label %}
+{% trans "Rester sur la page" as song_stay_label %}
+{% trans "Oui" as song_yes_label %}
+{% trans "Non" as song_no_label %}
+{% trans "Ne pas continuer la numérotation" as song_not_c_num_label %}
+{% trans "Ne pas rejouer le refrain après ce bloc" as song_followed_label %}
+{% trans "Bloc vide" as song_empty_block_label %}
+{% trans "Erreur lors de la prévisualisation." as song_preview_fetch_error %}
+<script>
+    window.LSS_MODIFY_SONG_I18N = {
+        summaryTitle: "{{ song_summary_title|escapejs }}",
+        deleteTitle: "{{ song_delete_title|escapejs }}",
+        deleteBlockMessage: "{{ song_delete_block_message|escapejs }}",
+        previewTitle: "{{ song_preview_title|escapejs }}",
+        previewError: "{{ song_preview_error|escapejs }}",
+        previewFetchError: "{{ song_preview_fetch_error|escapejs }}",
+        leaveTitle: "{{ song_leave_title|escapejs }}",
+        leaveMessage: "{{ song_leave_message|escapejs }}",
+        abandonLabel: "{{ song_abandon_label|escapejs }}",
+        saveAndLeaveLabel: "{{ song_save_and_leave_label|escapejs }}",
+        stayLabel: "{{ song_stay_label|escapejs }}",
+        yesLabel: "{{ song_yes_label|escapejs }}",
+        noLabel: "{{ song_no_label|escapejs }}",
+        followedLabel: "{{ song_followed_label|escapejs }}",
+        notCNumLabel: "{{ song_not_c_num_label|escapejs }}",
+        emptyBlockLabel: "{{ song_empty_block_label|escapejs }}"
+    };
+    window.LSS_SONG_I18N = {
+        summaryTitle: "{{ song_summary_title|escapejs }}"
+    };
+</script>

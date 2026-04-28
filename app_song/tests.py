@@ -1,6 +1,9 @@
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 
+from app_main.models import DirectoryUserRecord
+from app_member.models import MemberRole
+
 from .models import Song, Verse
 from .rendering import (
     ChorusRenderMode,
@@ -402,3 +405,178 @@ class SongViewsRenderingTests(TestCase):
         body = response.content.decode("utf-8")
         self.assertIn("<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
+
+
+class ModifySongViewTests(TestCase):
+    def setUp(self):
+        self.user_id = "11111111-1111-1111-1111-111111111111"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="known.user",
+            first_name="Known",
+            last_name="User",
+            email="known.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song = Song.objects.create(
+            title="Chant",
+            subtitle="Base",
+            description="Description",
+            status=0,
+            licensed=False,
+        )
+        self.verse_1 = Verse.objects.create(
+            song=self.song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Couplet original",
+        )
+        self.verse_2 = Verse.objects.create(
+            song=self.song,
+            num=4,
+            num_verse=0,
+            chorus=True,
+            text="Refrain original",
+        )
+
+    def _login(self, *, is_moderator=False, is_admin=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+            "is_moderator": is_moderator,
+            "is_admin": is_admin,
+        }
+        session.save()
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if is_moderator or is_admin:
+            MemberRole.objects.create(
+                member_id=self.user_id,
+                is_moderator=is_moderator,
+                is_admin=is_admin,
+            )
+
+    def _base_payload(self):
+        return {
+            "title": " Nouveau : titre ? ",
+            "subtitle": " Sous titre ",
+            "description": " Ligne 1 ;\\n\\n Ligne 2 ! ",
+            "blocks[a][id]": str(self.verse_1.verse_id),
+            "blocks[a][position]": "4",
+            "blocks[a][type]": "verse",
+            "blocks[a][text]": "  Couplet 1  !",
+            "blocks[a][prefix]": "",
+            "blocks[a][followed]": "0",
+            "blocks[a][not_c_num]": "0",
+            "blocks[a][delete]": "0",
+            "blocks[b][id]": str(self.verse_2.verse_id),
+            "blocks[b][position]": "2",
+            "blocks[b][type]": "chorus",
+            "blocks[b][text]": " Refrain : test ",
+            "blocks[b][prefix]": "",
+            "blocks[b][followed]": "0",
+            "blocks[b][not_c_num]": "0",
+            "blocks[b][delete]": "0",
+            "blocks[c][id]": "",
+            "blocks[c][position]": "6",
+            "blocks[c][type]": "special",
+            "blocks[c][text]": " Pont final ",
+            "blocks[c][prefix]": "Pont final ;",
+            "blocks[c][followed]": "1",
+            "blocks[c][not_c_num]": "1",
+            "blocks[c][delete]": "0",
+            "submit_intent": "save",
+        }
+
+    def test_guest_cannot_access_modify_page(self):
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_member_can_access_unvalidated_song(self):
+        self._login()
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-reorder-list")
+
+    def test_member_cannot_access_validated_song(self):
+        self.song.status = 1
+        self.song.save(update_fields=["status"])
+        self._login()
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_moderator_can_access_validated_song(self):
+        self.song.status = 1
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_save_updates_identity_and_verses(self):
+        self._login()
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
+
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.title, "Nouveau\u00A0: titre\u00A0?")
+        self.assertEqual(self.song.subtitle, "Sous titre")
+        self.assertEqual(self.song.description, "Ligne 1\u00A0;\n\nLigne 2\u00A0!")
+
+        verses = list(self.song.verses.all().order_by("num", "verse_id"))
+        self.assertEqual(len(verses), 3)
+        self.assertTrue(verses[0].chorus)
+        self.assertEqual(verses[0].num, 2)
+        self.assertEqual(verses[0].num_verse, 0)
+        self.assertFalse(verses[1].chorus)
+        self.assertEqual(verses[1].num, 4)
+        self.assertEqual(verses[1].num_verse, 1)
+        self.assertTrue(verses[2].chorus_like)
+        self.assertTrue(verses[2].followed)
+        self.assertEqual(verses[2].num, 6)
+        self.assertEqual(verses[2].num_verse, 1)
+        self.assertEqual(verses[2].prefix, "Pont final\u00A0;")
+
+    def test_post_save_deletes_blocks_marked_for_deletion(self):
+        self._login()
+        payload = self._base_payload()
+        payload["blocks[b][delete]"] = "1"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        verses = list(self.song.verses.all())
+        self.assertEqual(len(verses), 2)
+        self.assertFalse(any(item.chorus for item in verses))
+
+    def test_save_and_exit_redirects_to_song_page(self):
+        self._login()
+        payload = self._base_payload()
+        payload["submit_intent"] = "save_and_exit"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
+
+    def test_save_and_exit_uses_safe_next_url(self):
+        self._login()
+        payload = self._base_payload()
+        payload["submit_intent"] = "save_and_exit"
+        payload["next_url"] = reverse("songs")
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("songs"))
+
+    def test_preview_endpoint_returns_current_unsaved_render(self):
+        self._login()
+        payload = self._base_payload()
+        payload["title"] = "Titre preview"
+        response = self.client.post(reverse("modify_song_preview", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("Titre preview", data["title"])
+        self.assertIn("Couplet 1", data["markdown"])
+        self.assertIn("Refrain", data["markdown"])

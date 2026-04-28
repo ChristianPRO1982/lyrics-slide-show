@@ -1,11 +1,16 @@
-from django.http import Http404, HttpRequest, HttpResponse
+import re
+from dataclasses import dataclass
+
+from django.db import connection, transaction
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.db import connection
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
+from app_member.services import get_site_params_for_language
 
 from .models import (
     Song,
@@ -16,12 +21,14 @@ from .models import (
     SongMessage,
     SongMessageStatus,
     SongStatus,
+    Verse,
 )
 from .rendering import (
     ChorusRenderMode,
     SongRenderSettings,
     build_song_full_title_with_tags,
     build_song_text_artifacts,
+    render_song_blocks,
     normalize_lyrics_linebreaks,
 )
 from .search import (
@@ -38,14 +45,42 @@ from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
 
 SONG_DESCRIPTION_SUMMARY_LENGTH = 180
 SONG_PAGE_SUMMARY_MAX_LENGTH = 100
+DEFAULT_VERSE_MAX_LINES = 10
+DEFAULT_VERSE_MAX_CHARS = 50
+BLOCK_FIELD_PATTERN = re.compile(r"^blocks\[(?P<row>[^\]]+)\]\[(?P<field>[a-z_]+)\]$")
+MULTISPACE_PATTERN = re.compile(r"[ \t]+")
+FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
+
+
+@dataclass
+class ParsedSongBlock:
+    row_key: str
+    block_id: int | None
+    position: int
+    block_type: str
+    text: str
+    prefix: str
+    followed: bool
+    not_c_num: bool
+    delete: bool
+    chorus: bool = False
+    chorus_like: bool = False
+    num: int = 0
+    display_num: int = 0
 
 
 def _is_authenticated(user) -> bool:
     return bool(getattr(user, "is_authenticated", False))
 
 
-def _can_edit_unvalidated_song(user, song: Song) -> bool:
-    return _is_authenticated(user) and not song.is_validated
+def _is_moderator(user) -> bool:
+    return bool(_is_authenticated(user) and getattr(user, "is_moderator", False))
+
+
+def _can_edit_song(user, song: Song) -> bool:
+    if not _is_authenticated(user):
+        return False
+    return (not song.is_validated) or _is_moderator(user)
 
 
 def _can_read_song(user, song: Song) -> bool:
@@ -53,7 +88,179 @@ def _can_read_song(user, song: Song) -> bool:
 
 
 def _can_report_message(user, song: Song) -> bool:
-    return _can_read_song(user, song) and not _can_edit_unvalidated_song(user, song)
+    return _can_read_song(user, song) and not _can_edit_song(user, song)
+
+
+def _is_truthy(value: str | None) -> bool:
+    return str(value or "").lower() in {"1", "true", "yes", "on"}
+
+
+def _safe_int(value: str | None, fallback: int) -> int:
+    try:
+        return int(str(value or "").strip())
+    except (TypeError, ValueError):
+        return fallback
+
+
+def _apply_french_spacing(value: str) -> str:
+    return FRENCH_PUNCTUATION_PATTERN.sub("\u00A0\\1", value)
+
+
+def _normalize_inline_text(value: str | None) -> str:
+    normalized = normalize_lyrics_linebreaks(value).replace("\n", " ")
+    normalized = MULTISPACE_PATTERN.sub(" ", normalized).strip()
+    if not normalized:
+        return ""
+    return _apply_french_spacing(normalized)
+
+
+def _normalize_multiline_text(value: str | None) -> str:
+    normalized = normalize_lyrics_linebreaks(value)
+    raw_lines = normalized.split("\n")
+    clean_lines: list[str] = []
+
+    for line in raw_lines:
+        stripped = str(line).strip()
+        if not stripped:
+            clean_lines.append("")
+            continue
+        collapsed = MULTISPACE_PATTERN.sub(" ", stripped)
+        clean_lines.append(_apply_french_spacing(collapsed))
+
+    while clean_lines and clean_lines[0] == "":
+        clean_lines.pop(0)
+    while clean_lines and clean_lines[-1] == "":
+        clean_lines.pop()
+
+    return "\n".join(clean_lines)
+
+
+def _extract_block_rows(data) -> dict[str, dict[str, str]]:
+    rows: dict[str, dict[str, str]] = {}
+    for key, value in data.items():
+        match = BLOCK_FIELD_PATTERN.match(key)
+        if not match:
+            continue
+        row_key = match.group("row")
+        field_name = match.group("field")
+        rows.setdefault(row_key, {})[field_name] = value
+    return rows
+
+
+def _map_block_type(block_type: str) -> tuple[bool, bool]:
+    if block_type == "chorus":
+        return True, False
+    if block_type == "special":
+        return False, True
+    return False, False
+
+
+def _parse_song_blocks(post_data) -> list[ParsedSongBlock]:
+    rows = _extract_block_rows(post_data)
+    blocks: list[ParsedSongBlock] = []
+
+    for row_key, row_data in rows.items():
+        block_type = (row_data.get("type") or "verse").strip().lower()
+        if block_type not in {"verse", "chorus", "special"}:
+            block_type = "verse"
+        block_id_raw = (row_data.get("id") or "").strip()
+        block_id = _safe_int(block_id_raw, fallback=-1) if block_id_raw else None
+        if block_id is not None and block_id <= 0:
+            block_id = None
+
+        parsed = ParsedSongBlock(
+            row_key=row_key,
+            block_id=block_id,
+            position=_safe_int(row_data.get("position"), fallback=999999),
+            block_type=block_type,
+            text=_normalize_multiline_text(row_data.get("text")),
+            prefix=_normalize_inline_text(row_data.get("prefix")),
+            followed=_is_truthy(row_data.get("followed")),
+            not_c_num=_is_truthy(row_data.get("not_c_num")),
+            delete=_is_truthy(row_data.get("delete")),
+        )
+
+        if parsed.block_id is None and not parsed.text and not parsed.prefix and not parsed.delete:
+            continue
+
+        parsed.chorus, parsed.chorus_like = _map_block_type(parsed.block_type)
+        if parsed.chorus:
+            parsed.followed = False
+            parsed.not_c_num = False
+            parsed.prefix = ""
+        blocks.append(parsed)
+
+    blocks.sort(key=lambda item: (item.position, item.row_key))
+    return blocks
+
+
+def _recalculate_song_blocks(blocks: list[ParsedSongBlock]) -> list[ParsedSongBlock]:
+    display_number = 0
+    for index, block in enumerate(blocks):
+        block.num = (index + 1) * 2
+        if not block.chorus and not block.chorus_like and not block.not_c_num:
+            display_number += 1
+        block.display_num = display_number
+    return blocks
+
+
+def _build_blocks_from_song(song: Song) -> list[ParsedSongBlock]:
+    blocks: list[ParsedSongBlock] = []
+    for verse in song.verses.all().order_by("num", "verse_id"):
+        if verse.chorus:
+            block_type = "chorus"
+        elif verse.chorus_like:
+            block_type = "special"
+        else:
+            block_type = "verse"
+        blocks.append(
+            ParsedSongBlock(
+                row_key=f"existing-{verse.verse_id}",
+                block_id=verse.verse_id,
+                position=verse.num,
+                block_type=block_type,
+                text=_normalize_display_linebreaks(verse.text).strip(),
+                prefix=(verse.prefix or "").strip(),
+                followed=bool(verse.followed),
+                not_c_num=bool(verse.notcontinuenumbering),
+                delete=False,
+                chorus=bool(verse.chorus),
+                chorus_like=bool(verse.chorus_like),
+                num=verse.num,
+                display_num=verse.num_verse,
+            )
+        )
+    return _recalculate_song_blocks(blocks)
+
+
+def _build_preview_markdown(song: Song, blocks: list[ParsedSongBlock], settings: SongRenderSettings) -> str:
+    preview_verses = []
+    for block in blocks:
+        preview_verses.append(
+            Verse(
+                verse_id=block.block_id or 0,
+                song=song,
+                num=block.num,
+                num_verse=block.display_num,
+                chorus=block.chorus,
+                chorus_like=block.chorus_like,
+                followed=block.followed,
+                notcontinuenumbering=block.not_c_num,
+                text=block.text,
+                prefix=block.prefix,
+            )
+        )
+
+    rendered_blocks = render_song_blocks(song, ChorusRenderMode.FULL, settings=settings, verses=preview_verses)
+    lines: list[str] = []
+    for rendered_block in rendered_blocks:
+        label = str(rendered_block.label or "").strip()
+        if label:
+            lines.append(f"**{label}**")
+        lines.extend(str(rendered_block.text or "").split("\n"))
+        lines.append("")
+
+    return "\n".join(lines).strip()
 
 
 def _normalize_display_linebreaks(value: str | None) -> str:
@@ -104,7 +311,7 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
                 "is_validated": song.is_validated,
                 "description_summary": description_summary,
                 "description_rest": description_rest,
-                "can_edit": _can_edit_unvalidated_song(user, song),
+                "can_edit": _can_edit_song(user, song),
                 "title_complete_with_tags": build_song_full_title_with_tags(song),
                 "genres": result.genres,
                 "bands": result.bands,
@@ -200,11 +407,138 @@ def _get_song_message_status_label(status: int) -> str:
     return _("Inconnu")
 
 
+def _get_song_validation_label(song: Song) -> str:
+    if song.status == SongStatus.VALIDATED:
+        return _("Chant validé")
+    if song.status == SongStatus.VALIDATED_WITH_CONCERN:
+        return _("Chant validé avec des messages")
+    return _("Chant non validé")
+
+
+def _build_block_display_label(block: ParsedSongBlock, settings: SongRenderSettings) -> str:
+    if block.chorus:
+        return settings.chorus_prefix
+    if block.chorus_like:
+        return block.prefix or _("Section spéciale")
+    if block.not_c_num:
+        return _("Couplet (sans numérotation)")
+    return settings.verse_label(block.display_num)
+
+
+def _build_block_display_text(block: ParsedSongBlock) -> str:
+    return _normalize_display_linebreaks(block.text).strip()
+
+
+def _as_template_block(
+    block: ParsedSongBlock,
+    settings: SongRenderSettings,
+    verse_max_lines: int,
+    verse_max_characters_for_line: int,
+) -> dict[str, object]:
+    lines = _build_block_display_text(block).split("\n") if block.text else []
+    max_line_length = max((len(line) for line in lines), default=0)
+    return {
+        "row_key": block.row_key,
+        "id": block.block_id or "",
+        "position": block.num or block.position,
+        "type": block.block_type,
+        "text": block.text,
+        "prefix": block.prefix,
+        "followed": block.followed,
+        "not_c_num": block.not_c_num,
+        "delete": block.delete,
+        "display_label": _build_block_display_label(block, settings),
+        "display_text": _build_block_display_text(block),
+        "drag_text": (_build_block_display_text(block).split("\n", 1)[0] if block.text else _("Bloc vide")),
+        "line_count": len(lines),
+        "max_line_length": max_line_length,
+        "has_too_many_lines": len(lines) > verse_max_lines if verse_max_lines > 0 else False,
+        "has_line_too_long": max_line_length > verse_max_characters_for_line if verse_max_characters_for_line > 0 else False,
+    }
+
+
+def _build_modify_song_context(
+    request: HttpRequest,
+    selected_group,
+    song: Song,
+    parsed_blocks: list[ParsedSongBlock] | None = None,
+) -> dict[str, object]:
+    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    site_params = get_site_params_for_language(getattr(request, "LANGUAGE_CODE", None))
+    verse_max_lines = site_params.verse_max_lines if site_params else DEFAULT_VERSE_MAX_LINES
+    verse_max_characters_for_line = (
+        site_params.verse_max_characters_for_a_line if site_params else DEFAULT_VERSE_MAX_CHARS
+    )
+
+    blocks = _recalculate_song_blocks(parsed_blocks or _build_blocks_from_song(song))
+    bands, artists, genre_groups = _get_song_metadata_labels(song)
+    page_summary_text, page_summary_truncated = _build_page_summary(song.description)
+
+    return {
+        "selected_group": selected_group,
+        "song": song,
+        "title_complete_with_tags": build_song_full_title_with_tags(song),
+        "description_display": _normalize_display_linebreaks(song.description).strip(),
+        "page_summary_text": page_summary_text,
+        "page_summary_truncated": page_summary_truncated,
+        "validation_label": _get_song_validation_label(song),
+        "licensed_label": _("Chant sous licence") if song.licensed else _("Chant hors licence"),
+        "links": song.links.all().order_by("link"),
+        "bands": bands,
+        "artists": artists,
+        "genre_groups": genre_groups,
+        "can_edit": _can_edit_song(request.user, song),
+        "display_url": reverse("song", args=[song.song_id]),
+        "preview_url": reverse("modify_song_preview", args=[song.song_id]),
+        "verse_max_lines": verse_max_lines,
+        "verse_max_characters_for_line": verse_max_characters_for_line,
+        "song_blocks": [
+            _as_template_block(
+                block,
+                settings=render_settings,
+                verse_max_lines=verse_max_lines,
+                verse_max_characters_for_line=verse_max_characters_for_line,
+            )
+            for block in blocks
+            if not block.delete
+        ],
+    }
+
+
+def _update_song_from_form(song: Song, request: HttpRequest) -> None:
+    song.title = _normalize_inline_text(request.POST.get("title"))
+    song.subtitle = _normalize_inline_text(request.POST.get("subtitle"))
+    song.description = _normalize_multiline_text(request.POST.get("description"))
+
+    parsed_blocks = _parse_song_blocks(request.POST)
+    active_blocks = _recalculate_song_blocks([block for block in parsed_blocks if not block.delete])
+    existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
+
+    with transaction.atomic():
+        song.save(update_fields=["title", "subtitle", "description"])
+        for block in active_blocks:
+            verse = existing_by_id.pop(block.block_id, None) if block.block_id else None
+            if verse is None:
+                verse = Verse(song=song)
+            verse.num = block.num
+            verse.num_verse = block.display_num
+            verse.chorus = block.chorus
+            verse.chorus_like = block.chorus_like
+            verse.followed = block.followed
+            verse.notcontinuenumbering = block.not_c_num
+            verse.text = block.text
+            verse.prefix = block.prefix
+            verse.save()
+
+        if existing_by_id:
+            Verse.objects.filter(verse_id__in=tuple(existing_by_id.keys())).delete()
+
+
 def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
     action = request.POST.get("action")
     song = get_object_or_404(Song, song_id=request.POST.get("song_id"))
     if action == "delete_song":
-        if not _can_edit_unvalidated_song(request.user, song):
+        if not _can_edit_song(request.user, song):
             raise Http404
         song.delete()
         return redirect(redirect_url)
@@ -306,7 +640,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "validation_label": validation_label,
             "licensed_label": _("Chant sous licence") if song_object.licensed else _("Chant hors licence"),
             "is_favorite": is_favorite,
-            "can_edit": _can_edit_unvalidated_song(request.user, song_object),
+            "can_edit": _can_edit_song(request.user, song_object),
             "can_view_messages": bool(member_id),
             "can_report_message": can_report,
             "message_error": request.method == "POST" and request.POST.get("action") == "add_message" and not bool((request.POST.get("message") or "").strip()),
@@ -337,16 +671,71 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
 
 def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
-    song_object = get_object_or_404(Song, song_id=song_id)
-    if not _can_read_song(request.user, song_object):
+    song_object = get_object_or_404(Song.objects.prefetch_related("verses", "links"), song_id=song_id)
+    if not _can_edit_song(request.user, song_object):
         raise Http404
+
+    if request.method == "POST":
+        _update_song_from_form(song_object, request)
+        submit_intent = (request.POST.get("submit_intent") or "save").strip()
+        next_url = (request.POST.get("next_url") or "").strip()
+        if submit_intent == "save_and_exit":
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
+            return redirect("song", song_id=song_object.song_id)
+        return redirect("modify_song", song_id=song_object.song_id)
+
     return render(
         request,
         "song/modify_song.html",
+        _build_modify_song_context(request, selected_group, song_object),
+    )
+
+
+def modify_song_preview(request: HttpRequest, song_id: int) -> JsonResponse:
+    if request.method != "POST":
+        raise Http404
+
+    song_object = get_object_or_404(Song, song_id=song_id)
+    if not _can_edit_song(request.user, song_object):
+        raise Http404
+
+    preview_song = Song(
+        song_id=song_object.song_id,
+        title=_normalize_inline_text(request.POST.get("title")) or song_object.title,
+        subtitle=_normalize_inline_text(request.POST.get("subtitle")) or "",
+        description=_normalize_multiline_text(request.POST.get("description")),
+        status=song_object.status,
+        licensed=song_object.licensed,
+    )
+    parsed_blocks = _recalculate_song_blocks([block for block in _parse_song_blocks(request.POST) if not block.delete])
+    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    artifacts = build_song_text_artifacts(preview_song, settings=render_settings, verses=[
+        Verse(
+            verse_id=block.block_id or 0,
+            song=preview_song,
+            num=block.num,
+            num_verse=block.display_num,
+            chorus=block.chorus,
+            chorus_like=block.chorus_like,
+            followed=block.followed,
+            notcontinuenumbering=block.not_c_num,
+            text=block.text,
+            prefix=block.prefix,
+        )
+        for block in parsed_blocks
+    ])
+
+    return JsonResponse(
         {
-            "selected_group": selected_group,
-            "song": song_object,
-        },
+            "title": artifacts.full_title_with_tags,
+            "markdown": _build_preview_markdown(preview_song, parsed_blocks, settings=render_settings),
+            "html": artifacts.long_text_html,
+        }
     )
 
 

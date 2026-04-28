@@ -56,7 +56,12 @@ Metadata editing belongs to another screen.
 
 ## Section Panel
 
-Use the same section logic as the song reading page.
+Must be aligned with `app_song/templates/song/song.html` for uniform UX.
+
+Use the same block strategy as the reading page:
+
+- `section_title`,
+- `section_nav`.
 
 The section title must display the selected group name when a group is selected.
 
@@ -66,9 +71,23 @@ TEXT: `Chants`
 
 The section icon must use the songs icon with the normal theme-aware image system.
 
+Required icon source (same visual contract as `song.html`):
+
+- `static/icons/ui/normal/512/light/songs.png` as fallback `<img src>`,
+- dark variant for dark mode source,
+- `<picture>` with theme-aware sources exactly like the reading template pattern.
+
+The selected group name must be visually coupled with this icon panel, exactly like the section presentation pattern used in `song.html`.
+
 ## Tools Panel
 
-The tools panel must provide navigation and page-level actions.
+Must be aligned with `app_song/templates/song/song.html` for uniform UX.
+
+The tools panel must reuse the same include strategy as the reading page (`song/includes/_song_actions.html`) with template context adapted to edit mode.
+
+The tool that points to the current page (`modify_song`) must be hidden when rendering this page.
+
+All other relevant song actions from the same actions component must remain visible.
 
 Expected actions:
 
@@ -85,11 +104,19 @@ The save actions submit the form.
 
 The tools panel must not expose metadata editing actions.
 
+Implementation anchor:
+
+- use `tools_title` and `page_tools` blocks with the same structure as the reading template.
+
 ## Main Header
+
+Must be aligned with `app_song/templates/song/song.html` for uniform UX and page rhythm.
 
 ### Kicker
 
-TEXT: `Modification du chant`
+Use the same block (`page_kicker`) and visual style as `song.html`.
+
+The content is still edit-context specific (for example `Modification du chant`), but the container and typography treatment must remain identical.
 
 ### Title
 
@@ -106,9 +133,24 @@ This title is contextual. The real editable title fields are inside the form bod
 
 ### Summary
 
-If a description exists, display a short summary of the current description.
+Use the same summary container behavior as `song.html` (`page_summary`).
+
+If a description exists, display a short summary of the current description with the same truncation and popup-open pattern used on the reading page when relevant.
 
 The summary is informational only. The editable description field is inside the form body.
+
+## Mobile Panel
+
+Must be aligned with `app_song/templates/song/song.html` for uniform UX.
+
+Use the same mobile side blocks and behavior:
+
+- `mobile_side_title`,
+- `mobile_side_content`,
+- mobile actions toggle button with `aria-expanded`,
+- collapsible actions area.
+
+The mobile panel must expose the same action list logic as desktop tools, with the current-page action hidden and other actions visible.
 
 ## Main Form
 
@@ -127,6 +169,102 @@ Suggested values:
 
 - `save`
 - `save_and_exit`
+
+## HTML Layout Contract
+
+The page should define a clear top-level DOM structure so template and JavaScript stay aligned.
+
+Recommended order:
+
+1. section panel,
+2. tools panel,
+3. main header,
+4. main form,
+5. sticky save bar,
+6. popup mount points if required by the site messagebox system.
+
+Recommended semantic skeleton:
+
+```html
+<section data-song-edit-page>
+  <header data-section-panel>
+    <!-- Section title + icon -->
+  </header>
+
+  <aside data-tools-panel>
+    <!-- Back actions, preview, save actions -->
+  </aside>
+
+  <header data-main-header>
+    <!-- Kicker, contextual title, summary -->
+  </header>
+
+  <form method="post" data-song-edit-form>
+    {% csrf_token %}
+
+    <div data-song-edit-layout>
+      <article data-card="identity">
+        <!-- title / subtitle / description -->
+      </article>
+
+      <article data-card="metadata-readonly">
+        <!-- validation/license/genres/artists/bands/links -->
+      </article>
+
+      <article data-card="lyrics-structure">
+        <!-- reorder controls, insertion controls, lyric list -->
+      </article>
+    </div>
+
+    <input type="hidden" name="submit_intent" value="save">
+  </form>
+
+  <div data-sticky-savebar>
+    <!-- save / save_and_exit -->
+  </div>
+</section>
+```
+
+This layout contract is functional documentation, not a strict pixel layout.
+
+### Layout expectations by viewport
+
+- Desktop: tools panel may be lateral, main form occupies the content column, sticky save bar remains visible.
+- Mobile: tools panel may collapse into stacked buttons; sticky save bar may become a compact bottom bar.
+- At all sizes: reorder handles, block open controls, and save actions must remain reachable and not hidden by sticky UI.
+
+### Base Template Block Mapping
+
+To avoid ambiguity, `modify_song.html` should map to the same base template block layout as `song.html`:
+
+1. `section_title`
+2. `section_intro`
+3. `section_nav`
+4. `tools_title`
+5. `page_tools`
+6. `mobile_side_title`
+7. `mobile_side_content`
+8. `page_kicker`
+9. `page_title`
+10. `page_summary`
+11. `content`
+12. `content_footer`
+13. `page_scripts`
+
+`content_footer` is the dedicated area for the lyric reorder panel.
+
+### Required functional hooks
+
+To avoid ambiguity between CSS classes and JavaScript wiring, each major zone must expose at least one stable hook:
+
+- page root: `data-song-edit-page`,
+- main form: `data-song-edit-form`,
+- identity card: `data-card="identity"`,
+- readonly metadata card: `data-card="metadata-readonly"`,
+- lyric structure card: `data-card="lyrics-structure"`,
+- sticky bar: `data-sticky-savebar`.
+
+Additional classes and wrappers are allowed, but these functional hooks should stay stable across visual refactors.
 
 ## Sticky Save Bar
 
@@ -500,6 +638,8 @@ It only reorders DOM items and updates hidden position inputs.
 
 The backend remains responsible for validating, saving, and recalculating final lyric numbering.
 
+`content_footer` must host the rendered lyric blocks for drag and drop, with the same UX intent as the prototype in `app_song/templates/song/modify_song.html` and the functional contract from `docs/reorder-list.md`.
+
 ### Reorder controls
 
 The lyric structure card must include:
@@ -568,6 +708,8 @@ Example structure:
 </div>
 ```
 
+The content footer panel must display lyric blocks in rendered business form (verse/chorus visual style) while still exposing the reorder module hooks.
+
 ### Reorder behavior
 
 When reorder mode starts:
@@ -597,6 +739,8 @@ startPosition: 2,
 positionStep: 2,
 scrollToMovedItemAfterDrop: true
 ```
+
+It should also set `vibrateOnTargetChange: false` by default to match the current song prototype behavior unless a product decision changes that default.
 
 The template-specific JavaScript must attach dirty-state tracking to reorder changes.
 
@@ -724,4 +868,3 @@ The backend remains responsible for:
 - recalculating displayed verse numbers,
 - validating warnings server-side,
 - rendering the final preview according to song rendering rules.
-
