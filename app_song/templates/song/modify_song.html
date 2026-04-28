@@ -62,14 +62,8 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-    <form method="post" id="modify-song-form" data-song-edit-form data-preview-url="{{ preview_url }}">
-        {% csrf_token %}
-        <input type="hidden" name="next_url" value="" data-next-url-input>
-        <input type="hidden" name="title" value="{{ song.title }}">
-        <input type="hidden" name="subtitle" value="{{ song.subtitle }}">
-        <input type="hidden" name="description" value="{{ song.description|default:'' }}">
-
-    <article class="site-theme-card song-detail-card">
+    
+        <article class="site-theme-card song-detail-card">
             <header class="site-theme-card-header">
                 <div>
                     <h2># tags</h2>
@@ -78,17 +72,24 @@
             {% include "song/includes/_song_metadata.html" %}
         </article>
 
-    <article class="site-theme-card song-detail-card">
+        <article class="site-theme-card song-detail-card">
             <header class="site-theme-card-header">
                 <div>
                     <h2>{% trans "Liens associés" %}</h2>
                 </div>
             </header>
             {% include "song/includes/_song_links.html" %}
-    </article>
+        </article>
     
 {% endblock %}
 {% block content_footer %}
+    <form method="post" id="modify-song-form" data-song-edit-form data-preview-url="{{ preview_url }}">
+        {% csrf_token %}
+        <input type="hidden" name="next_url" value="" data-next-url-input>
+        <input type="hidden" name="title" value="{{ song.title }}">
+        <input type="hidden" name="subtitle" value="{{ song.subtitle }}">
+        <input type="hidden" name="description" value="{{ song.description|default:'' }}">
+
         <section class="song-list-section" data-song-blocks-panel>
             <header class="song-list-header">
                 <h2>{% trans "Couplets et refrains" %}</h2>
@@ -97,24 +98,33 @@
             <div class="song-list" data-reorder-list>
                 {% for block in song_blocks %}
                     <article class="site-theme-card song-card song-edit-block" data-reorder-item data-id="{{ block.row_key }}">
-                        <button type="button" class="song-tool-button" data-reorder-handle>{% trans "Déplacer" %}</button>
-
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                             <p><strong>{{ block.display_label }}</strong></p>
                             <p>{{ block.drag_text }}</p>
                         </div>
 
                         <div data-reorder-normal-view>
-                            <header class="song-edit-block-header">
-                                <h3>{{ block.display_label }}</h3>
-                            </header>
-                            <div class="song-block-readonly">
-                                {% if block.display_text %}
-                                    <p>{{ block.display_text|linebreaksbr }}</p>
-                                {% else %}
-                                    <p><em>{% trans "Bloc vide" %}</em></p>
-                                {% endif %}
-                            </div>
+                            <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
+                                <tbody>
+                                    <tr>
+                                        <td style="vertical-align: top; width: 3em;">
+                                            <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
+                                        </td>
+                                        <td style="vertical-align: top; text-align: right; width: 5em;">
+                                            <strong>{{ block.display_label }}</strong>
+                                        </td>
+                                        <td style="vertical-align: top;">
+                                            <div class="song-block-readonly">
+                                                {% if block.display_text %}
+                                                    <p>{{ block.display_text|linebreaksbr }}</p>
+                                                {% else %}
+                                                    <p><em>{% trans "Bloc vide" %}</em></p>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
 
                         <input type="hidden" data-reorder-position name="blocks[{{ block.row_key }}][position]" value="{{ block.position }}">
@@ -138,5 +148,4 @@
 {% block page_scripts %}
     {% include "song/modify_song_page_i18n.html" %}
     <script src="{% static 'js/app_song.js' %}"></script>
-    <script type="module" src="{% static 'js/modify_song.js' %}"></script>
 {% endblock %}

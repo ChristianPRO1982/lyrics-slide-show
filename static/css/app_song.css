@@ -490,6 +490,11 @@
     touch-action: none;
 }
 
+.song-reorder-handle-symbol {
+    font-size: 4em;
+    line-height: 1;
+}
+
 .song-edit-block-drag-view p,
 .song-block-readonly p,
 .song-block-warnings p,
@@ -590,18 +595,6 @@
 @media (max-width: 760px) {
     .song-reorder-actions,
     .song-sticky-savebar {
-        grid-template-columns: 1fr;
-    }
-}
-
-.song-metadata-two-cols {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-}
-
-@media (max-width: 900px) {
-    .song-metadata-two-cols {
         grid-template-columns: 1fr;
     }
 }
