@@ -246,16 +246,65 @@
 
 .song-rendered-text {
     margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
     font-family: var(--site-font-body);
     font-size: 1rem;
     line-height: 1.65;
 }
 
+.song-lyrics-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.8rem;
+    table-layout: fixed;
+}
+
+.song-lyrics-table th,
+.song-lyrics-table td {
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+
+.song-lyrics-table th {
+    width: clamp(7.5rem, 18vw, 11rem);
+    padding-right: 0.9rem;
+    font-weight: 800;
+    color: var(--site-ink-soft);
+    text-align: right;
+}
+
+.song-lyrics-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
 .song-message-history {
     display: grid;
     gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+    .song-lyrics-table,
+    .song-lyrics-table tbody,
+    .song-lyrics-table tr,
+    .song-lyrics-table th,
+    .song-lyrics-table td {
+        display: block;
+    }
+
+    .song-lyrics-table {
+        border-spacing: 0;
+    }
+
+    .song-lyrics-table tr {
+        margin-bottom: 0.8rem;
+    }
+
+    .song-lyrics-table th {
+        width: auto;
+        padding-right: 0;
+        margin-bottom: 0.2rem;
+    }
 }
 
 .song-message-item {

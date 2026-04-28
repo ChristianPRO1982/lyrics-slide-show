@@ -23,5 +23,5 @@ class SongTextArtifactsAdapterTests(SimpleTestCase):
         artifacts = get_song_text_artifacts(song, settings=settings, verses=verses)
 
         self.assertEqual(artifacts.full_title, "Le Sud - Nino Ferrer")
-        self.assertIn("<b><i>Refrain</i> On dirait le Sud</b>", artifacts.long_text_html)
-        self.assertIn("<i>1.</i> C'est un endroit", artifacts.short_text_html)
+        self.assertIn("<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", artifacts.long_text_html)
+        self.assertIn("<th scope=\"row\">1.</th><td>C&#x27;est un endroit</td>", artifacts.short_text_html)
