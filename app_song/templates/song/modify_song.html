@@ -146,7 +146,7 @@
                     <article class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}" data-reorder-item data-id="{{ block.row_key }}">
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                             <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
-                            <strong class="song-edit-block-drag-label">{{ block.display_label }}</strong>
+                            <strong class="song-edit-block-drag-label">{{ block.drag_label }}</strong>
                             <span class="song-edit-block-drag-text">{{ block.drag_text }}</span>
                         </div>
 
@@ -167,9 +167,6 @@
                                                 {% else %}
                                                     <p><em>{% trans "Bloc vide" %}</em></p>
                                                 {% endif %}
-                                            </div>
-                                            <div class="song-block-readonly-compact">
-                                                {{ block.drag_text }}
                                             </div>
                                         </td>
                                     </tr>

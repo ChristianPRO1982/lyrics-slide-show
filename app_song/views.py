@@ -429,6 +429,27 @@ def _build_block_display_text(block: ParsedSongBlock) -> str:
     return _normalize_display_linebreaks(block.text).strip()
 
 
+def _build_block_drag_label(block: ParsedSongBlock, settings: SongRenderSettings) -> str:
+    prefix = str(block.prefix or "").strip()
+    if prefix:
+        return prefix
+    if block.chorus:
+        return settings.chorus_prefix
+    return settings.verse_label(block.display_num)
+
+
+def _build_block_drag_text(block: ParsedSongBlock) -> str:
+    normalized = _build_block_display_text(block)
+    if not normalized:
+        return _("Bloc vide")
+
+    for line in normalized.split("\n"):
+        excerpt = line.strip()
+        if excerpt:
+            return excerpt
+    return _("Bloc vide")
+
+
 def _as_template_block(
     block: ParsedSongBlock,
     settings: SongRenderSettings,
@@ -449,7 +470,8 @@ def _as_template_block(
         "delete": block.delete,
         "display_label": _build_block_display_label(block, settings),
         "display_text": _build_block_display_text(block),
-        "drag_text": (_build_block_display_text(block).split("\n", 1)[0] if block.text else _("Bloc vide")),
+        "drag_label": _build_block_drag_label(block, settings),
+        "drag_text": _build_block_drag_text(block),
         "line_count": len(lines),
         "max_line_length": max_line_length,
         "has_too_many_lines": len(lines) > verse_max_lines if verse_max_lines > 0 else False,

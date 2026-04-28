@@ -502,6 +502,13 @@ class ModifySongViewTests(TestCase):
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-reorder-list")
+        self.assertContains(response, "data-reorder-drag-view hidden")
+        self.assertContains(response, "data-reorder-normal-view")
+        self.assertNotContains(response, "song-block-readonly-compact")
+        self.assertContains(response, '<strong class="song-edit-block-drag-label">Couplet 1</strong>', html=False)
+        self.assertContains(response, '<strong class="song-edit-block-drag-label">Refrain</strong>', html=False)
+        self.assertContains(response, '<span class="song-edit-block-drag-text">Couplet original</span>', html=False)
+        self.assertContains(response, '<span class="song-edit-block-drag-text">Refrain original</span>', html=False)
 
     def test_member_cannot_access_validated_song(self):
         self.song.status = 1

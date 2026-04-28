@@ -495,13 +495,8 @@
     line-height: 1;
 }
 
-.song-edit-block--emphasis .song-block-readonly p,
-.song-edit-block--emphasis .song-block-readonly-compact {
+.song-edit-block--emphasis .song-block-readonly p {
     font-weight: 800;
-}
-
-.song-block-readonly-compact {
-    display: none;
 }
 
 .song-edit-block-drag-view p,
@@ -521,7 +516,16 @@
     text-overflow: ellipsis;
 }
 
+.song-edit-block-drag-view[hidden] {
+    display: none !important;
+}
+
+.song-edit-block-drag-view .song-tool-button {
+    width: auto;
+}
+
 .song-reorder-handle-inline {
+    width: auto;
     font-size: 1.05em;
     line-height: 1;
     flex: 0 0 auto;
@@ -530,12 +534,18 @@
 }
 
 .song-edit-block-drag-label {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    max-width: 45%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .song-edit-block-drag-text {
-    display: none;
+    display: block;
+    flex: 1 1 auto;
     min-width: 0;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -644,7 +654,6 @@
     .song-edit-block td {
         padding: 0.1rem 0.2rem !important;
         vertical-align: middle !important;
-        white-space: nowrap;
     }
 
     .song-edit-block td:first-child {
@@ -658,29 +667,13 @@
     }
 
     .song-edit-block td:last-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .song-edit-block .song-block-readonly {
-        display: none;
-    }
-
-    .song-edit-block .song-block-readonly-compact {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1em;
+        white-space: normal;
     }
 
     .song-edit-block-drag-view {
         display: flex;
         gap: 0.25rem;
         padding: 0.05rem 0.1rem;
-    }
-
-    .song-edit-block-drag-text {
-        display: inline;
     }
 
     .song-reorder-handle-inline {
