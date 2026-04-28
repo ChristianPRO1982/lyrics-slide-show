@@ -491,8 +491,17 @@
 }
 
 .song-reorder-handle-symbol {
-    font-size: 4em;
+    font-size: 3em;
     line-height: 1;
+}
+
+.song-edit-block--emphasis .song-block-readonly p,
+.song-edit-block--emphasis .song-block-readonly-compact {
+    font-weight: 800;
+}
+
+.song-block-readonly-compact {
+    display: none;
 }
 
 .song-edit-block-drag-view p,
@@ -500,6 +509,35 @@
 .song-block-warnings p,
 .song-insert-inline-action {
     margin: 0;
+}
+
+.song-edit-block-drag-view {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-reorder-handle-inline {
+    font-size: 1.05em;
+    line-height: 1;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 0.05rem 0.2rem;
+}
+
+.song-edit-block-drag-label {
+    flex: 0 0 auto;
+}
+
+.song-edit-block-drag-text {
+    display: none;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .song-edit-block-header {
@@ -596,5 +634,63 @@
     .song-reorder-actions,
     .song-sticky-savebar {
         grid-template-columns: 1fr;
+    }
+
+    .song-edit-block table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .song-edit-block td {
+        padding: 0.1rem 0.2rem !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+    }
+
+    .song-edit-block td:first-child {
+        width: 2.2em !important;
+    }
+
+    .song-edit-block td:nth-child(2) {
+        width: 5.5em !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .song-edit-block td:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .song-edit-block .song-block-readonly {
+        display: none;
+    }
+
+    .song-edit-block .song-block-readonly-compact {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1em;
+    }
+
+    .song-edit-block-drag-view {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.05rem 0.1rem;
+    }
+
+    .song-edit-block-drag-text {
+        display: inline;
+    }
+
+    .song-reorder-handle-inline {
+        font-size: 1.05em;
+    }
+
+    .song-reorder-handle-symbol {
+        font-size: 2em;
+        min-height: 0;
+        line-height: 1;
+        padding: 0.05rem 0.15rem;
     }
 }

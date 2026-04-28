@@ -51,6 +51,13 @@
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{{ title_complete_with_tags }}{% endblock %}
+{% block page_intro %}
+    <p>
+        <button type="button" class="song-tool-button" data-song-edit-meta-open>
+            {% trans "Modifier le titre, sous-titre et la description" %}
+        </button>
+    </p>
+{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>
@@ -80,27 +87,67 @@
             </header>
             {% include "song/includes/_song_links.html" %}
         </article>
+
+        <article class="site-theme-card song-detail-card" data-song-edit-meta-card hidden style="display: none;">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Modification du titre et sous-titre" %}</h2>
+                </div>
+            </header>
+            <p>
+                <label for="song-title-edit">{% trans "Titre" %}</label>
+                <input id="song-title-edit" name="title" form="modify-song-form" type="text" value="{{ song.title }}" data-song-title-edit>
+            </p>
+            <p>
+                <label for="song-subtitle-edit">{% trans "Sous-titre" %}</label>
+                <input id="song-subtitle-edit" name="subtitle" form="modify-song-form" type="text" value="{{ song.subtitle }}" data-song-subtitle-edit>
+            </p>
+        </article>
+
+        <article class="site-theme-card song-detail-card" data-song-edit-meta-card hidden style="display: none;">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Modification de la description" %}</h2>
+                </div>
+            </header>
+            <p>
+                <label for="song-description-edit">{% trans "Description" %}</label>
+                <textarea id="song-description-edit" name="description" form="modify-song-form" rows="5" data-song-description-edit>{{ song.description|default:'' }}</textarea>
+            </p>
+            <p>
+                <button type="button" class="song-secondary-action" data-song-edit-meta-close>
+                    {% trans "Masquer les cartes d'édition" %}
+                </button>
+            </p>
+        </article>
     
 {% endblock %}
 {% block content_footer %}
     <form method="post" id="modify-song-form" data-song-edit-form data-preview-url="{{ preview_url }}">
         {% csrf_token %}
         <input type="hidden" name="next_url" value="" data-next-url-input>
-        <input type="hidden" name="title" value="{{ song.title }}">
-        <input type="hidden" name="subtitle" value="{{ song.subtitle }}">
-        <input type="hidden" name="description" value="{{ song.description|default:'' }}">
+        <input type="hidden" name="title" value="{{ song.title }}" data-song-title-hidden>
+        <input type="hidden" name="subtitle" value="{{ song.subtitle }}" data-song-subtitle-hidden>
+        <input type="hidden" name="description" value="{{ song.description|default:'' }}" data-song-description-hidden>
 
         <section class="song-list-section" data-song-blocks-panel>
             <header class="song-list-header">
                 <h2>{% trans "Couplets et refrains" %}</h2>
             </header>
+            <p>
+                <button type="button" class="song-tool-button" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
+            </p>
+            <p>
+                <button type="button" class="song-secondary-action" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
+            </p>
 
             <div class="song-list" data-reorder-list>
                 {% for block in song_blocks %}
-                    <article class="site-theme-card song-card song-edit-block" data-reorder-item data-id="{{ block.row_key }}">
+                    <article class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}" data-reorder-item data-id="{{ block.row_key }}">
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
-                            <p><strong>{{ block.display_label }}</strong></p>
-                            <p>{{ block.drag_text }}</p>
+                            <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                            <strong class="song-edit-block-drag-label">{{ block.display_label }}</strong>
+                            <span class="song-edit-block-drag-text">{{ block.drag_text }}</span>
                         </div>
 
                         <div data-reorder-normal-view>
@@ -120,6 +167,9 @@
                                                 {% else %}
                                                     <p><em>{% trans "Bloc vide" %}</em></p>
                                                 {% endif %}
+                                            </div>
+                                            <div class="song-block-readonly-compact">
+                                                {{ block.drag_text }}
                                             </div>
                                         </td>
                                     </tr>
@@ -148,4 +198,67 @@
 {% block page_scripts %}
     {% include "song/modify_song_page_i18n.html" %}
     <script src="{% static 'js/app_song.js' %}"></script>
+    <script>
+        (() => {
+            const openButton = document.querySelector("[data-song-edit-meta-open]");
+            const closeButton = document.querySelector("[data-song-edit-meta-close]");
+            const cards = Array.from(document.querySelectorAll("[data-song-edit-meta-card]"));
+            const titleInput = document.querySelector("[data-song-title-edit]");
+            const subtitleInput = document.querySelector("[data-song-subtitle-edit]");
+            const descriptionInput = document.querySelector("[data-song-description-edit]");
+            const hiddenTitle = document.querySelector("[data-song-title-hidden]");
+            const hiddenSubtitle = document.querySelector("[data-song-subtitle-hidden]");
+            const hiddenDescription = document.querySelector("[data-song-description-hidden]");
+
+            if (!openButton || !closeButton || cards.length === 0) {
+                return;
+            }
+
+            const showCards = () => {
+                cards.forEach((card) => {
+                    card.hidden = false;
+                    card.style.display = "";
+                });
+            };
+
+            const hideCards = () => {
+                cards.forEach((card) => {
+                    card.hidden = true;
+                    card.style.display = "none";
+                });
+            };
+
+            const syncHiddenFields = () => {
+                if (hiddenTitle && titleInput) hiddenTitle.value = titleInput.value;
+                if (hiddenSubtitle && subtitleInput) hiddenSubtitle.value = subtitleInput.value;
+                if (hiddenDescription && descriptionInput) hiddenDescription.value = descriptionInput.value;
+            };
+
+            openButton.addEventListener("click", showCards);
+            closeButton.addEventListener("click", hideCards);
+            hideCards();
+
+            [titleInput, subtitleInput, descriptionInput].forEach((field) => {
+                if (!field) return;
+                field.addEventListener("input", syncHiddenFields);
+                field.addEventListener("change", syncHiddenFields);
+            });
+        })();
+    </script>
+    <script type="module">
+        import { init } from "{% static 'js/reorder-list.module.js' %}";
+
+        const list = document.querySelector("[data-reorder-list]");
+        if (list) {
+            window.modifySongReorderController = init({
+                list,
+                toggleButton: document.querySelector("[data-reorder-toggle]"),
+                cancelButton: document.querySelector("[data-reorder-cancel]"),
+                startPosition: 2,
+                positionStep: 2,
+                vibrateOnTargetChange: false,
+                scrollToMovedItemAfterDrop: true,
+            });
+        }
+    </script>
 {% endblock %}

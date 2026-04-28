@@ -102,6 +102,13 @@ function normalizeNumber(value, fallback) {
     return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function toSafeRatio(value, size) {
+    if (!Number.isFinite(size) || size <= 0) {
+        return 0.5;
+    }
+    return clamp(value / size, 0, 1);
+}
+
 function assertOptionalElement(value, optionName) {
     if (value == null) {
         return null;
@@ -729,8 +736,8 @@ export function init(rawOptions) {
             activeDropIndex: fromIndex,
             pointerX: pointerEvent.clientX,
             pointerY: pointerEvent.clientY,
-            offsetX: pointerEvent.clientX - rect.left,
-            offsetY: pointerEvent.clientY - rect.top,
+            offsetX: pending.anchorRatioX * rect.width,
+            offsetY: pending.anchorRatioY * rect.height,
             dropzones: [],
             scrollContainer: findScrollableAncestor(options.list),
             autoScrollFrame: 0,
@@ -905,6 +912,9 @@ export function init(rawOptions) {
         if (!item || item.parentElement !== options.list) {
             return;
         }
+        const itemRect = item.getBoundingClientRect();
+        const pointerOffsetX = event.clientX - itemRect.left;
+        const pointerOffsetY = event.clientY - itemRect.top;
 
         state.pendingPointer = {
             pointerId: event.pointerId,
@@ -914,6 +924,8 @@ export function init(rawOptions) {
             startY: event.clientY,
             lastX: event.clientX,
             lastY: event.clientY,
+            anchorRatioX: toSafeRatio(pointerOffsetX, itemRect.width),
+            anchorRatioY: toSafeRatio(pointerOffsetY, itemRect.height),
         };
 
         if (typeof handle.setPointerCapture === "function") {
