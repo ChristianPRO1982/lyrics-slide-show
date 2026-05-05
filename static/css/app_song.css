@@ -283,6 +283,95 @@
     gap: 0.75rem;
 }
 
+.song-meta-crud-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.song-meta-sheet {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.song-meta-row {
+    display: grid;
+    gap: 0.75rem;
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-sm);
+    padding: 0.7rem;
+}
+
+.song-meta-row > label,
+.song-meta-row > div {
+    display: grid;
+    gap: 0;
+    align-items: center;
+}
+
+.song-meta-row input[type="text"] {
+    min-height: 2.75rem;
+    width: 100%;
+}
+
+.song-meta-crud-delete > span:last-child {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (min-width: 761px) {
+    .song-meta-row--genres {
+        grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
+        align-items: end;
+    }
+
+    .song-meta-row--simple {
+        grid-template-columns: minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
+        align-items: end;
+    }
+
+    .song-meta-row--head {
+        font-weight: 800;
+    }
+
+    .song-meta-row--head > label {
+        min-height: 2.75rem;
+        display: flex;
+        align-items: center;
+        color: var(--site-ink-soft);
+    }
+
+    .song-meta-row--head {
+        grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
+        border: 0;
+        padding: 0;
+    }
+
+    .song-meta-row--head.song-meta-row--simple {
+        grid-template-columns: minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .song-meta-row--genres,
+    .song-meta-row--simple {
+        grid-template-columns: 1fr;
+    }
+
+    .song-meta-row--head {
+        display: grid;
+        border: 0;
+        padding: 0;
+        gap: 0.35rem;
+    }
+
+    .song-meta-row--head label {
+        color: var(--site-ink-soft);
+        font-weight: 800;
+    }
+}
+
 @media (max-width: 720px) {
     .song-lyrics-table,
     .song-lyrics-table tbody,

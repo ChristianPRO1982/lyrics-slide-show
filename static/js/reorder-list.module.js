@@ -60,6 +60,18 @@ function getOrderFromList(listElement) {
         .filter((id) => id.length > 0);
 }
 
+function areOrdersEqual(left, right) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
+        return false;
+    }
+    for (let index = 0; index < left.length; index += 1) {
+        if (left[index] !== right[index]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function findScrollableAncestor(element) {
     let node = element;
     while (node && node !== document.body) {
@@ -174,6 +186,7 @@ export function init(rawOptions) {
         mode: MODE_DISABLED,
         destroyed: false,
         snapshot: null,
+        orderDirty: false,
         pendingPointer: null,
         drag: null,
     };
@@ -221,6 +234,7 @@ export function init(rawOptions) {
             hiddenStates,
             compactStates,
             listHadEnabledClass: options.list.classList.contains(CLASS_ENABLED),
+            initialOrder: getOrderFromList(options.list),
         };
     }
 
@@ -253,6 +267,15 @@ export function init(rawOptions) {
         });
 
         options.list.classList.toggle(CLASS_ENABLED, snapshot.listHadEnabledClass);
+    }
+
+    function refreshOrderDirty() {
+        if (!state.snapshot) {
+            state.orderDirty = false;
+            return;
+        }
+        const currentOrder = getOrderFromList(options.list);
+        state.orderDirty = !areOrdersEqual(currentOrder, state.snapshot.initialOrder || []);
     }
 
     function applyCompactLayout() {
@@ -299,7 +322,7 @@ export function init(rawOptions) {
         }
 
         if (options.cancelButton) {
-            options.cancelButton.hidden = !persistent;
+            options.cancelButton.hidden = !state.orderDirty;
         }
     }
 
@@ -584,9 +607,13 @@ export function init(rawOptions) {
         if (!keepPersistentMode) {
             applyDefaultLayout();
             state.mode = MODE_DISABLED;
-            state.snapshot = null;
         } else {
             state.mode = MODE_ENABLED_PERSISTENT;
+        }
+
+        refreshOrderDirty();
+        if (!state.orderDirty && state.mode === MODE_DISABLED) {
+            state.snapshot = null;
         }
 
         const payload = buildPayload({
@@ -630,9 +657,13 @@ export function init(rawOptions) {
         if (!keepPersistentMode) {
             applyDefaultLayout();
             state.mode = MODE_DISABLED;
-            state.snapshot = null;
         } else {
             state.mode = MODE_ENABLED_PERSISTENT;
+        }
+
+        refreshOrderDirty();
+        if (!state.orderDirty && state.mode === MODE_DISABLED) {
+            state.snapshot = null;
         }
 
         if (emitEnd) {
@@ -784,12 +815,15 @@ export function init(rawOptions) {
 
         applyDefaultLayout();
         state.mode = MODE_DISABLED;
-        state.snapshot = null;
+        refreshOrderDirty();
+        if (!state.orderDirty) {
+            state.snapshot = null;
+        }
         syncButtons();
     }
 
     function cancel() {
-        if (state.destroyed || state.mode === MODE_DISABLED) {
+        if (state.destroyed || (state.mode === MODE_DISABLED && !state.orderDirty)) {
             return;
         }
 
@@ -800,6 +834,7 @@ export function init(rawOptions) {
         restoreSnapshot();
         options.list.classList.remove(CLASS_DRAGGING);
         state.mode = MODE_DISABLED;
+        state.orderDirty = false;
         state.snapshot = null;
         syncButtons();
 
@@ -833,6 +868,7 @@ export function init(rawOptions) {
         removers.splice(0).forEach((remove) => remove());
 
         state.snapshot = null;
+        state.orderDirty = false;
         state.mode = MODE_DISABLED;
         state.destroyed = true;
         syncButtons();

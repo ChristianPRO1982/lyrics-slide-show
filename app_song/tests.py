@@ -1,5 +1,7 @@
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
+from unittest.mock import MagicMock, patch
+from django.db import IntegrityError
 
 from app_main.models import DirectoryUserRecord
 from app_member.models import MemberRole
@@ -646,3 +648,178 @@ class ModifySongViewTests(TestCase):
         self.assertIn("Titre preview", data["title"])
         self.assertIn("Couplet 1", data["markdown"])
         self.assertIn("Refrain", data["markdown"])
+
+
+class ModifyGenresViewTests(TestCase):
+    def setUp(self):
+        self.user_id = "33333333-3333-3333-3333-333333333333"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="moderator.user",
+            first_name="Moderator",
+            last_name="User",
+            email="moderator.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+
+    def _login(self, *, is_moderator=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "moderator.user",
+            "email": "moderator.user@example.test",
+            "first_name": "Moderator",
+            "last_name": "User",
+            "is_moderator": is_moderator,
+            "is_admin": False,
+        }
+        session.save()
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if is_moderator:
+            MemberRole.objects.create(
+                member_id=self.user_id,
+                is_moderator=True,
+                is_admin=False,
+            )
+
+    @patch("app_song.views._fetch_genre_rows", return_value=[])
+    def test_access_denied_for_non_moderator(self, _fetch_rows):
+        response = self.client.get(reverse("modify_genres"))
+        self.assertEqual(response.status_code, 404)
+
+    @patch("app_song.views._fetch_genre_rows")
+    def test_moderator_can_access_and_see_responsive_cards(self, fetch_rows):
+        fetch_rows.return_value = [
+            {"genre_id": 1, "group": "Louange", "name": "Prière", "usage_count": 1, "is_used": True},
+        ]
+        self._login(is_moderator=True)
+        response = self.client.get(reverse("modify_genres"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "groupe")
+        self.assertContains(response, "nom")
+        self.assertContains(response, "état")
+        self.assertContains(response, "actions")
+        self.assertContains(response, "⚡")
+        self.assertContains(response, "Enregistrer", count=2)
+        self.assertNotContains(response, "<table")
+
+    @patch("app_song.views.messages.error")
+    @patch("app_song.views.messages.success")
+    @patch("app_song.views._fetch_genre_rows")
+    @patch("app_song.views.connection.cursor")
+    def test_post_save_runs_create_update_and_delete(self, cursor_factory, fetch_rows, success_mock, error_mock):
+        self._login(is_moderator=True)
+        fetch_rows.return_value = [
+            {"genre_id": 1, "group": "A", "name": "Alpha", "usage_count": 0, "is_used": False},
+            {"genre_id": 2, "group": "B", "name": "Beta", "usage_count": 2, "is_used": True},
+        ]
+        cursor = MagicMock()
+        cursor_factory.return_value.__enter__.return_value = cursor
+        cursor.execute.return_value = None
+
+        response = self.client.post(
+            reverse("modify_genres"),
+            data={
+                "action": "save",
+                "new_group": "Nouveau groupe",
+                "new_name": "Nouveau nom",
+                "rows[1][group]": "A2",
+                "rows[1][name]": "Alpha2",
+                "rows[2][group]": "B",
+                "rows[2][name]": "Beta",
+                "rows[2][delete]": "1",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("modify_genres"))
+
+        executed_sql = " ".join(str(call.args[0]) for call in cursor.execute.call_args_list)
+        self.assertIn('INSERT INTO "common"."genres"', executed_sql)
+        self.assertIn('UPDATE "common"."genres"', executed_sql)
+        self.assertIn('DELETE FROM "common"."genres"', executed_sql)
+        success_mock.assert_called()
+        error_mock.assert_not_called()
+
+    @patch("app_song.views.messages.error")
+    @patch("app_song.views._fetch_genre_rows")
+    @patch("app_song.views.connection.cursor")
+    def test_delete_failure_shows_error_message(self, cursor_factory, fetch_rows, error_mock):
+        self._login(is_moderator=True)
+        fetch_rows.return_value = [
+            {"genre_id": 7, "group": "A", "name": "Alpha", "usage_count": 3, "is_used": True},
+        ]
+        cursor = MagicMock()
+        cursor_factory.return_value.__enter__.return_value = cursor
+
+        def execute_side_effect(sql, params=None):
+            if 'DELETE FROM "common"."genres"' in sql:
+                raise IntegrityError("fk failure")
+            return None
+
+        cursor.execute.side_effect = execute_side_effect
+
+        response = self.client.post(
+            reverse("modify_genres"),
+            data={
+                "action": "save",
+                "rows[7][group]": "A",
+                "rows[7][name]": "Alpha",
+                "rows[7][delete]": "1",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        error_mock.assert_called()
+
+
+class ModifyArtistsAndBandsViewTests(TestCase):
+    def setUp(self):
+        self.user_id = "44444444-4444-4444-4444-444444444444"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="metadata.moderator",
+            first_name="Meta",
+            last_name="Moderator",
+            email="metadata.moderator@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+
+    def _login(self, *, is_moderator=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "metadata.moderator",
+            "email": "metadata.moderator@example.test",
+            "first_name": "Meta",
+            "last_name": "Moderator",
+            "is_moderator": is_moderator,
+            "is_admin": False,
+        }
+        session.save()
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if is_moderator:
+            MemberRole.objects.create(member_id=self.user_id, is_moderator=True, is_admin=False)
+
+    def test_artists_and_bands_are_404_for_non_moderator(self):
+        self.assertEqual(self.client.get(reverse("modify_artists")).status_code, 404)
+        self.assertEqual(self.client.get(reverse("modify_bands")).status_code, 404)
+
+    @patch("app_song.views._fetch_name_item_rows")
+    def test_artists_and_bands_render_responsive_cards(self, fetch_items):
+        fetch_items.return_value = [{"item_id": 10, "name": "Nom", "usage_count": 1, "is_used": True}]
+        self._login(is_moderator=True)
+
+        artists_response = self.client.get(reverse("modify_artists"))
+        self.assertEqual(artists_response.status_code, 200)
+        self.assertContains(artists_response, "song-meta-crud-grid--simple")
+        self.assertNotContains(artists_response, "<table")
+        self.assertContains(artists_response, "Enregistrer", count=2)
+
+        bands_response = self.client.get(reverse("modify_bands"))
+        self.assertEqual(bands_response.status_code, 200)
+        self.assertContains(bands_response, "song-meta-crud-grid--simple")
+        self.assertNotContains(bands_response, "<table")
+        self.assertContains(bands_response, "Enregistrer", count=2)

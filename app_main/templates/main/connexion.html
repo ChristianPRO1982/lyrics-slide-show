@@ -176,6 +176,19 @@
                     <p>{% trans "Vous êtes membre authentifié sans droit privilégié global." %}</p>
                 {% endif %}
             </article>
+
+            {% if is_moderator %}
+                <article class="site-theme-card">
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>Gestiond es métadonnées</h2>
+                        </div>
+                    </header>
+                    <p><a href="{% url 'modify_genres' %}">Genres</a></p>
+                    <p><a href="{% url 'modify_artists' %}">Artistes</a></p>
+                    <p><a href="{% url 'modify_bands' %}">Groupes de musiques</a></p>
+                </article>
+            {% endif %}
         </section>
 
         {% if is_moderator %}

@@ -1,7 +1,8 @@
 import re
 from dataclasses import dataclass
 
-from django.db import connection, transaction
+from django.contrib import messages
+from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -18,6 +19,8 @@ from .models import (
     SongBand,
     SongFavorite,
     SongGenre,
+    SongLink,
+    SongLinkType,
     SongMessage,
     SongMessageStatus,
     SongStatus,
@@ -48,6 +51,8 @@ SONG_PAGE_SUMMARY_MAX_LENGTH = 100
 DEFAULT_VERSE_MAX_LINES = 10
 DEFAULT_VERSE_MAX_CHARS = 50
 BLOCK_FIELD_PATTERN = re.compile(r"^blocks\[(?P<row>[^\]]+)\]\[(?P<field>[a-z_]+)\]$")
+GENRE_ROW_FIELD_PATTERN = re.compile(r"^rows\[(?P<genre_id>\d+)\]\[(?P<field>group|name|delete)\]$")
+NAME_ROW_FIELD_PATTERN = re.compile(r"^rows\[(?P<item_id>\d+)\]\[(?P<field>name|delete)\]$")
 MULTISPACE_PATTERN = re.compile(r"[ \t]+")
 FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
 
@@ -614,6 +619,365 @@ def songs(request: HttpRequest) -> HttpResponse:
     )
 
 
+def modify_genres(request: HttpRequest) -> HttpResponse:
+    if not _is_moderator(request.user):
+        raise Http404
+
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action != "save":
+            messages.error(request, _("Action inconnue."))
+            return redirect("modify_genres")
+        _save_genres(request)
+        return redirect("modify_genres")
+
+    return render(
+        request,
+        "song/modify_genres.html",
+        {
+            "selected_group": selected_group,
+            "item_rows": _fetch_genre_rows(),
+        },
+    )
+
+
+def modify_artists(request: HttpRequest) -> HttpResponse:
+    if not _is_moderator(request.user):
+        raise Http404
+
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action != "save":
+            messages.error(request, _("Action inconnue."))
+            return redirect("modify_artists")
+        _save_name_items(
+            request,
+            page_label=_("Artistes"),
+            table_name="artists",
+            id_column="artist_id",
+            relation_table="s_song_artists",
+            relation_id_column="artist_id",
+        )
+        return redirect("modify_artists")
+
+    return render(
+        request,
+        "song/modify_artists.html",
+        {
+            "selected_group": selected_group,
+            "item_rows": _fetch_name_item_rows(
+                table_name="artists",
+                id_column="artist_id",
+                relation_table="s_song_artists",
+                relation_id_column="artist_id",
+            ),
+        },
+    )
+
+
+def modify_bands(request: HttpRequest) -> HttpResponse:
+    if not _is_moderator(request.user):
+        raise Http404
+
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action != "save":
+            messages.error(request, _("Action inconnue."))
+            return redirect("modify_bands")
+        _save_name_items(
+            request,
+            page_label=_("Groupes de musiques"),
+            table_name="bands",
+            id_column="band_id",
+            relation_table="s_song_bands",
+            relation_id_column="band_id",
+        )
+        return redirect("modify_bands")
+
+    return render(
+        request,
+        "song/modify_bands.html",
+        {
+            "selected_group": selected_group,
+            "item_rows": _fetch_name_item_rows(
+                table_name="bands",
+                id_column="band_id",
+                relation_table="s_song_bands",
+                relation_id_column="band_id",
+            ),
+        },
+    )
+
+
+def _fetch_genre_rows() -> list[dict[str, object]]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT g.genre_id, g."group", g."name", COUNT(sg.song_id) AS usage_count
+            FROM "common"."genres" g
+            LEFT JOIN "lss"."s_song_genres" sg ON sg.genre_id = g.genre_id
+            GROUP BY g.genre_id, g."group", g."name"
+            ORDER BY g."group", g."name", g.genre_id
+            """
+        )
+        rows = cursor.fetchall()
+
+    return [
+        {
+            "genre_id": int(row[0]),
+            "group": str(row[1] or ""),
+            "name": str(row[2] or ""),
+            "usage_count": int(row[3] or 0),
+            "is_used": int(row[3] or 0) > 0,
+        }
+        for row in rows
+    ]
+
+
+def _parse_genre_rows(post_data) -> tuple[str, str, dict[int, dict[str, object]]]:
+    new_group = str(post_data.get("new_group") or "").strip()
+    new_name = str(post_data.get("new_name") or "").strip()
+    rows_by_id: dict[int, dict[str, object]] = {}
+
+    for key, value in post_data.items():
+        match = GENRE_ROW_FIELD_PATTERN.match(key)
+        if not match:
+            continue
+        genre_id = int(match.group("genre_id"))
+        field = match.group("field")
+        row = rows_by_id.setdefault(genre_id, {"group": "", "name": "", "delete": False})
+        if field == "delete":
+            row["delete"] = _is_truthy(value)
+        else:
+            row[field] = str(value or "").strip()
+
+    return new_group, new_name, rows_by_id
+
+
+def _save_genres(request: HttpRequest) -> None:
+    new_group, new_name, parsed_rows = _parse_genre_rows(request.POST)
+    success_parts: list[str] = []
+    error_parts: list[str] = []
+
+    created_count = 0
+    updated_count = 0
+    deleted_count = 0
+
+    existing_rows = _fetch_genre_rows()
+    existing_by_id = {int(item["genre_id"]): item for item in existing_rows}
+
+    if new_group or new_name:
+        if new_group and new_name:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s)',
+                        [new_group, new_name],
+                    )
+                created_count += 1
+            except IntegrityError:
+                error_parts.append(_("Création impossible pour le nouveau genre (%(group)s / %(name)s).") % {
+                    "group": new_group,
+                    "name": new_name,
+                })
+        else:
+            error_parts.append(_("Pour créer un genre, renseignez à la fois le groupe et le nom."))
+
+    for genre_id, values in parsed_rows.items():
+        existing = existing_by_id.get(genre_id)
+        if not existing:
+            continue
+
+        if bool(values.get("delete")):
+            try:
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.execute('DELETE FROM "common"."genres" WHERE genre_id = %s', [genre_id])
+                deleted_count += 1
+            except Exception:
+                error_parts.append(_("Suppression impossible pour le genre #%(genre_id)s.") % {"genre_id": genre_id})
+            continue
+
+        new_group_value = str(values.get("group") or "").strip()
+        new_name_value = str(values.get("name") or "").strip()
+        if not new_group_value or not new_name_value:
+            error_parts.append(_("Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires).") % {
+                "genre_id": genre_id,
+            })
+            continue
+
+        old_group = str(existing.get("group") or "").strip()
+        old_name = str(existing.get("name") or "").strip()
+        if old_group == new_group_value and old_name == new_name_value:
+            continue
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    'UPDATE "common"."genres" SET "group" = %s, "name" = %s WHERE genre_id = %s',
+                    [new_group_value, new_name_value, genre_id],
+                )
+            updated_count += 1
+        except IntegrityError:
+            error_parts.append(_("Mise à jour impossible pour le genre #%(genre_id)s.") % {"genre_id": genre_id})
+
+    if created_count:
+        success_parts.append(_("%(count)s création(s)") % {"count": created_count})
+    if updated_count:
+        success_parts.append(_("%(count)s mise(s) à jour") % {"count": updated_count})
+    if deleted_count:
+        success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
+
+    if success_parts:
+        messages.success(request, _("Genres enregistrés : %(summary)s.") % {"summary": ", ".join(success_parts)})
+    if error_parts:
+        messages.error(request, " ".join(error_parts))
+
+
+def _fetch_name_item_rows(
+    *,
+    table_name: str,
+    id_column: str,
+    relation_table: str,
+    relation_id_column: str,
+) -> list[dict[str, object]]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"""
+            SELECT i."{id_column}", i."name", COUNT(r.song_id) AS usage_count
+            FROM "common"."{table_name}" i
+            LEFT JOIN "lss"."{relation_table}" r ON r."{relation_id_column}" = i."{id_column}"
+            GROUP BY i."{id_column}", i."name"
+            ORDER BY i."name", i."{id_column}"
+            """
+        )
+        rows = cursor.fetchall()
+
+    return [
+        {
+            "item_id": int(row[0]),
+            "name": str(row[1] or ""),
+            "usage_count": int(row[2] or 0),
+            "is_used": int(row[2] or 0) > 0,
+        }
+        for row in rows
+    ]
+
+
+def _parse_name_rows(post_data) -> tuple[str, dict[int, dict[str, object]]]:
+    new_name = str(post_data.get("new_name") or "").strip()
+    rows_by_id: dict[int, dict[str, object]] = {}
+
+    for key, value in post_data.items():
+        match = NAME_ROW_FIELD_PATTERN.match(key)
+        if not match:
+            continue
+        item_id = int(match.group("item_id"))
+        field = match.group("field")
+        row = rows_by_id.setdefault(item_id, {"name": "", "delete": False})
+        if field == "delete":
+            row["delete"] = _is_truthy(value)
+        else:
+            row[field] = str(value or "").strip()
+
+    return new_name, rows_by_id
+
+
+def _save_name_items(
+    request: HttpRequest,
+    *,
+    page_label,
+    table_name: str,
+    id_column: str,
+    relation_table: str,
+    relation_id_column: str,
+) -> None:
+    new_name, parsed_rows = _parse_name_rows(request.POST)
+    success_parts: list[str] = []
+    error_parts: list[str] = []
+
+    created_count = 0
+    updated_count = 0
+    deleted_count = 0
+
+    existing_rows = _fetch_name_item_rows(
+        table_name=table_name,
+        id_column=id_column,
+        relation_table=relation_table,
+        relation_id_column=relation_id_column,
+    )
+    existing_by_id = {int(item["item_id"]): item for item in existing_rows}
+
+    if new_name:
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(f'INSERT INTO "common"."{table_name}" ("name") VALUES (%s)', [new_name])
+            created_count += 1
+        except IntegrityError:
+            error_parts.append(_("Création impossible pour %(item)s \"%(name)s\".") % {"item": page_label, "name": new_name})
+
+    for item_id, values in parsed_rows.items():
+        existing = existing_by_id.get(item_id)
+        if not existing:
+            continue
+
+        if bool(values.get("delete")):
+            try:
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.execute(f'DELETE FROM "common"."{table_name}" WHERE "{id_column}" = %s', [item_id])
+                deleted_count += 1
+            except Exception:
+                error_parts.append(_("Suppression impossible pour %(item)s #%(item_id)s.") % {
+                    "item": page_label,
+                    "item_id": item_id,
+                })
+            continue
+
+        new_name_value = str(values.get("name") or "").strip()
+        if not new_name_value:
+            error_parts.append(_("Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire).") % {
+                "item": page_label,
+                "item_id": item_id,
+            })
+            continue
+
+        old_name = str(existing.get("name") or "").strip()
+        if old_name == new_name_value:
+            continue
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    f'UPDATE "common"."{table_name}" SET "name" = %s WHERE "{id_column}" = %s',
+                    [new_name_value, item_id],
+                )
+            updated_count += 1
+        except IntegrityError:
+            error_parts.append(_("Mise à jour impossible pour %(item)s #%(item_id)s.") % {
+                "item": page_label,
+                "item_id": item_id,
+            })
+
+    if created_count:
+        success_parts.append(_("%(count)s création(s)") % {"count": created_count})
+    if updated_count:
+        success_parts.append(_("%(count)s mise(s) à jour") % {"count": updated_count})
+    if deleted_count:
+        success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
+
+    if success_parts:
+        messages.success(request, _("%(item)s enregistrés : %(summary)s.") % {
+            "item": page_label,
+            "summary": ", ".join(success_parts),
+        })
+    if error_parts:
+        messages.error(request, " ".join(error_parts))
+
+
 def song(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
     song_object = get_object_or_404(
@@ -786,17 +1150,100 @@ def modify_song_preview(request: HttpRequest, song_id: int) -> JsonResponse:
 
 def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
-    song_object = get_object_or_404(Song, song_id=song_id)
+    song_object = get_object_or_404(Song.objects.prefetch_related("links"), song_id=song_id)
     if not _can_read_song(request.user, song_object):
         raise Http404
+
+    if request.method == "POST":
+        if not _can_edit_song(request.user, song_object):
+            raise Http404
+        _update_song_metadata_links_from_form(song_object, request)
+        return redirect("song_metadata", song_id=song_object.song_id)
+
+    metadata_links = list(song_object.links.all().order_by("link"))
+    bands, artists, _genre_groups = _get_song_metadata_labels(song_object)
     return render(
         request,
         "song/metadata.html",
         {
             "selected_group": selected_group,
             "song": song_object,
+            "title_complete_with_tags": build_song_full_title_with_tags(song_object),
+            "metadata_links": metadata_links,
+            "artists": artists,
+            "bands": bands,
+            "can_edit": _can_edit_song(request.user, song_object),
         },
     )
+
+
+def _update_song_metadata_links_from_form(song: Song, request: HttpRequest) -> None:
+    def normalize_link_type(raw_value: str | None) -> str:
+        value = str(raw_value or "").strip().lower()
+        if value in {SongLinkType.WEB, SongLinkType.SCORE, SongLinkType.INTERNAL, SongLinkType.AUDIO_VIDEO}:
+            return value
+        if value in {"youtube", "audio"}:
+            return SongLinkType.AUDIO_VIDEO
+        return SongLinkType.WEB
+
+    existing_links_by_value = {item.link: item for item in song.links.all()}
+    consumed_targets: set[str] = set()
+
+    with transaction.atomic():
+        for index, existing in enumerate(song.links.all().order_by("link")):
+            original_link = (request.POST.get(f"existing_{index}_original") or "").strip()
+            current_link = (request.POST.get(f"existing_{index}_link") or "").strip()
+            current_type = normalize_link_type(request.POST.get(f"existing_{index}_type"))
+            delete_checked = _is_truthy(request.POST.get(f"existing_{index}_delete"))
+
+            if not original_link:
+                original_link = existing.link
+
+            link_object = existing_links_by_value.get(original_link)
+            if link_object is None:
+                continue
+
+            if delete_checked or not current_link:
+                link_object.delete()
+                existing_links_by_value.pop(original_link, None)
+                continue
+
+            if current_link in consumed_targets:
+                link_object.delete()
+                existing_links_by_value.pop(original_link, None)
+                continue
+
+            if current_link == original_link:
+                if link_object.type != current_type:
+                    link_object.type = current_type
+                    link_object.save(update_fields=["type"])
+                consumed_targets.add(current_link)
+                continue
+
+            if current_link in existing_links_by_value:
+                link_object.delete()
+                existing_links_by_value.pop(original_link, None)
+                consumed_targets.add(current_link)
+                continue
+
+            SongLink.objects.create(
+                song=song,
+                link=current_link,
+                type=current_type,
+            )
+            link_object.delete()
+            existing_links_by_value.pop(original_link, None)
+            existing_links_by_value[current_link] = SongLink(song=song, link=current_link, type=current_type)
+            consumed_targets.add(current_link)
+
+        new_link = (request.POST.get("new_link") or "").strip()
+        new_type = normalize_link_type(request.POST.get("new_type"))
+        if new_link and new_link not in existing_links_by_value and new_link not in consumed_targets:
+            SongLink.objects.create(
+                song=song,
+                link=new_link,
+                type=new_type,
+            )
 
 
 def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
