@@ -32,6 +32,24 @@
         applyLocalSearch();
     }
 
+    const referenceFilterInput = document.querySelector("[data-song-reference-filter]");
+    const referenceOptions = Array.from(document.querySelectorAll("[data-song-reference-option]"));
+    if (referenceFilterInput && referenceOptions.length) {
+        const applyReferenceFilter = () => {
+            const query = normalizeSearch(referenceFilterInput.value);
+            const shouldFilter = query.length >= 1;
+
+            referenceOptions.forEach((option) => {
+                const haystack = normalizeSearch(option.textContent || "");
+                const isHidden = shouldFilter && !haystack.includes(query);
+                option.style.display = isHidden ? "none" : "";
+            });
+        };
+
+        referenceFilterInput.addEventListener("input", applyReferenceFilter);
+        applyReferenceFilter();
+    }
+
     document.querySelectorAll("[data-song-description-toggle]").forEach((button) => {
         button.addEventListener("click", () => {
             const container = button.closest("[data-song-description]");

@@ -88,9 +88,15 @@
 
 .song-advanced-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-top: 1rem;
+}
+
+.song-advanced-top-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .song-advanced-grid label {
@@ -117,6 +123,43 @@
     max-height: 16rem;
     overflow: auto;
     padding: 0.8rem;
+}
+
+.song-reference-filter-unified {
+    gap: 0.75rem;
+    max-height: none;
+    overflow: visible;
+}
+
+.song-reference-filter-input {
+    min-height: 2.5rem;
+    width: 100%;
+}
+
+.song-reference-options {
+    display: grid;
+    gap: 0.45rem;
+    max-height: 16rem;
+    overflow: auto;
+    padding-right: 0.2rem;
+}
+
+.song-reference-option {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.song-reference-option input {
+    margin: 0;
+}
+
+.song-reference-legend {
+    border-top: 1px solid var(--site-line);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0;
+    padding-top: 0.55rem;
 }
 
 .song-reference-logic {
@@ -563,7 +606,8 @@
     }
 
     .song-search-main,
-    .song-advanced-grid {
+    .song-advanced-grid,
+    .song-advanced-top-row {
         grid-template-columns: 1fr;
     }
 
