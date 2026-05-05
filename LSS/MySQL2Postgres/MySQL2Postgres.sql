@@ -1,8 +1,13 @@
-SELECT CONCAT("INSERT INTO common.artists VALUES (", artist_id, ", '", REPLACE(name, '''', ''''''), "');") FROM c_artists c;
+SELECT setval(
+    pg_get_serial_sequence('common.artists', 'artist_id'),
+    (SELECT MAX(artist_id) FROM common.artists)
+);
 
-SELECT CONCAT("INSERT INTO common.bands VALUES (", band_id, ", '", REPLACE(name, '''', ''''''), "');") FROM c_bands
+SELECT CONCAT("INSERT INTO common.artists (artist_id, name) OVERRIDING SYSTEM VALUE VALUES (", artist_id, ", '", REPLACE(name, '''', ''''''), "');") FROM c_artists c;
 
-SELECT CONCAT("INSERT INTO common.genres VALUES (", genre_id, ", '", REPLACE(l.group, '''', ''''''), "', '", REPLACE(l.name, '''', ''''''), "');") FROM  l_genres l
+SELECT CONCAT("INSERT INTO common.bands (band_id, name) OVERRIDING SYSTEM VALUE VALUES (", band_id, ", '", REPLACE(name, '''', ''''''), "');") FROM c_bands
+
+SELECT CONCAT("INSERT INTO common.genres OVERRIDING SYSTEM VALUE VALUES (", genre_id, ", '", REPLACE(l.group, '''', ''''''), "', '", REPLACE(l.name, '''', ''''''), "');") FROM  l_genres l
 
 SELECT CONCAT(
 	"INSERT INTO lss.s_songs VALUES (",
@@ -54,7 +59,7 @@ SELECT CONCAT(
 )
 FROM l_verses l
 
-SELECT CONCAT("INSERT INTO lss.s_verse_prefixes (prefix_id, prefix, comment) VALUES (", .prefix_id, ", '", l.prefix, "', '", l.comment, "');") FROM l_verse_prefixes l
+SELECT CONCAT("INSERT INTO lss.s_verse_prefixes (prefix_id, prefix, comment) VALUES (", l.prefix_id, ", '", l.prefix, "', '", l.comment, "');") FROM l_verse_prefixes l
 
 SELECT CONCAT(
 	"INSERT INTO lss.s_song_links (song_id, type, link) VALUES (",
@@ -81,3 +86,4 @@ SELECT CONCAT("INSERT INTO lss.s_song_bands (song_id, band_id) VALUES (", l.song
 
 SELECT CONCAT("INSERT INTO lss.s_song_artists (song_id, artist_id) VALUES (", l.song_id, ", ", l.artist_id, ");") FROM l_song_artists l
 
+SELECT CONCAT("INSERT INTO lss.s_song_genres (song_id, genre_id) VALUES (", lsg.song_id, ", ", lsg.genre_id, ");") FROM l_song_genre lsg
