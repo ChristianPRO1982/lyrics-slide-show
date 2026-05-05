@@ -80,7 +80,7 @@ def _is_moderator(user) -> bool:
 def _can_edit_song(user, song: Song) -> bool:
     if not _is_authenticated(user):
         return False
-    return (not song.is_validated) or _is_moderator(user)
+    return not song.is_validated
 
 
 def _can_read_song(user, song: Song) -> bool:

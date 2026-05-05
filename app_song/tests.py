@@ -517,12 +517,12 @@ class ModifySongViewTests(TestCase):
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 404)
 
-    def test_moderator_can_access_validated_song(self):
+    def test_moderator_cannot_access_validated_song(self):
         self.song.status = 1
         self.song.save(update_fields=["status"])
         self._login(is_moderator=True)
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
 
     def test_post_save_updates_identity_and_verses(self):
         self._login()

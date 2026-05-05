@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'app_group',
     'app_song',
     'app_animation',
-    'app_logs',
 ]
 
 MIDDLEWARE = [
