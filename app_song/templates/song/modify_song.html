@@ -20,6 +20,9 @@
 {% block page_tools %}
     {% include "song/includes/_song_actions.html" %}
     <hr>
+    {% if can_devalidate %}
+        <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
+    {% endif %}
     <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
     <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
     <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
@@ -44,6 +47,9 @@
     <div data-song-mobile-actions hidden>
         {% include "song/includes/_song_actions.html" %}
         <hr>
+        {% if can_devalidate %}
+            <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
+        {% endif %}
         <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
         <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
         <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
@@ -52,11 +58,13 @@
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{{ title_complete_with_tags }}{% endblock %}
 {% block page_intro %}
-    <p>
-        <button type="button" class="song-tool-button" data-song-edit-meta-open>
-            {% trans "Modifier le titre, sous-titre et la description" %}
-        </button>
-    </p>
+    {% if can_edit %}
+        <p>
+            <button type="button" class="song-tool-button" data-song-edit-meta-open>
+                {% trans "Modifier le titre, sous-titre, la description et la validation" %}
+            </button>
+        </p>
+    {% endif %}
 {% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
@@ -102,6 +110,19 @@
                 <label for="song-subtitle-edit">{% trans "Sous-titre" %}</label>
                 <input id="song-subtitle-edit" name="subtitle" form="modify-song-form" type="text" value="{{ song.subtitle }}" data-song-subtitle-edit>
             </p>
+            <p>
+                <label for="song-status-validated-edit">
+                    <input
+                        id="song-status-validated-edit"
+                        name="status_validated"
+                        form="modify-song-form"
+                        type="checkbox"
+                        value="1"
+                        {% if song.is_validated %}checked{% endif %}
+                    >
+                    {% trans "Chant validé. Ce chant ne pourra être modifié que par les modérateurs" %}
+                </label>
+            </p>
         </article>
 
         <article class="site-theme-card song-detail-card" data-song-edit-meta-card hidden style="display: none;">
@@ -134,18 +155,22 @@
             <header class="song-list-header">
                 <h2>{% trans "Couplets et refrains" %}</h2>
             </header>
-            <p>
-                <button type="button" class="song-tool-button" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
-            </p>
-            <p>
-                <button type="button" class="song-secondary-action" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
-            </p>
+            {% if can_edit %}
+                <p>
+                    <button type="button" class="song-tool-button" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
+                </p>
+                <p>
+                    <button type="button" class="song-secondary-action" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
+                </p>
+            {% endif %}
 
             <div class="song-list" data-reorder-list>
                 {% for block in song_blocks %}
                     <article class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}" data-reorder-item data-id="{{ block.row_key }}">
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
-                            <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                            {% if can_edit %}
+                                <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                            {% endif %}
                             <strong class="song-edit-block-drag-label">{{ block.drag_label }}</strong>
                             <span class="song-edit-block-drag-text">{{ block.drag_text }}</span>
                         </div>
@@ -155,7 +180,9 @@
                                 <tbody>
                                     <tr>
                                         <td style="vertical-align: top; width: 3em;">
-                                            <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
+                                            {% if can_edit %}
+                                                <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
+                                            {% endif %}
                                         </td>
                                         <td style="vertical-align: top; text-align: right; width: 5em;">
                                             <strong>{{ block.display_label }}</strong>

@@ -4,7 +4,7 @@ from django.urls import reverse
 from app_main.models import DirectoryUserRecord
 from app_member.models import MemberRole
 
-from .models import Song, Verse
+from .models import Song, SongStatus, Verse
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
@@ -510,19 +510,60 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, '<span class="song-edit-block-drag-text">Couplet original</span>', html=False)
         self.assertContains(response, '<span class="song-edit-block-drag-text">Refrain original</span>', html=False)
 
-    def test_member_cannot_access_validated_song(self):
+    def test_member_can_access_validated_song_read_only(self):
         self.song.status = 1
         self.song.save(update_fields=["status"])
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
-    def test_moderator_cannot_access_validated_song(self):
+    def test_moderator_can_access_validated_song_read_only(self):
         self.song.status = 1
         self.song.save(update_fields=["status"])
         self._login(is_moderator=True)
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_member_cannot_post_validated_song(self):
+        self.song.status = 1
+        self.song.save(update_fields=["status"])
+        self._login()
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
         self.assertEqual(response.status_code, 404)
+
+    def test_moderator_can_post_validated_song(self):
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
+        self.assertEqual(response.status_code, 302)
+
+    def test_member_cannot_devalidate_song(self):
+        self.song.status = 1
+        self.song.save(update_fields=["status"])
+        self._login()
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "devalidate_song"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_moderator_can_devalidate_song_status_only(self):
+        self.song.status = 1
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "devalidate_song"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
+
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
+        self.assertEqual(self.song.title, "Chant")
+        self.assertEqual(self.song.subtitle, "Base")
+        self.assertEqual(self.song.description, "Description")
 
     def test_post_save_updates_identity_and_verses(self):
         self._login()
@@ -548,6 +589,24 @@ class ModifySongViewTests(TestCase):
         self.assertEqual(verses[2].num, 6)
         self.assertEqual(verses[2].num_verse, 1)
         self.assertEqual(verses[2].prefix, "Pont final\u00A0;")
+
+    def test_member_cannot_change_status_via_checkbox(self):
+        self._login()
+        payload = self._base_payload()
+        payload["status_validated"] = "1"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
+
+    def test_moderator_can_validate_with_checkbox(self):
+        self._login(is_moderator=True)
+        payload = self._base_payload()
+        payload["status_validated"] = "1"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
 
     def test_post_save_deletes_blocks_marked_for_deletion(self):
         self._login()

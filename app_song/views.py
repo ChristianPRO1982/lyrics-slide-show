@@ -80,7 +80,7 @@ def _is_moderator(user) -> bool:
 def _can_edit_song(user, song: Song) -> bool:
     if not _is_authenticated(user):
         return False
-    return not song.is_validated
+    return (not song.is_validated) or _is_moderator(user)
 
 
 def _can_read_song(user, song: Song) -> bool:
@@ -510,6 +510,7 @@ def _build_modify_song_context(
         "artists": artists,
         "genre_groups": genre_groups,
         "can_edit": _can_edit_song(request.user, song),
+        "can_devalidate": bool(song.is_validated and _is_moderator(request.user)),
         "display_url": reverse("song", args=[song.song_id]),
         "preview_url": reverse("modify_song_preview", args=[song.song_id]),
         "verse_max_lines": verse_max_lines,
@@ -531,13 +532,25 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
     song.title = _normalize_inline_text(request.POST.get("title"))
     song.subtitle = _normalize_inline_text(request.POST.get("subtitle"))
     song.description = _normalize_multiline_text(request.POST.get("description"))
+    validated_checked = _is_truthy(request.POST.get("status_validated"))
 
     parsed_blocks = _parse_song_blocks(request.POST)
     active_blocks = _recalculate_song_blocks([block for block in parsed_blocks if not block.delete])
     existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
+    song_update_fields = ["title", "subtitle", "description"]
+    if _is_moderator(request.user):
+        next_status = SongStatus.NOT_VALIDATED
+        if validated_checked:
+            if song.status == SongStatus.VALIDATED_WITH_CONCERN:
+                next_status = SongStatus.VALIDATED_WITH_CONCERN
+            else:
+                next_status = SongStatus.VALIDATED
+        if song.status != next_status:
+            song.status = next_status
+            song_update_fields.append("status")
 
     with transaction.atomic():
-        song.save(update_fields=["title", "subtitle", "description"])
+        song.save(update_fields=song_update_fields)
         for block in active_blocks:
             verse = existing_by_id.pop(block.block_id, None) if block.block_id else None
             if verse is None:
@@ -694,10 +707,20 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
 def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
     song_object = get_object_or_404(Song.objects.prefetch_related("verses", "links"), song_id=song_id)
-    if not _can_edit_song(request.user, song_object):
+    if not _is_authenticated(request.user):
         raise Http404
 
     if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action == "devalidate_song":
+            if not (_is_moderator(request.user) and song_object.is_validated):
+                raise Http404
+            song_object.status = SongStatus.NOT_VALIDATED
+            song_object.save(update_fields=["status"])
+            return redirect("modify_song", song_id=song_object.song_id)
+
+        if not _can_edit_song(request.user, song_object):
+            raise Http404
         _update_song_from_form(song_object, request)
         submit_intent = (request.POST.get("submit_intent") or "save").strip()
         next_url = (request.POST.get("next_url") or "").strip()
