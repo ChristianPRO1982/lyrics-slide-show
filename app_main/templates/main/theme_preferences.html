@@ -3,6 +3,7 @@
 {% load i18n %}
 {% trans "Icône du thème" as theme_icon_label %}
 {% trans "Logo du thème" as theme_logo_label %}
+{% trans "Choix du thème" as theme_section_icon_alt %}
 
 {% block title %}{% trans "Thèmes" %} | Lyrics Slide Show{% endblock %}
 
@@ -12,22 +13,22 @@
 
 {% block section_nav %}
     <div class="site-home-media">
-        <picture data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
+        <picture data-theme-icon="theme" data-theme-alt="{{ theme_section_icon_alt }}">
             <source
                 data-theme-size="512"
                 data-theme-mode="dark"
-                srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}"
+                srcset="{% static 'icons/ui/normal/512/dark/theme.png' %}"
                 media="(prefers-color-scheme: dark)"
             >
             <source
                 data-theme-size="512"
                 data-theme-mode="light"
-                srcset="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                srcset="{% static 'icons/ui/normal/512/light/theme.png' %}"
                 media="(prefers-color-scheme: light)"
             >
             <img
-                src="{% static 'icons/ui/normal/512/light/lss.png' %}"
-                alt="Lyrics Slide Show"
+                src="{% static 'icons/ui/normal/512/light/theme.png' %}"
+                alt="{{ theme_section_icon_alt }}"
                 data-theme-size="512"
                 data-theme-mode="light"
             >
