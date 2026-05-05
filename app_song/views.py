@@ -1157,11 +1157,40 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
     if request.method == "POST":
         if not _can_edit_song(request.user, song_object):
             raise Http404
-        _update_song_metadata_links_from_form(song_object, request)
+        _update_song_metadata_from_form(song_object, request)
         return redirect("song_metadata", song_id=song_object.song_id)
 
     metadata_links = list(song_object.links.all().order_by("link"))
-    bands, artists, _genre_groups = _get_song_metadata_labels(song_object)
+    for item in metadata_links:
+        display_type = str(item.type or SongLinkType.WEB)
+        if display_type == SongLinkType.AUDIO_VIDEO:
+            # Legacy fallback kept for pre-migration values.
+            display_type = "audio"
+        setattr(item, "display_type", display_type)
+    bands, artists, genre_groups = _get_song_metadata_labels(song_object)
+    reference_options = get_reference_options()
+    selected_genre_ids = set(SongGenre.objects.filter(song_id=song_object.song_id).values_list("genre_id", flat=True))
+    selected_band_ids = set(SongBand.objects.filter(song_id=song_object.song_id).values_list("band_id", flat=True))
+    selected_artist_ids = set(SongArtist.objects.filter(song_id=song_object.song_id).values_list("artist_id", flat=True))
+
+    def split_reference_options(options, selected_ids: set[int]) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
+        selected_items: list[dict[str, object]] = []
+        available_items: list[dict[str, object]] = []
+        for item in options:
+            payload = {
+                "id": item.id,
+                "label": item.label,
+            }
+            if item.id in selected_ids:
+                selected_items.append(payload)
+            else:
+                available_items.append(payload)
+        return (tuple(selected_items), tuple(available_items))
+
+    genres_selected, genres_available = split_reference_options(reference_options.genres, selected_genre_ids)
+    bands_selected, bands_available = split_reference_options(reference_options.bands, selected_band_ids)
+    artists_selected, artists_available = split_reference_options(reference_options.artists, selected_artist_ids)
+
     return render(
         request,
         "song/metadata.html",
@@ -1170,20 +1199,60 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
             "song": song_object,
             "title_complete_with_tags": build_song_full_title_with_tags(song_object),
             "metadata_links": metadata_links,
+            "genre_groups": genre_groups,
             "artists": artists,
             "bands": bands,
+            "metadata_genres_selected": genres_selected,
+            "metadata_genres_available": genres_available,
+            "metadata_bands_selected": bands_selected,
+            "metadata_bands_available": bands_available,
+            "metadata_artists_selected": artists_selected,
+            "metadata_artists_available": artists_available,
             "can_edit": _can_edit_song(request.user, song_object),
         },
     )
 
 
-def _update_song_metadata_links_from_form(song: Song, request: HttpRequest) -> None:
+def _normalize_posted_ids(values: list[str]) -> tuple[int, ...]:
+    normalized: list[int] = []
+    for value in values:
+        try:
+            parsed = int(str(value or "").strip())
+        except (TypeError, ValueError):
+            continue
+        if parsed > 0 and parsed not in normalized:
+            normalized.append(parsed)
+    return tuple(normalized)
+
+
+def _sync_song_reference_relations(song: Song, relation_model, id_field: str, selected_ids: tuple[int, ...]) -> None:
+    selected_set = set(selected_ids)
+    existing_ids = set(
+        relation_model.objects.filter(song_id=song.song_id).values_list(id_field, flat=True)
+    )
+
+    to_delete = existing_ids - selected_set
+    if to_delete:
+        relation_model.objects.filter(song_id=song.song_id, **{f"{id_field}__in": list(to_delete)}).delete()
+
+    to_create = selected_set - existing_ids
+    if to_create:
+        relation_model.objects.bulk_create(
+            [
+                relation_model(song=song, **{id_field: item_id})
+                for item_id in to_create
+            ]
+        )
+
+
+def _update_song_metadata_from_form(song: Song, request: HttpRequest) -> None:
     def normalize_link_type(raw_value: str | None) -> str:
         value = str(raw_value or "").strip().lower()
-        if value in {SongLinkType.WEB, SongLinkType.SCORE, SongLinkType.INTERNAL, SongLinkType.AUDIO_VIDEO}:
+        if value in {SongLinkType.WEB, SongLinkType.SCORE, SongLinkType.INTERNAL, "youtube", "audio"}:
             return value
-        if value in {"youtube", "audio"}:
-            return SongLinkType.AUDIO_VIDEO
+        if value == SongLinkType.AUDIO_VIDEO:
+            # Legacy fallback kept for pre-migration values.
+            return "audio"
         return SongLinkType.WEB
 
     existing_links_by_value = {item.link: item for item in song.links.all()}
@@ -1244,6 +1313,25 @@ def _update_song_metadata_links_from_form(song: Song, request: HttpRequest) -> N
                 link=new_link,
                 type=new_type,
             )
+
+        _sync_song_reference_relations(
+            song,
+            SongGenre,
+            "genre_id",
+            _normalize_posted_ids(request.POST.getlist("genre_ids")),
+        )
+        _sync_song_reference_relations(
+            song,
+            SongBand,
+            "band_id",
+            _normalize_posted_ids(request.POST.getlist("band_ids")),
+        )
+        _sync_song_reference_relations(
+            song,
+            SongArtist,
+            "artist_id",
+            _normalize_posted_ids(request.POST.getlist("artist_ids")),
+        )
 
 
 def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:

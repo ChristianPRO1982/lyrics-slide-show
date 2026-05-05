@@ -71,11 +71,11 @@
                             {% if not can_edit %}readonly{% endif %}
                         >
                         <select name="existing_{{ forloop.counter0 }}_type" {% if not can_edit %}disabled{% endif %}>
-                            <option value="web" {% if link.type == 'web' %}selected{% endif %}>lien</option>
-                            <option value="score" {% if link.type == 'score' %}selected{% endif %}>partition</option>
-                            <option value="youtube" {% if link.type == 'audio-video' %}selected{% endif %}>YouTube</option>
-                            <option value="audio">audio</option>
-                            <option value="internal" {% if link.type == 'internal' %}selected{% endif %}>lien interne</option>
+                            <option value="web" {% if link.display_type == 'web' %}selected{% endif %}>lien</option>
+                            <option value="score" {% if link.display_type == 'score' %}selected{% endif %}>partition</option>
+                            <option value="audio" {% if link.display_type == 'audio' %}selected{% endif %}>audio</option>
+                            <option value="youtube" {% if link.display_type == 'youtube' %}selected{% endif %}>YouTube</option>
+                            <option value="internal" {% if link.display_type == 'internal' %}selected{% endif %}>lien interne</option>
                         </select>
                         <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
                         <label for="existing-{{ forloop.counter0 }}-delete">
@@ -108,8 +108,8 @@
                 <select name="new_type" {% if not can_edit %}disabled{% endif %}>
                     <option value="web" selected>lien</option>
                     <option value="score">partition</option>
-                    <option value="youtube">YouTube</option>
                     <option value="audio">audio</option>
+                    <option value="youtube">YouTube</option>
                     <option value="internal">lien interne</option>
                 </select>
             </p>
@@ -119,35 +119,106 @@
     <article class="site-theme-card song-detail-card">
         <header class="site-theme-card-header">
             <div>
-                <h2>{% trans "Artistes" %}</h2>
+                <h2>{% trans "Genres" %}</h2>
             </div>
         </header>
-        {% if artists %}
-            <ul>
-                {% for artist in artists %}
-                    <li>{{ artist }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p><em>{% trans "Aucun artiste associé." %}</em></p>
-        {% endif %}
+        <div id="metadata-genres-transfer" data-meta-transfer-container data-input-name="genre_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_genres_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="genre_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_genres_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </article>
 
     <article class="site-theme-card song-detail-card">
         <header class="site-theme-card-header">
             <div>
-                <h2>{% trans "Groupes" %}</h2>
+                <h2>{% trans "Artistes" %}</h2>
             </div>
         </header>
-        {% if bands %}
-            <ul>
-                {% for band in bands %}
-                    <li>{{ band }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p><em>{% trans "Aucun groupe associé." %}</em></p>
-        {% endif %}
+        <div id="metadata-artists-transfer" data-meta-transfer-container data-input-name="artist_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_artists_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="artist_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_artists_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Groupes de musique" %}</h2>
+            </div>
+        </header>
+        <div id="metadata-bands-transfer" data-meta-transfer-container data-input-name="band_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_bands_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="band_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_bands_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </article>
 {% endblock %}
 {% block page_scripts %}
@@ -192,6 +263,60 @@
                     if (result.buttonId === "yes") {
                         checkbox.checked = true;
                     }
+                });
+            });
+        })();
+
+        (() => {
+            const canEdit = {{ can_edit|yesno:"true,false" }};
+
+            const createHiddenInput = (name, value) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = value;
+                input.setAttribute("form", "metadata-form");
+                return input;
+            };
+
+            document.querySelectorAll("[data-meta-transfer-container]").forEach((container) => {
+                if (!(container instanceof HTMLElement)) {
+                    return;
+                }
+
+                const inputName = container.getAttribute("data-input-name") || "";
+                const selectedList = container.querySelector("[data-meta-transfer-source]");
+                const availableList = container.querySelector("[data-meta-transfer-target]");
+                if (!(selectedList instanceof HTMLElement) || !(availableList instanceof HTMLElement)) {
+                    return;
+                }
+
+                container.addEventListener("click", (event) => {
+                    if (!canEdit) {
+                        return;
+                    }
+                    const target = event.target;
+                    if (!(target instanceof Element)) {
+                        return;
+                    }
+                    const item = target.closest("[data-meta-transfer-item]");
+                    if (!(item instanceof HTMLElement)) {
+                        return;
+                    }
+                    const itemId = item.getAttribute("data-id") || "";
+                    if (!itemId) {
+                        return;
+                    }
+
+                    const isSelected = item.parentElement === selectedList;
+                    if (isSelected) {
+                        item.querySelectorAll(`input[type="hidden"][name="${inputName}"]`).forEach((input) => input.remove());
+                        availableList.appendChild(item);
+                        return;
+                    }
+
+                    item.appendChild(createHiddenInput(inputName, itemId));
+                    selectedList.appendChild(item);
                 });
             });
         })();

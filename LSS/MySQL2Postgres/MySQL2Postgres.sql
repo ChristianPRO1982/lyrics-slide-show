@@ -87,3 +87,32 @@ SELECT CONCAT("INSERT INTO lss.s_song_bands (song_id, band_id) VALUES (", l.song
 SELECT CONCAT("INSERT INTO lss.s_song_artists (song_id, artist_id) VALUES (", l.song_id, ", ", l.artist_id, ");") FROM l_song_artists l
 
 SELECT CONCAT("INSERT INTO lss.s_song_genres (song_id, genre_id) VALUES (", lsg.song_id, ", ", lsg.genre_id, ");") FROM l_song_genre lsg
+
+
+
+
+"""
+BEGIN;
+
+UPDATE lss.s_song_links
+SET "type" = CASE
+    -- anciens labels FR
+    WHEN "type" = 'lien' THEN 'web'
+    WHEN "type" = 'partition' THEN 'score'
+    WHEN "type" = 'lien interne' THEN 'internal'
+    WHEN "type" = 'YouTube' THEN 'youtube'
+    WHEN "type" = 'audio' THEN 'audio'
+
+    -- ancien type fusionné
+    WHEN "type" = 'audio-video'
+         AND (LOWER(link) LIKE '%youtube.com%' OR LOWER(link) LIKE '%youtu.be%')
+      THEN 'youtube'
+    WHEN "type" = 'audio-video'
+      THEN 'audio'
+
+    ELSE "type"
+END
+WHERE "type" IN ('lien', 'partition', 'YouTube', 'audio', 'lien interne', 'audio-video');
+
+COMMIT;
+"""
