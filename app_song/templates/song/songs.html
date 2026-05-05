@@ -78,6 +78,12 @@
                     placeholder="{% trans 'Titre ou sous-titre' %}"
                     data-song-local-search
                 >
+                {% if can_use_advanced_search %}
+                    <label class="song-checkbox-option">
+                        <input type="checkbox" name="everywhere" value="1" {% if search_params.everywhere %}checked{% endif %}>
+                        <span>{% trans "Inclure description et paroles" %}</span>
+                    </label>
+                {% endif %}
                 <button type="submit">{% trans "Rechercher" %}</button>
                 <a class="song-secondary-action" href="{% url 'songs' %}?reset_search=1">{% trans "Réinitialiser" %}</a>
             </div>
@@ -86,15 +92,17 @@
                 <details class="song-advanced-search" {% if search_params.everywhere or search_params.validation != 'all' or search_params.favorites_only or search_params.genre_ids or search_params.band_ids or search_params.artist_ids %}open{% endif %}>
                     <summary>{% trans "Recherche avancée" %}</summary>
                     <div class="song-advanced-grid">
-                        <label class="song-checkbox-option">
-                            <input type="checkbox" name="everywhere" value="1" {% if search_params.everywhere %}checked{% endif %}>
-                            <span>{% trans "Inclure description et paroles" %}</span>
-                        </label>
-
-                        <label class="song-checkbox-option">
-                            <input type="checkbox" name="match_all_selected_refs" value="1" {% if search_params.match_all_selected_refs %}checked{% endif %}>
-                            <span>{% trans "Exiger toutes les références sélectionnées" %}</span>
-                        </label>
+                        <fieldset class="song-reference-logic">
+                            <legend>{% trans "Références" %}</legend>
+                            <label class="song-checkbox-option">
+                                <input type="radio" name="search_logic" value="or" {% if not search_params.match_all_selected_refs %}checked{% endif %}>
+                                <span>{% trans "OU" %}</span>
+                            </label>
+                            <label class="song-checkbox-option">
+                                <input type="radio" name="search_logic" value="and" {% if search_params.match_all_selected_refs %}checked{% endif %}>
+                                <span>{% trans "ET" %}</span>
+                            </label>
+                        </fieldset>
 
                         <label>
                             <span>{% trans "Validation" %}</span>
