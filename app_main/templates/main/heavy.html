@@ -3,7 +3,7 @@
 
 {% block title %}{% trans "Page lourde" %}{% endblock %}
 
-{% block section_title %}{% trans "Debug" %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Debug" %}{% endif %}{% endblock %}
 {% block section_intro %}
     <p>{% trans "Page réservée aux tests de chargement." %}</p>
 {% endblock %}

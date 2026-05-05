@@ -7,7 +7,7 @@
 
 {% block title %}{% trans "Thèmes" %} | Lyrics Slide Show{% endblock %}
 
-{% block section_title %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Thèmes" %}{% endif %}{% endblock %}
 
 {% block section_intro %}{% endblock %}
 

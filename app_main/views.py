@@ -13,6 +13,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+from app_group.services import get_selected_group_state
 from app_main.auth import (
     DisabledUserError,
     InvalidCallbackError,
@@ -66,11 +67,19 @@ AVAILABLE_THEMES = [
 HEAVY_IMAGE_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
 
 
+def _get_selected_group(request: HttpRequest):
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    return selected_group
+
+
 def homepage(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "main/homepage.html",
-        {"auth_mode": settings.AUTH_MODE},
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "selected_group": _get_selected_group(request),
+        },
     )
 
 
@@ -127,6 +136,7 @@ def heavy(request: HttpRequest) -> HttpResponse:
         {
             "images": images,
             "image_source": image_source,
+            "selected_group": _get_selected_group(request),
         },
     )
 
@@ -192,6 +202,7 @@ def _build_account_context(
     return {
         "auth_mode": settings.AUTH_MODE,
         "session_user": get_session_user(request.session),
+        "selected_group": _get_selected_group(request),
         "page_mode": "account",
         "available_themes": AVAILABLE_THEMES,
         "default_theme": AVAILABLE_THEMES[0]["slug"],
@@ -236,6 +247,7 @@ def login(request: HttpRequest) -> HttpResponse:
         {
             "auth_mode": settings.AUTH_MODE,
             "session_user": get_session_user(request.session),
+            "selected_group": _get_selected_group(request),
             "page_mode": "login",
         },
     )
@@ -419,7 +431,10 @@ def privacy_policy(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "main/privacy_policy.html",
-        {"auth_mode": settings.AUTH_MODE},
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "selected_group": _get_selected_group(request),
+        },
     )
 
 
@@ -429,6 +444,7 @@ def theme_preferences(request: HttpRequest) -> HttpResponse:
         "main/theme_preferences.html",
         {
             "auth_mode": settings.AUTH_MODE,
+            "selected_group": _get_selected_group(request),
             "available_themes": AVAILABLE_THEMES,
             "default_theme": AVAILABLE_THEMES[0]["slug"],
         },
@@ -441,6 +457,7 @@ def language_preferences(request: HttpRequest) -> HttpResponse:
         "main/language.html",
         {
             "auth_mode": settings.AUTH_MODE,
+            "selected_group": _get_selected_group(request),
             "current_language": getattr(request, "LANGUAGE_CODE", None) or get_language() or settings.LANGUAGE_CODE,
         },
     )

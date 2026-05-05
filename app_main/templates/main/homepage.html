@@ -12,7 +12,7 @@
 {% block title %}Lyrics Slide Show{% endblock %}
 {% block meta_description %}{% endblock %}
 
-{% block section_title %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% endif %}{% endblock %}
 {% block section_intro %}{% endblock %}
 {% block section_nav %}
     <div class="site-home-media">

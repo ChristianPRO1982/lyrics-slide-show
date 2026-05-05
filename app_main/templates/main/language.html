@@ -4,7 +4,7 @@
 
 {% block title %}{% trans "Langue" %} | Lyrics Slide Show{% endblock %}
 
-{% block section_title %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Langue" %}{% endif %}{% endblock %}
 
 {% block section_intro %}{% endblock %}
 
