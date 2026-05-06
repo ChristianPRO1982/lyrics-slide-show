@@ -148,11 +148,11 @@ def get_site_params_for_language(language_code: str | None) -> SiteParams | None
     fallback_language = (settings.LANGUAGE_CODE or "fr")[:2].lower()
 
     try:
-        params = SiteParams.objects.filter(language=normalized_language).first()
+        params = SiteParams.objects.filter(language__iexact=normalized_language).first()
         if params is not None:
             return params
         if normalized_language != fallback_language:
-            params = SiteParams.objects.filter(language=fallback_language).first()
+            params = SiteParams.objects.filter(language__iexact=fallback_language).first()
             if params is not None:
                 return params
         return SiteParams.objects.order_by("language").first()

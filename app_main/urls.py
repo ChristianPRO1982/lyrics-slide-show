@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('login/', views.login, name='login'),
     path('account/', views.account, name='account'),
+    path('site-params/', views.site_params, name='site_params'),
     path('themes/', views.theme_preferences, name='theme_preferences'),
     path('language/', views.language_preferences, name='language'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),

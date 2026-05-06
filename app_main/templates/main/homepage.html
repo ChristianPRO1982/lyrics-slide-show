@@ -9,7 +9,7 @@
 {% trans "Comment ça marche ?" as homepage_how_label %}
 {% trans "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" as homepage_quote_label %}
 
-{% block title %}Lyrics Slide Show{% endblock %}
+{% block title %}{{ home_site_title }} - Lyrics Slide Show{% endblock %}
 {% block meta_description %}{% endblock %}
 
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% endif %}{% endblock %}
@@ -43,15 +43,9 @@
 {% block tools_intro %}{% endblock %}
 {% block page_tools %}
     <div class="site-home-media">
-        <a class="site-nav-drawer-partner-link"
-           href="https://www.carthographie.fr/"
-           target="_blank"
-           rel="noopener noreferrer"
-           title="cARThographie">
-            <img class="site-nav-drawer-partner-image"
-                 src="{% static 'images/cARThographie.gif' %}"
-                 alt="cARThographie">
-        </a>
+        {% if home_bloc1_text %}
+            <p>{{ home_bloc1_text|linebreaksbr }}</p>
+        {% endif %}
     </div>
     <div>
         <a class="site-home-release-link"
@@ -101,18 +95,35 @@
     </div>
 {% endblock %}
 
-{% block page_kicker %}{% trans "propulsé par cARThographie !" %}{% endblock %}
+{% block page_kicker %}{{ home_site_title }}{% endblock %}
 
-{% block page_title %}{% trans "Lyrics Slide Show" %}{% endblock %}
+{% block page_title %}{{ home_site_title_h1 }}{% endblock %}
 
 {% block page_intro %}{% endblock %}
 
 {% block page_summary %}
-    <p>{% trans "Si vous avez des suggestions d'amélioration du site ou des bugs à remonter, merci de le faire ici : déposer un message" %}</p>
+    {% if home_bloc2_text %}
+        <p>{{ home_bloc2_text|linebreaksbr }}</p>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     <section class="site-theme-selection" aria-label="{% trans 'Présentation de Lyrics Slide Show' %}">
+        {% for home_card in home_cards %}
+            <article class="site-theme-card">
+                {% if home_card.title %}
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{{ home_card.title }}</h2>
+                        </div>
+                    </header>
+                {% endif %}
+                {% if home_card.text %}
+                    <div>{{ home_card.text|safe }}</div>
+                {% endif %}
+            </article>
+        {% endfor %}
+
         <article class="site-theme-card">
             <header class="site-theme-card-header">
                 <div>

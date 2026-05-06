@@ -1,5 +1,6 @@
 import logging
 import mimetypes
+import json
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -73,14 +74,50 @@ def _get_selected_group(request: HttpRequest):
 
 
 def homepage(request: HttpRequest) -> HttpResponse:
+    current_language = _current_language_code(request)
+    site_params = get_site_params_for_language(current_language)
+    home_cards = _parse_home_cards(site_params.home_text if site_params else "")
+
     return render(
         request,
         "main/homepage.html",
         {
             "auth_mode": settings.AUTH_MODE,
             "selected_group": _get_selected_group(request),
+            "home_site_title": (site_params.title if site_params and site_params.title else "Lyrics Slide Show"),
+            "home_site_title_h1": (site_params.title_h1 if site_params and site_params.title_h1 else "Lyrics Slide Show"),
+            "home_text": (site_params.home_text if site_params and site_params.home_text else ""),
+            "home_cards": home_cards,
+            "home_bloc1_text": (site_params.bloc1_text if site_params and site_params.bloc1_text else ""),
+            "home_bloc2_text": (site_params.bloc2_text if site_params and site_params.bloc2_text else ""),
         },
     )
+
+
+def _parse_home_cards(raw_value: str | None) -> list[dict[str, str]]:
+    raw = str(raw_value or "").strip()
+    if not raw:
+        return []
+
+    try:
+        payload = json.loads(raw)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return [{"title": "", "text": raw}]
+
+    cards = payload.get("cards") if isinstance(payload, dict) else None
+    if not isinstance(cards, list):
+        return []
+
+    output: list[dict[str, str]] = []
+    for item in cards[:6]:
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("title") or "").strip()
+        text = str(item.get("text") or "").strip()
+        if not title and not text:
+            continue
+        output.append({"title": title, "text": text})
+    return output
 
 
 def _collect_heavy_images(root: Path, *, source: str) -> list[dict[str, str]]:
@@ -424,6 +461,67 @@ def account(request: HttpRequest) -> HttpResponse:
             member_results=member_results,
             member_search=member_search,
         ),
+    )
+
+
+def site_params(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return redirect("login")
+    if not can_manage_site_settings(request.user):
+        raise Http404
+
+    selected_language = (request.GET.get("language") or _current_language_code(request) or "fr")[:2].lower()
+    if selected_language not in {"fr", "en"}:
+        selected_language = "fr"
+
+    language_db_value = selected_language.upper()
+    current_params = SiteParams.objects.filter(language__iexact=language_db_value).first()
+    admin_instance = current_params if current_params is not None else SiteParams(language=language_db_value)
+
+    if request.method == "POST":
+        posted_language = (request.POST.get("language") or selected_language)[:2].lower()
+        if posted_language not in {"fr", "en"}:
+            posted_language = selected_language
+        posted_language_db = posted_language.upper()
+        posted_current = SiteParams.objects.filter(language__iexact=posted_language_db).first()
+        posted_instance = posted_current if posted_current is not None else SiteParams(language=posted_language_db)
+        admin_form = SiteParamsAdminForm(request.POST, instance=posted_instance, prefix="admin-settings")
+        if admin_form.is_valid():
+            saved_params = admin_form.save(commit=False)
+            saved_params.language = posted_language_db
+            saved_params.save()
+            return redirect(f"{reverse('site_params')}?{urlencode({'language': posted_language})}")
+        missing_or_invalid_fields = []
+        for field_name, errors in admin_form.errors.items():
+            if field_name == "__all__":
+                continue
+            field = admin_form.fields.get(field_name)
+            label = str(field.label) if field else field_name
+            if errors:
+                missing_or_invalid_fields.append(label)
+        if missing_or_invalid_fields:
+            messages.error(
+                request,
+                _("Enregistrement impossible: informations manquantes ou invalides (%(fields)s).") % {
+                    "fields": ", ".join(missing_or_invalid_fields),
+                },
+            )
+        else:
+            messages.error(request, _("Enregistrement impossible: informations manquantes ou invalides."))
+        selected_language = posted_language
+    else:
+        admin_form = SiteParamsAdminForm(instance=admin_instance, prefix="admin-settings")
+
+    return render(
+        request,
+        "main/site_params.html",
+        {
+            "auth_mode": settings.AUTH_MODE,
+            "selected_group": _get_selected_group(request),
+            "selected_language": selected_language,
+            "admin_form": admin_form,
+            "is_admin": True,
+        },
     )
 
 
