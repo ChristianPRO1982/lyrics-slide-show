@@ -9,6 +9,15 @@
 {% block section_intro %}
     <style>@import url("{% static 'css/app_animation.css' %}");</style>
 {% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Liste des animations' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}
     <p><a href="{% url 'animations' %}">{% trans "Retour à la liste" %}</a></p>
@@ -80,7 +89,7 @@
                         <input
                             id="{{ form.text_color.id_for_label }}-picker"
                             type="color"
-                            value="#000000"
+                            value="#FFFFFF"
                             title="{% trans 'Choisir la couleur en hexadécimal' %}"
                             aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
                             oninput="document.getElementById('{{ form.text_color.id_for_label }}').value=this.value.toUpperCase()"
@@ -212,7 +221,7 @@
                                 <input
                                     id="song-{{ item.animation_song_id }}-text-color-picker"
                                     type="color"
-                                    value="#000000"
+                                    value="#FFFFFF"
                                     title="{% trans 'Choisir la couleur en hexadécimal' %}"
                                     aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
                                     oninput="document.getElementById('song-{{ item.animation_song_id }}-text-color').value=this.value.toUpperCase()"
