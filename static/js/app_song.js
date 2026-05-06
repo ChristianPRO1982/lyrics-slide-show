@@ -17,15 +17,33 @@
 
     const searchInput = document.querySelector("[data-song-local-search]");
     const songCards = Array.from(document.querySelectorAll("[data-song-card]"));
+    const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
+    const localEmptyState = document.querySelector("[data-song-local-empty]");
     if (searchInput && songCards.length) {
+        const updateVisibleCount = (count) => {
+            visibleCountTargets.forEach((target) => {
+                target.textContent = String(count);
+            });
+        };
+
         const applyLocalSearch = () => {
             const query = normalizeSearch(searchInput.value);
             const shouldFilter = query.length >= 3;
+            let visibleCount = 0;
 
             songCards.forEach((card) => {
                 const haystack = normalizeSearch(card.getAttribute("data-song-search-text"));
-                card.hidden = shouldFilter && !haystack.includes(query);
+                const isVisible = !shouldFilter || haystack.includes(query);
+                card.style.display = isVisible ? "" : "none";
+                if (isVisible) {
+                    visibleCount += 1;
+                }
             });
+
+            updateVisibleCount(visibleCount);
+            if (localEmptyState) {
+                localEmptyState.hidden = visibleCount !== 0;
+            }
         };
 
         searchInput.addEventListener("input", applyLocalSearch);

@@ -26,14 +26,14 @@
         </p>
     {% endif %}
     <hr>
-    <p>{% trans "Chants" %} : <strong>{{ displayed_count }}</strong></p>
+    <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
     <p>{% trans "Recherche ⓘ" %} : <strong>{{ search_count }}</strong></p>
     <p>{% trans "Total ⓘ" %} : <strong>{{ catalog_count }}</strong></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
 {% block mobile_side_content %}
     <div class="song-mobile-summary">
-        <p>{% trans "Chants" %} : <strong>{{ displayed_count }}</strong></p>
+        <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
         <p>{% trans "Recherche" %} : <strong>{{ search_count }}</strong></p>
         <p>{% trans "Total" %} : <strong>{{ catalog_count }}</strong></p>
     </div>
@@ -89,7 +89,7 @@
             </div>
 
             {% if can_use_advanced_search %}
-                <details class="song-advanced-search" {% if search_params.everywhere or search_params.validation != 'all' or search_params.favorites_only or search_params.genre_ids or search_params.band_ids or search_params.artist_ids %}open{% endif %}>
+                <details class="song-advanced-search">
                     <summary>{% trans "Recherche avancée" %}</summary>
                     <div class="song-advanced-grid">
                         <div class="song-advanced-top-row">
@@ -259,6 +259,12 @@
                     <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
                 </article>
             {% endfor %}
+
+            {% if song_cards %}
+                <article class="site-theme-card" data-song-local-empty hidden>
+                    <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
+                </article>
+            {% endif %}
         </div>
     </section>
 {% endblock %}
