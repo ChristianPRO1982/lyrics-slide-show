@@ -19,6 +19,13 @@ from app_song.search import (
     search_songs,
 )
 
+from .font_catalog import (
+    FONT_FAMILIES,
+    list_font_choices,
+    list_font_previews,
+    normalize_animation_font_family,
+    normalize_override_font_family,
+)
 from .forms import AnimationForm
 from .models import Animation, AnimationSong, AnimationVerseOverride
 from .services.access import ensure_animation_in_selected_group, get_selected_group_or_404
@@ -128,6 +135,15 @@ def _normalize_nullable_int(value: str | None) -> int | None:
     return parsed if parsed >= 0 else None
 
 
+def _font_selector_context() -> dict[str, object]:
+    sample_text = _("Texte exemple ABC abc 123 àéèêïùôç")
+    return {
+        "font_choices": list_font_choices(),
+        "font_values": FONT_FAMILIES,
+        "font_previews": list_font_previews(sample_text=sample_text),
+    }
+
+
 def _save_song_overrides(request: HttpRequest, animation: Animation) -> None:
     editable_fields = {
         "text_color_override",
@@ -164,6 +180,8 @@ def _save_song_overrides(request: HttpRequest, animation: Animation) -> None:
                     continue
                 if field_name in {"font_size_override", "horizontal_padding_override"}:
                     normalized_value = _normalize_nullable_int(field_values[field_name])
+                elif field_name == "font_family_override":
+                    normalized_value = normalize_override_font_family(field_values[field_name])
                 else:
                     normalized_value = _normalize_nullable_string(field_values[field_name])
                 if getattr(animation_song, field_name) != normalized_value:
@@ -239,6 +257,8 @@ def new_animation(request: HttpRequest) -> HttpResponse:
             "form": form,
             "is_creation": True,
             "animation": None,
+            "animation_font_family": normalize_animation_font_family(form["font_family"].value()),
+            **_font_selector_context(),
         },
     )
 
@@ -289,7 +309,9 @@ def edit_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "animation": animation,
             "playlist": playlist,
             "rendered_bundle_count": len(bundle),
+            "animation_font_family": normalize_animation_font_family(form["font_family"].value()),
             **selector_context,
+            **_font_selector_context(),
         },
     )
 
@@ -306,6 +328,9 @@ def delete_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
 
 
 def _build_verse_override_rows(animation_song: AnimationSong) -> list[dict[str, object]]:
+    animation_font_family = normalize_animation_font_family(animation_song.animation.font_family)
+    song_font_override = normalize_override_font_family(animation_song.font_family_override)
+    inherited_song_font_family = song_font_override or animation_font_family
     overrides_by_verse_id = {
         override.source_verse_id: override
         for override in animation_song.verse_overrides.all()
@@ -316,6 +341,7 @@ def _build_verse_override_rows(animation_song: AnimationSong) -> list[dict[str, 
         if verse.verse_id in rows_by_verse_id:
             continue
         override = overrides_by_verse_id.get(verse.verse_id)
+        verse_font_override = normalize_override_font_family(override.font_family_override if override is not None else None)
         rows_by_verse_id[verse.verse_id] = {
             "verse_id": verse.verse_id,
             "label": (verse.prefix or "").strip() or (_("Refrain") if verse.chorus else _("Couplet %(num)s") % {"num": verse.num_verse}),
@@ -323,10 +349,11 @@ def _build_verse_override_rows(animation_song: AnimationSong) -> list[dict[str, 
             "is_visible": override.is_visible if override is not None else True,
             "text_color_override": override.text_color_override if override is not None else "",
             "bg_color_override": override.bg_color_override if override is not None else "",
-            "font_family_override": override.font_family_override if override is not None else "",
+            "font_family_override": verse_font_override or "",
             "font_size_override": override.font_size_override if override is not None else "",
             "horizontal_padding_override": override.horizontal_padding_override if override is not None else "",
             "background_asset_code_override": override.background_asset_code_override if override is not None else "",
+            "font_preview_family": verse_font_override or inherited_song_font_family,
         }
     return list(rows_by_verse_id.values())
 
@@ -354,7 +381,7 @@ def _save_verse_overrides(request: HttpRequest, animation_song: AnimationSong) -
             is_visible = _bool_from_query(row.get("visible", "1"))
             text_color = _normalize_nullable_string(row.get("text_color"))
             bg_color = _normalize_nullable_string(row.get("bg_color"))
-            font_family = _normalize_nullable_string(row.get("font_family"))
+            font_family = normalize_override_font_family(row.get("font_family"))
             font_size = _normalize_nullable_int(row.get("font_size"))
             horizontal_padding = _normalize_nullable_int(row.get("horizontal_padding"))
             background_asset_code = _normalize_nullable_string(row.get("background_asset_code"))
@@ -418,5 +445,11 @@ def edit_animation_song_verses(request: HttpRequest, animation_id: int, animatio
             "animation": animation,
             "animation_song": animation_song,
             "rows": _build_verse_override_rows(animation_song),
+            "animation_font_family": normalize_animation_font_family(animation.font_family),
+            "song_font_family": (
+                normalize_override_font_family(animation_song.font_family_override)
+                or normalize_animation_font_family(animation.font_family)
+            ),
+            **_font_selector_context(),
         },
     )

@@ -43,7 +43,6 @@
             <header class="site-theme-card-header">
                 <div>
                     <h2>{% trans "Paramètres de base" %}</h2>
-                    <p>{% trans "Titre, description et date de l'animation." %}</p>
                 </div>
             </header>
             <div class="animation-stack-form">
@@ -72,10 +71,16 @@
             <header class="site-theme-card-header">
                 <div>
                     <h2>{% trans "Paramètres visuels" %}</h2>
-                    <p>{% trans "Défauts visuels appliqués à toute la projection." %}</p>
                 </div>
             </header>
             <div class="animation-stack-form">
+                <div class="animation-form-row">
+                    <label for="animation-live-preview">{% trans "Aperçu en direct" %}</label>
+                    <div
+                        id="animation-live-preview"
+                        style="padding: 1rem; border-radius: 0.75rem; color: #FFFFFF; background: #000000; font-family: 'Source Sans Pro', sans-serif; font-size: 20px;"
+                    >{% trans "Texte exemple" %}</div>
+                </div>
                 <div class="animation-form-row">
                     {{ form.text_color.label_tag }}
                     <div>
@@ -123,6 +128,10 @@
                 <div class="animation-form-row">
                     {{ form.font_family.label_tag }}
                     {{ form.font_family }}
+                    <p style="font-family: '{{ animation_font_family }}', sans-serif;">
+                        {% trans "Aperçu de la police animation" %}:
+                        <strong>{{ animation_font_family }}</strong> - {% trans "Texte exemple ABC abc 123 àéèêïùôç" %}
+                    </p>
                     {% if form.font_family.help_text %}<p class="animation-field-help">{{ form.font_family.help_text }}</p>{% endif %}
                     {% for error in form.font_family.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
                 </div>
@@ -146,6 +155,22 @@
                 </div>
                 {% for error in form.non_field_errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
                 <button type="submit">{% trans "Enregistrer" %}</button>
+            </div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Polices disponibles" %}</h2>
+                    <p>{% trans "Catalogue fermé utilisé par animation, chant et couplet." %}</p>
+                </div>
+            </header>
+            <div class="animation-stack-form">
+                {% for font_preview in font_previews %}
+                    <p style="font-family: '{{ font_preview.family }}', sans-serif;">
+                        {{ font_preview.sample }} <strong>[{{ font_preview.family }}]</strong>
+                    </p>
+                {% endfor %}
             </div>
         </article>
     </form>
@@ -248,7 +273,17 @@
                             </div>
                         </label>
                         <label>{% trans "Police" %}
-                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][font_family_override]" value="{{ item.font_family_override|default:'' }}">
+                            <select name="song_overrides[{{ item.animation_song_id }}][font_family_override]">
+                                <option value="" {% if not item.font_family_override or item.font_family_override not in font_values %}selected{% endif %}>
+                                    {% trans "Hériter de l'animation" %}
+                                </option>
+                                {% for font_value, font_label in font_choices %}
+                                    <option value="{{ font_value }}" {% if item.font_family_override == font_value %}selected{% endif %}>{{ font_label }}</option>
+                                {% endfor %}
+                            </select>
+                            <small style="font-family: '{% if item.font_family_override and item.font_family_override in font_values %}{{ item.font_family_override }}{% else %}{{ animation_font_family }}{% endif %}', sans-serif;">
+                                {% trans "Aperçu" %}: {% if item.font_family_override and item.font_family_override in font_values %}{{ item.font_family_override }}{% else %}{{ animation_font_family }}{% endif %}
+                            </small>
                         </label>
                         <label>{% trans "Taille police" %}
                             <input type="number" min="0" name="song_overrides[{{ item.animation_song_id }}][font_size_override]" value="{{ item.font_size_override|default:'' }}">
@@ -386,6 +421,46 @@
                     linkedInput.value = value.toUpperCase();
                 }
             });
+
+            const preview = document.getElementById("animation-live-preview");
+            const textColor = document.getElementById("id_text_color");
+            const bgColor = document.getElementById("id_bg_color");
+            const textColorPicker = document.getElementById("id_text_color-picker");
+            const bgColorPicker = document.getElementById("id_bg_color-picker");
+            const fontFamily = document.getElementById("id_font_family");
+            const horizontalPadding = document.getElementById("id_horizontal_padding");
+
+            const validHex = (value) => /^#([0-9a-fA-F]{6})$/.test(String(value || "").trim());
+            const readInt = (value, fallback) => {
+                const parsed = Number.parseInt(String(value || "").trim(), 10);
+                return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+            };
+
+            const updatePreview = () => {
+                if (!preview) {
+                    return;
+                }
+                const nextTextColor = validHex(textColor?.value) ? textColor.value.toUpperCase() : "#FFFFFF";
+                const nextBgColor = validHex(bgColor?.value) ? bgColor.value.toUpperCase() : "#000000";
+                const nextFontFamily = String(fontFamily?.value || "Source Sans Pro").trim() || "Source Sans Pro";
+                const nextPadding = readInt(horizontalPadding?.value, 80);
+
+                preview.style.color = nextTextColor;
+                preview.style.background = nextBgColor;
+                preview.style.fontFamily = `'${nextFontFamily}', sans-serif`;
+                preview.style.fontSize = "20px";
+                preview.style.paddingLeft = `${nextPadding}px`;
+                preview.style.paddingRight = `${nextPadding}px`;
+            };
+
+            [textColor, bgColor, textColorPicker, bgColorPicker, fontFamily, horizontalPadding].forEach((input) => {
+                if (!input) {
+                    return;
+                }
+                input.addEventListener("input", updatePreview);
+                input.addEventListener("change", updatePreview);
+            });
+            updatePreview();
         });
     </script>
     <script src="{% static 'js/app_animation.js' %}"></script>

@@ -9,6 +9,8 @@ from app_group.services import (
 )
 from app_song.models import Song, SongStatus, Verse
 
+from .forms import AnimationForm
+from .font_catalog import FALLBACK_FONT_FAMILY, GOOGLE_FONTS_STYLESHEET_HREF
 from .models import Animation, AnimationSong, AnimationVerseOverride
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.render_bundle import build_animation_render_bundle
@@ -18,6 +20,41 @@ class PlaylistParsingTests(SimpleTestCase):
     def test_parse_ordered_mix_keeps_valid_tokens(self):
         tokens = parse_ordered_mix("asid:10| sid:20 |bad|sid:nope|foo:1|asid:11")
         self.assertEqual([(token.token_type, token.token_id) for token in tokens], [("asid", 10), ("sid", 20), ("asid", 11)])
+
+
+class AnimationFormFontValidationTests(SimpleTestCase):
+    def test_animation_form_accepts_catalog_font(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation A",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_animation_form_rejects_font_outside_catalog(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation B",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Unknown Font",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("font_family", form.errors)
 
 
 class AnimationRenderBundleTests(TestCase):
@@ -141,6 +178,114 @@ class AnimationViewsTests(TestCase):
         results = response.context["song_search"].results
         result_song_ids = {item.song.song_id for item in results}
         self.assertEqual(result_song_ids, {visible_song.song_id})
+
+    def test_save_song_overrides_normalizes_font_values(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(group=group, title="Session A", scheduled_at=timezone.now())
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        response = self.client.post(
+            reverse("edit_animation", args=[animation.animation_id]),
+            {
+                "action": "save_song_overrides",
+                f"song_overrides[{animation_song.animation_song_id}][font_family_override]": "Unknown Font",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        animation_song.refresh_from_db()
+        self.assertIsNone(animation_song.font_family_override)
+
+        response = self.client.post(
+            reverse("edit_animation", args=[animation.animation_id]),
+            {
+                "action": "save_song_overrides",
+                f"song_overrides[{animation_song.animation_song_id}][font_family_override]": "Raleway",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        animation_song.refresh_from_db()
+        self.assertEqual(animation_song.font_family_override, "Raleway")
+
+    def test_save_verse_overrides_normalizes_font_values(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(group=group, title="Session A", scheduled_at=timezone.now())
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Line one")
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        response = self.client.post(
+            reverse("edit_animation_song_verses", args=[animation.animation_id, animation_song.animation_song_id]),
+            {
+                f"rows[{verse.verse_id}][visible]": "1",
+                f"rows[{verse.verse_id}][font_family]": "Unknown Font",
+                f"rows[{verse.verse_id}][text_color]": "#FFFFFF",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        override = AnimationVerseOverride.objects.get(
+            animation_song_id=animation_song.animation_song_id,
+            source_verse_id=verse.verse_id,
+        )
+        self.assertIsNone(override.font_family_override)
+
+        response = self.client.post(
+            reverse("edit_animation_song_verses", args=[animation.animation_id, animation_song.animation_song_id]),
+            {
+                f"rows[{verse.verse_id}][visible]": "1",
+                f"rows[{verse.verse_id}][font_family]": "Ubuntu",
+                f"rows[{verse.verse_id}][text_color]": "#FFFFFF",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        override.refresh_from_db()
+        self.assertEqual(override.font_family_override, "Ubuntu")
+
+    def test_legacy_animation_font_is_displayed_with_fallback(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(
+            group=group,
+            title="Legacy font animation",
+            scheduled_at=timezone.now(),
+            font_family="Legacy Font",
+        )
+
+        response = self.client.get(reverse("edit_animation", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, FALLBACK_FONT_FAMILY)
+
+    def test_base_template_loads_google_fonts_stylesheet(self):
+        response = self.client.get(reverse("animations"))
+        self.assertEqual(response.status_code, 404)
+        self._select_group(Group.objects.create(name="Open Group", status=GroupStatus.OPEN))
+        response = self.client.get(reverse("animations"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, GOOGLE_FONTS_STYLESHEET_HREF)
+
+    def test_font_selects_and_preview_card_are_present_in_animation_pages(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(group=group, title="Session A", scheduled_at=timezone.now())
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Line one")
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        edit_response = self.client.get(reverse("edit_animation", args=[animation.animation_id]))
+        self.assertEqual(edit_response.status_code, 200)
+        self.assertContains(edit_response, "Polices disponibles")
+        self.assertContains(
+            edit_response,
+            f'name="song_overrides[{animation_song.animation_song_id}][font_family_override]"',
+        )
+
+        verse_response = self.client.get(
+            reverse("edit_animation_song_verses", args=[animation.animation_id, animation_song.animation_song_id])
+        )
+        self.assertEqual(verse_response.status_code, 200)
+        self.assertContains(verse_response, f'name="rows[{verse.verse_id}][font_family]"')
 
 
 class PlaylistSyncTests(TestCase):
