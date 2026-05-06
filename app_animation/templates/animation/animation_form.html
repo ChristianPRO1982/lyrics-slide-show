@@ -25,29 +25,121 @@
     {% if is_creation %}{% trans "Nouvelle animation" %}{% else %}{{ animation.title }}{% endif %}
 {% endblock %}
 {% block content %}
-    <article class="site-theme-card">
-        <header class="site-theme-card-header">
-            <div>
-                <h2>{% trans "Paramètres de l'animation" %}</h2>
-                <p>{% trans "Défauts visuels appliqués à toute la projection." %}</p>
-            </div>
-        </header>
-        <form method="post" class="animation-stack-form">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="save_animation">
-            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-            {% for field in form.visible_fields %}
-                <div class="animation-form-row">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}<p class="animation-field-help">{{ field.help_text }}</p>{% endif %}
-                    {% for error in field.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+    <form method="post" class="site-theme-selection" aria-label="{% trans 'Paramètres de l animation' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_animation">
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Paramètres de base" %}</h2>
+                    <p>{% trans "Titre, description et date de l'animation." %}</p>
                 </div>
-            {% endfor %}
-            {% for error in form.non_field_errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
-            <button type="submit">{% trans "Enregistrer" %}</button>
-        </form>
-    </article>
+            </header>
+            <div class="animation-stack-form">
+                <div class="animation-form-row">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% if form.title.help_text %}<p class="animation-field-help">{{ form.title.help_text }}</p>{% endif %}
+                    {% for error in form.title.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {% if form.description.help_text %}<p class="animation-field-help">{{ form.description.help_text }}</p>{% endif %}
+                    {% for error in form.description.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.scheduled_at.label_tag }}
+                    {{ form.scheduled_at }}
+                    {% if form.scheduled_at.help_text %}<p class="animation-field-help">{{ form.scheduled_at.help_text }}</p>{% endif %}
+                    {% for error in form.scheduled_at.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Paramètres visuels" %}</h2>
+                    <p>{% trans "Défauts visuels appliqués à toute la projection." %}</p>
+                </div>
+            </header>
+            <div class="animation-stack-form">
+                <div class="animation-form-row">
+                    {{ form.text_color.label_tag }}
+                    <div>
+                        <input
+                            id="{{ form.text_color.id_for_label }}"
+                            type="text"
+                            name="{{ form.text_color.html_name }}"
+                            value="{{ form.text_color.value|default:'' }}"
+                            oninput="const p=document.getElementById('{{ form.text_color.id_for_label }}-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                        >
+                        <input
+                            id="{{ form.text_color.id_for_label }}-picker"
+                            type="color"
+                            value="#000000"
+                            title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                            aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                            oninput="document.getElementById('{{ form.text_color.id_for_label }}').value=this.value.toUpperCase()"
+                        >
+                    </div>
+                    {% if form.text_color.help_text %}<p class="animation-field-help">{{ form.text_color.help_text }}</p>{% endif %}
+                    {% for error in form.text_color.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.bg_color.label_tag }}
+                    <div>
+                        <input
+                            id="{{ form.bg_color.id_for_label }}"
+                            type="text"
+                            name="{{ form.bg_color.html_name }}"
+                            value="{{ form.bg_color.value|default:'' }}"
+                            oninput="const p=document.getElementById('{{ form.bg_color.id_for_label }}-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                        >
+                        <input
+                            id="{{ form.bg_color.id_for_label }}-picker"
+                            type="color"
+                            value="#000000"
+                            title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                            aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                            oninput="document.getElementById('{{ form.bg_color.id_for_label }}').value=this.value.toUpperCase()"
+                        >
+                    </div>
+                    {% if form.bg_color.help_text %}<p class="animation-field-help">{{ form.bg_color.help_text }}</p>{% endif %}
+                    {% for error in form.bg_color.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.font_family.label_tag }}
+                    {{ form.font_family }}
+                    {% if form.font_family.help_text %}<p class="animation-field-help">{{ form.font_family.help_text }}</p>{% endif %}
+                    {% for error in form.font_family.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.font_size.label_tag }}
+                    {{ form.font_size }}
+                    {% if form.font_size.help_text %}<p class="animation-field-help">{{ form.font_size.help_text }}</p>{% endif %}
+                    {% for error in form.font_size.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.horizontal_padding.label_tag }}
+                    {{ form.horizontal_padding }}
+                    {% if form.horizontal_padding.help_text %}<p class="animation-field-help">{{ form.horizontal_padding.help_text }}</p>{% endif %}
+                    {% for error in form.horizontal_padding.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="animation-form-row">
+                    {{ form.background_asset_code.label_tag }}
+                    {{ form.background_asset_code }}
+                    {% if form.background_asset_code.help_text %}<p class="animation-field-help">{{ form.background_asset_code.help_text }}</p>{% endif %}
+                    {% for error in form.background_asset_code.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+                {% for error in form.non_field_errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                <button type="submit">{% trans "Enregistrer" %}</button>
+            </div>
+        </article>
+    </form>
 
     {% if not is_creation %}
         <article class="site-theme-card">
@@ -109,10 +201,42 @@
                     <fieldset class="animation-song-override-fieldset">
                         <legend>{{ item.song.display_title }}</legend>
                         <label>{% trans "Couleur texte" %}
-                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][text_color_override]" value="{{ item.text_color_override|default:'' }}">
+                            <div>
+                                <input
+                                    id="song-{{ item.animation_song_id }}-text-color"
+                                    type="text"
+                                    name="song_overrides[{{ item.animation_song_id }}][text_color_override]"
+                                    value="{{ item.text_color_override|default:'' }}"
+                                    oninput="const p=document.getElementById('song-{{ item.animation_song_id }}-text-color-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                                >
+                                <input
+                                    id="song-{{ item.animation_song_id }}-text-color-picker"
+                                    type="color"
+                                    value="#000000"
+                                    title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                    aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                    oninput="document.getElementById('song-{{ item.animation_song_id }}-text-color').value=this.value.toUpperCase()"
+                                >
+                            </div>
                         </label>
                         <label>{% trans "Couleur fond" %}
-                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][bg_color_override]" value="{{ item.bg_color_override|default:'' }}">
+                            <div>
+                                <input
+                                    id="song-{{ item.animation_song_id }}-bg-color"
+                                    type="text"
+                                    name="song_overrides[{{ item.animation_song_id }}][bg_color_override]"
+                                    value="{{ item.bg_color_override|default:'' }}"
+                                    oninput="const p=document.getElementById('song-{{ item.animation_song_id }}-bg-color-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                                >
+                                <input
+                                    id="song-{{ item.animation_song_id }}-bg-color-picker"
+                                    type="color"
+                                    value="#000000"
+                                    title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                    aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                    oninput="document.getElementById('song-{{ item.animation_song_id }}-bg-color').value=this.value.toUpperCase()"
+                                >
+                            </div>
                         </label>
                         <label>{% trans "Police" %}
                             <input type="text" name="song_overrides[{{ item.animation_song_id }}][font_family_override]" value="{{ item.font_family_override|default:'' }}">
@@ -240,6 +364,20 @@
         window.LSS_ANIMATION_I18N = {
             removeFromPlaylist: "{{ animation_remove_from_playlist_label|escapejs }}"
         };
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("input[type='color'][id$='-picker']").forEach((picker) => {
+                const inputId = picker.id.replace(/-picker$/, "");
+                const linkedInput = document.getElementById(inputId);
+                if (!linkedInput) {
+                    return;
+                }
+                const value = String(linkedInput.value || "").trim();
+                if (/^#([0-9a-fA-F]{6})$/.test(value)) {
+                    picker.value = value;
+                    linkedInput.value = value.toUpperCase();
+                }
+            });
+        });
     </script>
     <script src="{% static 'js/app_animation.js' %}"></script>
     {% if not is_creation %}

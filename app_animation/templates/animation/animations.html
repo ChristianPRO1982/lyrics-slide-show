@@ -26,7 +26,7 @@
     <p><a href="{% url 'new_animation' %}">{% trans "Nouvelle animation" %}</a></p>
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
-{% block page_title %}{% trans "Animations à venir" %}{% endblock %}
+{% block page_title %}{% trans "Liste des animations" %}{% endblock %}
 {% block content %}
     <section class="animation-list-section">
         {% for animation in upcoming_animations %}

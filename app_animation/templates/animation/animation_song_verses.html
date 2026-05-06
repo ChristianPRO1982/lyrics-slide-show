@@ -7,6 +7,24 @@
 {% block section_intro %}
     <style>@import url("{% static 'css/app_animation.css' %}");</style>
 {% endblock %}
+{% block page_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("input[type='color'][id$='-picker']").forEach((picker) => {
+                const inputId = picker.id.replace(/-picker$/, "");
+                const linkedInput = document.getElementById(inputId);
+                if (!linkedInput) {
+                    return;
+                }
+                const value = String(linkedInput.value || "").trim();
+                if (/^#([0-9a-fA-F]{6})$/.test(value)) {
+                    picker.value = value;
+                    linkedInput.value = value.toUpperCase();
+                }
+            });
+        });
+    </script>
+{% endblock %}
 {% block tools_title %}{% trans "Animation" %}{% endblock %}
 {% block page_tools %}
     <p><a href="{% url 'edit_animation' animation.animation_id %}">{% trans "Retour à l'animation" %}</a></p>
@@ -37,10 +55,42 @@
                     </label>
 
                     <label>{% trans "Couleur texte" %}
-                        <input type="text" name="rows[{{ row.verse_id }}][text_color]" value="{{ row.text_color_override }}">
+                        <div>
+                            <input
+                                id="verse-{{ row.verse_id }}-text-color"
+                                type="text"
+                                name="rows[{{ row.verse_id }}][text_color]"
+                                value="{{ row.text_color_override }}"
+                                oninput="const p=document.getElementById('verse-{{ row.verse_id }}-text-color-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                            >
+                            <input
+                                id="verse-{{ row.verse_id }}-text-color-picker"
+                                type="color"
+                                value="#000000"
+                                title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                oninput="document.getElementById('verse-{{ row.verse_id }}-text-color').value=this.value.toUpperCase()"
+                            >
+                        </div>
                     </label>
                     <label>{% trans "Couleur fond" %}
-                        <input type="text" name="rows[{{ row.verse_id }}][bg_color]" value="{{ row.bg_color_override }}">
+                        <div>
+                            <input
+                                id="verse-{{ row.verse_id }}-bg-color"
+                                type="text"
+                                name="rows[{{ row.verse_id }}][bg_color]"
+                                value="{{ row.bg_color_override }}"
+                                oninput="const p=document.getElementById('verse-{{ row.verse_id }}-bg-color-picker'); if(p){const v=(this.value||'').trim(); if(/^#([0-9a-fA-F]{6})$/.test(v)){p.value=v;}}"
+                            >
+                            <input
+                                id="verse-{{ row.verse_id }}-bg-color-picker"
+                                type="color"
+                                value="#000000"
+                                title="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                aria-label="{% trans 'Choisir la couleur en hexadécimal' %}"
+                                oninput="document.getElementById('verse-{{ row.verse_id }}-bg-color').value=this.value.toUpperCase()"
+                            >
+                        </div>
                     </label>
                     <label>{% trans "Police" %}
                         <input type="text" name="rows[{{ row.verse_id }}][font_family]" value="{{ row.font_family_override }}">
