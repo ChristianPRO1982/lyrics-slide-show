@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .forms import GroupCreateForm, GroupSettingsForm
@@ -36,6 +37,7 @@ from .services import (
     user_can_select_group,
 )
 from app_member.services import can_manage_groups_globally
+from app_animation.models import Animation
 
 
 def _duplicate_name_exists(name: str, exclude_group_id: int | None = None) -> bool:
@@ -413,7 +415,12 @@ def modify_group(request: HttpRequest, group_id: int) -> HttpResponse:
         "delete_confirmation_word": get_delete_confirmation_word(getattr(request, "LANGUAGE_CODE", None)),
         "join_request_cards": join_request_cards,
         "member_cards": member_cards,
-        "upcoming_animations": [],
+        "upcoming_animations": list(
+            Animation.objects.filter(
+                group_id=group.group_id,
+                scheduled_at__gte=timezone.now(),
+            ).order_by("scheduled_at", "animation_id")
+        ),
         "can_select_current_group": user_can_select_group(request.user, group, membership, current_session_secret),
     }
     return render(request, "group/modify_group.html", context)

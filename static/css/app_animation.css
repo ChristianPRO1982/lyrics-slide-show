@@ -1,0 +1,113 @@
+.animation-list-section {
+    display: grid;
+    gap: 1rem;
+}
+
+.animation-list-card p {
+    margin: 0.35rem 0;
+}
+
+.animation-inline-form {
+    margin: 0;
+}
+
+.animation-danger-action {
+    background: #8b1e1e;
+    color: #fff;
+}
+
+.animation-secondary-action {
+    background: transparent;
+}
+
+.animation-stack-form {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.animation-form-row {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.animation-field-error {
+    color: #8b1e1e;
+}
+
+.animation-field-help {
+    opacity: 0.8;
+}
+
+.animation-playlist-toolbar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.animation-playlist-list {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.animation-playlist-item {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    padding: 0.65rem;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.animation-playlist-item-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.animation-playlist-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.animation-reorder-handle {
+    cursor: grab;
+    touch-action: none;
+}
+
+.animation-song-override-fieldset {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.8rem;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.animation-song-candidates {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.animation-song-candidate {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.animation-song-search-form {
+    display: grid;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.animation-checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+@media (max-width: 900px) {
+    .animation-song-override-fieldset {
+        padding: 0.6rem;
+    }
+}

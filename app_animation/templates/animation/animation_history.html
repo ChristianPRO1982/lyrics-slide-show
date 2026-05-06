@@ -2,34 +2,22 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Liste des animations" %} | Lyrics Slide Show{% endblock %}
+{% block title %}{% trans "Historique des animations" %} | Lyrics Slide Show{% endblock %}
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
 {% block section_intro %}
     <style>@import url("{% static 'css/app_animation.css' %}");</style>
 {% endblock %}
-{% block section_nav %}
-    <div class="site-home-media">
-        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
-            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
-            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
-            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Liste des animations' %}" data-theme-size="512" data-theme-mode="light">
-        </picture>
-    </div>
-{% endblock %}
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}
+    <p><a href="{% url 'animations' %}">{% trans "Retour aux animations à venir" %}</a></p>
     <p><a href="{% url 'new_animation' %}">{% trans "Nouvelle animation" %}</a></p>
-    <p><a href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
-{% block mobile_side_content %}
-    <p><a href="{% url 'new_animation' %}">{% trans "Nouvelle animation" %}</a></p>
-{% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
-{% block page_title %}{% trans "Animations à venir" %}{% endblock %}
+{% block page_title %}{% trans "Historique des animations" %}{% endblock %}
 {% block content %}
     <section class="animation-list-section">
-        {% for animation in upcoming_animations %}
+        {% for animation in past_animations %}
             <article class="site-theme-card animation-list-card">
                 <header class="site-theme-card-header">
                     <div>
@@ -44,7 +32,7 @@
             </article>
         {% empty %}
             <article class="site-theme-card">
-                <p>{% trans "Aucune animation à venir pour ce groupe." %}</p>
+                <p>{% trans "Aucune animation passée pour ce groupe." %}</p>
             </article>
         {% endfor %}
     </section>

@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+    {% if is_creation %}{% trans "Nouvelle animation" %}{% else %}{{ animation.title }}{% endif %} | Lyrics Slide Show
+{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    <p><a href="{% url 'animations' %}">{% trans "Retour à la liste" %}</a></p>
+    {% if not is_creation %}
+        <form method="post" action="{% url 'delete_animation' animation.animation_id %}" class="animation-inline-form">
+            {% csrf_token %}
+            <button type="submit" class="animation-danger-action">{% trans "Supprimer l'animation" %}</button>
+        </form>
+    {% endif %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}
+    {% if is_creation %}{% trans "Nouvelle animation" %}{% else %}{{ animation.title }}{% endif %}
+{% endblock %}
+{% block content %}
+    <article class="site-theme-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Paramètres de l'animation" %}</h2>
+                <p>{% trans "Défauts visuels appliqués à toute la projection." %}</p>
+            </div>
+        </header>
+        <form method="post" class="animation-stack-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="save_animation">
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+            {% for field in form.visible_fields %}
+                <div class="animation-form-row">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}<p class="animation-field-help">{{ field.help_text }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}<p class="animation-field-error">{{ error }}</p>{% endfor %}
+            <button type="submit">{% trans "Enregistrer" %}</button>
+        </form>
+    </article>
+
+    {% if not is_creation %}
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Playlist" %}</h2>
+                    <p>{% trans "Ajoutez les chants et réordonnez-les." %}</p>
+                </div>
+            </header>
+            <p>{% trans "Slides pré-calculées dans le bundle" %} : <strong>{{ rendered_bundle_count }}</strong></p>
+            <form method="post" class="animation-stack-form" data-animation-playlist-form>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_playlist">
+                <input type="hidden" name="ordered_mix" value="" data-animation-ordered-mix>
+
+                <div class="animation-playlist-toolbar">
+                    <button type="button" data-reorder-toggle>{% trans "Mode réorganisation" %}</button>
+                    <button type="button" data-reorder-cancel hidden>{% trans "Annuler" %}</button>
+                </div>
+
+                <div class="animation-playlist-list" data-reorder-list data-animation-playlist>
+                    {% for item in playlist %}
+                        <article class="animation-playlist-item" data-reorder-item data-id="asid:{{ item.animation_song_id }}" data-token="asid:{{ item.animation_song_id }}">
+                            <div class="animation-playlist-item-compact" data-reorder-drag-view hidden>
+                                <button type="button" data-reorder-handle class="animation-reorder-handle">☰</button>
+                                <strong>{{ item.song.display_title }}</strong>
+                            </div>
+                            <div class="animation-playlist-item-full" data-reorder-normal-view>
+                                <div class="animation-playlist-item-head">
+                                    <button type="button" data-reorder-handle class="animation-reorder-handle">☰</button>
+                                    <strong>{{ item.song.display_title }}</strong>
+                                </div>
+                                <p>
+                                    <a href="{% url 'edit_animation_song_verses' animation.animation_id item.animation_song_id %}">{% trans "Overrides couplets" %}</a>
+                                </p>
+                                <button type="button" class="animation-secondary-action" data-animation-remove-item>{% trans "Retirer de la playlist" %}</button>
+                                <input type="hidden" data-reorder-position value="{{ item.position }}">
+                            </div>
+                        </article>
+                    {% empty %}
+                        <p data-animation-playlist-empty>{% trans "La playlist est vide." %}</p>
+                    {% endfor %}
+                </div>
+
+                <button type="submit">{% trans "Enregistrer la playlist" %}</button>
+            </form>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Overrides visuels au niveau chant" %}</h2>
+                </div>
+            </header>
+            <form method="post" class="animation-stack-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_song_overrides">
+                {% for item in playlist %}
+                    <fieldset class="animation-song-override-fieldset">
+                        <legend>{{ item.song.display_title }}</legend>
+                        <label>{% trans "Couleur texte" %}
+                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][text_color_override]" value="{{ item.text_color_override|default:'' }}">
+                        </label>
+                        <label>{% trans "Couleur fond" %}
+                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][bg_color_override]" value="{{ item.bg_color_override|default:'' }}">
+                        </label>
+                        <label>{% trans "Police" %}
+                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][font_family_override]" value="{{ item.font_family_override|default:'' }}">
+                        </label>
+                        <label>{% trans "Taille police" %}
+                            <input type="number" min="0" name="song_overrides[{{ item.animation_song_id }}][font_size_override]" value="{{ item.font_size_override|default:'' }}">
+                        </label>
+                        <label>{% trans "Marge horizontale" %}
+                            <input type="number" min="0" name="song_overrides[{{ item.animation_song_id }}][horizontal_padding_override]" value="{{ item.horizontal_padding_override|default:'' }}">
+                        </label>
+                        <label>{% trans "Code image fond" %}
+                            <input type="text" name="song_overrides[{{ item.animation_song_id }}][background_asset_code_override]" value="{{ item.background_asset_code_override|default:'' }}">
+                        </label>
+                    </fieldset>
+                {% empty %}
+                    <p>{% trans "Ajoutez d'abord des chants dans la playlist." %}</p>
+                {% endfor %}
+                {% if playlist %}
+                    <button type="submit">{% trans "Enregistrer les overrides de chants" %}</button>
+                {% endif %}
+            </form>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Ajouter des chants" %}</h2>
+                </div>
+            </header>
+
+            <form method="get" class="animation-song-search-form">
+                <label>{% trans "Mode de recherche" %}
+                    <select name="song_mode">
+                        <option value="all" {% if song_mode == 'all' %}selected{% endif %}>{% trans "Tous les chants" %}</option>
+                        {% if can_use_favorites %}
+                            <option value="favorites" {% if song_mode == 'favorites' %}selected{% endif %}>{% trans "Favoris" %}</option>
+                        {% endif %}
+                        {% if can_use_advanced %}
+                            <option value="advanced" {% if song_mode == 'advanced' %}selected{% endif %}>{% trans "Recherche avancée" %}</option>
+                        {% endif %}
+                    </select>
+                </label>
+                <label>{% trans "Texte" %}
+                    <input type="search" name="song_q" value="{{ song_search_text }}" placeholder="{% trans 'Titre ou sous-titre' %}">
+                </label>
+
+                {% if song_mode == 'advanced' and can_use_advanced %}
+                    <label class="animation-checkbox-option">
+                        <input type="checkbox" name="everywhere" value="1" {% if song_search.params.everywhere %}checked{% endif %}>
+                        <span>{% trans "Inclure description et paroles" %}</span>
+                    </label>
+                    <label>{% trans "Validation" %}
+                        <select name="validation">
+                            <option value="all" {% if song_search.params.validation == 'all' %}selected{% endif %}>{% trans "Tous" %}</option>
+                            <option value="validated_only" {% if song_search.params.validation == 'validated_only' %}selected{% endif %}>{% trans "Validés" %}</option>
+                            <option value="non_validated_only" {% if song_search.params.validation == 'non_validated_only' %}selected{% endif %}>{% trans "Non validés" %}</option>
+                        </select>
+                    </label>
+                    <label>{% trans "Logique des références" %}
+                        <select name="search_logic">
+                            <option value="or" {% if not song_search.params.match_all_selected_refs %}selected{% endif %}>{% trans "OU" %}</option>
+                            <option value="and" {% if song_search.params.match_all_selected_refs %}selected{% endif %}>{% trans "ET" %}</option>
+                        </select>
+                    </label>
+
+                    {% if song_reference_options.genres %}
+                        <label>{% trans "Genres" %}
+                            <select name="genre_ids" multiple size="6">
+                                {% for option in song_reference_options.genres %}
+                                    <option value="{{ option.id }}" {% if option.id in song_search.params.genre_ids %}selected{% endif %}>{{ option.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    {% endif %}
+                    {% if song_reference_options.bands %}
+                        <label>{% trans "Groupes" %}
+                            <select name="band_ids" multiple size="6">
+                                {% for option in song_reference_options.bands %}
+                                    <option value="{{ option.id }}" {% if option.id in song_search.params.band_ids %}selected{% endif %}>{{ option.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    {% endif %}
+                    {% if song_reference_options.artists %}
+                        <label>{% trans "Artistes" %}
+                            <select name="artist_ids" multiple size="6">
+                                {% for option in song_reference_options.artists %}
+                                    <option value="{{ option.id }}" {% if option.id in song_search.params.artist_ids %}selected{% endif %}>{{ option.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    {% endif %}
+                {% endif %}
+
+                <button type="submit">{% trans "Rechercher" %}</button>
+            </form>
+
+            <label>{% trans "Filtre local rapide" %}
+                <input type="search" data-animation-song-local-search placeholder="{% trans 'Filtrer dans les résultats' %}">
+            </label>
+
+            <div class="animation-song-candidates" data-animation-song-candidates>
+                {% for result in song_search.results %}
+                    <article class="animation-song-candidate" data-animation-song-candidate data-search-text="{{ result.song.title }} {{ result.song.subtitle }}">
+                        <p><strong>{{ result.song.display_title }}</strong></p>
+                        <button
+                            type="button"
+                            data-add-song-button
+                            data-song-id="{{ result.song.song_id }}"
+                            data-song-title="{{ result.song.display_title }}"
+                        >
+                            {% trans "Ajouter à la playlist" %}
+                        </button>
+                    </article>
+                {% empty %}
+                    <p data-animation-candidate-empty>{% trans "Aucun chant trouvé." %}</p>
+                {% endfor %}
+            </div>
+        </article>
+    {% endif %}
+{% endblock %}
+{% block page_scripts %}
+    {% trans "Retirer de la playlist" as animation_remove_from_playlist_label %}
+    <script>
+        window.LSS_ANIMATION_I18N = {
+            removeFromPlaylist: "{{ animation_remove_from_playlist_label|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'js/app_animation.js' %}"></script>
+    {% if not is_creation %}
+        <script type="module">
+            import { init } from "{% static 'js/reorder-list.module.js' %}";
+
+            const form = document.querySelector("[data-animation-playlist-form]");
+            const playlist = document.querySelector("[data-animation-playlist]");
+            const toggleButton = document.querySelector("[data-reorder-toggle]");
+            const cancelButton = document.querySelector("[data-reorder-cancel]");
+            if (form && playlist && window.LSSAnimationPage) {
+                init({
+                    list: playlist,
+                    toggleButton,
+                    cancelButton,
+                    startPosition: 2,
+                    positionStep: 2,
+                    onChange: () => window.LSSAnimationPage.updateOrderedMix(),
+                    onEnd: () => window.LSSAnimationPage.updateOrderedMix(),
+                    onCancel: () => window.LSSAnimationPage.updateOrderedMix(),
+                });
+            }
+        </script>
+    {% endif %}
+{% endblock %}
