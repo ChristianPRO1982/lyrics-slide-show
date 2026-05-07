@@ -164,11 +164,13 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'id="id_title"')
         self.assertContains(response, 'name="ordered_mix"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
+        self.assertContains(response, '"songCatalog"')
 
     def test_modify_animation_post_updates_values(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
         song_b = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_c = Song.objects.create(title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -196,7 +198,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "66",
                 "horizontal_padding": "92",
                 "background_asset_code": "bg-asset-01",
-                "ordered_mix": f"asid:{item_b.animation_song_id}|asid:{item_a.animation_song_id}",
+                "ordered_mix": f"asid:{item_b.animation_song_id}|sid:{song_c.song_id}|asid:{item_a.animation_song_id}",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -211,8 +213,10 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(animation.horizontal_padding, 92)
         self.assertEqual(animation.background_asset_code, "bg-asset-01")
         reordered = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
-        self.assertEqual([row.animation_song_id for row in reordered], [item_b.animation_song_id, item_a.animation_song_id])
-        self.assertEqual([row.position for row in reordered], [2, 4])
+        self.assertEqual(reordered[0].animation_song_id, item_b.animation_song_id)
+        self.assertEqual(reordered[1].song_id, song_c.song_id)
+        self.assertEqual(reordered[2].animation_song_id, item_a.animation_song_id)
+        self.assertEqual([row.position for row in reordered], [2, 4, 6])
 
     def test_modify_animation_post_invalid_renders_errors(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -245,6 +249,43 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "Des erreurs empêchent l'enregistrement")
         persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
         self.assertEqual([row.animation_song_id for row in persisted], [item_a.animation_song_id, item_b.animation_song_id])
+
+    def test_modify_animation_post_ignores_inaccessible_sid_token(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_hidden = Song.objects.create(title="Hidden", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=True)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=72,
+            horizontal_padding=80,
+        )
+        item_a = AnimationSong.objects.create(animation=animation, song=song_a, position=2)
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"sid:{song_hidden.song_id}|asid:{item_a.animation_song_id}",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
+        self.assertEqual(len(persisted), 1)
+        self.assertEqual(persisted[0].animation_song_id, item_a.animation_song_id)
 
 
 class PlaylistSyncTests(TestCase):

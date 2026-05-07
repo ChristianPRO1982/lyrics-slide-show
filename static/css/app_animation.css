@@ -197,6 +197,41 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.animation-song-secondary-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.animation-song-secondary-title-row p {
+    margin: 0;
+}
+
+.animation-song-secondary-drag-view {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.animation-song-secondary-drag-view .animation-danger-action {
+    margin-left: auto;
+}
+
+.animation-insert-slot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 0;
+}
+
+.animation-insert-slot-button {
+    width: 75%;
+    min-width: 3rem;
+    min-height: 2rem;
+    border-radius: 999px;
 }
 
 .animation-modal-layer {

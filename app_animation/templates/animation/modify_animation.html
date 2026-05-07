@@ -98,7 +98,7 @@
         </div>
     </section>
 
-    <form method="post" id="modify-animation-form" data-animation-edit-form>
+    <form method="post" id="modify-animation-form" data-animation-edit-form data-reorder-module-url="{% static 'js/reorder-list.module.js' %}">
         {% csrf_token %}
         {{ form.title.as_hidden }}
         {{ form.description.as_hidden }}
@@ -114,14 +114,31 @@
 {% endblock %}
 {% block content_footer %}
     <section data-animation-edit-mode="secondary" hidden>
-        <div class="animation-song-stack" data-animation-secondary-list>
+        <div class="animation-song-stack" data-animation-secondary-list data-reorder-list>
             {% for item in animation_songs %}
-                <article class="site-theme-card animation-song-secondary-card" data-animation-song-item data-animation-song-id="{{ item.animation_song_id }}">
-                    <p><strong>{{ item.song.display_title }}</strong></p>
-                    <div class="animation-song-secondary-actions">
-                        <button type="button" class="animation-secondary-action" data-animation-song-up>{% trans "Monter" %}</button>
-                        <button type="button" class="animation-secondary-action" data-animation-song-down>{% trans "Descendre" %}</button>
-                        <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer de l'animation" %}</button>
+                <article
+                    class="site-theme-card animation-song-secondary-card"
+                    data-animation-song-item
+                    data-animation-token="asid:{{ item.animation_song_id }}"
+                    data-animation-song-id="{{ item.song.song_id }}"
+                    data-animation-song-title="{{ item.song.display_title|escape }}"
+                    data-reorder-item
+                    data-id="asid:{{ item.animation_song_id }}"
+                >
+                    <div class="animation-song-secondary-drag-view" data-reorder-drag-view hidden>
+                        <button type="button" class="animation-tool-button animation-reorder-handle" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                        <strong>{{ item.song.display_title }}</strong>
+                        <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer" %}</button>
+                    </div>
+
+                    <div class="animation-song-secondary-normal-view" data-reorder-normal-view>
+                        <div class="animation-song-secondary-title-row">
+                            <button type="button" class="animation-tool-button animation-reorder-handle" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                            <p><strong>{{ item.song.display_title }}</strong></p>
+                        </div>
+                        <div class="animation-song-secondary-actions">
+                            <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer" %}</button>
+                        </div>
                     </div>
                 </article>
             {% endfor %}

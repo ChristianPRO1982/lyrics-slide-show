@@ -23,6 +23,15 @@
 {% trans "Supprimer cette chanson de l'animation ?" as lss_anim_remove_song_message %}
 {% trans "Oui" as lss_anim_yes %}
 {% trans "Non" as lss_anim_no %}
+{% trans "Déplacer" as lss_anim_move %}
+{% trans "Supprimer" as lss_anim_remove_song_action %}
+{% trans "Ajouter un chant" as lss_anim_add_song_title %}
+{% trans "Choisir un chant à insérer dans la playlist." as lss_anim_add_song_message %}
+{% trans "Aucun chant accessible pour le moment." as lss_anim_no_song_available %}
+{% trans "Ajouter" as lss_anim_add_song_action %}
+{% trans "Chant" as lss_anim_song_choice_label %}
+{% trans "Insérer un chant" as lss_anim_insert_song_label %}
+{% trans "déjà dans la playlist" as lss_anim_already_in_playlist %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -48,6 +57,15 @@
         removeSongTitle: "{{ lss_anim_remove_song_title|escapejs }}",
         removeSongMessage: "{{ lss_anim_remove_song_message|escapejs }}",
         yesLabel: "{{ lss_anim_yes|escapejs }}",
-        noLabel: "{{ lss_anim_no|escapejs }}"
+        noLabel: "{{ lss_anim_no|escapejs }}",
+        moveLabel: "{{ lss_anim_move|escapejs }}",
+        removeSongActionLabel: "{{ lss_anim_remove_song_action|escapejs }}",
+        addSongPopupTitle: "{{ lss_anim_add_song_title|escapejs }}",
+        addSongPopupMessage: "{{ lss_anim_add_song_message|escapejs }}",
+        noAccessibleSongMessage: "{{ lss_anim_no_song_available|escapejs }}",
+        addSongActionLabel: "{{ lss_anim_add_song_action|escapejs }}",
+        songChoiceLabel: "{{ lss_anim_song_choice_label|escapejs }}",
+        insertSongLabel: "{{ lss_anim_insert_song_label|escapejs }}",
+        alreadyInPlaylistLabel: "{{ lss_anim_already_in_playlist|escapejs }}"
     };
 </script>

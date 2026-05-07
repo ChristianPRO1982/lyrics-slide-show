@@ -6,6 +6,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from app_group.services import get_member_id_from_user
+from app_song.search import SongSearchParams, search_songs
+
 from .font_catalog import list_font_choices, list_font_previews
 from .forms import AnimationForm
 from .models import Animation
@@ -71,6 +74,16 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     animation_songs = list(
         animation.animation_songs.select_related("song").order_by("position", "animation_song_id")
     )
+    member_id = get_member_id_from_user(request.user)
+    song_search_results = search_songs(SongSearchParams.empty(), request.user, member_id)
+    accessible_song_ids = {item.song.song_id for item in song_search_results.results}
+    song_catalog = [
+        {
+            "id": item.song.song_id,
+            "title": item.song.display_title,
+        }
+        for item in song_search_results.results
+    ]
 
     if request.method == "POST":
         form = AnimationForm(request.POST, instance=animation)
@@ -78,8 +91,8 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             form.instance = form.save(commit=False)
             ordered_mix_raw = request.POST.get("ordered_mix")
             if ordered_mix_raw is not None:
-                ordered_tokens = [token for token in parse_ordered_mix(ordered_mix_raw) if token.token_type == "asid"]
-                sync_animation_playlist(animation, ordered_tokens, allowed_song_ids=set())
+                ordered_tokens = parse_ordered_mix(ordered_mix_raw)
+                sync_animation_playlist(animation, ordered_tokens, allowed_song_ids=accessible_song_ids)
             form.instance.save()
             messages.success(request, _("L'animation a été enregistrée."))
             return redirect("modify_animation", animation_id=animation.animation_id)
@@ -108,6 +121,7 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "popup_data": {
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
+                "songCatalog": song_catalog,
             },
         },
     )
