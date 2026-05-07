@@ -268,7 +268,6 @@
                     "font_family",
                     "font_size",
                     "horizontal_padding",
-                    "background_asset_code",
                 ]),
             ],
             preview: {
@@ -319,13 +318,6 @@
                     min: 0,
                     max: 600,
                     step: 1,
-                },
-                {
-                    id: "background_asset_code",
-                    label: label("labelBackgroundAssetCode"),
-                    type: "text",
-                    value: values.background_asset_code,
-                    maxLength: 128,
                 },
             ],
             enterButtonId: "ok",
