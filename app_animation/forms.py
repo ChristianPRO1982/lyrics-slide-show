@@ -52,6 +52,8 @@ class AnimationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         scheduled_value = self.initial.get("scheduled_at")
+        if scheduled_value is None and getattr(self.instance, "pk", None):
+            scheduled_value = self.instance.scheduled_at
         if scheduled_value is not None:
             self.initial["scheduled_at"] = scheduled_value.strftime("%Y-%m-%dT%H:%M")
 

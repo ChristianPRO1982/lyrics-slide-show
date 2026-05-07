@@ -19,7 +19,7 @@
     };
 
     const allowedButtonTones = new Set(["neutral", "success", "warning", "danger"]);
-    const allowedFieldTypes = new Set(["text", "email", "password", "textarea"]);
+    const allowedFieldTypes = new Set(["text", "email", "password", "textarea", "color", "number", "select", "datetime-local"]);
     const allowedSizes = new Set(["compact", "default", "wide"]);
     const themeConfig = window.LSS_THEME_CONFIG || null;
     const colorSchemeQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
@@ -267,8 +267,8 @@
     const normalizeFields = (fields) => {
         const normalized = Array.isArray(fields) ? fields : [];
 
-        if (normalized.length > 5) {
-            throw new Error("Popup supports at most five fields.");
+        if (normalized.length > 12) {
+            throw new Error("Popup supports at most twelve fields.");
         }
 
         return normalized.map((field, index) => {
@@ -288,6 +288,24 @@
                 autocomplete: String(field.autocomplete ?? ""),
                 maxLength: Number.isInteger(field.maxLength) && field.maxLength > 0 ? field.maxLength : null,
                 rows: type === "textarea" && Number.isInteger(field.rows) && field.rows > 0 ? field.rows : 4,
+                min: Number.isFinite(field.min) ? Number(field.min) : null,
+                max: Number.isFinite(field.max) ? Number(field.max) : null,
+                step: Number.isFinite(field.step) && Number(field.step) > 0 ? Number(field.step) : null,
+                options: type === "select"
+                    ? (Array.isArray(field.options) ? field.options : []).map((option, optionIndex) => {
+                        if (option == null || typeof option !== "object") {
+                            return {
+                                value: `option-${optionIndex}`,
+                                label: `option-${optionIndex}`,
+                            };
+                        }
+                        const value = String(option.value ?? `option-${optionIndex}`);
+                        return {
+                            value,
+                            label: String(option.label ?? value),
+                        };
+                    })
+                    : [],
             };
         });
     };
@@ -316,6 +334,21 @@
             showCloseButton,
             enterButtonId,
             escapeButtonId,
+            onFieldChange: typeof normalized.onFieldChange === "function" ? normalized.onFieldChange : null,
+            preview: normalized.preview && typeof normalized.preview === "object"
+                ? {
+                    label: String(normalized.preview.label ?? ""),
+                    text: String(normalized.preview.text ?? ""),
+                    className: String(normalized.preview.className ?? "").trim(),
+                }
+                : null,
+            fontSamples: Array.isArray(normalized.fontSamples)
+                ? normalized.fontSamples.map((sample) => ({
+                    fontFamily: String((sample && sample.fontFamily) ?? "").trim(),
+                    sample: String((sample && sample.sample) ?? ""),
+                    label: String((sample && sample.label) ?? ""),
+                })).filter((sample) => sample.fontFamily)
+                : [],
         };
     };
 
@@ -377,18 +410,39 @@
             label.appendChild(required);
         }
 
-        const input = document.createElement(field.type === "textarea" ? "textarea" : "input");
+        const isTextArea = field.type === "textarea";
+        const isSelect = field.type === "select";
+        const input = document.createElement(isTextArea ? "textarea" : (isSelect ? "select" : "input"));
         input.id = `lss-messagebox-field-${field.id}`;
         input.name = field.id;
-        input.className = field.type === "textarea" ? "lss-messagebox-textarea" : "lss-messagebox-input";
-        input.placeholder = field.placeholder;
+        input.className = isTextArea
+            ? "lss-messagebox-textarea"
+            : (isSelect ? "lss-messagebox-select" : "lss-messagebox-input");
         input.value = field.value;
         input.dataset.fieldId = field.id;
 
-        if (field.type !== "textarea") {
+        if (!isTextArea && !isSelect) {
             input.type = field.type;
-        } else {
+        } else if (isTextArea) {
             input.rows = field.rows;
+        }
+
+        if (!isSelect) {
+            input.placeholder = field.placeholder;
+        }
+
+        if (isSelect) {
+            field.options.forEach((option) => {
+                const optionElement = document.createElement("option");
+                optionElement.value = option.value;
+                optionElement.textContent = option.label;
+                input.appendChild(optionElement);
+            });
+            if (field.options.some((option) => option.value === field.value)) {
+                input.value = field.value;
+            } else if (field.options.length > 0) {
+                input.value = field.options[0].value;
+            }
         }
 
         if (field.required) {
@@ -401,6 +455,18 @@
 
         if (field.maxLength) {
             input.maxLength = field.maxLength;
+        }
+
+        if (field.min !== null && "min" in input) {
+            input.min = String(field.min);
+        }
+
+        if (field.max !== null && "max" in input) {
+            input.max = String(field.max);
+        }
+
+        if (field.step !== null && "step" in input) {
+            input.step = String(field.step);
         }
 
         const error = document.createElement("p");
@@ -475,6 +541,45 @@
             content.appendChild(markdown);
         }
 
+        if (normalizedConfig.fontSamples.length) {
+            const sampleList = document.createElement("div");
+            sampleList.className = "lss-messagebox-font-samples";
+            normalizedConfig.fontSamples.forEach((sample) => {
+                const item = document.createElement("div");
+                item.className = "lss-messagebox-font-sample";
+                item.style.fontFamily = `'${sample.fontFamily}', sans-serif`;
+
+                const textNode = document.createTextNode(`${sample.sample} `);
+                const labelNode = document.createElement("strong");
+                labelNode.textContent = `[${sample.label || sample.fontFamily}]`;
+                item.append(textNode, labelNode);
+                sampleList.appendChild(item);
+            });
+            content.appendChild(sampleList);
+        }
+
+        let previewElement = null;
+        if (normalizedConfig.preview) {
+            const previewWrapper = document.createElement("div");
+            previewWrapper.className = "lss-messagebox-live-preview-wrapper";
+
+            if (normalizedConfig.preview.label) {
+                const previewLabel = document.createElement("p");
+                previewLabel.className = "lss-messagebox-live-preview-label";
+                previewLabel.textContent = normalizedConfig.preview.label;
+                previewWrapper.appendChild(previewLabel);
+            }
+
+            previewElement = document.createElement("div");
+            previewElement.className = "lss-messagebox-live-preview";
+            if (normalizedConfig.preview.className) {
+                previewElement.classList.add(normalizedConfig.preview.className);
+            }
+            previewElement.textContent = normalizedConfig.preview.text;
+            previewWrapper.appendChild(previewElement);
+            content.appendChild(previewWrapper);
+        }
+
         let form = null;
 
         if (normalizedConfig.fields.length) {
@@ -512,6 +617,7 @@
             closeButton,
             form,
             footer,
+            previewElement,
         };
     };
 
@@ -579,6 +685,52 @@
         error.textContent = message;
     };
 
+    const setFieldValue = (state, fieldId, value) => {
+        if (!state.form) {
+            return false;
+        }
+
+        const input = state.form.querySelector(`[data-field-id="${escapeSelectorValue(fieldId)}"]`);
+        if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)) {
+            return false;
+        }
+
+        const nextValue = String(value ?? "");
+        if (input.value === nextValue) {
+            return false;
+        }
+
+        input.value = nextValue;
+        return true;
+    };
+
+    const triggerFieldChangeHook = (state, fieldId) => {
+        if (!state.config.onFieldChange) {
+            return;
+        }
+
+        try {
+            state.config.onFieldChange({
+                fieldId,
+                value: fieldId ? (getFieldValues(state)[fieldId] ?? "") : "",
+                values: getFieldValues(state),
+                previewElement: state.previewElement,
+                setFieldValue: (targetFieldId, targetValue) => {
+                    const changed = setFieldValue(state, targetFieldId, targetValue);
+                    if (changed) {
+                        triggerFieldChangeHook(state, targetFieldId);
+                    }
+                    return changed;
+                },
+                setFieldError: (targetFieldId, message) => {
+                    setFieldError(state, targetFieldId, String(message || ""));
+                },
+            });
+        } catch (error) {
+            window.console.error("LSSMessageBox onFieldChange callback failed.", error);
+        }
+    };
+
     const validateFields = (state, button) => {
         if (!state.form || !shouldValidateButton(state.config, button)) {
             return true;
@@ -591,7 +743,7 @@
             const selector = `[data-field-id="${escapeSelectorValue(field.id)}"]`;
             const input = state.form.querySelector(selector);
 
-            if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) {
+            if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)) {
                 return;
             }
 
@@ -677,6 +829,13 @@
             },
             setFieldError: (fieldId, message) => {
                 setFieldError(state, fieldId, String(message || ""));
+            },
+            setFieldValue: (fieldId, value) => {
+                const changed = setFieldValue(state, fieldId, value);
+                if (changed) {
+                    triggerFieldChangeHook(state, fieldId);
+                }
+                return changed;
             },
         };
     };
@@ -932,11 +1091,23 @@
             });
         });
 
+        if (state.form) {
+            state.form.querySelectorAll("[data-field-id]").forEach((fieldElement) => {
+                fieldElement.addEventListener("input", () => {
+                    triggerFieldChangeHook(state, fieldElement.dataset.fieldId || "");
+                });
+                fieldElement.addEventListener("change", () => {
+                    triggerFieldChangeHook(state, fieldElement.dataset.fieldId || "");
+                });
+            });
+        }
+
         document.addEventListener("keydown", state.onKeyDown, true);
         document.addEventListener("focusin", state.onFocusIn, true);
 
         setBusyState(state, false);
         window.requestAnimationFrame(() => {
+            triggerFieldChangeHook(state, "");
             moveFocusToInitialTarget(state);
         });
     };

@@ -1,0 +1,45 @@
+{% load i18n %}
+{% trans "Données générales" as lss_anim_general_title %}
+{% trans "Couleurs et style" as lss_anim_visual_title %}
+{% trans "Liste des polices" as lss_anim_font_list_title %}
+{% trans "Titre" as lss_anim_label_title %}
+{% trans "Description" as lss_anim_label_description %}
+{% trans "Date et heure" as lss_anim_label_datetime %}
+{% trans "Couleur du texte" as lss_anim_label_text_color %}
+{% trans "Couleur de fond" as lss_anim_label_bg_color %}
+{% trans "Police" as lss_anim_label_font_family %}
+{% trans "Taille de police" as lss_anim_label_font_size %}
+{% trans "Marge horizontale" as lss_anim_label_padding %}
+{% trans "Code d'image de fond" as lss_anim_label_bg_asset %}
+{% trans "OK" as lss_anim_ok %}
+{% trans "Abandonner" as lss_anim_cancel %}
+{% trans "Réinitialiser" as lss_anim_reset %}
+{% trans "Sans description." as lss_anim_no_description %}
+{% trans "Exemple de projection" as lss_anim_preview_text %}
+{% trans "Aperçu en direct" as lss_anim_preview_label %}
+{% trans "Text color" as lss_anim_preview_line_1 %}
+{% trans "Background color" as lss_anim_preview_line_2 %}
+<script>
+    window.LSS_MODIFY_ANIMATION_I18N = {
+        generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
+        visualPopupTitle: "{{ lss_anim_visual_title|escapejs }}",
+        fontListPopupTitle: "{{ lss_anim_font_list_title|escapejs }}",
+        labelTitle: "{{ lss_anim_label_title|escapejs }}",
+        labelDescription: "{{ lss_anim_label_description|escapejs }}",
+        labelDateTime: "{{ lss_anim_label_datetime|escapejs }}",
+        labelTextColor: "{{ lss_anim_label_text_color|escapejs }}",
+        labelBgColor: "{{ lss_anim_label_bg_color|escapejs }}",
+        labelFontFamily: "{{ lss_anim_label_font_family|escapejs }}",
+        labelFontSize: "{{ lss_anim_label_font_size|escapejs }}",
+        labelHorizontalPadding: "{{ lss_anim_label_padding|escapejs }}",
+        labelBackgroundAssetCode: "{{ lss_anim_label_bg_asset|escapejs }}",
+        okLabel: "{{ lss_anim_ok|escapejs }}",
+        cancelLabel: "{{ lss_anim_cancel|escapejs }}",
+        resetLabel: "{{ lss_anim_reset|escapejs }}",
+        noDescriptionLabel: "{{ lss_anim_no_description|escapejs }}",
+        previewText: "{{ lss_anim_preview_text|escapejs }}",
+        previewLabel: "{{ lss_anim_preview_label|escapejs }}",
+        previewLine1: "{{ lss_anim_preview_line_1|escapejs }}",
+        previewLine2: "{{ lss_anim_preview_line_2|escapejs }}"
+    };
+</script>

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Modifier l'animation" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animation" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+    <hr>
+    <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+    <hr>
+    <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{{ animation.title }}{% endblock %}
+{% block page_intro %}
+    <p>{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
+    <p data-animation-summary-description>
+        {% if animation.description %}{{ animation.description|linebreaksbr }}{% else %}{% trans "Sans description." %}{% endif %}
+    </p>
+{% endblock %}
+{% block page_summary %}
+    <div class="animation-summary-preview" data-animation-summary-preview>
+        <p data-animation-summary-live data-animation-summary-title>{{ animation.title }}</p>
+    </div>
+    <p>
+        <span class="animation-color-dot" data-animation-summary-text-dot></span>
+        {% trans "Texte" %}:
+        <strong data-animation-summary-font>{{ animation.font_family }}</strong>,
+        <span data-animation-summary-font-size>{{ animation.font_size }}</span>px
+    </p>
+    <p>
+        <span class="animation-color-dot" data-animation-summary-bg-dot></span>
+        {% trans "Fond" %},
+        {% trans "Marge horizontale" %}:
+        <span data-animation-summary-padding>{{ animation.horizontal_padding }}</span>px
+    </p>
+    <p>{% trans "Date et heure" %}: <span data-animation-summary-scheduled>{{ animation.scheduled_at|date:"d/m/Y H:i" }}</span></p>
+    <div class="animation-summary-actions">
+        <button type="button" class="animation-tool-button" data-animation-action="open-general">{% trans "Données générales" %}</button>
+        <button type="button" class="animation-tool-button" data-animation-action="open-visual">{% trans "Couleurs" %}</button>
+        <button type="button" class="animation-secondary-action" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
+    </div>
+{% endblock %}
+{% block content %}
+    {% if form.errors %}
+        <article class="site-theme-card animation-list-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Des erreurs empêchent l'enregistrement" %}</h2>
+                </div>
+            </header>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+    {% endif %}
+
+    <article class="site-theme-card animation-list-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Édition de l'animation" %}</h2>
+            </div>
+        </header>
+        <p>{% trans "La gestion de la playlist et des chants sera ajoutée dans une itération suivante." %}</p>
+        <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
+    </article>
+
+    <form method="post" id="modify-animation-form" data-animation-edit-form>
+        {% csrf_token %}
+        {{ form.title.as_hidden }}
+        {{ form.description.as_hidden }}
+        {{ form.scheduled_at.as_hidden }}
+        {{ form.text_color.as_hidden }}
+        {{ form.bg_color.as_hidden }}
+        {{ form.font_family.as_hidden }}
+        {{ form.font_size.as_hidden }}
+        {{ form.horizontal_padding.as_hidden }}
+        {{ form.background_asset_code.as_hidden }}
+    </form>
+{% endblock %}
+{% block page_scripts %}
+    {% include "animation/modify_animation_page_i18n.html" %}
+    {{ popup_data|json_script:"lss-modify-animation-data" }}
+    <script src="{% static 'js/app_animation.js' %}"></script>
+{% endblock %}

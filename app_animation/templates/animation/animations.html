@@ -18,12 +18,13 @@
 {% endblock %}
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}
-    <p><a href="{% url 'new_animation' %}">{% trans "Nouvelle animation" %}</a></p>
-    <p><a href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
+    {% include "animation/includes/_animation_actions.html" %}
+    <p><a class="animation-tool-link" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
 {% block mobile_side_content %}
-    <p><a href="{% url 'new_animation' %}">{% trans "Nouvelle animation" %}</a></p>
+    {% include "animation/includes/_animation_actions.html" %}
+    <p><a class="animation-tool-link" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Liste des animations" %}{% endblock %}
@@ -40,7 +41,7 @@
                 {% if animation.description %}
                     <p>{{ animation.description|linebreaksbr }}</p>
                 {% endif %}
-                <p><a href="{% url 'edit_animation' animation.animation_id %}">{% trans "Modifier" %}</a></p>
+                <p><a href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
             </article>
         {% empty %}
             <article class="site-theme-card">
