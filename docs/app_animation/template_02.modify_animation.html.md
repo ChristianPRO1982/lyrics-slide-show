@@ -1,65 +1,125 @@
-# Design of Template `edit.html`
+# Design of Template `modify_animation.html`
 
 ## Guiding Idea
 
-Dans la même page on doit pouvoir modifier :
-- les données au niveau de l'animation
-- les données d'un chant
-- les données d'un slide
+Cette page est la page de modification d'une animation.
+
+Dans l'état actuel, elle couvre uniquement le niveau `animation` :
+- données générales de l'animation,
+- données visuelles par défaut de l'animation.
+
+La playlist et les chansons ne sont pas encore implémentées sur cette page.
 
 ## affichage
 
 ### panneau section
 
-comme les autres templates exemple animations.html
+Aligné avec `animations.html` :
+- titre de section = nom du groupe sélectionné (sinon `Animations`),
+- icône animations.
 
 ### panneau outils
 
-de la même manière que pour app_song/modify_song.html, il faut avoir des liens en commun avec tous les templates traitant d'une animation en enlevant le lien pointant sur soi
+Le panneau outils réutilise des actions communes `app_animation` :
+- retour vers la liste des animations à venir (sauf si déjà sur la liste),
+- lien vers modification (sauf si déjà sur la page de modification),
+- bouton `Enregistrer`.
 
-### panneau 'en-tête principal'
+Important :
+- le lien vers l'historique n'est pas dans les actions communes ;
+- il reste uniquement sur `animations.html`.
 
-Dans ce panneau :
-- sur-titre : Animations
-- titre : titre de l'animation
-- en dssous, la date et l'heure
+### panneau mobile
 
-### panneau 'encadré résumé'
+Même logique que le panneau outils :
+- actions communes,
+- bouton `Enregistrer`.
 
-Les informations de base sont à mettre dans ce panneau :
-- la description
-- un exemple de la couleur de la police d'écriture, du fond et de la police utilisée
-- deux boutons modifier
+### en-tête principal
 
-Les champs titre, description, date, etc. au niveau de l'animation doivent être dans le <form> général mais non affichés car ils seront mis à jour par une popup.
+- sur-titre : `Animations`
+- titre principal : titre de l'animation
+- texte d'introduction :
+  - date et heure de l'animation
+  - description (ou `Sans description.`)
 
-Le bouton "Données générales" permet d'afficher une popup pour modifier une popup avec :
-- croix
-- champ titre avec la valeur du champ cible caché (voir plus haut)
-- champ description avec la valeur du champ cible caché
-- champ date et heure avec la valeur du champ cible caché
-- bouton vert OK
-- bouton "Abandonner"
-- bouton orange "Réinitialiser" > la réinitialisation ne se fera que sur les données cible de cette popup, il faut donc garder en mémoire les données du chargement
+### encadré résumé
 
-Le bouton "Couleurs"
-- croix
-- Aperçu en direct
-- Couleur du texte avec son bouton de sélection
-- Couleur de fond avec son bouton de sélection
-- Police
-- Taille de police
-- Marge horizontale
-- bouton vert OK
-- bouton "Abandonner"
-- bouton orange "Réinitialiser" > la réinitialisation ne se fera que sur les données cible de cette popup, il faut donc garder en mémoire les données du chargement
+Le résumé affiche un aperçu visuel :
+- exemple de rendu texte/fond,
+- couleur texte,
+- couleur fond,
+- police,
+- taille de police,
+- marge horizontale.
 
-Le bouton liste des polices
-- croix
-- liste des polices en HTML
-- bouton OK
+Le résumé contient 3 actions :
+- `Données générales`
+- `Couleurs`
+- `Liste des polices`
 
-### panneau principal
+## formulaire principal
 
-Avoir un <article> par chansons
-Afficher uniquement la titre de la chanson
+La page contient un seul formulaire `POST` avec `csrf`.
+
+Les champs animation sont rendus en champs cachés et servent de source de vérité avant soumission :
+- `title`
+- `description`
+- `scheduled_at`
+- `text_color`
+- `bg_color`
+- `font_family`
+- `font_size`
+- `horizontal_padding`
+- `background_asset_code`
+
+## popups
+
+Les popups utilisent exclusivement `window.LSSMessageBox` (pas de modales HTML locales).
+
+### popup "Données générales"
+
+Contenu :
+- titre
+- description
+- date/heure
+
+Actions :
+- `OK` (valide et copie vers champs cachés, sans soumettre automatiquement),
+- `Abandonner`,
+- `Réinitialiser` (revient aux valeurs initiales chargées pour ce groupe de champs).
+
+### popup "Couleurs"
+
+Contenu :
+- aperçu en direct,
+- couleur du texte,
+- couleur de fond,
+- police,
+- taille de police,
+- marge horizontale.
+
+Actions :
+- `OK`,
+- `Abandonner`,
+- `Réinitialiser` (sur ce groupe de champs uniquement).
+
+Note :
+- `Code d'image de fond` n'est pas affiché dans cette popup pour l'instant.
+
+### popup "Liste des polices"
+
+Contenu :
+- liste d'échantillons typographiques,
+- chaque ligne est affichée avec sa propre police (`font-family`),
+- format visuel de type `TEXT text àéèêïùôÔç [Nom de police]`.
+
+Actions :
+- croix de fermeture,
+- bouton `OK`.
+
+## panneau principal (contenu)
+
+Le contenu principal affiche actuellement :
+- une carte d'information indiquant que la gestion playlist/chants viendra plus tard,
+- un bouton `Enregistrer`.
