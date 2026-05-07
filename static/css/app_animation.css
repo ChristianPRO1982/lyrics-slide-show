@@ -176,6 +176,29 @@
     padding: 0.65rem;
 }
 
+.animation-song-grid {
+    display: grid;
+    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.animation-song-main-card p,
+.animation-song-secondary-card p {
+    margin: 0;
+}
+
+.animation-song-stack {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.animation-song-secondary-actions {
+    margin-top: 0.55rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 .animation-modal-layer {
     position: fixed;
     inset: 0;

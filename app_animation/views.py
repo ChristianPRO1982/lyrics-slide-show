@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from .font_catalog import list_font_choices, list_font_previews
 from .forms import AnimationForm
 from .models import Animation
+from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
@@ -67,10 +68,19 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     if animation.group_id != selected_group.group_id:
         raise Http404
 
+    animation_songs = list(
+        animation.animation_songs.select_related("song").order_by("position", "animation_song_id")
+    )
+
     if request.method == "POST":
         form = AnimationForm(request.POST, instance=animation)
         if form.is_valid():
-            form.save()
+            form.instance = form.save(commit=False)
+            ordered_mix_raw = request.POST.get("ordered_mix")
+            if ordered_mix_raw is not None:
+                ordered_tokens = [token for token in parse_ordered_mix(ordered_mix_raw) if token.token_type == "asid"]
+                sync_animation_playlist(animation, ordered_tokens, allowed_song_ids=set())
+            form.instance.save()
             messages.success(request, _("L'animation a été enregistrée."))
             return redirect("modify_animation", animation_id=animation.animation_id)
     else:
@@ -92,6 +102,8 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
         {
             "selected_group": selected_group,
             "animation": animation,
+            "animation_songs": animation_songs,
+            "ordered_mix_initial": "|".join([f"asid:{row.animation_song_id}" for row in animation_songs]),
             "form": form,
             "popup_data": {
                 "fontChoices": font_choices,

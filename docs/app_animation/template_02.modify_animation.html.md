@@ -120,6 +120,19 @@ Actions :
 
 ## panneau principal (contenu)
 
-Le contenu principal affiche actuellement :
-- une carte d'information indiquant que la gestion playlist/chants viendra plus tard,
-- un bouton `Enregistrer`.
+deux modes :
+1- principal : éditions des chansons
+2- secondaire : ajout de chanson et réordonnancement
+
+De base, la page s'ouvre en mode principale saud s'il n'y a pas de chansons
+Un bouton toggle permet de passer d'un mode à l'autre.
+
+### mode principal
+
+les chansons sont affichées dans des <article> les unes à cotés des autres.
+seul les titres des chansons sont affichées
+
+### mode secondaire
+
+au lieu des <article> les uns à cotés des autres, les chansons seront les unes au dessus des autres et le panneau utilisera 'pied de contenu'
+Pour l'instant il faut le laisser vide

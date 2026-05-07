@@ -42,6 +42,12 @@
             .map((name) => [name, document.getElementById(`id_${name}`)])
             .filter((item) => item[1] instanceof HTMLInputElement)
     );
+    const orderedMixInput = document.querySelector("[data-animation-ordered-mix]");
+    const modeToggleButton = document.querySelector("[data-animation-mode-toggle]");
+    const mainModePanel = document.querySelector("[data-animation-edit-mode='main']");
+    const secondaryModePanel = document.querySelector("[data-animation-edit-mode='secondary']");
+    const secondaryList = document.querySelector("[data-animation-secondary-list]");
+    const siteMainContent = document.querySelector(".site-main-content");
 
     const initialValues = Object.fromEntries(
         hiddenFieldNames.map((name) => [name, String(hiddenFields[name]?.value || "")])
@@ -335,7 +341,6 @@
             font_family: String(result.values?.font_family || "").trim(),
             font_size: String(result.values?.font_size || "").trim(),
             horizontal_padding: String(result.values?.horizontal_padding || "").trim(),
-            background_asset_code: String(result.values?.background_asset_code || "").trim(),
         });
         applySummaryPreview();
     };
@@ -369,5 +374,130 @@
         });
     });
 
+    const getSecondaryItems = () => {
+        if (!(secondaryList instanceof HTMLElement)) {
+            return [];
+        }
+        return Array.from(secondaryList.querySelectorAll("[data-animation-song-item]"));
+    };
+
+    const updateOrderedMix = () => {
+        if (!(orderedMixInput instanceof HTMLInputElement)) {
+            return;
+        }
+        const tokens = getSecondaryItems()
+            .map((item) => String(item.getAttribute("data-animation-song-id") || "").trim())
+            .filter((id) => /^\d+$/.test(id))
+            .map((id) => `asid:${id}`);
+        orderedMixInput.value = tokens.join("|");
+    };
+
+    const updateModeButtonLabel = (mode) => {
+        if (!(modeToggleButton instanceof HTMLButtonElement)) {
+            return;
+        }
+        if (mode === "main") {
+            modeToggleButton.textContent = String(modeToggleButton.getAttribute("data-mode-secondary-label") || "");
+            return;
+        }
+        modeToggleButton.textContent = String(modeToggleButton.getAttribute("data-mode-main-label") || "");
+    };
+
+    const setMode = (mode) => {
+        const selectedMode = mode === "secondary" ? "secondary" : "main";
+        if (mainModePanel instanceof HTMLElement) {
+            mainModePanel.hidden = selectedMode !== "main";
+        }
+        if (secondaryModePanel instanceof HTMLElement) {
+            secondaryModePanel.hidden = selectedMode !== "secondary";
+        }
+        if (siteMainContent instanceof HTMLElement) {
+            siteMainContent.style.display = selectedMode === "secondary" ? "none" : "";
+        }
+        updateModeButtonLabel(selectedMode);
+    };
+
+    const ensureModeOnLoad = () => {
+        const hasSongs = getSecondaryItems().length > 0;
+        if (hasSongs) {
+            setMode("main");
+            return;
+        }
+        setMode("secondary");
+    };
+
+    const moveItem = (item, direction) => {
+        if (!(item instanceof HTMLElement) || !(secondaryList instanceof HTMLElement)) {
+            return;
+        }
+        if (direction === "up") {
+            const previous = item.previousElementSibling;
+            if (previous) {
+                secondaryList.insertBefore(item, previous);
+            }
+        } else if (direction === "down") {
+            const next = item.nextElementSibling;
+            if (next) {
+                secondaryList.insertBefore(next, item);
+            }
+        }
+        updateOrderedMix();
+    };
+
+    const removeItem = async (item) => {
+        if (!(item instanceof HTMLElement)) {
+            return;
+        }
+        const title = item.querySelector("strong")?.textContent || "";
+        const result = await messageBox.confirm({
+            title: label("removeSongTitle"),
+            messageMarkdown: `${label("removeSongMessage")} **${title}**`,
+            showCloseButton: false,
+            buttons: [
+                { id: "yes", label: label("yesLabel"), tone: "danger" },
+                { id: "no", label: label("noLabel"), tone: "neutral" },
+            ],
+        });
+        if (result.buttonId !== "yes") {
+            return;
+        }
+        item.remove();
+        updateOrderedMix();
+        ensureModeOnLoad();
+    };
+
+    if (modeToggleButton instanceof HTMLButtonElement) {
+        modeToggleButton.addEventListener("click", () => {
+            const mainVisible = mainModePanel instanceof HTMLElement ? !mainModePanel.hidden : false;
+            setMode(mainVisible ? "secondary" : "main");
+        });
+    }
+
+    if (secondaryList instanceof HTMLElement) {
+        secondaryList.addEventListener("click", async (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+            const item = target.closest("[data-animation-song-item]");
+            if (!(item instanceof HTMLElement)) {
+                return;
+            }
+            if (target.closest("[data-animation-song-up]")) {
+                moveItem(item, "up");
+                return;
+            }
+            if (target.closest("[data-animation-song-down]")) {
+                moveItem(item, "down");
+                return;
+            }
+            if (target.closest("[data-animation-song-remove]")) {
+                await removeItem(item);
+            }
+        });
+    }
+
     applySummaryPreview();
+    updateOrderedMix();
+    ensureModeOnLoad();
 })();

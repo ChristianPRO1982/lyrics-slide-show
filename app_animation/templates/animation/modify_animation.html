@@ -25,8 +25,6 @@
 {% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
-    <hr>
-    <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ animation.title }}{% endblock %}
@@ -34,6 +32,17 @@
     <p>{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
     <p data-animation-summary-description>
         {% if animation.description %}{{ animation.description|linebreaksbr }}{% else %}{% trans "Sans description." %}{% endif %}
+    </p>
+    <p>
+        <button
+            type="button"
+            class="animation-tool-button"
+            data-animation-mode-toggle
+            data-mode-main-label="{% trans 'Mode principal' %}"
+            data-mode-secondary-label="{% trans 'Mode secondaire' %}"
+        >
+            {% trans "Mode secondaire" %}
+        </button>
     </p>
 {% endblock %}
 {% block page_summary %}
@@ -79,15 +88,15 @@
         </article>
     {% endif %}
 
-    <article class="site-theme-card animation-list-card">
-        <header class="site-theme-card-header">
-            <div>
-                <h2>{% trans "Édition de l'animation" %}</h2>
-            </div>
-        </header>
-        <p>{% trans "La gestion de la playlist et des chants sera ajoutée dans une itération suivante." %}</p>
-        <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
-    </article>
+    <section data-animation-edit-mode="main" hidden>
+        <div class="animation-song-grid">
+            {% for item in animation_songs %}
+                <article class="site-theme-card animation-song-main-card">
+                    <p><strong>{{ item.song.display_title }}</strong></p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
 
     <form method="post" id="modify-animation-form" data-animation-edit-form>
         {% csrf_token %}
@@ -100,7 +109,24 @@
         {{ form.font_size.as_hidden }}
         {{ form.horizontal_padding.as_hidden }}
         {{ form.background_asset_code.as_hidden }}
+        <input type="hidden" name="ordered_mix" value="{{ ordered_mix_initial }}" data-animation-ordered-mix>
     </form>
+{% endblock %}
+{% block content_footer %}
+    <section data-animation-edit-mode="secondary" hidden>
+        <div class="animation-song-stack" data-animation-secondary-list>
+            {% for item in animation_songs %}
+                <article class="site-theme-card animation-song-secondary-card" data-animation-song-item data-animation-song-id="{{ item.animation_song_id }}">
+                    <p><strong>{{ item.song.display_title }}</strong></p>
+                    <div class="animation-song-secondary-actions">
+                        <button type="button" class="animation-secondary-action" data-animation-song-up>{% trans "Monter" %}</button>
+                        <button type="button" class="animation-secondary-action" data-animation-song-down>{% trans "Descendre" %}</button>
+                        <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer de l'animation" %}</button>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}
 {% block page_scripts %}
     {% include "animation/modify_animation_page_i18n.html" %}

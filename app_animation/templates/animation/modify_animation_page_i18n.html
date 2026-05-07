@@ -19,6 +19,10 @@
 {% trans "Aperçu en direct" as lss_anim_preview_label %}
 {% trans "Text color" as lss_anim_preview_line_1 %}
 {% trans "Background color" as lss_anim_preview_line_2 %}
+{% trans "Confirmer la suppression" as lss_anim_remove_song_title %}
+{% trans "Supprimer cette chanson de l'animation ?" as lss_anim_remove_song_message %}
+{% trans "Oui" as lss_anim_yes %}
+{% trans "Non" as lss_anim_no %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -40,6 +44,10 @@
         previewText: "{{ lss_anim_preview_text|escapejs }}",
         previewLabel: "{{ lss_anim_preview_label|escapejs }}",
         previewLine1: "{{ lss_anim_preview_line_1|escapejs }}",
-        previewLine2: "{{ lss_anim_preview_line_2|escapejs }}"
+        previewLine2: "{{ lss_anim_preview_line_2|escapejs }}",
+        removeSongTitle: "{{ lss_anim_remove_song_title|escapejs }}",
+        removeSongMessage: "{{ lss_anim_remove_song_message|escapejs }}",
+        yesLabel: "{{ lss_anim_yes|escapejs }}",
+        noLabel: "{{ lss_anim_no|escapejs }}"
     };
 </script>
