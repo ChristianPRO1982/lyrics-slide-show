@@ -44,6 +44,13 @@
         return String(value).replace(/["\\]/g, "\\$&");
     };
 
+    const findFieldInput = (container, fieldId) => {
+        const escapedFieldId = escapeSelectorValue(fieldId);
+        return container.querySelector(
+            `input[data-field-id="${escapedFieldId}"], textarea[data-field-id="${escapedFieldId}"], select[data-field-id="${escapedFieldId}"]`
+        );
+    };
+
     const escapeHtml = (value) => {
         return String(value ?? "")
             .replace(/&/g, "&amp;")
@@ -667,7 +674,7 @@
         }
 
         const wrapper = state.form.querySelector(`.lss-messagebox-field[data-field-id="${escapeSelectorValue(fieldId)}"]`);
-        const input = state.form.querySelector(`[data-field-id="${escapeSelectorValue(fieldId)}"]`);
+        const input = findFieldInput(state.form, fieldId);
 
         if (!(wrapper instanceof HTMLElement) || !(input instanceof HTMLElement)) {
             return;
@@ -690,7 +697,7 @@
             return false;
         }
 
-        const input = state.form.querySelector(`[data-field-id="${escapeSelectorValue(fieldId)}"]`);
+        const input = findFieldInput(state.form, fieldId);
         if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)) {
             return false;
         }
@@ -740,8 +747,7 @@
         let firstInvalidInput = null;
 
         state.config.fields.forEach((field) => {
-            const selector = `[data-field-id="${escapeSelectorValue(field.id)}"]`;
-            const input = state.form.querySelector(selector);
+            const input = findFieldInput(state.form, field.id);
 
             if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)) {
                 return;
@@ -910,16 +916,16 @@
         if (initialFocus === "close" && state.closeButton) {
             target = state.closeButton;
         } else if (initialFocus === "first-field" && state.form) {
-            target = state.form.querySelector("[data-field-id]");
+            target = state.form.querySelector("input[data-field-id], textarea[data-field-id], select[data-field-id]");
         } else if (initialFocus && initialFocus.startsWith("button:")) {
             target = state.panel.querySelector(`[data-button-id="${escapeSelectorValue(initialFocus.slice(7))}"]`);
         } else if (initialFocus && initialFocus.startsWith("field:")) {
-            target = state.panel.querySelector(`[data-field-id="${escapeSelectorValue(initialFocus.slice(6))}"]`);
+            target = findFieldInput(state.panel, initialFocus.slice(6));
         }
 
         if (!(target instanceof HTMLElement)) {
             if (state.form) {
-                target = state.form.querySelector("[data-field-id]");
+                target = state.form.querySelector("input[data-field-id], textarea[data-field-id], select[data-field-id]");
             }
         }
 
@@ -1092,7 +1098,7 @@
         });
 
         if (state.form) {
-            state.form.querySelectorAll("[data-field-id]").forEach((fieldElement) => {
+            state.form.querySelectorAll("input[data-field-id], textarea[data-field-id], select[data-field-id]").forEach((fieldElement) => {
                 fieldElement.addEventListener("input", () => {
                     triggerFieldChangeHook(state, fieldElement.dataset.fieldId || "");
                 });

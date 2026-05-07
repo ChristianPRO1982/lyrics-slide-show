@@ -483,6 +483,12 @@ body.lss-messagebox-open {
     resize: vertical;
 }
 
+.lss-messagebox-input[type="color"] {
+    min-height: 52px;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
 .lss-messagebox-field.is-invalid .lss-messagebox-input,
 .lss-messagebox-field.is-invalid .lss-messagebox-textarea,
 .lss-messagebox-field.is-invalid .lss-messagebox-select {
