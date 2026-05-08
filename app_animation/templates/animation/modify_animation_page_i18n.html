@@ -32,6 +32,16 @@
 {% trans "Chant" as lss_anim_song_choice_label %}
 {% trans "Insérer un chant" as lss_anim_insert_song_label %}
 {% trans "déjà dans la playlist" as lss_anim_already_in_playlist %}
+{% trans "Options du chant" as lss_anim_song_options_title %}
+{% trans "Couleur du texte" as lss_anim_song_color_text %}
+{% trans "Couleur de fond" as lss_anim_song_color_bg %}
+{% trans "Voir le texte du chant" as lss_anim_song_view_text_title %}
+{% trans "Impossible de charger le texte du chant." as lss_anim_song_view_text_error %}
+{% trans "Navigation vers le chant" as lss_anim_song_navigation_title %}
+{% trans "Des modifications non enregistrées seront perdues." as lss_anim_song_navigation_dirty_warning %}
+{% trans "Ouvrir dans un nouvel onglet" as lss_anim_song_navigation_new_tab %}
+{% trans "Perdre les données et aller à la page" as lss_anim_song_navigation_lose_and_go %}
+{% trans "Abandonner" as lss_anim_song_navigation_abort %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -66,6 +76,16 @@
         addSongActionLabel: "{{ lss_anim_add_song_action|escapejs }}",
         songChoiceLabel: "{{ lss_anim_song_choice_label|escapejs }}",
         insertSongLabel: "{{ lss_anim_insert_song_label|escapejs }}",
-        alreadyInPlaylistLabel: "{{ lss_anim_already_in_playlist|escapejs }}"
+        alreadyInPlaylistLabel: "{{ lss_anim_already_in_playlist|escapejs }}",
+        songOptionsPopupTitle: "{{ lss_anim_song_options_title|escapejs }}",
+        songTextColorLabel: "{{ lss_anim_song_color_text|escapejs }}",
+        songBgColorLabel: "{{ lss_anim_song_color_bg|escapejs }}",
+        songViewTextTitle: "{{ lss_anim_song_view_text_title|escapejs }}",
+        songViewTextError: "{{ lss_anim_song_view_text_error|escapejs }}",
+        songNavigationTitle: "{{ lss_anim_song_navigation_title|escapejs }}",
+        songNavigationDirtyWarning: "{{ lss_anim_song_navigation_dirty_warning|escapejs }}",
+        songNavigationNewTabLabel: "{{ lss_anim_song_navigation_new_tab|escapejs }}",
+        songNavigationLoseAndGoLabel: "{{ lss_anim_song_navigation_lose_and_go|escapejs }}",
+        songNavigationAbortLabel: "{{ lss_anim_song_navigation_abort|escapejs }}"
     };
 </script>

@@ -43,20 +43,18 @@
             .map((name) => [name, document.getElementById(`id_${name}`)])
             .filter((item) => item[1] instanceof HTMLInputElement)
     );
+
     const orderedMixInput = document.querySelector("[data-animation-ordered-mix]");
+    const songsPayloadInput = document.querySelector("[data-animation-songs-payload]");
     const modeToggleButton = document.querySelector("[data-animation-mode-toggle]");
     const mainModePanel = document.querySelector("[data-animation-edit-mode='main']");
     const secondaryModePanel = document.querySelector("[data-animation-edit-mode='secondary']");
     const secondaryList = document.querySelector("[data-animation-secondary-list]");
     const siteMainContent = document.querySelector(".site-main-content");
-    const reorderToggleButton = null;
-    const reorderCancelButton = null;
-    let tempSongCounter = 0;
-    let reorderController = null;
 
-    const initialValues = Object.fromEntries(
-        hiddenFieldNames.map((name) => [name, String(hiddenFields[name]?.value || "")])
-    );
+    let reorderController = null;
+    let tempSongCounter = 0;
+    let dirty = false;
 
     const summaryNodes = {
         title: document.querySelector("[data-animation-summary-title]"),
@@ -70,6 +68,10 @@
         live: document.querySelector("[data-animation-summary-live]"),
         preview: document.querySelector("[data-animation-summary-preview]"),
     };
+
+    const initialValues = Object.fromEntries(
+        hiddenFieldNames.map((name) => [name, String(hiddenFields[name]?.value || "")])
+    );
 
     const hexPattern = /^#([0-9a-fA-F]{6})$/;
     const fallbackValues = {
@@ -96,6 +98,21 @@
         return Math.min(max, Math.max(min, parsed));
     };
 
+    const readCurrentValues = () => {
+        return Object.fromEntries(
+            hiddenFieldNames.map((name) => [name, String(hiddenFields[name]?.value || "")])
+        );
+    };
+
+    const writeValues = (values) => {
+        hiddenFieldNames.forEach((name) => {
+            if (!hiddenFields[name]) {
+                return;
+            }
+            hiddenFields[name].value = String(values[name] ?? "");
+        });
+    };
+
     const formatDateTime = (rawValue) => {
         const value = String(rawValue || "").trim();
         if (!value) {
@@ -114,21 +131,6 @@
         });
     };
 
-    const readCurrentValues = () => {
-        return Object.fromEntries(
-            hiddenFieldNames.map((name) => [name, String(hiddenFields[name]?.value || "")])
-        );
-    };
-
-    const writeValues = (values) => {
-        hiddenFieldNames.forEach((name) => {
-            if (!hiddenFields[name]) {
-                return;
-            }
-            hiddenFields[name].value = String(values[name] ?? "");
-        });
-    };
-
     const applySummaryPreview = () => {
         const values = readCurrentValues();
         const textColor = validHex(values.text_color) || fallbackValues.text_color;
@@ -138,7 +140,7 @@
         const horizontalPadding = clampNumber(values.horizontal_padding, fallbackValues.horizontal_padding, 0, 600);
 
         if (summaryNodes.title) {
-            summaryNodes.title.textContent = String(values.title || "-").trim() || "-";
+            summaryNodes.title.textContent = "Test";
         }
         if (summaryNodes.description) {
             summaryNodes.description.textContent = String(values.description || "").trim() || label("noDescriptionLabel");
@@ -165,7 +167,7 @@
             summaryNodes.live.style.color = textColor;
             summaryNodes.live.style.fontFamily = `'${fontFamily}', sans-serif`;
             summaryNodes.live.style.fontSize = `${fontSize}px`;
-            summaryNodes.live.textContent = String(values.title || "").trim() || label("previewText");
+            summaryNodes.live.textContent = "Test";
         }
         if (summaryNodes.preview) {
             summaryNodes.preview.style.background = bgColor;
@@ -263,6 +265,7 @@
             scheduled_at: String(result.values?.scheduled_at || "").trim(),
         });
         applySummaryPreview();
+        refreshDirtyState();
     };
 
     const openVisualPopup = async () => {
@@ -273,13 +276,7 @@
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
                 { id: "cancel", label: label("cancelLabel"), tone: "neutral", validate: false },
-                makeResetButton([
-                    "text_color",
-                    "bg_color",
-                    "font_family",
-                    "font_size",
-                    "horizontal_padding",
-                ]),
+                makeResetButton(["text_color", "bg_color", "font_family", "font_size", "horizontal_padding"]),
             ],
             preview: {
                 label: label("previewLabel"),
@@ -348,6 +345,7 @@
             horizontal_padding: String(result.values?.horizontal_padding || "").trim(),
         });
         applySummaryPreview();
+        refreshDirtyState();
     };
 
     const openFontListPopup = async () => {
@@ -356,9 +354,7 @@
             fontSamples: fontPreviews,
             showCloseButton: true,
             size: "wide",
-            buttons: [
-                { id: "ok", label: label("okLabel"), tone: "neutral" },
-            ],
+            buttons: [{ id: "ok", label: label("okLabel"), tone: "neutral" }],
         });
     };
 
@@ -426,6 +422,23 @@
         });
     };
 
+    const normalizeSecondaryItemCompact = (itemElement) => {
+        if (!(itemElement instanceof HTMLElement)) {
+            return;
+        }
+        itemElement.classList.add("is-reorder-compact");
+        itemElement.querySelectorAll("[data-reorder-drag-view]").forEach((node) => {
+            if (node instanceof HTMLElement) {
+                node.hidden = false;
+            }
+        });
+        itemElement.querySelectorAll("[data-reorder-normal-view]").forEach((node) => {
+            if (node instanceof HTMLElement) {
+                node.hidden = true;
+            }
+        });
+    };
+
     const createSongItemElement = (token, songId, songTitle) => {
         const article = document.createElement("article");
         article.className = "site-theme-card animation-song-secondary-card";
@@ -444,49 +457,32 @@
         dragView.className = "animation-song-secondary-drag-view";
         dragView.setAttribute("data-reorder-drag-view", "");
         dragView.hidden = true;
+
         const dragHandle = document.createElement("button");
         dragHandle.type = "button";
         dragHandle.className = "animation-tool-button animation-reorder-handle";
         dragHandle.setAttribute("data-reorder-handle", "");
         dragHandle.setAttribute("aria-label", label("moveLabel"));
         dragHandle.textContent = "⋮↕⋮";
+
         const dragTitle = document.createElement("strong");
         dragTitle.textContent = songTitle;
+
         const dragRemove = document.createElement("button");
         dragRemove.type = "button";
         dragRemove.className = "animation-danger-action";
         dragRemove.setAttribute("data-animation-song-remove", "");
         dragRemove.textContent = label("removeSongActionLabel");
+
         dragView.append(dragHandle, dragTitle, dragRemove);
 
         const normalView = document.createElement("div");
         normalView.className = "animation-song-secondary-normal-view";
         normalView.setAttribute("data-reorder-normal-view", "");
-        const normalTitleRow = document.createElement("div");
-        normalTitleRow.className = "animation-song-secondary-title-row";
-        const normalHandle = document.createElement("button");
-        normalHandle.type = "button";
-        normalHandle.className = "animation-tool-button animation-reorder-handle";
-        normalHandle.setAttribute("data-reorder-handle", "");
-        normalHandle.setAttribute("aria-label", label("moveLabel"));
-        normalHandle.textContent = "⋮↕⋮";
-        const titleParagraph = document.createElement("p");
-        const titleStrong = document.createElement("strong");
-        titleStrong.textContent = songTitle;
-        titleParagraph.appendChild(titleStrong);
-        normalTitleRow.append(normalHandle, titleParagraph);
-
-        const normalActions = document.createElement("div");
-        normalActions.className = "animation-song-secondary-actions";
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "animation-danger-action";
-        removeButton.setAttribute("data-animation-song-remove", "");
-        removeButton.textContent = label("removeSongActionLabel");
-        normalActions.appendChild(removeButton);
-        normalView.append(normalTitleRow, normalActions);
+        normalView.hidden = true;
 
         article.append(dragView, normalView);
+        normalizeSecondaryItemCompact(article);
         return article;
     };
 
@@ -500,18 +496,6 @@
         }
 
         const itemElement = createSongItemElement(`sid:${songId}`, songId, String(song.title || ""));
-        // Secondary mode uses compact layout permanently: keep only drag-view visible.
-        itemElement.classList.add("is-reorder-compact");
-        itemElement.querySelectorAll("[data-reorder-drag-view]").forEach((node) => {
-            if (node instanceof HTMLElement) {
-                node.hidden = false;
-            }
-        });
-        itemElement.querySelectorAll("[data-reorder-normal-view]").forEach((node) => {
-            if (node instanceof HTMLElement) {
-                node.hidden = true;
-            }
-        });
         secondaryList.classList.add("is-reorder-enabled");
 
         const items = getSecondaryItems();
@@ -568,6 +552,7 @@
         insertSongAtIndex(songId, insertIndex);
         renderInsertSlots();
         updateOrderedMix();
+        refreshDirtyState();
     };
 
     const buildInsertSlot = (index) => {
@@ -575,7 +560,7 @@
         slot.className = "animation-insert-slot";
         slot.setAttribute("data-animation-insert-slot", "");
         slot.setAttribute("data-insert-index", String(index));
-        slot.innerHTML = `<button type="button" class="animation-insert-slot-button" data-animation-insert-trigger data-insert-index="${index}" aria-label="${label("insertSongLabel")}">+</button>`;
+        slot.innerHTML = `<button type="button" class="animation-insert-slot-button" data-animation-insert-trigger data-insert-index="${index}" aria-label="${label("insertSongLabel")}">➕</button>`;
         return slot;
     };
 
@@ -650,9 +635,318 @@
         item.remove();
         renderInsertSlots();
         updateOrderedMix();
+        refreshDirtyState();
         if (getSecondaryItems().length === 0) {
             setMode("secondary");
         }
+    };
+
+    const escapeMarkdown = (value) => {
+        return String(value || "")
+            .replace(/\\/g, "\\\\")
+            .replace(/([*_`[\]()#+\-.!>])/g, "\\$1");
+    };
+
+    const colorValueOrFallback = (value, fallback) => validHex(value) || fallback;
+
+    const gatherMainSongsPayload = () => {
+        const cards = Array.from(document.querySelectorAll("[data-main-song-card]"));
+        const items = cards.map((card) => {
+            const animationSongId = Number.parseInt(String(card.getAttribute("data-animation-song-id") || ""), 10);
+            const songId = Number.parseInt(String(card.getAttribute("data-song-id") || ""), 10);
+            const visibleSet = new Set();
+
+            card.querySelectorAll("[data-main-verse-checkbox]").forEach((checkbox) => {
+                if (!(checkbox instanceof HTMLInputElement)) {
+                    return;
+                }
+                if (!checkbox.checked) {
+                    return;
+                }
+                const verseId = Number.parseInt(String(checkbox.getAttribute("data-verse-id") || ""), 10);
+                if (Number.isNaN(verseId) || verseId <= 0) {
+                    return;
+                }
+                visibleSet.add(verseId);
+            });
+
+            const songFontFamily = card.querySelector("[data-song-font-family]");
+            const songFontSizeDelta = card.querySelector("[data-song-font-size-delta]");
+
+            const verseStyles = {};
+            card.querySelectorAll("[data-main-verse-row]").forEach((row) => {
+                if (!(row instanceof HTMLElement)) {
+                    return;
+                }
+                const verseId = Number.parseInt(String(row.getAttribute("data-verse-id") || ""), 10);
+                if (Number.isNaN(verseId) || verseId <= 0) {
+                    return;
+                }
+                const verseFontFamily = row.querySelector("[data-verse-font-family]");
+                const verseFontSizeDelta = row.querySelector("[data-verse-font-size-delta]");
+                verseStyles[String(verseId)] = {
+                    font_family_override: String(verseFontFamily?.value || "").trim(),
+                    font_size_delta: Number.parseInt(String(verseFontSizeDelta?.value || "0"), 10) || 0,
+                    text_color_override: String(row.getAttribute("data-verse-text-color") || "").trim(),
+                    bg_color_override: String(row.getAttribute("data-verse-bg-color") || "").trim(),
+                };
+            });
+
+            return {
+                animation_song_id: Number.isNaN(animationSongId) ? 0 : animationSongId,
+                song_id: Number.isNaN(songId) ? 0 : songId,
+                visible_verse_ids: Array.from(visibleSet).sort((a, b) => a - b),
+                song_style: {
+                    font_family_override: String(songFontFamily?.value || "").trim(),
+                    font_size_delta: Number.parseInt(String(songFontSizeDelta?.value || "0"), 10) || 0,
+                    text_color_override: String(card.getAttribute("data-song-text-color") || "").trim(),
+                    bg_color_override: String(card.getAttribute("data-song-bg-color") || "").trim(),
+                },
+                verse_styles: verseStyles,
+            };
+        }).filter((item) => item.animation_song_id > 0 && item.song_id > 0);
+
+        return { items };
+    };
+
+    const updateSongsPayloadInput = () => {
+        if (!(songsPayloadInput instanceof HTMLInputElement)) {
+            return;
+        }
+        songsPayloadInput.value = JSON.stringify(gatherMainSongsPayload());
+    };
+
+    const getCurrentSnapshot = () => {
+        return JSON.stringify({
+            fields: readCurrentValues(),
+            orderedMix: String(orderedMixInput?.value || ""),
+            songsPayload: String(songsPayloadInput?.value || ""),
+        });
+    };
+
+    let initialSnapshot = getCurrentSnapshot();
+
+    function refreshDirtyState() {
+        dirty = getCurrentSnapshot() !== initialSnapshot;
+    }
+
+    const syncVerseCheckboxes = (card, verseId, checked, source) => {
+        card.querySelectorAll(`[data-main-verse-checkbox][data-verse-id="${verseId}"]`).forEach((checkbox) => {
+            if (!(checkbox instanceof HTMLInputElement) || checkbox === source) {
+                return;
+            }
+            checkbox.checked = checked;
+        });
+    };
+
+    const openSongColorPopup = async (card) => {
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+        const initialTextColor = colorValueOrFallback(card.getAttribute("data-song-text-color"), fallbackValues.text_color);
+        const initialBgColor = colorValueOrFallback(card.getAttribute("data-song-bg-color"), fallbackValues.bg_color);
+
+        const result = await messageBox.show({
+            title: label("songOptionsPopupTitle"),
+            showCloseButton: true,
+            buttons: [
+                { id: "ok", label: label("okLabel"), tone: "success", validate: true },
+                { id: "cancel", label: label("cancelLabel"), tone: "neutral" },
+                {
+                    id: "reset",
+                    label: label("resetLabel"),
+                    tone: "warning",
+                    validate: false,
+                    onClick: ({ setFieldValue, keepOpen }) => {
+                        setFieldValue("text_color", initialTextColor);
+                        setFieldValue("bg_color", initialBgColor);
+                        keepOpen();
+                        return false;
+                    },
+                },
+            ],
+            fields: [
+                { id: "text_color", label: label("songTextColorLabel"), type: "color", value: initialTextColor, required: true },
+                { id: "bg_color", label: label("songBgColorLabel"), type: "color", value: initialBgColor, required: true },
+            ],
+            enterButtonId: "ok",
+            escapeButtonId: "cancel",
+        });
+
+        if (result.buttonId !== "ok") {
+            return;
+        }
+
+        card.setAttribute("data-song-text-color", colorValueOrFallback(result.values?.text_color, fallbackValues.text_color));
+        card.setAttribute("data-song-bg-color", colorValueOrFallback(result.values?.bg_color, fallbackValues.bg_color));
+        updateSongsPayloadInput();
+        refreshDirtyState();
+    };
+
+    const openVerseColorPopup = async (row) => {
+        if (!(row instanceof HTMLElement)) {
+            return;
+        }
+        const initialTextColor = colorValueOrFallback(row.getAttribute("data-verse-text-color"), fallbackValues.text_color);
+        const initialBgColor = colorValueOrFallback(row.getAttribute("data-verse-bg-color"), fallbackValues.bg_color);
+
+        const result = await messageBox.show({
+            title: label("songOptionsPopupTitle"),
+            showCloseButton: true,
+            buttons: [
+                { id: "ok", label: label("okLabel"), tone: "success", validate: true },
+                { id: "cancel", label: label("cancelLabel"), tone: "neutral" },
+                {
+                    id: "reset",
+                    label: label("resetLabel"),
+                    tone: "warning",
+                    validate: false,
+                    onClick: ({ setFieldValue, keepOpen }) => {
+                        setFieldValue("text_color", initialTextColor);
+                        setFieldValue("bg_color", initialBgColor);
+                        keepOpen();
+                        return false;
+                    },
+                },
+            ],
+            fields: [
+                { id: "text_color", label: label("songTextColorLabel"), type: "color", value: initialTextColor, required: true },
+                { id: "bg_color", label: label("songBgColorLabel"), type: "color", value: initialBgColor, required: true },
+            ],
+            enterButtonId: "ok",
+            escapeButtonId: "cancel",
+        });
+
+        if (result.buttonId !== "ok") {
+            return;
+        }
+
+        row.setAttribute("data-verse-text-color", colorValueOrFallback(result.values?.text_color, fallbackValues.text_color));
+        row.setAttribute("data-verse-bg-color", colorValueOrFallback(result.values?.bg_color, fallbackValues.bg_color));
+        updateSongsPayloadInput();
+        refreshDirtyState();
+    };
+
+    const openSongTextPopup = async (url) => {
+        try {
+            const response = await fetch(String(url || ""), {
+                credentials: "same-origin",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Failed");
+            }
+            const payload = await response.json();
+            await messageBox.alert({
+                title: String(payload.title || label("songViewTextTitle")),
+                messageMarkdown: String(payload.markdown || ""),
+                showCloseButton: true,
+                size: "wide",
+            });
+        } catch (_error) {
+            await messageBox.alert({
+                title: label("songViewTextTitle"),
+                messageMarkdown: label("songViewTextError"),
+                showCloseButton: true,
+            });
+        }
+    };
+
+    const openGoToSongPopup = async (href, songTitle) => {
+        const warning = dirty ? `\n\n> ${escapeMarkdown(label("songNavigationDirtyWarning"))}` : "";
+        const result = await messageBox.show({
+            title: label("songNavigationTitle"),
+            messageMarkdown: `**${escapeMarkdown(songTitle)}**${warning}`,
+            showCloseButton: true,
+            buttons: [
+                { id: "new-tab", label: label("songNavigationNewTabLabel"), tone: "success" },
+                { id: "cancel", label: label("songNavigationAbortLabel"), tone: "warning" },
+                { id: "go", label: label("songNavigationLoseAndGoLabel"), tone: "danger" },
+            ],
+            enterButtonId: "cancel",
+            escapeButtonId: "cancel",
+        });
+
+        if (result.buttonId === "new-tab") {
+            window.open(String(href || ""), "_blank", "noopener");
+            return;
+        }
+        if (result.buttonId === "go") {
+            dirty = false;
+            window.location.assign(String(href || ""));
+        }
+    };
+
+    const bindMainSongCards = () => {
+        document.querySelectorAll("[data-main-song-card]").forEach((card) => {
+            if (!(card instanceof HTMLElement)) {
+                return;
+            }
+
+            const toggle = card.querySelector("[data-song-options-toggle]");
+            const expanded = card.querySelector("[data-song-expanded]");
+            if (toggle instanceof HTMLButtonElement && expanded instanceof HTMLElement) {
+                toggle.addEventListener("click", () => {
+                    const shouldOpen = expanded.hidden;
+                    expanded.hidden = !shouldOpen;
+                    toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+                    toggle.textContent = shouldOpen
+                        ? String(toggle.getAttribute("data-close-label") || "")
+                        : String(toggle.getAttribute("data-open-label") || "");
+                });
+            }
+
+            card.querySelectorAll("[data-main-verse-checkbox]").forEach((checkbox) => {
+                if (!(checkbox instanceof HTMLInputElement)) {
+                    return;
+                }
+                checkbox.addEventListener("change", () => {
+                    const verseId = String(checkbox.getAttribute("data-verse-id") || "");
+                    syncVerseCheckboxes(card, verseId, checkbox.checked, checkbox);
+                    updateSongsPayloadInput();
+                    refreshDirtyState();
+                });
+            });
+
+            card.querySelectorAll("[data-song-font-family], [data-song-font-size-delta], [data-verse-font-family], [data-verse-font-size-delta]").forEach((field) => {
+                field.addEventListener("change", () => {
+                    updateSongsPayloadInput();
+                    refreshDirtyState();
+                });
+            });
+
+            card.querySelectorAll("[data-song-color-popup-trigger]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const level = String(button.getAttribute("data-color-target-level") || "song");
+                    if (level === "verse") {
+                        const verseId = String(button.getAttribute("data-verse-id") || "");
+                        const row = card.querySelector(`[data-main-verse-row][data-verse-id="${verseId}"]`);
+                        await openVerseColorPopup(row);
+                        return;
+                    }
+                    await openSongColorPopup(card);
+                });
+            });
+
+            const viewLink = card.querySelector("[data-song-view-text]");
+            if (viewLink instanceof HTMLAnchorElement) {
+                viewLink.addEventListener("click", async (event) => {
+                    event.preventDefault();
+                    await openSongTextPopup(viewLink.getAttribute("data-popup-url"));
+                });
+            }
+
+            const goToLink = card.querySelector("[data-song-go-to-link]");
+            if (goToLink instanceof HTMLAnchorElement) {
+                goToLink.addEventListener("click", async (event) => {
+                    event.preventDefault();
+                    const songTitle = String(card.getAttribute("data-song-title") || "");
+                    await openGoToSongPopup(goToLink.href, songTitle);
+                });
+            }
+        });
     };
 
     if (modeToggleButton instanceof HTMLButtonElement) {
@@ -700,8 +994,8 @@
             }
             reorderController = reorderModule.init({
                 list: secondaryList,
-                toggleButton: reorderToggleButton,
-                cancelButton: reorderCancelButton,
+                toggleButton: null,
+                cancelButton: null,
                 startPosition: 2,
                 positionStep: 2,
                 vibrateOnTargetChange: false,
@@ -709,27 +1003,52 @@
                 onChange: () => {
                     renderInsertSlots();
                     updateOrderedMix();
+                    refreshDirtyState();
                 },
                 onCancel: () => {
                     renderInsertSlots();
                     updateOrderedMix();
+                    refreshDirtyState();
                 },
                 onEnd: () => {
                     renderInsertSlots();
                     updateOrderedMix();
+                    refreshDirtyState();
                 },
             });
             if (reorderController && typeof reorderController.enable === "function") {
                 reorderController.enable();
             }
         } catch (_error) {
-            // Keep the page usable without drag-and-drop when module load fails.
+            // Keep page usable when dynamic import fails.
         }
     };
 
+    form.addEventListener("change", () => {
+        refreshDirtyState();
+    });
+
+    hiddenFieldNames.forEach((name) => {
+        const field = hiddenFields[name];
+        if (!(field instanceof HTMLInputElement)) {
+            return;
+        }
+        field.addEventListener("change", refreshDirtyState);
+        field.addEventListener("input", refreshDirtyState);
+    });
+
+    getSecondaryItems().forEach((item) => normalizeSecondaryItemCompact(item));
+    if (secondaryList instanceof HTMLElement) {
+        secondaryList.classList.add("is-reorder-enabled");
+    }
+
     applySummaryPreview();
-    renderInsertSlots();
+    bindMainSongCards();
+    updateSongsPayloadInput();
     updateOrderedMix();
+    renderInsertSlots();
     ensureModeOnLoad();
+    initialSnapshot = getCurrentSnapshot();
+    refreshDirtyState();
     void initReorderModule();
 })();

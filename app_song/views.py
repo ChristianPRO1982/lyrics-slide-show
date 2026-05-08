@@ -1360,3 +1360,18 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
             "text_html": text_html,
         },
     )
+
+
+def song_text_popup(request: HttpRequest, song_id: int) -> JsonResponse:
+    song = get_object_or_404(Song, song_id=song_id)
+    if not _can_read_song(request.user, song):
+        raise Http404
+
+    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    blocks = _build_blocks_from_song(song)
+    return JsonResponse(
+        {
+            "title": build_song_full_title_with_tags(song),
+            "markdown": _build_preview_markdown(song, blocks, settings=render_settings),
+        }
+    )

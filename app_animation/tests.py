@@ -1,3 +1,5 @@
+import json
+
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -151,6 +153,7 @@ class AnimationViewsTests(TestCase):
     def test_modify_animation_get_renders_form(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Line one")
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -163,8 +166,96 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'data-animation-edit-form')
         self.assertContains(response, 'id="id_title"')
         self.assertContains(response, 'name="ordered_mix"')
+        self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
         self.assertContains(response, '"songCatalog"')
+        self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
+
+    def test_modify_animation_post_updates_song_and_verse_overrides_from_payload(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse_one = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Verse one")
+        verse_two = Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="Verse two")
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse_one.verse_id],
+                    "song_style": {
+                        "font_family_override": "Arial",
+                        "font_size_delta": 10,
+                        "text_color_override": "#123456",
+                        "bg_color_override": "#654321",
+                    },
+                    "verse_styles": {
+                        str(verse_one.verse_id): {
+                            "font_family_override": "Ubuntu",
+                            "font_size_delta": -5,
+                            "text_color_override": "#AABBCC",
+                            "bg_color_override": "#112233",
+                        },
+                    },
+                }
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        item.refresh_from_db()
+        self.assertEqual(item.font_family_override, "Arial")
+        self.assertEqual(item.font_size_override, 70)
+        self.assertEqual(item.text_color_override, "#123456")
+        self.assertEqual(item.bg_color_override, "#654321")
+
+        verse_one_override = AnimationVerseOverride.objects.get(
+            animation_song=item,
+            source_verse_id=verse_one.verse_id,
+        )
+        self.assertTrue(verse_one_override.is_visible)
+        self.assertEqual(verse_one_override.font_family_override, "Ubuntu")
+        self.assertEqual(verse_one_override.font_size_override, 65)
+        self.assertEqual(verse_one_override.text_color_override, "#AABBCC")
+        self.assertEqual(verse_one_override.bg_color_override, "#112233")
+
+        verse_two_override = AnimationVerseOverride.objects.get(
+            animation_song=item,
+            source_verse_id=verse_two.verse_id,
+        )
+        self.assertFalse(verse_two_override.is_visible)
+        self.assertIsNone(verse_two_override.font_family_override)
+        self.assertIsNone(verse_two_override.font_size_override)
+        self.assertIsNone(verse_two_override.text_color_override)
+        self.assertIsNone(verse_two_override.bg_color_override)
 
     def test_modify_animation_post_updates_values(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -222,6 +313,7 @@ class AnimationViewsTests(TestCase):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
         song_b = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse_a = Verse.objects.create(song=song_a, num=2, num_verse=1, chorus=False, text="Verse A")
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -229,6 +321,11 @@ class AnimationViewsTests(TestCase):
         )
         item_a = AnimationSong.objects.create(animation=animation, song=song_a, position=2)
         item_b = AnimationSong.objects.create(animation=animation, song=song_b, position=4)
+        existing_override = AnimationVerseOverride.objects.create(
+            animation_song=item_a,
+            source_verse_id=verse_a.verse_id,
+            is_visible=False,
+        )
         self._select_group(group)
         response = self.client.post(
             reverse("modify_animation", args=[animation.animation_id]),
@@ -243,12 +340,37 @@ class AnimationViewsTests(TestCase):
                 "horizontal_padding": "80",
                 "background_asset_code": "",
                 "ordered_mix": f"asid:{item_b.animation_song_id}|asid:{item_a.animation_song_id}",
+                "songs_payload": json.dumps(
+                    {
+                        "items": [
+                            {
+                                "animation_song_id": item_a.animation_song_id,
+                                "song_id": song_a.song_id,
+                                "visible_verse_ids": [verse_a.verse_id],
+                                "song_style": {
+                                    "font_family_override": "Arial",
+                                    "font_size_delta": 15,
+                                    "text_color_override": "#111111",
+                                    "bg_color_override": "#222222",
+                                },
+                                "verse_styles": {},
+                            }
+                        ]
+                    }
+                ),
             },
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Des erreurs empêchent l'enregistrement")
         persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
         self.assertEqual([row.animation_song_id for row in persisted], [item_a.animation_song_id, item_b.animation_song_id])
+        item_a.refresh_from_db()
+        self.assertIsNone(item_a.font_family_override)
+        self.assertIsNone(item_a.font_size_override)
+        self.assertIsNone(item_a.text_color_override)
+        self.assertIsNone(item_a.bg_color_override)
+        existing_override.refresh_from_db()
+        self.assertFalse(existing_override.is_visible)
 
     def test_modify_animation_post_ignores_inaccessible_sid_token(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

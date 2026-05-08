@@ -187,6 +187,40 @@
     margin: 0;
 }
 
+.animation-song-main-card {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.animation-song-main-links {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.animation-song-main-links a:last-child {
+    margin-left: auto;
+}
+
+.animation-song-verse-list {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.animation-song-verse-options {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.animation-song-verse-option {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0.45rem;
+    padding: 0.55rem;
+    display: grid;
+    gap: 0.4rem;
+}
+
 .animation-song-stack {
     display: grid;
     gap: 0.7rem;

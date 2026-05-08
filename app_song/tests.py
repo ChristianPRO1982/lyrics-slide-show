@@ -408,6 +408,19 @@ class SongViewsRenderingTests(TestCase):
         self.assertIn("<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
 
+    def test_song_text_popup_endpoint_returns_full_chorus_markdown(self):
+        response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertIn("title", payload)
+        self.assertIn("markdown", payload)
+        self.assertIn("Refrain", payload["markdown"])
+
+    @patch("app_song.views._can_read_song", return_value=False)
+    def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
+        response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 404)
+
 
 class ModifySongViewTests(TestCase):
     def setUp(self):

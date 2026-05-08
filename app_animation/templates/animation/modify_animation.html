@@ -38,16 +38,30 @@
             type="button"
             class="animation-tool-button"
             data-animation-mode-toggle
-            data-mode-main-label="{% trans 'Mode principal' %}"
-            data-mode-secondary-label="{% trans 'Mode secondaire' %}"
+            data-mode-main-label="{% trans 'Modification' %}"
+            data-mode-secondary-label="{% trans 'Playlist' %}"
         >
-            {% trans "Mode secondaire" %}
+            {% trans "Playlist" %}
         </button>
     </p>
+    <form method="post" id="modify-animation-form" data-animation-edit-form data-reorder-module-url="{% static 'js/reorder-list.module.js' %}" hidden>
+        {% csrf_token %}
+        {{ form.title.as_hidden }}
+        {{ form.description.as_hidden }}
+        {{ form.scheduled_at.as_hidden }}
+        {{ form.text_color.as_hidden }}
+        {{ form.bg_color.as_hidden }}
+        {{ form.font_family.as_hidden }}
+        {{ form.font_size.as_hidden }}
+        {{ form.horizontal_padding.as_hidden }}
+        {{ form.background_asset_code.as_hidden }}
+        <input type="hidden" name="ordered_mix" value="{{ ordered_mix_initial }}" data-animation-ordered-mix>
+        <input type="hidden" name="songs_payload" value="{{ songs_payload_initial_json }}" data-animation-songs-payload>
+    </form>
 {% endblock %}
 {% block page_summary %}
     <div class="animation-summary-preview" data-animation-summary-preview>
-        <p data-animation-summary-live data-animation-summary-title>{{ animation.title }}</p>
+        <p data-animation-summary-live data-animation-summary-title>Test</p>
     </div>
     <p>
         <span class="animation-color-dot" data-animation-summary-text-dot></span>
@@ -87,32 +101,158 @@
             </ul>
         </article>
     {% endif %}
-
+{% endblock %}
+{% block content_footer %}
     <section data-animation-edit-mode="main" hidden>
-        <div class="animation-song-grid">
-            {% for item in animation_songs %}
-                <article class="site-theme-card animation-song-main-card">
-                    <p><strong>{{ item.song.display_title }}</strong></p>
+        <div class="animation-song-stack">
+            {% for card in main_song_cards %}
+                <article
+                    class="site-theme-card animation-song-main-card"
+                    data-main-song-card
+                    data-animation-song-id="{{ card.animation_song_id }}"
+                    data-song-id="{{ card.song_id }}"
+                    data-song-title="{{ card.song_title|escape }}"
+                    data-song-text-color="{{ card.song_style.text_color_override }}"
+                    data-song-bg-color="{{ card.song_style.bg_color_override }}"
+                >
+                    <div data-song-collapsed>
+                        <p><strong>{{ card.song_title }}</strong></p>
+                        <div class="animation-song-verse-list">
+                            {% for verse in card.verses %}
+                                <label class="animation-checkbox-option">
+                                    <input
+                                        type="checkbox"
+                                        data-main-verse-checkbox
+                                        data-verse-id="{{ verse.verse_id }}"
+                                        {% if verse.is_visible %}checked{% endif %}
+                                    >
+                                    <span>{{ verse.label }}{% if verse.excerpt %} - {{ verse.excerpt }}{% endif %}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <p>
+                            <button
+                                type="button"
+                                class="animation-secondary-action"
+                                data-song-options-toggle
+                                data-open-label="{% trans 'Afficher les options' %}"
+                                data-close-label="{% trans 'Masquer les options' %}"
+                                aria-expanded="false"
+                            >
+                                {% trans "Afficher les options" %}
+                            </button>
+                        </p>
+                        <hr>
+                        <div class="animation-song-main-links">
+                            <a
+                                href="#"
+                                data-song-view-text
+                                data-popup-url="{% url 'song_text_popup' card.song_id %}"
+                            >👁️ {% trans "Voir le texte du chant" %}</a>
+                            {% if request.user.is_authenticated %}
+                                <a
+                                    href="{% url 'modify_song' card.song_id %}"
+                                    data-song-go-to-link
+                                >🔗 {% trans "Aller vers le chant" %}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div data-song-expanded hidden>
+                        <p>
+                            <label for="song-font-family-{{ card.animation_song_id }}">{% trans "Police du chant" %}</label>
+                            <select id="song-font-family-{{ card.animation_song_id }}" data-song-font-family>
+                                <option value="">{% trans "Même police que l'animation" %}</option>
+                                {% for option in font_choices %}
+                                    <option value="{{ option.value }}"{% if option.value == card.song_style.font_family_override %} selected{% endif %}>{{ option.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="song-font-size-delta-{{ card.animation_song_id }}">{% trans "Taille du chant" %}</label>
+                            <select id="song-font-size-delta-{{ card.animation_song_id }}" data-song-font-size-delta>
+                                {% for delta in font_size_delta_choices %}
+                                    <option value="{{ delta }}"{% if delta == card.song_style.font_size_delta %} selected{% endif %}>
+                                        {% if delta > 0 %}+{% endif %}{{ delta }}px
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                        <p>
+                            <button type="button" class="animation-tool-button" data-song-color-popup-trigger data-color-target-level="song">
+                                {% trans "Couleurs du chant" %}
+                            </button>
+                        </p>
+                        <div class="animation-song-verse-options">
+                            {% for verse in card.verses %}
+                                <article
+                                    class="animation-song-verse-option"
+                                    data-main-verse-row
+                                    data-verse-id="{{ verse.verse_id }}"
+                                    data-verse-text-color="{{ verse.text_color_override }}"
+                                    data-verse-bg-color="{{ verse.bg_color_override }}"
+                                >
+                                    <p>
+                                        <strong>{{ verse.label }}</strong>
+                                    </p>
+                                    <p>
+                                        <label class="animation-checkbox-option">
+                                            <input
+                                                type="checkbox"
+                                                data-main-verse-checkbox
+                                                data-verse-id="{{ verse.verse_id }}"
+                                                {% if verse.is_visible %}checked{% endif %}
+                                            >
+                                            <span>{% trans "Afficher ce couplet" %}</span>
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label for="verse-font-family-{{ card.animation_song_id }}-{{ verse.verse_id }}">{% trans "Police" %}</label>
+                                        <select
+                                            id="verse-font-family-{{ card.animation_song_id }}-{{ verse.verse_id }}"
+                                            data-verse-font-family
+                                            data-verse-id="{{ verse.verse_id }}"
+                                        >
+                                            <option value="">{% trans "Même police que le chant" %}</option>
+                                            {% for option in font_choices %}
+                                                <option value="{{ option.value }}"{% if option.value == verse.font_family_override %} selected{% endif %}>{{ option.label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <label for="verse-font-size-delta-{{ card.animation_song_id }}-{{ verse.verse_id }}">{% trans "Taille" %}</label>
+                                        <select
+                                            id="verse-font-size-delta-{{ card.animation_song_id }}-{{ verse.verse_id }}"
+                                            data-verse-font-size-delta
+                                            data-verse-id="{{ verse.verse_id }}"
+                                        >
+                                            {% for delta in font_size_delta_choices %}
+                                                <option value="{{ delta }}"{% if delta == verse.font_size_delta %} selected{% endif %}>
+                                                    {% if delta > 0 %}+{% endif %}{{ delta }}px
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <button
+                                            type="button"
+                                            class="animation-tool-button"
+                                            data-song-color-popup-trigger
+                                            data-color-target-level="verse"
+                                            data-verse-id="{{ verse.verse_id }}"
+                                        >
+                                            {% trans "Couleurs du couplet" %}
+                                        </button>
+                                    </p>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </article>
             {% endfor %}
         </div>
     </section>
 
-    <form method="post" id="modify-animation-form" data-animation-edit-form data-reorder-module-url="{% static 'js/reorder-list.module.js' %}">
-        {% csrf_token %}
-        {{ form.title.as_hidden }}
-        {{ form.description.as_hidden }}
-        {{ form.scheduled_at.as_hidden }}
-        {{ form.text_color.as_hidden }}
-        {{ form.bg_color.as_hidden }}
-        {{ form.font_family.as_hidden }}
-        {{ form.font_size.as_hidden }}
-        {{ form.horizontal_padding.as_hidden }}
-        {{ form.background_asset_code.as_hidden }}
-        <input type="hidden" name="ordered_mix" value="{{ ordered_mix_initial }}" data-animation-ordered-mix>
-    </form>
-{% endblock %}
-{% block content_footer %}
     <section data-animation-edit-mode="secondary" hidden>
         <div class="animation-song-stack" data-animation-secondary-list data-reorder-list>
             {% for item in animation_songs %}
