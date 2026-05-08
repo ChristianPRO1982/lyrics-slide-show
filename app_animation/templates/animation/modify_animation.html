@@ -116,7 +116,19 @@
                     data-song-bg-color="{{ card.song_style.bg_color_override }}"
                 >
                     <div data-song-collapsed>
-                        <p><strong>{{ card.song_title }}</strong></p>
+                        <div class="animation-song-main-head">
+                            <p><strong>{{ card.song_title }}</strong></p>
+                            <button
+                                type="button"
+                                class="animation-secondary-action"
+                                data-song-options-toggle
+                                data-open-label="{% trans 'Afficher les options' %}"
+                                data-close-label="{% trans 'Masquer les options' %}"
+                                aria-expanded="false"
+                            >
+                                {% trans "Afficher les options" %}
+                            </button>
+                        </div>
                         <div class="animation-song-verse-list">
                             {% for verse in card.verses %}
                                 <label class="animation-checkbox-option">
@@ -130,18 +142,6 @@
                                 </label>
                             {% endfor %}
                         </div>
-                        <p>
-                            <button
-                                type="button"
-                                class="animation-secondary-action"
-                                data-song-options-toggle
-                                data-open-label="{% trans 'Afficher les options' %}"
-                                data-close-label="{% trans 'Masquer les options' %}"
-                                aria-expanded="false"
-                            >
-                                {% trans "Afficher les options" %}
-                            </button>
-                        </p>
                         <hr>
                         <div class="animation-song-main-links">
                             <a

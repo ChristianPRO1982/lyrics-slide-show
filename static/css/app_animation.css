@@ -192,6 +192,18 @@
     gap: 0.65rem;
 }
 
+.animation-song-main-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem;
+}
+
+.animation-song-main-head .animation-secondary-action {
+    margin-left: auto;
+    white-space: nowrap;
+}
+
 .animation-song-main-links {
     display: flex;
     justify-content: space-between;
