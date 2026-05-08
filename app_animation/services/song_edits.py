@@ -44,6 +44,10 @@ def _excerpt(value: str | None, max_length: int = 45) -> str:
     return f"{text[:max_length].rstrip()}…"
 
 
+def _full_text(value: str | None) -> str:
+    return str(value or "").strip()
+
+
 def _verse_label(verse: Verse) -> str:
     if verse.chorus:
         return _("Refrain")
@@ -112,6 +116,7 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
                     "verse_id": int(verse.verse_id),
                     "label": _verse_label(verse),
                     "excerpt": _excerpt(verse.text),
+                    "full_text": _full_text(verse.text),
                     "is_visible": is_visible,
                     "font_family_override": style_data["font_family_override"],
                     "font_size_delta": style_data["font_size_delta"],

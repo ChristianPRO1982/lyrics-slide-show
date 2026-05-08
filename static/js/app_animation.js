@@ -81,6 +81,7 @@
         font_size: 72,
         horizontal_padding: 80,
     };
+    const previewFontSizePx = 34;
 
     const validHex = (value) => {
         const candidate = String(value || "").trim();
@@ -730,6 +731,65 @@
         dirty = getCurrentSnapshot() !== initialSnapshot;
     }
 
+    const readAnimationBaseStyle = () => {
+        const values = readCurrentValues();
+        return {
+            textColor: validHex(values.text_color) || fallbackValues.text_color,
+            bgColor: validHex(values.bg_color) || fallbackValues.bg_color,
+            fontFamily: String(values.font_family || fallbackValues.font_family).trim() || fallbackValues.font_family,
+        };
+    };
+
+    const applySongCardPreviewStyles = (card) => {
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+
+        const baseStyle = readAnimationBaseStyle();
+        const songFontSelect = card.querySelector("[data-song-font-family]");
+        const songFontFamily = String(songFontSelect?.value || "").trim() || baseStyle.fontFamily;
+        const songTextColor = validHex(card.getAttribute("data-song-text-color")) || baseStyle.textColor;
+        const songBgColor = validHex(card.getAttribute("data-song-bg-color")) || baseStyle.bgColor;
+
+        const songPreview = card.querySelector("[data-song-style-preview]");
+        const songPreviewText = card.querySelector("[data-song-style-preview-text]");
+        if (songPreview instanceof HTMLElement) {
+            songPreview.style.background = songBgColor;
+        }
+        if (songPreviewText instanceof HTMLElement) {
+            songPreviewText.style.color = songTextColor;
+            songPreviewText.style.fontFamily = `'${songFontFamily}', sans-serif`;
+            songPreviewText.style.fontSize = `${previewFontSizePx}px`;
+        }
+
+        card.querySelectorAll("[data-main-verse-row]").forEach((row) => {
+            if (!(row instanceof HTMLElement)) {
+                return;
+            }
+            const verseId = String(row.getAttribute("data-verse-id") || "");
+            const verseCheckbox = card.querySelector(
+                `[data-main-verse-checkbox][data-verse-id="${verseId}"]`
+            );
+            const verseFontSelect = row.querySelector("[data-verse-font-family]");
+            const verseFontFamily = String(verseFontSelect?.value || "").trim() || songFontFamily;
+            const verseTextColor = validHex(row.getAttribute("data-verse-text-color")) || songTextColor;
+            const verseBgColor = validHex(row.getAttribute("data-verse-bg-color")) || songBgColor;
+
+            const versePreview = row.querySelector("[data-verse-style-preview]");
+            const versePreviewContent = row.querySelector("[data-verse-style-preview-content]");
+            if (versePreview instanceof HTMLElement) {
+                versePreview.style.background = verseBgColor;
+                const isVisible = verseCheckbox instanceof HTMLInputElement ? verseCheckbox.checked : true;
+                versePreview.classList.toggle("is-not-visible", !isVisible);
+            }
+            if (versePreviewContent instanceof HTMLElement) {
+                versePreviewContent.style.color = verseTextColor;
+                versePreviewContent.style.fontFamily = `'${verseFontFamily}', sans-serif`;
+                versePreviewContent.style.fontSize = `${previewFontSizePx}px`;
+            }
+        });
+    };
+
     const syncVerseCheckboxes = (card, verseId, checked, source) => {
         card.querySelectorAll(`[data-main-verse-checkbox][data-verse-id="${verseId}"]`).forEach((checkbox) => {
             if (!(checkbox instanceof HTMLInputElement) || checkbox === source) {
@@ -779,6 +839,7 @@
 
         card.setAttribute("data-song-text-color", colorValueOrFallback(result.values?.text_color, fallbackValues.text_color));
         card.setAttribute("data-song-bg-color", colorValueOrFallback(result.values?.bg_color, fallbackValues.bg_color));
+        applySongCardPreviewStyles(card);
         updateSongsPayloadInput();
         refreshDirtyState();
     };
@@ -823,6 +884,8 @@
 
         row.setAttribute("data-verse-text-color", colorValueOrFallback(result.values?.text_color, fallbackValues.text_color));
         row.setAttribute("data-verse-bg-color", colorValueOrFallback(result.values?.bg_color, fallbackValues.bg_color));
+        const card = row.closest("[data-main-song-card]");
+        applySongCardPreviewStyles(card);
         updateSongsPayloadInput();
         refreshDirtyState();
     };
@@ -905,6 +968,7 @@
                 checkbox.addEventListener("change", () => {
                     const verseId = String(checkbox.getAttribute("data-verse-id") || "");
                     syncVerseCheckboxes(card, verseId, checkbox.checked, checkbox);
+                    applySongCardPreviewStyles(card);
                     updateSongsPayloadInput();
                     refreshDirtyState();
                 });
@@ -912,6 +976,7 @@
 
             card.querySelectorAll("[data-song-font-family], [data-song-font-size-delta], [data-verse-font-family], [data-verse-font-size-delta]").forEach((field) => {
                 field.addEventListener("change", () => {
+                    applySongCardPreviewStyles(card);
                     updateSongsPayloadInput();
                     refreshDirtyState();
                 });
@@ -946,6 +1011,8 @@
                     await openGoToSongPopup(goToLink.href, songTitle);
                 });
             }
+
+            applySongCardPreviewStyles(card);
         });
     };
 
