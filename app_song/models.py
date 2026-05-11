@@ -240,4 +240,4 @@ class SongFavorite(models.Model):
     member_id = models.UUIDField(db_column="user_id")
 
     class Meta:
-        db_table = 'lss"."s_song_favorites'
+        db_table = 'lss"."m_songs_users'

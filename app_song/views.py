@@ -37,10 +37,11 @@ from .rendering import (
 from .search import (
     TEXT_MODE_FULL_CHORUS,
     TEXT_MODE_SINGLE_CHORUS,
+    SongSearchParams,
     SongReferenceOptions,
-    build_song_search_query,
     get_active_song_search,
     get_reference_options,
+    load_member_song_search,
     search_songs,
 )
 from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
@@ -94,6 +95,29 @@ def _can_read_song(user, song: Song) -> bool:
 
 def _can_report_message(user, song: Song) -> bool:
     return _can_read_song(user, song) and not _can_edit_song(user, song)
+
+
+def _is_song_favorite(song_id: int, member_id: str | None) -> bool:
+    return bool(
+        member_id
+        and SongFavorite.objects.filter(song_id=song_id, member_id=member_id).exists()
+    )
+
+
+def _toggle_song_favorite(song: Song, member_id: str | None) -> None:
+    if not member_id:
+        raise Http404
+
+    favorites = SongFavorite.objects.filter(song_id=song.song_id, member_id=member_id)
+    if favorites.exists():
+        favorites.delete()
+        return
+
+    try:
+        SongFavorite.objects.create(song=song, member_id=member_id)
+    except IntegrityError:
+        # A concurrent request may have created the relation already.
+        pass
 
 
 def _is_truthy(value: str | None) -> bool:
@@ -500,6 +524,7 @@ def _build_modify_song_context(
     blocks = _recalculate_song_blocks(parsed_blocks or _build_blocks_from_song(song))
     bands, artists, genre_groups = _get_song_metadata_labels(song)
     page_summary_text, page_summary_truncated = _build_page_summary(song.description)
+    member_id = get_member_id_from_user(request.user)
 
     return {
         "selected_group": selected_group,
@@ -514,6 +539,7 @@ def _build_modify_song_context(
         "bands": bands,
         "artists": artists,
         "genre_groups": genre_groups,
+        "is_favorite": _is_song_favorite(song.song_id, member_id),
         "can_edit": _can_edit_song(request.user, song),
         "can_devalidate": bool(song.is_validated and _is_moderator(request.user)),
         "display_url": reverse("song", args=[song.song_id]),
@@ -592,8 +618,15 @@ def songs(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         return _handle_song_post(request, "songs")
 
-    search_params = get_active_song_search(request, member_id)
-    search_results = search_songs(search_params, request.user, member_id)
+    favorites_quick = bool(member_id and _is_truthy(request.GET.get("favorites_quick")))
+    if favorites_quick:
+        # Temporary view: ignore and do not overwrite the persisted member search.
+        applied_search_params = SongSearchParams(favorites_only=True)
+        display_search_params = load_member_song_search(member_id)
+    else:
+        applied_search_params = get_active_song_search(request, member_id)
+        display_search_params = applied_search_params
+    search_results = search_songs(applied_search_params, request.user, member_id)
     song_cards = _build_song_cards(search_results.results, request.user)
     reference_options = get_reference_options() if _is_authenticated(request.user) else _empty_reference_options()
 
@@ -602,7 +635,7 @@ def songs(request: HttpRequest) -> HttpResponse:
         "song/songs.html",
         {
             "selected_group": selected_group,
-            "search_params": search_results.params,
+            "search_params": display_search_params,
             "reference_options": reference_options,
             "song_cards": song_cards,
             "displayed_count": search_results.displayed_count,
@@ -611,10 +644,8 @@ def songs(request: HttpRequest) -> HttpResponse:
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
             "can_create_song": _is_authenticated(request.user),
-            "favorites_toggle_query": build_song_search_query(
-                search_results.params,
-                favorites_only=not search_results.params.favorites_only,
-            ),
+            "favorites_toggle_query": "favorites_quick=1",
+            "favorites_quick_active": favorites_quick,
         },
     )
 
@@ -989,6 +1020,9 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
 
     if request.method == "POST":
         action = request.POST.get("action")
+        if action == "toggle_favorite":
+            _toggle_song_favorite(song_object, get_member_id_from_user(request.user))
+            return redirect("song", song_id=song_object.song_id)
         if action == "delete_song":
             return _handle_song_post(request, "songs")
         if action == "add_message":
@@ -1016,10 +1050,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
 
     member_id = get_member_id_from_user(request.user)
     bands, artists, genre_groups = _get_song_metadata_labels(song_object)
-    is_favorite = bool(
-        member_id
-        and SongFavorite.objects.filter(song_id=song_object.song_id, member_id=member_id).exists()
-    )
+    is_favorite = _is_song_favorite(song_object.song_id, member_id)
     can_report = _can_report_message(request.user, song_object)
     render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
     text_artifacts = build_song_text_artifacts(song_object, settings=render_settings)
@@ -1076,6 +1107,9 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
 
     if request.method == "POST":
         action = (request.POST.get("action") or "").strip()
+        if action == "toggle_favorite":
+            _toggle_song_favorite(song_object, get_member_id_from_user(request.user))
+            return redirect("modify_song", song_id=song_object.song_id)
         if action == "devalidate_song":
             if not (_is_moderator(request.user) and song_object.is_validated):
                 raise Http404
@@ -1155,6 +1189,10 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         raise Http404
 
     if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action == "toggle_favorite":
+            _toggle_song_favorite(song_object, get_member_id_from_user(request.user))
+            return redirect("song_metadata", song_id=song_object.song_id)
         if not _can_edit_song(request.user, song_object):
             raise Http404
         _update_song_metadata_from_form(song_object, request)
@@ -1208,6 +1246,7 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
             "metadata_bands_available": bands_available,
             "metadata_artists_selected": artists_selected,
             "metadata_artists_available": artists_available,
+            "is_favorite": _is_song_favorite(song_object.song_id, get_member_id_from_user(request.user)),
             "can_edit": _can_edit_song(request.user, song_object),
         },
     )

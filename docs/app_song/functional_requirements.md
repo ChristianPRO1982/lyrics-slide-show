@@ -497,7 +497,7 @@ The required relation tables are:
 - `s_song_genres`,
 - `s_song_artists`,
 - `s_song_bands`,
-- `s_song_favorites`.
+- `m_songs_users`.
 
 ```sql
 CREATE TABLE s_song_genres (
@@ -542,15 +542,15 @@ CREATE TABLE s_song_bands (
         ON DELETE CASCADE
 );
 
-CREATE TABLE s_song_favorites (
+CREATE TABLE m_songs_users (
     song_id integer NOT NULL,
-    user_id integer NOT NULL,
-    CONSTRAINT s_song_favorites_pkey PRIMARY KEY (song_id, user_id),
-    CONSTRAINT s_song_favorites_songs_fk
+    user_id uuid NOT NULL,
+    CONSTRAINT m_songs_users_pkey PRIMARY KEY (song_id, user_id),
+    CONSTRAINT m_songs_users_songs_fk
         FOREIGN KEY (song_id)
         REFERENCES s_songs(song_id)
         ON DELETE CASCADE,
-    CONSTRAINT s_song_favorites_users_fk
+    CONSTRAINT m_songs_users_users_fk
         FOREIGN KEY (user_id)
         REFERENCES users.users(id)
         ON DELETE CASCADE
@@ -561,7 +561,7 @@ Functional notes:
 
 - Composite primary keys prevent duplicate relations.
 - All relation foreign keys use `ON DELETE CASCADE`.
-- `s_song_favorites` stores member-specific favorites.
+- `m_songs_users` stores member-specific favorites.
 
 ## Song Links
 
@@ -709,6 +709,12 @@ For authenticated users, regardless of role:
 - search persistence applies across browsers where the same user is authenticated,
 - navigating away, logging out, and logging back in restores the latest saved search parameters,
 - the user must explicitly reset the search to return to an empty search state and therefore show all accessible songs.
+- clicking `💫 Afficher mes favoris` opens a temporary favorites-only view,
+- this temporary favorites-only view must ignore the persisted search parameters,
+- this temporary favorites-only view must not update or overwrite the persisted search parameters,
+- in that temporary view, songs are filtered only by accessibility and favorite membership for the authenticated user.
+- in that temporary view, the search form keeps displaying the persisted search parameters,
+- this allows quick return to the persisted search without rebuilding criteria.
 
 When a submitted search returns no matching song, the user-facing behavior must make clear that no song matches the given criteria.
 

@@ -1,12 +1,14 @@
+from types import SimpleNamespace
+
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
 from django.db import IntegrityError
 
 from app_main.models import DirectoryUserRecord
-from app_member.models import MemberRole
+from app_member.models import MemberPreferences, MemberRole
 
-from .models import Song, SongStatus, Verse
+from .models import Song, SongFavorite, SongStatus, Verse
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
@@ -17,7 +19,7 @@ from .rendering import (
     render_song_blocks,
     render_song_text,
 )
-from .search import SongSearchParams, build_song_search_query, get_active_song_search
+from .search import SongSearchParams, build_song_search_query, get_active_song_search, search_songs
 
 
 class AnonymousUser:
@@ -420,6 +422,116 @@ class SongViewsRenderingTests(TestCase):
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
         response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 404)
+
+
+class SongFavoriteActionsTests(TestCase):
+    def setUp(self):
+        self.user_id = "55555555-5555-5555-5555-555555555555"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="favorite.user",
+            first_name="Favorite",
+            last_name="User",
+            email="favorite.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song = Song.objects.create(
+            title="Favori",
+            subtitle="Test",
+            description="Description",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "favorite.user",
+            "email": "favorite.user@example.test",
+            "first_name": "Favorite",
+            "last_name": "User",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_song_toggle_creates_and_deletes_favorite(self):
+        self._login()
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "toggle_favorite"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
+        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "toggle_favorite"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
+        self.assertFalse(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+
+    def test_toggle_requires_authenticated_user(self):
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "toggle_favorite"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_modify_song_toggle_works_without_edit_rights(self):
+        self._login()
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "toggle_favorite"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
+        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+
+    def test_song_metadata_toggle_works_without_edit_rights(self):
+        self._login()
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+
+        response = self.client.post(
+            reverse("song_metadata", args=[self.song.song_id]),
+            data={"action": "toggle_favorite"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("song_metadata", args=[self.song.song_id]))
+        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+
+    def test_actions_show_toggle_on_all_song_pages_when_authenticated(self):
+        self._login()
+
+        song_response = self.client.get(reverse("song", args=[self.song.song_id]))
+        self.assertEqual(song_response.status_code, 200)
+        self.assertContains(song_response, "☆ Pas encore favori")
+        self.assertContains(song_response, "Supprimer")
+        song_html = song_response.content.decode("utf-8")
+        self.assertLess(song_html.find("☆ Pas encore favori"), song_html.find("Supprimer"))
+
+        modify_response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(modify_response.status_code, 200)
+        self.assertContains(modify_response, "☆ Pas encore favori")
+
+        metadata_response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+        self.assertEqual(metadata_response.status_code, 200)
+        self.assertContains(metadata_response, "☆ Pas encore favori")
+
+    def test_song_view_hides_toggle_for_guest(self):
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "☆ Pas encore favori")
+        self.assertNotContains(response, "⭐ Favori")
 
 
 class ModifySongViewTests(TestCase):
@@ -836,3 +948,114 @@ class ModifyArtistsAndBandsViewTests(TestCase):
         self.assertContains(bands_response, "song-meta-crud-grid--simple")
         self.assertNotContains(bands_response, "<table")
         self.assertContains(bands_response, "Enregistrer", count=2)
+
+
+class SongFavoritesSearchRegressionTests(TestCase):
+    def setUp(self):
+        self.user_id = "66666666-6666-6666-6666-666666666666"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="search.favorite.user",
+            first_name="Search",
+            last_name="Favorite",
+            email="search.favorite.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.favorite_song = Song.objects.create(
+            title="Chant favori",
+            subtitle="A",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        self.other_song = Song.objects.create(
+            title="Autre chant",
+            subtitle="B",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        SongFavorite.objects.create(song=self.favorite_song, member_id=self.user_id)
+
+    def test_favorites_only_search_still_filters_member_favorites(self):
+        user = SimpleNamespace(is_authenticated=True)
+        results = search_songs(
+            SongSearchParams(favorites_only=True),
+            user=user,
+            member_id=self.user_id,
+        )
+
+        self.assertEqual(results.displayed_count, 1)
+        self.assertEqual(results.results[0].song.song_id, self.favorite_song.song_id)
+
+
+class SongFavoritesQuickViewTests(TestCase):
+    def setUp(self):
+        self.user_id = "77777777-7777-7777-7777-777777777777"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="quick.favorite.user",
+            first_name="Quick",
+            last_name="Favorite",
+            email="quick.favorite.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.favorite_song = Song.objects.create(
+            title="Mon favori",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        self.non_favorite_matching_saved_search = Song.objects.create(
+            title="Saved Search Hit",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        SongFavorite.objects.create(song=self.favorite_song, member_id=self.user_id)
+        MemberPreferences.objects.create(
+            member_id=self.user_id,
+            song_search={
+                "text": "Saved Search",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "quick.favorite.user",
+            "email": "quick.favorite.user@example.test",
+            "first_name": "Quick",
+            "last_name": "Favorite",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_favorites_quick_view_ignores_and_does_not_overwrite_saved_search(self):
+        self._login()
+
+        response = self.client.get(reverse("songs") + "?favorites_quick=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Mon favori")
+        self.assertNotContains(response, "Saved Search Hit")
+        self.assertFalse(response.context["search_params"].favorites_only)
+        self.assertEqual(response.context["search_params"].text, "Saved Search")
+        self.assertContains(response, "Mode favoris temporaire actif.")
+        self.assertContains(response, "Revenir à ma recherche enregistrée")
+
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        self.assertEqual(preferences.song_search["text"], "Saved Search")
+        self.assertFalse(preferences.song_search["favorites_only"])

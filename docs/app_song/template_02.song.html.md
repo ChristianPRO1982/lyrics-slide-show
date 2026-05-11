@@ -29,6 +29,7 @@ si le chant n'est pas validé :
 
 TEXTE : <hr>
 TEXTE : "Modifier"
+TEXTE : "☆ Pas encore favori" ou "⭐ Favori" (si connecté)
 TEXTE : "Supprimer"
 
 ### en-tête principal
@@ -103,6 +104,7 @@ Mettre les actions sous les informations du chant.
 
 - Afficher
 - Modifier si le chant n'est pas validé
+- ☆ Pas encore favori / ⭐ Favori si l'utilisateur est connecté
 - Supprimer si le chant n'est pas validé, avec popup de validation Oui/Non sans croix
 
 À droite :

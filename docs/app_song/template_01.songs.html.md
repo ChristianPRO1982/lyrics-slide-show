@@ -17,6 +17,9 @@ mettre l'icone static/icons/ui/normal/512/light/songs.png selon le thème et le 
 ### panneau outils
 
 TEXTE : "💫 Afficher mes favoris"
+si le mode favoris temporaire est actif :
+TEXTE : "Mode favoris temporaire actif."
+TEXTE : "Revenir à ma recherche enregistrée"
 TEXTE : <hr>
 TEXTE : "Chants : 742"
 TEXTE : Recherche ⓘ : 742"
@@ -42,6 +45,9 @@ TEXTE : """
 
 Recherche
 Recherche avancée
+
+Quand le mode `💫 Afficher mes favoris` est actif, le formulaire de recherche affiché doit conserver les critères enregistrés du membre.
+Le mode favoris est un filtre momentané des résultats et ne doit pas réécrire ni vider le formulaire.
 
 ### contenu principal / carte de thème 2
 

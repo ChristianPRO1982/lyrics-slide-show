@@ -24,6 +24,10 @@
                 {% trans "💫 Afficher mes favoris" %}
             </a>
         </p>
+        {% if favorites_quick_active %}
+            <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
+            <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+        {% endif %}
     {% endif %}
     <hr>
     <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
@@ -185,7 +189,7 @@
                             <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a></h3>
                         </div>
                         <div class="song-card-markers">
-                            {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">💫</span>{% endif %}
+                            {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>{% endif %}
                         </div>
                     </div>
 
