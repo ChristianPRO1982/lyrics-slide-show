@@ -27,67 +27,86 @@
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
 {% block content %}
-    <form method="post" class="animation-create-form">
+    <form method="post" class="site-theme-selection">
         {% csrf_token %}
         {{ form.non_field_errors }}
 
-        <section class="animation-song-grid">
-            <article class="site-theme-card animation-list-card">
-                <p>
-                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        <article class="site-theme-card">
+            <div class="animation-create-form-row">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.title }}
                     {{ form.title.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.description }}
                     {{ form.description.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.scheduled_at.id_for_label }}">{{ form.scheduled_at.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.scheduled_at.id_for_label }}">{{ form.scheduled_at.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.scheduled_at }}
                     {{ form.scheduled_at.errors }}
-                </p>
-            </article>
+                </div>
+            </div>
+        </article>
 
-            <article class="site-theme-card animation-list-card">
-                <p>
-                    <label for="{{ form.text_color.id_for_label }}">{{ form.text_color.label }}</label>
+        <article class="site-theme-card">
+            <div class="animation-create-form-row">
+                <label for="{{ form.text_color.id_for_label }}">{{ form.text_color.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.text_color }}
                     {{ form.text_color.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.bg_color.id_for_label }}">{{ form.bg_color.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.bg_color.id_for_label }}">{{ form.bg_color.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.bg_color }}
                     {{ form.bg_color.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.font_family.id_for_label }}">{{ form.font_family.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.font_family.id_for_label }}">{{ form.font_family.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.font_family }}
                     {{ form.font_family.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.font_size.id_for_label }}">{{ form.font_size.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.font_size.id_for_label }}">{{ form.font_size.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.font_size }}
                     {{ form.font_size.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.horizontal_padding.id_for_label }}">{{ form.horizontal_padding.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.horizontal_padding.id_for_label }}">{{ form.horizontal_padding.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.horizontal_padding }}
                     {{ form.horizontal_padding.errors }}
-                </p>
-                <p>
-                    <label for="{{ form.background_asset_code.id_for_label }}">{{ form.background_asset_code.label }}</label>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.background_asset_code.id_for_label }}">{{ form.background_asset_code.label }}</label>
+                <div class="animation-create-form-control">
                     {{ form.background_asset_code }}
                     {{ form.background_asset_code.errors }}
-                </p>
-            </article>
+                </div>
+            </div>
+        </article>
 
-            <article class="site-theme-card animation-list-card">
-                <p>
-                    <button type="submit" class="animation-tool-button">{% trans "Créer l'animation" %}</button>
-                </p>
-            </article>
-        </section>
+        <article class="site-theme-card">
+            <p>
+                <button type="submit" class="animation-tool-button">{% trans "Créer l'animation" %}</button>
+            </p>
+        </article>
     </form>
+{% endblock %}
+{% block page_scripts %}
+    {% include "animation/includes/_viewport_debug_overlay.html" %}
 {% endblock %}

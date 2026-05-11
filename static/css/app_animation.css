@@ -20,12 +20,20 @@
     margin: 0.35rem 0;
 }
 
-.site-main-content > .animation-create-form {
-    grid-column: 1 / -1;
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
+.animation-create-form-row {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.35rem 0;
+}
+
+.animation-create-form-control {
+    min-width: 0;
+}
+
+.animation-create-form-control input,
+.animation-create-form-control select,
+.animation-create-form-control textarea {
+    width: 100%;
 }
 
 .animation-inline-form {
@@ -488,7 +496,7 @@
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 979px) {
     .animation-song-style-grid {
         grid-template-columns: 1fr;
     }
@@ -518,5 +526,17 @@
 
     .animation-verse-style-preview {
         min-height: 7rem;
+    }
+}
+
+@media (min-width: 980px) {
+    .site-theme-selection .animation-create-form-row {
+        grid-template-columns: minmax(0, 35%) minmax(0, 65%);
+        align-items: start;
+        column-gap: 0.9rem;
+    }
+
+    .site-theme-selection .animation-create-form-row > label {
+        margin-top: 0.35rem;
     }
 }
