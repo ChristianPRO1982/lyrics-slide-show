@@ -127,6 +127,50 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, GOOGLE_FONTS_STYLESHEET_HREF)
 
+    def test_animations_page_contains_add_animation_link(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        response = self.client.get(reverse("animations"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("add_animation"))
+
+    def test_add_animation_requires_selected_group(self):
+        response = self.client.get(reverse("add_animation"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    def test_add_animation_get_renders_form(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        response = self.client.get(reverse("add_animation"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="scheduled_at"')
+
+    def test_add_animation_post_creates_animation_in_selected_group(self):
+        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        self._select_group(selected_group)
+        response = self.client.post(
+            reverse("add_animation"),
+            data={
+                "title": "Nouvelle animation",
+                "description": "Description",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        created = Animation.objects.get(title="Nouvelle animation")
+        self.assertEqual(created.group_id, selected_group.group_id)
+        self.assertNotEqual(created.group_id, other_group.group_id)
+        self.assertEqual(response.headers["Location"], reverse("modify_animation", args=[created.animation_id]))
+
     def test_modify_animation_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(

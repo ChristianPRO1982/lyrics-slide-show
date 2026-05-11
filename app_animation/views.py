@@ -69,6 +69,33 @@ def animation_history(request: HttpRequest) -> HttpResponse:
     )
 
 
+def add_animation(request: HttpRequest) -> HttpResponse:
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return redirect_to_groups_when_no_selection(request)
+
+    if request.method == "POST":
+        form = AnimationForm(request.POST)
+        if form.is_valid():
+            animation = form.save(commit=False)
+            animation.group = selected_group
+            animation.save()
+            messages.success(request, _("L'animation a été créée."))
+            return redirect("modify_animation", animation_id=animation.animation_id)
+    else:
+        form = AnimationForm()
+
+    return render(
+        request,
+        "animation/add_animation.html",
+        {
+            "selected_group": selected_group,
+            "form": form,
+        },
+    )
+
+
 def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     try:
         selected_group = get_selected_group_or_404(request)

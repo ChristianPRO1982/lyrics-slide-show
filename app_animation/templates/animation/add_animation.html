@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Ajouter une animation" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
+{% block content %}
+    <form method="post" class="animation-create-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <section class="animation-song-grid">
+            <article class="site-theme-card animation-list-card">
+                <p>
+                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.scheduled_at.id_for_label }}">{{ form.scheduled_at.label }}</label>
+                    {{ form.scheduled_at }}
+                    {{ form.scheduled_at.errors }}
+                </p>
+            </article>
+
+            <article class="site-theme-card animation-list-card">
+                <p>
+                    <label for="{{ form.text_color.id_for_label }}">{{ form.text_color.label }}</label>
+                    {{ form.text_color }}
+                    {{ form.text_color.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.bg_color.id_for_label }}">{{ form.bg_color.label }}</label>
+                    {{ form.bg_color }}
+                    {{ form.bg_color.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.font_family.id_for_label }}">{{ form.font_family.label }}</label>
+                    {{ form.font_family }}
+                    {{ form.font_family.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.font_size.id_for_label }}">{{ form.font_size.label }}</label>
+                    {{ form.font_size }}
+                    {{ form.font_size.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.horizontal_padding.id_for_label }}">{{ form.horizontal_padding.label }}</label>
+                    {{ form.horizontal_padding }}
+                    {{ form.horizontal_padding.errors }}
+                </p>
+                <p>
+                    <label for="{{ form.background_asset_code.id_for_label }}">{{ form.background_asset_code.label }}</label>
+                    {{ form.background_asset_code }}
+                    {{ form.background_asset_code.errors }}
+                </p>
+            </article>
+
+            <article class="site-theme-card animation-list-card">
+                <p>
+                    <button type="submit" class="animation-tool-button">{% trans "Créer l'animation" %}</button>
+                </p>
+            </article>
+        </section>
+    </form>
+{% endblock %}

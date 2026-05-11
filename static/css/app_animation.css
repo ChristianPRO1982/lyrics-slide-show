@@ -20,6 +20,14 @@
     margin: 0.35rem 0;
 }
 
+.site-main-content > .animation-create-form {
+    grid-column: 1 / -1;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
 .animation-inline-form {
     margin: 0;
 }
