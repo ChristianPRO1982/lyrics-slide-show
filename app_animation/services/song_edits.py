@@ -91,7 +91,10 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
 
         for verse in animation_song.song.verses.all():
             override = overrides_by_verse_id.get(int(verse.verse_id))
+            is_selectable = not bool(verse.chorus)
             is_visible = bool(override.is_visible) if override is not None else True
+            if verse.chorus:
+                is_visible = True
             if is_visible:
                 visible_verse_ids.append(int(verse.verse_id))
 
@@ -111,19 +114,20 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
             ):
                 verse_styles[str(verse.verse_id)] = style_data
 
-            verses.append(
-                {
-                    "verse_id": int(verse.verse_id),
-                    "label": _verse_label(verse),
-                    "excerpt": _excerpt(verse.text),
-                    "full_text": _full_text(verse.text),
-                    "is_visible": is_visible,
-                    "font_family_override": style_data["font_family_override"],
-                    "font_size_delta": style_data["font_size_delta"],
-                    "text_color_override": style_data["text_color_override"],
-                    "bg_color_override": style_data["bg_color_override"],
-                }
-            )
+            if is_selectable:
+                verses.append(
+                    {
+                        "verse_id": int(verse.verse_id),
+                        "label": _verse_label(verse),
+                        "excerpt": _excerpt(verse.text),
+                        "full_text": _full_text(verse.text),
+                        "is_visible": is_visible,
+                        "font_family_override": style_data["font_family_override"],
+                        "font_size_delta": style_data["font_size_delta"],
+                        "text_color_override": style_data["text_color_override"],
+                        "bg_color_override": style_data["bg_color_override"],
+                    }
+                )
 
         song_style = {
             "font_family_override": str(animation_song.font_family_override or "").strip(),
@@ -304,7 +308,9 @@ def apply_songs_payload(animation: Animation, payload: dict[str, Any]) -> None:
             if parsed_id > 0:
                 visible_verse_ids.add(parsed_id)
 
-        valid_verse_ids = {int(verse.verse_id) for verse in animation_song.song.verses.all()}
+        all_song_verses = list(animation_song.song.verses.all())
+        valid_verse_ids = {int(verse.verse_id) for verse in all_song_verses}
+        chorus_verse_ids = {int(verse.verse_id) for verse in all_song_verses if verse.chorus}
         visible_verse_ids = {value for value in visible_verse_ids if value in valid_verse_ids}
         existing_overrides = {
             int(override.source_verse_id): override
@@ -313,6 +319,14 @@ def apply_songs_payload(animation: Animation, payload: dict[str, Any]) -> None:
         base_song_font_size = _effective_song_font_size(animation, animation_song)
 
         for verse_id in sorted(valid_verse_ids):
+            if verse_id in chorus_verse_ids:
+                # Refrains are always visible. Keep existing style overrides,
+                # only neutralize legacy hidden flags.
+                existing_override = existing_overrides.get(verse_id)
+                if existing_override is not None and not existing_override.is_visible:
+                    existing_override.is_visible = True
+                    existing_override.save(update_fields=["is_visible"])
+                continue
             raw_style = verse_style_map.get(str(verse_id))
             verse_style = raw_style if isinstance(raw_style, dict) else {}
             _set_verse_override(

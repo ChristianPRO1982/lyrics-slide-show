@@ -86,6 +86,27 @@ class AnimationRenderBundleTests(TestCase):
         self.assertIn(verse_one.verse_id, source_verse_ids)
         self.assertNotIn(verse_two.verse_id, source_verse_ids)
 
+    def test_hidden_chorus_override_does_not_remove_chorus_from_bundle(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session B",
+            scheduled_at=timezone.now(),
+        )
+        song = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
+        Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        AnimationVerseOverride.objects.create(
+            animation_song=animation_song,
+            source_verse_id=chorus.verse_id,
+            is_visible=False,
+        )
+
+        bundle = build_animation_render_bundle(animation)
+        source_verse_ids = [slide.source_verse_id for slide in bundle]
+        self.assertIn(chorus.verse_id, source_verse_ids)
+
 
 class AnimationViewsTests(TestCase):
     def _select_group(self, group: Group, secret: str | None = None) -> None:
@@ -237,6 +258,28 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
         self.assertContains(response, '"songCatalog"')
+        self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
+        self.assertContains(response, 'data-song-text-swatch')
+        self.assertContains(response, 'data-song-bg-swatch')
+        self.assertContains(response, 'data-song-color-parent-trigger')
+        self.assertContains(response, 'data-song-style-parent-reset-trigger')
+
+    def test_modify_animation_get_hides_chorus_rows_and_keeps_verse_rows(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
+        verse = Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, f"data-verse-id=\"{chorus.verse_id}\"")
         self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
 
     def test_modify_animation_get_member_exposes_advanced_favorites_and_all_song_catalogs(self):
@@ -403,6 +446,61 @@ class AnimationViewsTests(TestCase):
         self.assertIsNone(verse_two_override.font_size_override)
         self.assertIsNone(verse_two_override.text_color_override)
         self.assertIsNone(verse_two_override.bg_color_override)
+
+    def test_modify_animation_post_forces_chorus_visibility_even_if_payload_hides_it(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(title="Song D", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
+        verse = Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id],
+                    "song_style": {},
+                    "verse_styles": {},
+                }
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        chorus_override = AnimationVerseOverride.objects.filter(
+            animation_song=item,
+            source_verse_id=chorus.verse_id,
+        ).first()
+        if chorus_override is not None:
+            self.assertTrue(chorus_override.is_visible)
 
     def test_modify_animation_post_updates_values(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

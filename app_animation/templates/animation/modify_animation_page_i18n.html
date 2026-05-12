@@ -39,6 +39,13 @@
 {% trans "Options du chant" as lss_anim_song_options_title %}
 {% trans "Couleur du texte" as lss_anim_song_color_text %}
 {% trans "Couleur de fond" as lss_anim_song_color_bg %}
+{% trans "Reprendre les couleurs parentes" as lss_anim_inherit_parent_colors %}
+{% trans "Confirmer le retour aux paramètres parents" as lss_anim_parent_reset_title %}
+{% trans "Reprendre les paramètres parents pour cet élément ?" as lss_anim_parent_reset_message %}
+{% trans "Réinitialiser le chant" as lss_anim_song_reset_action %}
+{% trans "Réinitialiser le couplet" as lss_anim_verse_reset_action %}
+{% trans "Couleur texte" as lss_anim_text_color_short %}
+{% trans "Couleur fond" as lss_anim_bg_color_short %}
 {% trans "Voir le texte du chant" as lss_anim_song_view_text_title %}
 {% trans "Impossible de charger le texte du chant." as lss_anim_song_view_text_error %}
 {% trans "Navigation vers le chant" as lss_anim_song_navigation_title %}
@@ -88,6 +95,13 @@
         songOptionsPopupTitle: "{{ lss_anim_song_options_title|escapejs }}",
         songTextColorLabel: "{{ lss_anim_song_color_text|escapejs }}",
         songBgColorLabel: "{{ lss_anim_song_color_bg|escapejs }}",
+        inheritParentColorsLabel: "{{ lss_anim_inherit_parent_colors|escapejs }}",
+        parentResetTitle: "{{ lss_anim_parent_reset_title|escapejs }}",
+        parentResetMessage: "{{ lss_anim_parent_reset_message|escapejs }}",
+        songResetActionLabel: "{{ lss_anim_song_reset_action|escapejs }}",
+        verseResetActionLabel: "{{ lss_anim_verse_reset_action|escapejs }}",
+        textColorShortLabel: "{{ lss_anim_text_color_short|escapejs }}",
+        bgColorShortLabel: "{{ lss_anim_bg_color_short|escapejs }}",
         songViewTextTitle: "{{ lss_anim_song_view_text_title|escapejs }}",
         songViewTextError: "{{ lss_anim_song_view_text_error|escapejs }}",
         songNavigationTitle: "{{ lss_anim_song_navigation_title|escapejs }}",

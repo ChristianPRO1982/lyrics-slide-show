@@ -350,6 +350,7 @@
             horizontal_padding: String(result.values?.horizontal_padding || "").trim(),
         });
         applySummaryPreview();
+        refreshAllSongCardPreviews();
         refreshDirtyState();
     };
 
@@ -782,6 +783,81 @@
         };
     };
 
+    const resolveSongEffectiveColors = (card, baseStyle) => {
+        return {
+            textColor: validHex(card.getAttribute("data-song-text-color")) || baseStyle.textColor,
+            bgColor: validHex(card.getAttribute("data-song-bg-color")) || baseStyle.bgColor,
+        };
+    };
+
+    const resolveVerseEffectiveColors = (row, songColors) => {
+        return {
+            textColor: validHex(row.getAttribute("data-verse-text-color")) || songColors.textColor,
+            bgColor: validHex(row.getAttribute("data-verse-bg-color")) || songColors.bgColor,
+        };
+    };
+
+    const clearSongColorOverrides = (card) => {
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+        card.setAttribute("data-song-text-color", "");
+        card.setAttribute("data-song-bg-color", "");
+    };
+
+    const clearVerseColorOverrides = (row) => {
+        if (!(row instanceof HTMLElement)) {
+            return;
+        }
+        row.setAttribute("data-verse-text-color", "");
+        row.setAttribute("data-verse-bg-color", "");
+    };
+
+    const resetSongStyleToParent = (card) => {
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+        const songFontFamily = card.querySelector("[data-song-font-family]");
+        const songFontSizeDelta = card.querySelector("[data-song-font-size-delta]");
+        if (songFontFamily instanceof HTMLSelectElement) {
+            songFontFamily.value = "";
+        }
+        if (songFontSizeDelta instanceof HTMLSelectElement) {
+            songFontSizeDelta.value = "0";
+        }
+        clearSongColorOverrides(card);
+    };
+
+    const resetVerseStyleToParent = (row) => {
+        if (!(row instanceof HTMLElement)) {
+            return;
+        }
+        const verseFontFamily = row.querySelector("[data-verse-font-family]");
+        const verseFontSizeDelta = row.querySelector("[data-verse-font-size-delta]");
+        if (verseFontFamily instanceof HTMLSelectElement) {
+            verseFontFamily.value = "";
+        }
+        if (verseFontSizeDelta instanceof HTMLSelectElement) {
+            verseFontSizeDelta.value = "0";
+        }
+        clearVerseColorOverrides(row);
+    };
+
+    const confirmParentReset = async () => {
+        const result = await messageBox.show({
+            title: label("parentResetTitle"),
+            messageMarkdown: label("parentResetMessage"),
+            showCloseButton: true,
+            buttons: [
+                { id: "yes", label: label("yesLabel"), tone: "danger" },
+                { id: "no", label: label("noLabel"), tone: "neutral" },
+            ],
+            enterButtonId: "no",
+            escapeButtonId: "no",
+        });
+        return result.buttonId === "yes";
+    };
+
     const applySongCardPreviewStyles = (card) => {
         if (!(card instanceof HTMLElement)) {
             return;
@@ -790,11 +866,14 @@
         const baseStyle = readAnimationBaseStyle();
         const songFontSelect = card.querySelector("[data-song-font-family]");
         const songFontFamily = String(songFontSelect?.value || "").trim() || baseStyle.fontFamily;
-        const songTextColor = validHex(card.getAttribute("data-song-text-color")) || baseStyle.textColor;
-        const songBgColor = validHex(card.getAttribute("data-song-bg-color")) || baseStyle.bgColor;
+        const songColors = resolveSongEffectiveColors(card, baseStyle);
+        const songTextColor = songColors.textColor;
+        const songBgColor = songColors.bgColor;
 
         const songPreview = card.querySelector("[data-song-style-preview]");
         const songPreviewText = card.querySelector("[data-song-style-preview-text]");
+        const songTextSwatch = card.querySelector("[data-song-text-swatch]");
+        const songBgSwatch = card.querySelector("[data-song-bg-swatch]");
         if (songPreview instanceof HTMLElement) {
             songPreview.style.background = songBgColor;
         }
@@ -802,6 +881,14 @@
             songPreviewText.style.color = songTextColor;
             songPreviewText.style.fontFamily = `'${songFontFamily}', sans-serif`;
             songPreviewText.style.fontSize = `${previewFontSizePx}px`;
+        }
+        if (songTextSwatch instanceof HTMLElement) {
+            songTextSwatch.style.background = songTextColor;
+            songTextSwatch.setAttribute("title", `${label("textColorShortLabel")}: ${songTextColor}`);
+        }
+        if (songBgSwatch instanceof HTMLElement) {
+            songBgSwatch.style.background = songBgColor;
+            songBgSwatch.setAttribute("title", `${label("bgColorShortLabel")}: ${songBgColor}`);
         }
 
         card.querySelectorAll("[data-main-verse-row]").forEach((row) => {
@@ -814,11 +901,14 @@
             );
             const verseFontSelect = row.querySelector("[data-verse-font-family]");
             const verseFontFamily = String(verseFontSelect?.value || "").trim() || songFontFamily;
-            const verseTextColor = validHex(row.getAttribute("data-verse-text-color")) || songTextColor;
-            const verseBgColor = validHex(row.getAttribute("data-verse-bg-color")) || songBgColor;
+            const verseColors = resolveVerseEffectiveColors(row, songColors);
+            const verseTextColor = verseColors.textColor;
+            const verseBgColor = verseColors.bgColor;
 
             const versePreview = row.querySelector("[data-verse-style-preview]");
             const versePreviewContent = row.querySelector("[data-verse-style-preview-content]");
+            const verseTextSwatch = row.querySelector("[data-verse-text-swatch]");
+            const verseBgSwatch = row.querySelector("[data-verse-bg-swatch]");
             if (versePreview instanceof HTMLElement) {
                 versePreview.style.background = verseBgColor;
                 const isVisible = verseCheckbox instanceof HTMLInputElement ? verseCheckbox.checked : true;
@@ -829,6 +919,20 @@
                 versePreviewContent.style.fontFamily = `'${verseFontFamily}', sans-serif`;
                 versePreviewContent.style.fontSize = `${previewFontSizePx}px`;
             }
+            if (verseTextSwatch instanceof HTMLElement) {
+                verseTextSwatch.style.background = verseTextColor;
+                verseTextSwatch.setAttribute("title", `${label("textColorShortLabel")}: ${verseTextColor}`);
+            }
+            if (verseBgSwatch instanceof HTMLElement) {
+                verseBgSwatch.style.background = verseBgColor;
+                verseBgSwatch.setAttribute("title", `${label("bgColorShortLabel")}: ${verseBgColor}`);
+            }
+        });
+    };
+
+    const refreshAllSongCardPreviews = () => {
+        document.querySelectorAll("[data-main-song-card]").forEach((card) => {
+            applySongCardPreviewStyles(card);
         });
     };
 
@@ -854,10 +958,11 @@
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
                 { id: "cancel", label: label("cancelLabel"), tone: "warning" },
+                { id: "inherit", label: label("inheritParentColorsLabel"), tone: "neutral", validate: false },
                 {
                     id: "reset",
                     label: label("resetLabel"),
-                    tone: "warning",
+                    tone: "neutral",
                     validate: false,
                     onClick: ({ setFieldValue, keepOpen }) => {
                         setFieldValue("text_color", initialTextColor);
@@ -874,6 +979,14 @@
             enterButtonId: "ok",
             escapeButtonId: "cancel",
         });
+
+        if (result.buttonId === "inherit") {
+            clearSongColorOverrides(card);
+            applySongCardPreviewStyles(card);
+            updateSongsPayloadInput();
+            refreshDirtyState();
+            return;
+        }
 
         if (result.buttonId !== "ok") {
             return;
@@ -899,10 +1012,11 @@
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
                 { id: "cancel", label: label("cancelLabel"), tone: "warning" },
+                { id: "inherit", label: label("inheritParentColorsLabel"), tone: "neutral", validate: false },
                 {
                     id: "reset",
                     label: label("resetLabel"),
-                    tone: "warning",
+                    tone: "neutral",
                     validate: false,
                     onClick: ({ setFieldValue, keepOpen }) => {
                         setFieldValue("text_color", initialTextColor);
@@ -919,6 +1033,15 @@
             enterButtonId: "ok",
             escapeButtonId: "cancel",
         });
+
+        if (result.buttonId === "inherit") {
+            clearVerseColorOverrides(row);
+            const cardFromRow = row.closest("[data-main-song-card]");
+            applySongCardPreviewStyles(cardFromRow);
+            updateSongsPayloadInput();
+            refreshDirtyState();
+            return;
+        }
 
         if (result.buttonId !== "ok") {
             return;
@@ -1034,6 +1157,46 @@
                         return;
                     }
                     await openSongColorPopup(card);
+                });
+            });
+
+            card.querySelectorAll("[data-song-color-parent-trigger]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const confirmed = await confirmParentReset();
+                    if (!confirmed) {
+                        return;
+                    }
+                    const level = String(button.getAttribute("data-color-target-level") || "song");
+                    if (level === "verse") {
+                        const verseId = String(button.getAttribute("data-verse-id") || "");
+                        const row = card.querySelector(`[data-main-verse-row][data-verse-id="${verseId}"]`);
+                        clearVerseColorOverrides(row);
+                    } else {
+                        clearSongColorOverrides(card);
+                    }
+                    applySongCardPreviewStyles(card);
+                    updateSongsPayloadInput();
+                    refreshDirtyState();
+                });
+            });
+
+            card.querySelectorAll("[data-song-style-parent-reset-trigger]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const confirmed = await confirmParentReset();
+                    if (!confirmed) {
+                        return;
+                    }
+                    const level = String(button.getAttribute("data-style-target-level") || "song");
+                    if (level === "verse") {
+                        const verseId = String(button.getAttribute("data-verse-id") || "");
+                        const row = card.querySelector(`[data-main-verse-row][data-verse-id="${verseId}"]`);
+                        resetVerseStyleToParent(row);
+                    } else {
+                        resetSongStyleToParent(card);
+                    }
+                    applySongCardPreviewStyles(card);
+                    updateSongsPayloadInput();
+                    refreshDirtyState();
                 });
             });
 

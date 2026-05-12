@@ -79,6 +79,11 @@ def build_animation_render_bundle(animation: Animation) -> list[RenderedAnimatio
     )
 
     for animation_song in animation_songs:
+        chorus_verse_ids = {
+            int(verse.verse_id)
+            for verse in animation_song.song.verses.all()
+            if verse.chorus
+        }
         overrides_by_verse_id = {
             override.source_verse_id: override
             for override in animation_song.verse_overrides.all()
@@ -94,7 +99,11 @@ def build_animation_render_bundle(animation: Animation) -> list[RenderedAnimatio
         for block in song_blocks:
             source_verse_id = block.source_verse_id
             verse_override = overrides_by_verse_id.get(source_verse_id) if source_verse_id is not None else None
-            if verse_override is not None and not verse_override.is_visible:
+            if (
+                verse_override is not None
+                and not verse_override.is_visible
+                and source_verse_id not in chorus_verse_ids
+            ):
                 continue
 
             style = _resolve_style(animation, animation_song, verse_override)

@@ -195,8 +195,34 @@
                                 {% trans "Couleurs" %}
                             </div>
                             <div class="animation-song-style-grid-cell">
-                                <button type="button" class="animation-tool-button" data-song-color-popup-trigger data-color-target-level="song">
-                                    {% trans "Couleurs du chant" %}
+                                <div class="animation-color-parent-controls">
+                                    <span
+                                        class="animation-color-square"
+                                        data-song-text-swatch
+                                        aria-label="{% trans 'Couleur texte' %}"
+                                        title="{% trans 'Couleur texte' %}"
+                                    ></span>
+                                    <span
+                                        class="animation-color-square"
+                                        data-song-bg-swatch
+                                        aria-label="{% trans 'Couleur fond' %}"
+                                        title="{% trans 'Couleur fond' %}"
+                                    ></span>
+                                    <button type="button" class="animation-tool-button" data-song-color-popup-trigger data-color-target-level="song">
+                                        {% trans "Couleurs du chant" %}
+                                    </button>
+                                    <button type="button" class="animation-secondary-action" data-song-color-parent-trigger data-color-target-level="song">
+                                        {% trans "Reprendre les couleurs parentes" %}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="animation-song-style-grid-cell">
+                                {% trans "Réinitialisation" %}
+                            </div>
+                            <div class="animation-song-style-grid-cell">
+                                <button type="button" class="animation-secondary-action" data-song-style-parent-reset-trigger data-style-target-level="song">
+                                    {% trans "Réinitialiser le chant" %}
                                 </button>
                             </div>
                         </div>
@@ -254,14 +280,49 @@
                                         </div>
                                         <div class="animation-verse-row-control-label animation-verse-row-color-label">{% trans "Couleurs" %}</div>
                                         <div class="animation-verse-row-control-input animation-verse-row-color-input">
+                                            <div class="animation-color-parent-controls">
+                                                <span
+                                                    class="animation-color-square"
+                                                    data-verse-text-swatch
+                                                    aria-label="{% trans 'Couleur texte' %}"
+                                                    title="{% trans 'Couleur texte' %}"
+                                                ></span>
+                                                <span
+                                                    class="animation-color-square"
+                                                    data-verse-bg-swatch
+                                                    aria-label="{% trans 'Couleur fond' %}"
+                                                    title="{% trans 'Couleur fond' %}"
+                                                ></span>
+                                                <button
+                                                    type="button"
+                                                    class="animation-tool-button"
+                                                    data-song-color-popup-trigger
+                                                    data-color-target-level="verse"
+                                                    data-verse-id="{{ verse.verse_id }}"
+                                                >
+                                                    {% trans "Couleurs du couplet" %}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="animation-secondary-action"
+                                                    data-song-color-parent-trigger
+                                                    data-color-target-level="verse"
+                                                    data-verse-id="{{ verse.verse_id }}"
+                                                >
+                                                    {% trans "Reprendre les couleurs parentes" %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="animation-verse-row-control-label animation-verse-row-reset-label">{% trans "Réinitialisation" %}</div>
+                                        <div class="animation-verse-row-control-input animation-verse-row-reset-input">
                                             <button
                                                 type="button"
-                                                class="animation-tool-button"
-                                                data-song-color-popup-trigger
-                                                data-color-target-level="verse"
+                                                class="animation-secondary-action"
+                                                data-song-style-parent-reset-trigger
+                                                data-style-target-level="verse"
                                                 data-verse-id="{{ verse.verse_id }}"
                                             >
-                                                {% trans "Couleurs du couplet" %}
+                                                {% trans "Réinitialiser le couplet" %}
                                             </button>
                                         </div>
                                         <div class="animation-verse-tablelike-preview">
