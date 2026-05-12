@@ -4,12 +4,14 @@ from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from app_main.models import DirectoryUserRecord
+from app_member.models import MemberPreferences
 from app_group.models import Group, GroupStatus
 from app_group.services import (
     SELECTED_GROUP_ID_SESSION_KEY,
     SELECTED_GROUP_SECRET_SESSION_KEY,
 )
-from app_song.models import Song, SongStatus, Verse
+from app_song.models import Song, SongFavorite, SongStatus, Verse
 
 from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
@@ -91,6 +93,28 @@ class AnimationViewsTests(TestCase):
         session[SELECTED_GROUP_ID_SESSION_KEY] = group.group_id
         if secret:
             session[SELECTED_GROUP_SECRET_SESSION_KEY] = secret
+        session.save()
+
+    def _login(self, user_id: str, username: str = "member.user") -> None:
+        DirectoryUserRecord.objects.create(
+            id=user_id,
+            username=username,
+            first_name="Member",
+            last_name="User",
+            email=f"{username}@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": user_id,
+            "username": username,
+            "email": f"{username}@example.test",
+            "first_name": "Member",
+            "last_name": "User",
+            "is_moderator": False,
+            "is_admin": False,
+        }
         session.save()
 
     def test_guest_can_access_open_and_private_with_secret(self):
@@ -214,6 +238,85 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, f"asid:{item.animation_song_id}")
         self.assertContains(response, '"songCatalog"')
         self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
+
+    def test_modify_animation_get_member_exposes_advanced_favorites_and_all_song_catalogs(self):
+        user_id = "88888888-8888-8888-8888-888888888888"
+        self._login(user_id=user_id, username="catalog.member")
+        MemberPreferences.objects.create(
+            member_id=user_id,
+            song_search={
+                "text": "Saved Search",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+
+        advanced_song = Song.objects.create(
+            title="Saved Search Match",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        favorite_song = Song.objects.create(
+            title="Favorite Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        other_song = Song.objects.create(
+            title="Other Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        SongFavorite.objects.create(song=favorite_song, member_id=user_id)
+
+        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        popup_data = response.context["popup_data"]
+
+        self.assertTrue(popup_data["canUseMemberSongTabs"])
+        self.assertIn({"id": advanced_song.song_id, "title": advanced_song.display_title}, popup_data["advancedSongCatalog"])
+        self.assertNotIn({"id": favorite_song.song_id, "title": favorite_song.display_title}, popup_data["advancedSongCatalog"])
+        self.assertIn({"id": favorite_song.song_id, "title": favorite_song.display_title}, popup_data["favoriteSongCatalog"])
+        self.assertEqual(len(popup_data["allSongCatalog"]), 3)
+
+    def test_modify_animation_get_guest_exposes_only_accessible_all_song_catalog(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+
+        visible_song = Song.objects.create(
+            title="Visible",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        hidden_song = Song.objects.create(
+            title="Hidden Licensed",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=True,
+        )
+
+        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        popup_data = response.context["popup_data"]
+
+        self.assertFalse(popup_data["canUseMemberSongTabs"])
+        self.assertEqual(popup_data["advancedSongCatalog"], [])
+        self.assertEqual(popup_data["favoriteSongCatalog"], [])
+        self.assertIn({"id": visible_song.song_id, "title": visible_song.display_title}, popup_data["allSongCatalog"])
+        self.assertNotIn({"id": hidden_song.song_id, "title": hidden_song.display_title}, popup_data["allSongCatalog"])
 
     def test_modify_animation_post_updates_song_and_verse_overrides_from_payload(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -452,6 +555,73 @@ class AnimationViewsTests(TestCase):
         persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
         self.assertEqual(len(persisted), 1)
         self.assertEqual(persisted[0].animation_song_id, item_a.animation_song_id)
+
+    def test_modify_animation_post_allows_sid_song_present_in_all_but_not_in_advanced_search(self):
+        user_id = "99999999-9999-9999-9999-999999999999"
+        self._login(user_id=user_id, username="advanced.filter.member")
+        MemberPreferences.objects.create(
+            member_id=user_id,
+            song_search={
+                "text": "Saved Search",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        song_saved = Song.objects.create(
+            title="Saved Search Match",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        song_all_only = Song.objects.create(
+            title="All Catalog Only",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=72,
+            horizontal_padding=80,
+        )
+        item_saved = AnimationSong.objects.create(animation=animation, song=song_saved, position=2)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item_saved.animation_song_id}|sid:{song_all_only.song_id}",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        persisted = list(
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id")
+        )
+        self.assertEqual(len(persisted), 2)
+        self.assertEqual(persisted[0].animation_song_id, item_saved.animation_song_id)
+        self.assertEqual(persisted[1].song_id, song_all_only.song_id)
 
 
 class PlaylistSyncTests(TestCase):

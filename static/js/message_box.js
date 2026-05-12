@@ -271,6 +271,22 @@
         });
     };
 
+    const normalizeSelectOptions = (options) => {
+        return (Array.isArray(options) ? options : []).map((option, optionIndex) => {
+            if (option == null || typeof option !== "object") {
+                return {
+                    value: `option-${optionIndex}`,
+                    label: `option-${optionIndex}`,
+                };
+            }
+            const value = String(option.value ?? `option-${optionIndex}`);
+            return {
+                value,
+                label: String(option.label ?? value),
+            };
+        });
+    };
+
     const normalizeFields = (fields) => {
         const normalized = Array.isArray(fields) ? fields : [];
 
@@ -299,29 +315,68 @@
                 max: Number.isFinite(field.max) ? Number(field.max) : null,
                 step: Number.isFinite(field.step) && Number(field.step) > 0 ? Number(field.step) : null,
                 size: type === "select" && Number.isInteger(field.size) && field.size > 1 ? field.size : null,
-                options: type === "select"
-                    ? (Array.isArray(field.options) ? field.options : []).map((option, optionIndex) => {
-                        if (option == null || typeof option !== "object") {
-                            return {
-                                value: `option-${optionIndex}`,
-                                label: `option-${optionIndex}`,
-                            };
-                        }
-                        const value = String(option.value ?? `option-${optionIndex}`);
-                        return {
-                            value,
-                            label: String(option.label ?? value),
-                        };
-                    })
-                    : [],
+                options: type === "select" ? normalizeSelectOptions(field.options) : [],
             };
         });
+    };
+
+    const normalizeTabbedSelect = (tabbedSelect, fields, buttons) => {
+        if (!tabbedSelect || typeof tabbedSelect !== "object") {
+            return null;
+        }
+
+        const fieldId = typeof tabbedSelect.fieldId === "string" ? tabbedSelect.fieldId.trim() : "";
+        if (!fieldId) {
+            throw new Error("tabbedSelect.fieldId must be a non-empty string.");
+        }
+
+        const selectField = fields.find((field) => field.id === fieldId);
+        if (!selectField || selectField.type !== "select") {
+            throw new Error("tabbedSelect.fieldId must target an existing select field.");
+        }
+
+        const tabs = (Array.isArray(tabbedSelect.tabs) ? tabbedSelect.tabs : []).map((tab, index) => {
+            if (!tab || typeof tab.id !== "string" || !tab.id.trim()) {
+                throw new Error(`tabbedSelect tab at index ${index} must define a non-empty id.`);
+            }
+            return {
+                id: tab.id,
+                label: String(tab.label ?? tab.id),
+                options: normalizeSelectOptions(tab.options),
+                emptyMessage: String(tab.emptyMessage ?? ""),
+            };
+        });
+
+        if (!tabs.length) {
+            throw new Error("tabbedSelect requires at least one tab.");
+        }
+
+        const initialTabId = typeof tabbedSelect.initialTabId === "string"
+            && tabs.some((tab) => tab.id === tabbedSelect.initialTabId)
+            ? tabbedSelect.initialTabId
+            : tabs[0].id;
+        const submitButtonId = typeof tabbedSelect.submitButtonId === "string"
+            && buttons.some((button) => button.id === tabbedSelect.submitButtonId)
+            ? tabbedSelect.submitButtonId
+            : null;
+
+        return {
+            fieldId,
+            fieldLabel: String(tabbedSelect.fieldLabel ?? selectField.label),
+            size: Number.isInteger(tabbedSelect.size) && tabbedSelect.size > 1
+                ? tabbedSelect.size
+                : selectField.size,
+            initialTabId,
+            submitButtonId,
+            tabs,
+        };
     };
 
     const normalizeConfig = (config) => {
         const normalized = config && typeof config === "object" ? config : {};
         const buttons = normalizeButtons(normalized.buttons);
         const fields = normalizeFields(normalized.fields);
+        const tabbedSelect = normalizeTabbedSelect(normalized.tabbedSelect, fields, buttons);
 
         if (fields.length && !buttons.length) {
             throw new Error("Popup fields require at least one action button.");
@@ -357,6 +412,7 @@
                     label: String((sample && sample.label) ?? ""),
                 })).filter((sample) => sample.fontFamily)
                 : [],
+            tabbedSelect,
         };
     };
 
@@ -592,6 +648,7 @@
         }
 
         let form = null;
+        let tabbedSelectController = null;
 
         if (normalizedConfig.fields.length) {
             form = document.createElement("form");
@@ -603,6 +660,116 @@
             });
 
             content.appendChild(form);
+        }
+
+        if (normalizedConfig.tabbedSelect && form) {
+            const tabbedSelect = normalizedConfig.tabbedSelect;
+            const selectInput = findFieldInput(form, tabbedSelect.fieldId);
+            const escapedFieldId = escapeSelectorValue(tabbedSelect.fieldId);
+            const fieldWrapper = form.querySelector(`.lss-messagebox-field[data-field-id="${escapedFieldId}"]`);
+            const fieldLabel = fieldWrapper instanceof HTMLElement
+                ? fieldWrapper.querySelector(".lss-messagebox-label")
+                : null;
+            const errorNode = fieldWrapper instanceof HTMLElement
+                ? fieldWrapper.querySelector(".lss-messagebox-error")
+                : null;
+
+            if (selectInput instanceof HTMLSelectElement && fieldWrapper instanceof HTMLElement) {
+                const tabsNode = document.createElement("div");
+                tabsNode.className = "lss-messagebox-tabbed-select-tabs";
+                tabsNode.setAttribute("role", "tablist");
+
+                const emptyNode = document.createElement("p");
+                emptyNode.className = "lss-messagebox-tabbed-select-empty";
+                emptyNode.hidden = true;
+
+                let updateSubmitButtonState = () => {};
+                let activeTabId = tabbedSelect.initialTabId;
+                const tabButtons = new Map();
+
+                const applyTab = (requestedTabId) => {
+                    const activeTab = tabbedSelect.tabs.find((tab) => tab.id === requestedTabId) || tabbedSelect.tabs[0];
+                    activeTabId = activeTab.id;
+                    const currentValue = selectInput.value;
+
+                    selectInput.innerHTML = "";
+                    activeTab.options.forEach((option) => {
+                        const optionElement = document.createElement("option");
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.label;
+                        selectInput.appendChild(optionElement);
+                    });
+
+                    if (tabbedSelect.size !== null) {
+                        selectInput.size = tabbedSelect.size;
+                    }
+
+                    tabButtons.forEach((button, tabId) => {
+                        button.setAttribute("aria-selected", tabId === activeTab.id ? "true" : "false");
+                        button.classList.toggle("is-active", tabId === activeTab.id);
+                    });
+
+                    const hasOptions = activeTab.options.length > 0;
+                    selectInput.disabled = !hasOptions;
+
+                    if (hasOptions) {
+                        if (activeTab.options.some((option) => option.value === currentValue)) {
+                            selectInput.value = currentValue;
+                        } else {
+                            selectInput.value = activeTab.options[0].value;
+                        }
+                        emptyNode.hidden = true;
+                        emptyNode.textContent = "";
+                    } else {
+                        selectInput.value = "";
+                        emptyNode.textContent = activeTab.emptyMessage;
+                        emptyNode.hidden = !activeTab.emptyMessage;
+                    }
+
+                    if (tabbedSelect.submitButtonId) {
+                        updateSubmitButtonState(tabbedSelect.submitButtonId, !hasOptions);
+                    }
+                };
+
+                tabbedSelect.tabs.forEach((tab) => {
+                    const tabButton = document.createElement("button");
+                    tabButton.type = "button";
+                    tabButton.className = "lss-messagebox-tabbed-select-tab";
+                    tabButton.setAttribute("role", "tab");
+                    tabButton.dataset.tabId = tab.id;
+                    tabButton.textContent = tab.label;
+                    tabButton.addEventListener("click", () => {
+                        applyTab(tab.id);
+                    });
+                    tabButtons.set(tab.id, tabButton);
+                    tabsNode.appendChild(tabButton);
+                });
+
+                if (fieldLabel instanceof HTMLElement) {
+                    if (fieldLabel.nextSibling) {
+                        fieldWrapper.insertBefore(tabsNode, fieldLabel.nextSibling);
+                    } else {
+                        fieldWrapper.appendChild(tabsNode);
+                    }
+                } else {
+                    fieldWrapper.insertBefore(tabsNode, fieldWrapper.firstChild);
+                }
+
+                if (errorNode instanceof HTMLElement) {
+                    fieldWrapper.insertBefore(emptyNode, errorNode);
+                } else {
+                    fieldWrapper.appendChild(emptyNode);
+                }
+
+                applyTab(activeTabId);
+
+                tabbedSelectController = {
+                    bindRuntime: (setButtonDisabled) => {
+                        updateSubmitButtonState = typeof setButtonDisabled === "function" ? setButtonDisabled : () => {};
+                        applyTab(activeTabId);
+                    },
+                };
+            }
         }
 
         const footer = document.createElement("footer");
@@ -629,6 +796,7 @@
             form,
             footer,
             previewElement,
+            tabbedSelectController,
         };
     };
 
@@ -784,7 +952,9 @@
 
         state.panel.querySelectorAll(".lss-messagebox-button").forEach((button) => {
             if (button instanceof HTMLButtonElement) {
-                button.disabled = isBusy || state.disabledButtonIds.has(button.dataset.buttonId);
+                button.disabled = isBusy
+                    || state.disabledButtonIds.has(button.dataset.buttonId)
+                    || state.runtimeDisabledButtonIds.has(button.dataset.buttonId);
             }
         });
 
@@ -1068,6 +1238,7 @@
             isBusy: false,
             isClosed: false,
             disabledButtonIds: new Set(next.config.buttons.filter((button) => button.disabled).map((button) => button.id)),
+            runtimeDisabledButtonIds: new Set(),
         };
 
         state.onKeyDown = (event) => handleKeyDown(state, event);
@@ -1078,6 +1249,20 @@
         };
 
         activeState = state;
+
+        if (state.tabbedSelectController && typeof state.tabbedSelectController.bindRuntime === "function") {
+            state.tabbedSelectController.bindRuntime((buttonId, isDisabled) => {
+                if (!buttonId) {
+                    return;
+                }
+                if (isDisabled) {
+                    state.runtimeDisabledButtonIds.add(buttonId);
+                } else {
+                    state.runtimeDisabledButtonIds.delete(buttonId);
+                }
+                setBusyState(state, state.isBusy);
+            });
+        }
 
         if (state.closeButton) {
             state.closeButton.addEventListener("click", () => {

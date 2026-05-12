@@ -24,7 +24,11 @@
 
     const fontChoices = Array.isArray(popupData.fontChoices) ? popupData.fontChoices : [];
     const fontPreviews = Array.isArray(popupData.fontPreviews) ? popupData.fontPreviews : [];
-    const songCatalog = Array.isArray(popupData.songCatalog) ? popupData.songCatalog : [];
+    const legacySongCatalog = Array.isArray(popupData.songCatalog) ? popupData.songCatalog : [];
+    const advancedSongCatalog = Array.isArray(popupData.advancedSongCatalog) ? popupData.advancedSongCatalog : [];
+    const favoriteSongCatalog = Array.isArray(popupData.favoriteSongCatalog) ? popupData.favoriteSongCatalog : [];
+    const allSongCatalog = Array.isArray(popupData.allSongCatalog) ? popupData.allSongCatalog : legacySongCatalog;
+    const canUseMemberSongTabs = Boolean(popupData.canUseMemberSongTabs);
 
     const hiddenFieldNames = [
         "title",
@@ -407,11 +411,14 @@
         return counts;
     };
 
-    const buildSongOptionsForPopup = () => {
+    const buildSongOptionsForPopup = (catalogEntries) => {
         const counts = countPlaylistSongOccurrences();
-        return songCatalog.map((entry) => {
+        return catalogEntries.map((entry) => {
             const songId = Number.parseInt(String(entry.id || ""), 10);
             const title = String(entry.title || "").trim();
+            if (Number.isNaN(songId) || songId <= 0 || !title) {
+                return null;
+            }
             const alreadyChosenCount = counts.get(songId) || 0;
             const suffix = alreadyChosenCount > 0
                 ? ` (${label("alreadyInPlaylistLabel")} x${alreadyChosenCount})`
@@ -420,7 +427,7 @@
                 value: String(songId),
                 label: `${title}${suffix}`,
             };
-        });
+        }).filter((option) => option !== null);
     };
 
     const normalizeSecondaryItemCompact = (itemElement) => {
@@ -491,7 +498,7 @@
         if (!(secondaryList instanceof HTMLElement)) {
             return;
         }
-        const song = songCatalog.find((item) => Number.parseInt(String(item.id || ""), 10) === songId);
+        const song = allSongCatalog.find((item) => Number.parseInt(String(item.id || ""), 10) === songId);
         if (!song) {
             return;
         }
@@ -510,8 +517,26 @@
     };
 
     const openSongPickerPopup = async (insertIndex) => {
-        const options = buildSongOptionsForPopup();
-        if (!options.length) {
+        const tabs = [];
+        if (canUseMemberSongTabs) {
+            tabs.push({
+                id: "advanced",
+                label: label("songTabAdvancedLabel"),
+                options: buildSongOptionsForPopup(advancedSongCatalog),
+            });
+            tabs.push({
+                id: "favorites",
+                label: label("songTabFavoritesLabel"),
+                options: buildSongOptionsForPopup(favoriteSongCatalog),
+            });
+        }
+        tabs.push({
+            id: "all",
+            label: label("songTabAllLabel"),
+            options: buildSongOptionsForPopup(allSongCatalog),
+        });
+
+        if (!tabs.some((tab) => tab.options.length > 0)) {
             await messageBox.alert({
                 title: label("addSongPopupTitle"),
                 messageMarkdown: label("noAccessibleSongMessage"),
@@ -519,6 +544,9 @@
             });
             return;
         }
+
+        const initialTabId = canUseMemberSongTabs ? "advanced" : "all";
+        const initialTab = tabs.find((tab) => tab.id === initialTabId) || tabs[0];
 
         const result = await messageBox.show({
             title: label("addSongPopupTitle"),
@@ -535,10 +563,23 @@
                     type: "select",
                     required: true,
                     size: 10,
-                    options,
-                    value: options[0].value,
+                    options: initialTab.options,
+                    value: initialTab.options[0]?.value || "",
                 },
             ],
+            tabbedSelect: {
+                fieldId: "song_id",
+                fieldLabel: label("songChoiceLabel"),
+                size: 10,
+                initialTabId,
+                submitButtonId: "add",
+                tabs: tabs.map((tab) => ({
+                    id: tab.id,
+                    label: tab.label,
+                    options: tab.options,
+                    emptyMessage: label("songTabEmptyLabel"),
+                })),
+            },
             enterButtonId: "add",
             escapeButtonId: "cancel",
         });

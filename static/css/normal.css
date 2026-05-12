@@ -489,6 +489,33 @@ body.lss-messagebox-open {
     cursor: pointer;
 }
 
+.lss-messagebox-tabbed-select-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.lss-messagebox-tabbed-select-tab {
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-surface);
+    color: var(--site-ink);
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.lss-messagebox-tabbed-select-tab.is-active {
+    border-color: var(--site-accent);
+    color: var(--site-accent);
+    font-weight: 700;
+}
+
+.lss-messagebox-tabbed-select-empty {
+    margin: 0;
+    color: var(--site-ink-soft);
+    font-style: italic;
+}
+
 .lss-messagebox-field.is-invalid .lss-messagebox-input,
 .lss-messagebox-field.is-invalid .lss-messagebox-textarea,
 .lss-messagebox-field.is-invalid .lss-messagebox-select {

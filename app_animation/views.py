@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user
-from app_song.search import SongSearchParams, search_songs
+from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
 from .font_catalog import list_font_choices, list_font_previews
 from .forms import AnimationForm
@@ -117,15 +117,36 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     ordered_mix_initial = "|".join([f"asid:{row.animation_song_id}" for row in animation_songs])
 
     member_id = get_member_id_from_user(request.user)
-    song_search_results = search_songs(SongSearchParams.empty(), request.user, member_id)
-    accessible_song_ids = {item.song.song_id for item in song_search_results.results}
-    song_catalog = [
+
+    all_song_results = search_songs(SongSearchParams.empty(), request.user, member_id)
+    all_song_catalog = [
         {
             "id": item.song.song_id,
             "title": item.song.display_title,
         }
-        for item in song_search_results.results
+        for item in all_song_results.results
     ]
+    accessible_song_ids = {item["id"] for item in all_song_catalog}
+
+    advanced_song_catalog: list[dict[str, object]] = []
+    favorite_song_catalog: list[dict[str, object]] = []
+    if member_id:
+        advanced_song_results = search_songs(load_member_song_search(member_id), request.user, member_id)
+        favorite_song_results = search_songs(SongSearchParams(favorites_only=True), request.user, member_id)
+        advanced_song_catalog = [
+            {
+                "id": item.song.song_id,
+                "title": item.song.display_title,
+            }
+            for item in advanced_song_results.results
+        ]
+        favorite_song_catalog = [
+            {
+                "id": item.song.song_id,
+                "title": item.song.display_title,
+            }
+            for item in favorite_song_results.results
+        ]
 
     if request.method == "POST":
         form = AnimationForm(request.POST, instance=animation)
@@ -173,7 +194,12 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "popup_data": {
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
-                "songCatalog": song_catalog,
+                # Backward compatibility key kept while consumers migrate.
+                "songCatalog": all_song_catalog,
+                "advancedSongCatalog": advanced_song_catalog,
+                "favoriteSongCatalog": favorite_song_catalog,
+                "allSongCatalog": all_song_catalog,
+                "canUseMemberSongTabs": bool(member_id),
             },
         },
     )
