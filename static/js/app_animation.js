@@ -224,7 +224,7 @@
             showCloseButton: true,
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
-                { id: "cancel", label: label("cancelLabel"), tone: "neutral", validate: false },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning", validate: false },
                 makeResetButton(["title", "description", "scheduled_at"]),
             ],
             fields: [
@@ -276,7 +276,7 @@
             showCloseButton: true,
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
-                { id: "cancel", label: label("cancelLabel"), tone: "neutral", validate: false },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning", validate: false },
                 makeResetButton(["text_color", "bg_color", "font_family", "font_size", "horizontal_padding"]),
             ],
             preview: {
@@ -526,7 +526,7 @@
             showCloseButton: true,
             buttons: [
                 { id: "add", label: label("addSongActionLabel"), tone: "success", validate: true },
-                { id: "cancel", label: label("cancelLabel"), tone: "neutral", validate: false },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning", validate: false },
             ],
             fields: [
                 {
@@ -534,6 +534,7 @@
                     label: label("songChoiceLabel"),
                     type: "select",
                     required: true,
+                    size: 10,
                     options,
                     value: options[0].value,
                 },
@@ -811,7 +812,7 @@
             showCloseButton: true,
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
-                { id: "cancel", label: label("cancelLabel"), tone: "neutral" },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning" },
                 {
                     id: "reset",
                     label: label("resetLabel"),
@@ -856,7 +857,7 @@
             showCloseButton: true,
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
-                { id: "cancel", label: label("cancelLabel"), tone: "neutral" },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning" },
                 {
                     id: "reset",
                     label: label("resetLabel"),

@@ -298,6 +298,7 @@
                 min: Number.isFinite(field.min) ? Number(field.min) : null,
                 max: Number.isFinite(field.max) ? Number(field.max) : null,
                 step: Number.isFinite(field.step) && Number(field.step) > 0 ? Number(field.step) : null,
+                size: type === "select" && Number.isInteger(field.size) && field.size > 1 ? field.size : null,
                 options: type === "select"
                     ? (Array.isArray(field.options) ? field.options : []).map((option, optionIndex) => {
                         if (option == null || typeof option !== "object") {
@@ -445,6 +446,9 @@
                 optionElement.textContent = option.label;
                 input.appendChild(optionElement);
             });
+            if (field.size !== null) {
+                input.size = field.size;
+            }
             if (field.options.some((option) => option.value === field.value)) {
                 input.value = field.value;
             } else if (field.options.length > 0) {
