@@ -1,0 +1,28 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ language_code|default:'fr' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ animation.title }} | {% trans "Projection" %}</title>
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+</head>
+<body class="lyrics-display-body">
+    <main
+        class="lyrics-display-root"
+        data-lyrics-display-root
+        data-display-session-id="{{ display_session_id }}"
+    >
+        <article class="lyrics-display-slide" data-lyrics-display-slide>
+            <p class="lyrics-display-waiting" data-lyrics-display-waiting>{{ display_i18n.waitingLabel }}</p>
+        </article>
+    </main>
+    <script>
+        window.LSS_LYRICS_DISPLAY_I18N = {
+            waitingLabel: "{{ display_i18n.waitingLabel|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'js/lyrics_slide_show_display.js' %}"></script>
+</body>
+</html>

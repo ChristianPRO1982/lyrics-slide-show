@@ -16,6 +16,7 @@ from app_song.models import Song, SongFavorite, SongStatus, Verse
 from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
 from .models import Animation, AnimationSong, AnimationVerseOverride
+from . import views as animation_views
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.render_bundle import build_animation_render_bundle
 
@@ -263,6 +264,8 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'data-song-bg-swatch')
         self.assertContains(response, 'data-song-color-parent-trigger')
         self.assertContains(response, 'data-song-style-parent-reset-trigger')
+        self.assertContains(response, 'unsavedChangesTitle')
+        self.assertContains(response, 'unsavedChangesMessage')
 
     def test_modify_animation_get_hides_chorus_rows_and_keeps_verse_rows(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -720,6 +723,138 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(len(persisted), 2)
         self.assertEqual(persisted[0].animation_song_id, item_saved.animation_song_id)
         self.assertEqual(persisted[1].song_id, song_all_only.song_id)
+
+    def test_modify_animation_tools_contains_link_to_lyrics_slide_show(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        self._select_group(group)
+
+        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("lyrics_slide_show", args=[animation.animation_id]))
+
+    def test_lyrics_slide_show_requires_selected_group(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    def test_lyrics_slide_show_refuses_animation_outside_selected_group(self):
+        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=other_group, title="Session", scheduled_at=timezone.now())
+        self._select_group(selected_group)
+
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_lyrics_slide_show_display_requires_valid_session_id(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        self._select_group(group)
+
+        response = self.client.get(reverse("lyrics_slide_show_display", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "invalid session"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_lyrics_slide_show_display_requires_selected_group(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "abcd1234-valid"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    def test_lyrics_slide_show_display_refuses_animation_outside_selected_group(self):
+        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=other_group, title="Session", scheduled_at=timezone.now())
+        self._select_group(selected_group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "abcd1234-valid"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_lyrics_slide_show_public_is_accessible_without_group_selection(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+
+        response = self.client.get(reverse("lyrics_slide_show_public", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-lyrics-public-root")
+
+    def test_lyrics_slide_show_master_context_contains_runtime_payload_and_qr(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse = Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.",
+        )
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        self._select_group(group)
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        self.assertEqual(payload["animationId"], animation.animation_id)
+        self.assertIn("slides", payload)
+        self.assertTrue(payload["publicUrl"].endswith(reverse("lyrics_slide_show_public", args=[animation.animation_id])))
+        if animation_views.qrcode is None:
+            self.assertEqual(payload["qrCodePngBase64"], "")
+        else:
+            self.assertTrue(payload["qrCodePngBase64"])
+
+        slides = payload["slides"]
+        self.assertEqual(len(slides), 1)
+        self.assertEqual(slides[0]["animationSongId"], animation_song.animation_song_id)
+        self.assertEqual(slides[0]["sourceVerseId"], verse.verse_id)
+        self.assertIn("[...]", slides[0]["excerpt"])
+        self.assertLessEqual(len(slides[0]["excerpt"]), 55)
+
+    def test_lyrics_slide_show_runtime_matches_render_bundle_order_and_visibility(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        verse_visible = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Visible")
+        verse_hidden = Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="Hidden")
+        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        AnimationVerseOverride.objects.create(
+            animation_song=animation_song,
+            source_verse_id=verse_hidden.verse_id,
+            is_visible=False,
+        )
+
+        expected_bundle = build_animation_render_bundle(animation)
+
+        self._select_group(group)
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+
+        payload_slides = response.context["runtime_payload"]["slides"]
+        self.assertEqual(len(payload_slides), len(expected_bundle))
+        self.assertEqual(
+            [slide["sourceVerseId"] for slide in payload_slides],
+            [entry.source_verse_id for entry in expected_bundle],
+        )
+        self.assertIn(verse_visible.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
+        self.assertNotIn(verse_hidden.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
 
 
 class PlaylistSyncTests(TestCase):

@@ -6,4 +6,7 @@
     {% if animation and request.resolver_match.url_name != "modify_animation" %}
         <p><a class="animation-tool-link" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
     {% endif %}
+    {% if animation and request.resolver_match.url_name != "lyrics_slide_show" %}
+        <p><a class="animation-tool-link" href="{% url 'lyrics_slide_show' animation.animation_id %}">{% trans "Lyrics Slide Show" %}</a></p>
+    {% endif %}
 </div>

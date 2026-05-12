@@ -53,6 +53,8 @@
 {% trans "Ouvrir dans un nouvel onglet" as lss_anim_song_navigation_new_tab %}
 {% trans "Perdre les données et aller à la page" as lss_anim_song_navigation_lose_and_go %}
 {% trans "Abandonner" as lss_anim_song_navigation_abort %}
+{% trans "Modifications non enregistrées" as lss_anim_unsaved_changes_title %}
+{% trans "Des modifications non enregistrées seront perdues. Voulez-vous continuer ?" as lss_anim_unsaved_changes_message %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -108,6 +110,8 @@
         songNavigationDirtyWarning: "{{ lss_anim_song_navigation_dirty_warning|escapejs }}",
         songNavigationNewTabLabel: "{{ lss_anim_song_navigation_new_tab|escapejs }}",
         songNavigationLoseAndGoLabel: "{{ lss_anim_song_navigation_lose_and_go|escapejs }}",
-        songNavigationAbortLabel: "{{ lss_anim_song_navigation_abort|escapejs }}"
+        songNavigationAbortLabel: "{{ lss_anim_song_navigation_abort|escapejs }}",
+        unsavedChangesTitle: "{{ lss_anim_unsaved_changes_title|escapejs }}",
+        unsavedChangesMessage: "{{ lss_anim_unsaved_changes_message|escapejs }}"
     };
 </script>

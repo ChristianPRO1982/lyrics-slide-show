@@ -59,6 +59,7 @@
     let reorderController = null;
     let tempSongCounter = 0;
     let dirty = false;
+    let isSubmitting = false;
 
     const summaryNodes = {
         title: document.querySelector("[data-animation-summary-title]"),
@@ -364,8 +365,30 @@
         });
     };
 
+    const confirmUnsavedChanges = async () => {
+        if (!dirty) {
+            return true;
+        }
+        const result = await messageBox.show({
+            title: label("unsavedChangesTitle"),
+            messageMarkdown: label("unsavedChangesMessage"),
+            showCloseButton: true,
+            buttons: [
+                { id: "yes", label: label("yesLabel"), tone: "danger" },
+                { id: "no", label: label("noLabel"), tone: "neutral" },
+            ],
+            enterButtonId: "no",
+            escapeButtonId: "no",
+        });
+        return result.buttonId === "yes";
+    };
+
     document.querySelectorAll("[data-animation-action]").forEach((button) => {
         button.addEventListener("click", async () => {
+            const confirmed = await confirmUnsavedChanges();
+            if (!confirmed) {
+                return;
+            }
             const action = String(button.getAttribute("data-animation-action") || "");
             if (action === "open-general") {
                 await openGeneralPopup();
@@ -685,12 +708,6 @@
         }
     };
 
-    const escapeMarkdown = (value) => {
-        return String(value || "")
-            .replace(/\\/g, "\\\\")
-            .replace(/([*_`[\]()#+\-.!>])/g, "\\$1");
-    };
-
     const colorValueOrFallback = (value, fallback) => validHex(value) || fallback;
 
     const gatherMainSongsPayload = () => {
@@ -890,6 +907,13 @@
             songBgSwatch.style.background = songBgColor;
             songBgSwatch.setAttribute("title", `${label("bgColorShortLabel")}: ${songBgColor}`);
         }
+        card.querySelectorAll("[data-song-color-parent-trigger][data-color-target-level='song']").forEach((button) => {
+            if (!(button instanceof HTMLElement)) {
+                return;
+            }
+            const hasParentDiff = songTextColor !== baseStyle.textColor || songBgColor !== baseStyle.bgColor;
+            button.hidden = !hasParentDiff;
+        });
 
         card.querySelectorAll("[data-main-verse-row]").forEach((row) => {
             if (!(row instanceof HTMLElement)) {
@@ -927,6 +951,13 @@
                 verseBgSwatch.style.background = verseBgColor;
                 verseBgSwatch.setAttribute("title", `${label("bgColorShortLabel")}: ${verseBgColor}`);
             }
+            row.querySelectorAll("[data-song-color-parent-trigger][data-color-target-level='verse']").forEach((button) => {
+                if (!(button instanceof HTMLElement)) {
+                    return;
+                }
+                const hasParentDiff = verseTextColor !== songTextColor || verseBgColor !== songBgColor;
+                button.hidden = !hasParentDiff;
+            });
         });
     };
 
@@ -1082,31 +1113,6 @@
         }
     };
 
-    const openGoToSongPopup = async (href, songTitle) => {
-        const warning = dirty ? `\n\n> ${escapeMarkdown(label("songNavigationDirtyWarning"))}` : "";
-        const result = await messageBox.show({
-            title: label("songNavigationTitle"),
-            messageMarkdown: `**${escapeMarkdown(songTitle)}**${warning}`,
-            showCloseButton: true,
-            buttons: [
-                { id: "new-tab", label: label("songNavigationNewTabLabel"), tone: "success" },
-                { id: "cancel", label: label("songNavigationAbortLabel"), tone: "warning" },
-                { id: "go", label: label("songNavigationLoseAndGoLabel"), tone: "danger" },
-            ],
-            enterButtonId: "cancel",
-            escapeButtonId: "cancel",
-        });
-
-        if (result.buttonId === "new-tab") {
-            window.open(String(href || ""), "_blank", "noopener");
-            return;
-        }
-        if (result.buttonId === "go") {
-            dirty = false;
-            window.location.assign(String(href || ""));
-        }
-    };
-
     const bindMainSongCards = () => {
         document.querySelectorAll("[data-main-song-card]").forEach((card) => {
             if (!(card instanceof HTMLElement)) {
@@ -1212,8 +1218,12 @@
             if (goToLink instanceof HTMLAnchorElement) {
                 goToLink.addEventListener("click", async (event) => {
                     event.preventDefault();
-                    const songTitle = String(card.getAttribute("data-song-title") || "");
-                    await openGoToSongPopup(goToLink.href, songTitle);
+                    const confirmed = await confirmUnsavedChanges();
+                    if (!confirmed) {
+                        return;
+                    }
+                    dirty = false;
+                    window.location.assign(goToLink.href);
                 });
             }
 
@@ -1222,7 +1232,11 @@
     };
 
     if (modeToggleButton instanceof HTMLButtonElement) {
-        modeToggleButton.addEventListener("click", () => {
+        modeToggleButton.addEventListener("click", async () => {
+            const confirmed = await confirmUnsavedChanges();
+            if (!confirmed) {
+                return;
+            }
             const mainVisible = mainModePanel instanceof HTMLElement ? !mainModePanel.hidden : false;
             setMode(mainVisible ? "secondary" : "main");
         });
@@ -1236,6 +1250,10 @@
             }
             const insertTrigger = target.closest("[data-animation-insert-trigger]");
             if (insertTrigger instanceof HTMLElement) {
+                const confirmed = await confirmUnsavedChanges();
+                if (!confirmed) {
+                    return;
+                }
                 const insertIndex = Number.parseInt(String(insertTrigger.getAttribute("data-insert-index") || "0"), 10);
                 await openSongPickerPopup(Number.isNaN(insertIndex) ? 0 : insertIndex);
                 return;
@@ -1300,6 +1318,11 @@
         refreshDirtyState();
     });
 
+    form.addEventListener("submit", () => {
+        isSubmitting = true;
+        dirty = false;
+    });
+
     hiddenFieldNames.forEach((name) => {
         const field = hiddenFields[name];
         if (!(field instanceof HTMLInputElement)) {
@@ -1313,6 +1336,14 @@
     if (secondaryList instanceof HTMLElement) {
         secondaryList.classList.add("is-reorder-enabled");
     }
+
+    window.addEventListener("beforeunload", (event) => {
+        if (!dirty || isSubmitting) {
+            return;
+        }
+        event.preventDefault();
+        event.returnValue = "";
+    });
 
     applySummaryPreview();
     bindMainSongCards();

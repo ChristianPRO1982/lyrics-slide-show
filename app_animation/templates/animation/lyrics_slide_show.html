@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Lyrics Slide Show" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Lyrics Slide Show' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Lyrics Slide Show' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animation" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{{ animation.title }}{% endblock %}
+{% block page_intro %}
+    <p>{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
+    <p>{% trans "Page maître de projection." %}</p>
+{% endblock %}
+{% block page_summary %}
+    <p><strong>{% trans "Session écran" %}</strong>: <code data-lyrics-display-session>{{ display_session_id }}</code></p>
+    <p><strong>{% trans "Chant" %}</strong>: <span data-lyrics-current-song-title>{% trans "Aucun" %}</span></p>
+    <p><strong>{% trans "Diapo" %}</strong>: <span data-lyrics-current-slide-label>{% trans "Aucune" %}</span></p>
+    <p data-lyrics-chorus-visibility-state></p>
+    <p data-lyrics-scroll-mode-state></p>
+{% endblock %}
+{% block content %}
+    <section
+        class="lyrics-master-layout"
+        data-lyrics-master-root
+        data-animation-id="{{ animation.animation_id }}"
+        data-display-session-id="{{ display_session_id }}"
+        data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
+    >
+        <article class="site-theme-card lyrics-master-toolbar">
+            <div class="lyrics-master-actions">
+                <button type="button" class="animation-tool-button" data-lyrics-action="open-display">{% trans "Ouvrir le second écran" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="reopen-display">{% trans "Rouvrir le second écran" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="black">🖥️ {% trans "BLACK MODE" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="prev-slide">🔙 {% trans "Diapo précédente" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="chorus">🎼 {% trans "Refrain" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="next-slide">🔜 {% trans "Diapo suivante" %}</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="prev-song">⏮️ <span data-lyrics-prev-song-title></span></button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="next-song"><span data-lyrics-next-song-title></span> ⏭️</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="toggle-scroll">↕️ / 🧱</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="toggle-chorus">🎼🔼 / 🎼🔽</button>
+                <button type="button" class="animation-tool-button" data-lyrics-action="toggle-qr">📱 QR</button>
+            </div>
+        </article>
+
+        <article class="site-theme-card lyrics-master-previews">
+            <div class="lyrics-master-preview-panel">
+                <h2>{% trans "Diapo en cours" %}</h2>
+                <p class="lyrics-master-preview-label" data-lyrics-current-label></p>
+                <p class="lyrics-master-preview-text" data-lyrics-current-text></p>
+            </div>
+            <div class="lyrics-master-preview-panel">
+                <h2>{% trans "Diapo suivante" %}</h2>
+                <p class="lyrics-master-preview-label" data-lyrics-next-label></p>
+                <p class="lyrics-master-preview-text" data-lyrics-next-text></p>
+            </div>
+        </article>
+
+        <section class="lyrics-master-song-groups">
+            {% for group in runtime_payload.cardGroups %}
+                <article class="site-theme-card lyrics-master-song-group" data-lyrics-song-group data-animation-song-id="{{ group.animationSongId }}">
+                    <header class="lyrics-master-song-group-header">
+                        <h2>{{ group.songTitle }}</h2>
+                    </header>
+                    <div class="lyrics-master-slide-grid">
+                        {% for card in group.cards %}
+                            <button
+                                type="button"
+                                class="lyrics-master-slide-card"
+                                data-lyrics-slide-card
+                                data-global-index="{{ card.globalIndex }}"
+                                data-kind="{{ card.kind }}"
+                            >
+                                <span class="lyrics-master-slide-card-label">{{ card.label|default:"-" }}</span>
+                                <span class="lyrics-master-slide-card-text">{{ card.excerpt }}</span>
+                            </button>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% empty %}
+                <article class="site-theme-card">
+                    <p>{% trans "Aucune diapo disponible pour cette animation." %}</p>
+                </article>
+            {% endfor %}
+        </section>
+    </section>
+{% endblock %}
+{% block page_scripts %}
+    {{ runtime_payload|json_script:"lss-lyrics-runtime-payload" }}
+    <script>
+        window.LSS_LYRICS_I18N = {
+            openSecondScreenLabel: "{{ lyrics_i18n.openSecondScreenLabel|escapejs }}",
+            reopenSecondScreenLabel: "{{ lyrics_i18n.reopenSecondScreenLabel|escapejs }}",
+            popupBlockedTitle: "{{ lyrics_i18n.popupBlockedTitle|escapejs }}",
+            popupBlockedMessage: "{{ lyrics_i18n.popupBlockedMessage|escapejs }}",
+            preloadWarningTitle: "{{ lyrics_i18n.preloadWarningTitle|escapejs }}",
+            preloadWarningMessage: "{{ lyrics_i18n.preloadWarningMessage|escapejs }}",
+            okLabel: "{{ lyrics_i18n.okLabel|escapejs }}",
+            noneLabel: "{{ lyrics_i18n.noneLabel|escapejs }}",
+            currentSlidePlaceholder: "{{ lyrics_i18n.currentSlidePlaceholder|escapejs }}",
+            nextSlidePlaceholder: "{{ lyrics_i18n.nextSlidePlaceholder|escapejs }}",
+            blackModeLabel: "{{ lyrics_i18n.blackModeLabel|escapejs }}",
+            chorusLabel: "{{ lyrics_i18n.chorusLabel|escapejs }}",
+            previewCurrentLabel: "{{ lyrics_i18n.previewCurrentLabel|escapejs }}",
+            previewNextLabel: "{{ lyrics_i18n.previewNextLabel|escapejs }}",
+            qrInfoLabel: "{{ lyrics_i18n.qrInfoLabel|escapejs }}",
+            hiddenChorusLabel: "{{ lyrics_i18n.hiddenChorusLabel|escapejs }}",
+            scrollLockedLabel: "{{ lyrics_i18n.scrollLockedLabel|escapejs }}",
+            scrollUnlockedLabel: "{{ lyrics_i18n.scrollUnlockedLabel|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'js/lyrics_slide_show_master.js' %}"></script>
+{% endblock %}
