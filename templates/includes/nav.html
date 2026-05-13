@@ -164,17 +164,11 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
                         </a>
                     {% endif %}
-                    <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
-                    </a>
                     <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
                         </span>
-                    </a>
-                    <a href="{% url 'privacy_policy' %}" title="{{ nav_cookies_label }}" data-django-alias="privacy-policy">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
                     </a>
                 </section>
             </nav>
@@ -321,17 +315,11 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
                         </a>
                     {% endif %}
-                    <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="theme" icon_alt=nav_theme_label %}
-                    </a>
                     <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
                         <span class="site-nav-flag-icon">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
                             <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
                         </span>
-                    </a>
-                    <a href="{% url 'privacy_policy' %}" title="{{ nav_cookies_label }}" data-django-alias="privacy-policy">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
                     </a>
                 </section>
             </nav>
