@@ -178,66 +178,7 @@
                     {% endif %}
 
                     <div class="site-layout lyrics-master-layout-shell">
-                        <aside class="site-side-stack">
-                            <section class="site-panel site-section-panel">
-                                <header class="site-panel-header">
-                                    <h2>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}</h2>
-                                </header>
-                                <div class="site-home-media">
-                                    <picture data-theme-icon="animations" data-theme-alt="{% trans 'Lyrics Slide Show' %}">
-                                        <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
-                                        <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
-                                        <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Lyrics Slide Show' %}" data-theme-size="512" data-theme-mode="light">
-                                    </picture>
-                                </div>
-                            </section>
-
-                            <section class="site-panel site-tools-panel">
-                                <header class="site-panel-header">
-                                    <h2>{% trans "Animation" %}</h2>
-                                </header>
-
-                                {% include "animation/includes/_animation_actions.html" %}
-
-                                <article class="lyrics-master-shortcuts">
-                                    <h3>{% trans "Raccourcis clavier" %}</h3>
-                                    <p><strong>O</strong> {% trans "Ouvrir le second écran" %}</p>
-                                    <p><strong>Esc / M</strong> {% trans "BLACK MODE" %}</p>
-                                    <p><strong>B / ↑</strong> {% trans "Diapo précédente" %}</p>
-                                    <p><strong>S / V / Espace / ↓</strong> {% trans "Diapo suivante" %}</p>
-                                    <p><strong>R / C</strong> {% trans "Refrain" %}</p>
-                                    <p><strong>F / ←</strong> {% trans "Chant précédent" %}</p>
-                                    <p><strong>N / Entrée / →</strong> {% trans "Chant suivant" %}</p>
-                                    <p><strong>A / D</strong> {% trans "Afficher ou masquer les refrains" %}</p>
-                                    <p><strong>L</strong> {% trans "Activer ou bloquer le scroll" %}</p>
-                                    <p><strong>Q</strong> {% trans "Afficher le QR code" %}</p>
-                                </article>
-                            </section>
-                        </aside>
-
                         <main class="site-panel site-main-panel lyrics-master-main-panel">
-                            <section class="site-panel site-mobile-side">
-                                <header class="site-panel-header">
-                                    <h2>{% trans "Animation" %}</h2>
-                                </header>
-
-                                {% include "animation/includes/_animation_actions.html" %}
-
-                                <article class="lyrics-master-shortcuts">
-                                    <h3>{% trans "Raccourcis clavier" %}</h3>
-                                    <p><strong>O</strong> {% trans "Ouvrir le second écran" %}</p>
-                                    <p><strong>Esc / M</strong> {% trans "BLACK MODE" %}</p>
-                                    <p><strong>B / ↑</strong> {% trans "Diapo précédente" %}</p>
-                                    <p><strong>S / V / Espace / ↓</strong> {% trans "Diapo suivante" %}</p>
-                                    <p><strong>R / C</strong> {% trans "Refrain" %}</p>
-                                    <p><strong>F / ←</strong> {% trans "Chant précédent" %}</p>
-                                    <p><strong>N / Entrée / →</strong> {% trans "Chant suivant" %}</p>
-                                    <p><strong>A / D</strong> {% trans "Afficher ou masquer les refrains" %}</p>
-                                    <p><strong>L</strong> {% trans "Activer ou bloquer le scroll" %}</p>
-                                    <p><strong>Q</strong> {% trans "Afficher le QR code" %}</p>
-                                </article>
-                            </section>
-
                             <section class="site-main-content lyrics-master-main-content">
                                 <section
                                     class="lyrics-master-layout"
@@ -247,11 +188,22 @@
                                     data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
                                 >
                                     <article class="site-theme-card lyrics-master-context">
-                                        <div class="lyrics-master-context-head">
-                                            <h1>{{ animation.title }}</h1>
-                                            <p>{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
+                                        <div class="lyrics-master-context-icon">
+                                            {% include "includes/themed_icon.html" with picture_class="lyrics-master-context-picture" img_class="lyrics-master-context-image" icon_name="animations" icon_alt=animation.title %}
                                         </div>
-                                        <div class="lyrics-master-context-state">
+                                        <div class="lyrics-master-context-body">
+                                            <div class="lyrics-master-context-head">
+                                                <p class="lyrics-master-context-kicker">{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
+                                                <h1>{{ animation.title }}</h1>
+                                                <p>
+                                                    {% if animation.description %}
+                                                        {{ animation.description|linebreaksbr }}
+                                                    {% else %}
+                                                        {% trans "Sans description." %}
+                                                    {% endif %}
+                                                </p>
+                                                <p><a class="animation-tool-link" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                                            </div>
                                             <p><strong>{% trans "Session écran" %}</strong>: <code data-lyrics-display-session>{{ display_session_id }}</code></p>
                                             <p><strong>{% trans "Chant" %}</strong>: <span data-lyrics-current-song-title>{% trans "Aucun" %}</span></p>
                                             <p><strong>{% trans "Diapo" %}</strong>: <span data-lyrics-current-slide-label>{% trans "Aucune" %}</span></p>
