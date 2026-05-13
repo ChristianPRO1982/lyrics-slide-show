@@ -535,6 +535,10 @@
             await openDisplayWindow();
             return;
         }
+        if (action === "show-shortcuts") {
+            await maybeShowPopup(label("shortcutsPopupTitle"), label("shortcutsPopupMessage"));
+            return;
+        }
         if (action === "black") {
             toggleBlackMode();
             return;

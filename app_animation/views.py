@@ -373,6 +373,19 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "hiddenChorusLabel": _("Refrains masqués dans la grille."),
                 "scrollLockedLabel": _("Scroll bloqué"),
                 "scrollUnlockedLabel": _("Scroll autorisé"),
+                "shortcutsPopupTitle": _("Raccourcis clavier"),
+                "shortcutsPopupMessage": _(
+                    "- `O` : Ouvrir un second écran\n"
+                    "- `Esc` ou `M` : Activer/désactiver BLACK MODE\n"
+                    "- `B` ou `↑` : Diapo précédente\n"
+                    "- `S`, `V`, `Espace` ou `↓` : Diapo suivante\n"
+                    "- `R` ou `C` : Refrain\n"
+                    "- `F` ou `←` : Chant précédent\n"
+                    "- `N`, `Entrée` ou `→` : Chant suivant\n"
+                    "- `A` ou `D` : Afficher/masquer les refrains\n"
+                    "- `L` : Activer/bloquer le scroll\n"
+                    "- `Q` : Afficher/masquer le QR code"
+                ),
             },
         },
     )
