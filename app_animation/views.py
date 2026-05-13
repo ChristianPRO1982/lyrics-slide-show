@@ -373,6 +373,14 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "hiddenChorusLabel": _("Refrains masqués dans la grille."),
                 "scrollLockedLabel": _("Scroll bloqué"),
                 "scrollUnlockedLabel": _("Scroll autorisé"),
+                "scrollAllowEmoji": "↕️",
+                "scrollAllowText": _("Scroll"),
+                "scrollStopEmoji": "🧱",
+                "scrollStopText": _("Stop scroll"),
+                "chorusShowEmoji": "🎼🔼",
+                "chorusShowText": _("Refrain"),
+                "chorusHideEmoji": "🎼🔽",
+                "chorusHideText": _("Pas de refrain"),
                 "shortcutsPopupTitle": _("Raccourcis clavier"),
                 "shortcutsPopupMessage": _(
                     "- `O` : Ouvrir un second écran\n"
@@ -413,6 +421,7 @@ def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpRe
             "display_session_id": session_id,
             "display_i18n": {
                 "waitingLabel": _("En attente du maître"),
+                "f11ReminderLabel": _("APPUYEZ SUR F11 SUR CETTE ÉCRAN"),
             },
         },
     )

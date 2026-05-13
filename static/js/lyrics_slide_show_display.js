@@ -12,6 +12,8 @@
     const waitingNode = root.querySelector("[data-lyrics-display-waiting]");
     const i18n = window.LSS_LYRICS_DISPLAY_I18N || {};
     const waitingLabel = String(i18n.waitingLabel || "");
+    const f11ReminderLabel = String(i18n.f11ReminderLabel || "");
+    const forceReminderOnLoad = new URLSearchParams(window.location.search).get("remind") === "1";
     const sessionId = String(root.getAttribute("data-display-session-id") || "").trim();
     if (!sessionId) {
         return;
@@ -86,6 +88,19 @@
         slideNode.textContent = "";
     };
 
+    const renderF11Reminder = () => {
+        clearWaiting();
+        setDisplayBaseStyle();
+        slideNode.style.backgroundImage = "";
+        slideNode.style.backgroundColor = "#000000";
+        slideNode.style.color = "rgb(200, 200, 200)";
+        slideNode.style.fontFamily = "'Source Sans Pro', sans-serif";
+        slideNode.style.fontSize = "64px";
+        slideNode.style.paddingLeft = "80px";
+        slideNode.style.paddingRight = "80px";
+        slideNode.textContent = f11ReminderLabel;
+    };
+
     const renderQr = (frame) => {
         clearWaiting();
         setDisplayBaseStyle();
@@ -154,6 +169,10 @@
             renderBlack();
             return;
         }
+        if (mode === "f11-reminder") {
+            renderF11Reminder();
+            return;
+        }
         if (mode === "qr") {
             renderQr(frame);
             return;
@@ -218,5 +237,11 @@
         }
     });
 
-    restoreFrame();
+    if (forceReminderOnLoad) {
+        const reminderFrame = { mode: "f11-reminder" };
+        renderFrame(reminderFrame);
+        persistFrame(reminderFrame);
+    } else {
+        restoreFrame();
+    }
 })();

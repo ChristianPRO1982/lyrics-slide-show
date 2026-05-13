@@ -661,6 +661,14 @@
     font-size: 1.25em;
 }
 
+.lyrics-master-qr-button-image {
+    display: block;
+    width: min(3.4rem, 100%);
+    height: auto;
+    max-height: 3.4rem;
+    object-fit: contain;
+}
+
 .lyrics-master-previews {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

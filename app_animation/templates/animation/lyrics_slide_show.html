@@ -214,7 +214,7 @@
 
                                     <article class="site-theme-card lyrics-master-toolbar">
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-primary">
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="black"><span class="lyrics-master-action-emoji">🖥️</span><span>{% trans "BLACK MODE" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="black"><span class="lyrics-master-action-emoji">⚫</span><span>{% trans "BLACK MODE" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="prev-slide"><span class="lyrics-master-action-emoji">🔙</span><span>{% trans "Diapo précédente" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="chorus"><span class="lyrics-master-action-emoji">🎼</span><span>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="next-slide"><span class="lyrics-master-action-emoji">🔜</span><span>{% trans "Diapo suivante" %}</span></button>
@@ -224,9 +224,9 @@
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier" %}</span></button>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji">↕️ / 🧱</span><span>{% trans "Scroll" %}</span></button>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji">🎼🔼 / 🎼🔽</span><span>{% trans "Refrains" %}</span></button>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><span class="lyrics-master-action-emoji">📱</span><span>QR</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
                                         </div>
                                     </article>
 
@@ -304,6 +304,14 @@
             hiddenChorusLabel: "{{ lyrics_i18n.hiddenChorusLabel|escapejs }}",
             scrollLockedLabel: "{{ lyrics_i18n.scrollLockedLabel|escapejs }}",
             scrollUnlockedLabel: "{{ lyrics_i18n.scrollUnlockedLabel|escapejs }}",
+            scrollAllowEmoji: "{{ lyrics_i18n.scrollAllowEmoji|escapejs }}",
+            scrollAllowText: "{{ lyrics_i18n.scrollAllowText|escapejs }}",
+            scrollStopEmoji: "{{ lyrics_i18n.scrollStopEmoji|escapejs }}",
+            scrollStopText: "{{ lyrics_i18n.scrollStopText|escapejs }}",
+            chorusShowEmoji: "{{ lyrics_i18n.chorusShowEmoji|escapejs }}",
+            chorusShowText: "{{ lyrics_i18n.chorusShowText|escapejs }}",
+            chorusHideEmoji: "{{ lyrics_i18n.chorusHideEmoji|escapejs }}",
+            chorusHideText: "{{ lyrics_i18n.chorusHideText|escapejs }}",
             shortcutsPopupTitle: "{{ lyrics_i18n.shortcutsPopupTitle|escapejs }}",
             shortcutsPopupMessage: "{{ lyrics_i18n.shortcutsPopupMessage|escapejs }}"
         };

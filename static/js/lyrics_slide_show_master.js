@@ -46,18 +46,29 @@
     const previewCurrentTextNode = document.querySelector("[data-lyrics-current-text]");
     const previewNextLabelNode = document.querySelector("[data-lyrics-next-label]");
     const previewNextTextNode = document.querySelector("[data-lyrics-next-text]");
+    const prevSongButton = document.querySelector("[data-lyrics-action='prev-song']");
+    const nextSongButton = document.querySelector("[data-lyrics-action='next-song']");
+    const scrollToggleEmojiNode = document.querySelector("[data-lyrics-scroll-emoji]");
+    const scrollToggleTextNode = document.querySelector("[data-lyrics-scroll-text]");
+    const chorusToggleEmojiNode = document.querySelector("[data-lyrics-chorus-toggle-emoji]");
+    const chorusToggleTextNode = document.querySelector("[data-lyrics-chorus-toggle-text]");
+    const qrButtonImageNode = document.querySelector("[data-lyrics-qr-button-image]");
+    const qrFallbackEmojiNode = document.querySelector("[data-lyrics-qr-fallback-emoji]");
+    const qrFallbackTextNode = document.querySelector("[data-lyrics-qr-fallback-text]");
 
     const messageBox = window.LSSMessageBox;
 
     const state = {
         sessionId: defaultSessionId,
-        currentSongIndex: 0,
-        currentSlideGlobalIndex: null,
+        selectedSongIndex: 0,
+        projectedSlideGlobalIndex: null,
         blackMode: false,
         qrMode: false,
         hideChorusesInGrid: false,
         blockScrollKeys: true,
         chorusCursorBySong: {},
+        progressCursorBySong: {},
+        f11ReminderActive: false,
     };
 
     const bridge = {
@@ -94,7 +105,16 @@
         return slides[globalIndex] || null;
     };
 
-    const getCurrentSong = () => getSongByIndex(state.currentSongIndex);
+    const getCurrentSong = () => getSongByIndex(state.selectedSongIndex);
+
+    const getProjectedSongIndex = () => {
+        const slide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
+        if (!slide) {
+            return -1;
+        }
+        const resolvedSongIndex = songIndexByAnimationSongId.get(Number(slide.animationSongId));
+        return Number.isInteger(resolvedSongIndex) ? resolvedSongIndex : -1;
+    };
 
     const getSongSlideIndexes = (songIndex) => {
         const song = getSongByIndex(songIndex);
@@ -116,24 +136,38 @@
             .filter((value) => Number.isInteger(value));
     };
 
-    const getCurrentSlideInSongPosition = () => {
-        const indexes = getSongSlideIndexes(state.currentSongIndex);
-        if (!indexes.length || !Number.isInteger(state.currentSlideGlobalIndex)) {
+    const getPreparedSlidePosition = (songIndex) => {
+        const indexes = getSongSlideIndexes(songIndex);
+        if (!indexes.length) {
             return -1;
         }
-        return indexes.indexOf(state.currentSlideGlobalIndex);
+
+        const songKey = String(songIndex);
+        const storedPosition = Number.parseInt(String(state.progressCursorBySong[songKey] ?? ""), 10);
+        if (Number.isInteger(storedPosition) && storedPosition >= 0 && storedPosition < indexes.length) {
+            return storedPosition;
+        }
+
+        if (Number.isInteger(state.projectedSlideGlobalIndex)) {
+            const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
+            if (projectedPosition >= 0) {
+                return projectedPosition;
+            }
+        }
+        return -1;
     };
 
     const persistState = () => {
         const payloadToStore = {
             sessionId: state.sessionId,
-            currentSongIndex: state.currentSongIndex,
-            currentSlideGlobalIndex: state.currentSlideGlobalIndex,
+            selectedSongIndex: state.selectedSongIndex,
+            projectedSlideGlobalIndex: state.projectedSlideGlobalIndex,
             blackMode: state.blackMode,
             qrMode: state.qrMode,
             hideChorusesInGrid: state.hideChorusesInGrid,
             blockScrollKeys: state.blockScrollKeys,
             chorusCursorBySong: state.chorusCursorBySong,
+            progressCursorBySong: state.progressCursorBySong,
         };
         try {
             window.localStorage.setItem(stateStorageKey, JSON.stringify(payloadToStore));
@@ -155,11 +189,15 @@
             if (typeof parsed.sessionId === "string" && parsed.sessionId.trim()) {
                 state.sessionId = parsed.sessionId.trim();
             }
-            if (Number.isInteger(parsed.currentSongIndex)) {
-                state.currentSongIndex = normalizeSongIndex(parsed.currentSongIndex);
+            if (Number.isInteger(parsed.selectedSongIndex)) {
+                state.selectedSongIndex = normalizeSongIndex(parsed.selectedSongIndex);
+            } else if (Number.isInteger(parsed.currentSongIndex)) {
+                state.selectedSongIndex = normalizeSongIndex(parsed.currentSongIndex);
             }
-            if (Number.isInteger(parsed.currentSlideGlobalIndex)) {
-                state.currentSlideGlobalIndex = parsed.currentSlideGlobalIndex;
+            if (Number.isInteger(parsed.projectedSlideGlobalIndex)) {
+                state.projectedSlideGlobalIndex = parsed.projectedSlideGlobalIndex;
+            } else if (Number.isInteger(parsed.currentSlideGlobalIndex)) {
+                state.projectedSlideGlobalIndex = parsed.currentSlideGlobalIndex;
             }
             state.blackMode = Boolean(parsed.blackMode);
             state.qrMode = Boolean(parsed.qrMode);
@@ -168,19 +206,30 @@
             if (parsed.chorusCursorBySong && typeof parsed.chorusCursorBySong === "object") {
                 state.chorusCursorBySong = parsed.chorusCursorBySong;
             }
+            if (parsed.progressCursorBySong && typeof parsed.progressCursorBySong === "object") {
+                state.progressCursorBySong = parsed.progressCursorBySong;
+            }
         } catch (_error) {
             // Ignore localStorage parsing errors.
         }
     };
 
     const normalizeState = () => {
-        state.currentSongIndex = normalizeSongIndex(state.currentSongIndex);
-        const currentSlide = slideByGlobalIndex(state.currentSlideGlobalIndex);
+        state.selectedSongIndex = normalizeSongIndex(state.selectedSongIndex);
+        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
         if (!currentSlide) {
-            state.currentSlideGlobalIndex = null;
+            state.projectedSlideGlobalIndex = null;
         }
         if (state.blackMode) {
             state.qrMode = false;
+        }
+        const projectedSongIndex = getProjectedSongIndex();
+        if (projectedSongIndex >= 0) {
+            const indexes = getSongSlideIndexes(projectedSongIndex);
+            const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
+            if (projectedPosition >= 0) {
+                state.progressCursorBySong[String(projectedSongIndex)] = projectedPosition;
+            }
         }
     };
 
@@ -226,6 +275,9 @@
     };
 
     const frameFromState = () => {
+        if (state.f11ReminderActive) {
+            return { mode: "f11-reminder" };
+        }
         if (state.blackMode) {
             return { mode: "black" };
         }
@@ -238,7 +290,7 @@
             };
         }
 
-        const slide = slideByGlobalIndex(state.currentSlideGlobalIndex);
+        const slide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
         if (!slide) {
             return { mode: "idle" };
         }
@@ -266,6 +318,20 @@
         });
     };
 
+    const sendF11ReminderFrame = () => {
+        const reminderFrame = { mode: "f11-reminder" };
+        sendBridgeMessage({
+            type: "init",
+            animationId,
+            frame: reminderFrame,
+        });
+        sendBridgeMessage({
+            type: "frame",
+            animationId,
+            frame: reminderFrame,
+        });
+    };
+
     const sendHeartbeat = () => {
         sendBridgeMessage({
             type: "heartbeat",
@@ -274,51 +340,49 @@
         });
     };
 
-    const syncSongContextFromCurrentSlide = () => {
-        const slide = slideByGlobalIndex(state.currentSlideGlobalIndex);
-        if (!slide) {
+    const setCurrentSong = (songIndex) => {
+        if (!Number.isInteger(songIndex) || songIndex < 0 || songIndex >= songs.length) {
             return;
         }
-        const resolvedSongIndex = songIndexByAnimationSongId.get(Number(slide.animationSongId));
-        if (Number.isInteger(resolvedSongIndex)) {
-            state.currentSongIndex = resolvedSongIndex;
-        }
-    };
-
-    const setCurrentSong = (songIndex) => {
-        state.currentSongIndex = normalizeSongIndex(songIndex);
-        state.currentSlideGlobalIndex = null;
-        state.blackMode = false;
-        state.qrMode = false;
+        state.selectedSongIndex = songIndex;
         persistState();
         refreshUI();
-        sendFrame();
     };
 
-    const projectSlide = (globalIndex) => {
+    const projectSlide = (globalIndex, options = {}) => {
         const slide = slideByGlobalIndex(globalIndex);
         if (!slide) {
             return;
         }
+        const preserveProgress = Boolean(options.preserveProgress);
+        const updateSelected = options.updateSelected !== false;
         const resolvedSongIndex = songIndexByAnimationSongId.get(Number(slide.animationSongId));
-        if (Number.isInteger(resolvedSongIndex)) {
-            state.currentSongIndex = resolvedSongIndex;
+        if (updateSelected && Number.isInteger(resolvedSongIndex)) {
+            state.selectedSongIndex = resolvedSongIndex;
         }
-        state.currentSlideGlobalIndex = globalIndex;
+        state.projectedSlideGlobalIndex = globalIndex;
         state.blackMode = false;
         state.qrMode = false;
+        state.f11ReminderActive = false;
+        if (!preserveProgress && Number.isInteger(resolvedSongIndex)) {
+            const indexes = getSongSlideIndexes(resolvedSongIndex);
+            const projectedPosition = indexes.indexOf(globalIndex);
+            if (projectedPosition >= 0) {
+                state.progressCursorBySong[String(resolvedSongIndex)] = projectedPosition;
+            }
+        }
         persistState();
         refreshUI();
         sendFrame();
     };
 
     const navigateSlide = (direction) => {
-        const indexes = getSongSlideIndexes(state.currentSongIndex);
+        const indexes = getSongSlideIndexes(state.selectedSongIndex);
         if (!indexes.length) {
             return;
         }
 
-        const currentPosition = getCurrentSlideInSongPosition();
+        const currentPosition = getPreparedSlidePosition(state.selectedSongIndex);
         let nextPosition;
         if (currentPosition < 0) {
             nextPosition = direction > 0 ? 0 : indexes.length - 1;
@@ -332,37 +396,58 @@
                 nextPosition = raw;
             }
         }
-        projectSlide(indexes[nextPosition]);
+        state.progressCursorBySong[String(state.selectedSongIndex)] = nextPosition;
+        projectSlide(indexes[nextPosition], { preserveProgress: true, updateSelected: false });
     };
 
     const navigateChorus = () => {
-        const chorusIndexes = getSongChorusIndexes(state.currentSongIndex);
+        const chorusIndexes = getSongChorusIndexes(state.selectedSongIndex);
         if (!chorusIndexes.length) {
             return;
         }
-        const songKey = String(state.currentSongIndex);
-        const currentCursor = Number.parseInt(String(state.chorusCursorBySong[songKey] || "0"), 10) || 0;
-        const normalizedCursor = currentCursor >= chorusIndexes.length ? 0 : currentCursor;
-        const targetIndex = chorusIndexes[normalizedCursor];
-        state.chorusCursorBySong[songKey] = (normalizedCursor + 1) % chorusIndexes.length;
-        projectSlide(targetIndex);
+
+        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
+        const currentSong = getCurrentSong();
+        const currentSlideAnimationSongId = currentSlide ? Number(currentSlide.animationSongId) : null;
+        const selectedAnimationSongId = currentSong ? Number(currentSong.animationSongId) : null;
+        const isProjectedFromSelectedSong = currentSlideAnimationSongId === selectedAnimationSongId;
+        const projectedChorusPosition = isProjectedFromSelectedSong
+            ? chorusIndexes.indexOf(state.projectedSlideGlobalIndex)
+            : -1;
+
+        let targetPosition = 0;
+        if (projectedChorusPosition >= 0) {
+            targetPosition = (projectedChorusPosition + 1) % chorusIndexes.length;
+        }
+
+        const targetIndex = chorusIndexes[targetPosition];
+        state.chorusCursorBySong[String(state.selectedSongIndex)] = (targetPosition + 1) % chorusIndexes.length;
+        projectSlide(targetIndex, { preserveProgress: true, updateSelected: false });
     };
 
     const toggleBlackMode = () => {
-        state.blackMode = !state.blackMode;
         if (state.blackMode) {
+            state.blackMode = false;
+            state.qrMode = false;
+        } else {
+            state.blackMode = true;
             state.qrMode = false;
         }
+        state.f11ReminderActive = false;
         persistState();
         refreshUI();
         sendFrame();
     };
 
     const toggleQrMode = () => {
-        state.qrMode = !state.qrMode;
         if (state.qrMode) {
+            state.qrMode = false;
+            state.blackMode = false;
+        } else {
+            state.qrMode = true;
             state.blackMode = false;
         }
+        state.f11ReminderActive = false;
         persistState();
         refreshUI();
         sendFrame();
@@ -398,20 +483,16 @@
     };
 
     const refreshPreview = () => {
-        const currentSlide = slideByGlobalIndex(state.currentSlideGlobalIndex);
-        const songIndexes = getSongSlideIndexes(state.currentSongIndex);
+        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
+        const songIndexes = getSongSlideIndexes(state.selectedSongIndex);
         let nextSlide = null;
 
         if (songIndexes.length) {
-            if (!currentSlide) {
+            const preparedPosition = getPreparedSlidePosition(state.selectedSongIndex);
+            if (preparedPosition < 0) {
                 nextSlide = slideByGlobalIndex(songIndexes[0]);
             } else {
-                const position = songIndexes.indexOf(state.currentSlideGlobalIndex);
-                if (position >= 0) {
-                    nextSlide = slideByGlobalIndex(songIndexes[(position + 1) % songIndexes.length]);
-                } else {
-                    nextSlide = slideByGlobalIndex(songIndexes[0]);
-                }
+                nextSlide = slideByGlobalIndex(songIndexes[(preparedPosition + 1) % songIndexes.length]);
             }
         }
 
@@ -422,17 +503,19 @@
     };
 
     const refreshSongNavigationLabels = () => {
-        const currentSong = getCurrentSong();
-        if (!currentSong) {
-            setText(prevSongTitleNode, label("noneLabel"));
-            setText(nextSongTitleNode, label("noneLabel"));
-            return;
-        }
-        const prevSong = getSongByIndex(normalizeSongIndex(state.currentSongIndex - 1));
-        const nextSong = getSongByIndex(normalizeSongIndex(state.currentSongIndex + 1));
+        const hasPrev = state.selectedSongIndex > 0;
+        const hasNext = state.selectedSongIndex < songs.length - 1;
+        const prevSong = hasPrev ? getSongByIndex(state.selectedSongIndex - 1) : null;
+        const nextSong = hasNext ? getSongByIndex(state.selectedSongIndex + 1) : null;
 
         setText(prevSongTitleNode, prevSong ? String(prevSong.songTitle || "") : label("noneLabel"));
         setText(nextSongTitleNode, nextSong ? String(nextSong.songTitle || "") : label("noneLabel"));
+        if (prevSongButton instanceof HTMLButtonElement) {
+            prevSongButton.disabled = !hasPrev;
+        }
+        if (nextSongButton instanceof HTMLButtonElement) {
+            nextSongButton.disabled = !hasNext;
+        }
     };
 
     const refreshSelectionStyles = () => {
@@ -441,7 +524,7 @@
                 return;
             }
             const globalIndex = Number.parseInt(String(card.getAttribute("data-global-index") || ""), 10);
-            const isActive = Number.isInteger(state.currentSlideGlobalIndex) && globalIndex === state.currentSlideGlobalIndex;
+            const isActive = Number.isInteger(state.projectedSlideGlobalIndex) && globalIndex === state.projectedSlideGlobalIndex;
             card.classList.toggle("is-active", isActive);
 
             const kind = String(card.getAttribute("data-kind") || "");
@@ -455,28 +538,57 @@
             }
             const asid = Number.parseInt(String(groupNode.getAttribute("data-animation-song-id") || ""), 10);
             const songIndex = songIndexByAnimationSongId.get(asid);
-            groupNode.classList.toggle("is-current-song", Number.isInteger(songIndex) && songIndex === state.currentSongIndex);
+            groupNode.classList.toggle("is-current-song", Number.isInteger(songIndex) && songIndex === state.selectedSongIndex);
         });
     };
 
     const refreshSummary = () => {
-        const currentSong = getCurrentSong();
-        setText(songTitleNode, currentSong ? String(currentSong.songTitle || "") : label("noneLabel"));
+        const projectedSongIndex = getProjectedSongIndex();
+        const projectedSong = projectedSongIndex >= 0 ? getSongByIndex(projectedSongIndex) : null;
+        const selectedSong = getCurrentSong();
+        setText(songTitleNode, projectedSong ? String(projectedSong.songTitle || "") : selectedSong ? String(selectedSong.songTitle || "") : label("noneLabel"));
         setText(displaySessionNode, state.sessionId);
 
-        const currentSlide = slideByGlobalIndex(state.currentSlideGlobalIndex);
+        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
         setText(slideLabelNode, currentSlide ? formatSlideLabel(currentSlide) : label("noneLabel"));
 
         setText(chorusVisibilityNode, state.hideChorusesInGrid ? label("hiddenChorusLabel") : "");
         setText(scrollModeNode, state.blockScrollKeys ? label("scrollLockedLabel") : label("scrollUnlockedLabel"));
     };
 
+    const refreshToggleButtons = () => {
+        setText(scrollToggleEmojiNode, state.blockScrollKeys ? label("scrollStopEmoji") : label("scrollAllowEmoji"));
+        setText(scrollToggleTextNode, state.blockScrollKeys ? label("scrollStopText") : label("scrollAllowText"));
+        setText(chorusToggleEmojiNode, state.hideChorusesInGrid ? label("chorusHideEmoji") : label("chorusShowEmoji"));
+        setText(chorusToggleTextNode, state.hideChorusesInGrid ? label("chorusHideText") : label("chorusShowText"));
+    };
+
+    const refreshQrButton = () => {
+        const hasQrCode = Boolean(qrCodePngBase64);
+        if (qrButtonImageNode instanceof HTMLImageElement) {
+            if (hasQrCode) {
+                qrButtonImageNode.src = `data:image/png;base64,${qrCodePngBase64}`;
+                qrButtonImageNode.hidden = false;
+            } else {
+                qrButtonImageNode.hidden = true;
+                qrButtonImageNode.removeAttribute("src");
+            }
+        }
+        if (qrFallbackEmojiNode instanceof HTMLElement) {
+            qrFallbackEmojiNode.hidden = hasQrCode;
+        }
+        if (qrFallbackTextNode instanceof HTMLElement) {
+            qrFallbackTextNode.hidden = hasQrCode;
+        }
+    };
+
     const refreshUI = () => {
-        syncSongContextFromCurrentSlide();
         refreshSongNavigationLabels();
         refreshSelectionStyles();
         refreshSummary();
         refreshPreview();
+        refreshToggleButtons();
+        refreshQrButton();
     };
 
     const maybeShowPopup = async (title, message) => {
@@ -495,15 +607,20 @@
         if (!displayUrlBase) {
             return;
         }
-        const query = new URLSearchParams({ session: state.sessionId });
+        const query = new URLSearchParams({ session: state.sessionId, remind: "1" });
         const targetUrl = `${displayUrlBase}?${query.toString()}`;
-        const openedWindow = window.open(targetUrl, "LSSLyricsDisplay", "noopener,noreferrer");
+        const windowName = `LSSLyricsDisplay-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+        const popupFeatures = "popup=yes,width=1280,height=720,left=80,top=40,resizable=yes,scrollbars=no";
+        const openedWindow = window.open(targetUrl, windowName, popupFeatures);
         if (!openedWindow) {
             await maybeShowPopup(label("popupBlockedTitle"), label("popupBlockedMessage"));
             return;
         }
-        sendInit();
-        sendFrame();
+        state.blockScrollKeys = true;
+        state.f11ReminderActive = true;
+        persistState();
+        refreshUI();
+        sendF11ReminderFrame();
         try {
             openedWindow.focus();
         } catch (_error) {
@@ -556,11 +673,11 @@
             return;
         }
         if (action === "prev-song") {
-            setCurrentSong(state.currentSongIndex - 1);
+            setCurrentSong(state.selectedSongIndex - 1);
             return;
         }
         if (action === "next-song") {
-            setCurrentSong(state.currentSongIndex + 1);
+            setCurrentSong(state.selectedSongIndex + 1);
             return;
         }
         if (action === "toggle-scroll") {
@@ -632,11 +749,11 @@
             return;
         }
         if (key === "arrowleft" || key === "f") {
-            setCurrentSong(state.currentSongIndex - 1);
+            setCurrentSong(state.selectedSongIndex - 1);
             return;
         }
         if (key === "arrowright" || key === "enter" || key === "n") {
-            setCurrentSong(state.currentSongIndex + 1);
+            setCurrentSong(state.selectedSongIndex + 1);
             return;
         }
         if (key === "a" || key === "d") {
