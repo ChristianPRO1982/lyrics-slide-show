@@ -222,4 +222,31 @@
             }
         });
     });
+
+    const createForm = document.querySelector("[data-song-create-form]");
+    const createTitleInput = document.querySelector("[data-song-create-title]");
+    const createSubtitleInput = document.querySelector("[data-song-create-subtitle]");
+    const createSubmit = document.querySelector("[data-song-create-submit]");
+    const existingIdentityNode = document.getElementById("song-existing-identities");
+    if (createForm && createTitleInput && createSubtitleInput && createSubmit && existingIdentityNode) {
+        const existingIdentityPairs = JSON.parse(existingIdentityNode.textContent || "[]");
+        const existingIdentitySet = new Set(
+            existingIdentityPairs.map((entry) => {
+                const pair = Array.isArray(entry) ? entry : ["", ""];
+                return `${normalizeSearch(pair[0])}::${normalizeSearch(pair[1])}`;
+            }),
+        );
+
+        const updateCreateSongState = () => {
+            const title = normalizeSearch(createTitleInput.value);
+            const subtitle = normalizeSearch(createSubtitleInput.value);
+            const hasTitle = title.length > 0;
+            const duplicate = existingIdentitySet.has(`${title}::${subtitle}`);
+            createSubmit.disabled = !hasTitle || duplicate;
+        };
+
+        createTitleInput.addEventListener("input", updateCreateSongState);
+        createSubtitleInput.addEventListener("input", updateCreateSongState);
+        updateCreateSongState();
+    }
 })();

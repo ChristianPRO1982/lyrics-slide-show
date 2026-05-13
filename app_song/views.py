@@ -602,6 +602,34 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
 
 def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
     action = request.POST.get("action")
+    if action == "create_song":
+        if not _is_authenticated(request.user):
+            raise Http404
+        title = _normalize_inline_text(request.POST.get("title"))
+        subtitle = _normalize_inline_text(request.POST.get("subtitle"))
+        if not title:
+            messages.error(request, _("Le titre est obligatoire."))
+            return redirect(redirect_url)
+        existing_song = Song.objects.filter(title=title, subtitle=subtitle).only("song_id").first()
+        if existing_song:
+            return redirect("modify_song", song_id=existing_song.song_id)
+        try:
+            created_song = Song.objects.create(
+                title=title,
+                subtitle=subtitle,
+                description="",
+                status=SongStatus.NOT_VALIDATED,
+                licensed=False,
+            )
+        except IntegrityError:
+            # Protect against race condition with another create request.
+            existing_song = Song.objects.filter(title=title, subtitle=subtitle).only("song_id").first()
+            if existing_song:
+                return redirect("modify_song", song_id=existing_song.song_id)
+            messages.error(request, _("Impossible de créer le chant pour le moment."))
+            return redirect(redirect_url)
+        return redirect("modify_song", song_id=created_song.song_id)
+
     song = get_object_or_404(Song, song_id=request.POST.get("song_id"))
     if action == "delete_song":
         if not _can_edit_song(request.user, song):
@@ -644,6 +672,9 @@ def songs(request: HttpRequest) -> HttpResponse:
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
             "can_create_song": _is_authenticated(request.user),
+            "song_identity_pairs": list(Song.objects.values_list("title", "subtitle"))
+            if _is_authenticated(request.user)
+            else [],
             "favorites_toggle_query": "favorites_quick=1",
             "favorites_quick_active": favorites_quick,
         },

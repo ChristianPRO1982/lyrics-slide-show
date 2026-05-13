@@ -169,7 +169,20 @@
             </div>
         </header>
         {% if can_create_song %}
-            <button type="button" disabled>{% trans "Nouveau chant" %}</button>
+            {{ song_identity_pairs|json_script:"song-existing-identities" }}
+            <form method="post" class="song-search-form" data-song-create-form>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_song">
+                <div class="song-search-main">
+                    <label for="song-create-title">{% trans "Titre" %}</label>
+                    <input id="song-create-title" name="title" type="text" data-song-create-title>
+
+                    <label for="song-create-subtitle">{% trans "Sous-titre" %}</label>
+                    <input id="song-create-subtitle" name="subtitle" type="text" data-song-create-subtitle>
+
+                    <button type="submit" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
+                </div>
+            </form>
         {% else %}
             <p>{% trans "La création de chant est réservée aux membres authentifiés." %}</p>
         {% endif %}

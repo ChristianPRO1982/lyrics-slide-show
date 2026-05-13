@@ -1059,3 +1059,97 @@ class SongFavoritesQuickViewTests(TestCase):
         preferences = MemberPreferences.objects.get(member_id=self.user_id)
         self.assertEqual(preferences.song_search["text"], "Saved Search")
         self.assertFalse(preferences.song_search["favorites_only"])
+
+
+class SongCreateFromSongsPageTests(TestCase):
+    def setUp(self):
+        self.user_id = "88888888-8888-8888-8888-888888888888"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="create.song.user",
+            first_name="Create",
+            last_name="Song",
+            email="create.song.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.existing_song = Song.objects.create(
+            title="Deja la",
+            subtitle="Sous",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "create.song.user",
+            "email": "create.song.user@example.test",
+            "first_name": "Create",
+            "last_name": "Song",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_authenticated_user_can_create_song_from_songs_page(self):
+        self._login()
+        response = self.client.post(
+            reverse("songs"),
+            data={
+                "action": "create_song",
+                "title": "  Nouveau titre  ",
+                "subtitle": "  Nouveau sous titre  ",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        created_song = Song.objects.get(title="Nouveau titre", subtitle="Nouveau sous titre")
+        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[created_song.song_id]))
+        self.assertEqual(created_song.description, "")
+        self.assertEqual(created_song.status, SongStatus.NOT_VALIDATED)
+        self.assertFalse(created_song.licensed)
+
+    def test_guest_cannot_create_song(self):
+        response = self.client.post(
+            reverse("songs"),
+            data={
+                "action": "create_song",
+                "title": "Nouveau titre",
+                "subtitle": "",
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_create_song_redirects_to_existing_song_when_duplicate(self):
+        self._login()
+        response = self.client.post(
+            reverse("songs"),
+            data={
+                "action": "create_song",
+                "title": "  Deja la ",
+                "subtitle": " Sous  ",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_song", args=[self.existing_song.song_id]),
+        )
+        self.assertEqual(Song.objects.filter(title="Deja la", subtitle="Sous").count(), 1)
+
+    def test_create_song_requires_non_empty_title(self):
+        self._login()
+        response = self.client.post(
+            reverse("songs"),
+            data={
+                "action": "create_song",
+                "title": "   ",
+                "subtitle": "Sous",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("songs"))
+        self.assertFalse(Song.objects.filter(subtitle="Sous", title="").exists())
