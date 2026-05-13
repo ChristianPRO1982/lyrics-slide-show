@@ -202,7 +202,7 @@
                                                         {% trans "Sans description." %}
                                                     {% endif %}
                                                 </p>
-                                                <p><a class="animation-tool-link" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                                                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
                                             </div>
                                             <p><strong>{% trans "Session écran" %}</strong>: <code data-lyrics-display-session>{{ display_session_id }}</code></p>
                                             <p><strong>{% trans "Chant" %}</strong>: <span data-lyrics-current-song-title>{% trans "Aucun" %}</span></p>
@@ -214,19 +214,19 @@
 
                                     <article class="site-theme-card lyrics-master-toolbar">
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-primary">
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="black">🖥️ {% trans "BLACK MODE" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="prev-slide">🔙 {% trans "Diapo précédente" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="chorus">🎼 {% trans "Refrain" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="next-slide">🔜 {% trans "Diapo suivante" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="prev-song">⏮️ <span data-lyrics-prev-song-title></span></button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="next-song"><span data-lyrics-next-song-title></span> ⏭️</button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="black"><span class="lyrics-master-action-emoji">🖥️</span><span>{% trans "BLACK MODE" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="prev-slide"><span class="lyrics-master-action-emoji">🔙</span><span>{% trans "Diapo précédente" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="chorus"><span class="lyrics-master-action-emoji">🎼</span><span>{% trans "Refrain" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="next-slide"><span class="lyrics-master-action-emoji">🔜</span><span>{% trans "Diapo suivante" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="prev-song"><span class="lyrics-master-action-emoji">⏮️</span><span data-lyrics-prev-song-title></span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="next-song"><span class="lyrics-master-action-emoji">⏭️</span><span data-lyrics-next-song-title></span></button>
                                         </div>
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="open-display">🖥️📽️ {% trans "Ouvrir un second écran" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="show-shortcuts">⌨️👢 {% trans "Raccourcis clavier" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="toggle-scroll">↕️ / 🧱</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="toggle-chorus">🎼🔼 / 🎼🔽</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="toggle-qr">📱 QR</button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji">↕️ / 🧱</span><span>{% trans "Scroll" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji">🎼🔼 / 🎼🔽</span><span>{% trans "Refrains" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><span class="lyrics-master-action-emoji">📱</span><span>QR</span></button>
                                         </div>
                                     </article>
 

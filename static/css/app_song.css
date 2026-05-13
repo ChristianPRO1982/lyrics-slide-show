@@ -1,9 +1,3 @@
-.song-tool-link,
-.song-secondary-action {
-    font-weight: 700;
-    text-decoration: none;
-}
-
 .song-tool-button {
     width: 100%;
 }
@@ -569,35 +563,8 @@
     padding-inline: 0.7rem;
 }
 
-.song-action-link,
-.song-icon-action {
-    border: 1px solid var(--site-line);
-    border-radius: var(--site-radius-sm);
-    background: linear-gradient(180deg, var(--site-surface-strong), var(--site-surface));
-    color: var(--site-accent);
-    display: inline-flex;
-    font-family: var(--site-font-ui);
-    font-weight: 800;
-    padding: 0.55rem 0.85rem;
-    text-decoration: none;
-}
-
-.song-action-link:hover,
-.song-action-link:focus-visible,
-.song-icon-action:hover,
-.song-icon-action:focus-visible {
-    border-color: var(--site-accent-gold);
-    color: var(--site-accent-gold);
-    outline: none;
-}
-
 .song-delete-form {
     margin: 0;
-}
-
-.song-danger-action {
-    border-color: #9a2b2b;
-    color: #6f1f1f;
 }
 
 @media (max-width: 760px) {

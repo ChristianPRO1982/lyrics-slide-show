@@ -1,12 +1,12 @@
 {% load i18n %}
 <div class="animation-actions-list">
     {% if request.resolver_match.url_name != "animations" %}
-        <p><a class="animation-tool-link" href="{% url 'animations' %}">{% trans "← Retour aux animations à venir" %}</a></p>
+        <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animations' %}">{% trans "← Retour aux animations à venir" %}</a></p>
     {% endif %}
     {% if animation and request.resolver_match.url_name != "modify_animation" %}
-        <p><a class="animation-tool-link" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+        <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
     {% endif %}
     {% if animation and request.resolver_match.url_name != "lyrics_slide_show" %}
-        <p><a class="animation-tool-link" href="{% url 'lyrics_slide_show' animation.animation_id %}">{% trans "Lyrics Slide Show" %}</a></p>
+        <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'lyrics_slide_show' animation.animation_id %}">{% trans "Lyrics Slide Show" %}</a></p>
     {% endif %}
 </div>

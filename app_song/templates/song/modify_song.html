@@ -21,11 +21,11 @@
     {% include "song/includes/_song_actions.html" %}
     <hr>
     {% if can_devalidate %}
-        <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
+        <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
     {% endif %}
-    <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
-    <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
-    <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+    <p><button type="button" class="song-tool-button site-action site-action--primary" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
+    <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
+    <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
 {% block mobile_side_content %}
@@ -35,7 +35,7 @@
     <p>
         <button
             type="button"
-            class="song-tool-button"
+            class="song-tool-button site-action site-action--primary"
             data-song-mobile-actions-toggle
             aria-expanded="false"
             data-open-label="{% trans 'Afficher les actions' %}"
@@ -48,11 +48,11 @@
         {% include "song/includes/_song_actions.html" %}
         <hr>
         {% if can_devalidate %}
-            <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
+            <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
         {% endif %}
-        <p><button type="button" class="song-tool-button" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
-        <p><button type="submit" form="modify-song-form" class="song-tool-button" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
-        <p><button type="submit" form="modify-song-form" class="song-secondary-action" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+        <p><button type="button" class="song-tool-button site-action site-action--primary" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
+        <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
+        <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
@@ -60,7 +60,7 @@
 {% block page_intro %}
     {% if can_edit %}
         <p>
-            <button type="button" class="song-tool-button" data-song-edit-meta-open>
+            <button type="button" class="song-tool-button site-action site-action--primary" data-song-edit-meta-open>
                 {% trans "Modifier le titre, sous-titre, la description et la validation" %}
             </button>
         </p>
@@ -136,7 +136,7 @@
                 <textarea id="song-description-edit" name="description" form="modify-song-form" rows="5" data-song-description-edit>{{ song.description|default:'' }}</textarea>
             </p>
             <p>
-                <button type="button" class="song-secondary-action" data-song-edit-meta-close>
+                <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-edit-meta-close>
                     {% trans "Masquer les cartes d'édition" %}
                 </button>
             </p>
@@ -157,10 +157,10 @@
             </header>
             {% if can_edit %}
                 <p>
-                    <button type="button" class="song-tool-button" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
+                    <button type="button" class="song-tool-button site-action site-action--primary" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
                 </p>
                 <p>
-                    <button type="button" class="song-secondary-action" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
+                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
                 </p>
             {% endif %}
 

@@ -20,13 +20,13 @@
 {% block page_tools %}
     {% if can_use_favorites %}
         <p>
-            <a class="song-tool-link" href="{% url 'songs' %}{% if favorites_toggle_query %}?{{ favorites_toggle_query }}{% endif %}">
+            <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}{% if favorites_toggle_query %}?{{ favorites_toggle_query }}{% endif %}">
                 {% trans "💫 Afficher mes favoris" %}
             </a>
         </p>
         {% if favorites_quick_active %}
             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
-            <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
     {% endif %}
     <hr>
@@ -88,8 +88,8 @@
                         <span>{% trans "Inclure description et paroles" %}</span>
                     </label>
                 {% endif %}
-                <button type="submit">{% trans "Rechercher" %}</button>
-                <a class="song-secondary-action" href="{% url 'songs' %}?reset_search=1">{% trans "Réinitialiser" %}</a>
+                <button type="submit" class="site-action site-action--primary">{% trans "Rechercher" %}</button>
+                <a class="song-secondary-action site-action site-action--secondary" href="{% url 'songs' %}?reset_search=1">{% trans "Réinitialiser" %}</a>
             </div>
 
             {% if can_use_advanced_search %}
@@ -180,7 +180,7 @@
                     <label for="song-create-subtitle">{% trans "Sous-titre" %}</label>
                     <input id="song-create-subtitle" name="subtitle" type="text" data-song-create-subtitle>
 
-                    <button type="submit" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
+                    <button type="submit" class="site-action site-action--primary" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
                 </div>
             </form>
         {% else %}
@@ -244,22 +244,22 @@
 
                     <div class="song-card-actions">
                         <div class="song-card-actions-left">
-                            <a class="song-action-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
+                            <a class="song-action-link site-action site-action--primary" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                             {% if item.can_edit %}
-                                <button type="button" disabled>{% trans "Modifier" %}</button>
+                                <button type="button" class="site-action site-action--primary" disabled>{% trans "Modifier" %}</button>
                                 <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.title_complete_with_tags }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="delete_song">
                                     <input type="hidden" name="song_id" value="{{ item.song.song_id }}">
-                                    <button type="submit" class="song-danger-action">{% trans "Supprimer" %}</button>
+                                    <button type="submit" class="song-danger-action site-action site-action--danger">{% trans "Supprimer" %}</button>
                                 </form>
                             {% endif %}
                         </div>
                         <div class="song-card-actions-right">
-                            <a class="song-icon-action" href="{{ item.display_url }}" title="{% trans 'Smartphone view' %}" aria-label="{% trans 'Smartphone view' %}">📱</a>
+                            <a class="song-icon-action site-action site-action--icon" href="{{ item.display_url }}" title="{% trans 'Smartphone view' %}" aria-label="{% trans 'Smartphone view' %}">📱</a>
                             <button
                                 type="button"
-                                class="song-icon-action"
+                                class="song-icon-action site-action site-action--icon"
                                 title="{% trans 'Impression du chant' %}"
                                 aria-label="{% trans 'Impression du chant' %}"
                                 data-song-print-menu

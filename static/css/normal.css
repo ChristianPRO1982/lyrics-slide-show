@@ -39,6 +39,16 @@
     --site-popup-danger-bg: rgba(255, 232, 232, 0.96);
     --site-popup-danger-border: #9a2b2b;
     --site-popup-danger-ink: #6f1f1f;
+    --site-action-bg: linear-gradient(180deg, var(--site-surface-strong), var(--site-surface));
+    --site-action-bg-hover: linear-gradient(180deg, rgba(255, 255, 255, 0.92), var(--site-surface));
+    --site-action-border: var(--site-line);
+    --site-action-border-hover: var(--site-accent-gold);
+    --site-action-ink: var(--site-accent);
+    --site-action-ink-hover: var(--site-accent-gold);
+    --site-action-disabled-opacity: 0.62;
+    --site-action-danger-bg: var(--site-popup-danger-bg);
+    --site-action-danger-border: var(--site-popup-danger-border);
+    --site-action-danger-ink: var(--site-popup-danger-ink);
 }
 
 *,
@@ -76,6 +86,147 @@ a {
 a:hover {
     color: var(--site-accent-gold);
     text-decoration-style: solid;
+}
+
+.site-action,
+.song-tool-link,
+.song-tool-button,
+.song-secondary-action,
+.song-action-link,
+.song-icon-action,
+.song-danger-action,
+.group-action-link,
+.animation-tool-link,
+.animation-tool-button,
+.animation-secondary-action,
+.animation-danger-action {
+    min-height: 2.75rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--site-action-border);
+    border-radius: 999px;
+    background: var(--site-action-bg);
+    color: var(--site-action-ink);
+    box-shadow: 0 8px 20px rgba(66, 24, 11, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    font-family: var(--site-font-ui);
+    font-weight: 800;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        background 160ms ease;
+}
+
+button.site-action,
+input.site-action,
+button.song-tool-button,
+button.song-secondary-action,
+button.song-danger-action,
+button.song-icon-action,
+button.animation-tool-button,
+button.animation-secondary-action,
+button.animation-danger-action {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.site-action:hover,
+.site-action:focus-visible,
+.song-tool-link:hover,
+.song-tool-link:focus-visible,
+.song-tool-button:hover,
+.song-tool-button:focus-visible,
+.song-secondary-action:hover,
+.song-secondary-action:focus-visible,
+.song-action-link:hover,
+.song-action-link:focus-visible,
+.song-icon-action:hover,
+.song-icon-action:focus-visible,
+.song-danger-action:hover,
+.song-danger-action:focus-visible,
+.group-action-link:hover,
+.group-action-link:focus-visible,
+.animation-tool-link:hover,
+.animation-tool-link:focus-visible,
+.animation-tool-button:hover,
+.animation-tool-button:focus-visible,
+.animation-secondary-action:hover,
+.animation-secondary-action:focus-visible,
+.animation-danger-action:hover,
+.animation-danger-action:focus-visible {
+    transform: translateY(-1px);
+    border-color: var(--site-action-border-hover);
+    color: var(--site-action-ink-hover);
+    background: var(--site-action-bg-hover);
+    box-shadow: 0 12px 24px rgba(66, 24, 11, 0.14);
+    outline: none;
+}
+
+.site-action:focus-visible,
+.song-tool-link:focus-visible,
+.song-tool-button:focus-visible,
+.song-secondary-action:focus-visible,
+.song-action-link:focus-visible,
+.song-icon-action:focus-visible,
+.song-danger-action:focus-visible,
+.group-action-link:focus-visible,
+.animation-tool-link:focus-visible,
+.animation-tool-button:focus-visible,
+.animation-secondary-action:focus-visible,
+.animation-danger-action:focus-visible {
+    box-shadow: var(--site-focus-ring), 0 12px 24px rgba(66, 24, 11, 0.14);
+}
+
+.site-action--primary {
+    background: var(--site-action-bg);
+}
+
+.site-action--secondary,
+.song-secondary-action,
+.animation-secondary-action {
+    background: transparent;
+}
+
+.site-action--danger,
+.song-danger-action,
+.animation-danger-action {
+    border-color: var(--site-action-danger-border);
+    color: var(--site-action-danger-ink);
+    background: var(--site-action-danger-bg);
+}
+
+.site-action--icon,
+.song-icon-action {
+    min-width: 3.25rem;
+    padding-inline: 0.7rem;
+}
+
+.site-action--block {
+    width: 100%;
+}
+
+button.site-action:disabled,
+input.site-action:disabled,
+button.song-tool-button:disabled,
+button.song-secondary-action:disabled,
+button.song-danger-action:disabled,
+button.song-icon-action:disabled,
+button.animation-tool-button:disabled,
+button.animation-secondary-action:disabled,
+button.animation-danger-action:disabled,
+.site-action[aria-disabled="true"] {
+    opacity: var(--site-action-disabled-opacity);
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
 }
 
 button,

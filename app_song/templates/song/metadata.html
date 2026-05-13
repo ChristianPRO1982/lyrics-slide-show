@@ -28,7 +28,7 @@
     <p>
         <button
             type="button"
-            class="song-tool-button"
+            class="song-tool-button site-action site-action--primary"
             data-song-mobile-actions-toggle
             aria-expanded="false"
             data-open-label="{% trans 'Afficher les actions' %}"
@@ -47,7 +47,7 @@
     <p>{% trans "Métadonnées" %}</p>
     {% if can_edit %}
         <p>
-            <button type="submit" form="metadata-form" class="song-tool-button">{% trans "Enregistrer" %}</button>
+            <button type="submit" form="metadata-form" class="song-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button>
         </p>
     {% endif %}
 {% endblock %}

@@ -22,7 +22,7 @@
     {% if selected_group %}
         <p><strong>{{ selected_group.name }}</strong></p>
         {% if selected_group_can_manage %}
-            <p><a class="group-action-link" href="{% url 'modify_group' selected_group.group_id %}">{% trans "Modifier" %}</a></p>
+            <p><a class="group-action-link site-action site-action--primary" href="{% url 'modify_group' selected_group.group_id %}">{% trans "Modifier" %}</a></p>
         {% endif %}
     {% else %}
         <p>{% trans "Pas de groupe sélectionné." %}</p>
@@ -82,7 +82,7 @@
                     </div>
                 {% endfor %}
                 {% for error in create_form.non_field_errors %}<p class="group-field-error">{{ error }}</p>{% endfor %}
-                <button type="submit">{% trans "Créer le groupe" %}</button>
+                <button type="submit" class="site-action site-action--primary">{% trans "Créer le groupe" %}</button>
             </form>
         </article>
     {% else %}
@@ -154,7 +154,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="select_group">
                                 <input type="hidden" name="group_id" value="{{ item.group.group_id }}">
-                                <button type="submit">{% trans "Sélectionner" %}</button>
+                                <button type="submit" class="site-action site-action--primary">{% trans "Sélectionner" %}</button>
                             </form>
                         {% elif item.needs_secret_prompt %}
                             <form method="post" class="group-inline-form" data-group-secret-form>
@@ -162,7 +162,7 @@
                                 <input type="hidden" name="action" value="select_group">
                                 <input type="hidden" name="group_id" value="{{ item.group.group_id }}">
                                 <input type="hidden" name="secret" value="">
-                                <button type="button" data-group-secret-prompt data-group-name="{{ item.group.name }}">{% trans "Sélectionner avec secret" %}</button>
+                                <button type="button" class="site-action site-action--primary" data-group-secret-prompt data-group-name="{{ item.group.name }}">{% trans "Sélectionner avec secret" %}</button>
                             </form>
                         {% endif %}
 
@@ -171,14 +171,14 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="request_join">
                                 <input type="hidden" name="group_id" value="{{ item.group.group_id }}">
-                                <button type="submit">{% trans "Demander à rejoindre" %}</button>
+                                <button type="submit" class="site-action site-action--primary">{% trans "Demander à rejoindre" %}</button>
                             </form>
                         {% elif item.can_cancel_request %}
                             <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Annuler cette demande d’adhésion ?' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="cancel_request">
                                 <input type="hidden" name="group_id" value="{{ item.group.group_id }}">
-                                <button type="submit">{% trans "Annuler la demande" %}</button>
+                                <button type="submit" class="site-action site-action--primary">{% trans "Annuler la demande" %}</button>
                             </form>
                         {% endif %}
 
@@ -187,12 +187,12 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="leave_group">
                                 <input type="hidden" name="group_id" value="{{ item.group.group_id }}">
-                                <button type="submit">{% trans "Quitter le groupe" %}</button>
+                                <button type="submit" class="site-action site-action--primary">{% trans "Quitter le groupe" %}</button>
                             </form>
                         {% endif %}
 
                         {% if item.can_manage %}
-                            <a class="group-action-link" href="{% url 'modify_group' item.group.group_id %}">{% trans "Modifier le groupe" %}</a>
+                            <a class="group-action-link site-action site-action--primary" href="{% url 'modify_group' item.group.group_id %}">{% trans "Modifier le groupe" %}</a>
                         {% endif %}
                     </div>
 

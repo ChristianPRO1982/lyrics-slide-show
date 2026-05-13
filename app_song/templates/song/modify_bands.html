@@ -18,7 +18,7 @@
 {% endblock %}
 {% block tools_title %}{% trans "Métadonnées" %}{% endblock %}
 {% block page_tools %}
-    <p><a class="song-tool-link" href="{% url 'songs' %}">{% trans "Retour aux chants" %}</a></p>
+    <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Retour aux chants" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Groupes de musiques" %}{% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
@@ -32,7 +32,7 @@
         <form method="post" class="song-meta-crud-form">
             {% csrf_token %}
             <input type="hidden" name="action" value="save">
-            <p><button type="submit">{% trans "Enregistrer" %}</button></p>
+            <p><button type="submit" class="site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
             <div class="site-theme-card song-meta-sheet">
                 <div class="song-meta-row song-meta-row--head song-meta-row--simple">
                     <label>{% trans "nom" %}</label>
@@ -70,7 +70,7 @@
                 {% endfor %}
             </div>
 
-            <p><button type="submit">{% trans "Enregistrer" %}</button></p>
+            <p><button type="submit" class="site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
         </form>
     </section>
 {% endblock %}

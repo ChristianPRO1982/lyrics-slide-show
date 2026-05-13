@@ -20,7 +20,7 @@
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
     <hr>
-    <p><button type="submit" form="modify-animation-form" class="animation-tool-button">{% trans "Enregistrer" %}</button></p>
+    <p><button type="submit" form="modify-animation-form" class="animation-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
 {% block mobile_side_content %}
@@ -36,7 +36,7 @@
     <p>
         <button
             type="button"
-            class="animation-tool-button"
+            class="animation-tool-button site-action site-action--primary"
             data-animation-mode-toggle
             data-mode-main-label="{% trans 'Modification' %}"
             data-mode-secondary-label="{% trans 'Playlist' %}"
@@ -76,9 +76,9 @@
         <span data-animation-summary-padding>{{ animation.horizontal_padding }}</span>px
     </p>
     <div class="animation-summary-actions">
-        <button type="button" class="animation-tool-button" data-animation-action="open-general">{% trans "Données générales" %}</button>
-        <button type="button" class="animation-tool-button" data-animation-action="open-visual">{% trans "Couleurs" %}</button>
-        <button type="button" class="animation-secondary-action" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
+        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-general">{% trans "Données générales" %}</button>
+        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-visual">{% trans "Couleurs" %}</button>
+        <button type="button" class="animation-secondary-action site-action site-action--secondary" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
     </div>
 {% endblock %}
 {% block content %}
@@ -120,7 +120,7 @@
                             <p><strong>{{ card.song_title }}</strong></p>
                             <button
                                 type="button"
-                                class="animation-secondary-action"
+                                class="animation-secondary-action site-action site-action--secondary"
                                 data-song-options-toggle
                                 data-open-label="{% trans 'Afficher les options' %}"
                                 data-close-label="{% trans 'Masquer les options' %}"
@@ -208,10 +208,10 @@
                                         aria-label="{% trans 'Couleur fond' %}"
                                         title="{% trans 'Couleur fond' %}"
                                     ></span>
-                                    <button type="button" class="animation-tool-button" data-song-color-popup-trigger data-color-target-level="song">
+                                    <button type="button" class="animation-tool-button site-action site-action--primary" data-song-color-popup-trigger data-color-target-level="song">
                                         {% trans "Couleurs du chant" %}
                                     </button>
-                                    <button type="button" class="animation-secondary-action" data-song-color-parent-trigger data-color-target-level="song">
+                                    <button type="button" class="animation-secondary-action site-action site-action--secondary" data-song-color-parent-trigger data-color-target-level="song">
                                         {% trans "Reprendre les couleurs parentes" %}
                                     </button>
                                 </div>
@@ -221,7 +221,7 @@
                                 {% trans "Réinitialisation" %}
                             </div>
                             <div class="animation-song-style-grid-cell">
-                                <button type="button" class="animation-secondary-action" data-song-style-parent-reset-trigger data-style-target-level="song">
+                                <button type="button" class="animation-secondary-action site-action site-action--secondary" data-song-style-parent-reset-trigger data-style-target-level="song">
                                     {% trans "Réinitialiser le chant" %}
                                 </button>
                             </div>
@@ -295,7 +295,7 @@
                                                 ></span>
                                                 <button
                                                     type="button"
-                                                    class="animation-tool-button"
+                                                    class="animation-tool-button site-action site-action--primary"
                                                     data-song-color-popup-trigger
                                                     data-color-target-level="verse"
                                                     data-verse-id="{{ verse.verse_id }}"
@@ -304,7 +304,7 @@
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    class="animation-secondary-action"
+                                                    class="animation-secondary-action site-action site-action--secondary"
                                                     data-song-color-parent-trigger
                                                     data-color-target-level="verse"
                                                     data-verse-id="{{ verse.verse_id }}"
@@ -317,7 +317,7 @@
                                         <div class="animation-verse-row-control-input animation-verse-row-reset-input">
                                             <button
                                                 type="button"
-                                                class="animation-secondary-action"
+                                                class="animation-secondary-action site-action site-action--secondary"
                                                 data-song-style-parent-reset-trigger
                                                 data-style-target-level="verse"
                                                 data-verse-id="{{ verse.verse_id }}"
@@ -362,7 +362,7 @@
                     <div class="animation-song-secondary-drag-view" data-reorder-drag-view hidden>
                         <button type="button" class="animation-tool-button animation-reorder-handle" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
                         <strong>{{ item.song.display_title }}</strong>
-                        <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer" %}</button>
+                        <button type="button" class="animation-danger-action site-action site-action--danger" data-animation-song-remove>{% trans "Supprimer" %}</button>
                     </div>
 
                     <div class="animation-song-secondary-normal-view" data-reorder-normal-view>
@@ -371,7 +371,7 @@
                             <p><strong>{{ item.song.display_title }}</strong></p>
                         </div>
                         <div class="animation-song-secondary-actions">
-                            <button type="button" class="animation-danger-action" data-animation-song-remove>{% trans "Supprimer" %}</button>
+                            <button type="button" class="animation-danger-action site-action site-action--danger" data-animation-song-remove>{% trans "Supprimer" %}</button>
                         </div>
                     </div>
                 </article>

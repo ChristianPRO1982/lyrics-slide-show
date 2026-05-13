@@ -30,7 +30,7 @@
                 {% if animation.description %}
                     <p>{{ animation.description|linebreaksbr }}</p>
                 {% endif %}
-                <p><a href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
             </article>
         {% empty %}
             <article class="site-theme-card">

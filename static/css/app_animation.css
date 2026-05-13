@@ -8,14 +8,6 @@
     gap: 0.6rem;
 }
 
-.animation-tool-link {
-    display: inline-block;
-}
-
-.animation-tool-button {
-    min-height: 2.2rem;
-}
-
 .animation-list-card p {
     margin: 0.35rem 0;
 }
@@ -38,15 +30,6 @@
 
 .animation-inline-form {
     margin: 0;
-}
-
-.animation-danger-action {
-    background: #8b1e1e;
-    color: #fff;
-}
-
-.animation-secondary-action {
-    background: transparent;
 }
 
 .animation-stack-form {
@@ -665,6 +648,17 @@
     min-height: 5.6rem;
     padding-top: 0.8rem;
     padding-bottom: 0.8rem;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 0.3rem;
+    text-align: center;
+}
+
+.lyrics-master-action-emoji {
+    display: block;
+    line-height: 1;
+    font-size: 1.25em;
 }
 
 .lyrics-master-previews {

@@ -94,7 +94,6 @@
     display: inline-flex;
 }
 
-.group-action-link,
 .group-inline-link {
     text-decoration: underline;
     cursor: pointer;

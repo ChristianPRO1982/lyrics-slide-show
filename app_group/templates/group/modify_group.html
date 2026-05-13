@@ -37,7 +37,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="select_group">
                 <input type="hidden" name="group_id" value="{{ group.group_id }}">
-                <button type="submit">{% trans "Sélectionner ce groupe" %}</button>
+                <button type="submit" class="site-action site-action--primary">{% trans "Sélectionner ce groupe" %}</button>
             </form>
         {% endif %}
     </article>
@@ -80,7 +80,7 @@
                 </div>
             {% endfor %}
             {% for error in settings_form.non_field_errors %}<p class="group-field-error">{{ error }}</p>{% endfor %}
-            <button type="submit">{% trans "Enregistrer les paramètres" %}</button>
+            <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer les paramètres" %}</button>
         </form>
     </article>
 
@@ -98,7 +98,7 @@
                     <label for="group-share-link">{% trans "Lien complet" %}</label>
                     <input id="group-share-link" type="text" value="{{ share_link }}" readonly>
                     <div class="group-card-actions">
-                        <button type="button" data-copy-text="{{ share_link }}">{% trans "Copier le lien" %}</button>
+                        <button type="button" class="site-action site-action--secondary" data-copy-text="{{ share_link }}">{% trans "Copier le lien" %}</button>
                     </div>
                     <div class="group-qr-panel">
                         <img
@@ -109,7 +109,7 @@
                             data-group-qr-image
                         >
                         <div class="group-card-actions">
-                            <button type="button" data-copy-qr>{% trans "Copier le QR code" %}</button>
+                            <button type="button" class="site-action site-action--secondary" data-copy-qr>{% trans "Copier le QR code" %}</button>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
             <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Générer ou remplacer le secret de groupe ?' %}">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="generate_secret">
-                <button type="submit">
+                <button type="submit" class="site-action site-action--primary">
                     {% if group.secret_ciphertext %}
                         {% trans "Remplacer le secret" %}
                     {% else %}
@@ -134,7 +134,7 @@
                 <form method="post" class="group-inline-form" data-group-confirm-form data-confirm-message="{% trans 'Supprimer le secret de groupe ?' %}">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="remove_secret">
-                    <button type="submit">{% trans "Supprimer le secret" %}</button>
+                    <button type="submit" class="site-action site-action--danger">{% trans "Supprimer le secret" %}</button>
                 </form>
             {% endif %}
         </div>
@@ -163,7 +163,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="">
                                 <input type="hidden" name="member_id" value="{{ request_item.member_id }}">
-                                <button type="button" data-group-join-review>{% trans "Accepter / refuser" %}</button>
+                                <button type="button" class="site-action site-action--secondary" data-group-join-review>{% trans "Accepter / refuser" %}</button>
                             </form>
                         </div>
                     </article>
@@ -200,7 +200,7 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="demote_member">
                                         <input type="hidden" name="member_id" value="{{ member.member_id }}">
-                                        <button type="submit">{% trans "Retirer responsable" %}</button>
+                                        <button type="submit" class="site-action site-action--primary">{% trans "Retirer responsable" %}</button>
                                     </form>
                                 {% endif %}
                             {% else %}
@@ -208,7 +208,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="promote_member">
                                     <input type="hidden" name="member_id" value="{{ member.member_id }}">
-                                    <button type="submit">{% trans "Nommer responsable" %}</button>
+                                    <button type="submit" class="site-action site-action--primary">{% trans "Nommer responsable" %}</button>
                                 </form>
                             {% endif %}
 
@@ -217,7 +217,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="remove_member">
                                     <input type="hidden" name="member_id" value="{{ member.member_id }}">
-                                    <button type="submit">{% trans "Retirer du groupe" %}</button>
+                                    <button type="submit" class="site-action site-action--primary">{% trans "Retirer du groupe" %}</button>
                                 </form>
                             {% endif %}
                         </div>
@@ -242,7 +242,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_group">
             <input type="hidden" name="confirmation_word" value="">
-            <button type="submit">{% trans "Supprimer le groupe" %}</button>
+            <button type="submit" class="site-action site-action--danger">{% trans "Supprimer le groupe" %}</button>
         </form>
     </article>
 {% endblock %}
