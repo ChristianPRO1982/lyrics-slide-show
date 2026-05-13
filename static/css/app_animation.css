@@ -642,9 +642,9 @@
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(255, 252, 247, 0.96);
-    border: 1px solid rgba(0, 0, 0, 0.24);
-    backdrop-filter: blur(6px);
+    background: var(--site-surface);
+    border-color: var(--site-line-strong);
+    backdrop-filter: blur(4px);
 }
 
 .lyrics-master-actions-row {

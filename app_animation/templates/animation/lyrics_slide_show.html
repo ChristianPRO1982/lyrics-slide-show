@@ -222,8 +222,8 @@
                                             <button type="button" class="animation-tool-button" data-lyrics-action="next-song"><span data-lyrics-next-song-title></span> ⏭️</button>
                                         </div>
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="open-display">🖥️ {% trans "Ouvrir le second écran" %}</button>
-                                            <button type="button" class="animation-tool-button" data-lyrics-action="reopen-display">🖥️ {% trans "Rouvrir le second écran" %}</button>
+                                            <button type="button" class="animation-tool-button" data-lyrics-action="open-display">🖥️📽️ {% trans "Ouvrir un second écran" %}</button>
+                                            <button type="button" class="animation-tool-button" data-lyrics-action="show-shortcuts">⌨️👢 {% trans "Raccourcis clavier" %}</button>
                                             <button type="button" class="animation-tool-button" data-lyrics-action="toggle-scroll">↕️ / 🧱</button>
                                             <button type="button" class="animation-tool-button" data-lyrics-action="toggle-chorus">🎼🔼 / 🎼🔽</button>
                                             <button type="button" class="animation-tool-button" data-lyrics-action="toggle-qr">📱 QR</button>
@@ -303,7 +303,9 @@
             qrInfoLabel: "{{ lyrics_i18n.qrInfoLabel|escapejs }}",
             hiddenChorusLabel: "{{ lyrics_i18n.hiddenChorusLabel|escapejs }}",
             scrollLockedLabel: "{{ lyrics_i18n.scrollLockedLabel|escapejs }}",
-            scrollUnlockedLabel: "{{ lyrics_i18n.scrollUnlockedLabel|escapejs }}"
+            scrollUnlockedLabel: "{{ lyrics_i18n.scrollUnlockedLabel|escapejs }}",
+            shortcutsPopupTitle: "{{ lyrics_i18n.shortcutsPopupTitle|escapejs }}",
+            shortcutsPopupMessage: "{{ lyrics_i18n.shortcutsPopupMessage|escapejs }}"
         };
     </script>
     <script src="{% static 'js/base.js' %}"></script>
