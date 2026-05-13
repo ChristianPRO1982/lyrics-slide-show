@@ -1,276 +1,185 @@
 # App Animation Functional Requirements
 
-## Purpose
+## Objectif
 
-This document defines the functional requirements for `app_animation`.
+Ce document décrit les exigences fonctionnelles actuellement implémentées par `app_animation`.
 
-`app_animation` owns the preparation, ordering, projection, and live runtime behavior of `animations` in `Lyrics Slide Show`.
+`app_animation` couvre la préparation, l'ordonnancement, la projection et le runtime live des `animations` dans `Lyrics Slide Show`.
 
-Very important boundary:
+Frontière fonctionnelle :
+- le contenu source des chants, la logique source couplets/refrains et l'édition des paroles restent sous la responsabilité de `app_song`.
 
-- `app_animation` does not own song source content.
+## Structure Documentaire
 
-Song source content and lyrics structure are owned by `app_song`. `app_animation` consumes that content to build ordered playlists and generated projection slides.
+Ce fichier décrit les comportements fonctionnels transverses et les contrats de données.
 
-## Documentation Structure
+Les détails d'interface par template sont documentés dans `docs/app_animation/template_*.md`.
+Ce document ne doit pas décrire la composition visuelle des pages ni les contrôles UI fins.
 
-This document defines global functional behavior for `app_animation`.
+`docs/general_overview.md` reste la référence inter-apps et doit rester cohérent avec ce document.
 
-UI layout, page composition, and template-specific controls must be documented in dedicated template documentation files under `docs/app_animation/` when those screens are formally documented.
-
-Functional workflows, permissions, projection behavior, runtime behavior, and data contracts belong in this document.
-
-`docs/general_overview.md` remains the authoritative cross-app reference and must stay consistent with this document.
-
-## Core Concepts
+## Concepts Clés
 
 ### Animation
 
-An `Animation` is:
+Une `Animation` :
+- est rattachée à un groupe,
+- contient une playlist ordonnée de chants,
+- porte des paramètres visuels de projection par défaut,
+- est planifiée via `scheduled_at` (datetime timezone-aware).
 
-- an ordered playlist of songs,
-- attached to a selected group,
-- configured with projection-oriented visual defaults,
-- scheduled with an animation date stored as timezone-aware datetime.
+Il n'existe pas de statut `draft` ou `archived`.
 
-Animations contain songs only.
-
-There is no dedicated animation status such as draft or archived in the current product definition.
-
-Past animations are hidden by default in the main interface, but they remain available through an explicit history view.
+Les animations à venir et passées sont séparées via `scheduled_at` (vues liste/historique).
 
 ### Animation Song
 
-An `Animation Song` is one usage instance of a global song inside one animation.
+Une `Animation Song` est une occurrence d'un chant global dans une animation.
 
-The same global song may appear multiple times in the same animation, at different positions, with potentially different local visual overrides.
+Un même chant global peut apparaître plusieurs fois dans une même animation.
+
+L'ordre est explicite via `position`, puis déterministe via `animation_song_id`.
 
 ### Rendered Slide
 
-A `Rendered Slide` is a runtime-generated projection view derived from:
+Une `Rendered Slide` est un artefact de projection généré au runtime.
 
-- selected animation songs,
-- selected verse flow and chorus logic from the song model,
-- visual inheritance rules.
+Elle est dérivée de :
+- l'ordre de playlist,
+- le rendu des blocs de chant par `app_song` (`render_song_blocks`),
+- l'héritage visuel résolu,
+- les drapeaux de visibilité des couplets.
 
-Rendered slides are not standalone editable content entities.
+Les slides ne sont pas des entités éditables persistées.
 
 ### Projection Runtime
 
-The `Projection Runtime` is the browser-side local runtime used during live projection.
+Le runtime de projection est local au navigateur et piloté par état.
 
-It must support stable navigation without depending on per-slide server roundtrips.
+La page `remote` construit et maintient le payload runtime, puis envoie des frames à l'écran projeté sans aller-retour serveur à chaque navigation de slide.
 
-## Access Rules
+## Règles D'accès
 
-A group must be selected before a user can work on an animation.
+Un groupe sélectionné est obligatoire pour les workflows de gestion d'animations.
 
-Animation permissions depend on the selected accessible group context, not only on user identity alone.
+Le contrat d'accès effectif suit les règles produit globales :
+- un invité peut gérer les animations d'un groupe `open`,
+- un invité peut gérer les animations d'un groupe `private_with_secret` avec secret valide,
+- un membre (et rôles supérieurs) peut gérer les animations du groupe accessible sélectionné,
+- un groupe `private` nécessite authentification + appartenance.
 
-Animation access implies full `CRUD` rights inside the currently selected accessible group.
+Contrôles implémentés côté vues :
+- sans groupe sélectionné : redirection vers `groups` avec message,
+- accès inter-groupe : `404`.
 
-The access contract is:
+## Contrat Du Modèle De Données (Actuel)
 
-- guests can create, edit, delete, and run animations inside an `open` group,
-- guests can also do the same inside a `private_with_secret` group if they know the secret,
-- members and privileged roles can do the same according to the currently selected accessible group,
-- a `private` group remains restricted to authenticated group members.
+### Animation
 
-## Animation Structure
+Champs gérés :
+- identité et FK groupe,
+- `title`, `description`, `scheduled_at`,
+- défauts visuels : `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`.
 
-An animation supports:
+### AnimationSong
 
-- ordered song sequence,
-- song insertion at any position,
-- song removal,
-- song reordering,
-- repeated usage of the same song,
-- visual override configuration on animation song instances,
-- verse-level display selection control where supported by projection rules.
+Champs par chant dans l'animation :
+- FK animation + FK chant,
+- `position`,
+- overrides texte/fond/police/taille/padding/image de fond.
 
-`app_animation` must preserve deterministic ordering. Given the same animation configuration and same song source content, generated slide order must be stable.
+Contrainte :
+- unicité `(animation, position)`.
 
-## Projection Model
+### AnimationVerseOverride
 
-`app_animation` is central to the product promise.
+Champs par couplet et par chant d'animation :
+- clé `(animation_song, source_verse_id)`,
+- `is_visible`,
+- overrides texte/fond/police/taille/padding/image de fond.
 
-From an animation's ordered list of songs, the site generates slides dynamically at runtime.
+## Playlist Et Ordonnancement
 
-The product must not rely on:
+La synchronisation de playlist repose sur une entrée ordonnée tokenisée :
+- `asid:<animation_song_id>` pour les lignes existantes,
+- `sid:<song_id>` pour les insertions de nouveaux chants.
 
-- external PowerPoint preparation,
-- `.pptx` export,
-- static slide decks stored ahead of time,
-- automatic verse splitting.
+Comportement :
+- les lignes existantes non listées sont supprimées,
+- les lignes existantes listées sont conservées et réordonnées,
+- les tokens `sid` listés sont ajoutés dans l'ordre demandé,
+- les positions sont normalisées sur des pas pairs (`2, 4, 6, ...`).
 
-If a verse is too long, users must structure song source content correctly in `app_song`.
+Ce mécanisme garantit un ordre déterministe.
 
-## Offline Projection Philosophy
+## Règles De Génération Des Diapos
 
-Projection runtime is local-browser first.
+La génération runtime (`build_animation_render_bundle`) est déterministe à entrée constante.
 
-Required behavior:
+Règles :
+- les chants sont rendus selon l'ordre de l'animation,
+- chaque chant est rendu en mode refrain complet (`FULL` / `full-chorus`),
+- la visibilité peut masquer un couplet non-refrain,
+- les refrains restent visibles (neutralisation des anciens flags cachés),
+- le style est résolu bloc par bloc par héritage.
 
-- projection navigation must run from precomputed or preloaded runtime data,
-- no blocking network dependency should be required between slide changes,
-- runtime must stay usable even when transient network issues occur after preload,
-- server interactions are acceptable for editing, preparing, or publishing updates, not for every next/previous action during live projection.
+## Modèle D'héritage Visuel
 
-## Slide Generation Rules
-
-Slides are generated runtime views, not manually edited slide documents.
-
-Generation rules:
-
-- slide sequence is derived from animation song order plus song block flow,
-- repeated chorus logic is preserved from song model behavior,
-- verse inclusion/exclusion is derived from configured display selection flags,
-- visual inheritance is applied at generation time,
-- generation remains deterministic for a given input state.
-
-Core invariant:
-
-- slides are generated runtime views,
-- slides are not standalone editable content entities.
-
-## Visual Preparation
-
-The animation level provides default projection settings, including:
-
-- text color,
-- slide background color,
-- background image,
-- title,
-- description,
-- shared horizontal padding,
-- font size,
-- font selection.
-
-Song-level and verse-level overrides may refine these settings according to the rules in `docs/general_overview.md`.
-
-## Visual Inheritance Model
-
-Visual properties are resolved with top-down inheritance:
+Ordre de résolution :
 
 ```text
 animation defaults
 -> animation-song overrides
--> verse-level overrides
--> rendered slide
+-> verse overrides
+-> rendered slide style
 ```
 
-This inheritance applies to projection-oriented properties such as:
+Champs résolus au runtime :
+- couleur du texte,
+- couleur de fond,
+- police,
+- taille de police,
+- padding horizontal,
+- code image de fond.
 
-- font family,
-- font size,
-- text color,
-- background color,
-- background image,
-- horizontal padding.
+Ce que l'UI `modify_animation` expose actuellement :
+- défauts animation,
+- overrides chant : texte/fond/police/taille,
+- overrides couplet : visibilité + texte/fond/police/taille.
 
-## Projection Rendering Rules
+Les overrides `padding`/`background` au niveau chant/couplet existent dans le modèle, mais ne sont pas exposés dans l'UI d'édition actuelle.
 
-Projection rendering rules are constrained by product scope:
+## Modèle De Session Runtime De Projection
 
-- text placement is centered horizontally and vertically,
-- free manual text positioning is out of scope,
-- rendering must favor stable readability for live singing contexts,
-- long verses are not auto-split during projection runtime,
-- projection must avoid visible loading interruptions during navigation after preload.
+Modèle d'exploitation :
+- une page `remote`,
+- une page `projected display`,
+- synchronisation navigateur par identifiant de session.
 
-## Background Images
+Comportement de session :
+- le remote génère un `display_session_id`,
+- la page display exige un paramètre `session` valide,
+- la page display peut restaurer la dernière frame via local storage,
+- il n'existe pas de verrou global exclusif côté serveur par animation.
 
-Background handling requirements:
+## Contrats Back -> Front
 
-- only valid application-managed image references can be used,
-- runtime should preload required background assets before or during initialization,
-- projection navigation should avoid runtime stalls due to background fetches,
-- fallback behavior must keep projection readable if one background fails,
-- background handling must preserve visual stability and readability.
+Contrats d'entrée/sortie gérés côté back et consommés par le front :
+- séparation `upcoming_animations` / `past_animations` via `scheduled_at`,
+- formulaire `AnimationForm` pour création/mise à jour des propriétés animation,
+- synchronisation playlist via `ordered_mix` (`asid`/`sid`),
+- synchronisation des overrides via `songs_payload`,
+- bundle runtime `lyrics_slide_show` (slides, songs, cardGroups, backgroundUrls, publicUrl, qrCodePngBase64),
+- vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet.
 
-## Runtime Navigation Model
+Les comportements UI détaillés de ces contrats sont décrits dans les documents template dédiés.
 
-Navigation is intentionally non-linear and music-flow aware.
+## Hors-périmètre
 
-Required capabilities include at least:
-
-- current slide controls,
-- next slide preview,
-- smart previous/next navigation,
-- chorus-aware navigation,
-- previous/next song navigation,
-- direct song and slide access,
-- keyboard shortcut support,
-- black mode toggle,
-- chorus display toggle,
-- scroll mode toggle.
-
-The remote must optimize operator flow without requiring manual duplication of chorus slides.
-
-## Projection Runtime Session
-
-The operating model uses two synchronized browser pages on the same computer:
-
-- the `remote`,
-- the `projected screen`.
-
-Current target usage is one computer and one active operator.
-
-There is no unique live-session lock per animation in the current product definition.
-
-Reopening and regaining control of an existing projected display is desirable.
-
-## Live Editing During Runtime
-
-When animation content or settings are updated during an active usage window, runtime behavior should preserve continuity:
-
-- updated runtime bundle is prepared before activation,
-- projection should switch only when a coherent new state is ready,
-- failures in update preparation should keep the current projection state usable,
-- projection continuity has priority over aggressive live refresh behavior.
-
-## Search And Song Selection Boundary
-
-`app_animation` depends on the global song catalog owned by `app_song`.
-
-`app_animation` is responsible for song selection into animations, but not for:
-
-- global song content authoring rules,
-- global song search ownership beyond integration points,
-- song validation lifecycle ownership.
-
-## Spectator Smartphone View
-
-`app_animation` exposes a public spectator smartphone view linked by QR code.
-
-This page is:
-
-- public,
-- stable for the animation before, during, and after the live session,
-- intentionally minimal,
-- not synchronized with the current projected slide.
-
-Spectators can read songs in sequence, including explicit repeated choruses in the reading flow.
-
-## Database Reference
-
-`app_animation` owns the animation-side persistence needed for:
-
-- animation identity and group linkage,
-- animation song ordering and overrides,
-- verse-level projection selections and overrides,
-- runtime projection relations where applicable.
-
-Table and schema-level SQL contracts may be expanded in this document as the implementation reference is finalized.
-
-## Non-Goals
-
-`app_animation` must not evolve into:
-
-- a general-purpose slide editor,
-- a free-form text placement editor,
-- a PowerPoint replacement with standalone authored slides,
-- a collaborative realtime editor as primary model,
-- a video-editing workflow,
-- a streaming-first product,
-- a generic media hosting platform.
+`app_animation` ne doit pas évoluer vers :
+- un éditeur de slides libre,
+- un placement texte arbitraire,
+- un workflow `.pptx` / deck statique,
+- l'édition collaborative temps réel comme modèle principal,
+- un outil de montage vidéo ou de media hosting,
+- un produit orienté streaming en priorité.

@@ -1,58 +1,30 @@
-# Design of Template `songs.html`
+# Template `songs.html`
 
-## Guiding Idea
+## Rôle
 
-C'est un outil central du site.
-La recherche, si on est connecté, permet de filtrer les chansons de façon assez fine.
-Cette recherche pourra être utilisée dans la partie "animations".
+Page racine front de consultation et recherche des chants (`/songs/`).
 
-## design
+## Responsabilité front
 
-### panneau section
+- Affiche le titre de section (groupe sélectionné sinon `Chants`) et l’icône songs.
+- Affiche les compteurs `Chants`, `Recherche ⓘ`, `Total ⓘ`.
+- Expose l’action `💫 Afficher mes favoris` et l’état visuel du mode favoris temporaire.
+- Affiche le formulaire de recherche simple et avancée.
+- Affiche la liste des cartes chant, leurs marqueurs et actions UI.
+- Affiche les états vides (aucun résultat backend/local).
 
-mettre le nom du groupe sélectionné tel que : {% block section_title %}{{ selected_group.name }}{% endblock %}
+## Contrat d’interface (variables attendues)
 
-mettre l'icone static/icons/ui/normal/512/light/songs.png selon le thème et le mode
+- `search_params`
+- `song_cards`
+- `displayed_count`
+- `search_count`
+- `catalog_count`
+- `can_use_favorites`
+- `can_use_advanced_search`
+- `can_create_song`
+- `favorites_quick_active`
 
-### panneau outils
+## Notes
 
-TEXTE : "💫 Afficher mes favoris"
-si le mode favoris temporaire est actif :
-TEXTE : "Mode favoris temporaire actif."
-TEXTE : "Revenir à ma recherche enregistrée"
-TEXTE : <hr>
-TEXTE : "Chants : 742"
-TEXTE : Recherche ⓘ : 742"
-TEXTE : Total ⓘ : 742"
-
-### en-tête principal
-
-sur-titre : "Chants"
-titre : "Listes des chants"
-
-### encadré résumé
-
-TEXTE : """
-✔️ : Chant validé
-✔️⁉️ : Chant validé avec des messages
-📄 : Chant sous licence
-📱 : Smartphone view
-🖨️💯: Impression du chant - avec un refrain entre chaque couplet
-🖨️1️⃣ : Impression du chant - avec un seul refrain
-"""
-
-### contenu principal / carte de thème 1
-
-Recherche
-Recherche avancée
-
-Quand le mode `💫 Afficher mes favoris` est actif, le formulaire de recherche affiché doit conserver les critères enregistrés du membre.
-Le mode favoris est un filtre momentané des résultats et ne doit pas réécrire ni vider le formulaire.
-
-### contenu principal / carte de thème 2
-
-Nouveau chant
-
-### pied de contenu
-
-liste des chants
+- Les règles métier de droits, de recherche et de persistance sont définies dans `functional_requirements.md`.

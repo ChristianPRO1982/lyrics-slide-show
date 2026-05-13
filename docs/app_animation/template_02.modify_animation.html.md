@@ -1,138 +1,142 @@
-# Design of Template `modify_animation.html`
+# Design du template `modify_animation.html`
 
-## Guiding Idea
+## Idée Directrice
 
-Cette page est la page de modification d'une animation.
+Cette page est l'éditeur principal d'une animation existante.
 
-Dans l'état actuel, elle couvre uniquement le niveau `animation` :
-- données générales de l'animation,
-- données visuelles par défaut de l'animation.
+Elle couvre aujourd'hui :
+- les données générales de l'animation,
+- les réglages visuels par défaut de l'animation,
+- la playlist (ajout, suppression, réordonnancement),
+- les options de rendu par chant,
+- les options de rendu par couplet (hors refrains).
 
-La playlist et les chansons ne sont pas encore implémentées sur cette page.
+L'édition se fait via un formulaire `POST` caché, piloté côté navigateur par `static/js/app_animation.js`.
 
-## affichage
+## Accès Et Périmètre
 
-### panneau section
+- la page exige un groupe sélectionné,
+- l'animation doit appartenir à ce groupe,
+- sinon la vue renvoie `404`.
 
-Aligné avec `animations.html` :
-- titre de section = nom du groupe sélectionné (sinon `Animations`),
-- icône animations.
+## Composition De La Page
 
-### panneau outils
+### Panneaux communs
 
-Le panneau outils réutilise des actions communes `app_animation` :
-- retour vers la liste des animations à venir (sauf si déjà sur la liste),
-- lien vers modification (sauf si déjà sur la page de modification),
-- bouton `Enregistrer`.
+- panneau section aligné sur le groupe sélectionné,
+- panneau outils via `animation/includes/_animation_actions.html`,
+- bouton `Enregistrer` (desktop),
+- actions communes aussi en panneau mobile.
 
-Important :
-- le lien vers l'historique n'est pas dans les actions communes ;
-- il reste uniquement sur `animations.html`.
+### En-tête de page
 
-### panneau mobile
+- titre = `animation.title`,
+- date/heure formatée,
+- description ou `Sans description.`,
+- bouton de bascule de mode : `Modification` / `Playlist`.
 
-Même logique que le panneau outils :
-- actions communes,
-- bouton `Enregistrer`.
+### Résumé visuel
 
-### en-tête principal
+Le résumé affiche :
+- aperçu live,
+- police + taille,
+- couleurs texte/fond,
+- marge horizontale.
 
-- sur-titre : `Animations`
-- titre principal : titre de l'animation
-- texte d'introduction :
-  - date et heure de l'animation
-  - description (ou `Sans description.`)
+Actions disponibles :
+- `Données générales`,
+- `Couleurs`,
+- `Liste des polices`.
 
-### encadré résumé
+## Formulaire Et Données Persistées
 
-Le résumé affiche un aperçu visuel :
-- exemple de rendu texte/fond,
+Le formulaire caché `#modify-animation-form` contient :
+- champs cachés `AnimationForm` : `title`, `description`, `scheduled_at`, `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`,
+- `ordered_mix` (playlist sérialisée),
+- `songs_payload` (JSON des options par chant/couplet).
+
+À la soumission :
+- `ordered_mix` alimente `sync_animation_playlist`,
+- `songs_payload` alimente `apply_songs_payload`,
+- puis l'animation est sauvegardée dans une transaction.
+
+## Modes d'édition
+
+### Mode principal (`main`)
+
+Affiche une carte par chant (`main_song_cards`) avec :
+- sélection des couplets visibles (`checkbox`),
+- options du chant : police, delta de taille, couleurs,
+- options du couplet : visibilité, police, delta de taille, couleurs,
+- aperçu visuel chant/couplet,
+- actions de reset sur héritage parent,
+- lien popup `Voir le texte du chant`,
+- lien `Aller vers le chant` pour utilisateur authentifié.
+
+Règle importante :
+- les refrains ne sont pas éditables en visibilité (toujours visibles côté rendu),
+- les checkboxes affichées concernent les couplets non-refrain.
+
+### Mode secondaire (`secondary`)
+
+Affiche la playlist sous forme de pile verticale réordonnable :
+- poignée de drag,
+- suppression d'un item,
+- insertion via slots `➕` entre items,
+- popup d'ajout de chant.
+
+La popup d'ajout propose :
+- `Tous les chants`,
+- et pour membres : `Recherche avancée` + `Favoris`.
+
+Le réordonnancement écrit des tokens `asid:<id>` (ligne existante) et `sid:<id>` (nouveau chant) dans `ordered_mix`.
+
+## Popups Et Modèle D'interaction
+
+Les popups utilisent `window.LSSMessageBox`.
+
+### Popup `Données générales`
+
+Champs :
+- titre,
+- description,
+- date/heure.
+
+Boutons :
+- `OK`,
+- `Abandonner`,
+- `Réinitialiser` (sur ce sous-ensemble).
+
+### Popup `Couleurs et style`
+
+Champs :
 - couleur texte,
 - couleur fond,
 - police,
-- taille de police,
+- taille,
 - marge horizontale.
 
-Le résumé contient 3 actions :
-- `Données générales`
-- `Couleurs`
-- `Liste des polices`
-
-## formulaire principal
-
-La page contient un seul formulaire `POST` avec `csrf`.
-
-Les champs animation sont rendus en champs cachés et servent de source de vérité avant soumission :
-- `title`
-- `description`
-- `scheduled_at`
-- `text_color`
-- `bg_color`
-- `font_family`
-- `font_size`
-- `horizontal_padding`
-- `background_asset_code`
-
-## popups
-
-Les popups utilisent exclusivement `window.LSSMessageBox` (pas de modales HTML locales).
-
-### popup "Données générales"
-
-Contenu :
-- titre
-- description
-- date/heure
-
-Actions :
-- `OK` (valide et copie vers champs cachés, sans soumettre automatiquement),
-- `Abandonner`,
-- `Réinitialiser` (revient aux valeurs initiales chargées pour ce groupe de champs).
-
-### popup "Couleurs"
-
-Contenu :
-- aperçu en direct,
-- couleur du texte,
-- couleur de fond,
-- police,
-- taille de police,
-- marge horizontale.
-
-Actions :
+Boutons :
 - `OK`,
 - `Abandonner`,
-- `Réinitialiser` (sur ce groupe de champs uniquement).
+- `Réinitialiser`.
 
-Note :
-- `Code d'image de fond` n'est pas affiché dans cette popup pour l'instant.
+Note : `background_asset_code` existe dans le modèle/formulaire mais n'est pas exposé dans cette popup actuellement.
 
-### popup "Liste des polices"
+### Popup `Liste des polices`
 
-Contenu :
-- liste d'échantillons typographiques,
-- chaque ligne est affichée avec sa propre police (`font-family`),
-- format visuel de type `TEXT text àéèêïùôÔç [Nom de police]`.
+Affiche les échantillons (`fontPreviews`) et un bouton `OK`.
 
-Actions :
-- croix de fermeture,
-- bouton `OK`.
+### Popups métiers additionnelles
 
-## panneau principal (contenu)
+- confirmation suppression chant,
+- confirmation perte de modifications non enregistrées,
+- confirmation reset vers paramètres parents,
+- popup options couleurs chant/couplet,
+- popup visualisation texte du chant (chargée depuis `song_text_popup`).
 
-deux modes :
-1- principal : éditions des chansons
-2- secondaire : ajout de chanson et réordonnancement
+## État De Modification
 
-De base, la page s'ouvre en mode principale saud s'il n'y a pas de chansons
-Un bouton toggle permet de passer d'un mode à l'autre.
-
-### mode principal
-
-les chansons sont affichées dans des <article> les unes à cotés des autres.
-seul les titres des chansons sont affichées
-
-### mode secondaire
-
-au lieu des <article> les uns à cotés des autres, les chansons seront les unes au dessus des autres et le panneau utilisera 'pied de contenu'
-Pour l'instant il faut le laisser vide
+Le JS maintient un snapshot local (`fields + ordered_mix + songs_payload`) :
+- toute divergence marque la page `dirty`,
+- certaines navigations/actions demandent confirmation avant perte des changements.

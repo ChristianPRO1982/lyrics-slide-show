@@ -10,6 +10,7 @@ This document defines the current functional requirements for `app_main` as impl
 - login, callback, and logout flows,
 - session-backed request user loading,
 - the authenticated `account` page,
+- the dedicated `site_params` administration page,
 - the theme and language preference pages,
 - the Django model that exposes shared site parameters stored in `lss.site_params`,
 - the directory-user mapping to `users.users`.
@@ -49,7 +50,10 @@ Those concerns belong elsewhere, mainly in `app_member` or the other domain apps
 - `/account/`,
 - `/themes/`,
 - `/language/`,
-- `/privacy-policy/`.
+- `/privacy-policy/`,
+- `/site-params/`,
+- `/heavy/` (debug-only),
+- `/heavy/assets/<path:asset_path>` (debug-only).
 
 ## Authentication
 
@@ -91,7 +95,8 @@ The callback flow must:
 - store a session representation of the authenticated user,
 - clear the local session user on callback failure,
 - redirect to the homepage after success or failure,
-- emit a flash message describing the result.
+- emit a flash message describing the result,
+- log authentication success and failure events.
 
 ### Logout Flow
 
@@ -176,31 +181,45 @@ Language lookup must:
 
 `app_main` currently edits these site parameters from the `account` page. In its own UI, it directly uses the popup-related fields and the language-based row selection. Other stored fields are administered here and are available for the rest of the project.
 
+Administrators can also edit the same `SiteParams` content from the dedicated `/site-params/` page with explicit language selection (`fr` or `en`), including row creation when the selected language row does not exist yet.
+
 ## Public Pages
 
 ### Homepage
 
 The homepage remains accessible to guests.
 
-It currently presents static marketing-oriented product copy and shared navigation links. It must continue to:
+It renders shared navigation and language-scoped marketing content from `SiteParams`. It must continue to:
 
 - expose login access for guests,
 - expose account and logout access for authenticated users,
 - expose links to theme, language, and privacy pages,
 - load the shared popup root and popup client-side configuration,
-- load the shared theme configuration used by the whole site shell.
+- load the shared theme configuration used by the whole site shell,
+- use `title` and `title_h1` from `SiteParams` when available (fallback to `Lyrics Slide Show`),
+- parse `home_text` as either plain text or JSON cards payload (`{"cards":[...]}`) and expose up to six cards.
 
 ### Login Page
 
 The login page must:
 
 - explain whether the project is currently running in mock mode or Keycloak mode,
-- offer the appropriate interactive login entry point,
-- reuse the same shared page shell as the account page.
+- offer the appropriate interactive login entry point.
 
 ### Privacy Policy Page
 
 The privacy policy page is a public informational page rendered by `app_main`.
+
+### Heavy Debug Page
+
+`/heavy/` and `/heavy/assets/...` are debug-only routes and must return `404` when `DEBUG=False`.
+
+In debug mode:
+
+- `/heavy/` lists discoverable image assets from `<BASE_DIR>/LSS` first, then `<BASE_DIR>/static` as fallback,
+- `/heavy/assets/...` serves files only from `<BASE_DIR>/LSS`,
+- path traversal is rejected,
+- only image extensions in `{.gif, .jpeg, .jpg, .png, .svg, .webp}` are served.
 
 ### Theme Preferences Page
 
@@ -209,7 +228,6 @@ The theme page is a browser-level preference page.
 It must:
 
 - expose the list of available visual themes,
-- describe each theme,
 - let the user activate a theme immediately on the client side,
 - rely on the shared base template theme system,
 - keep the chosen theme in browser storage as the current runtime source of truth.
@@ -240,6 +258,8 @@ The authenticated `account` page is the single privileged entry point currently 
 
 There is no separate admin dashboard route.
 
+The dedicated `/site-params/` route exists and is restricted to site-setting administrators.
+
 ### Access Rules
 
 - anonymous users are redirected to `login`,
@@ -266,8 +286,7 @@ When `request.user.is_moderator` is true, the account page must expose a moderat
 This section currently includes:
 
 - editing the public moderator popup message,
-- editing `moderator_message_cooldown_minutes`,
-- a placeholder block for future moderation notifications around song modification requests.
+- editing `moderator_message_cooldown_minutes`.
 
 If no `SiteParams` row can be resolved for the active language context, moderator message editing is temporarily unavailable.
 
@@ -286,6 +305,19 @@ This section currently includes:
 - granting or revoking the local `admin` role.
 
 When an administrator edits site settings for a language that does not yet have a `SiteParams` row, saving the form creates that row.
+
+## Dedicated Site Params Page
+
+`/site-params/` is a dedicated administration page for full `SiteParams` editing.
+
+Rules:
+
+- anonymous users are redirected to `login`,
+- authenticated users without site-settings permission receive `404`,
+- language context is selected by query string (`?language=fr|en`), defaults to current language then `fr`,
+- invalid language values are normalized to `fr`,
+- POST saves the selected language row and redirects back to the same page/language,
+- validation failures show a flash error with invalid field labels when available.
 
 ## Account POST Actions
 
@@ -328,6 +360,8 @@ This capability must:
 The shared base template loads popup client-side support on all pages.
 
 The popup content currently comes from the site popup context processor and the `SiteParams` row selected for the current language.
+
+`app_main` edits popup texts and cooldown fields, while popup eligibility/rendering remains driven by shared shell logic.
 
 ### Popup Scope
 

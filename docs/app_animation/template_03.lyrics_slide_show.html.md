@@ -1,61 +1,97 @@
-# Design of Template `lyrics_slide_show.html`
+# Design du template `lyrics_slide_show.html`
 
-## Guiding Idea
+## Idée Directrice
 
-Cette page est la page de l'essence même de ce site : LYRICS SLIDE SHOW
+Cette page est la télécommande maître de projection (`remote`).
 
-Cette page est la page maitre et intelligente de l'affichage à la "PowerPoint".
-On par du principe que le PC voire tablette projetant les chants est en mode étendu sur un deuxième écran, généralement un vidéoprojecteur.
+Elle pilote un second écran (`lyrics_slide_show_display.html`) via un pont navigateur local :
+- `BroadcastChannel` si disponible,
+- fallback `localStorage` events.
 
-Cette page intelligente "crée" et manipule une page stupide.
+Le contenu projeté n'est pas calculé dans la page display.
+La page maître envoie des `frames` prêtes à afficher (slide, black, QR, idle).
 
-Cette seconde page est stupide car elle ne gère ni action ni contenu mais cette elle qui est affichée sur le deuxième. C'est la page maitre qui manipule les slides à afficher et c'est la page maitre qui a le contenu, c'est-à-dire que la page maitre envoi un layout avec le contenu et les paramètres du slide.
+## Accès Et Périmètre
 
-## affichage
+- groupe sélectionné obligatoire,
+- animation appartenant au groupe sélectionné,
+- sinon `404`.
 
-### panneau section
+## Payload Runtime
 
-Aligné avec `animations.html` :
-- titre de section = nom du groupe sélectionné (sinon `Animations`),
-- icône animations.
+La vue construit un bundle `runtime_payload` issu de `build_animation_render_bundle(animation)` avec :
+- `slides` (style résolu + texte + métadonnées),
+- `songs` (indexes de slides par chant, indexes de refrains),
+- `cardGroups` (grille des cartes de navigation),
+- `backgroundUrls` (préchargement),
+- `publicUrl` (page smartphone),
+- `qrCodePngBase64`.
 
-### panneau outils
+Le payload est injecté via `json_script` (`lss-lyrics-runtime-payload`).
 
-Le panneau outils réutilise des actions communes `app_animation` :
-- retour vers la liste des animations à venir (sauf si déjà sur la liste),
-- lien vers modification (sauf si déjà sur la page de modification),
-- lien vers Lyrics Slide Show (sauf si déjà sur la page de Lyrics Slide Show, cette page),
+## Modèle De Session
 
-## PARTIE PRINCIPALE
+- chaque ouverture crée un `display_session_id` (`<16hex>-<animation_id>`),
+- la page display exige ce `session` dans l'URL,
+- le remote stocke aussi son état local (`lss-lyrics-master-state:<animationId>`).
 
-### partie gauche
+## Mise En Page
 
-A la différence de la quasi totalité des templates du site, ici, il n'y aura pas la même interface.
-La partie de gauche est indantique, 'panneau section' et 'panneau outils'.
+La page contient :
+- barre d'actions,
+- panneau aperçu diapo courante,
+- panneau aperçu diapo suivante,
+- liste par chant avec grille de cartes de diapos.
 
-### partie centrale
+## Actions De La Barre D'outils
 
-Ce template a besoin de toute la hauteur dans un même encadré avec toutes les fonctionnalités.
+Actions implémentées :
+- ouvrir second écran,
+- rouvrir second écran,
+- `BLACK MODE`,
+- diapo précédente,
+- refrain (cycle sur les refrains du chant courant),
+- diapo suivante,
+- chant précédent,
+- chant suivant,
+- toggle scroll (`↕️ / 🧱`),
+- toggle affichage cartes refrain,
+- toggle QR public.
 
-Sur la partie haute, il y aura un sous encadré sur toute la largeur avec les boutons actions.
+## Comportement De Navigation
 
-En dessous, un autre sous encadré sur toute la largeur affiche deux sous sous encadré (50% / 50%) affichant le texte en cours et le texte de la slide suivante.
+- navigation non linéaire, centrée sur la structure musicale,
+- cycle local dans les slides du chant courant,
+- action `Refrain` sur curseur de refrains par chant,
+- clic direct possible sur chaque carte de slide.
 
-En dessous des sous encadrés sur toute la largeur, un par chant.
+## Frames Envoyées À L'écran Projeté
 
-#### liste des boutons actions
+Frames possibles :
+- `idle` (attente),
+- `slide` (texte + style résolu),
+- `black`,
+- `qr` (URL publique + image QR encodée).
 
-Boutons à ajouter :
-- BLACK MODE 🖥️
-- Smart nav : Diapo précédente 🔙
-- Smart nav : Refrain 🎼
-- Smart nav : Diapo suivante 🔜
-- <titre du chant précédent> ⏮️
-- ⏭️ <titre du chant suivant>
-- ↕️ ou 🧱 (toggle)
-- 📱 QR code
+La page display applique :
+- centrage horizontal/vertical,
+- `white-space: pre-wrap`,
+- couleurs/police/taille/padding/image de fond selon la slide.
 
-#### affichage d'un chant
+## Résilience
 
-Un chant affiche les couplets et refrain dans l'ordre qu'il vont être affichés. Il faut afficher une grille responsive avec 3 colonnes,
-chaque texte d'un couplet/refrain est affiché dans un encadré avec les 50 premiers caractères. Si le texte est plus long, alors il est tronqué et "[...]" est ajouté.
+- préchargement des backgrounds côté remote,
+- avertissement popup si préchargement incomplet,
+- persistance du dernier frame côté display (`lss-lyrics-display-lastframe:<sessionId>`),
+- heartbeat du remote pour continuité de synchro.
+
+## Lien Smartphone Public
+
+Le bouton QR expose `lyrics_slide_show_public`.
+
+Cette vue publique :
+- est accessible sans authentification,
+- affiche les chants dans l'ordre de l'animation,
+- rend les blocs en mode refrain complet,
+- propose navigation par chant, taille de texte, thème clair/sombre,
+- n'est pas synchronisée avec la slide projetée en cours.

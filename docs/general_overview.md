@@ -113,9 +113,9 @@ The following rules describe the current functional intent.
 - Guests cannot create, edit, or delete songs.
 - Members and above can add songs.
 - Members and above can edit or delete a non-validated song.
-- Everyone can leave a message on a validated song.
+- Guests and non-moderator members without direct edit rights can leave a message on a validated song.
 - Only moderators and admins can validate a song.
-- Once validated, a song becomes a trusted source marked with `✔️` and can only be modified or deleted by moderators and admins.
+- Once validated, a song becomes a trusted source marked with `✔️` or `✔️⁉️` and can only be modified or deleted by moderators and admins.
 - Validated and non-validated songs are both usable in animations.
 - Songs under license are hidden from non-authenticated users.
 
@@ -139,11 +139,11 @@ The following rules describe the current functional intent.
 
 ### Account And Privileged UI
 
-- The authenticated account page is the single entry point for privileged member tools.
+- The authenticated account page is the primary entry point for privileged member tools.
 - A simple `Member` sees identity and preference-oriented account information only.
 - A `Moderator` sees the moderation section on the account page.
 - An `Admin` sees both the moderation section and the administration section on the account page.
-- No dedicated admin navigation entry is required for these tools.
+- A dedicated `/site-params/` page may be used for detailed site-parameter editing by admins, without changing the account page's role as the main privileged hub.
 
 ### Site Popup Messages
 
@@ -177,7 +177,7 @@ A song is defined by:
 - `title`,
 - `subtitle`,
 - `description`,
-- `validated`,
+- `status` (`0` non validé, `1` validé, `2` validé avec attention/messages),
 - `licensed`.
 
 The pair `title + subtitle` must be unique.
@@ -271,7 +271,7 @@ The animation level provides the mandatory default projection configuration:
 - description,
 - left/right margins through one shared padding setting,
 - font size,
-- Google font.
+- font from the application catalog.
 
 ### Song-Level Overrides
 
