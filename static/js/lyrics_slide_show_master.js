@@ -75,6 +75,7 @@
         sessionId: defaultSessionId,
         selectedSongIndex: 0,
         projectedSlideGlobalIndex: null,
+        pendingSongRestartIndex: null,
         blackMode: false,
         qrMode: false,
         hideChorusesInGrid: false,
@@ -169,18 +170,22 @@
             return -1;
         }
 
-        const songKey = String(songIndex);
-        const storedPosition = Number.parseInt(String(state.progressCursorBySong[songKey] ?? ""), 10);
-        if (Number.isInteger(storedPosition) && storedPosition >= 0 && storedPosition < indexes.length) {
-            return storedPosition;
+        if (!Number.isInteger(state.projectedSlideGlobalIndex)) {
+            // Sans diapo active, on repart toujours de la première diapo du chant sélectionné.
+            return -1;
         }
 
-        if (Number.isInteger(state.projectedSlideGlobalIndex)) {
-            const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
-            if (projectedPosition >= 0) {
-                return projectedPosition;
-            }
+        if (Number.isInteger(state.pendingSongRestartIndex) && state.pendingSongRestartIndex === songIndex) {
+            // Après une sélection de chant, la prochaine navigation repart du début du chant.
+            return -1;
         }
+
+        const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
+        if (projectedPosition >= 0) {
+            return projectedPosition;
+        }
+
+        // La diapo projetée appartient à un autre chant : prochaine navigation = première diapo.
         return -1;
     };
 
@@ -372,6 +377,7 @@
             return;
         }
         state.selectedSongIndex = songIndex;
+        state.pendingSongRestartIndex = songIndex;
         persistState();
         refreshUI();
     };
@@ -391,6 +397,9 @@
         state.blackMode = false;
         state.qrMode = false;
         state.f11ReminderActive = false;
+        if (Number.isInteger(resolvedSongIndex) && state.pendingSongRestartIndex === resolvedSongIndex) {
+            state.pendingSongRestartIndex = null;
+        }
         if (!preserveProgress && Number.isInteger(resolvedSongIndex)) {
             const indexes = getSongSlideIndexes(resolvedSongIndex);
             const projectedPosition = indexes.indexOf(globalIndex);
@@ -599,6 +608,7 @@
             link.dataset.songIndex = String(songIndex);
             link.addEventListener("click", (event) => {
                 event.preventDefault();
+                setCurrentSong(songIndex);
                 scrollToElementWithToolbarOffset(targetNode);
             });
             fragment.appendChild(link);
