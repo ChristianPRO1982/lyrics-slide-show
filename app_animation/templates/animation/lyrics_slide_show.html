@@ -187,6 +187,39 @@
                                     data-display-session-id="{{ display_session_id }}"
                                     data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
                                 >
+                                    <nav class="site-floating-actions lyrics-master-floating-actions" aria-label="{% trans 'Navigation rapide remote' %}" data-lyrics-floating-nav>
+                                        <a
+                                            href="#lyrics-master-slides-anchor"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-slides-link
+                                            title="{% trans 'Diapo en cours / Diapo suivante' %}"
+                                            aria-label="{% trans 'Diapo en cours / Diapo suivante' %}"
+                                        >
+                                            🎼
+                                        </a>
+                                        <button
+                                            type="button"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-up
+                                            hidden
+                                            title="{% trans 'Afficher les chants précédents' %}"
+                                            aria-label="{% trans 'Afficher les chants précédents' %}"
+                                        >
+                                            ⬆️
+                                        </button>
+                                        <div class="lyrics-master-floating-song-links" data-lyrics-floating-song-links></div>
+                                        <button
+                                            type="button"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-down
+                                            hidden
+                                            title="{% trans 'Afficher les chants suivants' %}"
+                                            aria-label="{% trans 'Afficher les chants suivants' %}"
+                                        >
+                                            ⬇️
+                                        </button>
+                                    </nav>
+
                                     <article class="site-theme-card lyrics-master-context">
                                         <div class="lyrics-master-context-icon">
                                             {% include "includes/themed_icon.html" with picture_class="lyrics-master-context-picture" img_class="lyrics-master-context-image" icon_name="animations" icon_alt=animation.title %}
@@ -211,6 +244,7 @@
                                             <p data-lyrics-scroll-mode-state></p>
                                         </div>
                                     </article>
+                                    <a id="lyrics-master-slides-anchor" name="slides" data-lyrics-slides-anchor aria-hidden="true"></a>
 
                                     <article class="site-theme-card lyrics-master-toolbar">
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-primary">
@@ -230,13 +264,13 @@
                                         </div>
                                     </article>
 
-                                    <article class="site-theme-card lyrics-master-previews">
-                                        <div class="lyrics-master-preview-panel">
+                                    <article class="site-theme-card lyrics-master-previews" data-lyrics-previews-card>
+                                        <div class="lyrics-master-preview-panel" data-lyrics-preview-current-panel role="button" tabindex="0">
                                             <h2>{% trans "Diapo en cours" %}</h2>
                                             <p class="lyrics-master-preview-label" data-lyrics-current-label></p>
                                             <p class="lyrics-master-preview-text" data-lyrics-current-text></p>
                                         </div>
-                                        <div class="lyrics-master-preview-panel">
+                                        <div class="lyrics-master-preview-panel" data-lyrics-preview-next-panel role="button" tabindex="0">
                                             <h2>{% trans "Diapo suivante" %}</h2>
                                             <p class="lyrics-master-preview-label" data-lyrics-next-label></p>
                                             <p class="lyrics-master-preview-text" data-lyrics-next-text></p>
@@ -245,9 +279,9 @@
 
                                     <section class="lyrics-master-song-groups">
                                         {% for group in runtime_payload.cardGroups %}
-                                            <article class="site-theme-card lyrics-master-song-group" data-lyrics-song-group data-animation-song-id="{{ group.animationSongId }}">
+                                            <article id="lyrics-song-group-{{ group.animationSongId }}" class="site-theme-card lyrics-master-song-group" data-lyrics-song-group data-animation-song-id="{{ group.animationSongId }}">
                                                 <header class="lyrics-master-song-group-header">
-                                                    <h2>{{ group.songTitle }}</h2>
+                                                    <h2>{{ forloop.counter }}. {{ group.songTitle }}</h2>
                                                 </header>
                                                 <div class="lyrics-master-slide-grid">
                                                     {% for card in group.cards %}

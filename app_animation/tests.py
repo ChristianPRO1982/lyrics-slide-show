@@ -856,6 +856,33 @@ class AnimationViewsTests(TestCase):
         self.assertIn(verse_visible.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
         self.assertNotIn(verse_hidden.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
 
+    def test_lyrics_slide_show_contains_floating_navigation_and_song_targets(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A")
+        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B")
+        item_one = AnimationSong.objects.create(animation=animation, song=song_one, position=2)
+        item_two = AnimationSong.objects.create(animation=animation, song=song_two, position=4)
+
+        self._select_group(group)
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-lyrics-floating-nav')
+        self.assertContains(response, 'data-lyrics-floating-slides-link')
+        self.assertContains(response, 'title="Diapo en cours / Diapo suivante"')
+        self.assertContains(response, 'id="lyrics-master-slides-anchor"')
+        self.assertContains(response, f'id="lyrics-song-group-{item_one.animation_song_id}"')
+        self.assertContains(response, f'id="lyrics-song-group-{item_two.animation_song_id}"')
+
+        content = response.content.decode("utf-8")
+        context_pos = content.index("lyrics-master-context")
+        slides_anchor_pos = content.index("data-lyrics-slides-anchor")
+        toolbar_pos = content.index("lyrics-master-toolbar")
+        self.assertLess(context_pos, slides_anchor_pos)
+        self.assertLess(slides_anchor_pos, toolbar_pos)
+
 
 class PlaylistSyncTests(TestCase):
     def test_sync_playlist_creates_keeps_and_deletes_with_normalized_positions(self):

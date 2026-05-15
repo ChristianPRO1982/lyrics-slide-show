@@ -46,6 +46,19 @@
     const previewCurrentTextNode = document.querySelector("[data-lyrics-current-text]");
     const previewNextLabelNode = document.querySelector("[data-lyrics-next-label]");
     const previewNextTextNode = document.querySelector("[data-lyrics-next-text]");
+    const previewCurrentPanelNode = document.querySelector("[data-lyrics-preview-current-panel]");
+    const previewNextPanelNode = document.querySelector("[data-lyrics-preview-next-panel]");
+    const toolbarNode = document.querySelector(".lyrics-master-toolbar");
+    const previewsCardNode = document.querySelector("[data-lyrics-previews-card]");
+    const slidesAnchorNode = document.querySelector("[data-lyrics-slides-anchor]");
+    const floatingNavNode = document.querySelector("[data-lyrics-floating-nav]");
+    const floatingSlidesLinkNode = document.querySelector("[data-lyrics-floating-slides-link]");
+    const floatingUpButtonNode = document.querySelector("[data-lyrics-floating-up]");
+    const floatingDownButtonNode = document.querySelector("[data-lyrics-floating-down]");
+    const floatingSongLinksNode = document.querySelector("[data-lyrics-floating-song-links]");
+    if (floatingNavNode && document.body && floatingNavNode.parentElement !== document.body) {
+        document.body.appendChild(floatingNavNode);
+    }
     const prevSongButton = document.querySelector("[data-lyrics-action='prev-song']");
     const nextSongButton = document.querySelector("[data-lyrics-action='next-song']");
     const scrollToggleEmojiNode = document.querySelector("[data-lyrics-scroll-emoji]");
@@ -76,6 +89,10 @@
         storageKey: "",
     };
 
+    const floatingSongWindowSize = 10;
+    const floatingSongWindowStep = 3;
+    let floatingSongWindowStart = 0;
+
     const slideCards = Array.from(document.querySelectorAll("[data-lyrics-slide-card]"));
 
     const getSongByIndex = (songIndex) => {
@@ -96,6 +113,16 @@
     const songIndexByAnimationSongId = new Map();
     songs.forEach((song, index) => {
         songIndexByAnimationSongId.set(Number(song.animationSongId), index);
+    });
+    const songGroupNodeByAnimationSongId = new Map();
+    document.querySelectorAll("[data-lyrics-song-group]").forEach((groupNode) => {
+        if (!(groupNode instanceof HTMLElement)) {
+            return;
+        }
+        const animationSongId = Number.parseInt(String(groupNode.getAttribute("data-animation-song-id") || ""), 10);
+        if (Number.isInteger(animationSongId)) {
+            songGroupNodeByAnimationSongId.set(animationSongId, groupNode);
+        }
     });
 
     const slideByGlobalIndex = (globalIndex) => {
@@ -482,17 +509,137 @@
         }
     };
 
+    const getToolbarScrollOffset = () => {
+        if (!(toolbarNode instanceof HTMLElement)) {
+            return 0;
+        }
+        const toolbarHeight = toolbarNode.getBoundingClientRect().height;
+        return Math.max(0, Math.ceil(toolbarHeight + 8));
+    };
+
+    const scrollToElementWithToolbarOffset = (targetNode) => {
+        if (!(targetNode instanceof HTMLElement)) {
+            return;
+        }
+        const scrollTop = window.scrollY + targetNode.getBoundingClientRect().top - getToolbarScrollOffset();
+        window.scrollTo({
+            top: Math.max(0, Math.floor(scrollTop)),
+            behavior: "smooth",
+        });
+    };
+
+    const trimFloatingSongLabel = (songIndex, rawTitle) => {
+        const title = String(rawTitle || "").trim();
+        const prefix = `${songIndex + 1}. `;
+        if (!title) {
+            return `${prefix}${label("noneLabel")}`;
+        }
+        if (title.length <= 10) {
+            return `${prefix}${title}`;
+        }
+        return `${prefix}${title.slice(0, 10)}…`;
+    };
+
+    const clampFloatingWindowStart = (candidateStart) => {
+        const maxStart = Math.max(0, songs.length - floatingSongWindowSize);
+        if (candidateStart <= 0) {
+            return 0;
+        }
+        if (candidateStart >= maxStart) {
+            return maxStart;
+        }
+        return candidateStart;
+    };
+
+    const renderFloatingSongLinks = () => {
+        if (!(floatingSongLinksNode instanceof HTMLElement)) {
+            return;
+        }
+
+        const hasWindowNavigation = songs.length > floatingSongWindowSize;
+        floatingSongWindowStart = hasWindowNavigation ? clampFloatingWindowStart(floatingSongWindowStart) : 0;
+
+        if (floatingUpButtonNode instanceof HTMLButtonElement) {
+            if (hasWindowNavigation) {
+                floatingUpButtonNode.removeAttribute("hidden");
+            } else {
+                floatingUpButtonNode.setAttribute("hidden", "hidden");
+            }
+            floatingUpButtonNode.disabled = !hasWindowNavigation || floatingSongWindowStart === 0;
+        }
+        if (floatingDownButtonNode instanceof HTMLButtonElement) {
+            const maxStart = clampFloatingWindowStart(Number.MAX_SAFE_INTEGER);
+            if (hasWindowNavigation) {
+                floatingDownButtonNode.removeAttribute("hidden");
+            } else {
+                floatingDownButtonNode.setAttribute("hidden", "hidden");
+            }
+            floatingDownButtonNode.disabled = !hasWindowNavigation || floatingSongWindowStart >= maxStart;
+        }
+
+        const songsStart = floatingSongWindowStart;
+        const songsEnd = Math.min(songsStart + floatingSongWindowSize, songs.length);
+        const fragment = document.createDocumentFragment();
+
+        for (let songIndex = songsStart; songIndex < songsEnd; songIndex += 1) {
+            const song = getSongByIndex(songIndex);
+            if (!song) {
+                continue;
+            }
+            const animationSongId = Number(song.animationSongId);
+            const targetNode = songGroupNodeByAnimationSongId.get(animationSongId);
+            if (!(targetNode instanceof HTMLElement)) {
+                continue;
+            }
+
+            const link = document.createElement("a");
+            link.href = `#lyrics-song-group-${animationSongId}`;
+            link.className = "site-floating-action lyrics-master-floating-song-link";
+            link.textContent = trimFloatingSongLabel(songIndex, song.songTitle);
+            link.dataset.songIndex = String(songIndex);
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                scrollToElementWithToolbarOffset(targetNode);
+            });
+            fragment.appendChild(link);
+        }
+
+        floatingSongLinksNode.replaceChildren(fragment);
+    };
+
+    const refreshFloatingSongSelection = () => {
+        if (!(floatingSongLinksNode instanceof HTMLElement)) {
+            return;
+        }
+        const selectedSongIndex = String(state.selectedSongIndex);
+        floatingSongLinksNode.querySelectorAll("[data-song-index]").forEach((linkNode) => {
+            if (!(linkNode instanceof HTMLElement)) {
+                return;
+            }
+            const isCurrent = String(linkNode.getAttribute("data-song-index") || "") === selectedSongIndex;
+            linkNode.classList.toggle("is-current-song", isCurrent);
+            if (isCurrent) {
+                linkNode.setAttribute("aria-current", "true");
+            } else {
+                linkNode.removeAttribute("aria-current");
+            }
+        });
+    };
+
     const refreshPreview = () => {
         const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
         const songIndexes = getSongSlideIndexes(state.selectedSongIndex);
         let nextSlide = null;
+        let nextSlideGlobalIndex = null;
 
         if (songIndexes.length) {
             const preparedPosition = getPreparedSlidePosition(state.selectedSongIndex);
             if (preparedPosition < 0) {
-                nextSlide = slideByGlobalIndex(songIndexes[0]);
+                nextSlideGlobalIndex = songIndexes[0];
+                nextSlide = slideByGlobalIndex(nextSlideGlobalIndex);
             } else {
-                nextSlide = slideByGlobalIndex(songIndexes[(preparedPosition + 1) % songIndexes.length]);
+                nextSlideGlobalIndex = songIndexes[(preparedPosition + 1) % songIndexes.length];
+                nextSlide = slideByGlobalIndex(nextSlideGlobalIndex);
             }
         }
 
@@ -500,6 +647,30 @@
         setText(previewCurrentTextNode, currentSlide ? String(currentSlide.text || "") : label("currentSlidePlaceholder"));
         setText(previewNextLabelNode, nextSlide ? formatSlideLabel(nextSlide) : label("nextSlidePlaceholder"));
         setText(previewNextTextNode, nextSlide ? String(nextSlide.text || "") : label("nextSlidePlaceholder"));
+
+        if (previewCurrentPanelNode instanceof HTMLElement) {
+            if (Number.isInteger(state.projectedSlideGlobalIndex)) {
+                previewCurrentPanelNode.dataset.targetGlobalIndex = String(state.projectedSlideGlobalIndex);
+                previewCurrentPanelNode.classList.remove("is-disabled");
+                previewCurrentPanelNode.setAttribute("aria-disabled", "false");
+            } else {
+                delete previewCurrentPanelNode.dataset.targetGlobalIndex;
+                previewCurrentPanelNode.classList.add("is-disabled");
+                previewCurrentPanelNode.setAttribute("aria-disabled", "true");
+            }
+        }
+
+        if (previewNextPanelNode instanceof HTMLElement) {
+            if (Number.isInteger(nextSlideGlobalIndex)) {
+                previewNextPanelNode.dataset.targetGlobalIndex = String(nextSlideGlobalIndex);
+                previewNextPanelNode.classList.remove("is-disabled");
+                previewNextPanelNode.setAttribute("aria-disabled", "false");
+            } else {
+                delete previewNextPanelNode.dataset.targetGlobalIndex;
+                previewNextPanelNode.classList.add("is-disabled");
+                previewNextPanelNode.setAttribute("aria-disabled", "true");
+            }
+        }
     };
 
     const refreshSongNavigationLabels = () => {
@@ -589,6 +760,7 @@
         refreshPreview();
         refreshToggleButtons();
         refreshQrButton();
+        refreshFloatingSongSelection();
     };
 
     const maybeShowPopup = async (title, message) => {
@@ -710,6 +882,63 @@
         });
     });
 
+    const activatePreviewPanel = (panelNode) => {
+        if (!(panelNode instanceof HTMLElement)) {
+            return;
+        }
+        const globalIndex = Number.parseInt(String(panelNode.dataset.targetGlobalIndex || ""), 10);
+        if (!Number.isInteger(globalIndex)) {
+            return;
+        }
+        projectSlide(globalIndex, { preserveProgress: true });
+    };
+
+    [previewCurrentPanelNode, previewNextPanelNode].forEach((panelNode) => {
+        if (!(panelNode instanceof HTMLElement)) {
+            return;
+        }
+        panelNode.addEventListener("click", () => {
+            activatePreviewPanel(panelNode);
+        });
+        panelNode.addEventListener("keydown", (event) => {
+            const key = String(event.key || "").toLowerCase();
+            if (key !== "enter" && key !== " ") {
+                return;
+            }
+            event.preventDefault();
+            activatePreviewPanel(panelNode);
+        });
+    });
+
+    if (floatingNavNode instanceof HTMLElement) {
+        floatingNavNode.hidden = songs.length === 0;
+    }
+    if (floatingSlidesLinkNode instanceof HTMLElement) {
+        floatingSlidesLinkNode.addEventListener("click", (event) => {
+            event.preventDefault();
+            const targetNode = previewsCardNode instanceof HTMLElement
+                ? previewsCardNode
+                : slidesAnchorNode instanceof HTMLElement
+                    ? slidesAnchorNode
+                    : null;
+            scrollToElementWithToolbarOffset(targetNode);
+        });
+    }
+    if (floatingUpButtonNode instanceof HTMLButtonElement) {
+        floatingUpButtonNode.addEventListener("click", () => {
+            floatingSongWindowStart = clampFloatingWindowStart(floatingSongWindowStart - floatingSongWindowStep);
+            renderFloatingSongLinks();
+            refreshFloatingSongSelection();
+        });
+    }
+    if (floatingDownButtonNode instanceof HTMLButtonElement) {
+        floatingDownButtonNode.addEventListener("click", () => {
+            floatingSongWindowStart = clampFloatingWindowStart(floatingSongWindowStart + floatingSongWindowStep);
+            renderFloatingSongLinks();
+            refreshFloatingSongSelection();
+        });
+    }
+
     const shouldIgnoreKeydownTarget = (target) => {
         if (!(target instanceof HTMLElement)) {
             return false;
@@ -780,6 +1009,7 @@
     restoreState();
     normalizeState();
     ensureBridge();
+    renderFloatingSongLinks();
     refreshUI();
     persistState();
     sendInit();
