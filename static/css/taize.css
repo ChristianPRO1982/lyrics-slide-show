@@ -33,6 +33,8 @@
     --site-popup-danger-bg: rgba(255, 231, 222, 0.98);
     --site-popup-danger-border: #a0392c;
     --site-popup-danger-ink: #6e2119;
+    --site-action-bg: linear-gradient(180deg, rgba(255, 248, 232, 0.98), rgba(247, 231, 199, 0.92));
+    --site-action-bg-hover: linear-gradient(180deg, rgba(255, 235, 189, 0.98), rgba(247, 231, 199, 0.92));
 }
 
 body {
@@ -110,6 +112,8 @@ h6 {
         --site-popup-danger-bg: rgba(103, 36, 28, 0.44);
         --site-popup-danger-border: rgba(255, 163, 140, 0.42);
         --site-popup-danger-ink: #ffcabc;
+        --site-action-bg: linear-gradient(180deg, rgba(45, 24, 17, 0.98), rgba(62, 32, 22, 0.94));
+        --site-action-bg-hover: linear-gradient(180deg, rgba(31, 17, 12, 0.98), rgba(62, 32, 22, 0.94));
     }
 
     body {
