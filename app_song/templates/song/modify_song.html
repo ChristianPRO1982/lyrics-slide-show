@@ -215,6 +215,19 @@
                         <p><strong>{% trans "Aucun bloc de paroles." %}</strong></p>
                     </article>
                 {% endfor %}
+                {% if can_edit %}
+                    <article class="site-theme-card song-card">
+                        <p>
+                            <button
+                                type="button"
+                                class="song-tool-button site-action site-action--primary"
+                                data-song-add-block-action
+                            >
+                                {% trans "Ajouter un couplet/refrain" %}
+                            </button>
+                        </p>
+                    </article>
+                {% endif %}
             </div>
         </section>
     </form>

@@ -1,7 +1,31 @@
 {% load i18n %}
 {% trans "Description du chant" as song_summary_title %}
+{% trans "Déplacer" as move_label %}
+{% trans "Bloc vide" as empty_block_label %}
+{% trans "Ajouter un bloc" as add_block_choice_title %}
+{% trans "Choisissez le type de bloc à ajouter." as add_block_choice_message %}
+{% trans "Ajouter un couplet" as add_verse_button_label %}
+{% trans "Ajouter un refrain" as add_chorus_button_label %}
+{% trans "Annuler" as cancel_label %}
+{% trans "Contenu du nouveau bloc" as add_block_text_title %}
+{% trans "Saisissez le texte du bloc." as add_block_text_message %}
+{% trans "Texte" as add_block_text_field_label %}
+{% trans "Couplet" as verse_label %}
+{% trans "Refrain" as chorus_label %}
 <script>
     window.LSS_SONG_I18N = {
-        summaryTitle: "{{ song_summary_title|escapejs }}"
+        summaryTitle: "{{ song_summary_title|escapejs }}",
+        moveLabel: "{{ move_label|escapejs }}",
+        emptyBlockLabel: "{{ empty_block_label|escapejs }}",
+        addBlockChoiceTitle: "{{ add_block_choice_title|escapejs }}",
+        addBlockChoiceMessage: "{{ add_block_choice_message|escapejs }}",
+        addVerseButtonLabel: "{{ add_verse_button_label|escapejs }}",
+        addChorusButtonLabel: "{{ add_chorus_button_label|escapejs }}",
+        cancelLabel: "{{ cancel_label|escapejs }}",
+        addBlockTextTitle: "{{ add_block_text_title|escapejs }}",
+        addBlockTextMessage: "{{ add_block_text_message|escapejs }}",
+        addBlockTextFieldLabel: "{{ add_block_text_field_label|escapejs }}",
+        verseLabel: "{{ verse_label|escapejs }}",
+        chorusLabel: "{{ chorus_label|escapejs }}"
     };
 </script>

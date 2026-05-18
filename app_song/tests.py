@@ -636,6 +636,8 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, '<strong class="song-edit-block-drag-label">Refrain</strong>', html=False)
         self.assertContains(response, '<span class="song-edit-block-drag-text">Couplet original</span>', html=False)
         self.assertContains(response, '<span class="song-edit-block-drag-text">Refrain original</span>', html=False)
+        self.assertContains(response, "Ajouter un couplet/refrain")
+        self.assertContains(response, "data-song-add-block-action")
 
     def test_member_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -643,6 +645,8 @@ class ModifySongViewTests(TestCase):
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Ajouter un couplet/refrain")
+        self.assertNotContains(response, "data-song-add-block-action")
 
     def test_moderator_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -650,6 +654,8 @@ class ModifySongViewTests(TestCase):
         self._login(is_moderator=True)
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ajouter un couplet/refrain")
+        self.assertContains(response, "data-song-add-block-action")
 
     def test_member_cannot_post_validated_song(self):
         self.song.status = 1
