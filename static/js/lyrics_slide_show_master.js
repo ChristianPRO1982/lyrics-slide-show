@@ -22,6 +22,63 @@
     const i18n = window.LSS_LYRICS_I18N || {};
     const label = (key) => String(i18n[key] || "");
 
+    const warnDroppedIndex = (context, value, reason) => {
+        console.warn(`[LSS remote] Ignored index (${context}):`, value, `(${reason})`);
+    };
+
+    const toIntegerOrNull = (value) => {
+        if (typeof value === "number") {
+            return Number.isInteger(value) ? value : null;
+        }
+        if (typeof value === "string") {
+            const trimmed = value.trim();
+            if (!trimmed || !/^[-+]?\d+$/.test(trimmed)) {
+                return null;
+            }
+            const parsed = Number.parseInt(trimmed, 10);
+            return Number.isInteger(parsed) ? parsed : null;
+        }
+        return null;
+    };
+
+    const toNonNegativeIndexOrNull = (value) => {
+        const parsed = toIntegerOrNull(value);
+        if (!Number.isInteger(parsed) || parsed < 0) {
+            return null;
+        }
+        return parsed;
+    };
+
+    const sanitizeIndexList = (values, options = {}) => {
+        if (!Array.isArray(values)) {
+            return [];
+        }
+        const context = String(options.context || "index-list");
+        const maxExclusive = Number.isInteger(options.maxExclusive) ? options.maxExclusive : null;
+        const seen = new Set();
+        const sanitized = [];
+
+        values.forEach((rawValue, rawPosition) => {
+            const parsed = toNonNegativeIndexOrNull(rawValue);
+            if (!Number.isInteger(parsed)) {
+                warnDroppedIndex(`${context}@${rawPosition}`, rawValue, "not-a-non-negative-integer");
+                return;
+            }
+            if (Number.isInteger(maxExclusive) && parsed >= maxExclusive) {
+                warnDroppedIndex(`${context}@${rawPosition}`, rawValue, "out-of-range");
+                return;
+            }
+            if (seen.has(parsed)) {
+                warnDroppedIndex(`${context}@${rawPosition}`, rawValue, "duplicate");
+                return;
+            }
+            seen.add(parsed);
+            sanitized.push(parsed);
+        });
+
+        return sanitized;
+    };
+
     const animationId = Number.parseInt(String(root.getAttribute("data-animation-id") || ""), 10) || 0;
     const displayUrlBase = String(root.getAttribute("data-display-url-base") || "").trim();
     const defaultSessionId = String(root.getAttribute("data-display-session-id") || "").trim();
@@ -113,16 +170,24 @@
 
     const songIndexByAnimationSongId = new Map();
     songs.forEach((song, index) => {
-        songIndexByAnimationSongId.set(Number(song.animationSongId), index);
+        const animationSongId = toIntegerOrNull(song.animationSongId);
+        if (!Number.isInteger(animationSongId)) {
+            warnDroppedIndex(`songs[${index}].animationSongId`, song.animationSongId, "invalid-animation-song-id");
+            return;
+        }
+        songIndexByAnimationSongId.set(animationSongId, index);
     });
     const songGroupNodeByAnimationSongId = new Map();
     document.querySelectorAll("[data-lyrics-song-group]").forEach((groupNode) => {
         if (!(groupNode instanceof HTMLElement)) {
             return;
         }
-        const animationSongId = Number.parseInt(String(groupNode.getAttribute("data-animation-song-id") || ""), 10);
+        const rawAnimationSongId = groupNode.getAttribute("data-animation-song-id");
+        const animationSongId = toIntegerOrNull(rawAnimationSongId);
         if (Number.isInteger(animationSongId)) {
             songGroupNodeByAnimationSongId.set(animationSongId, groupNode);
+        } else {
+            warnDroppedIndex("data-animation-song-id", rawAnimationSongId, "invalid-dom-animation-song-id");
         }
     });
 
@@ -140,7 +205,12 @@
         if (!slide) {
             return -1;
         }
-        const resolvedSongIndex = songIndexByAnimationSongId.get(Number(slide.animationSongId));
+        const animationSongId = toIntegerOrNull(slide.animationSongId);
+        if (!Number.isInteger(animationSongId)) {
+            warnDroppedIndex("slide.animationSongId", slide.animationSongId, "invalid-slide-animation-song-id");
+            return -1;
+        }
+        const resolvedSongIndex = songIndexByAnimationSongId.get(animationSongId);
         return Number.isInteger(resolvedSongIndex) ? resolvedSongIndex : -1;
     };
 
@@ -149,9 +219,10 @@
         if (!song || !Array.isArray(song.slideIndexes)) {
             return [];
         }
-        return song.slideIndexes
-            .map((value) => Number.parseInt(String(value || ""), 10))
-            .filter((value) => Number.isInteger(value));
+        return sanitizeIndexList(song.slideIndexes, {
+            context: `songs[${songIndex}].slideIndexes`,
+            maxExclusive: slides.length,
+        });
     };
 
     const getSongChorusIndexes = (songIndex) => {
@@ -159,9 +230,10 @@
         if (!song || !Array.isArray(song.chorusIndexes)) {
             return [];
         }
-        return song.chorusIndexes
-            .map((value) => Number.parseInt(String(value || ""), 10))
-            .filter((value) => Number.isInteger(value));
+        return sanitizeIndexList(song.chorusIndexes, {
+            context: `songs[${songIndex}].chorusIndexes`,
+            maxExclusive: slides.length,
+        });
     };
 
     const getPreparedSlidePosition = (songIndex) => {
@@ -221,15 +293,19 @@
             if (typeof parsed.sessionId === "string" && parsed.sessionId.trim()) {
                 state.sessionId = parsed.sessionId.trim();
             }
-            if (Number.isInteger(parsed.selectedSongIndex)) {
-                state.selectedSongIndex = normalizeSongIndex(parsed.selectedSongIndex);
-            } else if (Number.isInteger(parsed.currentSongIndex)) {
-                state.selectedSongIndex = normalizeSongIndex(parsed.currentSongIndex);
+            const restoredSelectedSongIndex = toIntegerOrNull(parsed.selectedSongIndex);
+            const legacySelectedSongIndex = toIntegerOrNull(parsed.currentSongIndex);
+            if (Number.isInteger(restoredSelectedSongIndex)) {
+                state.selectedSongIndex = normalizeSongIndex(restoredSelectedSongIndex);
+            } else if (Number.isInteger(legacySelectedSongIndex)) {
+                state.selectedSongIndex = normalizeSongIndex(legacySelectedSongIndex);
             }
-            if (Number.isInteger(parsed.projectedSlideGlobalIndex)) {
-                state.projectedSlideGlobalIndex = parsed.projectedSlideGlobalIndex;
-            } else if (Number.isInteger(parsed.currentSlideGlobalIndex)) {
-                state.projectedSlideGlobalIndex = parsed.currentSlideGlobalIndex;
+            const restoredProjectedSlideIndex = toNonNegativeIndexOrNull(parsed.projectedSlideGlobalIndex);
+            const legacyProjectedSlideIndex = toNonNegativeIndexOrNull(parsed.currentSlideGlobalIndex);
+            if (Number.isInteger(restoredProjectedSlideIndex)) {
+                state.projectedSlideGlobalIndex = restoredProjectedSlideIndex;
+            } else if (Number.isInteger(legacyProjectedSlideIndex)) {
+                state.projectedSlideGlobalIndex = legacyProjectedSlideIndex;
             }
             state.blackMode = Boolean(parsed.blackMode);
             state.qrMode = Boolean(parsed.qrMode);
@@ -385,11 +461,15 @@
     const projectSlide = (globalIndex, options = {}) => {
         const slide = slideByGlobalIndex(globalIndex);
         if (!slide) {
+            warnDroppedIndex("projectSlide", globalIndex, "unknown-slide");
             return;
         }
         const preserveProgress = Boolean(options.preserveProgress);
         const updateSelected = options.updateSelected !== false;
-        const resolvedSongIndex = songIndexByAnimationSongId.get(Number(slide.animationSongId));
+        const animationSongId = toIntegerOrNull(slide.animationSongId);
+        const resolvedSongIndex = Number.isInteger(animationSongId)
+            ? songIndexByAnimationSongId.get(animationSongId)
+            : null;
         if (updateSelected && Number.isInteger(resolvedSongIndex)) {
             state.selectedSongIndex = resolvedSongIndex;
         }
@@ -433,7 +513,12 @@
             }
         }
         state.progressCursorBySong[String(state.selectedSongIndex)] = nextPosition;
-        projectSlide(indexes[nextPosition], { preserveProgress: true, updateSelected: false });
+        const targetGlobalIndex = indexes[nextPosition];
+        if (!Number.isInteger(targetGlobalIndex)) {
+            warnDroppedIndex("navigateSlide.targetGlobalIndex", targetGlobalIndex, "invalid-target-index");
+            return;
+        }
+        projectSlide(targetGlobalIndex, { preserveProgress: true, updateSelected: false });
     };
 
     const navigateChorus = () => {
@@ -444,8 +529,8 @@
 
         const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
         const currentSong = getCurrentSong();
-        const currentSlideAnimationSongId = currentSlide ? Number(currentSlide.animationSongId) : null;
-        const selectedAnimationSongId = currentSong ? Number(currentSong.animationSongId) : null;
+        const currentSlideAnimationSongId = currentSlide ? toIntegerOrNull(currentSlide.animationSongId) : null;
+        const selectedAnimationSongId = currentSong ? toIntegerOrNull(currentSong.animationSongId) : null;
         const isProjectedFromSelectedSong = currentSlideAnimationSongId === selectedAnimationSongId;
         const projectedChorusPosition = isProjectedFromSelectedSong
             ? chorusIndexes.indexOf(state.projectedSlideGlobalIndex)
@@ -457,6 +542,10 @@
         }
 
         const targetIndex = chorusIndexes[targetPosition];
+        if (!Number.isInteger(targetIndex)) {
+            warnDroppedIndex("navigateChorus.targetIndex", targetIndex, "invalid-target-index");
+            return;
+        }
         state.chorusCursorBySong[String(state.selectedSongIndex)] = (targetPosition + 1) % chorusIndexes.length;
         projectSlide(targetIndex, { preserveProgress: true, updateSelected: false });
     };
@@ -595,7 +684,11 @@
             if (!song) {
                 continue;
             }
-            const animationSongId = Number(song.animationSongId);
+            const animationSongId = toIntegerOrNull(song.animationSongId);
+            if (!Number.isInteger(animationSongId)) {
+                warnDroppedIndex(`songs[${songIndex}].animationSongId`, song.animationSongId, "invalid-floating-link-animation-song-id");
+                continue;
+            }
             const targetNode = songGroupNodeByAnimationSongId.get(animationSongId);
             if (!(targetNode instanceof HTMLElement)) {
                 continue;
@@ -626,7 +719,12 @@
             if (!(linkNode instanceof HTMLElement)) {
                 return;
             }
-            const isCurrent = String(linkNode.getAttribute("data-song-index") || "") === selectedSongIndex;
+            const rawSongIndex = linkNode.getAttribute("data-song-index");
+            const parsedSongIndex = toNonNegativeIndexOrNull(rawSongIndex);
+            const isCurrent = Number.isInteger(parsedSongIndex) && String(parsedSongIndex) === selectedSongIndex;
+            if (rawSongIndex !== null && !Number.isInteger(parsedSongIndex)) {
+                warnDroppedIndex("data-song-index", rawSongIndex, "invalid-floating-song-index");
+            }
             linkNode.classList.toggle("is-current-song", isCurrent);
             if (isCurrent) {
                 linkNode.setAttribute("aria-current", "true");
@@ -704,9 +802,13 @@
             if (!(card instanceof HTMLElement)) {
                 return;
             }
-            const globalIndex = Number.parseInt(String(card.getAttribute("data-global-index") || ""), 10);
+            const rawGlobalIndex = card.getAttribute("data-global-index");
+            const globalIndex = toNonNegativeIndexOrNull(rawGlobalIndex);
             const isActive = Number.isInteger(state.projectedSlideGlobalIndex) && globalIndex === state.projectedSlideGlobalIndex;
             card.classList.toggle("is-active", isActive);
+            if (rawGlobalIndex !== null && !Number.isInteger(globalIndex)) {
+                warnDroppedIndex("data-global-index", rawGlobalIndex, "invalid-slide-card-global-index");
+            }
 
             const kind = String(card.getAttribute("data-kind") || "");
             const hide = state.hideChorusesInGrid && kind === "chorus";
@@ -717,9 +819,13 @@
             if (!(groupNode instanceof HTMLElement)) {
                 return;
             }
-            const asid = Number.parseInt(String(groupNode.getAttribute("data-animation-song-id") || ""), 10);
+            const rawAnimationSongId = groupNode.getAttribute("data-animation-song-id");
+            const asid = toIntegerOrNull(rawAnimationSongId);
             const songIndex = songIndexByAnimationSongId.get(asid);
             groupNode.classList.toggle("is-current-song", Number.isInteger(songIndex) && songIndex === state.selectedSongIndex);
+            if (rawAnimationSongId !== null && !Number.isInteger(asid)) {
+                warnDroppedIndex("data-animation-song-id", rawAnimationSongId, "invalid-song-group-animation-song-id");
+            }
         });
     };
 
@@ -884,8 +990,10 @@
 
     slideCards.forEach((card) => {
         card.addEventListener("click", () => {
-            const globalIndex = Number.parseInt(String(card.getAttribute("data-global-index") || ""), 10);
+            const rawGlobalIndex = card.getAttribute("data-global-index");
+            const globalIndex = toNonNegativeIndexOrNull(rawGlobalIndex);
             if (!Number.isInteger(globalIndex)) {
+                warnDroppedIndex("slide-card-click", rawGlobalIndex, "invalid-global-index");
                 return;
             }
             projectSlide(globalIndex);
@@ -896,8 +1004,9 @@
         if (!(panelNode instanceof HTMLElement)) {
             return;
         }
-        const globalIndex = Number.parseInt(String(panelNode.dataset.targetGlobalIndex || ""), 10);
+        const globalIndex = toNonNegativeIndexOrNull(panelNode.dataset.targetGlobalIndex);
         if (!Number.isInteger(globalIndex)) {
+            warnDroppedIndex("preview-panel-target", panelNode.dataset.targetGlobalIndex, "invalid-global-index");
             return;
         }
         projectSlide(globalIndex, { preserveProgress: true });

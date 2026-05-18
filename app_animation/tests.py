@@ -856,6 +856,63 @@ class AnimationViewsTests(TestCase):
         self.assertIn(verse_visible.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
         self.assertNotIn(verse_hidden.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
 
+    def test_lyrics_slide_show_runtime_payload_keeps_zero_index_for_first_song(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A")
+        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B")
+        item_one = AnimationSong.objects.create(animation=animation, song=song_one, position=2)
+        AnimationSong.objects.create(animation=animation, song=song_two, position=4)
+
+        self._select_group(group)
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        self.assertGreaterEqual(len(payload["slides"]), 1)
+        self.assertEqual(payload["slides"][0]["globalIndex"], 0)
+
+        first_song_entry = next((entry for entry in payload["songs"] if entry["animationSongId"] == item_one.animation_song_id), None)
+        self.assertIsNotNone(first_song_entry)
+        self.assertGreaterEqual(len(first_song_entry["slideIndexes"]), 1)
+        self.assertEqual(first_song_entry["slideIndexes"][0], 0)
+        self.assertIn(0, first_song_entry["slideIndexes"])
+
+    def test_lyrics_slide_show_runtime_payload_has_contiguous_global_indexes(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A1")
+        Verse.objects.create(song=song_one, num=4, num_verse=2, chorus=False, text="Couplet A2")
+        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B1")
+        Verse.objects.create(song=song_two, num=4, num_verse=2, chorus=False, text="Couplet B2")
+        AnimationSong.objects.create(animation=animation, song=song_one, position=2)
+        AnimationSong.objects.create(animation=animation, song=song_two, position=4)
+
+        self._select_group(group)
+        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        global_indexes = [slide["globalIndex"] for slide in payload["slides"]]
+        self.assertEqual(global_indexes, list(range(len(global_indexes))))
+
+        max_index = len(payload["slides"])
+        for song_entry in payload["songs"]:
+            self.assertEqual(song_entry["slideIndexes"], sorted(song_entry["slideIndexes"]))
+            self.assertEqual(song_entry["chorusIndexes"], sorted(song_entry["chorusIndexes"]))
+            self.assertEqual(len(song_entry["slideIndexes"]), len(set(song_entry["slideIndexes"])))
+            self.assertEqual(len(song_entry["chorusIndexes"]), len(set(song_entry["chorusIndexes"])))
+            for index in song_entry["slideIndexes"]:
+                self.assertGreaterEqual(index, 0)
+                self.assertLess(index, max_index)
+            for index in song_entry["chorusIndexes"]:
+                self.assertGreaterEqual(index, 0)
+                self.assertLess(index, max_index)
+
     def test_lyrics_slide_show_contains_floating_navigation_and_song_targets(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
