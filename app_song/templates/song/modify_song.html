@@ -166,13 +166,19 @@
 
             <div class="song-list" data-reorder-list>
                 {% for block in song_blocks %}
-                    <article class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}" data-reorder-item data-id="{{ block.row_key }}">
+                    <article
+                        class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}"
+                        data-reorder-item
+                        data-id="{{ block.row_key }}"
+                        data-song-block-card
+                        data-song-block-row="{{ block.row_key }}"
+                    >
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                             {% if can_edit %}
                                 <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
                             {% endif %}
-                            <strong class="song-edit-block-drag-label">{{ block.drag_label }}</strong>
-                            <span class="song-edit-block-drag-text">{{ block.drag_text }}</span>
+                            <strong class="song-edit-block-drag-label" data-song-block-drag-label>{{ block.drag_label }}</strong>
+                            <span class="song-edit-block-drag-text" data-song-block-drag-text>{{ block.drag_text }}</span>
                         </div>
 
                         <div data-reorder-normal-view>
@@ -185,30 +191,94 @@
                                             {% endif %}
                                         </td>
                                         <td style="vertical-align: top; text-align: right; width: 5em;">
-                                            <strong>{{ block.display_label }}</strong>
+                                            {% if can_edit %}
+                                                <button type="button" class="song-tool-button" data-song-block-open-prefix>
+                                                    <strong data-song-block-display-label>{{ block.display_label }}</strong>
+                                                </button>
+                                            {% else %}
+                                                <strong data-song-block-display-label>{{ block.display_label }}</strong>
+                                            {% endif %}
                                         </td>
                                         <td style="vertical-align: top;">
                                             <div class="song-block-readonly">
-                                                {% if block.display_text %}
-                                                    <p>{{ block.display_text|linebreaksbr }}</p>
+                                                {% if can_edit %}
+                                                    <button type="button" class="song-tool-button" data-song-block-open-text style="text-align: left; width: 100%;">
+                                                        {% if block.display_text %}
+                                                            <span data-song-block-display-text>{{ block.display_text|linebreaksbr }}</span>
+                                                        {% else %}
+                                                            <span data-song-block-display-text><em>{% trans "Bloc vide" %}</em></span>
+                                                        {% endif %}
+                                                    </button>
                                                 {% else %}
-                                                    <p><em>{% trans "Bloc vide" %}</em></p>
+                                                    {% if block.display_text %}
+                                                        <p data-song-block-display-text>{{ block.display_text|linebreaksbr }}</p>
+                                                    {% else %}
+                                                        <p data-song-block-display-text><em>{% trans "Bloc vide" %}</em></p>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
+                                        </td>
+                                        <td style="vertical-align: top; text-align: right; width: 8em;">
+                                            {% if can_edit %}
+                                                <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
+                                                    {% trans "Supprimer" %}
+                                                </button>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            {% if can_edit %}
+                                <div data-song-block-editor hidden>
+                                    <p>
+                                        <label>{% trans "Préfixe" %}</label>
+                                        <input type="text" value="{{ block.prefix }}" data-song-block-prefix-input>
+                                    </p>
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" {% if block.type == 'chorus' %}checked{% endif %} data-song-block-chorus-checkbox>
+                                            {% trans "Refrain" %}
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" {% if block.followed %}checked{% endif %} data-song-block-followed-checkbox>
+                                            {% trans "Suivi" %}
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" {% if block.not_c_num %}checked{% endif %} data-song-block-not-c-num-checkbox>
+                                            {% trans "Not C. num" %}
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                            <input type="checkbox" {% if block.type == 'special' %}checked{% endif %} data-song-block-special-checkbox>
+                                            {% trans "Comme un refrain" %}
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>{% trans "Texte" %}</label>
+                                        <textarea rows="5" data-song-block-text-input>{{ block.text }}</textarea>
+                                    </p>
+                                    <p>
+                                        <button type="button" class="song-tool-button site-action site-action--primary" data-song-block-editor-ok>
+                                            {% trans "OK" %}
+                                        </button>
+                                    </p>
+                                </div>
+                            {% endif %}
                         </div>
 
-                        <input type="hidden" data-reorder-position name="blocks[{{ block.row_key }}][position]" value="{{ block.position }}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][id]" value="{{ block.id }}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][type]" value="{{ block.type }}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][text]" value="{{ block.text }}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][prefix]" value="{{ block.prefix }}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][followed]" value="{% if block.followed %}1{% else %}0{% endif %}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][not_c_num]" value="{% if block.not_c_num %}1{% else %}0{% endif %}">
-                        <input type="hidden" name="blocks[{{ block.row_key }}][delete]" value="0">
+                        <input type="hidden" data-reorder-position data-song-hidden-position name="blocks[{{ block.row_key }}][position]" value="{{ block.position }}">
+                        <input type="hidden" data-song-hidden-id name="blocks[{{ block.row_key }}][id]" value="{{ block.id }}">
+                        <input type="hidden" data-song-hidden-type name="blocks[{{ block.row_key }}][type]" value="{{ block.type }}">
+                        <input type="hidden" data-song-hidden-text name="blocks[{{ block.row_key }}][text]" value="{{ block.text }}">
+                        <input type="hidden" data-song-hidden-prefix name="blocks[{{ block.row_key }}][prefix]" value="{{ block.prefix }}">
+                        <input type="hidden" data-song-hidden-followed name="blocks[{{ block.row_key }}][followed]" value="{% if block.followed %}1{% else %}0{% endif %}">
+                        <input type="hidden" data-song-hidden-not-c-num name="blocks[{{ block.row_key }}][not_c_num]" value="{% if block.not_c_num %}1{% else %}0{% endif %}">
+                        <input type="hidden" data-song-hidden-delete name="blocks[{{ block.row_key }}][delete]" value="0">
                     </article>
                 {% empty %}
                     <article class="site-theme-card song-card song-edit-empty">
@@ -286,15 +356,27 @@
         import { init } from "{% static 'js/reorder-list.module.js' %}";
 
         const list = document.querySelector("[data-reorder-list]");
+        const closeBlockEditors = () => {
+            if (window.LSSModifySong && typeof window.LSSModifySong.closeAllBlockEditors === "function") {
+                window.LSSModifySong.closeAllBlockEditors();
+            }
+        };
         if (list) {
+            const toggleButton = document.querySelector("[data-reorder-toggle]");
+            if (toggleButton) {
+                toggleButton.addEventListener("click", closeBlockEditors);
+            }
             window.modifySongReorderController = init({
                 list,
-                toggleButton: document.querySelector("[data-reorder-toggle]"),
+                toggleButton,
                 cancelButton: document.querySelector("[data-reorder-cancel]"),
                 startPosition: 2,
                 positionStep: 2,
                 vibrateOnTargetChange: false,
                 scrollToMovedItemAfterDrop: true,
+                onStart: closeBlockEditors,
+                onEnd: closeBlockEditors,
+                onCancel: closeBlockEditors,
             });
         }
     </script>

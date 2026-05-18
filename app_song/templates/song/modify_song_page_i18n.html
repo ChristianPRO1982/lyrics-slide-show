@@ -12,6 +12,18 @@
 {% trans "Texte" as add_block_text_field_label %}
 {% trans "Couplet" as verse_label %}
 {% trans "Refrain" as chorus_label %}
+{% trans "Section spéciale" as special_section_fallback_label %}
+{% trans "Couplet (sans numérotation)" as verse_no_numbering_label %}
+{% trans "Supprimer" as delete_block_label %}
+{% trans "Préfixe" as prefix_field_label %}
+{% trans "Suivi" as followed_label %}
+{% trans "Not C. num" as not_c_num_label %}
+{% trans "Comme un refrain" as special_like_chorus_label %}
+{% trans "OK" as ok_label %}
+{% trans "Supprimer le bloc" as delete_block_title %}
+{% trans "Êtes-vous sûr de vouloir supprimer ce couplet/refrain ? Cette suppression sera enregistrée uniquement après clic sur Enregistrer." as delete_block_message %}
+{% trans "Oui" as yes_label %}
+{% trans "Non" as no_label %}
 <script>
     window.LSS_SONG_I18N = {
         summaryTitle: "{{ song_summary_title|escapejs }}",
@@ -26,6 +38,19 @@
         addBlockTextMessage: "{{ add_block_text_message|escapejs }}",
         addBlockTextFieldLabel: "{{ add_block_text_field_label|escapejs }}",
         verseLabel: "{{ verse_label|escapejs }}",
-        chorusLabel: "{{ chorus_label|escapejs }}"
+        chorusLabel: "{{ chorus_label|escapejs }}",
+        specialSectionFallbackLabel: "{{ special_section_fallback_label|escapejs }}",
+        verseNoNumberingLabel: "{{ verse_no_numbering_label|escapejs }}",
+        deleteBlockLabel: "{{ delete_block_label|escapejs }}",
+        prefixFieldLabel: "{{ prefix_field_label|escapejs }}",
+        followedLabel: "{{ followed_label|escapejs }}",
+        notCNumLabel: "{{ not_c_num_label|escapejs }}",
+        specialLikeChorusLabel: "{{ special_like_chorus_label|escapejs }}",
+        textFieldLabel: "{{ add_block_text_field_label|escapejs }}",
+        okLabel: "{{ ok_label|escapejs }}",
+        deleteBlockTitle: "{{ delete_block_title|escapejs }}",
+        deleteBlockMessage: "{{ delete_block_message|escapejs }}",
+        yesLabel: "{{ yes_label|escapejs }}",
+        noLabel: "{{ no_label|escapejs }}"
     };
 </script>
