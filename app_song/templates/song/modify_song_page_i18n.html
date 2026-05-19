@@ -11,7 +11,7 @@
 {% trans "Saisissez le texte du bloc." as add_block_text_message %}
 {% trans "Texte" as add_block_text_field_label %}
 {% trans "Couplet" as verse_label %}
-{% trans "Refrain" as chorus_label %}
+{% trans "Refrain" as chorus_label_default %}
 {% trans "Section spéciale" as special_section_fallback_label %}
 {% trans "Couplet (sans numérotation)" as verse_no_numbering_label %}
 {% trans "Supprimer" as delete_block_label %}
@@ -38,7 +38,8 @@
         addBlockTextMessage: "{{ add_block_text_message|escapejs }}",
         addBlockTextFieldLabel: "{{ add_block_text_field_label|escapejs }}",
         verseLabel: "{{ verse_label|escapejs }}",
-        chorusLabel: "{{ chorus_label|escapejs }}",
+        chorusLabel: "{{ chorus_label_default|escapejs }}",
+        chorusPrefix: "{{ chorus_prefix|default:chorus_label_default|escapejs }}",
         specialSectionFallbackLabel: "{{ special_section_fallback_label|escapejs }}",
         verseNoNumberingLabel: "{{ verse_no_numbering_label|escapejs }}",
         deleteBlockLabel: "{{ delete_block_label|escapejs }}",

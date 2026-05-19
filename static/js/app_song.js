@@ -287,6 +287,8 @@
         };
 
         const getHidden = (card, selector) => card ? card.querySelector(selector) : null;
+        const getReadView = (card) => card ? card.querySelector("[data-song-block-read-view]") : null;
+        const getEditView = (card) => card ? card.querySelector("[data-song-block-edit-view]") : null;
         const asBool = (value) => String(value || "") === "1";
 
         const normalizeBlockState = (state) => {
@@ -307,7 +309,7 @@
 
         const labelForState = (state, card) => {
             if (state.type === "chorus") {
-                return label("chorusLabel");
+                return label("chorusPrefix") || label("chorusLabel");
             }
             if (state.type === "special") {
                 return state.prefix.trim() || label("specialSectionFallbackLabel");
@@ -371,16 +373,16 @@
         };
 
         const readStateFromEditor = (card) => {
-            const textInput = card.querySelector("[data-song-block-text-input]");
+            const textInput = card.querySelector("[data-song-block-lyrics-input]");
             const prefixInput = card.querySelector("[data-song-block-prefix-input]");
             const chorusCheckbox = card.querySelector("[data-song-block-chorus-checkbox]");
             const followedCheckbox = card.querySelector("[data-song-block-followed-checkbox]");
-            const notCNumCheckbox = card.querySelector("[data-song-block-not-c-num-checkbox]");
-            const specialCheckbox = card.querySelector("[data-song-block-special-checkbox]");
+            const notCNumCheckbox = card.querySelector("[data-song-block-no-continue-numbering-checkbox]");
+            const chorusLikeCheckbox = card.querySelector("[data-song-block-chorus-like-checkbox]");
             let type = "verse";
             if (chorusCheckbox?.checked) {
                 type = "chorus";
-            } else if (specialCheckbox?.checked) {
+            } else if (chorusLikeCheckbox?.checked) {
                 type = "special";
             }
             return normalizeBlockState({
@@ -394,16 +396,16 @@
 
         const writeStateToEditor = (card, state) => {
             const normalized = normalizeBlockState(state);
-            const textInput = card.querySelector("[data-song-block-text-input]");
+            const textInput = card.querySelector("[data-song-block-lyrics-input]");
             const prefixInput = card.querySelector("[data-song-block-prefix-input]");
             const chorusCheckbox = card.querySelector("[data-song-block-chorus-checkbox]");
             const followedCheckbox = card.querySelector("[data-song-block-followed-checkbox]");
-            const notCNumCheckbox = card.querySelector("[data-song-block-not-c-num-checkbox]");
-            const specialCheckbox = card.querySelector("[data-song-block-special-checkbox]");
+            const notCNumCheckbox = card.querySelector("[data-song-block-no-continue-numbering-checkbox]");
+            const chorusLikeCheckbox = card.querySelector("[data-song-block-chorus-like-checkbox]");
             if (textInput) textInput.value = normalized.text;
             if (prefixInput) prefixInput.value = normalized.prefix;
             if (chorusCheckbox) chorusCheckbox.checked = normalized.type === "chorus";
-            if (specialCheckbox) specialCheckbox.checked = normalized.type === "special";
+            if (chorusLikeCheckbox) chorusLikeCheckbox.checked = normalized.type === "special";
             if (followedCheckbox) followedCheckbox.checked = normalized.followed;
             if (notCNumCheckbox) notCNumCheckbox.checked = normalized.notCNum;
 
@@ -411,15 +413,15 @@
             if (prefixInput) prefixInput.disabled = isChorus;
             if (followedCheckbox) followedCheckbox.disabled = isChorus;
             if (notCNumCheckbox) notCNumCheckbox.disabled = isChorus;
-            if (specialCheckbox) specialCheckbox.disabled = isChorus;
+            if (chorusLikeCheckbox) chorusLikeCheckbox.disabled = isChorus;
         };
 
         const closeAllEditors = () => {
             getCards().forEach((card) => {
-                const editor = card.querySelector("[data-song-block-editor]");
-                if (editor) {
-                    editor.hidden = true;
-                }
+                const readView = getReadView(card);
+                const editView = getEditView(card);
+                if (readView) readView.hidden = false;
+                if (editView) editView.hidden = true;
             });
         };
 
@@ -430,15 +432,17 @@
             const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
             if (hiddenDelete && hiddenDelete.value === "1") return;
 
-            const editor = card.querySelector("[data-song-block-editor]");
-            if (!editor) return;
+            const readView = getReadView(card);
+            const editView = getEditView(card);
+            if (!editView) return;
             const state = readStateFromHidden(card);
             writeStateToEditor(card, state);
-            editor.hidden = false;
+            if (readView) readView.hidden = true;
+            editView.hidden = false;
 
             const focusSelector = focusTarget === "prefix"
                 ? "[data-song-block-prefix-input]"
-                : "[data-song-block-text-input]";
+                : "[data-song-block-lyrics-input]";
             const focusNode = card.querySelector(focusSelector);
             if (focusNode && typeof focusNode.focus === "function") {
                 focusNode.focus();
@@ -447,12 +451,12 @@
 
         const ensureExclusiveType = (card, changedKey) => {
             const chorusCheckbox = card.querySelector("[data-song-block-chorus-checkbox]");
-            const specialCheckbox = card.querySelector("[data-song-block-special-checkbox]");
-            if (!chorusCheckbox || !specialCheckbox) return;
+            const chorusLikeCheckbox = card.querySelector("[data-song-block-chorus-like-checkbox]");
+            if (!chorusCheckbox || !chorusLikeCheckbox) return;
             if (changedKey === "chorus" && chorusCheckbox.checked) {
-                specialCheckbox.checked = false;
+                chorusLikeCheckbox.checked = false;
             }
-            if (changedKey === "special" && specialCheckbox.checked) {
+            if (changedKey === "chorus-like" && chorusLikeCheckbox.checked) {
                 chorusCheckbox.checked = false;
             }
         };
@@ -484,7 +488,9 @@
                 followed: false,
                 notCNum: false,
             });
-            const initialLabel = initialType === "chorus" ? label("chorusLabel") : label("verseLabel");
+            const initialLabel = initialType === "chorus"
+                ? (label("chorusPrefix") || label("chorusLabel"))
+                : label("verseLabel");
 
             article.className = `site-theme-card song-card song-edit-block${blockType === "chorus" ? " song-edit-block--emphasis" : ""}`;
             article.setAttribute("data-reorder-item", "");
@@ -506,17 +512,56 @@
                                 <td style="vertical-align: top; width: 3em;">
                                     <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
                                 </td>
-                                <td style="vertical-align: top; text-align: right; width: 5em;">
-                                    <button type="button" class="song-tool-button" data-song-block-open-prefix>
-                                        <strong data-song-block-display-label>${escapeHtml(initialLabel)}</strong>
-                                    </button>
-                                </td>
                                 <td style="vertical-align: top;">
-                                    <div class="song-block-readonly">
-                                        <button type="button" class="song-tool-button" data-song-block-open-text style="text-align: left; width: 100%;">
-                                            <span data-song-block-display-text>${escapeHtml(initialState.text || label("emptyBlockLabel")).replace(/\n/g, "<br>")}</span>
-                                        </button>
+                                    <div data-song-block-read-view>
+                                        <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="song-block-prefix-col" style="vertical-align: top; white-space: nowrap;">
+                                                        <button type="button" class="song-inline-trigger" data-song-block-open-prefix>
+                                                            <strong data-song-block-display-label>${escapeHtml(initialLabel)}</strong>
+                                                        </button>
+                                                    </td>
+                                                    <td style="vertical-align: top;">
+                                                        <div class="song-block-readonly">
+                                                            <button type="button" class="song-inline-trigger song-inline-trigger--text" data-song-block-open-text>
+                                                                <span data-song-block-display-text>${escapeHtml(initialState.text || label("emptyBlockLabel")).replace(/\n/g, "<br>")}</span>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
+                    <div data-song-block-edit-view data-song-block-editor hidden>
+                        <div class="song-block-edit-layout" data-song-block-edit-layout>
+                            <div class="song-block-edit-text-col" data-song-block-edit-text-col>
+                                <label>${escapeHtml(label("textFieldLabel"))}</label>
+                                <textarea rows="5" data-song-block-lyrics-input>${escapeHtml(initialState.text)}</textarea>
+                            </div>
+                            <div class="song-block-edit-options-col" data-song-block-edit-options-col>
+                                <p>
+                                    <label>${escapeHtml(label("prefixFieldLabel"))}</label>
+                                    <input type="text" value="" data-song-block-prefix-input>
+                                </p>
+                                <p>
+                                    <label><input type="checkbox" ${initialType === "chorus" ? "checked" : ""} data-song-block-chorus-checkbox> ${escapeHtml(label("chorusLabel"))}</label>
+                                </p>
+                                <p>
+                                    <label><input type="checkbox" data-song-block-followed-checkbox> ${escapeHtml(label("followedLabel"))}</label>
+                                </p>
+                                <p>
+                                    <label><input type="checkbox" data-song-block-no-continue-numbering-checkbox> ${escapeHtml(label("notCNumLabel"))}</label>
+                                </p>
+                                <p>
+                                    <label><input type="checkbox" data-song-block-chorus-like-checkbox> ${escapeHtml(label("specialLikeChorusLabel"))}</label>
+                                </p>
+                                <p>
+                                    <button type="button" class="song-tool-button site-action site-action--primary" data-song-block-editor-ok>${escapeHtml(label("okLabel"))}</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                                 </td>
                                 <td style="vertical-align: top; text-align: right; width: 8em;">
                                     <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
@@ -526,31 +571,6 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div data-song-block-editor hidden>
-                        <p>
-                            <label>${escapeHtml(label("prefixFieldLabel"))}</label>
-                            <input type="text" value="" data-song-block-prefix-input>
-                        </p>
-                        <p>
-                            <label><input type="checkbox" ${initialType === "chorus" ? "checked" : ""} data-song-block-chorus-checkbox> ${escapeHtml(label("chorusLabel"))}</label>
-                        </p>
-                        <p>
-                            <label><input type="checkbox" data-song-block-followed-checkbox> ${escapeHtml(label("followedLabel"))}</label>
-                        </p>
-                        <p>
-                            <label><input type="checkbox" data-song-block-not-c-num-checkbox> ${escapeHtml(label("notCNumLabel"))}</label>
-                        </p>
-                        <p>
-                            <label><input type="checkbox" data-song-block-special-checkbox> ${escapeHtml(label("specialLikeChorusLabel"))}</label>
-                        </p>
-                        <p>
-                            <label>${escapeHtml(label("textFieldLabel"))}</label>
-                            <textarea rows="5" data-song-block-text-input>${escapeHtml(initialState.text)}</textarea>
-                        </p>
-                        <p>
-                            <button type="button" class="song-tool-button site-action site-action--primary" data-song-block-editor-ok>${escapeHtml(label("okLabel"))}</button>
-                        </p>
-                    </div>
                 </div>
 
                 <input type="hidden" data-reorder-position data-song-hidden-position name="blocks[${escapeHtml(rowKey)}][position]" value="${position}">
@@ -647,10 +667,10 @@
             if (!card) return;
 
             if (
-                target.matches("[data-song-block-text-input]") ||
+                target.matches("[data-song-block-lyrics-input]") ||
                 target.matches("[data-song-block-prefix-input]") ||
                 target.matches("[data-song-block-followed-checkbox]") ||
-                target.matches("[data-song-block-not-c-num-checkbox]")
+                target.matches("[data-song-block-no-continue-numbering-checkbox]")
             ) {
                 syncCardFromEditor(card);
             }
@@ -667,14 +687,14 @@
                 syncCardFromEditor(card);
                 return;
             }
-            if (target.matches("[data-song-block-special-checkbox]")) {
-                ensureExclusiveType(card, "special");
+            if (target.matches("[data-song-block-chorus-like-checkbox]")) {
+                ensureExclusiveType(card, "chorus-like");
                 syncCardFromEditor(card);
                 return;
             }
             if (
                 target.matches("[data-song-block-followed-checkbox]") ||
-                target.matches("[data-song-block-not-c-num-checkbox]")
+                target.matches("[data-song-block-no-continue-numbering-checkbox]")
             ) {
                 syncCardFromEditor(card);
             }

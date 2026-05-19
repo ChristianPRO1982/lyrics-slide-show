@@ -640,6 +640,9 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-add-block-action")
         self.assertContains(response, "data-song-block-delete-action")
         self.assertContains(response, "data-song-block-editor")
+        self.assertContains(response, "data-song-block-read-view")
+        self.assertContains(response, "data-song-block-edit-view")
+        self.assertContains(response, "data-song-block-edit-view data-song-block-editor hidden")
         self.assertContains(response, "data-song-block-open-text")
         self.assertContains(response, "data-song-block-open-prefix")
 
@@ -653,6 +656,8 @@ class ModifySongViewTests(TestCase):
         self.assertNotContains(response, "data-song-add-block-action")
         self.assertNotContains(response, "data-song-block-delete-action")
         self.assertNotContains(response, "data-song-block-editor")
+        self.assertContains(response, "data-song-block-read-view")
+        self.assertNotContains(response, "data-song-block-edit-view")
 
     def test_moderator_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -664,6 +669,8 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-add-block-action")
         self.assertContains(response, "data-song-block-delete-action")
         self.assertContains(response, "data-song-block-editor")
+        self.assertContains(response, "data-song-block-read-view")
+        self.assertContains(response, "data-song-block-edit-view")
 
     def test_member_cannot_post_validated_song(self):
         self.song.status = 1

@@ -529,6 +529,7 @@ def _build_modify_song_context(
     return {
         "selected_group": selected_group,
         "song": song,
+        "chorus_prefix": render_settings.chorus_prefix,
         "title_complete_with_tags": build_song_full_title_with_tags(song),
         "description_display": _normalize_display_linebreaks(song.description).strip(),
         "page_summary_text": page_summary_text,
