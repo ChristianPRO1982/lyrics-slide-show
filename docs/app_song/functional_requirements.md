@@ -100,11 +100,28 @@ Comportement fonctionnel actuel côté édition de blocs :
 - l’activation du déplacement ferme les éditeurs ouverts ;
 - en affichage lecture, préfixe et texte sont rendus côte à côte ; la colonne préfixe est fixe et alignée à droite.
 
-Règles de cohérence des options de bloc :
+### Fonctionnement des options d’un couplet/refrain
 
-- `Refrain` force le type `chorus` ;
-- un bloc `chorus` neutralise `followed`, `not_c_num` et `prefix` ;
-- `Refrain` et `Comme un refrain` sont mutuellement exclusifs.
+Règles métier à appliquer sur un bloc (`s_verses`) :
+
+- un bloc ne peut être que `couplet` ou `refrain` selon le booléen `chorus` ;
+- si à la sauvegarde `chorus=true`, alors les autres options sont forcées à :
+  - `chorus_like=false`
+  - `followed=false`
+  - `notcontinuenumbering=false`
+  - `prefix=NULL`
+- `followed` signifie que ce couplet est suivi directement par le couplet suivant, sans réinsertion du groupe de refrains à cet endroit ;
+- `notcontinuenumbering` signifie que `num_verse` de ce couplet reprend la valeur du couplet précédent (la numérotation affichée ne s’incrémente pas) ;
+- si `notcontinuenumbering` est absent, sa valeur est `0` ;
+- `chorus_like` signifie que l’affichage du bloc reprend le style refrain (gras) tout en restant un couplet dans la logique ;
+- lorsque `chorus_like=true`, `notcontinuenumbering` devient obligatoire (coché et grisé côté UI) ;
+- lorsque `chorus_like=true`, le champ `prefix` est activé et utilisé (pont, coda, pré-refrain, refrain alternatif final, etc.) ;
+- `Refrain` (`chorus=true`) et `Comme un refrain` (`chorus_like=true`) sont mutuellement exclusifs.
+
+Notes importantes :
+
+- `num` représente uniquement la position technique du bloc dans la chanson, indépendamment des options ;
+- à l’affichage, les blocs `chorus` et `chorus_like` sont en gras ; les autres couplets sont en style normal.
 
 ## Recherche
 
