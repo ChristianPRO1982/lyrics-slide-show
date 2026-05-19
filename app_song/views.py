@@ -217,6 +217,11 @@ def _parse_song_blocks(post_data) -> list[ParsedSongBlock]:
             parsed.followed = False
             parsed.not_c_num = False
             parsed.prefix = ""
+            parsed.chorus_like = False
+        elif parsed.chorus_like:
+            parsed.not_c_num = True
+        else:
+            parsed.prefix = ""
         blocks.append(parsed)
 
     blocks.sort(key=lambda item: (item.position, item.row_key))
@@ -594,7 +599,7 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
             verse.followed = block.followed
             verse.notcontinuenumbering = block.not_c_num
             verse.text = block.text
-            verse.prefix = block.prefix
+            verse.prefix = block.prefix or None
             verse.save()
 
         if existing_by_id:

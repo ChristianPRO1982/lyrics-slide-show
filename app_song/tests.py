@@ -738,6 +738,44 @@ class ModifySongViewTests(TestCase):
         self.assertEqual(verses[2].num_verse, 1)
         self.assertEqual(verses[2].prefix, "Pont final\u00A0;")
 
+    def test_chorus_save_resets_incompatible_options_and_prefix_to_null(self):
+        self._login()
+        payload = self._base_payload()
+        payload["blocks[b][type]"] = "chorus"
+        payload["blocks[b][prefix]"] = "Prefix should be removed"
+        payload["blocks[b][followed]"] = "1"
+        payload["blocks[b][not_c_num]"] = "1"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        chorus_block = Verse.objects.get(song=self.song, chorus=True)
+        self.assertFalse(chorus_block.chorus_like)
+        self.assertFalse(chorus_block.followed)
+        self.assertFalse(chorus_block.notcontinuenumbering)
+        self.assertIsNone(chorus_block.prefix)
+
+    def test_chorus_like_forces_not_continue_numbering(self):
+        self._login()
+        payload = self._base_payload()
+        payload["blocks[c][type]"] = "special"
+        payload["blocks[c][not_c_num]"] = "0"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        chorus_like_block = Verse.objects.get(song=self.song, chorus_like=True)
+        self.assertTrue(chorus_like_block.notcontinuenumbering)
+
+    def test_non_chorus_like_verse_clears_prefix_to_null(self):
+        self._login()
+        payload = self._base_payload()
+        payload["blocks[a][type]"] = "verse"
+        payload["blocks[a][prefix]"] = "Bridge"
+        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        verse_block = Verse.objects.get(song=self.song, chorus=False, chorus_like=False, num=4)
+        self.assertIsNone(verse_block.prefix)
+
     def test_member_cannot_change_status_via_checkbox(self):
         self._login()
         payload = self._base_payload()

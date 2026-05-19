@@ -303,6 +303,10 @@
                 next.followed = false;
                 next.notCNum = false;
                 next.prefix = "";
+            } else if (next.type === "special") {
+                next.notCNum = true;
+            } else {
+                next.prefix = "";
             }
             return next;
         };
@@ -402,6 +406,10 @@
             const followedCheckbox = card.querySelector("[data-song-block-followed-checkbox]");
             const notCNumCheckbox = card.querySelector("[data-song-block-no-continue-numbering-checkbox]");
             const chorusLikeCheckbox = card.querySelector("[data-song-block-chorus-like-checkbox]");
+            const prefixField = card.querySelector("[data-song-block-prefix-field]");
+            const followedOption = card.querySelector("[data-song-block-followed-option]");
+            const noContinueOption = card.querySelector("[data-song-block-no-continue-numbering-option]");
+            const chorusLikeOption = card.querySelector("[data-song-block-chorus-like-option]");
             if (textInput) textInput.value = normalized.text;
             if (prefixInput) prefixInput.value = normalized.prefix;
             if (chorusCheckbox) chorusCheckbox.checked = normalized.type === "chorus";
@@ -410,10 +418,15 @@
             if (notCNumCheckbox) notCNumCheckbox.checked = normalized.notCNum;
 
             const isChorus = normalized.type === "chorus";
+            const isChorusLike = normalized.type === "special";
             if (prefixInput) prefixInput.disabled = isChorus;
             if (followedCheckbox) followedCheckbox.disabled = isChorus;
-            if (notCNumCheckbox) notCNumCheckbox.disabled = isChorus;
+            if (notCNumCheckbox) notCNumCheckbox.disabled = isChorus || isChorusLike;
             if (chorusLikeCheckbox) chorusLikeCheckbox.disabled = isChorus;
+            if (prefixField) prefixField.hidden = !isChorusLike;
+            if (followedOption) followedOption.hidden = isChorus;
+            if (noContinueOption) noContinueOption.hidden = isChorus;
+            if (chorusLikeOption) chorusLikeOption.hidden = isChorus;
         };
 
         const closeAllEditors = () => {
@@ -540,20 +553,20 @@
                                 <textarea rows="5" data-song-block-lyrics-input>${escapeHtml(initialState.text)}</textarea>
                             </div>
                             <div class="song-block-edit-options-col" data-song-block-edit-options-col>
-                                <p>
+                                <p data-song-block-prefix-field hidden>
                                     <label>${escapeHtml(label("prefixFieldLabel"))}</label>
                                     <input type="text" value="" data-song-block-prefix-input>
                                 </p>
                                 <p>
                                     <label><input type="checkbox" ${initialType === "chorus" ? "checked" : ""} data-song-block-chorus-checkbox> ${escapeHtml(label("chorusLabel"))}</label>
                                 </p>
-                                <p>
+                                <p data-song-block-followed-option ${initialType === "chorus" ? "hidden" : ""}>
                                     <label><input type="checkbox" data-song-block-followed-checkbox> ${escapeHtml(label("followedLabel"))}</label>
                                 </p>
-                                <p>
+                                <p data-song-block-no-continue-numbering-option ${initialType === "chorus" ? "hidden" : ""}>
                                     <label><input type="checkbox" data-song-block-no-continue-numbering-checkbox> ${escapeHtml(label("notCNumLabel"))}</label>
                                 </p>
-                                <p>
+                                <p data-song-block-chorus-like-option ${initialType === "chorus" ? "hidden" : ""}>
                                     <label><input type="checkbox" data-song-block-chorus-like-checkbox> ${escapeHtml(label("specialLikeChorusLabel"))}</label>
                                 </p>
                                 <p>

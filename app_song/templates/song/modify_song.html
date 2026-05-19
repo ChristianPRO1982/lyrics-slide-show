@@ -235,7 +235,7 @@
                                                             <textarea id="song-block-text-{{ block.row_key|slugify }}" rows="5" data-song-block-lyrics-input>{{ block.text }}</textarea>
                                                         </div>
                                                         <div class="song-block-edit-options-col" data-song-block-edit-options-col>
-                                                            <p>
+                                                            <p data-song-block-prefix-field {% if block.type != 'special' %}hidden{% endif %}>
                                                                 <label for="song-block-prefix-{{ block.row_key|slugify }}">{% trans "Préfixe" %}</label>
                                                                 <input id="song-block-prefix-{{ block.row_key|slugify }}" type="text" value="{{ block.prefix }}" data-song-block-prefix-input>
                                                             </p>
@@ -245,19 +245,19 @@
                                                                     {% trans "Refrain" %}
                                                                 </label>
                                                             </p>
-                                                            <p>
+                                                            <p data-song-block-followed-option {% if block.type == 'chorus' %}hidden{% endif %}>
                                                                 <label>
                                                                     <input type="checkbox" {% if block.followed %}checked{% endif %} data-song-block-followed-checkbox>
                                                                     {% trans "Suivi" %}
                                                                 </label>
                                                             </p>
-                                                            <p>
+                                                            <p data-song-block-no-continue-numbering-option {% if block.type == 'chorus' %}hidden{% endif %}>
                                                                 <label>
                                                                     <input type="checkbox" {% if block.not_c_num %}checked{% endif %} data-song-block-no-continue-numbering-checkbox>
                                                                     {% trans "Not C. num" %}
                                                                 </label>
                                                             </p>
-                                                            <p>
+                                                            <p data-song-block-chorus-like-option {% if block.type == 'chorus' %}hidden{% endif %}>
                                                                 <label>
                                                                     <input type="checkbox" {% if block.type == 'special' %}checked{% endif %} data-song-block-chorus-like-checkbox>
                                                                     {% trans "Comme un refrain" %}
