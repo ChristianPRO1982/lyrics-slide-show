@@ -79,6 +79,33 @@ Le rendu est centralisé dans `app_song/rendering.py` (`render_song_blocks`).
 - Deux modes : `full-chorus` (répétitions complètes) et `single-chorus` (un seul groupe chorus).
 - Les blocs `chorus_like` gardent la logique de verse, avec style/label de type refrain.
 
+### Préfixes de rendu
+
+Les préfixes affichés (`refrain`, `couplet`) proviennent des paramètres de site localisés (`site_params`) via `SongRenderSettings`.
+
+- `chorus_prefix` est utilisé pour le label de refrain (exemple FR courant : `R.` selon paramétrage).
+- les labels de couplet sont construits via `verse_prefix1 + numéro + verse_prefix2`.
+
+## Workflow de modification de chant (`/songs/<id>/modify/`)
+
+Comportement fonctionnel actuel côté édition de blocs :
+
+- les changements de blocs sont locaux tant que l’utilisateur ne clique pas sur `Enregistrer` ;
+- le formulaire transporte l’état complet via `blocks[<row_key>][field]` ;
+- l’ajout de bloc se fait en front (choix couplet/refrain + texte), puis insertion d’une nouvelle carte dans la liste ;
+- la suppression d’un bloc demande confirmation, puis marque `delete=1` et masque la carte localement ; la suppression DB est effective uniquement après `Enregistrer` ;
+- l’édition d’un bloc est inline et exclusive : un seul bloc en mode édition à la fois ;
+- en mode édition inline, le rendu lecture est remplacé par le formulaire d’édition ; le bouton `OK` referme l’édition sans soumettre le formulaire ;
+- le déplacement est géré par poignées drag-and-drop (pas de `<select>` de déplacement) ;
+- l’activation du déplacement ferme les éditeurs ouverts ;
+- en affichage lecture, préfixe et texte sont rendus côte à côte ; la colonne préfixe est fixe et alignée à droite.
+
+Règles de cohérence des options de bloc :
+
+- `Refrain` force le type `chorus` ;
+- un bloc `chorus` neutralise `followed`, `not_c_num` et `prefix` ;
+- `Refrain` et `Comme un refrain` sont mutuellement exclusifs.
+
 ## Recherche
 
 La recherche est gérée par `app_song/search.py`.
