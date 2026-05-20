@@ -49,8 +49,9 @@
         slideNode.style.alignItems = "center";
         slideNode.style.justifyContent = "center";
         slideNode.style.textAlign = "center";
-        slideNode.style.width = "100vw";
+        slideNode.style.width = "100%";
         slideNode.style.height = "100vh";
+        slideNode.style.boxSizing = "border-box";
         slideNode.style.whiteSpace = "pre-wrap";
         slideNode.style.overflowWrap = "anywhere";
         slideNode.style.backgroundSize = "100% 100%";
