@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Ajouter une animation" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
+{% block page_summary %}
+    <div class="animation-summary-preview" data-animation-create-summary-preview>
+        <p data-animation-create-summary-live>Test</p>
+    </div>
+    <p>
+        <span class="animation-color-dot" data-animation-create-summary-text-dot></span>
+        {% trans "Texte" %}:
+        <strong data-animation-create-summary-font>{{ form.font_family.value|default_if_none:"" }}</strong>,
+        <span data-animation-create-summary-font-size>{{ form.font_size.value|default_if_none:"" }}</span>px
+    </p>
+    <p>
+        <span class="animation-color-dot" data-animation-create-summary-bg-dot></span>
+        {% trans "Fond" %},
+        {% trans "Marge horizontale" %}:
+        <span data-animation-create-summary-padding>{{ form.horizontal_padding.value|default_if_none:"" }}</span>px
+    </p>
+{% endblock %}
+{% block content %}
+    <form method="post" class="site-theme-selection">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <article class="site-theme-card">
+            <div class="animation-create-form-row">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.scheduled_at.id_for_label }}">{{ form.scheduled_at.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.scheduled_at }}
+                    {{ form.scheduled_at.errors }}
+                </div>
+            </div>
+        </article>
+
+        <article class="site-theme-card">
+            <div class="animation-create-form-row">
+                <label for="{{ form.text_color.id_for_label }}">{{ form.text_color.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.text_color }}
+                    {{ form.text_color.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.bg_color.id_for_label }}">{{ form.bg_color.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.bg_color }}
+                    {{ form.bg_color.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <span>{% trans "Couleurs" %}</span>
+                <div class="animation-create-form-control">
+                    <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-create-colors-popup>
+                        {% trans "Couleurs du chant" %}
+                    </button>
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.font_family.id_for_label }}">{{ form.font_family.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.font_family }}
+                    {{ form.font_family.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.font_size.id_for_label }}">{{ form.font_size.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.font_size }}
+                    {{ form.font_size.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.horizontal_padding.id_for_label }}">{{ form.horizontal_padding.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.horizontal_padding }}
+                    {{ form.horizontal_padding.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.background_asset_code.id_for_label }}">{{ form.background_asset_code.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.background_asset_code }}
+                    {{ form.background_asset_code.errors }}
+                </div>
+            </div>
+        </article>
+
+        <article class="site-theme-card">
+            <p>
+                <button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Créer l'animation" %}</button>
+            </p>
+        </article>
+    </form>
+{% endblock %}
+{% block page_scripts %}
+    {% trans "Couleurs du chant" as lss_add_anim_popup_title %}
+    {% trans "Couleur du texte" as lss_add_anim_popup_text_color %}
+    {% trans "Couleur de fond" as lss_add_anim_popup_bg_color %}
+    {% trans "OK" as lss_add_anim_popup_ok %}
+    {% trans "Abandonner" as lss_add_anim_popup_cancel %}
+    <script>
+        (() => {
+            const form = document.querySelector("form.site-theme-selection");
+            if (!(form instanceof HTMLFormElement)) {
+                return;
+            }
+
+            const textColorInput = form.querySelector("#id_text_color");
+            const bgColorInput = form.querySelector("#id_bg_color");
+            const fontFamilyInput = form.querySelector("#id_font_family");
+            const fontSizeInput = form.querySelector("#id_font_size");
+            const paddingInput = form.querySelector("#id_horizontal_padding");
+            const colorsPopupTrigger = form.querySelector("[data-animation-create-colors-popup]");
+
+            const preview = document.querySelector("[data-animation-create-summary-preview]");
+            const live = document.querySelector("[data-animation-create-summary-live]");
+            const textDot = document.querySelector("[data-animation-create-summary-text-dot]");
+            const bgDot = document.querySelector("[data-animation-create-summary-bg-dot]");
+            const fontNode = document.querySelector("[data-animation-create-summary-font]");
+            const fontSizeNode = document.querySelector("[data-animation-create-summary-font-size]");
+            const paddingNode = document.querySelector("[data-animation-create-summary-padding]");
+
+            const hexPattern = /^#([0-9a-fA-F]{6})$/;
+            const defaults = {
+                textColor: "#FFFFFF",
+                bgColor: "#000000",
+                fontFamily: "Source Sans Pro",
+                fontSize: 72,
+                padding: 80,
+            };
+            const popupTitle = "{{ lss_add_anim_popup_title|escapejs }}";
+            const popupTextColorLabel = "{{ lss_add_anim_popup_text_color|escapejs }}";
+            const popupBgColorLabel = "{{ lss_add_anim_popup_bg_color|escapejs }}";
+            const popupOkLabel = "{{ lss_add_anim_popup_ok|escapejs }}";
+            const popupCancelLabel = "{{ lss_add_anim_popup_cancel|escapejs }}";
+
+            const validHex = (value) => {
+                const candidate = String(value || "").trim();
+                return hexPattern.test(candidate) ? candidate.toUpperCase() : null;
+            };
+
+            const clampNumber = (value, fallback, min, max) => {
+                const parsed = Number.parseInt(String(value || ""), 10);
+                if (Number.isNaN(parsed)) {
+                    return fallback;
+                }
+                return Math.min(max, Math.max(min, parsed));
+            };
+
+            const applySummary = () => {
+                const textColor = validHex(textColorInput?.value) || defaults.textColor;
+                const bgColor = validHex(bgColorInput?.value) || defaults.bgColor;
+                const fontFamily = String(fontFamilyInput?.value || "").trim() || defaults.fontFamily;
+                const fontSize = clampNumber(fontSizeInput?.value, defaults.fontSize, 10, 300);
+                const horizontalPadding = clampNumber(paddingInput?.value, defaults.padding, 0, 600);
+
+                if (textDot instanceof HTMLElement) {
+                    textDot.style.backgroundColor = textColor;
+                }
+                if (bgDot instanceof HTMLElement) {
+                    bgDot.style.backgroundColor = bgColor;
+                }
+                if (fontNode instanceof HTMLElement) {
+                    fontNode.textContent = fontFamily;
+                }
+                if (fontSizeNode instanceof HTMLElement) {
+                    fontSizeNode.textContent = String(fontSize);
+                }
+                if (paddingNode instanceof HTMLElement) {
+                    paddingNode.textContent = String(horizontalPadding);
+                }
+                if (live instanceof HTMLElement) {
+                    live.style.color = textColor;
+                    live.style.fontFamily = `'${fontFamily}', sans-serif`;
+                    live.style.fontSize = `${fontSize}px`;
+                }
+                if (preview instanceof HTMLElement) {
+                    preview.style.background = bgColor;
+                    preview.style.paddingLeft = `${horizontalPadding}px`;
+                    preview.style.paddingRight = `${horizontalPadding}px`;
+                }
+            };
+
+            form.addEventListener("input", applySummary);
+            form.addEventListener("change", applySummary);
+
+            const openColorsPopup = async () => {
+                const messageBox = window.LSSMessageBox;
+                if (!messageBox || typeof messageBox.show !== "function") {
+                    return;
+                }
+
+                const currentTextColor = validHex(textColorInput?.value) || defaults.textColor;
+                const currentBgColor = validHex(bgColorInput?.value) || defaults.bgColor;
+                const result = await messageBox.show({
+                    title: popupTitle,
+                    showCloseButton: true,
+                    buttons: [
+                        { id: "ok", label: popupOkLabel, tone: "success", validate: true },
+                        { id: "cancel", label: popupCancelLabel, tone: "neutral", validate: false },
+                    ],
+                    fields: [
+                        { id: "text_color", label: popupTextColorLabel, type: "color", value: currentTextColor, required: true },
+                        { id: "bg_color", label: popupBgColorLabel, type: "color", value: currentBgColor, required: true },
+                    ],
+                    enterButtonId: "ok",
+                    escapeButtonId: "cancel",
+                });
+
+                if (result.buttonId !== "ok") {
+                    return;
+                }
+
+                if (textColorInput instanceof HTMLInputElement) {
+                    textColorInput.value = validHex(result.values?.text_color) || defaults.textColor;
+                }
+                if (bgColorInput instanceof HTMLInputElement) {
+                    bgColorInput.value = validHex(result.values?.bg_color) || defaults.bgColor;
+                }
+                applySummary();
+            };
+
+            if (colorsPopupTrigger instanceof HTMLButtonElement) {
+                colorsPopupTrigger.addEventListener("click", () => {
+                    void openColorsPopup();
+                });
+            }
+            applySummary();
+        })();
+    </script>
+{% endblock %}

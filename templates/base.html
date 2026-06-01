@@ -1,209 +1,237 @@
 {% load static %}
 {% load i18n %}
+{% trans "Chargement..." as page_loader_label %}
+{% trans "Préparation de la page." as page_loader_help %}
 
 <!DOCTYPE html>
-<html class="scroll-smooth" template="true" lang="{{ language_code }}">
+<html lang="{{ language_code|default:'fr' }}" data-theme="normal">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title_before }}{% block title %}{% endblock title %}{{ title_after }}</title>
-    <meta content="author" name="{{ author }}">
-    <meta content="description" name="{{ description }}">
-    <link rel="icon" sizes="192x192" href="{% static "images/Lyrics.png" %}" type="image/png"/>
-    {% comment %} à supprimer <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Anton&family=Baloo+2&family=Bangers&family=Bree+Serif&family=Caveat&family=Chewy&family=Concert+One&family=Fredoka&family=Fugaz+One&family=Gloria+Hallelujah&family=Indie+Flower&family=Lobster&family=Patrick+Hand&family=Poppins&family=Quicksand&family=Righteous&family=Roboto+Slab&family=SACRAMENTO&family=Source+Sans+Pro&family=Special+Elite&family=Staatliches&family=Ubuntu&family=Work+Sans&display=swap" rel="stylesheet"> {% endcomment %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Anton&family=Baloo+2&family=Bangers&family=Bree+Serif&family=Caveat&family=Caveat+Brush&family=Chewy&family=Concert+One&family=Fredoka&family=Fugaz+One&family=Gloria+Hallelujah&family=Indie+Flower&family=Lobster&family=Patrick+Hand&family=Poppins&family=Quicksand&family=Raleway&family=Righteous&family=Roboto+Slab&family=Sacramento&family=Sarabun&family=Source+Sans+Pro&family=Special+Elite&family=Staatliches&family=Ubuntu&family=Work+Sans&display=swap" rel="stylesheet">
-    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'css/tailwind.lyrics_slide_show.css' %}">
-    <link rel="stylesheet" href="{% if css == "scout.css" %}{% static "css/scout.css" %}{% else %}{% static "css/normal.css" %}{% endif %}">
-    <link rel="stylesheet" href="{% static "css/fonts.css" %}">
-    <script src="{% static 'js/lyrics_slide_show.js' %}"></script>
-</head>
-<body class="L_TEXT L_BG">
-    {% if not no_loader %}
-    <div id="loader" class="text-l fixed inset-0 z-50 flex items-center justify-center">
-        <a href="{% url "kill_loader" %}"><div>
-            <div class="fixed inset-0 z-50 flex items-center justify-center">
-                <img src="{% static 'images/loading.gif' %}" alt="🔄" title="{% trans 'Loading...' %}" class="w-96 h-48">
-            </div>
-            <br><br><br>
-            <div class="text-center">
-                <b>{% trans 'Loading...' %}</b>
-            </div>
-            <br><br><br>
-            <div class="text-center">
-                {% trans "Page not displayed after a few seconds? Refresh (F5) it or click here." %}
-            </div></a>
-        </div>
-    </div>
-    {% endif %}
-    
-    <div id="general" {% if not no_loader %}style="display: none;"{% endif %}>
-        {% include 'includes/header.html' %}
-        {% include 'includes/l_site_messages.html' %}
-
-        <div class="container mx-auto p-4">
-            <div class="flex flex-col lg:flex-row mb-4 items-stretch">
-                <div class="lg:w-3/4 flex flex-col md:flex-row">
-                    <div class="md:w-2/3 p-4 mx-2 mt-4 shadow-lg md:order-2 rounded-tl-lg rounded-br-lg MAIN_BLOC">
-                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
-                        <!-- §§§§§ MAIN BLOC §§§§§ -->
-                        <!-- §§§§§§§§§§§§§§§§§§§§§ -->
-                        {% if error != '' %}
-                            <span class="float-left">⚠️&nbsp;</span>
-                            {% if error == '[ERR1]' %}
-                                <p class="L_ERROR">{% trans "ERR1" %}</p>
-                            {% elif error == '[ERR2]' %}
-                                <p class="L_ERROR">{% trans "ERR2" %}</p>
-                            {% elif error == '[ERR3]' %}
-                                <p class="L_ERROR">{% trans "ERR3" %}</p>
-                            {% elif error == '[ERR4]' %}
-                                <p class="L_ERROR">{% trans "ERR4" %}</p>
-                            {% elif error == '[ERR5]' %}
-                                <p class="L_ERROR">{% trans "ERR5" %}</p>
-                            {% elif error == '[ERR6]' %}
-                                <p class="L_ERROR">{% trans "ERR5" %}</p>
-                            {% elif error == '[ERR7]' %}
-                                <p class="L_ERROR">{% trans "ERR7" %}</p>
-                            {% elif error == '[ERR8]' %}
-                                <p class="L_ERROR">{% trans "ERR8" %}</p>
-                            {% elif error == '[ERR9]' %}
-                                <p class="L_ERROR">{% trans "ERR9" %}</p>
-                            {% elif error == '[ERR10]' %}
-                                <p class="L_ERROR">{% trans "ERR10" %}</p>
-                            {% elif error == '[ERR11]' %}
-                                <p class="L_ERROR">{% trans "ERR11" %}</p>
-                            {% elif error == '[ERR12]' %}
-                                <p class="L_ERROR">{% trans "ERR12" %}</p>
-                            {% elif error == '[ERR13]' %}
-                                <p class="L_ERROR">{% trans "ERR13" %}</p>
-                            {% elif error == '[ERR14]' %}
-                                <p class="L_ERROR">{% trans "ERR14" %}</p>
-                            {% elif error == '[ERR15]' %}
-                                <p class="L_ERROR">{% trans "ERR15" %}</p>
-                            {% elif error == '[ERR16]' %}
-                                <p class="L_ERROR">{% trans "ERR16" %}</p>
-                            {% elif error == '[ERR17]' %}
-                                <p class="L_ERROR">{% trans "ERR17" %}</p>
-                            {% elif error == '[ERR18]' %}
-                                <p class="L_ERROR">{% trans "ERR18" %}</p>
-                            {% elif error == '[ERR19]' %}
-                                <p class="L_ERROR">{% trans "ERR19" %}</p>
-                            {% elif error == '[ERR20]' %}
-                                <p class="L_ERROR">{% trans "ERR20" %}</p>
-                            {% elif error == '[ERR21]' %}
-                                <p class="L_ERROR">{% trans "ERR21" %}</p>
-                            {% elif error == '[ERR22]' %}
-                                <p class="L_ERROR">{% trans "ERR22" %}</p>
-                            {% elif error == '[ERR23]' %}
-                                <p class="L_ERROR">{% trans "ERR23" %}</p>
-                            {% elif error == '[ERR24]' %}
-                                <p class="L_ERROR">{% trans "ERR24" %}</p>
-                            {% elif error == '[ERR25]' %}
-                                <p class="L_ERROR">{% trans "ERR25" %}</p>
-                            {% elif error == '[ERR26]' %}
-                                <p class="L_ERROR">{% trans "ERR26" %}</p>
-                            {% elif error == '[ERR27]' %}
-                                <p class="L_ERROR">{% trans "ERR27" %}</p>
-                            {% elif error == '[ERR28]' %}
-                                <p class="L_ERROR">{% trans "ERR28" %}</p>
-                            {% elif error == '[ERR29]' %}
-                                <p class="L_ERROR">{% trans "ERR29" %}</p>
-                            {% elif error == '[ERR30]' %}
-                                <p class="L_ERROR">{% trans "ERR30" %}</p>
-                            {% elif error == '[ERR31]' %}
-                                <p class="L_ERROR">{% trans "ERR31" %}</p>
-                            {% elif error == '[ERR32]' %}
-                                <p class="L_ERROR">{% trans "ERR32" %}</p>
-                            {% elif error == '[ERR33]' %}
-                                <p class="L_ERROR">{% trans "ERR33" %}</p>
-                            {% elif error == '[ERR34]' %}
-                                <p class="L_ERROR">{% trans "ERR34" %}</p>
-                            {% elif error == '[ERR35]' %}
-                                <p class="L_ERROR">{% trans "ERR35" %}</p>
-                            {% elif error == '[ERR36]' %}
-                                <p class="L_ERROR">{% trans "ERR36" %}</p>
-                            {% elif error == '[ERR37]' %}
-                                <p class="L_ERROR">{% trans "ERR37" %}</p>
-                            {% elif error == '[ERR38]' %}
-                                <p class="L_ERROR">{% trans "ERR38" %}</p>
-                            {% elif error == '[ERR39]' %}
-                                <p class="L_ERROR">{% trans "ERR39" %}</p>
-                            {% elif error == '[ERR40]' %}
-                                <p class="L_ERROR">{% trans "ERR40" %}</p>
-                            {% elif error == '[ERR41]' %}
-                                <p class="L_ERROR">{% trans "ERR41" %}</p>
-                            {% elif error == '[ERR42]' %}
-                                <p class="L_ERROR">{% trans "ERR42" %}</p>
-                            {% elif error == '[ERR43]' %}
-                                <p class="L_ERROR">{% trans "ERR43" %}</p>
-                            {% elif error == '[ERR44]' %}
-                                <p class="L_ERROR">{% trans "ERR44" %}</p>
-                            {% elif error == '[ERR45]' %}
-                                <p class="L_ERROR">{% trans "ERR45" %}</p>
-                            {% elif error == '[ERR46]' %}
-                                <p class="L_ERROR">{% trans "ERR46" %}</p>
-                            {% elif error == '[ERR47]' %}
-                                <p class="L_ERROR">{% trans "ERR47" %}</p>
-                            {% elif error == '[ERR48]' %}
-                                <p class="L_ERROR">{% trans "ERR48" %}</p>
-                            {% elif error == '[ERR49]' %}
-                                <p class="L_ERROR">{% trans "ERR49" %}</p>
-                            {% elif error == '[ERR50]' %}
-                                <p class="L_ERROR">{% trans "ERR50" %}</p>
-                            {% elif error == '[ERR51]' %}
-                                <p class="L_ERROR">{% trans "ERR51" %}</p>
-                            {% elif error == '[ERR52]' %}
-                                <p class="L_ERROR">{% trans "ERR52" %}</p>
-                            {% elif error == '[ERR53]' %}
-                                <p class="L_ERROR">{% trans "ERR53" %}</p>
-                            {% elif error == '[ERR54]' %}
-                                <p class="L_ERROR">{% trans "ERR54" %}</p>
-                            {% elif error == '[ERR55]' %}
-                                <p class="L_ERROR">{% trans "ERR55" %}</p>
-                            {% elif error == '[ERR56]' %}
-                                <p class="L_ERROR">{% trans "ERR56" %}</p>
-                            {% elif error == '[ERR57]' %}
-                                <p class="L_ERROR">{% trans "ERR57" %}</p>
-                            {% elif error == '[ERR58]' %}
-                                <p class="L_ERROR">{% trans "ERR58" %}</p>
-                            {% elif error == '[ERR59]' %}
-                                <p class="L_ERROR">{% trans "ERR59" %}</p>
-                            {% elif error == '[ERR60]' %}
-                                <p class="L_ERROR">{% trans "ERR60" %}</p>
-                            {% else %}
-                                <p class="L_ERROR_OTHER">{{ error }}</p>
-                            {% endif %}
-                            <hr>
-                        {% endif %}
-                        <h1 class="L_H1">{% block title_h1 %}{% endblock title_h1 %}</h1>
-                        {% block content %}{% endblock %}
-                    </div>
-                    <div class="md:w-1/3 mx-2 mt-4 p-4 shadow-lg bg-black bg-opacity-10 rounded-tl-lg rounded-br-lg">
-                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                        <!-- §§§§§ SECONDAY BLOC (left) §§§§§ -->
-                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                        {% block bloc1 %}{% endblock %}
-                    </div>
-                </div>
-                <div class="lg:w-1/4 mx-2 mt-4">
-                    <div class="p-4 shadow-lg order-3 bg-black bg-opacity-10 h-full rounded-tl-lg rounded-br-lg">
-                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                        <!-- §§§§§ THIRD BLOC (right) §§§§§ -->
-                        <!-- §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ -->
-                        {% block bloc2 %}{% endblock %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% include 'includes/footer.html' %}
-    </div>
-
+    <link id="site-favicon" rel="icon" sizes="64x64" href="{% static 'icons/favicon.png' %}" type="image/png"/>
     <script>
-        window.LOADER_CONFIG = {
-            loaderDebug: {{ loader_debug|yesno:"true,false" }},
-            loaderDebugDelayMs: {{ loader_debug_delay_ms|default:0 }}
+        (() => {
+            const root = document.documentElement;
+            const now = () => (window.performance && typeof window.performance.now === "function")
+                ? window.performance.now()
+                : Date.now();
+            const config = {
+                revealDelayMs: 150,
+                minimumVisibleMs: 250,
+                failsafeMs: 5000,
+                loadingLabel: "{{ page_loader_label|escapejs }}",
+                loadingHelp: "{{ page_loader_help|escapejs }}"
+            };
+
+            window.LSS_PAGE_LOADER_CONFIG = config;
+            root.classList.add("lss-page-loading");
+
+            const dispatchReady = () => {
+                document.dispatchEvent(new CustomEvent("lss:page-ready"));
+            };
+
+            const markReady = () => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                root.classList.add("lss-page-ready");
+                root.classList.remove("lss-page-loading", "lss-page-loader-visible");
+                dispatchReady();
+            };
+
+            const state = {
+                startedAt: now(),
+                loaderShownAt: null,
+                revealTimerId: null,
+                failsafeTimerId: null,
+                markReady
+            };
+
+            state.revealTimerId = window.setTimeout(() => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                state.loaderShownAt = now();
+                root.classList.add("lss-page-loader-visible");
+            }, config.revealDelayMs);
+
+            state.failsafeTimerId = window.setTimeout(markReady, config.failsafeMs);
+            window.LSS_PAGE_LOADER_STATE = state;
+        })();
+    </script>
+    <script>
+        window.LSS_THEME_CONFIG = {
+            storageKey: "lss-theme",
+            defaultTheme: "normal",
+            themeStylesheets: {
+                normal: "{% static 'css/normal.css' %}",
+                scout: "{% static 'css/scout.css' %}",
+                taize: "{% static 'css/taize.css' %}",
+                "me†al": "{% static 'css/me†al.css' %}"
+            },
+            iconBasePath: "{% static 'icons/ui' %}",
+            faviconFallbackPath: "{% static 'icons/favicon.png' %}"
+        };
+
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            let savedTheme = null;
+
+            try {
+                savedTheme = window.localStorage ? window.localStorage.getItem(config.storageKey) : null;
+            } catch (error) {
+                savedTheme = null;
+            }
+
+            const selectedTheme = config.themeStylesheets[savedTheme] ? savedTheme : config.defaultTheme;
+
+            document.documentElement.dataset.theme = selectedTheme;
+        })();
+    </script>
+    <script>
+        window.LSS_MESSAGE_BOX_CONFIG = {
+            i18n: {
+                closeLabel: "{% trans 'Fermer la fenêtre' %}",
+                okLabel: "{% trans 'OK' %}",
+                yesLabel: "{% trans 'Oui' %}",
+                noLabel: "{% trans 'Non' %}",
+                cancelLabel: "{% trans 'Annuler' %}",
+                confirmLabel: "{% trans 'Confirmer' %}",
+                logoutTitle: "{% trans 'Déconnexion' %}",
+                logoutMessage: "{% trans 'Voulez-vous vraiment vous déconnecter du site ?' %}",
+                fieldRequiredLabel: "{% trans 'Ce champ est obligatoire.' %}",
+                invalidEmailLabel: "{% trans 'Veuillez saisir une adresse e-mail valide.' %}",
+                dialogLabel: "{% trans 'Fenêtre de dialogue' %}",
+                copyTitle: "{% trans 'Copie' %}",
+                confirmationTitle: "{% trans 'Confirmation' %}"
+            }
         };
     </script>
-    <script src="{% static 'js/loader.js' %}"></script>
+    <style>
+        [data-page-loader] {
+            display: none;
+        }
+
+        .lss-page-loading:not(.lss-page-ready) [data-page-content] {
+            visibility: hidden;
+        }
+
+        .lss-page-loader-visible:not(.lss-page-ready) [data-page-loader] {
+            display: grid;
+        }
+
+        [data-nav-drawer]:not([data-nav-ready]) {
+            display: none !important;
+        }
+    </style>
+    <link id="site-theme-stylesheet" rel="stylesheet" href="{% static 'css/normal.css' %}">
+    <script>
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            const theme = document.documentElement.dataset.theme || config.defaultTheme;
+            const stylesheet = document.getElementById("site-theme-stylesheet");
+
+            if (stylesheet && config.themeStylesheets[theme]) {
+                stylesheet.href = config.themeStylesheets[theme];
+            }
+        })();
+    </script>
+</head>
+<body id="site-top">
+    <div class="lss-page-loader" data-page-loader role="status" aria-live="polite" aria-label="{{ page_loader_label }}">
+        <div class="lss-page-loader-panel">
+            <img
+                class="lss-page-loader-image"
+                src="{% static 'images/loading.gif' %}"
+                alt=""
+                aria-hidden="true"
+            >
+            <strong>{{ page_loader_label }}</strong>
+            <span>{{ page_loader_help }}</span>
+        </div>
+    </div>
+    <div data-page-content>
+    <script>
+        window.LSS_FLOATING_HELP_CONFIG = {
+            collapseDelayMs: 3000
+        };
+    </script>
+    <div class="site-shell">
+        {% include "includes/nav.html" %}
+
+        <div class="site-workspace">
+            <div class="site-frame">
+                {% if messages %}
+                    <ul class="site-global-messages" aria-label="{% trans 'Messages' %}">
+                        {% for message in messages %}
+                            <li class="site-global-message site-global-message-{{ message.tags|default:'info' }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="site-layout">
+                    <aside class="site-side-stack">
+                        <section class="site-panel site-section-panel">
+                            <header class="site-panel-header">
+                                <h2>{% block section_title %}{% trans "Section" %}{% endblock %}</h2>
+                                {% block section_intro %}{% endblock %}
+                            </header>
+                            {% block section_nav %}{% endblock %}
+                        </section>
+
+                        <section class="site-panel site-tools-panel">
+                            <header class="site-panel-header">
+                                <h2>{% block tools_title %}{% trans "Outils" %}{% endblock %}</h2>
+                                {% block tools_intro %}{% endblock %}
+                            </header>
+                            {% block page_tools %}{% endblock %}
+                        </section>
+                    </aside>
+
+                    <main class="site-panel site-main-panel">
+                        <section class="site-panel site-mobile-side">
+                            <header class="site-panel-header">
+                                <h2>{% block mobile_side_title %}{% trans "Structure de la page" %}{% endblock %}</h2>
+                                {% block mobile_side_intro %}{% endblock %}
+                            </header>
+                            {% block mobile_side_content %}{% endblock %}
+                        </section>
+
+                        <section class="site-main-header">
+                            <div class="site-main-heading">
+                                <p>{% block page_kicker %}{% endblock %}</p>
+                                <h1>{% block page_title %}{% endblock %}</h1>
+                                {% block page_intro %}{% endblock %}
+                            </div>
+                            <div class="site-main-aside">
+                                {% block page_summary %}{% endblock %}
+                            </div>
+                        </section>
+
+                        <section class="site-main-content">
+                            {% block content %}{% endblock %}
+                        </section>
+                        
+                        <section class="site-main-footer">
+                            {% block content_footer %}{% endblock %}
+                        </section>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "includes/footer.html" %}
+    </div>
+    <div id="lss-messagebox-root" hidden></div>
+    <script id="lss-site-popup-config" type="application/json">{{ lss_site_popup_json|default:"{}"|safe }}</script>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/message_box.js' %}"></script>
+    {% block page_scripts %}{% endblock %}
+    <script src="{% static 'js/page_loader.js' %}"></script>
 </body>
 </html>

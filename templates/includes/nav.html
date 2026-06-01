@@ -1,25 +1,328 @@
-{% comment %} https://symbl.cc/fr/ {% endcomment %}
+{% load static %}
 {% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% trans "Rôle global administrateur" as nav_admin_role_label %}
+{% trans "Rôle global modérateur" as nav_moderator_role_label %}
+{% trans "Fermer" as nav_close_label %}
+{% trans "Accueil" as nav_home_label %}
+{% trans "Liste des groupes" as nav_groups_label %}
+{% trans "Liste des chants" as nav_songs_label %}
+{% trans "Liste des animations" as nav_animations_label %}
+{% trans "Déconnexion" as nav_logout_label %}
+{% trans "Connexion" as nav_login_label %}
+{% trans "Créer un compte" as nav_signup_label %}
+{% trans "Thèmes" as nav_theme_label %}
+{% trans "Cookies et politique de confidentialité" as nav_cookies_label %}
+{% trans "Navigation principale" as nav_main_links_label %}
+{% trans "Profil et préférences" as nav_profile_label %}
+{% trans "Navigation générale" as nav_general_navigation_label %}
+{% trans "Ouvrir la navigation" as nav_open_navigation_label %}
+{% trans "Compte" as nav_account_label %}
+{% trans "Voir mon profil" as nav_view_profile_label %}
+{% trans "Journal des versions sur GitHub" as nav_changelog_label %}
+{% trans "Dernière version publiée" as nav_latest_release_label %}
+{% with current_lang=CURRENT_LANGUAGE|default:'fr'|slice:':2'|lower %}
+    {% if current_lang == "en" %}
+        {% trans "Anglais" as nav_language_label %}
+        {% with "🇬🇧" as nav_language_flag %}
+            <div class="site-nav-backdrop" hidden data-nav-backdrop></div>
 
-{% comment %} <a class="NAV mx-2 hidden md:block" href="{% url "homepage" %}">🏠 {% trans "nav_home" %}</a> {% endcomment %}
-{% if user.is_authenticated %}
-            <span class="hidden md:block">👥 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "groups" %}">{% trans "nav_groups_list" %}</a>
-            <span class="hidden md:block">🎼 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "songs" %}">{% trans "nav_songs_list" %}</a>
-            <span class="hidden md:block">🗣️ </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "animations" %}">{% trans "nav_animations_list" %}</a>
-{% else %}
-            <span class="hidden md:block">👥 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "groups" %}">{% trans "nav_groups_list" %}</a>
-            <span class="hidden md:block">🎼 </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "songs" %}">{% trans "nav_songs_list" %}</a>
-            <span class="hidden md:block">🗣️ </span><a class="NAV mx-2 hidden md:block L_LINK_HEADER" href="{% url "animations" %}">{% trans "nav_animations_list" %}</a>
-{% endif %}
+            <aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
+                <header class="site-nav-drawer-header">
+                    <div>
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-brand-picture" img_class="site-nav-brand-icon" icon_name="lss" icon_alt="LSS" %}
+                        <strong>Lyrics Slide Show</strong>
+                    </div>
+                    <button class="site-nav-image-button" type="button" data-nav-close aria-label="{{ nav_close_label }}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="close" icon_alt=nav_close_label %}
+                    </button>
+                </header>
 
-{% comment %} SMARTPHONE {% endcomment %}
-{% comment %} <a class="NAV mx-2 block md:hidden" href="{% url "homepage" %}">🏠</a> {% endcomment %}
-{% if user.is_authenticated %}
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️</a>
-{% else %}
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "groups" %}">👥</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "songs" %}">🎼</a>
-            <a class="NAV mx-2 block md:hidden L_LINK_HEADER" href="{% url "animations" %}">🗣️</a>
-{% endif %}
+                <section class="site-nav-group">
+                    <h2>{{ nav_main_links_label }}</h2>
+                    <a href="{% url 'homepage' %}" title="{{ nav_home_label }}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
+                        <span>{{ nav_home_label }}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{{ nav_groups_label }}</span>
+                    </a>
+                    <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                        <span>{{ nav_songs_label }}</span>
+                    </a>
+                    <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                        <span>{{ nav_animations_label }}</span>
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    <h2>{{ nav_profile_label }}</h2>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-lss-logout-confirm="true">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                            <span>{{ nav_logout_label }}</span>
+                        </a>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            <span>{{ nav_view_profile_label }}</span>
+                            {% if request.user.is_admin %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% elif request.user.is_moderator %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{{ nav_login_label }}">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
+                            <span>{{ nav_login_label }}</span>
+                        </a>
+                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                            <span>{{ nav_signup_label }}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                        <span>{{ nav_theme_label }}</span>
+                    </a>
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                        <span>{{ nav_language_label }}</span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{{ nav_cookies_label }}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                        <span>{{ nav_cookies_label }}</span>
+                    </a>
+                </section>
+
+                <div class="site-nav-drawer-footer">
+                    <a class="site-nav-drawer-partner-link"
+                       href="https://www.carthographie.fr/"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="cARThographie">
+                        <img class="site-nav-drawer-partner-image"
+                             src="{% static 'images/cARThographie.gif' %}"
+                             alt="cARThographie">
+                    </a>
+                    <a class="site-home-release-link"
+                       href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="{{ nav_changelog_label }}">
+                        <img class="site-home-release-badge"
+                             src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                             alt="{{ nav_latest_release_label }}">
+                    </a>
+                </div>
+            </aside>
+
+            <nav class="site-nav-rail" aria-label="{{ nav_general_navigation_label }}">
+                <button class="site-nav-image-button" type="button" aria-label="{{ nav_open_navigation_label }}" data-nav-open>
+                    {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="hamburger" icon_alt=nav_open_navigation_label %}
+                </button>
+
+                <section class="site-nav-group">
+                    <a href="{% url 'homepage' %}" title="{{ nav_home_label }}" data-django-alias="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                    </a>
+                    <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                    </a>
+                    <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                        </a>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            {% if request.user.is_admin %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% elif request.user.is_moderator %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
+                        </a>
+                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                    </a>
+                </section>
+            </nav>
+        {% endwith %}
+    {% else %}
+        {% trans "Français" as nav_language_label %}
+        {% with "🇫🇷" as nav_language_flag %}
+            <div class="site-nav-backdrop" hidden data-nav-backdrop></div>
+
+            <aside class="site-nav-drawer" aria-hidden="true" data-nav-drawer>
+                <header class="site-nav-drawer-header">
+                    <div>
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-brand-picture" img_class="site-nav-brand-icon" icon_name="lss" icon_alt="LSS" %}
+                        <strong>Lyrics Slide Show</strong>
+                    </div>
+                    <button class="site-nav-image-button" type="button" data-nav-close aria-label="{{ nav_close_label }}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="close" icon_alt=nav_close_label %}
+                    </button>
+                </header>
+
+                <section class="site-nav-group">
+                    <h2>{{ nav_main_links_label }}</h2>
+                    <a href="{% url 'homepage' %}" title="{{ nav_home_label }}">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
+                        <span>{{ nav_home_label }}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{{ nav_groups_label }}</span>
+                    </a>
+                    <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                        <span>{{ nav_songs_label }}</span>
+                    </a>
+                    <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                        <span>{{ nav_animations_label }}</span>
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    <h2>{{ nav_profile_label }}</h2>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-lss-logout-confirm="true">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                            <span>{{ nav_logout_label }}</span>
+                        </a>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            <span>{{ nav_view_profile_label }}</span>
+                            {% if request.user.is_admin %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% elif request.user.is_moderator %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{{ nav_login_label }}">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
+                            <span>{{ nav_login_label }}</span>
+                        </a>
+                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                            <span>{{ nav_signup_label }}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'theme_preferences' %}" title="{{ nav_theme_label }}" data-django-alias="theme">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="theme" icon_alt=nav_theme_label %}
+                        <span>{{ nav_theme_label }}</span>
+                    </a>
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                        <span>{{ nav_language_label }}</span>
+                    </a>
+                    <a href="{% url 'privacy_policy' %}" title="{{ nav_cookies_label }}" data-django-alias="privacy-policy">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="cookies" icon_alt=nav_cookies_label %}
+                        <span>{{ nav_cookies_label }}</span>
+                    </a>
+                </section>
+
+                <div class="site-nav-drawer-footer">
+                    <a class="site-nav-drawer-partner-link"
+                       href="https://www.carthographie.fr/"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="cARThographie">
+                        <img class="site-nav-drawer-partner-image"
+                             src="{% static 'images/cARThographie.gif' %}"
+                             alt="cARThographie">
+                    </a>
+                    <a class="site-home-release-link"
+                       href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="{{ nav_changelog_label }}">
+                        <img class="site-home-release-badge"
+                             src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                             alt="{{ nav_latest_release_label }}">
+                    </a>
+                </div>
+            </aside>
+
+            <nav class="site-nav-rail" aria-label="{{ nav_general_navigation_label }}">
+                <button class="site-nav-image-button" type="button" aria-label="{{ nav_open_navigation_label }}" data-nav-open>
+                    {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="hamburger" icon_alt=nav_open_navigation_label %}
+                </button>
+
+                <section class="site-nav-group">
+                    <a href="{% url 'homepage' %}" title="{{ nav_home_label }}" data-django-alias="homepage">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                    </a>
+                    <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
+                    </a>
+                    <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                </section>
+
+                <section class="site-nav-group">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'logout' %}" title="{{ nav_logout_label }}" data-django-alias="logout" data-lss-logout-confirm="true">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="logout" icon_alt=nav_logout_label %}
+                        </a>
+                        <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
+                            {% if request.user.is_admin %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% elif request.user.is_moderator %}
+                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
+                        </a>
+                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'language' %}" title="{{ nav_language_label }}" data-django-alias="language">
+                        <span class="site-nav-flag-icon">
+                            {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="button" icon_alt=nav_language_label %}
+                            <span class="site-nav-flag-badge" aria-hidden="true">{{ nav_language_flag }}</span>
+                        </span>
+                    </a>
+                </section>
+            </nav>
+        {% endwith %}
+    {% endif %}
+{% endwith %}

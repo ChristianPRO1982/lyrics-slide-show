@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="song-tag-badges">
+    {% for artist in artists %}
+        <span class="song-tag-badge">{{ artist }}</span>
+    {% endfor %}
+    {% for band in bands %}
+        <span class="song-tag-badge">{{ band }}</span>
+    {% endfor %}
+</div>
+{% for group_name, genres in genre_groups %}
+    <h4 class="song-tag-group">{{ group_name }}</h4>
+    <div class="song-tag-badges">
+        {% for genre in genres %}
+            <span class="song-tag-badge">{{ genre }}</span>
+        {% endfor %}
+    </div>
+{% empty %}
+    <p>-</p>
+{% endfor %}

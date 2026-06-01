@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% trans "Journal des versions sur GitHub" as homepage_changelog_label %}
+{% trans "Dernière version publiée" as homepage_latest_release_label %}
+{% trans "Projetez. Chantez. Kiffez." as homepage_project_label %}
+{% trans "Pourquoi c’est cool ?" as homepage_why_label %}
+{% trans "Ce que tu y gagnes" as homepage_benefits_label %}
+{% trans "Comment ça marche ?" as homepage_how_label %}
+{% trans "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" as homepage_quote_label %}
+
+{% block title %}{{ home_site_title }} - Lyrics Slide Show{% endblock %}
+{% block meta_description %}{% endblock %}
+
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% endif %}{% endblock %}
+{% block section_intro %}{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                alt="Lyrics Slide Show"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
+
+{% block tools_title %}{% endblock %}
+{% block tools_intro %}{% endblock %}
+{% block page_tools %}
+    <div class="site-home-media">
+        {% if home_bloc1_text %}
+            <p>{{ home_bloc1_text|linebreaksbr }}</p>
+        {% endif %}
+    </div>
+    <div>
+        <a class="site-home-release-link"
+           href="https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/CHANGELOG.md"
+           target="_blank"
+           rel="noopener noreferrer"
+           title="{{ homepage_changelog_label }}">
+            <img class="site-home-release-badge"
+                 src="https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg"
+                 alt="{{ homepage_latest_release_label }}">
+        </a>
+        <a href="{% url 'privacy_policy' %}" title="{% trans 'Politique de confidentialité' %}">
+            {% trans "Politique de confidentialité" %}
+        </a>
+    </div>
+{% endblock %}
+
+{% block mobile_side_title %}{% endblock %}
+{% block mobile_side_intro %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="site-home-media">
+        <picture class="site-home-mobile-logo" data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/lss.png' %}"
+                alt="Lyrics Slide Show"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+    <div>
+        <a href="{% url 'privacy_policy' %}" title="{% trans 'Politique de confidentialité' %}">
+            {% trans "Politique de confidentialité" %}
+        </a>
+    </div>
+{% endblock %}
+
+{% block page_kicker %}{{ home_site_title }}{% endblock %}
+
+{% block page_title %}{{ home_site_title_h1 }}{% endblock %}
+
+{% block page_intro %}{% endblock %}
+
+{% block page_summary %}
+    {% if home_bloc2_text %}
+        <p>{{ home_bloc2_text|linebreaksbr }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <section class="site-theme-selection" aria-label="{% trans 'Présentation de Lyrics Slide Show' %}">
+        {% for home_card in home_cards %}
+            <article class="site-theme-card">
+                {% if home_card.title %}
+                    <header class="site-theme-card-header">
+                        <div>
+                            <h2>{{ home_card.title }}</h2>
+                        </div>
+                    </header>
+                {% endif %}
+                {% if home_card.text %}
+                    <div>{{ home_card.text|safe }}</div>
+                {% endif %}
+            </article>
+        {% endfor %}
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Projetez. Chantez. Kiffez." %}</h2>
+                    <div class="site-home-dropcap-copy">
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="animations" icon_alt=homepage_project_label %}
+                        <p>{% blocktrans %}<strong>Lyrics Slide Show</strong> transforme tes paroles en slides claires et prêtes à projeter… en quelques secondes.{% endblocktrans %}</p>
+                        <p>{% trans "Parfait pour une soirée louange, une animation musicale ou un concert improvisé." %}</p>
+                    </div>
+                </div>
+            </header>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Pourquoi c’est cool ?" %}</h2>
+                    <div class="site-home-dropcap-copy">
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="lss" icon_alt=homepage_why_label %}
+                        <p>{% trans "Tu te concentres sur la musique, pas sur la mise en page. Le texte est net, lisible de loin, et tes enchaînements restent fluides." %}</p>
+                        <p>{% trans "Fini les bricolages sur PowerPoint, Google Slides ou Canva : ici tout est pensé pour chanter, pas pour faire des diapos." %}</p>
+                    </div>
+                </div>
+            </header>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Ce que tu y gagnes" %}</h2>
+                    <div class="site-home-dropcap-copy">
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="groups" icon_alt=homepage_benefits_label %}
+                        <p>{% trans "🎤 Des slides propres, sans distractions." %}</p>
+                        <p>{% trans "⚡ Une prise en main immédiate." %}</p>
+                        <p>{% trans "🎶 Des transitions sans coupure dans l’ambiance." %}</p>
+                        <p>{% trans "👥 Une salle qui suit et chante avec toi." %}</p>
+                        <p>{% trans '🎛️ Pilotage au clavier ou pédalier, comme un "tourne-page" pour musiciens 👢' %}</p>
+                    </div>
+                </div>
+            </header>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Comment ça marche ?" %}</h2>
+                    <div class="site-home-dropcap-copy">
+                        {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="account" icon_alt=homepage_how_label %}
+                        <p>{% trans "Ouvre une session, colle tes paroles, puis laisse Lyrics Slide Show découper le texte en écrans prêts à projeter." %}</p>
+                        <p>{% trans "Tu ajustes ensuite le rythme, le thème et la navigation pour piloter la projection sans casser l'élan du chant." %}</p>
+                    </div>
+                </div>
+            </header>
+        </article>
+
+        <article class="site-theme-card">
+            <div class="site-home-dropcap-copy">
+                {% include "includes/themed_icon.html" with picture_class="site-home-dropcap" img_class="site-home-dropcap-image" icon_name="songs" icon_alt=homepage_quote_label %}
+                <p class="site-home-dropcap-lead">{% trans "A vous !" %}</p>
+                <blockquote class="site-home-clear-below">
+                    {% trans "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a jamais perdu le fil. »" %}
+                </blockquote>
+                <p>{% trans "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la vibe." %}</p>
+            </div>
+        </article>
+    </section>
+{% endblock %}
