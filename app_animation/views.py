@@ -128,7 +128,9 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     main_song_cards = build_main_song_cards(animation, animation_songs)
     songs_payload_initial = build_songs_payload_initial(main_song_cards)
     songs_payload_initial_json = serialize_songs_payload(songs_payload_initial)
-    ordered_mix_initial = "|".join([f"asid:{row.animation_song_id}" for row in animation_songs])
+    ordered_mix_initial = "|".join(
+        [f"asid:{row.animation_song_id}" for row in animation_songs]
+    )
 
     member_id = get_member_id_from_user(request.user)
 
@@ -145,8 +147,12 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
     advanced_song_catalog: list[dict[str, object]] = []
     favorite_song_catalog: list[dict[str, object]] = []
     if member_id:
-        advanced_song_results = search_songs(load_member_song_search(member_id), request.user, member_id)
-        favorite_song_results = search_songs(SongSearchParams(favorites_only=True), request.user, member_id)
+        advanced_song_results = search_songs(
+            load_member_song_search(member_id), request.user, member_id
+        )
+        favorite_song_results = search_songs(
+            SongSearchParams(favorites_only=True), request.user, member_id
+        )
         advanced_song_catalog = [
             {
                 "id": item.song.song_id,
@@ -171,17 +177,25 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                 ordered_mix_raw = request.POST.get("ordered_mix")
                 if ordered_mix_raw is not None:
                     ordered_tokens = parse_ordered_mix(ordered_mix_raw)
-                    sync_animation_playlist(animation, ordered_tokens, allowed_song_ids=accessible_song_ids)
+                    sync_animation_playlist(
+                        animation, ordered_tokens, allowed_song_ids=accessible_song_ids
+                    )
                 apply_songs_payload(form.instance, songs_payload)
                 form.instance.save()
             messages.success(request, _("L'animation a été enregistrée."))
             return redirect("modify_animation", animation_id=animation.animation_id)
-        songs_payload_initial_json = str(request.POST.get("songs_payload") or songs_payload_initial_json)
-        ordered_mix_initial = str(request.POST.get("ordered_mix") or ordered_mix_initial)
+        songs_payload_initial_json = str(
+            request.POST.get("songs_payload") or songs_payload_initial_json
+        )
+        ordered_mix_initial = str(
+            request.POST.get("ordered_mix") or ordered_mix_initial
+        )
     else:
         form = AnimationForm(instance=animation)
 
-    font_choices = [{"value": value, "label": label} for value, label in list_font_choices()]
+    font_choices = [
+        {"value": value, "label": label} for value, label in list_font_choices()
+    ]
     font_size_delta_choices = list(range(-30, 35, 5))
     font_previews = [
         {
@@ -268,7 +282,9 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
             "animationSongId": int(slide.animation_song_id),
             "songId": int(slide.song_id),
             "songTitle": slide.song_title,
-            "sourceVerseId": int(slide.source_verse_id) if slide.source_verse_id is not None else None,
+            "sourceVerseId": int(slide.source_verse_id)
+            if slide.source_verse_id is not None
+            else None,
             "kind": str(slide.kind),
             "label": str(slide.label or ""),
             "text": str(slide.text or ""),
@@ -341,7 +357,9 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
         raise Http404
 
     public_url = request.build_absolute_uri(
-        reverse("lyrics_slide_show_public", kwargs={"animation_id": animation.animation_id})
+        reverse(
+            "lyrics_slide_show_public", kwargs={"animation_id": animation.animation_id}
+        )
     )
     runtime_payload = _build_runtime_payload(animation, public_url)
     display_session_id = f"{uuid.uuid4().hex[:16]}-{animation.animation_id}"
@@ -358,9 +376,13 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "openSecondScreenLabel": _("Ouvrir le second écran"),
                 "reopenSecondScreenLabel": _("Rouvrir le second écran"),
                 "popupBlockedTitle": _("Fenêtre bloquée"),
-                "popupBlockedMessage": _("Le navigateur a bloqué l'ouverture du second écran."),
+                "popupBlockedMessage": _(
+                    "Le navigateur a bloqué l'ouverture du second écran."
+                ),
                 "preloadWarningTitle": _("Préchargement incomplet"),
-                "preloadWarningMessage": _("Certaines images de fond n'ont pas pu être préchargées."),
+                "preloadWarningMessage": _(
+                    "Certaines images de fond n'ont pas pu être préchargées."
+                ),
                 "okLabel": _("OK"),
                 "noneLabel": _("Aucun"),
                 "currentSlidePlaceholder": _("Aucune diapo projetée."),
@@ -429,7 +451,9 @@ def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpRe
 
 def lyrics_slide_show_public(request: HttpRequest, animation_id: int) -> HttpResponse:
     animation = get_object_or_404(Animation, animation_id=animation_id)
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
     animation_songs = list(
         animation.animation_songs.select_related("song")
         .prefetch_related("song__verses")

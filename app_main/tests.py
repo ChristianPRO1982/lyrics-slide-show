@@ -61,7 +61,9 @@ def create_directory_user(**overrides):
 
 
 class CallbackValidationTests(SimpleTestCase):
-    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
+    @override_settings(
+        AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
+    )
     def test_validate_callback_payload_accepts_signed_payload(self):
         payload = {
             "external_id": "11111111-1111-1111-1111-111111111111",
@@ -78,7 +80,9 @@ class CallbackValidationTests(SimpleTestCase):
 
         self.assertEqual(result["external_id"], payload["external_id"])
 
-    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
+    @override_settings(
+        AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
+    )
     def test_validate_callback_payload_rejects_bad_signature(self):
         payload = {
             "external_id": "11111111-1111-1111-1111-111111111111",
@@ -94,7 +98,9 @@ class CallbackValidationTests(SimpleTestCase):
             with self.assertRaisesMessage(Exception, "Invalid callback signature."):
                 validate_callback_payload(payload)
 
-    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
+    @override_settings(
+        AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
+    )
     def test_validate_callback_payload_rejects_invalid_uuid(self):
         payload = {
             "external_id": "not-a-uuid",
@@ -119,14 +125,18 @@ class CallbackValidationTests(SimpleTestCase):
     )
     @patch("app_main.auth._fetch_keycloak_userinfo")
     @patch("app_main.auth._exchange_keycloak_code")
-    def test_validate_keycloak_callback_accepts_valid_userinfo(self, exchange_mock, userinfo_mock):
+    def test_validate_keycloak_callback_accepts_valid_userinfo(
+        self, exchange_mock, userinfo_mock
+    ):
         exchange_mock.return_value = {"access_token": "access-token"}
         userinfo_mock.return_value = {
             "sub": "11111111-1111-1111-1111-111111111111",
         }
         session = {"lss_keycloak_state": "expected-state"}
 
-        payload = validate_keycloak_callback({"code": "auth-code", "state": "expected-state"}, session)
+        payload = validate_keycloak_callback(
+            {"code": "auth-code", "state": "expected-state"}, session
+        )
 
         self.assertEqual(payload["external_id"], "11111111-1111-1111-1111-111111111111")
         self.assertIsNone(payload["username"])
@@ -136,7 +146,9 @@ class CallbackValidationTests(SimpleTestCase):
         session = {"lss_keycloak_state": "expected-state"}
 
         with self.assertRaisesMessage(KeycloakAuthError, "Invalid Keycloak state."):
-            validate_keycloak_callback({"code": "auth-code", "state": "wrong-state"}, session)
+            validate_keycloak_callback(
+                {"code": "auth-code", "state": "wrong-state"}, session
+            )
 
 
 class DirectoryUserLookupTests(TestCase):
@@ -159,12 +171,17 @@ class DirectoryUserLookupTests(TestCase):
 
         self.assertEqual(user.username, "known.user")
 
-    @patch("app_main.auth.DirectoryUserRecord.objects.get", side_effect=Exception("boom"))
+    @patch(
+        "app_main.auth.DirectoryUserRecord.objects.get", side_effect=Exception("boom")
+    )
     def test_get_directory_user_propagates_unexpected_orm_error(self, _get_mock):
         with self.assertRaisesMessage(Exception, "boom"):
             get_directory_user("11111111-1111-1111-1111-111111111111")
 
-    @patch("app_main.auth.DirectoryUserRecord.objects.get", side_effect=DirectoryUserRecord.DoesNotExist)
+    @patch(
+        "app_main.auth.DirectoryUserRecord.objects.get",
+        side_effect=DirectoryUserRecord.DoesNotExist,
+    )
     def test_get_directory_user_raises_unknown_user(self, _get_mock):
         with self.assertRaises(UnknownUserError):
             get_directory_user("11111111-1111-1111-1111-111111111111")
@@ -176,7 +193,9 @@ class DirectoryUserLookupTests(TestCase):
         return cursor
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_returns_enabled_user_with_sql_fallback(self, cursor_factory):
+    def test_get_directory_user_returns_enabled_user_with_sql_fallback(
+        self, cursor_factory
+    ):
         cursor = self._patch_cursor(
             cursor_factory,
             [
@@ -199,7 +218,9 @@ class DirectoryUserLookupTests(TestCase):
         self.assertEqual(cursor.execute.call_count, 2)
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_raises_unknown_user_with_sql_fallback(self, cursor_factory):
+    def test_get_directory_user_raises_unknown_user_with_sql_fallback(
+        self, cursor_factory
+    ):
         self._patch_cursor(cursor_factory, [(1,), None])
 
         with self.settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users"):
@@ -207,7 +228,9 @@ class DirectoryUserLookupTests(TestCase):
                 get_directory_user("missing")
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_raises_disabled_user_with_sql_fallback(self, cursor_factory):
+    def test_get_directory_user_raises_disabled_user_with_sql_fallback(
+        self, cursor_factory
+    ):
         self._patch_cursor(
             cursor_factory,
             [
@@ -228,7 +251,9 @@ class DirectoryUserLookupTests(TestCase):
                 get_directory_user("22222222-2222-2222-2222-222222222222")
 
     @patch("app_main.auth.connection.cursor")
-    def test_get_directory_user_defaults_to_enabled_when_column_is_missing(self, cursor_factory):
+    def test_get_directory_user_defaults_to_enabled_when_column_is_missing(
+        self, cursor_factory
+    ):
         self._patch_cursor(
             cursor_factory,
             [
@@ -266,7 +291,9 @@ class RequestUserRefreshTests(SimpleTestCase):
             last_name="User",
             enabled=True,
         )
-        get_member_role_flags_safe_mock.return_value = MemberRoleFlags(is_moderator=True, is_admin=False)
+        get_member_role_flags_safe_mock.return_value = MemberRoleFlags(
+            is_moderator=True, is_admin=False
+        )
 
         session = {
             "lss_user": {
@@ -284,7 +311,10 @@ class RequestUserRefreshTests(SimpleTestCase):
         self.assertEqual(session["lss_user"]["username"], "fresh.user")
 
     @patch("app_main.auth.get_member_role_flags_safe")
-    @patch("app_main.auth.get_directory_user", side_effect=DisabledUserError("This user is disabled in users.users."))
+    @patch(
+        "app_main.auth.get_directory_user",
+        side_effect=DisabledUserError("This user is disabled in users.users."),
+    )
     def test_refresh_request_user_clears_session_when_directory_user_is_disabled(
         self,
         _get_directory_user_mock,
@@ -335,7 +365,9 @@ class AuthFlowTests(TestCase):
         response = self.client.get(reverse("login") + "?start=1")
 
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response["Location"].startswith("http://localhost:8001/login?return_to="))
+        self.assertTrue(
+            response["Location"].startswith("http://localhost:8001/login?return_to=")
+        )
 
     def test_login_page_shows_mock_entrypoint(self):
         response = self.client.get(reverse("login"))
@@ -345,7 +377,10 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, reverse("login") + "?start=1")
 
     @override_settings(AUTH_MODE="keycloak")
-    @patch("app_main.views.build_keycloak_login_url", return_value="https://auth.example.com/realms/carthographie/protocol/openid-connect/auth?x=1")
+    @patch(
+        "app_main.views.build_keycloak_login_url",
+        return_value="https://auth.example.com/realms/carthographie/protocol/openid-connect/auth?x=1",
+    )
     def test_login_redirects_to_keycloak(self, _build_keycloak_login_url_mock):
         response = self.client.get(reverse("login") + "?start=1")
 
@@ -381,7 +416,9 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], reverse("language"))
 
-    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
+    @override_settings(
+        AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
+    )
     @patch("app_main.views.get_directory_user")
     def test_callback_creates_session_for_known_user(self, get_directory_user_mock):
         create_directory_user()
@@ -415,8 +452,13 @@ class AuthFlowTests(TestCase):
         self.assertNotContains(response, 'data-django-alias="login"')
         self.assertNotContains(response, 'data-django-alias="signup"')
 
-    @override_settings(AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300)
-    @patch("app_main.views.get_directory_user", side_effect=UnknownUserError("No matching user found in users.users."))
+    @override_settings(
+        AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
+    )
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=UnknownUserError("No matching user found in users.users."),
+    )
     def test_callback_rejects_unknown_user(self, _get_directory_user_mock):
         params = {
             "external_id": "33333333-3333-3333-3333-333333333333",
@@ -441,7 +483,9 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("Interactive login is not configured for this environment.", messages)
+        self.assertIn(
+            "Interactive login is not configured for this environment.", messages
+        )
 
     @override_settings(AUTH_MODE="keycloak")
     @patch("app_main.views.get_directory_user")
@@ -467,18 +511,31 @@ class AuthFlowTests(TestCase):
             "last_name": "User",
         }
         get_directory_user_mock.return_value.username = "known.user"
-        get_directory_user_mock.return_value.external_id = "11111111-1111-1111-1111-111111111111"
+        get_directory_user_mock.return_value.external_id = (
+            "11111111-1111-1111-1111-111111111111"
+        )
 
-        response = self.client.get(reverse("auth_callback"), {"code": "auth-code", "state": "state"}, follow=True)
+        response = self.client.get(
+            reverse("auth_callback"),
+            {"code": "auth-code", "state": "state"},
+            follow=True,
+        )
 
         self.assertRedirects(response, reverse("homepage"))
         self.assertContains(response, "Connected as known.user.")
         self.assertContains(response, 'data-django-alias="logout"')
 
     @override_settings(AUTH_MODE="keycloak")
-    @patch("app_main.views.validate_keycloak_callback", side_effect=KeycloakAuthError("Invalid Keycloak state."))
-    def test_keycloak_callback_rejects_invalid_state(self, _validate_keycloak_callback_mock):
-        response = self.client.get(reverse("auth_callback"), {"code": "auth-code", "state": "bad"}, follow=True)
+    @patch(
+        "app_main.views.validate_keycloak_callback",
+        side_effect=KeycloakAuthError("Invalid Keycloak state."),
+    )
+    def test_keycloak_callback_rejects_invalid_state(
+        self, _validate_keycloak_callback_mock
+    ):
+        response = self.client.get(
+            reverse("auth_callback"), {"code": "auth-code", "state": "bad"}, follow=True
+        )
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
@@ -514,7 +571,9 @@ class AuthFlowTests(TestCase):
 
         response = self.client.get(reverse("logout"))
 
-        self.assertRedirects(response, build_keycloak_logout_url(), fetch_redirect_response=False)
+        self.assertRedirects(
+            response, build_keycloak_logout_url(), fetch_redirect_response=False
+        )
         self.assertNotIn("lss_user", self.client.session)
 
     def test_account_page_requires_authenticated_session(self):
@@ -564,7 +623,9 @@ class AuthFlowTests(TestCase):
 class AccountRoleTests(TestCase):
     member_id = "11111111-1111-1111-1111-111111111111"
 
-    def _build_request(self, method: str = "get", data=None, *, is_moderator=False, is_admin=False):
+    def _build_request(
+        self, method: str = "get", data=None, *, is_moderator=False, is_admin=False
+    ):
         factory = RequestFactory()
         request = getattr(factory, method)(reverse("account"), data=data or {})
         request.session = {
@@ -596,7 +657,9 @@ class AccountRoleTests(TestCase):
     def test_account_page_shows_moderation_section_for_moderator(self):
         create_site_params(moderator_message="Message moderation")
         create_directory_user(id=self.member_id)
-        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=False)
+        MemberRole.objects.create(
+            member_id=self.member_id, is_moderator=True, is_admin=False
+        )
         request = self._build_request(is_moderator=True, is_admin=False)
 
         response = account(request)
@@ -605,9 +668,13 @@ class AccountRoleTests(TestCase):
         self.assertNotContains(response, "Paramètres administrateur")
 
     def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
-        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+        create_site_params(
+            admin_message="Message admin", moderator_message="Message moderation"
+        )
         create_directory_user(id=self.member_id)
-        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=True)
+        MemberRole.objects.create(
+            member_id=self.member_id, is_moderator=True, is_admin=True
+        )
         request = self._build_request(is_moderator=True, is_admin=True)
 
         response = account(request)
@@ -617,7 +684,9 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "Membres du site")
 
     @patch("app_main.views.messages.success")
-    def test_admin_can_update_member_role_from_account_page(self, _messages_success_mock):
+    def test_admin_can_update_member_role_from_account_page(
+        self, _messages_success_mock
+    ):
         create_site_params()
         create_directory_user(id=self.member_id)
         create_directory_user(
@@ -627,7 +696,9 @@ class AccountRoleTests(TestCase):
             first_name="Future",
             last_name="User",
         )
-        MemberRole.objects.create(member_id=self.member_id, is_moderator=True, is_admin=True)
+        MemberRole.objects.create(
+            member_id=self.member_id, is_moderator=True, is_admin=True
+        )
         request = self._build_request(
             method="post",
             data={
@@ -644,7 +715,9 @@ class AccountRoleTests(TestCase):
         response = account(request)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], reverse("account") + "?member_search=future.user")
+        self.assertEqual(
+            response["Location"], reverse("account") + "?member_search=future.user"
+        )
         self.assertTrue(
             MemberRole.objects.filter(
                 member_id="22222222-2222-2222-2222-222222222222",
@@ -680,11 +753,17 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         rendered = template.render({"request": request, "language_code": "fr"})
 
-        self.assertIn('/static/js/message_box.js', rendered)
-        self.assertIn('/static/js/page-popup-test.js', rendered)
-        self.assertIn('/static/js/page_loader.js', rendered)
-        self.assertLess(rendered.index('/static/js/message_box.js'), rendered.index('/static/js/page-popup-test.js'))
-        self.assertLess(rendered.index('/static/js/page-popup-test.js'), rendered.index('/static/js/page_loader.js'))
+        self.assertIn("/static/js/message_box.js", rendered)
+        self.assertIn("/static/js/page-popup-test.js", rendered)
+        self.assertIn("/static/js/page_loader.js", rendered)
+        self.assertLess(
+            rendered.index("/static/js/message_box.js"),
+            rendered.index("/static/js/page-popup-test.js"),
+        )
+        self.assertLess(
+            rendered.index("/static/js/page-popup-test.js"),
+            rendered.index("/static/js/page_loader.js"),
+        )
 
     def test_navigation_marks_logout_links_for_popup_confirmation(self):
         request = RequestFactory().get("/")
@@ -764,7 +843,9 @@ class HeavyPageTests(SimpleTestCase):
 
 class SitePopupContextTests(TestCase):
     def test_homepage_includes_admin_and_moderator_popup_sections(self):
-        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+        create_site_params(
+            admin_message="Message admin", moderator_message="Message moderation"
+        )
 
         response = self.client.get(reverse("homepage"))
 
@@ -773,7 +854,9 @@ class SitePopupContextTests(TestCase):
         self.assertContains(response, "Message moderation")
 
     def test_non_main_page_excludes_moderator_popup_message(self):
-        create_site_params(admin_message="Message admin", moderator_message="Message moderation")
+        create_site_params(
+            admin_message="Message admin", moderator_message="Message moderation"
+        )
 
         response = self.client.get(reverse("privacy_policy"))
 

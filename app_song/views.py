@@ -52,8 +52,12 @@ SONG_PAGE_SUMMARY_MAX_LENGTH = 100
 DEFAULT_VERSE_MAX_LINES = 10
 DEFAULT_VERSE_MAX_CHARS = 50
 BLOCK_FIELD_PATTERN = re.compile(r"^blocks\[(?P<row>[^\]]+)\]\[(?P<field>[a-z_]+)\]$")
-GENRE_ROW_FIELD_PATTERN = re.compile(r"^rows\[(?P<genre_id>\d+)\]\[(?P<field>group|name|delete)\]$")
-NAME_ROW_FIELD_PATTERN = re.compile(r"^rows\[(?P<item_id>\d+)\]\[(?P<field>name|delete)\]$")
+GENRE_ROW_FIELD_PATTERN = re.compile(
+    r"^rows\[(?P<genre_id>\d+)\]\[(?P<field>group|name|delete)\]$"
+)
+NAME_ROW_FIELD_PATTERN = re.compile(
+    r"^rows\[(?P<item_id>\d+)\]\[(?P<field>name|delete)\]$"
+)
 MULTISPACE_PATTERN = re.compile(r"[ \t]+")
 FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
 
@@ -132,7 +136,7 @@ def _safe_int(value: str | None, fallback: int) -> int:
 
 
 def _apply_french_spacing(value: str) -> str:
-    return FRENCH_PUNCTUATION_PATTERN.sub("\u00A0\\1", value)
+    return FRENCH_PUNCTUATION_PATTERN.sub("\u00a0\\1", value)
 
 
 def _normalize_inline_text(value: str | None) -> str:
@@ -209,7 +213,12 @@ def _parse_song_blocks(post_data) -> list[ParsedSongBlock]:
             delete=_is_truthy(row_data.get("delete")),
         )
 
-        if parsed.block_id is None and not parsed.text and not parsed.prefix and not parsed.delete:
+        if (
+            parsed.block_id is None
+            and not parsed.text
+            and not parsed.prefix
+            and not parsed.delete
+        ):
             continue
 
         parsed.chorus, parsed.chorus_like = _map_block_type(parsed.block_type)
@@ -267,7 +276,9 @@ def _build_blocks_from_song(song: Song) -> list[ParsedSongBlock]:
     return _recalculate_song_blocks(blocks)
 
 
-def _build_preview_markdown(song: Song, blocks: list[ParsedSongBlock], settings: SongRenderSettings) -> str:
+def _build_preview_markdown(
+    song: Song, blocks: list[ParsedSongBlock], settings: SongRenderSettings
+) -> str:
     preview_verses = []
     for block in blocks:
         preview_verses.append(
@@ -285,7 +296,9 @@ def _build_preview_markdown(song: Song, blocks: list[ParsedSongBlock], settings:
             )
         )
 
-    rendered_blocks = render_song_blocks(song, ChorusRenderMode.FULL, settings=settings, verses=preview_verses)
+    rendered_blocks = render_song_blocks(
+        song, ChorusRenderMode.FULL, settings=settings, verses=preview_verses
+    )
     lines: list[str] = []
     for rendered_block in rendered_blocks:
         label = str(rendered_block.label or "").strip()
@@ -312,7 +325,10 @@ def _split_description_for_display(value: str | None) -> tuple[str, str]:
 
     if len(first_line) > SONG_DESCRIPTION_SUMMARY_LENGTH:
         summary = f"{first_line[:SONG_DESCRIPTION_SUMMARY_LENGTH].rstrip()}…"
-        rest_parts = [first_line[SONG_DESCRIPTION_SUMMARY_LENGTH:].lstrip(), *remaining_lines]
+        rest_parts = [
+            first_line[SONG_DESCRIPTION_SUMMARY_LENGTH:].lstrip(),
+            *remaining_lines,
+        ]
         return summary, "\n".join(rest_parts).strip()
 
     return first_line, "\n".join(remaining_lines).strip()
@@ -337,7 +353,9 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
     cards = []
     for result in search_results:
         song = result.song
-        description_summary, description_rest = _split_description_for_display(song.description)
+        description_summary, description_rest = _split_description_for_display(
+            song.description
+        )
         cards.append(
             {
                 "song": song,
@@ -400,16 +418,17 @@ def _get_song_metadata_labels(
     song: Song,
 ) -> tuple[tuple[str, ...], tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
     genre_ids = tuple(
-        SongGenre.objects.filter(song_id=song.song_id)
-        .values_list("genre_id", flat=True)
+        SongGenre.objects.filter(song_id=song.song_id).values_list(
+            "genre_id", flat=True
+        )
     )
     band_ids = tuple(
-        SongBand.objects.filter(song_id=song.song_id)
-        .values_list("band_id", flat=True)
+        SongBand.objects.filter(song_id=song.song_id).values_list("band_id", flat=True)
     )
     artist_ids = tuple(
-        SongArtist.objects.filter(song_id=song.song_id)
-        .values_list("artist_id", flat=True)
+        SongArtist.objects.filter(song_id=song.song_id).values_list(
+            "artist_id", flat=True
+        )
     )
 
     genre_labels = _fetch_genre_labels(set(genre_ids))
@@ -425,9 +444,20 @@ def _get_song_metadata_labels(
         grouped_genres.setdefault(group_name, []).append(genre_name)
 
     return (
-        tuple(with_band_emoji(label) for label in (band_labels.get(item) for item in band_ids) if label),
-        tuple(with_artist_emoji(label) for label in (artist_labels.get(item) for item in artist_ids) if label),
-        tuple((group_name, tuple(with_music_emoji(name) for name in names)) for group_name, names in grouped_genres.items()),
+        tuple(
+            with_band_emoji(label)
+            for label in (band_labels.get(item) for item in band_ids)
+            if label
+        ),
+        tuple(
+            with_artist_emoji(label)
+            for label in (artist_labels.get(item) for item in artist_ids)
+            if label
+        ),
+        tuple(
+            (group_name, tuple(with_music_emoji(name) for name in names))
+            for group_name, names in grouped_genres.items()
+        ),
     )
 
 
@@ -449,7 +479,9 @@ def _get_song_validation_label(song: Song) -> str:
     return _("Chant non validé")
 
 
-def _build_block_display_label(block: ParsedSongBlock, settings: SongRenderSettings) -> str:
+def _build_block_display_label(
+    block: ParsedSongBlock, settings: SongRenderSettings
+) -> str:
     if block.chorus:
         return settings.chorus_prefix
     if block.chorus_like:
@@ -463,7 +495,9 @@ def _build_block_display_text(block: ParsedSongBlock) -> str:
     return _normalize_display_linebreaks(block.text).strip()
 
 
-def _build_block_drag_label(block: ParsedSongBlock, settings: SongRenderSettings) -> str:
+def _build_block_drag_label(
+    block: ParsedSongBlock, settings: SongRenderSettings
+) -> str:
     prefix = str(block.prefix or "").strip()
     if prefix:
         return prefix
@@ -508,8 +542,12 @@ def _as_template_block(
         "drag_text": _build_block_drag_text(block),
         "line_count": len(lines),
         "max_line_length": max_line_length,
-        "has_too_many_lines": len(lines) > verse_max_lines if verse_max_lines > 0 else False,
-        "has_line_too_long": max_line_length > verse_max_characters_for_line if verse_max_characters_for_line > 0 else False,
+        "has_too_many_lines": len(lines) > verse_max_lines
+        if verse_max_lines > 0
+        else False,
+        "has_line_too_long": max_line_length > verse_max_characters_for_line
+        if verse_max_characters_for_line > 0
+        else False,
     }
 
 
@@ -519,11 +557,17 @@ def _build_modify_song_context(
     song: Song,
     parsed_blocks: list[ParsedSongBlock] | None = None,
 ) -> dict[str, object]:
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
     site_params = get_site_params_for_language(getattr(request, "LANGUAGE_CODE", None))
-    verse_max_lines = site_params.verse_max_lines if site_params else DEFAULT_VERSE_MAX_LINES
+    verse_max_lines = (
+        site_params.verse_max_lines if site_params else DEFAULT_VERSE_MAX_LINES
+    )
     verse_max_characters_for_line = (
-        site_params.verse_max_characters_for_a_line if site_params else DEFAULT_VERSE_MAX_CHARS
+        site_params.verse_max_characters_for_a_line
+        if site_params
+        else DEFAULT_VERSE_MAX_CHARS
     )
 
     blocks = _recalculate_song_blocks(parsed_blocks or _build_blocks_from_song(song))
@@ -540,7 +584,9 @@ def _build_modify_song_context(
         "page_summary_text": page_summary_text,
         "page_summary_truncated": page_summary_truncated,
         "validation_label": _get_song_validation_label(song),
-        "licensed_label": _("Chant sous licence") if song.licensed else _("Chant hors licence"),
+        "licensed_label": _("Chant sous licence")
+        if song.licensed
+        else _("Chant hors licence"),
         "links": song.links.all().order_by("link"),
         "bands": bands,
         "artists": artists,
@@ -572,7 +618,9 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
     validated_checked = _is_truthy(request.POST.get("status_validated"))
 
     parsed_blocks = _parse_song_blocks(request.POST)
-    active_blocks = _recalculate_song_blocks([block for block in parsed_blocks if not block.delete])
+    active_blocks = _recalculate_song_blocks(
+        [block for block in parsed_blocks if not block.delete]
+    )
     existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
     song_update_fields = ["title", "subtitle", "description"]
     if _is_moderator(request.user):
@@ -616,7 +664,9 @@ def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
         if not title:
             messages.error(request, _("Le titre est obligatoire."))
             return redirect(redirect_url)
-        existing_song = Song.objects.filter(title=title, subtitle=subtitle).only("song_id").first()
+        existing_song = (
+            Song.objects.filter(title=title, subtitle=subtitle).only("song_id").first()
+        )
         if existing_song:
             return redirect("modify_song", song_id=existing_song.song_id)
         try:
@@ -629,7 +679,11 @@ def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
             )
         except IntegrityError:
             # Protect against race condition with another create request.
-            existing_song = Song.objects.filter(title=title, subtitle=subtitle).only("song_id").first()
+            existing_song = (
+                Song.objects.filter(title=title, subtitle=subtitle)
+                .only("song_id")
+                .first()
+            )
             if existing_song:
                 return redirect("modify_song", song_id=existing_song.song_id)
             messages.error(request, _("Impossible de créer le chant pour le moment."))
@@ -662,7 +716,11 @@ def songs(request: HttpRequest) -> HttpResponse:
         display_search_params = applied_search_params
     search_results = search_songs(applied_search_params, request.user, member_id)
     song_cards = _build_song_cards(search_results.results, request.user)
-    reference_options = get_reference_options() if _is_authenticated(request.user) else _empty_reference_options()
+    reference_options = (
+        get_reference_options()
+        if _is_authenticated(request.user)
+        else _empty_reference_options()
+    )
 
     return render(
         request,
@@ -816,7 +874,9 @@ def _parse_genre_rows(post_data) -> tuple[str, str, dict[int, dict[str, object]]
             continue
         genre_id = int(match.group("genre_id"))
         field = match.group("field")
-        row = rows_by_id.setdefault(genre_id, {"group": "", "name": "", "delete": False})
+        row = rows_by_id.setdefault(
+            genre_id, {"group": "", "name": "", "delete": False}
+        )
         if field == "delete":
             row["delete"] = _is_truthy(value)
         else:
@@ -847,12 +907,19 @@ def _save_genres(request: HttpRequest) -> None:
                     )
                 created_count += 1
             except IntegrityError:
-                error_parts.append(_("Création impossible pour le nouveau genre (%(group)s / %(name)s).") % {
-                    "group": new_group,
-                    "name": new_name,
-                })
+                error_parts.append(
+                    _(
+                        "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
+                    )
+                    % {
+                        "group": new_group,
+                        "name": new_name,
+                    }
+                )
         else:
-            error_parts.append(_("Pour créer un genre, renseignez à la fois le groupe et le nom."))
+            error_parts.append(
+                _("Pour créer un genre, renseignez à la fois le groupe et le nom.")
+            )
 
     for genre_id, values in parsed_rows.items():
         existing = existing_by_id.get(genre_id)
@@ -863,18 +930,29 @@ def _save_genres(request: HttpRequest) -> None:
             try:
                 with transaction.atomic():
                     with connection.cursor() as cursor:
-                        cursor.execute('DELETE FROM "common"."genres" WHERE genre_id = %s', [genre_id])
+                        cursor.execute(
+                            'DELETE FROM "common"."genres" WHERE genre_id = %s',
+                            [genre_id],
+                        )
                 deleted_count += 1
             except Exception:
-                error_parts.append(_("Suppression impossible pour le genre #%(genre_id)s.") % {"genre_id": genre_id})
+                error_parts.append(
+                    _("Suppression impossible pour le genre #%(genre_id)s.")
+                    % {"genre_id": genre_id}
+                )
             continue
 
         new_group_value = str(values.get("group") or "").strip()
         new_name_value = str(values.get("name") or "").strip()
         if not new_group_value or not new_name_value:
-            error_parts.append(_("Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires).") % {
-                "genre_id": genre_id,
-            })
+            error_parts.append(
+                _(
+                    "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
+                )
+                % {
+                    "genre_id": genre_id,
+                }
+            )
             continue
 
         old_group = str(existing.get("group") or "").strip()
@@ -890,7 +968,10 @@ def _save_genres(request: HttpRequest) -> None:
                 )
             updated_count += 1
         except IntegrityError:
-            error_parts.append(_("Mise à jour impossible pour le genre #%(genre_id)s.") % {"genre_id": genre_id})
+            error_parts.append(
+                _("Mise à jour impossible pour le genre #%(genre_id)s.")
+                % {"genre_id": genre_id}
+            )
 
     if created_count:
         success_parts.append(_("%(count)s création(s)") % {"count": created_count})
@@ -900,7 +981,11 @@ def _save_genres(request: HttpRequest) -> None:
         success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
 
     if success_parts:
-        messages.success(request, _("Genres enregistrés : %(summary)s.") % {"summary": ", ".join(success_parts)})
+        messages.success(
+            request,
+            _("Genres enregistrés : %(summary)s.")
+            % {"summary": ", ".join(success_parts)},
+        )
     if error_parts:
         messages.error(request, " ".join(error_parts))
 
@@ -982,10 +1067,16 @@ def _save_name_items(
     if new_name:
         try:
             with connection.cursor() as cursor:
-                cursor.execute(f'INSERT INTO "common"."{table_name}" ("name") VALUES (%s)', [new_name])
+                cursor.execute(
+                    f'INSERT INTO "common"."{table_name}" ("name") VALUES (%s)',
+                    [new_name],
+                )
             created_count += 1
         except IntegrityError:
-            error_parts.append(_("Création impossible pour %(item)s \"%(name)s\".") % {"item": page_label, "name": new_name})
+            error_parts.append(
+                _('Création impossible pour %(item)s "%(name)s".')
+                % {"item": page_label, "name": new_name}
+            )
 
     for item_id, values in parsed_rows.items():
         existing = existing_by_id.get(item_id)
@@ -996,21 +1087,30 @@ def _save_name_items(
             try:
                 with transaction.atomic():
                     with connection.cursor() as cursor:
-                        cursor.execute(f'DELETE FROM "common"."{table_name}" WHERE "{id_column}" = %s', [item_id])
+                        cursor.execute(
+                            f'DELETE FROM "common"."{table_name}" WHERE "{id_column}" = %s',
+                            [item_id],
+                        )
                 deleted_count += 1
             except Exception:
-                error_parts.append(_("Suppression impossible pour %(item)s #%(item_id)s.") % {
-                    "item": page_label,
-                    "item_id": item_id,
-                })
+                error_parts.append(
+                    _("Suppression impossible pour %(item)s #%(item_id)s.")
+                    % {
+                        "item": page_label,
+                        "item_id": item_id,
+                    }
+                )
             continue
 
         new_name_value = str(values.get("name") or "").strip()
         if not new_name_value:
-            error_parts.append(_("Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire).") % {
-                "item": page_label,
-                "item_id": item_id,
-            })
+            error_parts.append(
+                _("Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire).")
+                % {
+                    "item": page_label,
+                    "item_id": item_id,
+                }
+            )
             continue
 
         old_name = str(existing.get("name") or "").strip()
@@ -1025,10 +1125,13 @@ def _save_name_items(
                 )
             updated_count += 1
         except IntegrityError:
-            error_parts.append(_("Mise à jour impossible pour %(item)s #%(item_id)s.") % {
-                "item": page_label,
-                "item_id": item_id,
-            })
+            error_parts.append(
+                _("Mise à jour impossible pour %(item)s #%(item_id)s.")
+                % {
+                    "item": page_label,
+                    "item_id": item_id,
+                }
+            )
 
     if created_count:
         success_parts.append(_("%(count)s création(s)") % {"count": created_count})
@@ -1038,10 +1141,14 @@ def _save_name_items(
         success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
 
     if success_parts:
-        messages.success(request, _("%(item)s enregistrés : %(summary)s.") % {
-            "item": page_label,
-            "summary": ", ".join(success_parts),
-        })
+        messages.success(
+            request,
+            _("%(item)s enregistrés : %(summary)s.")
+            % {
+                "item": page_label,
+                "summary": ", ".join(success_parts),
+            },
+        )
     if error_parts:
         messages.error(request, " ".join(error_parts))
 
@@ -1075,8 +1182,12 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
                 )
                 return redirect("song", song_id=song_object.song_id)
 
-    description_summary, description_rest = _split_description_for_display(song_object.description)
-    page_summary_text, page_summary_truncated = _build_page_summary(song_object.description)
+    description_summary, description_rest = _split_description_for_display(
+        song_object.description
+    )
+    page_summary_text, page_summary_truncated = _build_page_summary(
+        song_object.description
+    )
     validation_label = ""
     if song_object.status == SongStatus.VALIDATED:
         validation_label = _("Chant validé")
@@ -1089,7 +1200,9 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
     bands, artists, genre_groups = _get_song_metadata_labels(song_object)
     is_favorite = _is_song_favorite(song_object.song_id, member_id)
     can_report = _can_report_message(request.user, song_object)
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
     text_artifacts = build_song_text_artifacts(song_object, settings=render_settings)
     messages_history = song_object.messages.all().order_by("-date", "-message_id")
 
@@ -1099,18 +1212,24 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         {
             "selected_group": selected_group,
             "song": song_object,
-            "description_display": _normalize_display_linebreaks(song_object.description).strip(),
+            "description_display": _normalize_display_linebreaks(
+                song_object.description
+            ).strip(),
             "page_summary_text": page_summary_text,
             "page_summary_truncated": page_summary_truncated,
             "description_summary": description_summary,
             "description_rest": description_rest,
             "validation_label": validation_label,
-            "licensed_label": _("Chant sous licence") if song_object.licensed else _("Chant hors licence"),
+            "licensed_label": _("Chant sous licence")
+            if song_object.licensed
+            else _("Chant hors licence"),
             "is_favorite": is_favorite,
             "can_edit": _can_edit_song(request.user, song_object),
             "can_view_messages": bool(member_id),
             "can_report_message": can_report,
-            "message_error": request.method == "POST" and request.POST.get("action") == "add_message" and not bool((request.POST.get("message") or "").strip()),
+            "message_error": request.method == "POST"
+            and request.POST.get("action") == "add_message"
+            and not bool((request.POST.get("message") or "").strip()),
             "messages_history": messages_history,
             "messages_with_status": [
                 {
@@ -1128,8 +1247,12 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "text_short_html": text_artifacts.short_text_html,
             "text_long_html": text_artifacts.long_text_html,
             "display_url": reverse("song", args=[song_object.song_id]),
-            "print_single_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS]),
-            "print_full_url": reverse("song_text", args=[song_object.song_id, TEXT_MODE_FULL_CHORUS]),
+            "print_single_url": reverse(
+                "song_text", args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS]
+            ),
+            "print_full_url": reverse(
+                "song_text", args=[song_object.song_id, TEXT_MODE_FULL_CHORUS]
+            ),
             "print_single_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain",
             "print_full_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain",
         },
@@ -1138,7 +1261,9 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
 
 def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
-    song_object = get_object_or_404(Song.objects.prefetch_related("verses", "links"), song_id=song_id)
+    song_object = get_object_or_404(
+        Song.objects.prefetch_related("verses", "links"), song_id=song_id
+    )
     if not _is_authenticated(request.user):
         raise Http404
 
@@ -1192,28 +1317,38 @@ def modify_song_preview(request: HttpRequest, song_id: int) -> JsonResponse:
         status=song_object.status,
         licensed=song_object.licensed,
     )
-    parsed_blocks = _recalculate_song_blocks([block for block in _parse_song_blocks(request.POST) if not block.delete])
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
-    artifacts = build_song_text_artifacts(preview_song, settings=render_settings, verses=[
-        Verse(
-            verse_id=block.block_id or 0,
-            song=preview_song,
-            num=block.num,
-            num_verse=block.display_num,
-            chorus=block.chorus,
-            chorus_like=block.chorus_like,
-            followed=block.followed,
-            notcontinuenumbering=block.not_c_num,
-            text=block.text,
-            prefix=block.prefix,
-        )
-        for block in parsed_blocks
-    ])
+    parsed_blocks = _recalculate_song_blocks(
+        [block for block in _parse_song_blocks(request.POST) if not block.delete]
+    )
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
+    artifacts = build_song_text_artifacts(
+        preview_song,
+        settings=render_settings,
+        verses=[
+            Verse(
+                verse_id=block.block_id or 0,
+                song=preview_song,
+                num=block.num,
+                num_verse=block.display_num,
+                chorus=block.chorus,
+                chorus_like=block.chorus_like,
+                followed=block.followed,
+                notcontinuenumbering=block.not_c_num,
+                text=block.text,
+                prefix=block.prefix,
+            )
+            for block in parsed_blocks
+        ],
+    )
 
     return JsonResponse(
         {
             "title": artifacts.full_title_with_tags,
-            "markdown": _build_preview_markdown(preview_song, parsed_blocks, settings=render_settings),
+            "markdown": _build_preview_markdown(
+                preview_song, parsed_blocks, settings=render_settings
+            ),
             "html": artifacts.long_text_html,
         }
     )
@@ -1221,7 +1356,9 @@ def modify_song_preview(request: HttpRequest, song_id: int) -> JsonResponse:
 
 def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
-    song_object = get_object_or_404(Song.objects.prefetch_related("links"), song_id=song_id)
+    song_object = get_object_or_404(
+        Song.objects.prefetch_related("links"), song_id=song_id
+    )
     if not _can_read_song(request.user, song_object):
         raise Http404
 
@@ -1244,11 +1381,25 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         setattr(item, "display_type", display_type)
     bands, artists, genre_groups = _get_song_metadata_labels(song_object)
     reference_options = get_reference_options()
-    selected_genre_ids = set(SongGenre.objects.filter(song_id=song_object.song_id).values_list("genre_id", flat=True))
-    selected_band_ids = set(SongBand.objects.filter(song_id=song_object.song_id).values_list("band_id", flat=True))
-    selected_artist_ids = set(SongArtist.objects.filter(song_id=song_object.song_id).values_list("artist_id", flat=True))
+    selected_genre_ids = set(
+        SongGenre.objects.filter(song_id=song_object.song_id).values_list(
+            "genre_id", flat=True
+        )
+    )
+    selected_band_ids = set(
+        SongBand.objects.filter(song_id=song_object.song_id).values_list(
+            "band_id", flat=True
+        )
+    )
+    selected_artist_ids = set(
+        SongArtist.objects.filter(song_id=song_object.song_id).values_list(
+            "artist_id", flat=True
+        )
+    )
 
-    def split_reference_options(options, selected_ids: set[int]) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
+    def split_reference_options(
+        options, selected_ids: set[int]
+    ) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
         selected_items: list[dict[str, object]] = []
         available_items: list[dict[str, object]] = []
         for item in options:
@@ -1262,9 +1413,15 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
                 available_items.append(payload)
         return (tuple(selected_items), tuple(available_items))
 
-    genres_selected, genres_available = split_reference_options(reference_options.genres, selected_genre_ids)
-    bands_selected, bands_available = split_reference_options(reference_options.bands, selected_band_ids)
-    artists_selected, artists_available = split_reference_options(reference_options.artists, selected_artist_ids)
+    genres_selected, genres_available = split_reference_options(
+        reference_options.genres, selected_genre_ids
+    )
+    bands_selected, bands_available = split_reference_options(
+        reference_options.bands, selected_band_ids
+    )
+    artists_selected, artists_available = split_reference_options(
+        reference_options.artists, selected_artist_ids
+    )
 
     return render(
         request,
@@ -1283,7 +1440,9 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
             "metadata_bands_available": bands_available,
             "metadata_artists_selected": artists_selected,
             "metadata_artists_available": artists_available,
-            "is_favorite": _is_song_favorite(song_object.song_id, get_member_id_from_user(request.user)),
+            "is_favorite": _is_song_favorite(
+                song_object.song_id, get_member_id_from_user(request.user)
+            ),
             "can_edit": _can_edit_song(request.user, song_object),
         },
     )
@@ -1301,30 +1460,39 @@ def _normalize_posted_ids(values: list[str]) -> tuple[int, ...]:
     return tuple(normalized)
 
 
-def _sync_song_reference_relations(song: Song, relation_model, id_field: str, selected_ids: tuple[int, ...]) -> None:
+def _sync_song_reference_relations(
+    song: Song, relation_model, id_field: str, selected_ids: tuple[int, ...]
+) -> None:
     selected_set = set(selected_ids)
     existing_ids = set(
-        relation_model.objects.filter(song_id=song.song_id).values_list(id_field, flat=True)
+        relation_model.objects.filter(song_id=song.song_id).values_list(
+            id_field, flat=True
+        )
     )
 
     to_delete = existing_ids - selected_set
     if to_delete:
-        relation_model.objects.filter(song_id=song.song_id, **{f"{id_field}__in": list(to_delete)}).delete()
+        relation_model.objects.filter(
+            song_id=song.song_id, **{f"{id_field}__in": list(to_delete)}
+        ).delete()
 
     to_create = selected_set - existing_ids
     if to_create:
         relation_model.objects.bulk_create(
-            [
-                relation_model(song=song, **{id_field: item_id})
-                for item_id in to_create
-            ]
+            [relation_model(song=song, **{id_field: item_id}) for item_id in to_create]
         )
 
 
 def _update_song_metadata_from_form(song: Song, request: HttpRequest) -> None:
     def normalize_link_type(raw_value: str | None) -> str:
         value = str(raw_value or "").strip().lower()
-        if value in {SongLinkType.WEB, SongLinkType.SCORE, SongLinkType.INTERNAL, "youtube", "audio"}:
+        if value in {
+            SongLinkType.WEB,
+            SongLinkType.SCORE,
+            SongLinkType.INTERNAL,
+            "youtube",
+            "audio",
+        }:
             return value
         if value == SongLinkType.AUDIO_VIDEO:
             # Legacy fallback kept for pre-migration values.
@@ -1336,9 +1504,13 @@ def _update_song_metadata_from_form(song: Song, request: HttpRequest) -> None:
 
     with transaction.atomic():
         for index, existing in enumerate(song.links.all().order_by("link")):
-            original_link = (request.POST.get(f"existing_{index}_original") or "").strip()
+            original_link = (
+                request.POST.get(f"existing_{index}_original") or ""
+            ).strip()
             current_link = (request.POST.get(f"existing_{index}_link") or "").strip()
-            current_type = normalize_link_type(request.POST.get(f"existing_{index}_type"))
+            current_type = normalize_link_type(
+                request.POST.get(f"existing_{index}_type")
+            )
             delete_checked = _is_truthy(request.POST.get(f"existing_{index}_delete"))
 
             if not original_link:
@@ -1378,12 +1550,18 @@ def _update_song_metadata_from_form(song: Song, request: HttpRequest) -> None:
             )
             link_object.delete()
             existing_links_by_value.pop(original_link, None)
-            existing_links_by_value[current_link] = SongLink(song=song, link=current_link, type=current_type)
+            existing_links_by_value[current_link] = SongLink(
+                song=song, link=current_link, type=current_type
+            )
             consumed_targets.add(current_link)
 
         new_link = (request.POST.get("new_link") or "").strip()
         new_type = normalize_link_type(request.POST.get("new_type"))
-        if new_link and new_link not in existing_links_by_value and new_link not in consumed_targets:
+        if (
+            new_link
+            and new_link not in existing_links_by_value
+            and new_link not in consumed_targets
+        ):
             SongLink.objects.create(
                 song=song,
                 link=new_link,
@@ -1420,9 +1598,15 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
     if not _can_read_song(request.user, song):
         raise Http404
 
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
     text_artifacts = build_song_text_artifacts(song, settings=render_settings)
-    text_html = text_artifacts.short_text_html if render_mode == ChorusRenderMode.SINGLE else text_artifacts.long_text_html
+    text_html = (
+        text_artifacts.short_text_html
+        if render_mode == ChorusRenderMode.SINGLE
+        else text_artifacts.long_text_html
+    )
     if request.GET.get("format") == "plain":
         return HttpResponse(text_html, content_type="text/plain; charset=utf-8")
 
@@ -1443,7 +1627,9 @@ def song_text_popup(request: HttpRequest, song_id: int) -> JsonResponse:
     if not _can_read_song(request.user, song):
         raise Http404
 
-    render_settings = SongRenderSettings.from_language(getattr(request, "LANGUAGE_CODE", None))
+    render_settings = SongRenderSettings.from_language(
+        getattr(request, "LANGUAGE_CODE", None)
+    )
     blocks = _build_blocks_from_song(song)
     return JsonResponse(
         {

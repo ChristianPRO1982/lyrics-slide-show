@@ -30,7 +30,9 @@ class DirectoryUserSummary:
 
     @property
     def display_name(self) -> str:
-        full_name = " ".join(part for part in [self.first_name, self.last_name] if part).strip()
+        full_name = " ".join(
+            part for part in [self.first_name, self.last_name] if part
+        ).strip()
         return full_name or self.username or self.member_id
 
 
@@ -113,15 +115,28 @@ def fetch_directory_users(member_ids: Iterable[str]) -> dict[str, DirectoryUserS
 def user_can_manage_group(user, membership: GroupMembership | None) -> bool:
     if can_manage_groups_globally(user):
         return True
-    return bool(getattr(user, "is_authenticated", False) and membership and membership.is_group_admin)
+    return bool(
+        getattr(user, "is_authenticated", False)
+        and membership
+        and membership.is_group_admin
+    )
 
 
-def user_can_select_group(user, group: Group, membership: GroupMembership | None, session_secret: str | None = None) -> bool:
+def user_can_select_group(
+    user,
+    group: Group,
+    membership: GroupMembership | None,
+    session_secret: str | None = None,
+) -> bool:
     if group.status == GroupStatus.OPEN:
         return True
     if membership is not None:
         return True
-    return bool(group.secret_ciphertext and session_secret and secrets.compare_digest(session_secret, group.secret_ciphertext))
+    return bool(
+        group.secret_ciphertext
+        and session_secret
+        and secrets.compare_digest(session_secret, group.secret_ciphertext)
+    )
 
 
 def mark_session_modified(session) -> None:
@@ -158,7 +173,9 @@ def get_selected_group_state(request) -> tuple[Group | None, bool]:
     member_id = get_member_id_from_user(request.user)
     membership = None
     if member_id:
-        membership = GroupMembership.objects.filter(group_id=group.group_id, member_id=member_id).first()
+        membership = GroupMembership.objects.filter(
+            group_id=group.group_id, member_id=member_id
+        ).first()
 
     secret = request.session.get(SELECTED_GROUP_SECRET_SESSION_KEY)
     if user_can_select_group(request.user, group, membership, secret):
@@ -168,7 +185,9 @@ def get_selected_group_state(request) -> tuple[Group | None, bool]:
     return None, False
 
 
-def require_group_manager(user, group: Group, membership: GroupMembership | None) -> None:
+def require_group_manager(
+    user, group: Group, membership: GroupMembership | None
+) -> None:
     if not user_can_manage_group(user, membership):
         raise Http404
 
@@ -188,14 +207,23 @@ def add_duplicate_name_message(request) -> None:
 
 
 def is_last_group_admin(group: Group, member_id: str) -> bool:
-    if not GroupMembership.objects.filter(group_id=group.group_id, member_id=member_id, is_group_admin=True).exists():
+    if not GroupMembership.objects.filter(
+        group_id=group.group_id, member_id=member_id, is_group_admin=True
+    ).exists():
         return False
-    return GroupMembership.objects.filter(group_id=group.group_id, is_group_admin=True).count() == 1
+    return (
+        GroupMembership.objects.filter(
+            group_id=group.group_id, is_group_admin=True
+        ).count()
+        == 1
+    )
 
 
 def ensure_not_last_group_admin(group: Group, member_id: str) -> None:
     if is_last_group_admin(group, member_id):
-        raise ValueError(_("Le dernier responsable du groupe ne peut pas perdre ce rôle."))
+        raise ValueError(
+            _("Le dernier responsable du groupe ne peut pas perdre ce rôle.")
+        )
 
 
 def accept_join_request(group: Group, member_id: str) -> None:
@@ -206,19 +234,27 @@ def accept_join_request(group: Group, member_id: str) -> None:
             member_id=normalized_member_id,
             is_group_admin=False,
         )
-        GroupJoinRequest.objects.filter(group_id=group.group_id, member_id=normalized_member_id).delete()
+        GroupJoinRequest.objects.filter(
+            group_id=group.group_id, member_id=normalized_member_id
+        ).delete()
 
 
 def remove_member(group: Group, member_id: str) -> None:
     normalized_member_id = normalize_member_id(member_id)
     ensure_not_last_group_admin(group, normalized_member_id)
-    GroupMembership.objects.filter(group_id=group.group_id, member_id=normalized_member_id).delete()
-    GroupJoinRequest.objects.filter(group_id=group.group_id, member_id=normalized_member_id).delete()
+    GroupMembership.objects.filter(
+        group_id=group.group_id, member_id=normalized_member_id
+    ).delete()
+    GroupJoinRequest.objects.filter(
+        group_id=group.group_id, member_id=normalized_member_id
+    ).delete()
 
 
 def set_group_admin(group: Group, member_id: str, enabled: bool) -> None:
     normalized_member_id = normalize_member_id(member_id)
-    membership = GroupMembership.objects.filter(group_id=group.group_id, member_id=normalized_member_id).first()
+    membership = GroupMembership.objects.filter(
+        group_id=group.group_id, member_id=normalized_member_id
+    ).first()
     if membership is None:
         raise ValueError(_("Ce membre n'appartient pas au groupe."))
     if not enabled:
@@ -228,8 +264,12 @@ def set_group_admin(group: Group, member_id: str, enabled: bool) -> None:
 
 
 def list_group_memberships(group: Group) -> QuerySet[GroupMembership]:
-    return GroupMembership.objects.filter(group_id=group.group_id).order_by("-is_group_admin", "member_id")
+    return GroupMembership.objects.filter(group_id=group.group_id).order_by(
+        "-is_group_admin", "member_id"
+    )
 
 
 def list_group_join_requests(group: Group) -> QuerySet[GroupJoinRequest]:
-    return GroupJoinRequest.objects.filter(group_id=group.group_id).order_by("member_id")
+    return GroupJoinRequest.objects.filter(group_id=group.group_id).order_by(
+        "member_id"
+    )

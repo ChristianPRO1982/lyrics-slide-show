@@ -46,7 +46,9 @@ def parse_ordered_mix(raw_value: str | None) -> list[PlaylistItemToken]:
 
 
 def normalize_animation_song_positions(animation: Animation) -> None:
-    songs = list(animation.animation_songs.all().order_by("position", "animation_song_id"))
+    songs = list(
+        animation.animation_songs.all().order_by("position", "animation_song_id")
+    )
     for index, animation_song in enumerate(songs):
         normalized_position = POSITION_START + index * POSITION_STEP
         if animation_song.position != normalized_position:
@@ -60,7 +62,9 @@ def sync_animation_playlist(
     allowed_song_ids: set[int],
 ) -> PlaylistSyncResult:
     existing_items = list(
-        AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id")
+        AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+            "position", "animation_song_id"
+        )
     )
     existing_by_id = {item.animation_song_id: item for item in existing_items}
 

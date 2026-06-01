@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -300,122 +299,122 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_messages" '
-                'ADD CONSTRAINT s_song_messages_songs_fk '
+                "ADD CONSTRAINT s_song_messages_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_messages" '
-                'DROP CONSTRAINT IF EXISTS s_song_messages_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_messages_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_links" '
-                'ADD CONSTRAINT s_song_links_songs_fk '
+                "ADD CONSTRAINT s_song_links_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_links" '
-                'DROP CONSTRAINT IF EXISTS s_song_links_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_links_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_verses" '
-                'ADD CONSTRAINT s_verses_songs_fk '
+                "ADD CONSTRAINT s_verses_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_verses" '
-                'DROP CONSTRAINT IF EXISTS s_verses_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_verses_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_genres" '
-                'ADD CONSTRAINT s_song_genres_songs_fk '
+                "ADD CONSTRAINT s_song_genres_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_genres" '
-                'DROP CONSTRAINT IF EXISTS s_song_genres_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_genres_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_genres" '
-                'ADD CONSTRAINT s_song_genres_genres_fk '
+                "ADD CONSTRAINT s_song_genres_genres_fk "
                 'FOREIGN KEY ("genre_id") REFERENCES "common"."genres" ("genre_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_genres" '
-                'DROP CONSTRAINT IF EXISTS s_song_genres_genres_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_genres_genres_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_artists" '
-                'ADD CONSTRAINT s_song_artists_songs_fk '
+                "ADD CONSTRAINT s_song_artists_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_artists" '
-                'DROP CONSTRAINT IF EXISTS s_song_artists_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_artists_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_artists" '
-                'ADD CONSTRAINT s_song_artists_artists_fk '
+                "ADD CONSTRAINT s_song_artists_artists_fk "
                 'FOREIGN KEY ("artist_id") REFERENCES "common"."artists" ("artist_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_artists" '
-                'DROP CONSTRAINT IF EXISTS s_song_artists_artists_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_artists_artists_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_bands" '
-                'ADD CONSTRAINT s_song_bands_songs_fk '
+                "ADD CONSTRAINT s_song_bands_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_bands" '
-                'DROP CONSTRAINT IF EXISTS s_song_bands_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_bands_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_bands" '
-                'ADD CONSTRAINT s_song_bands_bands_fk '
+                "ADD CONSTRAINT s_song_bands_bands_fk "
                 'FOREIGN KEY ("band_id") REFERENCES "common"."bands" ("band_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_bands" '
-                'DROP CONSTRAINT IF EXISTS s_song_bands_bands_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_bands_bands_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_favorites" '
-                'ADD CONSTRAINT s_song_favorites_songs_fk '
+                "ADD CONSTRAINT s_song_favorites_songs_fk "
                 'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_favorites" '
-                'DROP CONSTRAINT IF EXISTS s_song_favorites_songs_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_favorites_songs_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."s_song_favorites" '
-                'ADD CONSTRAINT s_song_favorites_users_fk '
+                "ADD CONSTRAINT s_song_favorites_users_fk "
                 'FOREIGN KEY ("user_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."s_song_favorites" '
-                'DROP CONSTRAINT IF EXISTS s_song_favorites_users_fk'
+                "DROP CONSTRAINT IF EXISTS s_song_favorites_users_fk"
             ),
         ),
     ]

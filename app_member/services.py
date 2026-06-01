@@ -116,11 +116,15 @@ def set_member_role(member_id: str, role_name: str, enabled: bool) -> MemberRole
 
     role.full_clean()
     role.save()
-    return MemberRoleFlags(is_moderator=role.is_moderator or role.is_admin, is_admin=role.is_admin)
+    return MemberRoleFlags(
+        is_moderator=role.is_moderator or role.is_admin, is_admin=role.is_admin
+    )
 
 
 def can_manage_site_members(user) -> bool:
-    return bool(getattr(user, "is_authenticated", False) and getattr(user, "is_admin", False))
+    return bool(
+        getattr(user, "is_authenticated", False) and getattr(user, "is_admin", False)
+    )
 
 
 def can_manage_site_settings(user) -> bool:
@@ -132,7 +136,10 @@ def can_manage_global_popup(user) -> bool:
 
 
 def can_manage_moderator_popup(user) -> bool:
-    return bool(getattr(user, "is_authenticated", False) and getattr(user, "is_moderator", False))
+    return bool(
+        getattr(user, "is_authenticated", False)
+        and getattr(user, "is_moderator", False)
+    )
 
 
 def can_validate_songs(user) -> bool:
@@ -152,7 +159,9 @@ def get_site_params_for_language(language_code: str | None) -> SiteParams | None
         if params is not None:
             return params
         if normalized_language != fallback_language:
-            params = SiteParams.objects.filter(language__iexact=fallback_language).first()
+            params = SiteParams.objects.filter(
+                language__iexact=fallback_language
+            ).first()
             if params is not None:
                 return params
         return SiteParams.objects.order_by("language").first()
@@ -169,11 +178,15 @@ def _build_directory_user_queryset(search_term: str):
     ).order_by("username", "email", "id")
 
 
-def _search_directory_users_with_sql(search_term: str, limit: int) -> list[DirectoryMemberSearchResult]:
+def _search_directory_users_with_sql(
+    search_term: str, limit: int
+) -> list[DirectoryMemberSearchResult]:
     schema = _validate_identifier(settings.USER_SCHEMA)
     table = _validate_identifier(settings.USER_TABLE)
     like_value = f"%{search_term}%"
-    enabled_select = "enabled" if _user_table_has_column("enabled") else "TRUE AS enabled"
+    enabled_select = (
+        "enabled" if _user_table_has_column("enabled") else "TRUE AS enabled"
+    )
 
     with connection.cursor() as cursor:
         cursor.execute(
@@ -214,7 +227,9 @@ def _search_directory_users_with_sql(search_term: str, limit: int) -> list[Direc
     ]
 
 
-def search_directory_members(search_term: str, limit: int = 20) -> list[DirectoryMemberSearchResult]:
+def search_directory_members(
+    search_term: str, limit: int = 20
+) -> list[DirectoryMemberSearchResult]:
     normalized_search = str(search_term or "").strip()
     if not normalized_search:
         return []
@@ -226,7 +241,9 @@ def search_directory_members(search_term: str, limit: int = 20) -> list[Director
                 is_moderator=role.is_moderator or role.is_admin,
                 is_admin=role.is_admin,
             )
-            for role in MemberRole.objects.filter(member_id__in=[row.id for row in rows])
+            for role in MemberRole.objects.filter(
+                member_id__in=[row.id for row in rows]
+            )
         }
         return [
             DirectoryMemberSearchResult(

@@ -135,14 +135,27 @@ def _signature_payload(data: dict[str, str]) -> str:
 
 def sign_callback_data(data: dict[str, str], secret: str) -> str:
     payload = _signature_payload(data)
-    return hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+    return hmac.new(
+        secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256
+    ).hexdigest()
 
 
 def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
-    required_fields = ("external_id", "username", "email", "first_name", "last_name", "ts", "sig")
+    required_fields = (
+        "external_id",
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "ts",
+        "sig",
+    )
     missing = [field for field in required_fields if not params.get(field)]
     if missing:
-        raise InvalidCallbackError(_("Champs de retour manquants : %(fields)s") % {"fields": ", ".join(missing)})
+        raise InvalidCallbackError(
+            _("Champs de retour manquants : %(fields)s")
+            % {"fields": ", ".join(missing)}
+        )
 
     try:
         timestamp = int(params["ts"])
@@ -164,7 +177,9 @@ def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
 
     for field in ("username", "email", "first_name", "last_name"):
         if len(params[field]) > MAX_TEXT_FIELD_LENGTH:
-            raise InvalidCallbackError(_("Champ trop long : %(field)s.") % {"field": field})
+            raise InvalidCallbackError(
+                _("Champ trop long : %(field)s.") % {"field": field}
+            )
 
     return {
         "external_id": normalized_uuid,
@@ -177,13 +192,17 @@ def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:
 
 def _keycloak_oidc_base_url() -> str:
     if not settings.KEYCLOAK_SERVER_URL or not settings.KEYCLOAK_REALM:
-        raise KeycloakAuthError(_("Keycloak n'est pas configuré pour cet environnement."))
+        raise KeycloakAuthError(
+            _("Keycloak n'est pas configuré pour cet environnement.")
+        )
     return f"{settings.KEYCLOAK_SERVER_URL}/realms/{settings.KEYCLOAK_REALM}/protocol/openid-connect"
 
 
 def build_keycloak_login_url(session) -> str:
     if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_REDIRECT_URI:
-        raise KeycloakAuthError(_("La configuration du client Keycloak est incomplète."))
+        raise KeycloakAuthError(
+            _("La configuration du client Keycloak est incomplète.")
+        )
     state = secrets.token_urlsafe(32)
     session[KEYCLOAK_STATE_SESSION_KEY] = state
     _mark_session_modified(session)
@@ -201,7 +220,9 @@ def build_keycloak_login_url(session) -> str:
 
 def build_keycloak_logout_url() -> str:
     if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_LOGOUT_REDIRECT_URI:
-        raise KeycloakAuthError(_("La configuration de déconnexion Keycloak est incomplète."))
+        raise KeycloakAuthError(
+            _("La configuration de déconnexion Keycloak est incomplète.")
+        )
     query_string = urlencode(
         {
             "client_id": settings.KEYCLOAK_CLIENT_ID,
@@ -228,9 +249,13 @@ def _load_json_response(request: Request) -> dict[str, Any]:
             exc.reason,
             response_body[:500],
         )
-        raise KeycloakAuthError(_("La requête Keycloak a échoué avec HTTP %(code)s.") % {"code": exc.code}) from exc
+        raise KeycloakAuthError(
+            _("La requête Keycloak a échoué avec HTTP %(code)s.") % {"code": exc.code}
+        ) from exc
     except URLError as exc:
-        logger.warning("keycloak_url_error url=%s reason=%s", request.full_url, exc.reason)
+        logger.warning(
+            "keycloak_url_error url=%s reason=%s", request.full_url, exc.reason
+        )
         raise KeycloakAuthError(_("La requête Keycloak a échoué.")) from exc
     except TimeoutError as exc:
         logger.warning("keycloak_timeout url=%s", request.full_url)
@@ -241,8 +266,14 @@ def _load_json_response(request: Request) -> dict[str, Any]:
 
 
 def _exchange_keycloak_code(code: str) -> dict[str, Any]:
-    if not settings.KEYCLOAK_CLIENT_ID or not settings.KEYCLOAK_CLIENT_SECRET or not settings.KEYCLOAK_REDIRECT_URI:
-        raise KeycloakAuthError(_("La configuration d'échange de jeton Keycloak est incomplète."))
+    if (
+        not settings.KEYCLOAK_CLIENT_ID
+        or not settings.KEYCLOAK_CLIENT_SECRET
+        or not settings.KEYCLOAK_REDIRECT_URI
+    ):
+        raise KeycloakAuthError(
+            _("La configuration d'échange de jeton Keycloak est incomplète.")
+        )
     body = urlencode(
         {
             "grant_type": "authorization_code",
@@ -275,7 +306,10 @@ def _fetch_keycloak_userinfo(access_token: str) -> dict[str, Any]:
 
 def validate_keycloak_callback(params: dict[str, str], session) -> dict[str, str]:
     if params.get("error"):
-        raise KeycloakAuthError(_("La connexion Keycloak a échoué : %(error)s.") % {"error": params["error"]})
+        raise KeycloakAuthError(
+            _("La connexion Keycloak a échoué : %(error)s.")
+            % {"error": params["error"]}
+        )
 
     code = params.get("code", "")
     state = params.get("state", "")
@@ -356,13 +390,17 @@ def get_directory_user(external_id: str) -> DirectoryUser:
     try:
         normalized_id = uuid.UUID(str(external_id))
     except (TypeError, ValueError) as exc:
-        raise UnknownUserError(_("Aucun utilisateur correspondant n'a été trouvé dans users.users.")) from exc
+        raise UnknownUserError(
+            _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
+        ) from exc
 
     if settings.USER_SCHEMA == "users" and settings.USER_TABLE == "users":
         try:
             record = DirectoryUserRecord.objects.get(pk=normalized_id)
         except DirectoryUserRecord.DoesNotExist as exc:
-            raise UnknownUserError(_("Aucun utilisateur correspondant n'a été trouvé dans users.users.")) from exc
+            raise UnknownUserError(
+                _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
+            ) from exc
         return _directory_user_from_record(record)
 
     with connection.cursor() as cursor:
@@ -370,7 +408,9 @@ def get_directory_user(external_id: str) -> DirectoryUser:
         row = cursor.fetchone()
 
     if row is None:
-        raise UnknownUserError(_("Aucun utilisateur correspondant n'a été trouvé dans users.users."))
+        raise UnknownUserError(
+            _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
+        )
 
     return _directory_user_from_record(
         DirectoryUserRecord(
@@ -409,7 +449,10 @@ def get_request_user(session) -> SessionUser | AnonymousSessionUser:
         email=session_user.get("email"),
         first_name=session_user.get("first_name"),
         last_name=session_user.get("last_name"),
-        is_moderator=bool(session_user.get("is_moderator", False) or session_user.get("is_admin", False)),
+        is_moderator=bool(
+            session_user.get("is_moderator", False)
+            or session_user.get("is_admin", False)
+        ),
         is_admin=bool(session_user.get("is_admin", False)),
     )
 

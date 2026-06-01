@@ -8,7 +8,16 @@ from dataclasses import dataclass, replace
 from urllib.parse import urlencode
 
 from django.db import connection
-from django.db.models import Count, Exists, Func, OuterRef, Q, QuerySet, TextField, Value
+from django.db.models import (
+    Count,
+    Exists,
+    Func,
+    OuterRef,
+    Q,
+    QuerySet,
+    TextField,
+    Value,
+)
 from django.db.models.functions import Coalesce, Lower
 from django.http import HttpRequest, QueryDict
 from django.urls import reverse
@@ -181,7 +190,11 @@ def _params_from_query(query: QueryDict) -> SongSearchParams:
 
 def _normalize_search_text(value: str) -> str:
     without_accents = unicodedata.normalize("NFKD", value)
-    return "".join(character for character in without_accents if not unicodedata.combining(character)).lower()
+    return "".join(
+        character
+        for character in without_accents
+        if not unicodedata.combining(character)
+    ).lower()
 
 
 def _unaccented_lower(field_name: str):
@@ -238,7 +251,9 @@ def save_song_search(member_id: str | None, params: SongSearchParams) -> None:
     )
 
 
-def get_active_song_search(request: HttpRequest, member_id: str | None) -> SongSearchParams:
+def get_active_song_search(
+    request: HttpRequest, member_id: str | None
+) -> SongSearchParams:
     if "reset_search" in request.GET:
         params = SongSearchParams.empty()
         if member_id:
@@ -291,7 +306,9 @@ def _base_accessible_songs(user) -> QuerySet[Song]:
     return queryset
 
 
-def _apply_text_filter(queryset: QuerySet[Song], params: SongSearchParams) -> QuerySet[Song]:
+def _apply_text_filter(
+    queryset: QuerySet[Song], params: SongSearchParams
+) -> QuerySet[Song]:
     search_text = _normalize_search_text(params.text).strip()
     if not search_text:
         return queryset
@@ -300,12 +317,16 @@ def _apply_text_filter(queryset: QuerySet[Song], params: SongSearchParams) -> Qu
         "_search_title": _unaccented_lower("title"),
         "_search_subtitle": _unaccented_lower("subtitle"),
     }
-    text_filter = Q(_search_title__contains=search_text) | Q(_search_subtitle__contains=search_text)
+    text_filter = Q(_search_title__contains=search_text) | Q(
+        _search_subtitle__contains=search_text
+    )
 
     if params.everywhere:
         annotations["_search_description"] = _unaccented_lower("description")
         annotations["_search_verse"] = _unaccented_lower("verses__text")
-        text_filter |= Q(_search_description__contains=search_text) | Q(_search_verse__contains=search_text)
+        text_filter |= Q(_search_description__contains=search_text) | Q(
+            _search_verse__contains=search_text
+        )
 
     return queryset.annotate(**annotations).filter(text_filter)
 
@@ -335,11 +356,15 @@ def _apply_reference_filter(
     ).filter(**{annotation_name: len(ids)})
 
 
-def _apply_filters(queryset: QuerySet[Song], params: SongSearchParams, member_id: str | None) -> QuerySet[Song]:
+def _apply_filters(
+    queryset: QuerySet[Song], params: SongSearchParams, member_id: str | None
+) -> QuerySet[Song]:
     queryset = _apply_text_filter(queryset, params)
 
     if params.validation == "validated_only":
-        queryset = queryset.filter(status__in=[SONG_STATUS_VALIDATED, SONG_STATUS_VALIDATED_WITH_CONCERN])
+        queryset = queryset.filter(
+            status__in=[SONG_STATUS_VALIDATED, SONG_STATUS_VALIDATED_WITH_CONCERN]
+        )
     elif params.validation == "non_validated_only":
         queryset = queryset.filter(status=SongStatus.NOT_VALIDATED)
 
@@ -371,7 +396,9 @@ def _apply_filters(queryset: QuerySet[Song], params: SongSearchParams, member_id
     return queryset.distinct()
 
 
-def _with_favorite_state(queryset: QuerySet[Song], member_id: str | None) -> QuerySet[Song]:
+def _with_favorite_state(
+    queryset: QuerySet[Song], member_id: str | None
+) -> QuerySet[Song]:
     if not member_id:
         return queryset
     return queryset.annotate(
@@ -424,15 +451,25 @@ def _get_relation_maps(song_ids: list[int]):
     band_map: dict[int, list[int]] = defaultdict(list)
     artist_map: dict[int, list[int]] = defaultdict(list)
 
-    for song_id, genre_id in SongGenre.objects.filter(song_id__in=song_ids).values_list("song_id", "genre_id"):
+    for song_id, genre_id in SongGenre.objects.filter(song_id__in=song_ids).values_list(
+        "song_id", "genre_id"
+    ):
         genre_map[song_id].append(genre_id)
-    for song_id, band_id in SongBand.objects.filter(song_id__in=song_ids).values_list("song_id", "band_id"):
+    for song_id, band_id in SongBand.objects.filter(song_id__in=song_ids).values_list(
+        "song_id", "band_id"
+    ):
         band_map[song_id].append(band_id)
-    for song_id, artist_id in SongArtist.objects.filter(song_id__in=song_ids).values_list("song_id", "artist_id"):
+    for song_id, artist_id in SongArtist.objects.filter(
+        song_id__in=song_ids
+    ).values_list("song_id", "artist_id"):
         artist_map[song_id].append(artist_id)
 
-    genre_labels = _fetch_genre_labels({genre_id for ids in genre_map.values() for genre_id in ids})
-    band_labels = _fetch_name_labels("bands", "band_id", {band_id for ids in band_map.values() for band_id in ids})
+    genre_labels = _fetch_genre_labels(
+        {genre_id for ids in genre_map.values() for genre_id in ids}
+    )
+    band_labels = _fetch_name_labels(
+        "bands", "band_id", {band_id for ids in band_map.values() for band_id in ids}
+    )
     artist_labels = _fetch_name_labels(
         "artists",
         "artist_id",
@@ -442,8 +479,12 @@ def _get_relation_maps(song_ids: list[int]):
 
 
 def _build_result(song: Song, relation_maps) -> SongSearchResult:
-    genre_map, band_map, artist_map, genre_labels, band_labels, artist_labels = relation_maps
-    print_single_url = reverse("song_text", args=[song.song_id, TEXT_MODE_SINGLE_CHORUS])
+    genre_map, band_map, artist_map, genre_labels, band_labels, artist_labels = (
+        relation_maps
+    )
+    print_single_url = reverse(
+        "song_text", args=[song.song_id, TEXT_MODE_SINGLE_CHORUS]
+    )
     print_full_url = reverse("song_text", args=[song.song_id, TEXT_MODE_FULL_CHORUS])
     return SongSearchResult(
         song=song,
@@ -451,17 +492,23 @@ def _build_result(song: Song, relation_maps) -> SongSearchResult:
         validation_label=_validation_label(song),
         genres=tuple(
             with_music_emoji(label)
-            for label in (genre_labels.get(item) for item in genre_map.get(song.song_id, []))
+            for label in (
+                genre_labels.get(item) for item in genre_map.get(song.song_id, [])
+            )
             if label
         ),
         bands=tuple(
             with_band_emoji(label)
-            for label in (band_labels.get(item) for item in band_map.get(song.song_id, []))
+            for label in (
+                band_labels.get(item) for item in band_map.get(song.song_id, [])
+            )
             if label
         ),
         artists=tuple(
             with_artist_emoji(label)
-            for label in (artist_labels.get(item) for item in artist_map.get(song.song_id, []))
+            for label in (
+                artist_labels.get(item) for item in artist_map.get(song.song_id, [])
+            )
             if label
         ),
         display_url=reverse("song", args=[song.song_id]),
@@ -484,9 +531,13 @@ def search_songs(
     catalog_count = accessible_songs.count()
     filtered_songs = _apply_filters(accessible_songs, active_params, member_id)
     search_count = filtered_songs.count()
-    songs = list(_with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle"))
+    songs = list(
+        _with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle")
+    )
     song_ids = [song.song_id for song in songs]
-    relation_maps = _get_relation_maps(song_ids) if song_ids else ({}, {}, {}, {}, {}, {})
+    relation_maps = (
+        _get_relation_maps(song_ids) if song_ids else ({}, {}, {}, {}, {}, {})
+    )
     results = tuple(_build_result(song, relation_maps) for song in songs)
 
     return SongSearchResults(
@@ -517,9 +568,15 @@ def get_reference_options() -> SongReferenceOptions:
         )
 
         cursor.execute('SELECT band_id, "name" FROM "common"."bands" ORDER BY "name"')
-        bands = tuple(SongReferenceOption(id=row[0], label=row[1]) for row in cursor.fetchall())
+        bands = tuple(
+            SongReferenceOption(id=row[0], label=row[1]) for row in cursor.fetchall()
+        )
 
-        cursor.execute('SELECT artist_id, "name" FROM "common"."artists" ORDER BY "name"')
-        artists = tuple(SongReferenceOption(id=row[0], label=row[1]) for row in cursor.fetchall())
+        cursor.execute(
+            'SELECT artist_id, "name" FROM "common"."artists" ORDER BY "name"'
+        )
+        artists = tuple(
+            SongReferenceOption(id=row[0], label=row[1]) for row in cursor.fetchall()
+        )
 
     return SongReferenceOptions(genres=genres, bands=bands, artists=artists)

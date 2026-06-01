@@ -6,7 +6,9 @@ from django.utils.translation import gettext as _
 from app_member.services import MAIN_PAGE_NAMES, get_site_params_for_language
 
 
-def _build_section(section_id: str, title: str, message: str, cooldown_minutes: int) -> dict[str, object]:
+def _build_section(
+    section_id: str, title: str, message: str, cooldown_minutes: int
+) -> dict[str, object]:
     normalized_message = str(message or "").strip()
     if not normalized_message:
         return {}

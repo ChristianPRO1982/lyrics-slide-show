@@ -17,7 +17,9 @@ class GroupCreateForm(forms.ModelForm):
             "info": _("Informations"),
         }
         help_texts = {
-            "info": _("Texte simple uniquement. Les retours à la ligne sont conservés."),
+            "info": _(
+                "Texte simple uniquement. Les retours à la ligne sont conservés."
+            ),
         }
 
     def clean_name(self) -> str:
@@ -54,12 +56,18 @@ class GroupSettingsForm(forms.ModelForm):
             "info": _("Informations"),
         }
         help_texts = {
-            "info": _("Texte simple uniquement. Les retours à la ligne sont conservés."),
+            "info": _(
+                "Texte simple uniquement. Les retours à la ligne sont conservés."
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        current_status = self.instance.status if self.instance and self.instance.pk else GroupStatus.OPEN
+        current_status = (
+            self.instance.status
+            if self.instance and self.instance.pk
+            else GroupStatus.OPEN
+        )
         self.fields["is_open"].initial = current_status
 
     def clean_name(self) -> str:

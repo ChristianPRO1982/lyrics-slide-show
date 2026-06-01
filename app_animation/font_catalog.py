@@ -72,5 +72,9 @@ def list_font_choices() -> tuple[tuple[str, str], ...]:
     return tuple((family, family) for family in FONT_FAMILIES)
 
 
-def list_font_previews(sample_text: str = "TEXT text àéèêïùôÔç") -> tuple[FontPreview, ...]:
-    return tuple(FontPreview(family=family, sample=sample_text) for family in FONT_FAMILIES)
+def list_font_previews(
+    sample_text: str = "TEXT text àéèêïùôÔç",
+) -> tuple[FontPreview, ...]:
+    return tuple(
+        FontPreview(family=family, sample=sample_text) for family in FONT_FAMILIES
+    )

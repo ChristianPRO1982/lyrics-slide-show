@@ -40,7 +40,9 @@ class ModeratorMessageForm(forms.ModelForm):
         ]
         labels = {
             "moderator_message": _("Message de modération"),
-            "moderator_message_cooldown_minutes": _("Délai de réaffichage du message de modération (minutes)"),
+            "moderator_message_cooldown_minutes": _(
+                "Délai de réaffichage du message de modération (minutes)"
+            ),
         }
         widgets = {
             "moderator_message": forms.Textarea(attrs={"rows": 6}),
@@ -48,18 +50,54 @@ class ModeratorMessageForm(forms.ModelForm):
 
 
 class SiteParamsAdminForm(forms.ModelForm):
-    home_card_1_title = forms.CharField(label=_("Carte accueil 1 - Titre"), required=False, max_length=255)
-    home_card_1_text = forms.CharField(label=_("Carte accueil 1 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
-    home_card_2_title = forms.CharField(label=_("Carte accueil 2 - Titre"), required=False, max_length=255)
-    home_card_2_text = forms.CharField(label=_("Carte accueil 2 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
-    home_card_3_title = forms.CharField(label=_("Carte accueil 3 - Titre"), required=False, max_length=255)
-    home_card_3_text = forms.CharField(label=_("Carte accueil 3 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
-    home_card_4_title = forms.CharField(label=_("Carte accueil 4 - Titre"), required=False, max_length=255)
-    home_card_4_text = forms.CharField(label=_("Carte accueil 4 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
-    home_card_5_title = forms.CharField(label=_("Carte accueil 5 - Titre"), required=False, max_length=255)
-    home_card_5_text = forms.CharField(label=_("Carte accueil 5 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
-    home_card_6_title = forms.CharField(label=_("Carte accueil 6 - Titre"), required=False, max_length=255)
-    home_card_6_text = forms.CharField(label=_("Carte accueil 6 - Texte (HTML)"), required=False, widget=forms.Textarea(attrs={"rows": 4}))
+    home_card_1_title = forms.CharField(
+        label=_("Carte accueil 1 - Titre"), required=False, max_length=255
+    )
+    home_card_1_text = forms.CharField(
+        label=_("Carte accueil 1 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    home_card_2_title = forms.CharField(
+        label=_("Carte accueil 2 - Titre"), required=False, max_length=255
+    )
+    home_card_2_text = forms.CharField(
+        label=_("Carte accueil 2 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    home_card_3_title = forms.CharField(
+        label=_("Carte accueil 3 - Titre"), required=False, max_length=255
+    )
+    home_card_3_text = forms.CharField(
+        label=_("Carte accueil 3 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    home_card_4_title = forms.CharField(
+        label=_("Carte accueil 4 - Titre"), required=False, max_length=255
+    )
+    home_card_4_text = forms.CharField(
+        label=_("Carte accueil 4 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    home_card_5_title = forms.CharField(
+        label=_("Carte accueil 5 - Titre"), required=False, max_length=255
+    )
+    home_card_5_text = forms.CharField(
+        label=_("Carte accueil 5 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    home_card_6_title = forms.CharField(
+        label=_("Carte accueil 6 - Titre"), required=False, max_length=255
+    )
+    home_card_6_text = forms.CharField(
+        label=_("Carte accueil 6 - Texte (HTML)"),
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
 
     class Meta:
         model = SiteParams
@@ -94,13 +132,19 @@ class SiteParamsAdminForm(forms.ModelForm):
             "bloc1_text": _("Texte du bloc 1"),
             "bloc2_text": _("Texte du bloc 2"),
             "verse_max_lines": _("Nombre maximal de lignes par couplet"),
-            "verse_max_characters_for_a_line": _("Nombre maximal de caractères par ligne"),
+            "verse_max_characters_for_a_line": _(
+                "Nombre maximal de caractères par ligne"
+            ),
             "chorus_prefix": _("Préfixe du refrain"),
             "verse_prefix1": _("Préfixe de couplet"),
             "verse_prefix2": _("Suffixe de couplet"),
             "admin_message": _("Message global administrateur"),
-            "admin_message_cooldown_minutes": _("Délai de réaffichage du message administrateur (minutes)"),
-            "moderator_message_cooldown_minutes": _("Délai de réaffichage du message modérateur (minutes)"),
+            "admin_message_cooldown_minutes": _(
+                "Délai de réaffichage du message administrateur (minutes)"
+            ),
+            "moderator_message_cooldown_minutes": _(
+                "Délai de réaffichage du message modérateur (minutes)"
+            ),
             "bg_img_max_bytes": _("Taille maximale des images de fond (octets)"),
             "bg_img_min_w": _("Largeur minimale des images de fond"),
             "bg_img_min_h": _("Hauteur minimale des images de fond"),
@@ -138,7 +182,9 @@ class SiteParamsAdminForm(forms.ModelForm):
             if not title and not text:
                 continue
             cards_payload.append({"title": title, "text": text})
-        cleaned_data["home_text"] = json.dumps({"cards": cards_payload}, ensure_ascii=False)
+        cleaned_data["home_text"] = json.dumps(
+            {"cards": cards_payload}, ensure_ascii=False
+        )
         return cleaned_data
 
     @staticmethod

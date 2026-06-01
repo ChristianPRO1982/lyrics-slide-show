@@ -52,33 +52,43 @@ def _verse_label(verse: Verse) -> str:
     if verse.chorus:
         return _("Refrain")
     if verse.chorus_like:
-        return (str(verse.prefix or "").strip() or _("Section spéciale"))
+        return str(verse.prefix or "").strip() or _("Section spéciale")
     num = int(verse.num_verse or 0)
     if num > 0:
         return _("Couplet %(number)s") % {"number": num}
     return _("Couplet")
 
 
-def _effective_song_font_size(animation: Animation, animation_song: AnimationSong) -> int:
+def _effective_song_font_size(
+    animation: Animation, animation_song: AnimationSong
+) -> int:
     if animation_song.font_size_override is not None:
         return int(animation_song.font_size_override)
     return int(animation.font_size)
 
 
-def _compute_song_font_delta(animation: Animation, animation_song: AnimationSong) -> int:
+def _compute_song_font_delta(
+    animation: Animation, animation_song: AnimationSong
+) -> int:
     if animation_song.font_size_override is None:
         return 0
     return int(animation_song.font_size_override) - int(animation.font_size)
 
 
-def _compute_verse_font_delta(animation: Animation, animation_song: AnimationSong, override: AnimationVerseOverride) -> int:
+def _compute_verse_font_delta(
+    animation: Animation,
+    animation_song: AnimationSong,
+    override: AnimationVerseOverride,
+) -> int:
     if override.font_size_override is None:
         return 0
     base_size = _effective_song_font_size(animation, animation_song)
     return int(override.font_size_override) - base_size
 
 
-def build_main_song_cards(animation: Animation, animation_songs: list[AnimationSong]) -> list[dict[str, Any]]:
+def build_main_song_cards(
+    animation: Animation, animation_songs: list[AnimationSong]
+) -> list[dict[str, Any]]:
     cards: list[dict[str, Any]] = []
     for animation_song in animation_songs:
         overrides_by_verse_id = {
@@ -99,10 +109,26 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
                 visible_verse_ids.append(int(verse.verse_id))
 
             style_data = {
-                "font_family_override": (str(override.font_family_override).strip() if override and override.font_family_override else ""),
-                "font_size_delta": (_compute_verse_font_delta(animation, animation_song, override) if override else 0),
-                "text_color_override": (str(override.text_color_override).strip().upper() if override and override.text_color_override else ""),
-                "bg_color_override": (str(override.bg_color_override).strip().upper() if override and override.bg_color_override else ""),
+                "font_family_override": (
+                    str(override.font_family_override).strip()
+                    if override and override.font_family_override
+                    else ""
+                ),
+                "font_size_delta": (
+                    _compute_verse_font_delta(animation, animation_song, override)
+                    if override
+                    else 0
+                ),
+                "text_color_override": (
+                    str(override.text_color_override).strip().upper()
+                    if override and override.text_color_override
+                    else ""
+                ),
+                "bg_color_override": (
+                    str(override.bg_color_override).strip().upper()
+                    if override and override.bg_color_override
+                    else ""
+                ),
             }
             if any(
                 [
@@ -130,10 +156,16 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
                 )
 
         song_style = {
-            "font_family_override": str(animation_song.font_family_override or "").strip(),
+            "font_family_override": str(
+                animation_song.font_family_override or ""
+            ).strip(),
             "font_size_delta": _compute_song_font_delta(animation, animation_song),
-            "text_color_override": str(animation_song.text_color_override or "").strip().upper(),
-            "bg_color_override": str(animation_song.bg_color_override or "").strip().upper(),
+            "text_color_override": str(animation_song.text_color_override or "")
+            .strip()
+            .upper(),
+            "bg_color_override": str(animation_song.bg_color_override or "")
+            .strip()
+            .upper(),
         }
         cards.append(
             {
@@ -149,18 +181,28 @@ def build_main_song_cards(animation: Animation, animation_songs: list[AnimationS
     return cards
 
 
-def build_songs_payload_initial(main_song_cards: list[dict[str, Any]]) -> dict[str, Any]:
+def build_songs_payload_initial(
+    main_song_cards: list[dict[str, Any]],
+) -> dict[str, Any]:
     return {
         "items": [
             {
                 "animation_song_id": int(card["animation_song_id"]),
                 "song_id": int(card["song_id"]),
-                "visible_verse_ids": [int(verse_id) for verse_id in card["visible_verse_ids"]],
+                "visible_verse_ids": [
+                    int(verse_id) for verse_id in card["visible_verse_ids"]
+                ],
                 "song_style": {
-                    "font_family_override": str(card["song_style"]["font_family_override"] or ""),
+                    "font_family_override": str(
+                        card["song_style"]["font_family_override"] or ""
+                    ),
                     "font_size_delta": int(card["song_style"]["font_size_delta"] or 0),
-                    "text_color_override": str(card["song_style"]["text_color_override"] or ""),
-                    "bg_color_override": str(card["song_style"]["bg_color_override"] or ""),
+                    "text_color_override": str(
+                        card["song_style"]["text_color_override"] or ""
+                    ),
+                    "bg_color_override": str(
+                        card["song_style"]["bg_color_override"] or ""
+                    ),
                 },
                 "verse_styles": card["verse_styles"],
             }
@@ -188,8 +230,12 @@ def parse_songs_payload(raw_value: str | None) -> dict[str, Any]:
     return {"items": items}
 
 
-def _set_song_style_overrides(animation: Animation, animation_song: AnimationSong, song_style: dict[str, Any]) -> None:
-    font_family_override = _normalize_optional_text(song_style.get("font_family_override"))
+def _set_song_style_overrides(
+    animation: Animation, animation_song: AnimationSong, song_style: dict[str, Any]
+) -> None:
+    font_family_override = _normalize_optional_text(
+        song_style.get("font_family_override")
+    )
     if font_family_override and not is_allowed_font_family(font_family_override):
         font_family_override = None
 
@@ -199,8 +245,12 @@ def _set_song_style_overrides(animation: Animation, animation_song: AnimationSon
     else:
         font_size_override = max(10, int(animation.font_size) + font_size_delta)
 
-    text_color_override = _normalize_optional_hex_color(song_style.get("text_color_override"))
-    bg_color_override = _normalize_optional_hex_color(song_style.get("bg_color_override"))
+    text_color_override = _normalize_optional_hex_color(
+        song_style.get("text_color_override")
+    )
+    bg_color_override = _normalize_optional_hex_color(
+        song_style.get("bg_color_override")
+    )
 
     animation_song.font_family_override = font_family_override
     animation_song.font_size_override = font_size_override
@@ -225,12 +275,18 @@ def _set_verse_override(
     base_font_size: int,
     existing_override: AnimationVerseOverride | None,
 ) -> None:
-    font_family_override = _normalize_optional_text(verse_style.get("font_family_override"))
+    font_family_override = _normalize_optional_text(
+        verse_style.get("font_family_override")
+    )
     if font_family_override and not is_allowed_font_family(font_family_override):
         font_family_override = None
     font_size_delta = _parse_int(verse_style.get("font_size_delta"), default=0)
-    text_color_override = _normalize_optional_hex_color(verse_style.get("text_color_override"))
-    bg_color_override = _normalize_optional_hex_color(verse_style.get("bg_color_override"))
+    text_color_override = _normalize_optional_hex_color(
+        verse_style.get("text_color_override")
+    )
+    bg_color_override = _normalize_optional_hex_color(
+        verse_style.get("bg_color_override")
+    )
 
     font_size_override = None
     if font_size_delta != 0:
@@ -252,7 +308,9 @@ def _set_verse_override(
 
     target = existing_override
     if target is None:
-        target = AnimationVerseOverride(animation_song=animation_song, source_verse_id=verse_id)
+        target = AnimationVerseOverride(
+            animation_song=animation_song, source_verse_id=verse_id
+        )
     target.is_visible = bool(is_visible)
     target.font_family_override = font_family_override
     target.font_size_override = font_size_override
@@ -271,10 +329,7 @@ def apply_songs_payload(animation: Animation, payload: dict[str, Any]) -> None:
         .prefetch_related("song__verses", "verse_overrides")
         .order_by("position", "animation_song_id")
     )
-    by_animation_song_id = {
-        int(item.animation_song_id): item
-        for item in current_items
-    }
+    by_animation_song_id = {int(item.animation_song_id): item for item in current_items}
 
     # Keep positions normalized in case the reorder payload removed intermediate rows.
     for index, row in enumerate(current_items):
@@ -310,8 +365,12 @@ def apply_songs_payload(animation: Animation, payload: dict[str, Any]) -> None:
 
         all_song_verses = list(animation_song.song.verses.all())
         valid_verse_ids = {int(verse.verse_id) for verse in all_song_verses}
-        chorus_verse_ids = {int(verse.verse_id) for verse in all_song_verses if verse.chorus}
-        visible_verse_ids = {value for value in visible_verse_ids if value in valid_verse_ids}
+        chorus_verse_ids = {
+            int(verse.verse_id) for verse in all_song_verses if verse.chorus
+        }
+        visible_verse_ids = {
+            value for value in visible_verse_ids if value in valid_verse_ids
+        }
         existing_overrides = {
             int(override.source_verse_id): override
             for override in animation_song.verse_overrides.all()

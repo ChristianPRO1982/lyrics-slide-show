@@ -6,7 +6,6 @@ from django.db.models.functions import Lower
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -47,7 +46,14 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "pk",
-                    models.CompositePrimaryKey("group", "member_id", blank=True, editable=False, primary_key=True, serialize=False),
+                    models.CompositePrimaryKey(
+                        "group",
+                        "member_id",
+                        blank=True,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
                 ),
                 ("member_id", models.UUIDField()),
                 ("is_group_admin", models.BooleanField(default=False)),
@@ -64,7 +70,9 @@ class Migration(migrations.Migration):
             options={
                 "db_table": 'lss"."g_group_user',
                 "indexes": [
-                    models.Index(fields=["is_group_admin"], name="g_grp_usr_is_admin_idx"),
+                    models.Index(
+                        fields=["is_group_admin"], name="g_grp_usr_is_admin_idx"
+                    ),
                 ],
             },
         ),
@@ -73,7 +81,14 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "pk",
-                    models.CompositePrimaryKey("group", "member_id", blank=True, editable=False, primary_key=True, serialize=False),
+                    models.CompositePrimaryKey(
+                        "group",
+                        "member_id",
+                        blank=True,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
                 ),
                 ("member_id", models.UUIDField()),
                 (
@@ -93,23 +108,23 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."g_group_user" '
-                'ADD CONSTRAINT g_group_user_member_fk '
+                "ADD CONSTRAINT g_group_user_member_fk "
                 'FOREIGN KEY ("member_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."g_group_user" '
-                'DROP CONSTRAINT IF EXISTS g_group_user_member_fk'
+                "DROP CONSTRAINT IF EXISTS g_group_user_member_fk"
             ),
         ),
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."g_group_user_ask_to_join" '
-                'ADD CONSTRAINT g_group_user_ask_to_join_member_fk '
+                "ADD CONSTRAINT g_group_user_ask_to_join_member_fk "
                 'FOREIGN KEY ("member_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."g_group_user_ask_to_join" '
-                'DROP CONSTRAINT IF EXISTS g_group_user_ask_to_join_member_fk'
+                "DROP CONSTRAINT IF EXISTS g_group_user_ask_to_join_member_fk"
             ),
         ),
         migrations.RunSQL(

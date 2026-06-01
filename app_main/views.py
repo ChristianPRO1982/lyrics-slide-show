@@ -30,7 +30,12 @@ from app_main.auth import (
     validate_keycloak_callback,
 )
 from app_main.models import SiteParams
-from app_member.forms import MemberRoleActionForm, MemberSearchForm, ModeratorMessageForm, SiteParamsAdminForm
+from app_member.forms import (
+    MemberRoleActionForm,
+    MemberSearchForm,
+    ModeratorMessageForm,
+    SiteParamsAdminForm,
+)
 from app_member.services import (
     can_manage_moderator_popup,
     can_manage_site_members,
@@ -51,12 +56,16 @@ AVAILABLE_THEMES = [
     {
         "slug": "scout",
         "label": _("Scout"),
-        "description": _("Palette plus fraîche, plus nette, avec une ambiance vert-bleu."),
+        "description": _(
+            "Palette plus fraîche, plus nette, avec une ambiance vert-bleu."
+        ),
     },
     {
         "slug": "taize",
         "label": _("Taizé"),
-        "description": _("Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."),
+        "description": _(
+            "Palette rouge et ocre, inspirée du parchemin et de la lumière des bougies."
+        ),
     },
     {
         "slug": "me†al",
@@ -84,12 +93,26 @@ def homepage(request: HttpRequest) -> HttpResponse:
         {
             "auth_mode": settings.AUTH_MODE,
             "selected_group": _get_selected_group(request),
-            "home_site_title": (site_params.title if site_params and site_params.title else "Lyrics Slide Show"),
-            "home_site_title_h1": (site_params.title_h1 if site_params and site_params.title_h1 else "Lyrics Slide Show"),
-            "home_text": (site_params.home_text if site_params and site_params.home_text else ""),
+            "home_site_title": (
+                site_params.title
+                if site_params and site_params.title
+                else "Lyrics Slide Show"
+            ),
+            "home_site_title_h1": (
+                site_params.title_h1
+                if site_params and site_params.title_h1
+                else "Lyrics Slide Show"
+            ),
+            "home_text": (
+                site_params.home_text if site_params and site_params.home_text else ""
+            ),
             "home_cards": home_cards,
-            "home_bloc1_text": (site_params.bloc1_text if site_params and site_params.bloc1_text else ""),
-            "home_bloc2_text": (site_params.bloc2_text if site_params and site_params.bloc2_text else ""),
+            "home_bloc1_text": (
+                site_params.bloc1_text if site_params and site_params.bloc1_text else ""
+            ),
+            "home_bloc2_text": (
+                site_params.bloc2_text if site_params and site_params.bloc2_text else ""
+            ),
         },
     )
 
@@ -190,22 +213,34 @@ def heavy_asset(request: HttpRequest, asset_path: str) -> FileResponse:
     except ValueError as exc:
         raise Http404 from exc
 
-    if not requested_path.is_file() or requested_path.suffix.lower() not in HEAVY_IMAGE_EXTENSIONS:
+    if (
+        not requested_path.is_file()
+        or requested_path.suffix.lower() not in HEAVY_IMAGE_EXTENSIONS
+    ):
         raise Http404
 
     content_type, _encoding = mimetypes.guess_type(requested_path.name)
-    return FileResponse(requested_path.open("rb"), content_type=content_type or "application/octet-stream")
+    return FileResponse(
+        requested_path.open("rb"),
+        content_type=content_type or "application/octet-stream",
+    )
 
 
 def _current_language_code(request: HttpRequest) -> str:
-    return (getattr(request, "LANGUAGE_CODE", None) or get_language() or settings.LANGUAGE_CODE)[:2].lower()
+    return (
+        getattr(request, "LANGUAGE_CODE", None)
+        or get_language()
+        or settings.LANGUAGE_CODE
+    )[:2].lower()
 
 
 def _account_redirect(request: HttpRequest, member_search: str = "") -> HttpResponse:
     redirect_url = reverse("account")
     normalized_search = str(member_search or "").strip()
     if normalized_search:
-        redirect_url = f"{redirect_url}?{urlencode({'member_search': normalized_search})}"
+        redirect_url = (
+            f"{redirect_url}?{urlencode({'member_search': normalized_search})}"
+        )
     return redirect(redirect_url)
 
 
@@ -233,8 +268,14 @@ def _build_account_context(
         moderator_form = ModeratorMessageForm(instance=site_params, prefix="moderation")
 
     if admin_form is None and is_admin:
-        admin_instance = site_params if site_params is not None else SiteParams(language=current_language)
-        admin_form = SiteParamsAdminForm(instance=admin_instance, prefix="admin-settings")
+        admin_instance = (
+            site_params
+            if site_params is not None
+            else SiteParams(language=current_language)
+        )
+        admin_form = SiteParamsAdminForm(
+            instance=admin_instance, prefix="admin-settings"
+        )
 
     return {
         "auth_mode": settings.AUTH_MODE,
@@ -252,7 +293,8 @@ def _build_account_context(
         "member_results": member_results,
         "member_search": member_search,
         "site_params_missing": site_params is None,
-        "account_heading": _("Compte de %(username)s") % {"username": request.user.username},
+        "account_heading": _("Compte de %(username)s")
+        % {"username": request.user.username},
     }
 
 
@@ -261,8 +303,14 @@ def login(request: HttpRequest) -> HttpResponse:
         return redirect("account")
 
     if settings.AUTH_MODE not in {"mock", "keycloak"}:
-        messages.error(request, _("La connexion interactive n'est pas configurée pour cet environnement."))
-        logger.warning("login_refused auth_mode=%s reason=unsupported_auth_mode", settings.AUTH_MODE)
+        messages.error(
+            request,
+            _("La connexion interactive n'est pas configurée pour cet environnement."),
+        )
+        logger.warning(
+            "login_refused auth_mode=%s reason=unsupported_auth_mode",
+            settings.AUTH_MODE,
+        )
         return redirect("homepage")
 
     if request.GET.get("start") == "1":
@@ -275,7 +323,10 @@ def login(request: HttpRequest) -> HttpResponse:
                 return redirect(build_keycloak_login_url(request.session))
             except KeycloakAuthError as exc:
                 messages.error(request, str(exc))
-                logger.warning("login_refused auth_mode=keycloak reason=configuration detail=%s", exc)
+                logger.warning(
+                    "login_refused auth_mode=keycloak reason=configuration detail=%s",
+                    exc,
+                )
                 return redirect("homepage")
 
     return render(
@@ -310,20 +361,30 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         clear_session_user(request.session)
         return redirect("homepage")
     except UnknownUserError as exc:
-        logger.warning("login_refused reason=unknown_user external_id=%s", request.GET.get("external_id", ""))
+        logger.warning(
+            "login_refused reason=unknown_user external_id=%s",
+            request.GET.get("external_id", ""),
+        )
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
     except DisabledUserError as exc:
-        logger.warning("login_refused reason=disabled_user external_id=%s", request.GET.get("external_id", ""))
+        logger.warning(
+            "login_refused reason=disabled_user external_id=%s",
+            request.GET.get("external_id", ""),
+        )
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
 
     request.session.cycle_key()
     store_session_user(request.session, user)
-    logger.info("login_success external_id=%s username=%s", user.external_id, user.username)
-    messages.success(request, _("Connecté en tant que %(username)s.") % {"username": user.username})
+    logger.info(
+        "login_success external_id=%s username=%s", user.external_id, user.username
+    )
+    messages.success(
+        request, _("Connecté en tant que %(username)s.") % {"username": user.username}
+    )
     return redirect("homepage")
 
 
@@ -364,13 +425,20 @@ def account(request: HttpRequest) -> HttpResponse:
                 return HttpResponseForbidden(_("Accès refusé."))
 
             if site_params is None:
-                messages.error(request, _("Les paramètres du site sont introuvables pour cette langue."))
+                messages.error(
+                    request,
+                    _("Les paramètres du site sont introuvables pour cette langue."),
+                )
                 return _account_redirect(request, posted_member_search)
 
-            moderator_form = ModeratorMessageForm(request.POST, instance=site_params, prefix="moderation")
+            moderator_form = ModeratorMessageForm(
+                request.POST, instance=site_params, prefix="moderation"
+            )
             if moderator_form.is_valid():
                 moderator_form.save()
-                messages.success(request, _("Les réglages de modération ont été enregistrés."))
+                messages.success(
+                    request, _("Les réglages de modération ont été enregistrés.")
+                )
                 return _account_redirect(request, posted_member_search)
 
             if can_manage_site_members(request.user) and posted_member_search:
@@ -380,7 +448,9 @@ def account(request: HttpRequest) -> HttpResponse:
                 current_language=current_language,
                 site_params=site_params,
                 moderator_form=moderator_form,
-                member_search_form=MemberSearchForm(initial={"member_search": posted_member_search}),
+                member_search_form=MemberSearchForm(
+                    initial={"member_search": posted_member_search}
+                ),
                 member_results=member_results,
                 member_search=posted_member_search,
             )
@@ -390,13 +460,21 @@ def account(request: HttpRequest) -> HttpResponse:
             if not can_manage_site_settings(request.user):
                 return HttpResponseForbidden(_("Accès refusé."))
 
-            admin_instance = site_params if site_params is not None else SiteParams(language=current_language)
-            admin_form = SiteParamsAdminForm(request.POST, instance=admin_instance, prefix="admin-settings")
+            admin_instance = (
+                site_params
+                if site_params is not None
+                else SiteParams(language=current_language)
+            )
+            admin_form = SiteParamsAdminForm(
+                request.POST, instance=admin_instance, prefix="admin-settings"
+            )
             if admin_form.is_valid():
                 saved_params = admin_form.save(commit=False)
                 saved_params.language = admin_instance.language
                 saved_params.save()
-                messages.success(request, _("Les paramètres administrateur ont été enregistrés."))
+                messages.success(
+                    request, _("Les paramètres administrateur ont été enregistrés.")
+                )
                 return _account_redirect(request, posted_member_search)
 
             if posted_member_search:
@@ -406,7 +484,9 @@ def account(request: HttpRequest) -> HttpResponse:
                 current_language=current_language,
                 site_params=site_params,
                 admin_form=admin_form,
-                member_search_form=MemberSearchForm(initial={"member_search": posted_member_search}),
+                member_search_form=MemberSearchForm(
+                    initial={"member_search": posted_member_search}
+                ),
                 member_results=member_results,
                 member_search=posted_member_search,
             )
@@ -424,21 +504,35 @@ def account(request: HttpRequest) -> HttpResponse:
                     role_name=cleaned["role_name"],
                     enabled=bool(cleaned["enabled"]),
                 )
-                role_label = _("administrateur") if cleaned["role_name"] == "admin" else _("modérateur")
+                role_label = (
+                    _("administrateur")
+                    if cleaned["role_name"] == "admin"
+                    else _("modérateur")
+                )
                 if cleaned["enabled"]:
-                    messages.success(request, _("Le rôle %(role)s a été attribué.") % {"role": role_label})
+                    messages.success(
+                        request,
+                        _("Le rôle %(role)s a été attribué.") % {"role": role_label},
+                    )
                 else:
-                    messages.success(request, _("Le rôle %(role)s a été retiré.") % {"role": role_label})
+                    messages.success(
+                        request,
+                        _("Le rôle %(role)s a été retiré.") % {"role": role_label},
+                    )
                 return _account_redirect(request, cleaned["member_search"])
 
             if posted_member_search:
                 member_results = search_directory_members(posted_member_search)
-            messages.error(request, _("La demande de mise à jour des rôles est invalide."))
+            messages.error(
+                request, _("La demande de mise à jour des rôles est invalide.")
+            )
             context = _build_account_context(
                 request,
                 current_language=current_language,
                 site_params=site_params,
-                member_search_form=MemberSearchForm(initial={"member_search": posted_member_search}),
+                member_search_form=MemberSearchForm(
+                    initial={"member_search": posted_member_search}
+                ),
                 member_results=member_results,
                 member_search=posted_member_search,
             )
@@ -457,7 +551,9 @@ def account(request: HttpRequest) -> HttpResponse:
             request,
             current_language=current_language,
             site_params=site_params,
-            member_search_form=MemberSearchForm(initial={"member_search": member_search}),
+            member_search_form=MemberSearchForm(
+                initial={"member_search": member_search}
+            ),
             member_results=member_results,
             member_search=member_search,
         ),
@@ -470,27 +566,47 @@ def site_params(request: HttpRequest) -> HttpResponse:
     if not can_manage_site_settings(request.user):
         raise Http404
 
-    selected_language = (request.GET.get("language") or _current_language_code(request) or "fr")[:2].lower()
+    selected_language = (
+        request.GET.get("language") or _current_language_code(request) or "fr"
+    )[:2].lower()
     if selected_language not in {"fr", "en"}:
         selected_language = "fr"
 
     language_db_value = selected_language.upper()
-    current_params = SiteParams.objects.filter(language__iexact=language_db_value).first()
-    admin_instance = current_params if current_params is not None else SiteParams(language=language_db_value)
+    current_params = SiteParams.objects.filter(
+        language__iexact=language_db_value
+    ).first()
+    admin_instance = (
+        current_params
+        if current_params is not None
+        else SiteParams(language=language_db_value)
+    )
 
     if request.method == "POST":
-        posted_language = (request.POST.get("language") or selected_language)[:2].lower()
+        posted_language = (request.POST.get("language") or selected_language)[
+            :2
+        ].lower()
         if posted_language not in {"fr", "en"}:
             posted_language = selected_language
         posted_language_db = posted_language.upper()
-        posted_current = SiteParams.objects.filter(language__iexact=posted_language_db).first()
-        posted_instance = posted_current if posted_current is not None else SiteParams(language=posted_language_db)
-        admin_form = SiteParamsAdminForm(request.POST, instance=posted_instance, prefix="admin-settings")
+        posted_current = SiteParams.objects.filter(
+            language__iexact=posted_language_db
+        ).first()
+        posted_instance = (
+            posted_current
+            if posted_current is not None
+            else SiteParams(language=posted_language_db)
+        )
+        admin_form = SiteParamsAdminForm(
+            request.POST, instance=posted_instance, prefix="admin-settings"
+        )
         if admin_form.is_valid():
             saved_params = admin_form.save(commit=False)
             saved_params.language = posted_language_db
             saved_params.save()
-            return redirect(f"{reverse('site_params')}?{urlencode({'language': posted_language})}")
+            return redirect(
+                f"{reverse('site_params')}?{urlencode({'language': posted_language})}"
+            )
         missing_or_invalid_fields = []
         for field_name, errors in admin_form.errors.items():
             if field_name == "__all__":
@@ -502,15 +618,23 @@ def site_params(request: HttpRequest) -> HttpResponse:
         if missing_or_invalid_fields:
             messages.error(
                 request,
-                _("Enregistrement impossible: informations manquantes ou invalides (%(fields)s).") % {
+                _(
+                    "Enregistrement impossible: informations manquantes ou invalides (%(fields)s)."
+                )
+                % {
                     "fields": ", ".join(missing_or_invalid_fields),
                 },
             )
         else:
-            messages.error(request, _("Enregistrement impossible: informations manquantes ou invalides."))
+            messages.error(
+                request,
+                _("Enregistrement impossible: informations manquantes ou invalides."),
+            )
         selected_language = posted_language
     else:
-        admin_form = SiteParamsAdminForm(instance=admin_instance, prefix="admin-settings")
+        admin_form = SiteParamsAdminForm(
+            instance=admin_instance, prefix="admin-settings"
+        )
 
     return render(
         request,
@@ -556,6 +680,8 @@ def language_preferences(request: HttpRequest) -> HttpResponse:
         {
             "auth_mode": settings.AUTH_MODE,
             "selected_group": _get_selected_group(request),
-            "current_language": getattr(request, "LANGUAGE_CODE", None) or get_language() or settings.LANGUAGE_CODE,
+            "current_language": getattr(request, "LANGUAGE_CODE", None)
+            or get_language()
+            or settings.LANGUAGE_CODE,
         },
     )
