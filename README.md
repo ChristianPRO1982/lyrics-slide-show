@@ -42,9 +42,12 @@ Recommended aliases (zsh):
 - `uvcir`: `uv run ruff check . && uv run ruff format --check .`
 - `uvci`: `uv run ruff check . && uv run ruff format --check . && uv run pytest -q`
 - `uvcip`: `uv run pytest`
+- `uvpc`: `uv run pre-commit run` (staged files only, ideal juste avant commit)
+- `uvpcall`: `uv run pre-commit run --all-files` (global verification)
 
 Notes:
 
 - `pre-commit` is intentionally fast (no test execution in commit hook).
 - Ruff ignores `docs/**` to avoid blocking commits on non-runtime draft code.
+- Ruff ignores `.pre-commit-cache/**` to avoid scanning hook repositories.
 - Local DB settings should come from `.env.dev` (shared PostgreSQL backend).

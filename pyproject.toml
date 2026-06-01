@@ -22,4 +22,4 @@ dev = [
 ]
 
 [tool.ruff]
-extend-exclude = ["docs"]
+extend-exclude = ["docs", ".pre-commit-cache"]
