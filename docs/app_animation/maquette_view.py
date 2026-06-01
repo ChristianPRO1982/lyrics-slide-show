@@ -47,7 +47,7 @@ def animations(request):
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         if group != 0:
             group_selected = group.name
-    
+
     if group_selected:
         if request.method == 'POST':
 
@@ -63,9 +63,9 @@ def animations(request):
                 request.POST['txt_new_name'] = ''
                 request.POST['txt_new_description'] = ''
                 request.POST['txt_new_date'] = ''
-                
+
         animations = Animation.get_all_animations(group_id)
-    
+
     else:
         animations = []
         error = "[ERR1]"
@@ -103,7 +103,7 @@ def modify_animation(request, animation_id):
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
@@ -130,7 +130,7 @@ def modify_animation(request, animation_id):
                         new_songs = request.POST.get('txt_new_songs').split('|')
                         for song_id in new_songs:
                             animation.new_song_verses(song_id)
-                    
+
                     for song in animation.songs:
                         if request.POST.get(f'box_delete_song_{song['animation_song_id']}', 'off') == 'on':
                             animation.delete_song(song['animation_song_id'])
@@ -142,13 +142,13 @@ def modify_animation(request, animation_id):
                                 request.POST.get(f'sel_font_size_{song['animation_song_id']}'),
                                 request.POST.get(f'rad_song_colors_{song['animation_song_id']}',  'no_change').split('|'),
                                 )
-                    
+
                     # update verses
                     for verse in animation.verses:
                         animation_song_id = verse['animation_song_id']
                         verse_id = verse['verse_id']
                         box_name = f"box_verse_{animation_song_id}_{verse_id}"
-                        
+
                         if request.POST.get(box_name, 'off') == 'on':
                             selected = True
                         else:
@@ -162,7 +162,7 @@ def modify_animation(request, animation_id):
                             request.POST.get(f"rad_verse_colors_{animation_song_id}_{verse_id}", 'no_change').split('|'),
                             ):
                             error = "[ERR31]"
-                
+
                 # reload animation
                 animation.new_song_verses_all()
                 animation = Animation.get_animation_by_id(animation_id, group_id)
@@ -177,7 +177,7 @@ def modify_animation(request, animation_id):
 
             if any(key in request.POST for key in ['btn_save_exit', 'btn_cancel']):
                 return redirect('lyrics_slide_show', animation_id=animation_id)
-        
+
             # Recalculate the 'order' for all songs
             for index, song in enumerate(animation.songs):
                 animation.update_song_num(song['animation_song_id'], (index + 1) * 2)
@@ -192,14 +192,14 @@ def modify_animation(request, animation_id):
             song_lyrics.verse_max_lines = song_params['verse_max_lines']
             song_lyrics.verse_max_characters_for_a_line = song_params['verse_max_characters_for_a_line']
             song_lyrics.get_verses()
-            
+
             full_title = song_lyrics.full_title
             list_lyrics.append({
                 'song_id': song['song_id'],
                 'full_title': song_lyrics.full_title,
                 'lyrics':  song_lyrics.get_lyrics(),
             })
-        
+
         songs_already_in = animation.get_songs_already_in()
 
         font_sizes = range(30, 101, 5)
@@ -237,7 +237,7 @@ def copy_animation(request, animation_id):
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
@@ -246,7 +246,7 @@ def copy_animation(request, animation_id):
         if request.method == 'POST':
             if 'btn_copy' in request.POST:
                 Animation.copy_animation(animation_id, request.POST.get('dt_new_date'))
-                
+
             return redirect('animations')
 
     return render(request, 'app_animation/copy_animation.html', {
@@ -271,7 +271,7 @@ def delete_animation(request, animation_id):
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
@@ -304,12 +304,12 @@ def lyrics_slide_show(request, animation_id):
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
             return redirect('animations')
-        
+
     slides = animation.get_slides()
     slides = all_lyrics(slides)
     slides_sliced = []
@@ -405,7 +405,7 @@ def modify_colors(request, xxx_id=None):
     if group_id != '':
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         group_selected = group.name
-    
+
     if group_selected:
         animation = Animation.get_animation_by_id(animation_id, group_id)
         if not animation:
@@ -430,7 +430,7 @@ def modify_colors(request, xxx_id=None):
                                                             request.POST.get('bg_color'))
             animation = Animation.get_animation_by_id(animation_id, group_id)
             return redirect('modify_animation', animation_id=animation_id)
-    
+
 
     bg_images = BackgroundImage.get_backgrounds(status_filter="ACTIVED")
 
@@ -483,7 +483,7 @@ def all_songs_all_lyrics(request, animation_id):
 
     if not animation:
         return redirect('homepage')
-    
+
     animation.all_songs()
     full_title = animation.name
     lyrics = ''
@@ -500,12 +500,12 @@ def all_songs_all_lyrics(request, animation_id):
         <h2>{song['full_title']}</h2>
         <p>{song_info.get_lyrics_to_display(False, Site=Site(getattr(request, "LANGUAGE_CODE", None)))}</p>
     </section>'''
-        
+
     # QR-CODE
     img_qr_code = ''
     try:
         link_to_copy = f'https://www.carthographie.fr/animations/lyrics_slide_show/all_lyrics/{animation_id}/'
-        
+
         qr = qrcode.QRCode(box_size=10, border=4)
         qr.add_data(link_to_copy)
         qr.make(fit=True)
@@ -516,7 +516,7 @@ def all_songs_all_lyrics(request, animation_id):
     except Exception as e:
         error = "[ERR35]"
 
-    
+
     return render(request, 'app_animation/all_lyrics.html', {
         'full_title': full_title,
         'lyrics': lyrics,
@@ -555,7 +555,7 @@ def submit_image(request: HttpRequest) -> HttpResponse:
 
 
     description = (request.POST.get("txt_description") or "").strip()
-    
+
     if request.method == "POST" and "btn_save" in request.POST:
         uploaded = request.FILES.get("img_file")
         if not uploaded:
@@ -609,8 +609,8 @@ def submit_image(request: HttpRequest) -> HttpResponse:
         'l_site_messages': site_messages(request),
         'css': css,
         'no_loader': no_loader,
-    })            
-            
+    })
+
 
 # Remove DB entries for images not present in img_dir
 def _sync_images_with_db(img_dir: Path, db_table: str):
@@ -620,7 +620,7 @@ def _sync_images_with_db(img_dir: Path, db_table: str):
     - Remove DB entries for images missing from img_dir.
     """
     files_in_dir = list(img_dir.glob("*"))
-    
+
     # Update or insert images in DB
     for file_path in files_in_dir:
         try:
@@ -699,7 +699,7 @@ def _delete_db_image_without_image_file(img_dir: Path, db_table: str):
         for file in files_in_dir:
             stored_path_file = str(img_dir).split("media/")[0] + "media/" + stored_path
             if str(file) == stored_path_file: to_delete = False
-        
+
         if db_table == "l_image_submissions":
             if to_delete: BackgroundImageSubmission.delete_by_stored_path(stored_path)
         elif db_table == "l_image_backgrounds":
@@ -734,17 +734,17 @@ def get_submissions(request):
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         if group != 0:
             group_selected = group.name
-    
+
     if not is_moderator(request):
         return redirect('animations')
-    
+
     if request.method == "POST":
         stored_path = request.POST.getlist("stored_path")
 
         if 'btn_validate' in request.POST:
             image_tmp = BackgroundImageSubmission(stored_path=stored_path)
             image_tmp.hydrate()
-            
+
             image_validated = BackgroundImage(
                 stored_path=str(image_tmp.stored_path).replace("/tmp/", "/validated/").replace("[", "").replace("]", "").replace("'", ""),
                 image_id=0,
@@ -772,8 +772,8 @@ def get_submissions(request):
             if src.exists(): src.unlink()
 
         _clean_submissions_and_images()
-            
-    
+
+
     submission_list = BackgroundImageSubmission.get_submissions()
     if not submission_list:
         return redirect('animations')
@@ -802,10 +802,10 @@ def moderate_images(request):
         group = Group.get_group_by_id(group_id, url_token, request.user.username, is_moderator(request))
         if group != 0:
             group_selected = group.name
-    
+
     if not is_moderator(request):
         return redirect('animations')
-    
+
     _clean_submissions_and_images()
 
     if request.method == "POST":
@@ -974,7 +974,7 @@ def animation_playlist(request: HttpRequest, animation_id: int) -> HttpResponse:
             animation.new_song_verses(song_id, position * 2)
         for asid, position in changes.reorder_ops:
             animation.update_song_num(asid, position * 2)
-        
+
         # For now, expose for debugging/inspection
         request.session["playlist_changes"] = {
             "ordered_mix": ordered_mix_raw,

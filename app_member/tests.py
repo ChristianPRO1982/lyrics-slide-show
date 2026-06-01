@@ -2,10 +2,15 @@ import uuid
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, TestCase, override_settings
+from django.test import SimpleTestCase, TestCase
 
 from app_main.models import DirectoryUserRecord
-from app_member.models import MemberPreferences, MemberRole, default_song_search, validate_song_search
+from app_member.models import (
+    MemberPreferences,
+    MemberRole,
+    default_song_search,
+    validate_song_search,
+)
 from app_member.services import (
     MemberRoleFlags,
     can_manage_global_popup,
@@ -38,7 +43,9 @@ class MemberPreferencesModelTests(SimpleTestCase):
         )
 
     def test_model_defaults_match_expected_member_preferences(self):
-        preferences = MemberPreferences(member_id=uuid.UUID("11111111-1111-1111-1111-111111111111"))
+        preferences = MemberPreferences(
+            member_id=uuid.UUID("11111111-1111-1111-1111-111111111111")
+        )
 
         self.assertEqual(preferences.theme_slug, "normal")
         self.assertEqual(preferences.song_search, default_song_search())
@@ -115,7 +122,10 @@ def create_directory_user(**overrides):
 
 class MemberRoleServiceTests(TestCase):
     def test_missing_member_role_defaults_to_simple_member(self):
-        self.assertEqual(get_member_role_flags("11111111-1111-1111-1111-111111111111"), MemberRoleFlags())
+        self.assertEqual(
+            get_member_role_flags("11111111-1111-1111-1111-111111111111"),
+            MemberRoleFlags(),
+        )
 
     def test_assigning_admin_also_assigns_moderator(self):
         create_directory_user()
@@ -131,11 +141,17 @@ class MemberRoleServiceTests(TestCase):
         create_directory_user()
         set_member_role("11111111-1111-1111-1111-111111111111", "admin", True)
 
-        flags = set_member_role("11111111-1111-1111-1111-111111111111", "moderator", False)
+        flags = set_member_role(
+            "11111111-1111-1111-1111-111111111111", "moderator", False
+        )
 
         self.assertFalse(flags.is_admin)
         self.assertFalse(flags.is_moderator)
-        self.assertFalse(MemberRole.objects.filter(member_id="11111111-1111-1111-1111-111111111111").exists())
+        self.assertFalse(
+            MemberRole.objects.filter(
+                member_id="11111111-1111-1111-1111-111111111111"
+            ).exists()
+        )
 
     def test_removing_admin_keeps_moderator_if_already_enabled(self):
         create_directory_user()
@@ -147,8 +163,13 @@ class MemberRoleServiceTests(TestCase):
         self.assertFalse(flags.is_admin)
         self.assertTrue(flags.is_moderator)
 
-    @patch("app_member.services.MemberRole.objects.filter", side_effect=AssertionError("db blocked"))
-    def test_safe_role_lookup_returns_empty_flags_when_db_is_unavailable(self, _filter_mock):
+    @patch(
+        "app_member.services.MemberRole.objects.filter",
+        side_effect=AssertionError("db blocked"),
+    )
+    def test_safe_role_lookup_returns_empty_flags_when_db_is_unavailable(
+        self, _filter_mock
+    ):
         self.assertEqual(
             get_member_role_flags_safe("11111111-1111-1111-1111-111111111111"),
             MemberRoleFlags(),
@@ -185,9 +206,21 @@ class DirectoryMemberSearchTests(TestCase):
 
 class PermissionHelperTests(SimpleTestCase):
     def test_permission_helpers_follow_role_contract(self):
-        admin_user = type("User", (), {"is_authenticated": True, "is_admin": True, "is_moderator": True})()
-        moderator_user = type("User", (), {"is_authenticated": True, "is_admin": False, "is_moderator": True})()
-        member_user = type("User", (), {"is_authenticated": True, "is_admin": False, "is_moderator": False})()
+        admin_user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_admin": True, "is_moderator": True},
+        )()
+        moderator_user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_admin": False, "is_moderator": True},
+        )()
+        member_user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_admin": False, "is_moderator": False},
+        )()
 
         self.assertTrue(can_manage_site_members(admin_user))
         self.assertTrue(can_manage_site_settings(admin_user))
