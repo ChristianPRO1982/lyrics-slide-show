@@ -4,32 +4,78 @@ on:
   push:
     branches:
       - dev
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: lss_ci
+          POSTGRES_USER: lss_ci
+          POSTGRES_PASSWORD: lss_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U lss_ci -d lss_ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DJANGO_SETTINGS_MODULE: lyrics_slide_show.settings
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: ci-secret-key
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:8000
+      DJANGO_TIME_ZONE: Europe/Paris
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_NAME: lss_ci
+      DB_USER: lss_ci
+      DB_PASSWORD: lss_ci
+      AUTH_MODE: mock
+      AUTH_MOCK_BASE_URL: http://localhost:8001
+      AUTH_MOCK_SHARED_SECRET: dev-shared-secret
+      AUTH_MOCK_MAX_AGE_SECONDS: "300"
+      USER_SCHEMA: users
+      USER_TABLE: users
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - name: Install dependencies
-      run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install -r requirements.txt
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
 
-    - name: Set environment variables
-      run: |
-        echo "DEBUG=4" >> $GITHUB_ENV
-        echo "LOGS_PATH=./logs/" >> $GITHUB_ENV
+      - name: Sync dependencies
+        run: uv sync --frozen --group dev
 
-    - name: Run pytest
-      run: |
-        source venv/bin/activate
-        pytest --disable-warnings -q
+      - name: Ruff
+        run: uv run ruff check .
+
+      - name: Django system checks
+        run: uv run python manage.py check
+
+      - name: Migration drift check
+        run: uv run python manage.py makemigrations --check --dry-run
+
+      - name: Pytest
+        run: uv run pytest -q

@@ -20,7 +20,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_PROXY_NETWORK:-proxy}"
-      - "traefik.http.routers.lss.rule=Host(`${LSS_DOMAIN:-lss.animation-messe.fr}`)"
+      - "traefik.http.routers.lss.rule=Host(`${LSS_DOMAIN:-lss.carthographie.fr}`)"
       - "traefik.http.routers.lss.entrypoints=websecure"
       - "traefik.http.routers.lss.tls=true"
       - "traefik.http.routers.lss.tls.certresolver=letsencrypt"
