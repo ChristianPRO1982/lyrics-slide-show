@@ -23,7 +23,7 @@ Il peut y avoir plusieurs écrans d'affichage et il doivent être synchrone.
 La remote (smart) envoi des payload assez simple pour que la page d'affichage (dump) n'est rien à faire.
 Cependant, la remote n'envoi que du paramétrage pas du HTML.
 
-Paramétrage : 
+Paramétrage :
 - couleur du fond
 - couleur de la police
 - police d'écriture
@@ -270,7 +270,7 @@ Ce QR-code est affiché sur le bouton et s'affiche en grand sur l'écran d'affic
 """
     <body>
         <div id="slideContent" class="full-screen" style="text-align: center; color: white; background-color: black;">QR code pour les paroles des chants<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcIAAAHCAQAAAABUY/ToAAADh0lEQVR4nO2cXWrkOhCFT40M/ShDFpClyDu4SwqzM3spvYCA/BiQOfdBP5adBIa5adKde+qhu93Wh20oVKeqJBvxd7b8+ksQEClSpEiRIkWKvD/Sig3AYmZYzMwmoBwCgE1rHTV9892KvC9yyF9hBoD1CQhxhAXmw2SAS8A6AvkXAPuv1xT5M8m1zC82+QT+HgHAJ3DGZjZ55vQtT1VfdU2RP5RcbADCdYDZCCCQzP/d8JoifxYZoqPZcwKAzczGzUimm15T5EOTIEkikCSjI+ATEJjA2bcTTCCjYzd4fqznFHlzcjGzEryuFwLrhfZyHQCsA2xaL7QJW07Lvv9uRd4VmYVO1/BYRgcCb8ZldPmwDjm2RR7rOUXejqyxLAIAHMkIcG4BrUkhch+iWCayt+IRvsqeGajuEx13ZVTO+gT5kMijVR9KQIgAZzj281BW0glos5Q0tciD1cLPeqEtz0XxWLgOINYRBp9gYXY0+FcjPFWnFnmyfR4qYSwCOcGHT00FVQsRmodEnixr6qKVm4j2VWfvlSI0KSQ9JPJg1YfQ5qGih4qmzh9teBZK8iGRnRUfqr5RP5qroCVnAPoTj/WcIm9Hvut1hOhYsrGI4jTF2ln5kMjeiktENClU5xx4kjNQ9RCg+pDIj6x4BFwW1iWq1cko66FucIRimciT1VjW9FDW1K09X12q5GpU317k2WquXmpBta/R+h+xTFBVXSu3F3m2Mg9Fd14r1A0p9aHmV/Ihkb1VTd2cxpfW6u40p9q1YpnIo/U1Rp+6WFYHuIMyUiwT+QkZSOY1iy/XATatQ7d+iPNqBqyXMmT67rsVeVdk69s/JcC/DsS6GeDfjIs5GgAQcKn07de2nPGxnlPk7chuHWOXg+Vu/V5PRF1YpPqQyM/JUl7k7N/y6nwyIm8ys5cIAP6t2634sM8p8svJbvNhjVsAgW3A8s9r/sVldMny2PUpKZaJPBqP1mXve0CbgSq71S8T+TG5v/ejtFuxmU17Dw0up2R5E/X0zXcr8r7I9/tcT0s84LoqtmqMIj+wPS/rWqvw/eboOjcBWj8k8g/IEDcrKVl9cUPp6kdHLM8JNn31NUX+LHIZHW3KjXogb7W3sWb+vGq/vciT1dzeE8hF6HXI2buFq7Xt99uQX4sWZu0vE3m29/3V42agWE7sC2KlqUUezPSOc5EiRYoUKVLk/5z8FwKfZCI3fDlgAAAAAElFTkSuQmCC" alt="📱 Erreur lors de la génération du QR code" style="height: 100%;" class="object-contain"></div>
-        
-        
+
+
     </body>
 """

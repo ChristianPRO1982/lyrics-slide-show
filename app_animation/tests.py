@@ -24,7 +24,10 @@ from .services.render_bundle import build_animation_render_bundle
 class PlaylistParsingTests(SimpleTestCase):
     def test_parse_ordered_mix_keeps_valid_tokens(self):
         tokens = parse_ordered_mix("asid:10| sid:20 |bad|sid:nope|foo:1|asid:11")
-        self.assertEqual([(token.token_type, token.token_id) for token in tokens], [("asid", 10), ("sid", 20), ("asid", 11)])
+        self.assertEqual(
+            [(token.token_type, token.token_id) for token in tokens],
+            [("asid", 10), ("sid", 20), ("asid", 11)],
+        )
 
 
 class AnimationFormFontValidationTests(SimpleTestCase):
@@ -70,10 +73,18 @@ class AnimationRenderBundleTests(TestCase):
             title="Session A",
             scheduled_at=timezone.now(),
         )
-        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        verse_one = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Line one")
-        verse_two = Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="Line two")
-        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse_one = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Line one"
+        )
+        verse_two = Verse.objects.create(
+            song=song, num=4, num_verse=2, chorus=False, text="Line two"
+        )
+        animation_song = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
 
         AnimationVerseOverride.objects.create(
             animation_song=animation_song,
@@ -94,10 +105,18 @@ class AnimationRenderBundleTests(TestCase):
             title="Session B",
             scheduled_at=timezone.now(),
         )
-        song = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
-        Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
-        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        song = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
+        animation_song = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
         AnimationVerseOverride.objects.create(
             animation_song=animation_song,
             source_verse_id=chorus.verse_id,
@@ -159,7 +178,9 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("groups"))
 
-        private_group = Group.objects.create(name="Private Group", status=GroupStatus.PRIVATE)
+        private_group = Group.objects.create(
+            name="Private Group", status=GroupStatus.PRIVATE
+        )
         self._select_group(private_group)
         response = self.client.get(reverse("animations"))
         self.assertEqual(response.status_code, 302)
@@ -168,7 +189,9 @@ class AnimationViewsTests(TestCase):
     def test_base_template_loads_google_fonts_stylesheet(self):
         response = self.client.get(reverse("animations"))
         self.assertEqual(response.status_code, 302)
-        self._select_group(Group.objects.create(name="Open Group", status=GroupStatus.OPEN))
+        self._select_group(
+            Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        )
         response = self.client.get(reverse("animations"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, GOOGLE_FONTS_STYLESHEET_HREF)
@@ -194,7 +217,9 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'name="scheduled_at"')
 
     def test_add_animation_post_creates_animation_in_selected_group(self):
-        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
         other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
         self._select_group(selected_group)
         response = self.client.post(
@@ -215,7 +240,10 @@ class AnimationViewsTests(TestCase):
         created = Animation.objects.get(title="Nouvelle animation")
         self.assertEqual(created.group_id, selected_group.group_id)
         self.assertNotEqual(created.group_id, other_group.group_id)
-        self.assertEqual(response.headers["Location"], reverse("modify_animation", args=[created.animation_id]))
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_animation", args=[created.animation_id]),
+        )
 
     def test_modify_animation_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -224,12 +252,16 @@ class AnimationViewsTests(TestCase):
             title="Session",
             scheduled_at=timezone.now(),
         )
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("groups"))
 
     def test_modify_animation_refuses_animation_outside_selected_group(self):
-        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
         other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
             group=other_group,
@@ -237,13 +269,19 @@ class AnimationViewsTests(TestCase):
             scheduled_at=timezone.now(),
         )
         self._select_group(selected_group)
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_modify_animation_get_renders_form(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        verse = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Line one")
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Line one"
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -251,27 +289,35 @@ class AnimationViewsTests(TestCase):
         )
         item = AnimationSong.objects.create(animation=animation, song=song, position=2)
         self._select_group(group)
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'data-animation-edit-form')
+        self.assertContains(response, "data-animation-edit-form")
         self.assertContains(response, 'id="id_title"')
         self.assertContains(response, 'name="ordered_mix"')
         self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
         self.assertContains(response, '"songCatalog"')
-        self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
-        self.assertContains(response, 'data-song-text-swatch')
-        self.assertContains(response, 'data-song-bg-swatch')
-        self.assertContains(response, 'data-song-color-parent-trigger')
-        self.assertContains(response, 'data-song-style-parent-reset-trigger')
-        self.assertContains(response, 'unsavedChangesTitle')
-        self.assertContains(response, 'unsavedChangesMessage')
+        self.assertContains(response, f'data-verse-id="{verse.verse_id}"')
+        self.assertContains(response, "data-song-text-swatch")
+        self.assertContains(response, "data-song-bg-swatch")
+        self.assertContains(response, "data-song-color-parent-trigger")
+        self.assertContains(response, "data-song-style-parent-reset-trigger")
+        self.assertContains(response, "unsavedChangesTitle")
+        self.assertContains(response, "unsavedChangesMessage")
 
     def test_modify_animation_get_hides_chorus_rows_and_keeps_verse_rows(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song = Song.objects.create(title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
-        verse = Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
+        song = Song.objects.create(
+            title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -280,12 +326,16 @@ class AnimationViewsTests(TestCase):
         AnimationSong.objects.create(animation=animation, song=song, position=2)
         self._select_group(group)
 
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, f"data-verse-id=\"{chorus.verse_id}\"")
-        self.assertContains(response, f"data-verse-id=\"{verse.verse_id}\"")
+        self.assertNotContains(response, f'data-verse-id="{chorus.verse_id}"')
+        self.assertContains(response, f'data-verse-id="{verse.verse_id}"')
 
-    def test_modify_animation_get_member_exposes_advanced_favorites_and_all_song_catalogs(self):
+    def test_modify_animation_get_member_exposes_advanced_favorites_and_all_song_catalogs(
+        self,
+    ):
         user_id = "88888888-8888-8888-8888-888888888888"
         self._login(user_id=user_id, username="catalog.member")
         MemberPreferences.objects.create(
@@ -304,7 +354,9 @@ class AnimationViewsTests(TestCase):
 
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         self._select_group(group)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
         advanced_song = Song.objects.create(
             title="Saved Search Match",
@@ -318,7 +370,7 @@ class AnimationViewsTests(TestCase):
             status=SongStatus.NOT_VALIDATED,
             licensed=False,
         )
-        other_song = Song.objects.create(
+        Song.objects.create(
             title="Other Song",
             subtitle="",
             status=SongStatus.NOT_VALIDATED,
@@ -326,20 +378,33 @@ class AnimationViewsTests(TestCase):
         )
         SongFavorite.objects.create(song=favorite_song, member_id=user_id)
 
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
         popup_data = response.context["popup_data"]
 
         self.assertTrue(popup_data["canUseMemberSongTabs"])
-        self.assertIn({"id": advanced_song.song_id, "title": advanced_song.display_title}, popup_data["advancedSongCatalog"])
-        self.assertNotIn({"id": favorite_song.song_id, "title": favorite_song.display_title}, popup_data["advancedSongCatalog"])
-        self.assertIn({"id": favorite_song.song_id, "title": favorite_song.display_title}, popup_data["favoriteSongCatalog"])
+        self.assertIn(
+            {"id": advanced_song.song_id, "title": advanced_song.display_title},
+            popup_data["advancedSongCatalog"],
+        )
+        self.assertNotIn(
+            {"id": favorite_song.song_id, "title": favorite_song.display_title},
+            popup_data["advancedSongCatalog"],
+        )
+        self.assertIn(
+            {"id": favorite_song.song_id, "title": favorite_song.display_title},
+            popup_data["favoriteSongCatalog"],
+        )
         self.assertEqual(len(popup_data["allSongCatalog"]), 3)
 
     def test_modify_animation_get_guest_exposes_only_accessible_all_song_catalog(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         self._select_group(group)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
         visible_song = Song.objects.create(
             title="Visible",
@@ -354,21 +419,35 @@ class AnimationViewsTests(TestCase):
             licensed=True,
         )
 
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
         popup_data = response.context["popup_data"]
 
         self.assertFalse(popup_data["canUseMemberSongTabs"])
         self.assertEqual(popup_data["advancedSongCatalog"], [])
         self.assertEqual(popup_data["favoriteSongCatalog"], [])
-        self.assertIn({"id": visible_song.song_id, "title": visible_song.display_title}, popup_data["allSongCatalog"])
-        self.assertNotIn({"id": hidden_song.song_id, "title": hidden_song.display_title}, popup_data["allSongCatalog"])
+        self.assertIn(
+            {"id": visible_song.song_id, "title": visible_song.display_title},
+            popup_data["allSongCatalog"],
+        )
+        self.assertNotIn(
+            {"id": hidden_song.song_id, "title": hidden_song.display_title},
+            popup_data["allSongCatalog"],
+        )
 
     def test_modify_animation_post_updates_song_and_verse_overrides_from_payload(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        verse_one = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Verse one")
-        verse_two = Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="Verse two")
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse_one = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse one"
+        )
+        verse_two = Verse.objects.create(
+            song=song, num=4, num_verse=2, chorus=False, text="Verse two"
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -450,11 +529,19 @@ class AnimationViewsTests(TestCase):
         self.assertIsNone(verse_two_override.text_color_override)
         self.assertIsNone(verse_two_override.bg_color_override)
 
-    def test_modify_animation_post_forces_chorus_visibility_even_if_payload_hides_it(self):
+    def test_modify_animation_post_forces_chorus_visibility_even_if_payload_hides_it(
+        self,
+    ):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song = Song.objects.create(title="Song D", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        chorus = Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="Refrain")
-        verse = Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="Couplet")
+        song = Song.objects.create(
+            title="Song D", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -507,9 +594,15 @@ class AnimationViewsTests(TestCase):
 
     def test_modify_animation_post_updates_values(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_b = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_c = Song.objects.create(title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_a = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_b = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_c = Song.objects.create(
+            title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -522,8 +615,12 @@ class AnimationViewsTests(TestCase):
             horizontal_padding=80,
             background_asset_code=None,
         )
-        item_a = AnimationSong.objects.create(animation=animation, song=song_a, position=2)
-        item_b = AnimationSong.objects.create(animation=animation, song=song_b, position=4)
+        item_a = AnimationSong.objects.create(
+            animation=animation, song=song_a, position=2
+        )
+        item_b = AnimationSong.objects.create(
+            animation=animation, song=song_b, position=4
+        )
         self._select_group(group)
         response = self.client.post(
             reverse("modify_animation", args=[animation.animation_id]),
@@ -541,7 +638,10 @@ class AnimationViewsTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_animation", args=[animation.animation_id]))
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_animation", args=[animation.animation_id]),
+        )
         animation.refresh_from_db()
         self.assertEqual(animation.title, "Updated Session")
         self.assertEqual(animation.description, "Updated description")
@@ -551,7 +651,11 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(animation.font_size, 66)
         self.assertEqual(animation.horizontal_padding, 92)
         self.assertEqual(animation.background_asset_code, "bg-asset-01")
-        reordered = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
+        reordered = list(
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+                "position", "animation_song_id"
+            )
+        )
         self.assertEqual(reordered[0].animation_song_id, item_b.animation_song_id)
         self.assertEqual(reordered[1].song_id, song_c.song_id)
         self.assertEqual(reordered[2].animation_song_id, item_a.animation_song_id)
@@ -559,16 +663,26 @@ class AnimationViewsTests(TestCase):
 
     def test_modify_animation_post_invalid_renders_errors(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_b = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        verse_a = Verse.objects.create(song=song_a, num=2, num_verse=1, chorus=False, text="Verse A")
+        song_a = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_b = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse_a = Verse.objects.create(
+            song=song_a, num=2, num_verse=1, chorus=False, text="Verse A"
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
             scheduled_at=timezone.now(),
         )
-        item_a = AnimationSong.objects.create(animation=animation, song=song_a, position=2)
-        item_b = AnimationSong.objects.create(animation=animation, song=song_b, position=4)
+        item_a = AnimationSong.objects.create(
+            animation=animation, song=song_a, position=2
+        )
+        item_b = AnimationSong.objects.create(
+            animation=animation, song=song_b, position=4
+        )
         existing_override = AnimationVerseOverride.objects.create(
             animation_song=item_a,
             source_verse_id=verse_a.verse_id,
@@ -610,8 +724,15 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Des erreurs empêchent l'enregistrement")
-        persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
-        self.assertEqual([row.animation_song_id for row in persisted], [item_a.animation_song_id, item_b.animation_song_id])
+        persisted = list(
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+                "position", "animation_song_id"
+            )
+        )
+        self.assertEqual(
+            [row.animation_song_id for row in persisted],
+            [item_a.animation_song_id, item_b.animation_song_id],
+        )
         item_a.refresh_from_db()
         self.assertIsNone(item_a.font_family_override)
         self.assertIsNone(item_a.font_size_override)
@@ -622,8 +743,12 @@ class AnimationViewsTests(TestCase):
 
     def test_modify_animation_post_ignores_inaccessible_sid_token(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song_a = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_hidden = Song.objects.create(title="Hidden", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=True)
+        song_a = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_hidden = Song.objects.create(
+            title="Hidden", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=True
+        )
         animation = Animation.objects.create(
             group=group,
             title="Session",
@@ -634,7 +759,9 @@ class AnimationViewsTests(TestCase):
             font_size=72,
             horizontal_padding=80,
         )
-        item_a = AnimationSong.objects.create(animation=animation, song=song_a, position=2)
+        item_a = AnimationSong.objects.create(
+            animation=animation, song=song_a, position=2
+        )
 
         self._select_group(group)
         response = self.client.post(
@@ -653,11 +780,17 @@ class AnimationViewsTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
+        persisted = list(
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+                "position", "animation_song_id"
+            )
+        )
         self.assertEqual(len(persisted), 1)
         self.assertEqual(persisted[0].animation_song_id, item_a.animation_song_id)
 
-    def test_modify_animation_post_allows_sid_song_present_in_all_but_not_in_advanced_search(self):
+    def test_modify_animation_post_allows_sid_song_present_in_all_but_not_in_advanced_search(
+        self,
+    ):
         user_id = "99999999-9999-9999-9999-999999999999"
         self._login(user_id=user_id, username="advanced.filter.member")
         MemberPreferences.objects.create(
@@ -698,7 +831,9 @@ class AnimationViewsTests(TestCase):
             font_size=72,
             horizontal_padding=80,
         )
-        item_saved = AnimationSong.objects.create(animation=animation, song=song_saved, position=2)
+        item_saved = AnimationSong.objects.create(
+            animation=animation, song=song_saved, position=2
+        )
 
         response = self.client.post(
             reverse("modify_animation", args=[animation.animation_id]),
@@ -718,7 +853,9 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         persisted = list(
-            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id")
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+                "position", "animation_song_id"
+            )
         )
         self.assertEqual(len(persisted), 2)
         self.assertEqual(persisted[0].animation_song_id, item_saved.animation_song_id)
@@ -726,36 +863,56 @@ class AnimationViewsTests(TestCase):
 
     def test_modify_animation_tools_contains_link_to_lyrics_slide_show(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
         self._select_group(group)
 
-        response = self.client.get(reverse("modify_animation", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, reverse("lyrics_slide_show", args=[animation.animation_id]))
+        self.assertContains(
+            response, reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
 
     def test_lyrics_slide_show_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("groups"))
 
     def test_lyrics_slide_show_refuses_animation_outside_selected_group(self):
-        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
         other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=other_group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=other_group, title="Session", scheduled_at=timezone.now()
+        )
         self._select_group(selected_group)
 
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_lyrics_slide_show_display_requires_valid_session_id(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
         self._select_group(group)
 
-        response = self.client.get(reverse("lyrics_slide_show_display", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 404)
 
         response = self.client.get(
@@ -766,7 +923,9 @@ class AnimationViewsTests(TestCase):
 
     def test_lyrics_slide_show_display_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
         response = self.client.get(
             reverse("lyrics_slide_show_display", args=[animation.animation_id]),
@@ -776,9 +935,13 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.headers["Location"], reverse("groups"))
 
     def test_lyrics_slide_show_display_refuses_animation_outside_selected_group(self):
-        selected_group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
         other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=other_group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=other_group, title="Session", scheduled_at=timezone.now()
+        )
         self._select_group(selected_group)
 
         response = self.client.get(
@@ -789,15 +952,21 @@ class AnimationViewsTests(TestCase):
 
     def test_lyrics_slide_show_public_is_accessible_without_group_selection(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
-        response = self.client.get(reverse("lyrics_slide_show_public", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show_public", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-lyrics-public-root")
 
     def test_lyrics_slide_show_master_context_contains_runtime_payload_and_qr(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
         verse = Verse.objects.create(
             song=song,
             num=2,
@@ -805,17 +974,27 @@ class AnimationViewsTests(TestCase):
             chorus=False,
             text="Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.",
         )
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
-        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        animation_song = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
 
         self._select_group(group)
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
 
         payload = response.context["runtime_payload"]
         self.assertEqual(payload["animationId"], animation.animation_id)
         self.assertIn("slides", payload)
-        self.assertTrue(payload["publicUrl"].endswith(reverse("lyrics_slide_show_public", args=[animation.animation_id])))
+        self.assertTrue(
+            payload["publicUrl"].endswith(
+                reverse("lyrics_slide_show_public", args=[animation.animation_id])
+            )
+        )
         if animation_views.qrcode is None:
             self.assertEqual(payload["qrCodePngBase64"], "")
         else:
@@ -830,11 +1009,21 @@ class AnimationViewsTests(TestCase):
 
     def test_lyrics_slide_show_runtime_matches_render_bundle_order_and_visibility(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
-        song = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        verse_visible = Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Visible")
-        verse_hidden = Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="Hidden")
-        animation_song = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse_visible = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Visible"
+        )
+        verse_hidden = Verse.objects.create(
+            song=song, num=4, num_verse=2, chorus=False, text="Hidden"
+        )
+        animation_song = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
         AnimationVerseOverride.objects.create(
             animation_song=animation_song,
             source_verse_id=verse_hidden.verse_id,
@@ -844,7 +1033,9 @@ class AnimationViewsTests(TestCase):
         expected_bundle = build_animation_render_bundle(animation)
 
         self._select_group(group)
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
 
         payload_slides = response.context["runtime_payload"]["slides"]
@@ -853,28 +1044,53 @@ class AnimationViewsTests(TestCase):
             [slide["sourceVerseId"] for slide in payload_slides],
             [entry.source_verse_id for entry in expected_bundle],
         )
-        self.assertIn(verse_visible.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
-        self.assertNotIn(verse_hidden.verse_id, [slide["sourceVerseId"] for slide in payload_slides])
+        self.assertIn(
+            verse_visible.verse_id, [slide["sourceVerseId"] for slide in payload_slides]
+        )
+        self.assertNotIn(
+            verse_hidden.verse_id, [slide["sourceVerseId"] for slide in payload_slides]
+        )
 
     def test_lyrics_slide_show_runtime_payload_keeps_zero_index_for_first_song(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
-        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A")
-        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B")
-        item_one = AnimationSong.objects.create(animation=animation, song=song_one, position=2)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song_one = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_two = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A"
+        )
+        Verse.objects.create(
+            song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B"
+        )
+        item_one = AnimationSong.objects.create(
+            animation=animation, song=song_one, position=2
+        )
         AnimationSong.objects.create(animation=animation, song=song_two, position=4)
 
         self._select_group(group)
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
 
         payload = response.context["runtime_payload"]
         self.assertGreaterEqual(len(payload["slides"]), 1)
         self.assertEqual(payload["slides"][0]["globalIndex"], 0)
 
-        first_song_entry = next((entry for entry in payload["songs"] if entry["animationSongId"] == item_one.animation_song_id), None)
+        first_song_entry = next(
+            (
+                entry
+                for entry in payload["songs"]
+                if entry["animationSongId"] == item_one.animation_song_id
+            ),
+            None,
+        )
         self.assertIsNotNone(first_song_entry)
         self.assertGreaterEqual(len(first_song_entry["slideIndexes"]), 1)
         self.assertEqual(first_song_entry["slideIndexes"][0], 0)
@@ -882,18 +1098,34 @@ class AnimationViewsTests(TestCase):
 
     def test_lyrics_slide_show_runtime_payload_has_contiguous_global_indexes(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
-        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A1")
-        Verse.objects.create(song=song_one, num=4, num_verse=2, chorus=False, text="Couplet A2")
-        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B1")
-        Verse.objects.create(song=song_two, num=4, num_verse=2, chorus=False, text="Couplet B2")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song_one = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_two = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A1"
+        )
+        Verse.objects.create(
+            song=song_one, num=4, num_verse=2, chorus=False, text="Couplet A2"
+        )
+        Verse.objects.create(
+            song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B1"
+        )
+        Verse.objects.create(
+            song=song_two, num=4, num_verse=2, chorus=False, text="Couplet B2"
+        )
         AnimationSong.objects.create(animation=animation, song=song_one, position=2)
         AnimationSong.objects.create(animation=animation, song=song_two, position=4)
 
         self._select_group(group)
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
 
         payload = response.context["runtime_payload"]
@@ -902,10 +1134,18 @@ class AnimationViewsTests(TestCase):
 
         max_index = len(payload["slides"])
         for song_entry in payload["songs"]:
-            self.assertEqual(song_entry["slideIndexes"], sorted(song_entry["slideIndexes"]))
-            self.assertEqual(song_entry["chorusIndexes"], sorted(song_entry["chorusIndexes"]))
-            self.assertEqual(len(song_entry["slideIndexes"]), len(set(song_entry["slideIndexes"])))
-            self.assertEqual(len(song_entry["chorusIndexes"]), len(set(song_entry["chorusIndexes"])))
+            self.assertEqual(
+                song_entry["slideIndexes"], sorted(song_entry["slideIndexes"])
+            )
+            self.assertEqual(
+                song_entry["chorusIndexes"], sorted(song_entry["chorusIndexes"])
+            )
+            self.assertEqual(
+                len(song_entry["slideIndexes"]), len(set(song_entry["slideIndexes"]))
+            )
+            self.assertEqual(
+                len(song_entry["chorusIndexes"]), len(set(song_entry["chorusIndexes"]))
+            )
             for index in song_entry["slideIndexes"]:
                 self.assertGreaterEqual(index, 0)
                 self.assertLess(index, max_index)
@@ -915,23 +1155,43 @@ class AnimationViewsTests(TestCase):
 
     def test_lyrics_slide_show_contains_floating_navigation_and_song_targets(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
-        song_one = Song.objects.create(title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_two = Song.objects.create(title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        Verse.objects.create(song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A")
-        Verse.objects.create(song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B")
-        item_one = AnimationSong.objects.create(animation=animation, song=song_one, position=2)
-        item_two = AnimationSong.objects.create(animation=animation, song=song_two, position=4)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song_one = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_two = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song_one, num=2, num_verse=1, chorus=False, text="Couplet A"
+        )
+        Verse.objects.create(
+            song=song_two, num=2, num_verse=1, chorus=False, text="Couplet B"
+        )
+        item_one = AnimationSong.objects.create(
+            animation=animation, song=song_one, position=2
+        )
+        item_two = AnimationSong.objects.create(
+            animation=animation, song=song_two, position=4
+        )
 
         self._select_group(group)
-        response = self.client.get(reverse("lyrics_slide_show", args=[animation.animation_id]))
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'data-lyrics-floating-nav')
-        self.assertContains(response, 'data-lyrics-floating-slides-link')
+        self.assertContains(response, "data-lyrics-floating-nav")
+        self.assertContains(response, "data-lyrics-floating-slides-link")
         self.assertContains(response, 'title="Diapo en cours / Diapo suivante"')
         self.assertContains(response, 'id="lyrics-master-slides-anchor"')
-        self.assertContains(response, f'id="lyrics-song-group-{item_one.animation_song_id}"')
-        self.assertContains(response, f'id="lyrics-song-group-{item_two.animation_song_id}"')
+        self.assertContains(
+            response, f'id="lyrics-song-group-{item_one.animation_song_id}"'
+        )
+        self.assertContains(
+            response, f'id="lyrics-song-group-{item_two.animation_song_id}"'
+        )
 
         content = response.content.decode("utf-8")
         context_pos = content.index("lyrics-master-context")
@@ -944,21 +1204,41 @@ class AnimationViewsTests(TestCase):
 class PlaylistSyncTests(TestCase):
     def test_sync_playlist_creates_keeps_and_deletes_with_normalized_positions(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
-        animation = Animation.objects.create(group=group, title="Session", scheduled_at=timezone.now())
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
 
-        song_a = Song.objects.create(title="A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_b = Song.objects.create(title="B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
-        song_c = Song.objects.create(title="C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False)
+        song_a = Song.objects.create(
+            title="A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_b = Song.objects.create(
+            title="B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_c = Song.objects.create(
+            title="C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
 
-        item_one = AnimationSong.objects.create(animation=animation, song=song_a, position=20)
-        item_two = AnimationSong.objects.create(animation=animation, song=song_b, position=60)
+        AnimationSong.objects.create(animation=animation, song=song_a, position=20)
+        item_two = AnimationSong.objects.create(
+            animation=animation, song=song_b, position=60
+        )
 
-        tokens = parse_ordered_mix(f"asid:{item_two.animation_song_id}|sid:{song_c.song_id}")
-        result = sync_animation_playlist(animation, tokens, allowed_song_ids={song_a.song_id, song_b.song_id, song_c.song_id})
+        tokens = parse_ordered_mix(
+            f"asid:{item_two.animation_song_id}|sid:{song_c.song_id}"
+        )
+        result = sync_animation_playlist(
+            animation,
+            tokens,
+            allowed_song_ids={song_a.song_id, song_b.song_id, song_c.song_id},
+        )
 
         self.assertEqual(result.created_count, 1)
         self.assertEqual(result.deleted_count, 1)
-        persisted = list(AnimationSong.objects.filter(animation_id=animation.animation_id).order_by("position", "animation_song_id"))
+        persisted = list(
+            AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
+                "position", "animation_song_id"
+            )
+        )
         self.assertEqual(len(persisted), 2)
         self.assertEqual([row.position for row in persisted], [2, 4])
         self.assertEqual(persisted[0].animation_song_id, item_two.animation_song_id)

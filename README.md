@@ -28,3 +28,26 @@ Main reference documents:
 - `docs/general_overview.md`
 - `docs/keycloak_connexion.md`
 - `docs/popup_messagebox.md`
+
+## Daily Quality Routine (Local + CI)
+
+Use this short sequence before a push:
+
+1. `uv sync --group dev`
+2. `uv run pre-commit run --all-files`
+3. `uv run pytest -q`
+
+Recommended aliases (zsh):
+
+- `uvcir`: `uv run ruff check . && uv run ruff format --check .`
+- `uvci`: `uv run ruff check . && uv run ruff format --check . && uv run pytest -q`
+- `uvcip`: `uv run pytest`
+- `uvpc`: `uv run pre-commit run` (staged files only, ideal juste avant commit)
+- `uvpcall`: `uv run pre-commit run --all-files` (global verification)
+
+Notes:
+
+- `pre-commit` is intentionally fast (no test execution in commit hook).
+- Ruff ignores `docs/**` to avoid blocking commits on non-runtime draft code.
+- Ruff ignores `.pre-commit-cache/**` to avoid scanning hook repositories.
+- Local DB settings should come from `.env.dev` (shared PostgreSQL backend).
