@@ -1,32 +1,18 @@
 FROM python:3.12-slim
 
+COPY --from=ghcr.io/astral-sh/uv:0.6.9 /uv /uvx /bin/
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV UV_LINK_MODE=copy
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
 
 WORKDIR /app
 
-# ✅ Ajout des paquets nécessaires à mysqlclient
-RUN apt-get update && apt-get install -y \
-    gettext \
-    gcc \
-    g++ \
-    default-libmysqlclient-dev \
-    pkg-config \
-    build-essential \
-    libssl-dev \
-    default-mysql-client \
-    netcat-openbsd \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml uv.lock /app/
+RUN uv sync --frozen
 
-COPY requirements.txt .
+COPY . /app
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-COPY . .
-
-RUN django-admin compilemessages
-
-RUN chmod +x scripts/wait_for_db.sh
-
-CMD ["gunicorn", "lyrics_slide_show.wsgi:application", "--bind", "0.0.0.0:8000"]
+EXPOSE 8000 8001

@@ -1,21 +1,13 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+
 import os
 import sys
-import dotenv
-
 
 
 def main():
     """Run administrative tasks."""
-
-    DEBUG = os.environ.get('DEBUG') == '1'
-
-    if DEBUG :
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lyrics_slide_show.settings.dev')
-    else :
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'lyrics_slide_show.settings.prod')
-
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lyrics_slide_show.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -27,6 +19,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
-    dotenv.load_dotenv(override=True)
+if __name__ == "__main__":
     main()

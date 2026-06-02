@@ -1,43 +1,42 @@
-# Fichiers sensibles
-.env
-*.pem
-*.key
-*.crt
-
-# Git
+# Git and local tooling
 .git
 .gitignore
+.github/
+.codex
+.python-version
 
-# Environnements virtuels / dépendances
+# Local Python environments and caches
+.venv/
+.uv-cache/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-env/
-venv/
-node_modules/
-.github/
 .pytest_cache/
-nginx.conf
-.releaserc
-.vscode/
-package-lock.json
-package.json
-frontend/
-staticfiles/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Frontend dependencies
+node_modules/
+
+# Local environment files
+.env
+.env.*
+
+# Local databases and generated runtime data
+*.sqlite*
+logs/
 media/
-test/
+staticfiles/
 
-# Logs
-*.log
-
-# Autres
+# Documentation and local workspace files
+docs/
 chris/
-MySQL/
-Dockerfile
-docker-compose.yml
-docker-compose-n8n.yml
-docker-compose-n9n.yml
-LICENSE
-README.md
-CHANGELOG.md
+README_chris.md
+compose.yaml
+
+# Legacy local assets
+LSS/

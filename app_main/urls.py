@@ -1,21 +1,16 @@
 from django.urls import path
 from app_main import views
 
-
-
 urlpatterns = [
-    path('', views.homepage, name='homepage'),
-    path('bands', views.bands, name='bands'),
-    path('artists', views.artists, name='artists'),
-    path('kill_loader', views.kill_loader, name='kill_loader'),
-    path('loader', views.loader, name='loader'),
-    path('privacy_policy', views.privacy_policy, name='privacy_policy'),
-    path('theme_normal', views.theme_normal, name='theme_normal'),
-    path('theme_scout', views.theme_scout, name='theme_scout'),
-    path('change_language', views.change_language, name='set_language'),
-    path('profile', views.profile, name='profile'),
-    path('email_check', views.email_check, name='email_check'),
-    path('delete_profile', views.delete_profile, name='delete_profile'),
-    path('clean_db', views.clean_db, name='clean_db'),
-    path('404', views.debug_error_404, name='error_404'),
+    path("", views.homepage, name="homepage"),
+    path("login/", views.login, name="login"),
+    path("account/", views.account, name="account"),
+    path("site-params/", views.site_params, name="site_params"),
+    path("themes/", views.theme_preferences, name="theme_preferences"),
+    path("language/", views.language_preferences, name="language"),
+    path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    path("auth/callback/", views.auth_callback, name="auth_callback"),
+    path("logout/", views.logout, name="logout"),
+    path("heavy/", views.heavy, name="heavy"),
+    path("heavy/assets/<path:asset_path>", views.heavy_asset, name="heavy_asset"),
 ]

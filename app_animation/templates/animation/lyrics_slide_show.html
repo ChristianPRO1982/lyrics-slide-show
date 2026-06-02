@@ -1,0 +1,358 @@
+{% load static %}
+{% load i18n %}
+{% trans "Chargement..." as page_loader_label %}
+{% trans "Préparation de la page." as page_loader_help %}
+
+<!DOCTYPE html>
+<html lang="{{ language_code|default:'fr' }}" data-theme="normal">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% trans "Lyrics Slide Show" %} | Lyrics Slide Show</title>
+    <meta name="description" content="{% trans 'Télécommande maître de projection des paroles.' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Anton&family=Baloo+2&family=Bangers&family=Bree+Serif&family=Caveat&family=Caveat+Brush&family=Chewy&family=Concert+One&family=Fredoka&family=Fugaz+One&family=Gloria+Hallelujah&family=Indie+Flower&family=Lobster&family=Patrick+Hand&family=Poppins&family=Quicksand&family=Raleway&family=Righteous&family=Roboto+Slab&family=Sacramento&family=Sarabun&family=Source+Sans+Pro&family=Special+Elite&family=Staatliches&family=Ubuntu&family=Work+Sans&display=swap" rel="stylesheet">
+    <link id="site-favicon" rel="icon" sizes="64x64" href="{% static 'icons/favicon.png' %}" type="image/png">
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const now = () => (window.performance && typeof window.performance.now === "function")
+                ? window.performance.now()
+                : Date.now();
+            const config = {
+                revealDelayMs: 150,
+                minimumVisibleMs: 250,
+                failsafeMs: 5000,
+                loadingLabel: "{{ page_loader_label|escapejs }}",
+                loadingHelp: "{{ page_loader_help|escapejs }}"
+            };
+
+            window.LSS_PAGE_LOADER_CONFIG = config;
+            root.classList.add("lss-page-loading");
+
+            const dispatchReady = () => {
+                document.dispatchEvent(new CustomEvent("lss:page-ready"));
+            };
+
+            const markReady = () => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                root.classList.add("lss-page-ready");
+                root.classList.remove("lss-page-loading", "lss-page-loader-visible");
+                dispatchReady();
+            };
+
+            const state = {
+                startedAt: now(),
+                loaderShownAt: null,
+                revealTimerId: null,
+                failsafeTimerId: null,
+                markReady
+            };
+
+            state.revealTimerId = window.setTimeout(() => {
+                if (root.classList.contains("lss-page-ready")) {
+                    return;
+                }
+
+                state.loaderShownAt = now();
+                root.classList.add("lss-page-loader-visible");
+            }, config.revealDelayMs);
+
+            state.failsafeTimerId = window.setTimeout(markReady, config.failsafeMs);
+            window.LSS_PAGE_LOADER_STATE = state;
+        })();
+    </script>
+    <script>
+        window.LSS_THEME_CONFIG = {
+            storageKey: "lss-theme",
+            defaultTheme: "normal",
+            themeStylesheets: {
+                normal: "{% static 'css/normal.css' %}",
+                scout: "{% static 'css/scout.css' %}",
+                taize: "{% static 'css/taize.css' %}",
+                "me†al": "{% static 'css/me†al.css' %}"
+            },
+            iconBasePath: "{% static 'icons/ui' %}",
+            faviconFallbackPath: "{% static 'icons/favicon.png' %}"
+        };
+
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            let savedTheme = null;
+
+            try {
+                savedTheme = window.localStorage ? window.localStorage.getItem(config.storageKey) : null;
+            } catch (error) {
+                savedTheme = null;
+            }
+
+            const selectedTheme = config.themeStylesheets[savedTheme] ? savedTheme : config.defaultTheme;
+
+            document.documentElement.dataset.theme = selectedTheme;
+        })();
+    </script>
+    <script>
+        window.LSS_MESSAGE_BOX_CONFIG = {
+            i18n: {
+                closeLabel: "{% trans 'Fermer la fenêtre' %}",
+                okLabel: "{% trans 'OK' %}",
+                yesLabel: "{% trans 'Oui' %}",
+                noLabel: "{% trans 'Non' %}",
+                cancelLabel: "{% trans 'Annuler' %}",
+                confirmLabel: "{% trans 'Confirmer' %}",
+                logoutTitle: "{% trans 'Déconnexion' %}",
+                logoutMessage: "{% trans 'Voulez-vous vraiment vous déconnecter du site ?' %}",
+                fieldRequiredLabel: "{% trans 'Ce champ est obligatoire.' %}",
+                invalidEmailLabel: "{% trans 'Veuillez saisir une adresse e-mail valide.' %}",
+                dialogLabel: "{% trans 'Fenêtre de dialogue' %}",
+                copyTitle: "{% trans 'Copie' %}",
+                confirmationTitle: "{% trans 'Confirmation' %}"
+            }
+        };
+    </script>
+    <style>
+        [data-page-loader] {
+            display: none;
+        }
+
+        .lss-page-loading:not(.lss-page-ready) [data-page-content] {
+            visibility: hidden;
+        }
+
+        .lss-page-loader-visible:not(.lss-page-ready) [data-page-loader] {
+            display: grid;
+        }
+
+        [data-nav-drawer]:not([data-nav-ready]) {
+            display: none !important;
+        }
+    </style>
+    <link id="site-theme-stylesheet" rel="stylesheet" href="{% static 'css/normal.css' %}">
+    <script>
+        (() => {
+            const config = window.LSS_THEME_CONFIG;
+            const theme = document.documentElement.dataset.theme || config.defaultTheme;
+            const stylesheet = document.getElementById("site-theme-stylesheet");
+
+            if (stylesheet && config.themeStylesheets[theme]) {
+                stylesheet.href = config.themeStylesheets[theme];
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'css/app_animation.css' %}">
+</head>
+<body id="site-top">
+    <div class="lss-page-loader" data-page-loader role="status" aria-live="polite" aria-label="{{ page_loader_label }}">
+        <div class="lss-page-loader-panel">
+            <img
+                class="lss-page-loader-image"
+                src="{% static 'images/loading.gif' %}"
+                alt=""
+                aria-hidden="true"
+            >
+            <strong>{{ page_loader_label }}</strong>
+            <span>{{ page_loader_help }}</span>
+        </div>
+    </div>
+
+    <div data-page-content>
+        <script>
+            window.LSS_FLOATING_HELP_CONFIG = {
+                collapseDelayMs: 3000
+            };
+        </script>
+
+        <div class="site-shell">
+            {% include "includes/nav.html" %}
+
+            <div class="site-workspace">
+                <div class="site-frame">
+                    {% if messages %}
+                        <ul class="site-global-messages" aria-label="{% trans 'Messages' %}">
+                            {% for message in messages %}
+                                <li class="site-global-message site-global-message-{{ message.tags|default:'info' }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="site-layout lyrics-master-layout-shell">
+                        <main class="site-panel site-main-panel lyrics-master-main-panel">
+                            <section class="site-main-content lyrics-master-main-content">
+                                <section
+                                    class="lyrics-master-layout"
+                                    data-lyrics-master-root
+                                    data-animation-id="{{ animation.animation_id }}"
+                                    data-display-session-id="{{ display_session_id }}"
+                                    data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
+                                >
+                                    <nav class="site-floating-actions lyrics-master-floating-actions" aria-label="{% trans 'Navigation rapide remote' %}" data-lyrics-floating-nav>
+                                        <a
+                                            href="#lyrics-master-slides-anchor"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-slides-link
+                                            title="{% trans 'Diapo en cours / Diapo suivante' %}"
+                                            aria-label="{% trans 'Diapo en cours / Diapo suivante' %}"
+                                        >
+                                            🎼
+                                        </a>
+                                        <button
+                                            type="button"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-up
+                                            hidden
+                                            title="{% trans 'Afficher les chants précédents' %}"
+                                            aria-label="{% trans 'Afficher les chants précédents' %}"
+                                        >
+                                            ⬆️
+                                        </button>
+                                        <div class="lyrics-master-floating-song-links" data-lyrics-floating-song-links></div>
+                                        <button
+                                            type="button"
+                                            class="site-floating-action lyrics-master-floating-link"
+                                            data-lyrics-floating-down
+                                            hidden
+                                            title="{% trans 'Afficher les chants suivants' %}"
+                                            aria-label="{% trans 'Afficher les chants suivants' %}"
+                                        >
+                                            ⬇️
+                                        </button>
+                                    </nav>
+
+                                    <article class="site-theme-card lyrics-master-context">
+                                        <div class="lyrics-master-context-icon">
+                                            {% include "includes/themed_icon.html" with picture_class="lyrics-master-context-picture" img_class="lyrics-master-context-image" icon_name="animations" icon_alt=animation.title %}
+                                        </div>
+                                        <div class="lyrics-master-context-body">
+                                            <div class="lyrics-master-context-head">
+                                                <p class="lyrics-master-context-kicker">{{ animation.scheduled_at|date:"d/m/Y H:i" }}</p>
+                                                <h1>{{ animation.title }}</h1>
+                                                <p>
+                                                    {% if animation.description %}
+                                                        {{ animation.description|linebreaksbr }}
+                                                    {% else %}
+                                                        {% trans "Sans description." %}
+                                                    {% endif %}
+                                                </p>
+                                                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                                            </div>
+                                            <p><strong>{% trans "Session écran" %}</strong>: <code data-lyrics-display-session>{{ display_session_id }}</code></p>
+                                            <p><strong>{% trans "Chant" %}</strong>: <span data-lyrics-current-song-title>{% trans "Aucun" %}</span></p>
+                                            <p><strong>{% trans "Diapo" %}</strong>: <span data-lyrics-current-slide-label>{% trans "Aucune" %}</span></p>
+                                            <p data-lyrics-chorus-visibility-state></p>
+                                            <p data-lyrics-scroll-mode-state></p>
+                                        </div>
+                                    </article>
+                                    <a id="lyrics-master-slides-anchor" name="slides" data-lyrics-slides-anchor aria-hidden="true"></a>
+
+                                    <article class="site-theme-card lyrics-master-toolbar">
+                                        <div class="lyrics-master-actions-row lyrics-master-actions-row-primary">
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="black"><span class="lyrics-master-action-emoji">⚫</span><span>{% trans "BLACK MODE" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="prev-slide"><span class="lyrics-master-action-emoji">🔙</span><span>{% trans "Diapo précédente" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="chorus"><span class="lyrics-master-action-emoji">🎼</span><span>{% trans "Refrain" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="next-slide"><span class="lyrics-master-action-emoji">🔜</span><span>{% trans "Diapo suivante" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="prev-song"><span class="lyrics-master-action-emoji">⏮️</span><span data-lyrics-prev-song-title></span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="next-song"><span class="lyrics-master-action-emoji">⏭️</span><span data-lyrics-next-song-title></span></button>
+                                        </div>
+                                        <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
+                                        </div>
+                                    </article>
+
+                                    <article class="site-theme-card lyrics-master-previews" data-lyrics-previews-card>
+                                        <div class="lyrics-master-preview-panel" data-lyrics-preview-current-panel role="button" tabindex="0">
+                                            <h2>{% trans "Diapo en cours" %}</h2>
+                                            <p class="lyrics-master-preview-label" data-lyrics-current-label></p>
+                                            <p class="lyrics-master-preview-text" data-lyrics-current-text></p>
+                                        </div>
+                                        <div class="lyrics-master-preview-panel" data-lyrics-preview-next-panel role="button" tabindex="0">
+                                            <h2>{% trans "Diapo suivante" %}</h2>
+                                            <p class="lyrics-master-preview-label" data-lyrics-next-label></p>
+                                            <p class="lyrics-master-preview-text" data-lyrics-next-text></p>
+                                        </div>
+                                    </article>
+
+                                    <section class="lyrics-master-song-groups">
+                                        {% for group in runtime_payload.cardGroups %}
+                                            <article id="lyrics-song-group-{{ group.animationSongId }}" class="site-theme-card lyrics-master-song-group" data-lyrics-song-group data-animation-song-id="{{ group.animationSongId }}">
+                                                <header class="lyrics-master-song-group-header">
+                                                    <h2>{{ forloop.counter }}. {{ group.songTitle }}</h2>
+                                                </header>
+                                                <div class="lyrics-master-slide-grid">
+                                                    {% for card in group.cards %}
+                                                        <button
+                                                            type="button"
+                                                            class="lyrics-master-slide-card"
+                                                            data-lyrics-slide-card
+                                                            data-global-index="{{ card.globalIndex }}"
+                                                            data-kind="{{ card.kind }}"
+                                                        >
+                                                            <span class="lyrics-master-slide-card-label">{{ card.label|default:"-" }}</span>
+                                                            <span class="lyrics-master-slide-card-text">{{ card.excerpt }}</span>
+                                                        </button>
+                                                    {% endfor %}
+                                                </div>
+                                            </article>
+                                        {% empty %}
+                                            <article class="site-theme-card">
+                                                <p>{% trans "Aucune diapo disponible pour cette animation." %}</p>
+                                            </article>
+                                        {% endfor %}
+                                    </section>
+                                </section>
+                            </section>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "includes/footer.html" %}
+    </div>
+
+    <div id="lss-messagebox-root" hidden></div>
+    <script id="lss-site-popup-config" type="application/json">{{ lss_site_popup_json|default:"{}"|safe }}</script>
+    {{ runtime_payload|json_script:"lss-lyrics-runtime-payload" }}
+    <script>
+        window.LSS_LYRICS_I18N = {
+            openSecondScreenLabel: "{{ lyrics_i18n.openSecondScreenLabel|escapejs }}",
+            reopenSecondScreenLabel: "{{ lyrics_i18n.reopenSecondScreenLabel|escapejs }}",
+            popupBlockedTitle: "{{ lyrics_i18n.popupBlockedTitle|escapejs }}",
+            popupBlockedMessage: "{{ lyrics_i18n.popupBlockedMessage|escapejs }}",
+            preloadWarningTitle: "{{ lyrics_i18n.preloadWarningTitle|escapejs }}",
+            preloadWarningMessage: "{{ lyrics_i18n.preloadWarningMessage|escapejs }}",
+            okLabel: "{{ lyrics_i18n.okLabel|escapejs }}",
+            noneLabel: "{{ lyrics_i18n.noneLabel|escapejs }}",
+            currentSlidePlaceholder: "{{ lyrics_i18n.currentSlidePlaceholder|escapejs }}",
+            nextSlidePlaceholder: "{{ lyrics_i18n.nextSlidePlaceholder|escapejs }}",
+            blackModeLabel: "{{ lyrics_i18n.blackModeLabel|escapejs }}",
+            chorusLabel: "{{ lyrics_i18n.chorusLabel|escapejs }}",
+            previewCurrentLabel: "{{ lyrics_i18n.previewCurrentLabel|escapejs }}",
+            previewNextLabel: "{{ lyrics_i18n.previewNextLabel|escapejs }}",
+            qrInfoLabel: "{{ lyrics_i18n.qrInfoLabel|escapejs }}",
+            hiddenChorusLabel: "{{ lyrics_i18n.hiddenChorusLabel|escapejs }}",
+            scrollLockedLabel: "{{ lyrics_i18n.scrollLockedLabel|escapejs }}",
+            scrollUnlockedLabel: "{{ lyrics_i18n.scrollUnlockedLabel|escapejs }}",
+            scrollAllowEmoji: "{{ lyrics_i18n.scrollAllowEmoji|escapejs }}",
+            scrollAllowText: "{{ lyrics_i18n.scrollAllowText|escapejs }}",
+            scrollStopEmoji: "{{ lyrics_i18n.scrollStopEmoji|escapejs }}",
+            scrollStopText: "{{ lyrics_i18n.scrollStopText|escapejs }}",
+            chorusShowEmoji: "{{ lyrics_i18n.chorusShowEmoji|escapejs }}",
+            chorusShowText: "{{ lyrics_i18n.chorusShowText|escapejs }}",
+            chorusHideEmoji: "{{ lyrics_i18n.chorusHideEmoji|escapejs }}",
+            chorusHideText: "{{ lyrics_i18n.chorusHideText|escapejs }}",
+            shortcutsPopupTitle: "{{ lyrics_i18n.shortcutsPopupTitle|escapejs }}",
+            shortcutsPopupMessage: "{{ lyrics_i18n.shortcutsPopupMessage|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/message_box.js' %}"></script>
+    <script src="{% static 'js/lyrics_slide_show_master.js' %}"></script>
+    <script src="{% static 'js/page_loader.js' %}"></script>
+</body>
+</html>

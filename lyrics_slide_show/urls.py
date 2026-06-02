@@ -2,7 +2,7 @@
 URL configuration for lyrics_slide_show project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
+    https://docs.djangoproject.com/en/6.0/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -14,23 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+
 from django.urls import path, include
-from django.conf.urls import handler404
-from django.conf import settings
-from django.conf.urls.static import static
-
-
-handler404 = 'app_main.views.error_404'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("account/", include("allauth.urls")),
-    path('', include('app_main.urls')),
-    path('groups/', include('app_group.urls')),
-    path('songs/', include('app_song.urls')),
-    path('animations/', include('app_animation.urls')),
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("", include("app_main.urls")),
+    path("member/", include("app_member.urls")),
+    path("groups/", include("app_group.urls")),
+    path("songs/", include("app_song.urls")),
+    path("animations/", include("app_animation.urls")),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

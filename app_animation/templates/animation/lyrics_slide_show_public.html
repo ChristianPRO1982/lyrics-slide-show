@@ -1,0 +1,51 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ language_code|default:'fr' }}" data-public-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ animation.title }} | {% trans "Paroles" %}</title>
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+</head>
+<body class="lyrics-public-body">
+    <main class="lyrics-public-root" data-lyrics-public-root>
+        <header class="lyrics-public-header">
+            <h1>{{ animation.title }}</h1>
+            <p>{% trans "Lecture publique des chants" %}</p>
+        </header>
+
+        <section class="lyrics-public-controls">
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-public-action="prev-song">⏮️</button>
+            <label>
+                <span>{% trans "Chant" %}</span>
+                <select data-lyrics-public-song-select>
+                    {% for song in public_songs %}
+                        <option value="{{ song.songIndex }}">{{ song.songTitle }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-public-action="next-song">⏭️</button>
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-public-action="decrease-size">A-</button>
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-public-action="increase-size">A+</button>
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-public-action="toggle-theme">🌓</button>
+        </section>
+
+        <article class="lyrics-public-song" data-lyrics-public-song>
+            <h2 data-lyrics-public-song-title></h2>
+            <div data-lyrics-public-song-content></div>
+        </article>
+    </main>
+
+    {{ public_songs|json_script:"lss-lyrics-public-songs" }}
+    <script>
+        window.LSS_LYRICS_PUBLIC_I18N = {
+            noSongLabel: "{% trans 'Aucun chant disponible.'|escapejs %}",
+            noContentLabel: "{% trans 'Aucun contenu.'|escapejs %}",
+            themeLightLabel: "{% trans 'Thème clair'|escapejs %}",
+            themeDarkLabel: "{% trans 'Thème sombre'|escapejs %}"
+        };
+    </script>
+    <script src="{% static 'js/lyrics_slide_show_public.js' %}"></script>
+</body>
+</html>

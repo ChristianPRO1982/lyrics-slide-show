@@ -1,25 +1,25 @@
 from django.urls import path
-from app_song import views
 
+from . import views
 
 
 urlpatterns = [
-    path('', views.songs, name='songs'),
-    path('display_my_favorites', views.songs, {'display_my_favorites': True}, name='display_my_favorites'),
-    path('delete_genre/<int:genre_id>/', views.delete_genre, name='delete_genre'),
-    path('delete_band/<int:band_id>/', views.delete_band, name='delete_band'),
-    path('delete_artist/<int:artist_id>/', views.delete_artist, name='delete_artist'),
-    path('song/<int:song_id>/', views.goto_song, name='goto_song'),
-    path('song_add_favorite/<int:song_id>/', views.song_add_favorite, name='goto_song_add_favorite'),
-    path('song_remove_favorite/<int:song_id>/', views.song_remove_favorite, name='goto_song_remove_favorite'),
-    path('moderator_song/<int:song_id>/', views.moderator_song, name='moderator_song'),
-    path('modify_song/<int:song_id>/', views.modify_song, name='modify_song'),
-    path('song_metadata/<int:song_id>/', views.song_metadata, name='song_metadata'),
-    path('delete_song/<int:song_id>/', views.delete_song, name='delete_song'),
-    path('smartphone_view/<int:song_id>/', views.smartphone_view, name='smartphone_view'),
-    path('print_lyrics/<int:song_id>/', views.print_lyrics, name='print_lyrics'),
-    path('print_lyrics_one_chorus/<int:song_id>/', views.print_lyrics_one_chorus, name='print_lyrics_one_chorus'),
-    path('genre/<str:genre_str>/', views.filter_genre, name='filter_songs'),
-    path('band/<str:band_str>/', views.filter_band, name='filter_band'),
-    path('artist/<str:artist_str>/', views.filter_artist, name='filter_artist'),
+    path("", views.songs, name="songs"),
+    path("genres/modify/", views.modify_genres, name="modify_genres"),
+    path("artists/modify/", views.modify_artists, name="modify_artists"),
+    path("bands/modify/", views.modify_bands, name="modify_bands"),
+    path("<int:song_id>/", views.song, name="song"),
+    path("<int:song_id>/modify/", views.modify_song, name="modify_song"),
+    path(
+        "<int:song_id>/modify/preview/",
+        views.modify_song_preview,
+        name="modify_song_preview",
+    ),
+    path("<int:song_id>/metadata/", views.song_metadata, name="song_metadata"),
+    path(
+        "<int:song_id>/text/full-chorus/popup/",
+        views.song_text_popup,
+        name="song_text_popup",
+    ),
+    path("<int:song_id>/text/<str:mode>/", views.song_text, name="song_text"),
 ]

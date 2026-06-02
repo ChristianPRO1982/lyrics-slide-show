@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Historique des animations" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Historique des animations" %}{% endblock %}
+{% block content %}
+    <section class="animation-list-section">
+        {% for animation in past_animations %}
+            <article class="site-theme-card animation-list-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{{ animation.title }}</h2>
+                        <p>{{ animation.scheduled_at }}</p>
+                    </div>
+                </header>
+                {% if animation.description %}
+                    <p>{{ animation.description|linebreaksbr }}</p>
+                {% endif %}
+                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+            </article>
+        {% empty %}
+            <article class="site-theme-card">
+                <p>{% trans "Aucune animation passée pour ce groupe." %}</p>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}

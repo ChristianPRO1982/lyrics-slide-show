@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ title_complete_with_tags }} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_song.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Chant' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Chant' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Chant" %}{% endblock %}
+{% block page_tools %}
+    {% include "song/includes/_song_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="song-mobile-summary">
+        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
+    </div>
+    <p>
+        <button
+            type="button"
+            class="song-tool-button site-action site-action--primary"
+            data-song-mobile-actions-toggle
+            aria-expanded="false"
+            data-open-label="{% trans 'Afficher les actions' %}"
+            data-close-label="{% trans 'Masquer les actions' %}"
+        >
+            {% trans "Afficher les actions" %}
+        </button>
+    </p>
+    <div data-song-mobile-actions hidden>
+        {% include "song/includes/_song_actions.html" %}
+    </div>
+{% endblock %}
+{% block page_kicker %}{% trans "Chants" %}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
+{% block page_summary %}
+    <p>{% trans "Métadonnées" %}</p>
+    {% if can_edit %}
+        <p>
+            <button type="submit" form="metadata-form" class="song-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button>
+        </p>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Liens associés" %}</h2>
+            </div>
+        </header>
+        <form method="post" id="metadata-form">
+            {% csrf_token %}
+            {% if metadata_links %}
+                {% for link in metadata_links %}
+                    <p>
+                        <input
+                            id="existing-{{ forloop.counter0 }}-link"
+                            type="text"
+                            name="existing_{{ forloop.counter0 }}_link"
+                            value="{{ link.link }}"
+                            {% if not can_edit %}readonly{% endif %}
+                        >
+                        <select name="existing_{{ forloop.counter0 }}_type" {% if not can_edit %}disabled{% endif %}>
+                            <option value="web" {% if link.display_type == 'web' %}selected{% endif %}>lien</option>
+                            <option value="score" {% if link.display_type == 'score' %}selected{% endif %}>partition</option>
+                            <option value="audio" {% if link.display_type == 'audio' %}selected{% endif %}>audio</option>
+                            <option value="youtube" {% if link.display_type == 'youtube' %}selected{% endif %}>YouTube</option>
+                            <option value="internal" {% if link.display_type == 'internal' %}selected{% endif %}>lien interne</option>
+                        </select>
+                        <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
+                        <label for="existing-{{ forloop.counter0 }}-delete">
+                            <input
+                                id="existing-{{ forloop.counter0 }}-delete"
+                                type="checkbox"
+                                name="existing_{{ forloop.counter0 }}_delete"
+                                value="1"
+                                data-meta-delete-checkbox
+                                data-meta-kind="{% trans 'lien' %}"
+                                data-meta-label="{{ link.link|escape }}"
+                                {% if not can_edit %}disabled{% endif %}
+                            >
+                            {% trans "Supprimer" %}
+                        </label>
+                    </p>
+                {% endfor %}
+            {% else %}
+                <p><em>{% trans "Aucun lien associé." %}</em></p>
+            {% endif %}
+            <p>
+                <input
+                    id="new-link"
+                    type="text"
+                    name="new_link"
+                    value=""
+                    placeholder="{% trans 'Nouveau lien' %}"
+                    {% if not can_edit %}readonly{% endif %}
+                >
+                <select name="new_type" {% if not can_edit %}disabled{% endif %}>
+                    <option value="web" selected>lien</option>
+                    <option value="score">partition</option>
+                    <option value="audio">audio</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="internal">lien interne</option>
+                </select>
+            </p>
+        </form>
+    </article>
+
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Genres" %}</h2>
+            </div>
+        </header>
+        <div id="metadata-genres-transfer" data-meta-transfer-container data-input-name="genre_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_genres_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="genre_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_genres_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Artistes" %}</h2>
+            </div>
+        </header>
+        <div id="metadata-artists-transfer" data-meta-transfer-container data-input-name="artist_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_artists_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="artist_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_artists_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="site-theme-card song-detail-card">
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Groupes de musique" %}</h2>
+            </div>
+        </header>
+        <div id="metadata-bands-transfer" data-meta-transfer-container data-input-name="band_ids">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                    <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_bands_selected %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                {% if can_edit %}<input type="hidden" name="band_ids" value="{{ item.id }}" form="metadata-form">{% endif %}
+                                {{ item.label }}
+                            </li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                    <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        {% for item in metadata_bands_available %}
+                            <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                        {% empty %}
+                            <li><em>-</em></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </article>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{% static 'js/app_song.js' %}"></script>
+    <script>
+        (() => {
+            const messageBox = window.LSSMessageBox;
+            const labels = {
+                title: "{% trans 'Confirmation' %}",
+                yes: "{% trans 'Oui' %}",
+                no: "{% trans 'Non' %}",
+                confirmMessage: "{% trans 'Confirmer la suppression de cet élément ?' %}",
+            };
+
+            document.querySelectorAll("[data-meta-delete-checkbox]").forEach((checkbox) => {
+                checkbox.addEventListener("change", async () => {
+                    if (!(checkbox instanceof HTMLInputElement) || !checkbox.checked) {
+                        return;
+                    }
+                    if (!messageBox || typeof messageBox.show !== "function") {
+                        return;
+                    }
+
+                    checkbox.checked = false;
+                    const itemKind = checkbox.getAttribute("data-meta-kind") || "";
+                    const label = checkbox.getAttribute("data-meta-label") || "";
+                    const lines = [labels.confirmMessage];
+                    if (itemKind || label) {
+                        lines.push(`**${[itemKind, label].filter(Boolean).join(" : ")}**`);
+                    }
+
+                    const result = await messageBox.show({
+                        title: labels.title,
+                        messageMarkdown: lines.join("\n\n"),
+                        showCloseButton: false,
+                        buttons: [
+                            { id: "yes", label: labels.yes, tone: "warning" },
+                            { id: "no", label: labels.no, tone: "neutral" },
+                        ],
+                    });
+
+                    if (result.buttonId === "yes") {
+                        checkbox.checked = true;
+                    }
+                });
+            });
+        })();
+
+        (() => {
+            const canEdit = {{ can_edit|yesno:"true,false" }};
+
+            const createHiddenInput = (name, value) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = value;
+                input.setAttribute("form", "metadata-form");
+                return input;
+            };
+
+            document.querySelectorAll("[data-meta-transfer-container]").forEach((container) => {
+                if (!(container instanceof HTMLElement)) {
+                    return;
+                }
+
+                const inputName = container.getAttribute("data-input-name") || "";
+                const selectedList = container.querySelector("[data-meta-transfer-source]");
+                const availableList = container.querySelector("[data-meta-transfer-target]");
+                if (!(selectedList instanceof HTMLElement) || !(availableList instanceof HTMLElement)) {
+                    return;
+                }
+
+                container.addEventListener("click", (event) => {
+                    if (!canEdit) {
+                        return;
+                    }
+                    const target = event.target;
+                    if (!(target instanceof Element)) {
+                        return;
+                    }
+                    const item = target.closest("[data-meta-transfer-item]");
+                    if (!(item instanceof HTMLElement)) {
+                        return;
+                    }
+                    const itemId = item.getAttribute("data-id") || "";
+                    if (!itemId) {
+                        return;
+                    }
+
+                    const isSelected = item.parentElement === selectedList;
+                    if (isSelected) {
+                        item.querySelectorAll(`input[type="hidden"][name="${inputName}"]`).forEach((input) => input.remove());
+                        availableList.appendChild(item);
+                        return;
+                    }
+
+                    item.appendChild(createHiddenInput(inputName, itemId));
+                    selectedList.appendChild(item);
+                });
+            });
+        })();
+    </script>
+{% endblock %}

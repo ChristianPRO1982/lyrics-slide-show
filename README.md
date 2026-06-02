@@ -1,213 +1,53 @@
 # Lyrics Slide Show
 
-[![Latest Release](https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg)](https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Latest Release](https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg?style=for-the-badge)](https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest)
+![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json&style=for-the-badge)
 
-![Django](https://img.shields.io/badge/Django-5.1.6-green?logo=django&logoColor=white)
-![Django](https://img.shields.io/badge/Django-Framework-green?logo=django)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+![Django](https://img.shields.io/badge/Django-6.x-0C4B33?style=for-the-badge&logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Keycloak](https://img.shields.io/badge/Keycloak-SSO-4D4D4D?style=for-the-badge)
 
-[![License](https://img.shields.io/github/license/ChristianPRO1982/lyrics-slide-show.svg)](https://github.com/ChristianPRO1982/lyrics-slide-show/blob/main/LICENSE)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/docker--compose-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![WhiteNoise](https://img.shields.io/badge/WhiteNoise-static%20files-6B7280?style=for-the-badge)
 
-“Lyrics Slide Show” is an application that lets you easily manage the display of slides linked to songs. The display is not linear, but follows the order of the song's verses and choruses.
+EN: Django-based web service for preparing and projecting song lyrics as live slides, with open guest access for public use cases and Keycloak-based authentication for member access.
 
-## Features
+FR: Service web Django dédié a la preparation et a la projection en direct de paroles de chants, avec un acces invite ouvert pour les usages publics et une authentification membre basee sur Keycloak.
 
-- Manage song lyrics and slides
-- Non-linear slide display
-- Easy to use interface
+This repository is documented from the `docs/` directory, which is the source of truth for project documentation.
 
-## .ENV
+Current auth workflow:
 
-```bash
-DEBUG=1
-LOADER_DEBUG=0
-LOADER_DEBUG_DELAY_MS=1500
-SQL_REQUEST_LOG=1 # 0: no log, 1: SQL name, 2: SQL name and request
-SQL_REQUEST_LOG_NAME_PREFIX='[DEV]'
-LOG_RETENTION_DAYS=1
+- `DEV`: local Docker setup with `auth_mock`
+- `PROD`: external `Keycloak`
 
-###########
-# SECRETS #
-###########
-SECRET_KEY=''
-GOOGLE_CLIENT_ID=''
-GOOGLE_CLIENT_SECRET=''
-GOOGLE_CLIENT_ID=''
-GOOGLE_CLIENT_SECRET=''
+Main reference documents:
 
-#######
-# BDD #
-#######
-LOCAL_FUNCTIONAL_HOST='localhost'
-LOCAL_FUNCTIONAL_USER='root'
-LOCAL_FUNCTIONAL_PASSWORD=''
-LOCAL_FUNCTIONAL_DATABASE=''
-LOCAL_FUNCTIONAL_SSL=''
+- `docs/general_overview.md`
+- `docs/keycloak_connexion.md`
+- `docs/popup_messagebox.md`
 
-CARTHOGRAPHIE_FUNCTIONAL_HOST=''
-CARTHOGRAPHIE_FUNCTIONAL_USER=''
-CARTHOGRAPHIE_FUNCTIONAL_PASSWORD=''
-CARTHOGRAPHIE_FUNCTIONAL_DATABASE=''
-CARTHOGRAPHIE_FUNCTIONAL_SSL=''
+## Daily Quality Routine (Local + CI)
 
-#########
-# GMAIL #
-#########
-EMAIL_HOST_USER=''
-EMAIL_HOST_PASSWORD=''
-```
+Use this short sequence before a push:
 
-## Installation
+1. `uv sync --group dev`
+2. `uv run pre-commit run --all-files`
+3. `uv run pytest -q`
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/lyrics-slide-show.git
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd lyrics-slide-show
-    ```
-3. Install the dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Apply migrations:
-    ```bash
-    python manage.py migrate
-    ```
-5. Run the development server:
-    ```bash
-    python manage.py runserver
-    ```
+Recommended aliases (zsh):
 
-## Usage
+- `uvcir`: `uv run ruff check . && uv run ruff format --check .`
+- `uvci`: `uv run ruff check . && uv run ruff format --check . && uv run pytest -q`
+- `uvcip`: `uv run pytest`
+- `uvpc`: `uv run pre-commit run` (staged files only, ideal juste avant commit)
+- `uvpcall`: `uv run pre-commit run --all-files` (global verification)
 
-1. Open your web browser and go to `http://127.0.0.1:8000/`.
-2. Add and manage your songs and slides through the web interface.
-3. Enjoy your non-linear lyrics slide show!
+Notes:
 
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any inquiries, please contact [Christian from cARThographie](mailto:carthographie@outlook.fr).
-
-# Memo
-
-## commands for translations
-
-### messages extraction
-
-```bash
-django-admin makemessages -l fr
-django-admin makemessages -l en
-```
-
-### compile messages
-
-```bash
-django-admin compilemessages
-```
-
-## django
-
-```bash
-python manage.py runserver
-python manage.py collectstatic
-python manage.py makemigrations
-python manage.py migrate
-```
-
-## MySQL
-```sql
-mysqldump -u root -p --no-data carthographie > schema.sql
-```
-
-## docker
-```bash
-docker compose down && docker compose up -d --remove-orphans
-```
-```bash
-docker compose pull && docker compose up -d && docker image prune -f
-```
-1) (Re)générer les fichiers statics
-```bash
-docker compose exec web python manage.py collectstatic --noinput
-```
-2) Recréer web + nginx pour prendre les volumes/labels
-```bash
-docker compose up -d --force-recreate web nginx
-```
-3) Vérifs côté Nginx : les dossiers existent et contiennent des fichiers
-```bash
-docker compose exec nginx sh -c 'ls -l /static | head -n 20'
-docker compose exec nginx sh -c 'ls -l /media  | head -n 20'
-docker compose exec nginx sh -lc 'wget -S -O - http://127.0.0.1/static/css/normal.css | head -n 15'
-docker compose exec nginx sh -lc 'wget -S -O - http://127.0.0.1/media/$(ls /media | head -n1) >/dev/null || true'
-curl -I https://www.carthographie.fr/static/css/normal.css
-```
-# 4) (optionnel une fois) réaligner les droits si besoin
-```bash
-docker compose exec web sh -c 'chown -R $(id -u):$(id -g) /app/media'
-```
-# 5) Sanity checks
-```bash
-#   - /static/* doit répondre 200 via Nginx
-#   - /media/* doit répondre 200 via Nginx
-```
-
-## Tailwind
-
-### NPM
-
-Add this files :
-* `./frontend/tailwind.config.js`
-    ```bash
-    /** @type {import('tailwindcss').Config} */
-    module.exports = {
-      content: [
-        './templates/**/*.html',
-        './static/js/**/*.js',
-        './static/**/*.html',
-      ],
-      safelist: [
-        'w-1/2',
-        'w-1/3',
-        'w-1/4',
-      ],
-      theme: {
-        extend: {},
-      },
-      plugins: [],
-      corePlugins: {
-        preflight: true, // normalement c’est true par défaut, mais mets-le pour être sûr
-      },
-    };
-    ```
-* `./frontend/postcss.config.js`
-    ```bash
-    module.exports = {
-      plugins: {
-        tailwindcss: {},
-        autoprefixer: {},
-      },
-    };
-    ```
-
-### NPM
-```bash
-rm -rf node_modules package-lock.json
-npm install --save-dev tailwindcss@3.4.17 postcss autoprefixer
-ls -l node_modules/.bin/tailwindcss
-```
-
-### manual build
-```bash
-npx tailwindcss -c frontend/tailwind.config.js -i static/css/tailwind.css -o static/css/tailwind.lyrics_slide_show.css --minify
-```
+- `pre-commit` is intentionally fast (no test execution in commit hook).
+- Ruff ignores `docs/**` to avoid blocking commits on non-runtime draft code.
+- Ruff ignores `.pre-commit-cache/**` to avoid scanning hook repositories.
+- Local DB settings should come from `.env.dev` (shared PostgreSQL backend).
