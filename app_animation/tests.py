@@ -467,7 +467,7 @@ class AnimationViewsTests(TestCase):
                     "song_id": song.song_id,
                     "visible_verse_ids": [verse_one.verse_id],
                     "song_style": {
-                        "font_family_override": "Arial",
+                        "font_family_override": "Source Sans Pro",
                         "font_size_delta": 10,
                         "text_color_override": "#123456",
                         "bg_color_override": "#654321",
@@ -504,7 +504,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         item.refresh_from_db()
-        self.assertEqual(item.font_family_override, "Arial")
+        self.assertEqual(item.font_family_override, "Source Sans Pro")
         self.assertEqual(item.font_size_override, 70)
         self.assertEqual(item.text_color_override, "#123456")
         self.assertEqual(item.bg_color_override, "#654321")
@@ -710,7 +710,7 @@ class AnimationViewsTests(TestCase):
                                 "song_id": song_a.song_id,
                                 "visible_verse_ids": [verse_a.verse_id],
                                 "song_style": {
-                                    "font_family_override": "Arial",
+                                    "font_family_override": "Source Sans Pro",
                                     "font_size_delta": 15,
                                     "text_color_override": "#111111",
                                     "bg_color_override": "#222222",

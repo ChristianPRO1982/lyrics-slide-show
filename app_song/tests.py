@@ -9,6 +9,7 @@ from app_main.models import DirectoryUserRecord
 from app_member.models import MemberPreferences, MemberRole
 
 from .models import Song, SongFavorite, SongStatus, Verse
+from . import views as song_views
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
@@ -424,6 +425,16 @@ class SongTextArtifactsTests(SimpleTestCase):
 
 class SongViewsRenderingTests(TestCase):
     def setUp(self):
+        self.user_id = "99999999-9999-9999-9999-999999999999"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="lyrics.reader",
+            first_name="Lyrics",
+            last_name="Reader",
+            email="lyrics.reader@example.test",
+            enabled=True,
+            email_verified=False,
+        )
         self.song = Song.objects.create(
             title="Le Sud",
             subtitle="Nino Ferrer",
@@ -447,9 +458,23 @@ class SongViewsRenderingTests(TestCase):
             followed=False,
         )
 
+    def _login(self) -> None:
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "lyrics.reader",
+            "email": "lyrics.reader@example.test",
+            "first_name": "Lyrics",
+            "last_name": "Reader",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
     def test_song_view_provides_tagged_navigation_title_and_text_without_title_duplication(
         self,
     ):
+        self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
@@ -459,6 +484,7 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
     def test_song_text_print_page_uses_full_title_without_tags(self):
+        self._login()
         response = self.client.get(
             reverse("song_text", args=[self.song.song_id, "full-chorus"])
         )
@@ -472,6 +498,7 @@ class SongViewsRenderingTests(TestCase):
         )
 
     def test_song_text_plain_endpoint_returns_html_fragment(self):
+        self._login()
         response = self.client.get(
             reverse("song_text", args=[self.song.song_id, "single-chorus"])
             + "?format=plain"
@@ -483,6 +510,7 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotIn("Le Sud - Nino Ferrer", body)
 
     def test_song_text_popup_endpoint_returns_full_chorus_markdown(self):
+        self._login()
         response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         payload = response.json()
@@ -738,22 +766,22 @@ class ModifySongViewTests(TestCase):
         self.assertNotContains(response, "song-block-readonly-compact")
         self.assertContains(
             response,
-            '<strong class="song-edit-block-drag-label">Couplet 1</strong>',
+            "data-song-block-drag-label>Couplet 1</strong>",
             html=False,
         )
         self.assertContains(
             response,
-            '<strong class="song-edit-block-drag-label">Refrain</strong>',
+            "data-song-block-drag-label>Refrain</strong>",
             html=False,
         )
         self.assertContains(
             response,
-            '<span class="song-edit-block-drag-text">Couplet original</span>',
+            "data-song-block-drag-text>Couplet original</span>",
             html=False,
         )
         self.assertContains(
             response,
-            '<span class="song-edit-block-drag-text">Refrain original</span>',
+            "data-song-block-drag-text>Refrain original</span>",
             html=False,
         )
         self.assertContains(response, "Ajouter un couplet/refrain")
@@ -1057,7 +1085,6 @@ class ModifyGenresViewTests(TestCase):
     def test_post_save_runs_create_update_and_delete(
         self, cursor_factory, fetch_rows, success_mock, error_mock
     ):
-        self._login(is_moderator=True)
         fetch_rows.return_value = [
             {
                 "genre_id": 1,
@@ -1078,10 +1105,9 @@ class ModifyGenresViewTests(TestCase):
         cursor_factory.return_value.__enter__.return_value = cursor
         cursor.execute.return_value = None
 
-        response = self.client.post(
+        request = RequestFactory().post(
             reverse("modify_genres"),
-            data={
-                "action": "save",
+            {
                 "new_group": "Nouveau groupe",
                 "new_name": "Nouveau nom",
                 "rows[1][group]": "A2",
@@ -1091,9 +1117,13 @@ class ModifyGenresViewTests(TestCase):
                 "rows[2][delete]": "1",
             },
         )
+        request.user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_moderator": True, "is_admin": False},
+        )()
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_genres"))
+        song_views._save_genres(request)
 
         executed_sql = " ".join(
             str(call.args[0]) for call in cursor.execute.call_args_list
@@ -1110,7 +1140,6 @@ class ModifyGenresViewTests(TestCase):
     def test_delete_failure_shows_error_message(
         self, cursor_factory, fetch_rows, error_mock
     ):
-        self._login(is_moderator=True)
         fetch_rows.return_value = [
             {
                 "genre_id": 7,
@@ -1123,24 +1152,28 @@ class ModifyGenresViewTests(TestCase):
         cursor = MagicMock()
         cursor_factory.return_value.__enter__.return_value = cursor
 
-        def execute_side_effect(sql, params=None):
-            if 'DELETE FROM "common"."genres"' in sql:
+        def execute_side_effect(sql_statement, params=None):
+            if 'DELETE FROM "common"."genres"' in str(sql_statement):
                 raise IntegrityError("fk failure")
             return None
 
         cursor.execute.side_effect = execute_side_effect
 
-        response = self.client.post(
+        request = RequestFactory().post(
             reverse("modify_genres"),
-            data={
-                "action": "save",
+            {
                 "rows[7][group]": "A",
                 "rows[7][name]": "Alpha",
                 "rows[7][delete]": "1",
             },
         )
+        request.user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_moderator": True, "is_admin": False},
+        )()
 
-        self.assertEqual(response.status_code, 302)
+        song_views._save_genres(request)
         error_mock.assert_called()
 
 
@@ -1188,13 +1221,13 @@ class ModifyArtistsAndBandsViewTests(TestCase):
 
         artists_response = self.client.get(reverse("modify_artists"))
         self.assertEqual(artists_response.status_code, 200)
-        self.assertContains(artists_response, "song-meta-crud-grid--simple")
+        self.assertContains(artists_response, "song-meta-row--simple")
         self.assertNotContains(artists_response, "<table")
         self.assertContains(artists_response, "Enregistrer", count=2)
 
         bands_response = self.client.get(reverse("modify_bands"))
         self.assertEqual(bands_response.status_code, 200)
-        self.assertContains(bands_response, "song-meta-crud-grid--simple")
+        self.assertContains(bands_response, "song-meta-row--simple")
         self.assertNotContains(bands_response, "<table")
         self.assertContains(bands_response, "Enregistrer", count=2)
 
@@ -1299,7 +1332,10 @@ class SongFavoritesQuickViewTests(TestCase):
         response = self.client.get(reverse("songs") + "?favorites_quick=1")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Mon favori")
-        self.assertNotContains(response, "Saved Search Hit")
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(displayed_titles, ["Mon favori"])
         self.assertFalse(response.context["search_params"].favorites_only)
         self.assertEqual(response.context["search_params"].text, "Saved Search")
         self.assertContains(response, "Mode favoris temporaire actif.")

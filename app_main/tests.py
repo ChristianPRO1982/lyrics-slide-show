@@ -95,7 +95,7 @@ class CallbackValidationTests(SimpleTestCase):
         }
 
         with patch("app_main.auth.time.time", return_value=1700000100):
-            with self.assertRaisesMessage(Exception, "Invalid callback signature."):
+            with self.assertRaisesMessage(Exception, "Signature de retour invalide."):
                 validate_callback_payload(payload)
 
     @override_settings(
@@ -113,7 +113,9 @@ class CallbackValidationTests(SimpleTestCase):
 
         with patch("app_main.auth.time.time", return_value=1700000100):
             payload["sig"] = sign_callback_data(payload, "shared-secret")
-            with self.assertRaisesMessage(Exception, "Invalid external_id format."):
+            with self.assertRaisesMessage(
+                Exception, "Format d'identifiant externe invalide."
+            ):
                 validate_callback_payload(payload)
 
     @override_settings(
@@ -145,7 +147,7 @@ class CallbackValidationTests(SimpleTestCase):
     def test_validate_keycloak_callback_rejects_invalid_state(self):
         session = {"lss_keycloak_state": "expected-state"}
 
-        with self.assertRaisesMessage(KeycloakAuthError, "Invalid Keycloak state."):
+        with self.assertRaisesMessage(KeycloakAuthError, "État Keycloak invalide."):
             validate_keycloak_callback(
                 {"code": "auth-code", "state": "wrong-state"}, session
             )
@@ -346,10 +348,10 @@ class AuthFlowTests(TestCase):
         response = self.client.get(reverse("homepage"))
 
         self.assertContains(response, "Lyrics Slide Show")
-        self.assertContains(response, "propulsé par cARThographie !")
+        self.assertContains(response, "Politique de confidentialité")
         self.assertContains(
             response,
-            "Si vous avez des suggestions d'amélioration du site ou des bugs à remonter, merci de le faire ici : déposer un message",
+            "Parfait pour une soirée louange, une animation musicale ou un concert improvisé.",
         )
         self.assertContains(response, "Projetez. Chantez. Kiffez.")
         self.assertContains(response, "Pourquoi c’est cool ?")
@@ -404,7 +406,7 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Choix de la langue")
         self.assertContains(response, "🇫🇷 Français")
-        self.assertContains(response, "🇬🇧 English")
+        self.assertContains(response, "🇬🇧 Anglais")
         self.assertContains(response, reverse("set_language"))
 
     def test_set_language_redirects_back_to_language_page(self):
@@ -445,7 +447,7 @@ class AuthFlowTests(TestCase):
             response = self.client.get(reverse("auth_callback"), params, follow=True)
 
         self.assertRedirects(response, reverse("homepage"))
-        self.assertContains(response, "Connected as known.user.")
+        self.assertContains(response, "Connecté en tant que known.user.")
         self.assertContains(response, "known.user")
         self.assertContains(response, 'data-django-alias="logout"')
         self.assertContains(response, 'data-django-alias="account"')
@@ -484,7 +486,8 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn(
-            "Interactive login is not configured for this environment.", messages
+            "La connexion interactive n'est pas configurée pour cet environnement.",
+            messages,
         )
 
     @override_settings(AUTH_MODE="keycloak")
@@ -522,7 +525,7 @@ class AuthFlowTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("homepage"))
-        self.assertContains(response, "Connected as known.user.")
+        self.assertContains(response, "Connecté en tant que known.user.")
         self.assertContains(response, 'data-django-alias="logout"')
 
     @override_settings(AUTH_MODE="keycloak")
