@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.0...v2.5.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* update semantic-release plugins and add changelog generation ([1535e4e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1535e4e1fb1e9232bf0e87a559be3c307926a112))
+
 ## [2.4.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.4.3...v2.4.4) (2026-01-20)
 
 
