@@ -127,6 +127,7 @@ jobs:
   build-and-push:
     name: Build and Push Docker image
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     permissions:
       contents: read
     steps:
