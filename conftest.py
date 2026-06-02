@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
+from django.conf import settings
 import psycopg
 import pytest
 from psycopg import sql
@@ -96,3 +98,8 @@ def _ensure_template_database() -> None:
 @pytest.fixture(scope="session", autouse=True)
 def prepare_postgres_test_template() -> None:
     _ensure_template_database()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def prepare_static_root() -> None:
+    Path(settings.STATIC_ROOT).mkdir(parents=True, exist_ok=True)
