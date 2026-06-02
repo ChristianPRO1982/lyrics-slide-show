@@ -2,8 +2,10 @@
 .git
 .gitignore
 .github/
+.agents
 .codex
 .python-version
+.pre-commit-config.yaml
 
 # Local Python environments and caches
 .venv/
@@ -22,6 +24,10 @@ htmlcov/
 # Frontend dependencies
 node_modules/
 
+# Frontend and release tooling
+package.json
+package-lock.json
+
 # Local environment files
 .env
 .env.*
@@ -35,8 +41,21 @@ staticfiles/
 # Documentation and local workspace files
 docs/
 chris/
+CHANGELOG.md
+README.md
 README_chris.md
 compose.yaml
+compose.*.yaml
+
+# Test-only files
+pytest.ini
+conftest.py
+app_test/
+app_main/tests.py
+app_member/tests.py
+app_group/tests.py
+app_song/tests.py
+app_animation/tests.py
 
 # Legacy local assets
 LSS/
