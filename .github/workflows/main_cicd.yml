@@ -160,7 +160,7 @@ jobs:
         env:
           N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
           N8N_USER: ${{ secrets.N8N_USER }}
-          N8N_PASS: " "
+          N8N_PASS: ""
         run: |
           set -euo pipefail
           payload=$(jq -n --arg repo "$GITHUB_REPOSITORY" --arg sha "$GITHUB_SHA" --arg ref "$GITHUB_REF_NAME" \
