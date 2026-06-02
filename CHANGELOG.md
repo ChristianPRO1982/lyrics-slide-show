@@ -1142,6 +1142,7 @@
 * status for insert and update song ([f7a032b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f7a032b425a1708b23b506dafcde54a79475f8dd))
 * translation ([7b1f4e5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7b1f4e58144d46d34df58d9c958cb8e9215685f6))
 
+=======
 # 1.0.0 (2025-04-16)
 
 
