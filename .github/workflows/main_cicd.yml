@@ -1,4 +1,5 @@
 name: CI/CD - Main Branch
+run-name: "Deploy PR #${{ github.event.pull_request.number }}: ${{ github.head_ref }} → main"
 
 on:
   pull_request:
@@ -204,7 +205,6 @@ jobs:
     needs:
       - deploy
       - test
-    if: vars.ENABLE_SEMANTIC_RELEASE == 'true'
     permissions:
       contents: write
       issues: write
