@@ -1,0 +1,23 @@
+{
+  "name": "lyrics-slide-show-release",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Release tooling for Lyrics Slide Show.",
+  "scripts": {
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "semantic-release": "^24.2.9"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "repositoryUrl": "https://github.com/ChristianPRO1982/lyrics-slide-show.git",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
+  }
+}
