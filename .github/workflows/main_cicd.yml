@@ -175,7 +175,7 @@ jobs:
           echo "HTTP_STATUS=$code"
           echo "RESPONSE_BODY=$(tr -d '\n' < response.json | head -c 500)"
           test "$code" -ge 200 -a "$code" -lt 300
-          jq -e 'type == "array" and length == 1 and .[0].status == "OK"' response.json >/dev/null
+          jq -e 'type == "object" and .status == "OK"' response.json >/dev/null
 
   deploy:
     name: Deploy to VPS
