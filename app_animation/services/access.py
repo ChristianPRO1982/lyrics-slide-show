@@ -24,5 +24,7 @@ def ensure_animation_in_selected_group(request, animation: Animation) -> Group:
 
 
 def redirect_to_groups_when_no_selection(request):
-    messages.info(request, _("Sélectionnez d'abord un groupe pour gérer les animations."))
+    messages.info(
+        request, _("Sélectionnez d'abord un groupe pour gérer les animations.")
+    )
     return redirect("groups")

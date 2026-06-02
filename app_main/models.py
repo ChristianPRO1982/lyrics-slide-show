@@ -25,7 +25,9 @@ class SiteParams(models.Model):
     bg_img_ratio_min = models.DecimalField(max_digits=3, decimal_places=1, default=1.3)
     bg_img_ratio_max = models.DecimalField(max_digits=3, decimal_places=1, default=2.0)
     bg_img_allowed_ext = models.CharField(max_length=100, default=".jpg,.jpeg,.png")
-    bg_img_allowed_mime = models.CharField(max_length=100, default="image/jpeg,image/png")
+    bg_img_allowed_mime = models.CharField(
+        max_length=100, default="image/jpeg,image/png"
+    )
 
     class Meta:
         db_table = 'lss"."site_params'

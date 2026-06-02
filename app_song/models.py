@@ -19,7 +19,10 @@ LINK_TYPE_AUDIO_VIDEO = "audio-video"
 class SongStatus(models.IntegerChoices):
     NOT_VALIDATED = SONG_STATUS_NOT_VALIDATED, _("Not validated")
     VALIDATED = SONG_STATUS_VALIDATED, _("Validated")
-    VALIDATED_WITH_CONCERN = SONG_STATUS_VALIDATED_WITH_CONCERN, _("Validated with concern")
+    VALIDATED_WITH_CONCERN = (
+        SONG_STATUS_VALIDATED_WITH_CONCERN,
+        _("Validated with concern"),
+    )
 
 
 class SongMessageStatus(models.IntegerChoices):

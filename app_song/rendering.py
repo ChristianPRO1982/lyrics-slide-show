@@ -50,7 +50,8 @@ class SongRenderSettings:
             chorus_prefix=site_params.chorus_prefix,
             verse_prefix1=site_params.verse_prefix1 or defaults.verse_prefix1,
             verse_prefix2=site_params.verse_prefix2 or defaults.verse_prefix2,
-            chorus_like_default_prefix=site_params.chorus_prefix or defaults.chorus_like_default_prefix,
+            chorus_like_default_prefix=site_params.chorus_prefix
+            or defaults.chorus_like_default_prefix,
         )
 
     def verse_label(self, number: int) -> str:
@@ -87,7 +88,9 @@ def normalize_lyrics_linebreaks(value: str | None) -> str:
     )
 
 
-def _get_ordered_verses(song: Song, verses: Iterable[Verse] | None = None) -> list[Verse]:
+def _get_ordered_verses(
+    song: Song, verses: Iterable[Verse] | None = None
+) -> list[Verse]:
     if verses is not None:
         return sorted(verses, key=lambda verse: (verse.num, verse.verse_id or 0))
     return list(song.verses.all().order_by("num", "verse_id"))
@@ -116,7 +119,9 @@ def _render_chorus_group(
     return blocks
 
 
-def _should_render_chorus_group(mode: ChorusRenderMode, chorus_already_rendered: bool) -> bool:
+def _should_render_chorus_group(
+    mode: ChorusRenderMode, chorus_already_rendered: bool
+) -> bool:
     return mode == ChorusRenderMode.FULL or not chorus_already_rendered
 
 
@@ -166,7 +171,7 @@ def _render_table_row(
     kind_class = kind.value.replace("_", "-")
     return (
         f'<tr class="song-lyrics-row song-lyrics-row--{kind_class}">'
-        f"<th scope=\"row\">{label_html}</th>"
+        f'<th scope="row">{label_html}</th>'
         f"<td>{text_html}</td>"
         "</tr>"
     )
@@ -203,12 +208,16 @@ def _render_blocks_table_html(blocks: list[RenderedSongBlock]) -> str:
 
         text_html = _format_html_text(block.text)
         if text_html:
-            rows.append(_render_table_row(label=block.label, text_html=text_html, kind=block.kind))
+            rows.append(
+                _render_table_row(
+                    label=block.label, text_html=text_html, kind=block.kind
+                )
+            )
         index += 1
 
     if not rows:
         return ""
-    return f"<table class=\"song-lyrics-table\"><tbody>{''.join(rows)}</tbody></table>"
+    return f'<table class="song-lyrics-table"><tbody>{"".join(rows)}</tbody></table>'
 
 
 def _render_song_html(
@@ -253,7 +262,9 @@ def render_song_blocks(
                 blocks.append(
                     RenderedSongBlock(
                         kind=RenderedSongBlockKind.CHORUS_LIKE,
-                        label=(verse.prefix or render_settings.chorus_like_default_prefix).strip(),
+                        label=(
+                            verse.prefix or render_settings.chorus_like_default_prefix
+                        ).strip(),
                         text=text,
                         source_verse_id=verse.verse_id,
                         display_num=verse.num_verse,
@@ -263,19 +274,37 @@ def render_song_blocks(
                 blocks.append(
                     RenderedSongBlock(
                         kind=RenderedSongBlockKind.VERSE,
-                        label="" if verse.notcontinuenumbering else render_settings.verse_label(verse.num_verse),
+                        label=""
+                        if verse.notcontinuenumbering
+                        else render_settings.verse_label(verse.num_verse),
                         text=text,
                         source_verse_id=verse.verse_id,
                         display_num=verse.num_verse,
                     )
                 )
 
-            if choruses and not verse.followed and _should_render_chorus_group(render_mode, chorus_already_rendered):
-                blocks.extend(_render_chorus_group(choruses, render_settings, repeated=chorus_already_rendered))
+            if (
+                choruses
+                and not verse.followed
+                and _should_render_chorus_group(render_mode, chorus_already_rendered)
+            ):
+                blocks.extend(
+                    _render_chorus_group(
+                        choruses, render_settings, repeated=chorus_already_rendered
+                    )
+                )
                 chorus_already_rendered = True
 
-        elif start_by_chorus and choruses and _should_render_chorus_group(render_mode, chorus_already_rendered):
-            blocks.extend(_render_chorus_group(choruses, render_settings, repeated=chorus_already_rendered))
+        elif (
+            start_by_chorus
+            and choruses
+            and _should_render_chorus_group(render_mode, chorus_already_rendered)
+        ):
+            blocks.extend(
+                _render_chorus_group(
+                    choruses, render_settings, repeated=chorus_already_rendered
+                )
+            )
             chorus_already_rendered = True
 
         start_by_chorus = False
@@ -297,8 +326,12 @@ def build_song_text_artifacts(
     return SongTextArtifacts(
         full_title=build_song_full_title(song),
         full_title_with_tags=build_song_full_title_with_tags(song),
-        short_text_html=_render_song_html(song, ChorusRenderMode.SINGLE, render_settings, verses=ordered_verses),
-        long_text_html=_render_song_html(song, ChorusRenderMode.FULL, render_settings, verses=ordered_verses),
+        short_text_html=_render_song_html(
+            song, ChorusRenderMode.SINGLE, render_settings, verses=ordered_verses
+        ),
+        long_text_html=_render_song_html(
+            song, ChorusRenderMode.FULL, render_settings, verses=ordered_verses
+        ),
     )
 
 
@@ -310,7 +343,11 @@ def render_song_text(
     verses: Iterable[Verse] | None = None,
 ) -> str:
     artifacts = build_song_text_artifacts(song, settings=settings, verses=verses)
-    text_html = artifacts.short_text_html if ChorusRenderMode(mode) == ChorusRenderMode.SINGLE else artifacts.long_text_html
+    text_html = (
+        artifacts.short_text_html
+        if ChorusRenderMode(mode) == ChorusRenderMode.SINGLE
+        else artifacts.long_text_html
+    )
     text = _table_html_to_plain_text(text_html)
 
     output = []

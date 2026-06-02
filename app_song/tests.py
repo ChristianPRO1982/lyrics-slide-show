@@ -9,6 +9,7 @@ from app_main.models import DirectoryUserRecord
 from app_member.models import MemberPreferences, MemberRole
 
 from .models import Song, SongFavorite, SongStatus, Verse
+from . import views as song_views
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
@@ -19,7 +20,12 @@ from .rendering import (
     render_song_blocks,
     render_song_text,
 )
-from .search import SongSearchParams, build_song_search_query, get_active_song_search, search_songs
+from .search import (
+    SongSearchParams,
+    build_song_search_query,
+    get_active_song_search,
+    search_songs,
+)
 
 
 class AnonymousUser:
@@ -74,11 +80,14 @@ class SongRenderingServiceTests(SimpleTestCase):
             ],
         )
 
-        self.assertEqual([block.kind for block in blocks], [
-            RenderedSongBlockKind.CHORUS,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.CHORUS,
-        ])
+        self.assertEqual(
+            [block.kind for block in blocks],
+            [
+                RenderedSongBlockKind.CHORUS,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.CHORUS,
+            ],
+        )
         self.assertEqual(blocks[0].label, "Refrain")
         self.assertTrue(blocks[2].is_repeated_chorus)
 
@@ -94,13 +103,16 @@ class SongRenderingServiceTests(SimpleTestCase):
             ],
         )
 
-        self.assertEqual([block.kind for block in blocks], [
-            RenderedSongBlockKind.CHORUS,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.CHORUS,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.CHORUS,
-        ])
+        self.assertEqual(
+            [block.kind for block in blocks],
+            [
+                RenderedSongBlockKind.CHORUS,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.CHORUS,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.CHORUS,
+            ],
+        )
 
     def test_single_mode_renders_chorus_only_once(self):
         blocks = render_song_blocks(
@@ -114,11 +126,14 @@ class SongRenderingServiceTests(SimpleTestCase):
             ],
         )
 
-        self.assertEqual([block.kind for block in blocks], [
-            RenderedSongBlockKind.CHORUS,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.VERSE,
-        ])
+        self.assertEqual(
+            [block.kind for block in blocks],
+            [
+                RenderedSongBlockKind.CHORUS,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.VERSE,
+            ],
+        )
 
     def test_followed_skips_next_chorus_insertion_point(self):
         blocks = render_song_blocks(
@@ -132,12 +147,15 @@ class SongRenderingServiceTests(SimpleTestCase):
             ],
         )
 
-        self.assertEqual([block.kind for block in blocks], [
-            RenderedSongBlockKind.CHORUS,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.VERSE,
-            RenderedSongBlockKind.CHORUS,
-        ])
+        self.assertEqual(
+            [block.kind for block in blocks],
+            [
+                RenderedSongBlockKind.CHORUS,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.VERSE,
+                RenderedSongBlockKind.CHORUS,
+            ],
+        )
 
     def test_song_with_only_choruses_still_renders_chorus_group(self):
         blocks = render_song_blocks(
@@ -161,7 +179,9 @@ class SongRenderingServiceTests(SimpleTestCase):
             settings=self.settings,
             verses=[
                 make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
-                make_verse(2, 4, "Pont final", num_verse=1, chorus_like=True, prefix="Pont"),
+                make_verse(
+                    2, 4, "Pont final", num_verse=1, chorus_like=True, prefix="Pont"
+                ),
             ],
         )
 
@@ -175,7 +195,9 @@ class SongRenderingServiceTests(SimpleTestCase):
             ChorusRenderMode.FULL,
             settings=self.settings,
             verses=[
-                make_verse(1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True),
+                make_verse(
+                    1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True
+                ),
             ],
         )
 
@@ -256,7 +278,9 @@ class SongTextArtifactsTests(SimpleTestCase):
     )
 
     def test_full_title_and_title_with_tags(self):
-        song = Song(song_id=1, title="Gloire", subtitle="Louange", status=0, licensed=False)
+        song = Song(
+            song_id=1, title="Gloire", subtitle="Louange", status=0, licensed=False
+        )
         self.assertEqual(build_song_full_title(song), "Gloire - Louange")
         self.assertEqual(build_song_full_title_with_tags(song), "Gloire - Louange")
 
@@ -265,7 +289,9 @@ class SongTextArtifactsTests(SimpleTestCase):
 
         song.status = 2
         song.licensed = True
-        self.assertEqual(build_song_full_title_with_tags(song), "Gloire - Louange ✔️⁉️ 📄")
+        self.assertEqual(
+            build_song_full_title_with_tags(song), "Gloire - Louange ✔️⁉️ 📄"
+        )
 
     def test_full_title_without_subtitle_omits_separator(self):
         song = Song(song_id=1, title="Gloire", subtitle="", status=0, licensed=False)
@@ -281,9 +307,19 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(3, 6, "Couplet deux", num_verse=2),
             ],
         )
-        self.assertIn("<table class=\"song-lyrics-table\">", artifacts.short_text_html)
-        self.assertEqual(artifacts.short_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 1)
-        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 3)
+        self.assertIn('<table class="song-lyrics-table">', artifacts.short_text_html)
+        self.assertEqual(
+            artifacts.short_text_html.count(
+                '<th scope="row">Refrain</th><td>Refrain</td>'
+            ),
+            1,
+        )
+        self.assertEqual(
+            artifacts.long_text_html.count(
+                '<th scope="row">Refrain</th><td>Refrain</td>'
+            ),
+            3,
+        )
 
     def test_followed_skips_chorus_reinsertion(self):
         artifacts = build_song_text_artifacts(
@@ -294,7 +330,12 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(2, 4, "Couplet un", num_verse=1, followed=True),
             ],
         )
-        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 1)
+        self.assertEqual(
+            artifacts.long_text_html.count(
+                '<th scope="row">Refrain</th><td>Refrain</td>'
+            ),
+            1,
+        )
 
     def test_empty_non_chorus_block_still_triggers_chorus_reinsertion(self):
         artifacts = build_song_text_artifacts(
@@ -306,7 +347,12 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(3, 6, "Couplet deux", num_verse=2),
             ],
         )
-        self.assertEqual(artifacts.long_text_html.count("<th scope=\"row\">Refrain</th><td>Refrain</td>"), 3)
+        self.assertEqual(
+            artifacts.long_text_html.count(
+                '<th scope="row">Refrain</th><td>Refrain</td>'
+            ),
+            3,
+        )
 
     def test_chorus_like_uses_optional_prefix_and_bold(self):
         artifacts = build_song_text_artifacts(
@@ -314,14 +360,19 @@ class SongTextArtifactsTests(SimpleTestCase):
             settings=self.settings,
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="Pont")],
         )
-        self.assertIn("<th scope=\"row\">Pont</th><td>Pont final</td>", artifacts.long_text_html)
+        self.assertIn(
+            '<th scope="row">Pont</th><td>Pont final</td>', artifacts.long_text_html
+        )
 
         artifacts_no_prefix = build_song_text_artifacts(
             make_song(),
             settings=self.settings,
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="")],
         )
-        self.assertIn("<th scope=\"row\">Refrain</th><td>Pont final</td>", artifacts_no_prefix.long_text_html)
+        self.assertIn(
+            '<th scope="row">Refrain</th><td>Pont final</td>',
+            artifacts_no_prefix.long_text_html,
+        )
 
     def test_not_continue_numbering_hides_verse_label(self):
         artifacts = build_song_text_artifacts(
@@ -332,10 +383,16 @@ class SongTextArtifactsTests(SimpleTestCase):
                 verse_prefix2="",
                 chorus_like_default_prefix="Refrain",
             ),
-            verses=[make_verse(1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True)],
+            verses=[
+                make_verse(
+                    1, 2, "Suite du couplet", num_verse=1, notcontinuenumbering=True
+                )
+            ],
         )
         self.assertIn("Suite du couplet", artifacts.long_text_html)
-        self.assertIn("<th scope=\"row\"></th><td>Suite du couplet</td>", artifacts.long_text_html)
+        self.assertIn(
+            '<th scope="row"></th><td>Suite du couplet</td>', artifacts.long_text_html
+        )
 
     def test_chorus_multi_blocks_are_joined_with_blank_line(self):
         artifacts = build_song_text_artifacts(
@@ -346,7 +403,10 @@ class SongTextArtifactsTests(SimpleTestCase):
                 make_verse(2, 4, "Ligne B", chorus=True, num_verse=0),
             ],
         )
-        self.assertIn("<th scope=\"row\">Refrain</th><td>Ligne A<br><br>Ligne B</td>", artifacts.long_text_html)
+        self.assertIn(
+            '<th scope="row">Refrain</th><td>Ligne A<br><br>Ligne B</td>',
+            artifacts.long_text_html,
+        )
 
     def test_html_output_escapes_dynamic_values(self):
         artifacts = build_song_text_artifacts(
@@ -365,6 +425,16 @@ class SongTextArtifactsTests(SimpleTestCase):
 
 class SongViewsRenderingTests(TestCase):
     def setUp(self):
+        self.user_id = "99999999-9999-9999-9999-999999999999"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="lyrics.reader",
+            first_name="Lyrics",
+            last_name="Reader",
+            email="lyrics.reader@example.test",
+            enabled=True,
+            email_verified=False,
+        )
         self.song = Song.objects.create(
             title="Le Sud",
             subtitle="Nino Ferrer",
@@ -388,29 +458,59 @@ class SongViewsRenderingTests(TestCase):
             followed=False,
         )
 
-    def test_song_view_provides_tagged_navigation_title_and_text_without_title_duplication(self):
+    def _login(self) -> None:
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "lyrics.reader",
+            "email": "lyrics.reader@example.test",
+            "first_name": "Lyrics",
+            "last_name": "Reader",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_song_view_provides_tagged_navigation_title_and_text_without_title_duplication(
+        self,
+    ):
+        self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
-        self.assertEqual(response.context["title_complete_with_tags"], "Le Sud - Nino Ferrer ✔️ 📄")
+        self.assertEqual(
+            response.context["title_complete_with_tags"], "Le Sud - Nino Ferrer ✔️ 📄"
+        )
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
     def test_song_text_print_page_uses_full_title_without_tags(self):
-        response = self.client.get(reverse("song_text", args=[self.song.song_id, "full-chorus"]))
+        self._login()
+        response = self.client.get(
+            reverse("song_text", args=[self.song.song_id, "full-chorus"])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
         self.assertContains(response, "<title>Le Sud - Nino Ferrer</title>", html=True)
-        self.assertContains(response, "<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", html=False)
+        self.assertContains(
+            response,
+            '<th scope="row">Refrain</th><td>On dirait le Sud</td>',
+            html=False,
+        )
 
     def test_song_text_plain_endpoint_returns_html_fragment(self):
-        response = self.client.get(reverse("song_text", args=[self.song.song_id, "single-chorus"]) + "?format=plain")
+        self._login()
+        response = self.client.get(
+            reverse("song_text", args=[self.song.song_id, "single-chorus"])
+            + "?format=plain"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
         body = response.content.decode("utf-8")
-        self.assertIn("<th scope=\"row\">Refrain</th><td>On dirait le Sud</td>", body)
+        self.assertIn('<th scope="row">Refrain</th><td>On dirait le Sud</td>', body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
 
     def test_song_text_popup_endpoint_returns_full_chorus_markdown(self):
+        self._login()
         response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         payload = response.json()
@@ -465,16 +565,28 @@ class SongFavoriteActionsTests(TestCase):
             data={"action": "toggle_favorite"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
-        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+        self.assertEqual(
+            response.headers["Location"], reverse("song", args=[self.song.song_id])
+        )
+        self.assertTrue(
+            SongFavorite.objects.filter(
+                song_id=self.song.song_id, member_id=self.user_id
+            ).exists()
+        )
 
         response = self.client.post(
             reverse("song", args=[self.song.song_id]),
             data={"action": "toggle_favorite"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
-        self.assertFalse(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+        self.assertEqual(
+            response.headers["Location"], reverse("song", args=[self.song.song_id])
+        )
+        self.assertFalse(
+            SongFavorite.objects.filter(
+                song_id=self.song.song_id, member_id=self.user_id
+            ).exists()
+        )
 
     def test_toggle_requires_authenticated_user(self):
         response = self.client.post(
@@ -493,8 +605,15 @@ class SongFavoriteActionsTests(TestCase):
             data={"action": "toggle_favorite"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
-        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_song", args=[self.song.song_id]),
+        )
+        self.assertTrue(
+            SongFavorite.objects.filter(
+                song_id=self.song.song_id, member_id=self.user_id
+            ).exists()
+        )
 
     def test_song_metadata_toggle_works_without_edit_rights(self):
         self._login()
@@ -506,8 +625,15 @@ class SongFavoriteActionsTests(TestCase):
             data={"action": "toggle_favorite"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("song_metadata", args=[self.song.song_id]))
-        self.assertTrue(SongFavorite.objects.filter(song_id=self.song.song_id, member_id=self.user_id).exists())
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("song_metadata", args=[self.song.song_id]),
+        )
+        self.assertTrue(
+            SongFavorite.objects.filter(
+                song_id=self.song.song_id, member_id=self.user_id
+            ).exists()
+        )
 
     def test_actions_show_toggle_on_all_song_pages_when_authenticated(self):
         self._login()
@@ -517,13 +643,19 @@ class SongFavoriteActionsTests(TestCase):
         self.assertContains(song_response, "☆ Pas encore favori")
         self.assertContains(song_response, "Supprimer")
         song_html = song_response.content.decode("utf-8")
-        self.assertLess(song_html.find("☆ Pas encore favori"), song_html.find("Supprimer"))
+        self.assertLess(
+            song_html.find("☆ Pas encore favori"), song_html.find("Supprimer")
+        )
 
-        modify_response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        modify_response = self.client.get(
+            reverse("modify_song", args=[self.song.song_id])
+        )
         self.assertEqual(modify_response.status_code, 200)
         self.assertContains(modify_response, "☆ Pas encore favori")
 
-        metadata_response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+        metadata_response = self.client.get(
+            reverse("song_metadata", args=[self.song.song_id])
+        )
         self.assertEqual(metadata_response.status_code, 200)
         self.assertContains(metadata_response, "☆ Pas encore favori")
 
@@ -632,17 +764,35 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-reorder-drag-view hidden")
         self.assertContains(response, "data-reorder-normal-view")
         self.assertNotContains(response, "song-block-readonly-compact")
-        self.assertContains(response, '<strong class="song-edit-block-drag-label">Couplet 1</strong>', html=False)
-        self.assertContains(response, '<strong class="song-edit-block-drag-label">Refrain</strong>', html=False)
-        self.assertContains(response, '<span class="song-edit-block-drag-text">Couplet original</span>', html=False)
-        self.assertContains(response, '<span class="song-edit-block-drag-text">Refrain original</span>', html=False)
+        self.assertContains(
+            response,
+            "data-song-block-drag-label>Couplet 1</strong>",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-block-drag-label>Refrain</strong>",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-block-drag-text>Couplet original</span>",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-block-drag-text>Refrain original</span>",
+            html=False,
+        )
         self.assertContains(response, "Ajouter un couplet/refrain")
         self.assertContains(response, "data-song-add-block-action")
         self.assertContains(response, "data-song-block-delete-action")
         self.assertContains(response, "data-song-block-editor")
         self.assertContains(response, "data-song-block-read-view")
         self.assertContains(response, "data-song-block-edit-view")
-        self.assertContains(response, "data-song-block-edit-view data-song-block-editor hidden")
+        self.assertContains(
+            response, "data-song-block-edit-view data-song-block-editor hidden"
+        )
         self.assertContains(response, "data-song-block-open-text")
         self.assertContains(response, "data-song-block-open-prefix")
 
@@ -676,14 +826,18 @@ class ModifySongViewTests(TestCase):
         self.song.status = 1
         self.song.save(update_fields=["status"])
         self._login()
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=self._base_payload()
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_moderator_can_post_validated_song(self):
         self.song.status = SongStatus.VALIDATED
         self.song.save(update_fields=["status"])
         self._login(is_moderator=True)
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=self._base_payload()
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_member_cannot_devalidate_song(self):
@@ -705,7 +859,10 @@ class ModifySongViewTests(TestCase):
             data={"action": "devalidate_song"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_song", args=[self.song.song_id]),
+        )
 
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
@@ -715,14 +872,19 @@ class ModifySongViewTests(TestCase):
 
     def test_post_save_updates_identity_and_verses(self):
         self._login()
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=self._base_payload())
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=self._base_payload()
+        )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_song", args=[self.song.song_id]),
+        )
 
         self.song.refresh_from_db()
-        self.assertEqual(self.song.title, "Nouveau\u00A0: titre\u00A0?")
+        self.assertEqual(self.song.title, "Nouveau\u00a0: titre\u00a0?")
         self.assertEqual(self.song.subtitle, "Sous titre")
-        self.assertEqual(self.song.description, "Ligne 1\u00A0;\n\nLigne 2\u00A0!")
+        self.assertEqual(self.song.description, "Ligne 1\u00a0;\n\nLigne 2\u00a0!")
 
         verses = list(self.song.verses.all().order_by("num", "verse_id"))
         self.assertEqual(len(verses), 3)
@@ -736,7 +898,7 @@ class ModifySongViewTests(TestCase):
         self.assertTrue(verses[2].followed)
         self.assertEqual(verses[2].num, 6)
         self.assertEqual(verses[2].num_verse, 1)
-        self.assertEqual(verses[2].prefix, "Pont final\u00A0;")
+        self.assertEqual(verses[2].prefix, "Pont final\u00a0;")
 
     def test_chorus_save_resets_incompatible_options_and_prefix_to_null(self):
         self._login()
@@ -745,7 +907,9 @@ class ModifySongViewTests(TestCase):
         payload["blocks[b][prefix]"] = "Prefix should be removed"
         payload["blocks[b][followed]"] = "1"
         payload["blocks[b][not_c_num]"] = "1"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
 
         chorus_block = Verse.objects.get(song=self.song, chorus=True)
@@ -759,7 +923,9 @@ class ModifySongViewTests(TestCase):
         payload = self._base_payload()
         payload["blocks[c][type]"] = "special"
         payload["blocks[c][not_c_num]"] = "0"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
 
         chorus_like_block = Verse.objects.get(song=self.song, chorus_like=True)
@@ -770,17 +936,23 @@ class ModifySongViewTests(TestCase):
         payload = self._base_payload()
         payload["blocks[a][type]"] = "verse"
         payload["blocks[a][prefix]"] = "Bridge"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
 
-        verse_block = Verse.objects.get(song=self.song, chorus=False, chorus_like=False, num=4)
+        verse_block = Verse.objects.get(
+            song=self.song, chorus=False, chorus_like=False, num=4
+        )
         self.assertIsNone(verse_block.prefix)
 
     def test_member_cannot_change_status_via_checkbox(self):
         self._login()
         payload = self._base_payload()
         payload["status_validated"] = "1"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
@@ -789,7 +961,9 @@ class ModifySongViewTests(TestCase):
         self._login(is_moderator=True)
         payload = self._base_payload()
         payload["status_validated"] = "1"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.VALIDATED)
@@ -798,7 +972,9 @@ class ModifySongViewTests(TestCase):
         self._login()
         payload = self._base_payload()
         payload["blocks[b][delete]"] = "1"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
 
         verses = list(self.song.verses.all())
@@ -809,16 +985,22 @@ class ModifySongViewTests(TestCase):
         self._login()
         payload = self._base_payload()
         payload["submit_intent"] = "save_and_exit"
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("song", args=[self.song.song_id]))
+        self.assertEqual(
+            response.headers["Location"], reverse("song", args=[self.song.song_id])
+        )
 
     def test_save_and_exit_uses_safe_next_url(self):
         self._login()
         payload = self._base_payload()
         payload["submit_intent"] = "save_and_exit"
         payload["next_url"] = reverse("songs")
-        response = self.client.post(reverse("modify_song", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("songs"))
 
@@ -826,7 +1008,9 @@ class ModifySongViewTests(TestCase):
         self._login()
         payload = self._base_payload()
         payload["title"] = "Titre preview"
-        response = self.client.post(reverse("modify_song_preview", args=[self.song.song_id]), data=payload)
+        response = self.client.post(
+            reverse("modify_song_preview", args=[self.song.song_id]), data=payload
+        )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("Titre preview", data["title"])
@@ -875,7 +1059,13 @@ class ModifyGenresViewTests(TestCase):
     @patch("app_song.views._fetch_genre_rows")
     def test_moderator_can_access_and_see_responsive_cards(self, fetch_rows):
         fetch_rows.return_value = [
-            {"genre_id": 1, "group": "Louange", "name": "Prière", "usage_count": 1, "is_used": True},
+            {
+                "genre_id": 1,
+                "group": "Louange",
+                "name": "Prière",
+                "usage_count": 1,
+                "is_used": True,
+            },
         ]
         self._login(is_moderator=True)
         response = self.client.get(reverse("modify_genres"))
@@ -892,20 +1082,32 @@ class ModifyGenresViewTests(TestCase):
     @patch("app_song.views.messages.success")
     @patch("app_song.views._fetch_genre_rows")
     @patch("app_song.views.connection.cursor")
-    def test_post_save_runs_create_update_and_delete(self, cursor_factory, fetch_rows, success_mock, error_mock):
-        self._login(is_moderator=True)
+    def test_post_save_runs_create_update_and_delete(
+        self, cursor_factory, fetch_rows, success_mock, error_mock
+    ):
         fetch_rows.return_value = [
-            {"genre_id": 1, "group": "A", "name": "Alpha", "usage_count": 0, "is_used": False},
-            {"genre_id": 2, "group": "B", "name": "Beta", "usage_count": 2, "is_used": True},
+            {
+                "genre_id": 1,
+                "group": "A",
+                "name": "Alpha",
+                "usage_count": 0,
+                "is_used": False,
+            },
+            {
+                "genre_id": 2,
+                "group": "B",
+                "name": "Beta",
+                "usage_count": 2,
+                "is_used": True,
+            },
         ]
         cursor = MagicMock()
         cursor_factory.return_value.__enter__.return_value = cursor
         cursor.execute.return_value = None
 
-        response = self.client.post(
+        request = RequestFactory().post(
             reverse("modify_genres"),
-            data={
-                "action": "save",
+            {
                 "new_group": "Nouveau groupe",
                 "new_name": "Nouveau nom",
                 "rows[1][group]": "A2",
@@ -915,11 +1117,17 @@ class ModifyGenresViewTests(TestCase):
                 "rows[2][delete]": "1",
             },
         )
+        request.user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_moderator": True, "is_admin": False},
+        )()
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], reverse("modify_genres"))
+        song_views._save_genres(request)
 
-        executed_sql = " ".join(str(call.args[0]) for call in cursor.execute.call_args_list)
+        executed_sql = " ".join(
+            str(call.args[0]) for call in cursor.execute.call_args_list
+        )
         self.assertIn('INSERT INTO "common"."genres"', executed_sql)
         self.assertIn('UPDATE "common"."genres"', executed_sql)
         self.assertIn('DELETE FROM "common"."genres"', executed_sql)
@@ -929,32 +1137,43 @@ class ModifyGenresViewTests(TestCase):
     @patch("app_song.views.messages.error")
     @patch("app_song.views._fetch_genre_rows")
     @patch("app_song.views.connection.cursor")
-    def test_delete_failure_shows_error_message(self, cursor_factory, fetch_rows, error_mock):
-        self._login(is_moderator=True)
+    def test_delete_failure_shows_error_message(
+        self, cursor_factory, fetch_rows, error_mock
+    ):
         fetch_rows.return_value = [
-            {"genre_id": 7, "group": "A", "name": "Alpha", "usage_count": 3, "is_used": True},
+            {
+                "genre_id": 7,
+                "group": "A",
+                "name": "Alpha",
+                "usage_count": 3,
+                "is_used": True,
+            },
         ]
         cursor = MagicMock()
         cursor_factory.return_value.__enter__.return_value = cursor
 
-        def execute_side_effect(sql, params=None):
-            if 'DELETE FROM "common"."genres"' in sql:
+        def execute_side_effect(sql_statement, params=None):
+            if 'DELETE FROM "common"."genres"' in str(sql_statement):
                 raise IntegrityError("fk failure")
             return None
 
         cursor.execute.side_effect = execute_side_effect
 
-        response = self.client.post(
+        request = RequestFactory().post(
             reverse("modify_genres"),
-            data={
-                "action": "save",
+            {
                 "rows[7][group]": "A",
                 "rows[7][name]": "Alpha",
                 "rows[7][delete]": "1",
             },
         )
+        request.user = type(
+            "User",
+            (),
+            {"is_authenticated": True, "is_moderator": True, "is_admin": False},
+        )()
 
-        self.assertEqual(response.status_code, 302)
+        song_views._save_genres(request)
         error_mock.assert_called()
 
 
@@ -985,7 +1204,9 @@ class ModifyArtistsAndBandsViewTests(TestCase):
         session.save()
         MemberRole.objects.filter(member_id=self.user_id).delete()
         if is_moderator:
-            MemberRole.objects.create(member_id=self.user_id, is_moderator=True, is_admin=False)
+            MemberRole.objects.create(
+                member_id=self.user_id, is_moderator=True, is_admin=False
+            )
 
     def test_artists_and_bands_are_404_for_non_moderator(self):
         self.assertEqual(self.client.get(reverse("modify_artists")).status_code, 404)
@@ -993,18 +1214,20 @@ class ModifyArtistsAndBandsViewTests(TestCase):
 
     @patch("app_song.views._fetch_name_item_rows")
     def test_artists_and_bands_render_responsive_cards(self, fetch_items):
-        fetch_items.return_value = [{"item_id": 10, "name": "Nom", "usage_count": 1, "is_used": True}]
+        fetch_items.return_value = [
+            {"item_id": 10, "name": "Nom", "usage_count": 1, "is_used": True}
+        ]
         self._login(is_moderator=True)
 
         artists_response = self.client.get(reverse("modify_artists"))
         self.assertEqual(artists_response.status_code, 200)
-        self.assertContains(artists_response, "song-meta-crud-grid--simple")
+        self.assertContains(artists_response, "song-meta-row--simple")
         self.assertNotContains(artists_response, "<table")
         self.assertContains(artists_response, "Enregistrer", count=2)
 
         bands_response = self.client.get(reverse("modify_bands"))
         self.assertEqual(bands_response.status_code, 200)
-        self.assertContains(bands_response, "song-meta-crud-grid--simple")
+        self.assertContains(bands_response, "song-meta-row--simple")
         self.assertNotContains(bands_response, "<table")
         self.assertContains(bands_response, "Enregistrer", count=2)
 
@@ -1109,7 +1332,10 @@ class SongFavoritesQuickViewTests(TestCase):
         response = self.client.get(reverse("songs") + "?favorites_quick=1")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Mon favori")
-        self.assertNotContains(response, "Saved Search Hit")
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(displayed_titles, ["Mon favori"])
         self.assertFalse(response.context["search_params"].favorites_only)
         self.assertEqual(response.context["search_params"].text, "Saved Search")
         self.assertContains(response, "Mode favoris temporaire actif.")
@@ -1165,8 +1391,13 @@ class SongCreateFromSongsPageTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
-        created_song = Song.objects.get(title="Nouveau titre", subtitle="Nouveau sous titre")
-        self.assertEqual(response.headers["Location"], reverse("modify_song", args=[created_song.song_id]))
+        created_song = Song.objects.get(
+            title="Nouveau titre", subtitle="Nouveau sous titre"
+        )
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_song", args=[created_song.song_id]),
+        )
         self.assertEqual(created_song.description, "")
         self.assertEqual(created_song.status, SongStatus.NOT_VALIDATED)
         self.assertFalse(created_song.licensed)
@@ -1197,7 +1428,9 @@ class SongCreateFromSongsPageTests(TestCase):
             response.headers["Location"],
             reverse("modify_song", args=[self.existing_song.song_id]),
         )
-        self.assertEqual(Song.objects.filter(title="Deja la", subtitle="Sous").count(), 1)
+        self.assertEqual(
+            Song.objects.filter(title="Deja la", subtitle="Sous").count(), 1
+        )
 
     def test_create_song_requires_non_empty_title(self):
         self._login()

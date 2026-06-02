@@ -72,7 +72,7 @@ class MemberPreferencesModelTests(SimpleTestCase):
     def test_song_search_rejects_invalid_validation_value(self):
         with self.assertRaisesMessage(
             ValidationError,
-            "song_search.validation must be one of: all, validated_only, non_validated_only.",
+            "song_search.validation doit être l'une des valeurs suivantes : all, validated_only, non_validated_only.",
         ):
             validate_song_search(
                 {
@@ -84,7 +84,7 @@ class MemberPreferencesModelTests(SimpleTestCase):
     def test_song_search_rejects_non_integer_reference_ids(self):
         with self.assertRaisesMessage(
             ValidationError,
-            "song_search.genre_ids must contain integer identifiers only.",
+            "song_search.genre_ids doit contenir uniquement des identifiants entiers.",
         ):
             validate_song_search(
                 {
@@ -96,7 +96,7 @@ class MemberPreferencesModelTests(SimpleTestCase):
     def test_song_search_rejects_unsupported_keys(self):
         with self.assertRaisesMessage(
             ValidationError,
-            "song_search contains unsupported keys: search_txt.",
+            "song_search contient des clés non prises en charge : search_txt.",
         ):
             validate_song_search(
                 {

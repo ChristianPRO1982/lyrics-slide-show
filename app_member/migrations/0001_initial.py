@@ -6,7 +6,6 @@ import app_member.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -33,7 +32,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="MemberPreferences",
             fields=[
-                ("id", models.UUIDField(editable=False, primary_key=True, serialize=False)),
+                (
+                    "id",
+                    models.UUIDField(editable=False, primary_key=True, serialize=False),
+                ),
                 ("theme_slug", models.CharField(default="normal", max_length=32)),
                 (
                     "song_search",
@@ -50,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."m_users" '
-                'ADD CONSTRAINT m_users_user_fk '
+                "ADD CONSTRAINT m_users_user_fk "
                 'FOREIGN KEY ("id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
             ),
             reverse_sql='ALTER TABLE "lss"."m_users" DROP CONSTRAINT IF EXISTS m_users_user_fk',

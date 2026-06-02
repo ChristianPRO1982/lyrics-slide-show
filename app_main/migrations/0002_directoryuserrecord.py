@@ -4,28 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app_main', '0001_initial'),
+        ("app_main", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DirectoryUserRecord',
+            name="DirectoryUserRecord",
             fields=[
-                ('id', models.UUIDField(primary_key=True, serialize=False)),
-                ('username', models.CharField(blank=True, max_length=255, null=True)),
-                ('first_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('last_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('email', models.CharField(blank=True, max_length=255, null=True)),
-                ('enabled', models.BooleanField(default=True)),
-                ('email_verified', models.BooleanField(default=False)),
-                ('synced_at', models.TimeField(blank=True, null=True)),
-                ('last_login_at', models.TimeField(blank=True, null=True)),
+                ("id", models.UUIDField(primary_key=True, serialize=False)),
+                ("username", models.CharField(blank=True, max_length=255, null=True)),
+                ("first_name", models.CharField(blank=True, max_length=255, null=True)),
+                ("last_name", models.CharField(blank=True, max_length=255, null=True)),
+                ("email", models.CharField(blank=True, max_length=255, null=True)),
+                ("enabled", models.BooleanField(default=True)),
+                ("email_verified", models.BooleanField(default=False)),
+                ("synced_at", models.TimeField(blank=True, null=True)),
+                ("last_login_at", models.TimeField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'users"."users',
-                'managed': False,
+                "db_table": 'users"."users',
+                "managed": False,
             },
         ),
     ]

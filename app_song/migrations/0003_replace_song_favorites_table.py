@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app_song", "0002_enable_unaccent"),
     ]
@@ -17,11 +16,11 @@ class Migration(migrations.Migration):
                         '"song_id" integer NOT NULL, '
                         '"user_id" uuid NOT NULL, '
                         'CONSTRAINT s_song_favorites_pkey PRIMARY KEY ("song_id", "user_id"), '
-                        'CONSTRAINT s_song_favorites_songs_fk '
+                        "CONSTRAINT s_song_favorites_songs_fk "
                         'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE, '
-                        'CONSTRAINT s_song_favorites_users_fk '
+                        "CONSTRAINT s_song_favorites_users_fk "
                         'FOREIGN KEY ("user_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
-                        ')'
+                        ")"
                     ),
                 ),
                 migrations.RunSQL(
@@ -30,11 +29,11 @@ class Migration(migrations.Migration):
                         '"song_id" integer NOT NULL, '
                         '"user_id" uuid NOT NULL, '
                         'CONSTRAINT m_songs_users_pkey PRIMARY KEY ("song_id", "user_id"), '
-                        'CONSTRAINT m_songs_users_songs_fk '
+                        "CONSTRAINT m_songs_users_songs_fk "
                         'FOREIGN KEY ("song_id") REFERENCES "lss"."s_songs" ("song_id") ON DELETE CASCADE, '
-                        'CONSTRAINT m_songs_users_users_fk '
+                        "CONSTRAINT m_songs_users_users_fk "
                         'FOREIGN KEY ("user_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
-                        ')'
+                        ")"
                     ),
                     reverse_sql='DROP TABLE IF EXISTS "lss"."m_songs_users"',
                 ),

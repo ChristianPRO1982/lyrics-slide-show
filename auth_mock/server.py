@@ -57,7 +57,9 @@ def callback_signature(user: dict[str, str], secret: str, ts: str) -> str:
             ts,
         ]
     )
-    return hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+    return hmac.new(
+        secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256
+    ).hexdigest()
 
 
 class AuthMockHandler(BaseHTTPRequestHandler):
@@ -92,7 +94,9 @@ class AuthMockHandler(BaseHTTPRequestHandler):
         user_key = params.get("user", [""])[0]
         users = load_mock_users()
         if user_key:
-            user = next((entry for entry in users if entry["external_id"] == user_key), None)
+            user = next(
+                (entry for entry in users if entry["external_id"] == user_key), None
+            )
             if user is None:
                 self._write_text(HTTPStatus.BAD_REQUEST, "unknown user")
                 return
@@ -124,7 +128,7 @@ class AuthMockHandler(BaseHTTPRequestHandler):
             user_href = f"/login?return_to={quote(return_to, safe='')}&user={quote(user['external_id'], safe='')}"
             links.append(
                 "<li>"
-                f"<a href=\"{html.escape(user_href)}\">{html.escape(user['label'])}</a>"
+                f'<a href="{html.escape(user_href)}">{html.escape(user["label"])}</a>'
                 f" ({html.escape(user['username'])})"
                 "</li>"
             )

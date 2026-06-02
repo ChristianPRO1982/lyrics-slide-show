@@ -50,28 +50,39 @@ def validate_song_search(value: object) -> None:
 
     for key in ("everywhere", "match_all_selected_refs", "favorites_only"):
         if not isinstance(value.get(key), bool):
-            raise ValidationError(_("song_search.%(key)s doit être un booléen.") % {"key": key})
+            raise ValidationError(
+                _("song_search.%(key)s doit être un booléen.") % {"key": key}
+            )
 
     for key in ("genre_ids", "band_ids", "artist_ids"):
         ids = value.get(key)
         if not isinstance(ids, list):
-            raise ValidationError(_("song_search.%(key)s doit être une liste.") % {"key": key})
+            raise ValidationError(
+                _("song_search.%(key)s doit être une liste.") % {"key": key}
+            )
         if not all(isinstance(item, int) for item in ids):
             raise ValidationError(
-                _("song_search.%(key)s doit contenir uniquement des identifiants entiers.") % {"key": key}
+                _(
+                    "song_search.%(key)s doit contenir uniquement des identifiants entiers."
+                )
+                % {"key": key}
             )
 
     validation = value.get("validation")
     if validation not in SONG_SEARCH_VALIDATION_VALUES:
         raise ValidationError(
-            _("song_search.validation doit être l'une des valeurs suivantes : all, validated_only, non_validated_only.")
+            _(
+                "song_search.validation doit être l'une des valeurs suivantes : all, validated_only, non_validated_only."
+            )
         )
 
 
 class MemberPreferences(models.Model):
     member_id = models.UUIDField(primary_key=True, editable=False)
     theme_slug = models.CharField(max_length=32, default="normal")
-    song_search = models.JSONField(default=default_song_search, validators=[validate_song_search])
+    song_search = models.JSONField(
+        default=default_song_search, validators=[validate_song_search]
+    )
 
     class Meta:
         db_table = 'lss"."m_preferences'

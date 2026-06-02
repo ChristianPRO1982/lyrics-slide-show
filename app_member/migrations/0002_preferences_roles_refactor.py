@@ -5,7 +5,6 @@ from django.db.models import Q
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app_member", "0001_initial"),
     ]
@@ -47,7 +46,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="MemberRole",
             fields=[
-                ("member_id", models.UUIDField(editable=False, primary_key=True, serialize=False)),
+                (
+                    "member_id",
+                    models.UUIDField(editable=False, primary_key=True, serialize=False),
+                ),
                 ("is_moderator", models.BooleanField(default=False)),
                 ("is_admin", models.BooleanField(default=False)),
             ],
@@ -64,12 +66,12 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=(
                 'ALTER TABLE "lss"."m_member_roles" '
-                'ADD CONSTRAINT m_member_roles_user_fk '
+                "ADD CONSTRAINT m_member_roles_user_fk "
                 'FOREIGN KEY ("member_id") REFERENCES "users"."users" ("id") ON DELETE CASCADE'
             ),
             reverse_sql=(
                 'ALTER TABLE "lss"."m_member_roles" '
-                'DROP CONSTRAINT IF EXISTS m_member_roles_user_fk'
+                "DROP CONSTRAINT IF EXISTS m_member_roles_user_fk"
             ),
         ),
     ]

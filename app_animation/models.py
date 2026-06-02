@@ -59,7 +59,9 @@ class AnimationSong(models.Model):
     font_family_override = models.CharField(max_length=120, blank=True, null=True)
     font_size_override = models.PositiveIntegerField(blank=True, null=True)
     horizontal_padding_override = models.PositiveIntegerField(blank=True, null=True)
-    background_asset_code_override = models.CharField(max_length=128, blank=True, null=True)
+    background_asset_code_override = models.CharField(
+        max_length=128, blank=True, null=True
+    )
 
     class Meta:
         db_table = 'lss"."a_animation_songs'
@@ -69,7 +71,9 @@ class AnimationSong(models.Model):
             models.Index(fields=["position"], name="a_anim_songs_pos_idx"),
         ]
         constraints = [
-            models.UniqueConstraint(fields=["animation", "position"], name="a_anim_songs_anim_pos_uniq"),
+            models.UniqueConstraint(
+                fields=["animation", "position"], name="a_anim_songs_anim_pos_uniq"
+            ),
         ]
 
 
@@ -89,7 +93,9 @@ class AnimationVerseOverride(models.Model):
     font_family_override = models.CharField(max_length=120, blank=True, null=True)
     font_size_override = models.PositiveIntegerField(blank=True, null=True)
     horizontal_padding_override = models.PositiveIntegerField(blank=True, null=True)
-    background_asset_code_override = models.CharField(max_length=128, blank=True, null=True)
+    background_asset_code_override = models.CharField(
+        max_length=128, blank=True, null=True
+    )
 
     class Meta:
         db_table = 'lss"."a_animation_verse_overrides'
