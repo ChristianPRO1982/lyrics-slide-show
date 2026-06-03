@@ -155,7 +155,7 @@ Production networking expectations:
 
 - `LSS` must join the shared backend Docker network to reach PostgreSQL
 - `LSS` must also join the shared proxy Docker network to be exposed through the main `Traefik`
-- the production service should be routed by `Traefik` with host-based rules such as `lss.animation-messe.fr`
+- the production service should be routed by `Traefik` with host-based rules such as `lss.carthographie.fr`
 
 Basic production start:
 
