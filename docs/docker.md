@@ -142,7 +142,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_PROXY_NETWORK:-proxy}"
-      - "traefik.http.routers.lss-fastapi.rule=Host(`${API_DOMAIN:-lss-api.animation-messe.fr}`)"
+      - "traefik.http.routers.lss-fastapi.rule=Host(`${API_DOMAIN:-lss-api.carthographie.fr}`)"
       - "traefik.http.routers.lss-fastapi.entrypoints=websecure"
       - "traefik.http.routers.lss-fastapi.tls=true"
       - "traefik.http.routers.lss-fastapi.tls.certresolver=letsencrypt"
@@ -230,7 +230,7 @@ APP_LOG_LEVEL=INFO
 
 SHARED_SECRETS_DIR=/opt/stacks/_shared/secrets
 TRAEFIK_PROXY_NETWORK=proxy
-API_DOMAIN=lss-api.animation-messe.fr
+API_DOMAIN=lss-api.carthographie.fr
 
 SESSION_SECRET_KEY_FILE=/opt/stacks/_shared/secrets/lss-fastapi/session_secret_key.txt
 SESSION_COOKIE_SECURE=true
@@ -247,12 +247,12 @@ AUTH_MODE=keycloak
 USER_SCHEMA=users
 USER_TABLE=users
 
-KEYCLOAK_SERVER_URL=https://auth.example.com
+KEYCLOAK_SERVER_URL=https://auth.carthographie.fr
 KEYCLOAK_REALM=carthographie
 KEYCLOAK_CLIENT_ID=app_lss
 KEYCLOAK_CLIENT_SECRET_FILE=/opt/stacks/_shared/secrets/lss-fastapi/client_secret.txt
-KEYCLOAK_REDIRECT_URI=https://lss-api.animation-messe.fr/auth/callback/
-KEYCLOAK_LOGOUT_REDIRECT_URI=https://lss.animation-messe.fr/
+KEYCLOAK_REDIRECT_URI=https://lss-api.carthographie.fr/auth/callback/
+KEYCLOAK_LOGOUT_REDIRECT_URI=https://lss.carthographie.fr/
 KEYCLOAK_SCOPES=openid profile email
 
 SHARED_DB_NETWORK=backend
