@@ -1,3 +1,11 @@
+## [2.5.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.1...v2.5.2) (2026-06-03)
+
+
+### Bug Fixes
+
+* ensure build-and-push job runs on push events ([aa1090b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/aa1090bbeb2976945cbc45416d9cd3aadc5bf6c1))
+* update domain references to use lss.carthographie.fr ([bd1f5b9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bd1f5b9a0513eb2445a2aa1d707590f9c7569710))
+
 ## [2.5.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.0...v2.5.1) (2026-06-02)
 
 
