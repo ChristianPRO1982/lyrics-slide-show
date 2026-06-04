@@ -7,7 +7,7 @@ import secrets
 import time
 from dataclasses import dataclass, replace
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 import uuid
 from typing import Any
@@ -43,6 +43,10 @@ class DisabledUserError(AuthError):
 
 
 class KeycloakAuthError(AuthError):
+    pass
+
+
+class HomeProvisioningError(AuthError):
     pass
 
 
@@ -138,6 +142,48 @@ def sign_callback_data(data: dict[str, str], secret: str) -> str:
     return hmac.new(
         secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256
     ).hexdigest()
+
+
+def _home_provision_signature_payload(
+    app_id: str, return_url: str, ts: str, nonce: str
+) -> str:
+    return "\n".join([app_id, return_url, ts, nonce])
+
+
+def build_home_provision_start_url() -> str:
+    start_url = str(settings.HOME_PROVISION_START_URL or "").strip()
+    app_id = str(settings.HOME_PROVISION_APP_ID or "").strip()
+    shared_secret = str(settings.HOME_PROVISION_SHARED_SECRET or "").strip()
+    return_url = str(settings.HOME_PROVISION_RETURN_URL or "").strip()
+
+    if not start_url or not app_id or not shared_secret or not return_url:
+        raise HomeProvisioningError(
+            _("La configuration du provisioning Home est incomplète.")
+        )
+
+    if urlsplit(return_url).fragment:
+        raise HomeProvisioningError(
+            _("L'URL de retour du provisioning Home est invalide.")
+        )
+
+    ts = str(int(time.time()))
+    nonce = secrets.token_urlsafe(24)
+    canonical = _home_provision_signature_payload(app_id, return_url, ts, nonce)
+    sig = hmac.new(
+        shared_secret.encode("utf-8"),
+        canonical.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    query_string = urlencode(
+        {
+            "app_id": app_id,
+            "return_url": return_url,
+            "ts": ts,
+            "nonce": nonce,
+            "sig": sig,
+        }
+    )
+    return f"{start_url}?{query_string}"
 
 
 def validate_callback_payload(params: dict[str, str]) -> dict[str, str]:

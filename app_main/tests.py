@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, patch
+from urllib.parse import parse_qs, urlparse
 
 from django.contrib.messages import get_messages
 from django.template import engines
@@ -9,8 +10,10 @@ from app_main.auth import (
     AnonymousSessionUser,
     DirectoryUser,
     DisabledUserError,
+    HomeProvisioningError,
     KeycloakAuthError,
     UnknownUserError,
+    build_home_provision_start_url,
     build_keycloak_logout_url,
     get_directory_user,
     refresh_request_user,
@@ -61,6 +64,60 @@ def create_directory_user(**overrides):
 
 
 class CallbackValidationTests(SimpleTestCase):
+    @override_settings(
+        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+        HOME_PROVISION_APP_ID="lss",
+        HOME_PROVISION_SHARED_SECRET="shared-secret",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
+    )
+    @patch("app_main.auth.secrets.token_urlsafe", return_value="nonce-value")
+    @patch("app_main.auth.time.time", return_value=1700000100)
+    def test_build_home_provision_start_url_signs_expected_payload(
+        self, _time_mock, _nonce_mock
+    ):
+        provision_url = build_home_provision_start_url()
+
+        parsed = urlparse(provision_url)
+        params = parse_qs(parsed.query)
+        self.assertEqual(
+            f"{parsed.scheme}://{parsed.netloc}{parsed.path}",
+            "https://carthographie.fr/provision/start",
+        )
+        self.assertEqual(params["app_id"], ["lss"])
+        self.assertEqual(params["return_url"], ["https://lss.carthographie.fr/"])
+        self.assertEqual(params["ts"], ["1700000100"])
+        self.assertEqual(params["nonce"], ["nonce-value"])
+        expected_sig = (
+            "ba32c6339442ffe80b7b36ff7f82afe5baf3721a0a9efd673f9337ef885a3a93"
+        )
+        self.assertEqual(params["sig"], [expected_sig])
+
+    @override_settings(
+        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+        HOME_PROVISION_APP_ID="lss",
+        HOME_PROVISION_SHARED_SECRET="shared-secret",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/#fragment",
+    )
+    def test_build_home_provision_start_url_rejects_fragment_in_return_url(self):
+        with self.assertRaisesMessage(
+            HomeProvisioningError,
+            "L'URL de retour du provisioning Home est invalide.",
+        ):
+            build_home_provision_start_url()
+
+    @override_settings(
+        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+        HOME_PROVISION_APP_ID="lss",
+        HOME_PROVISION_SHARED_SECRET="",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
+    )
+    def test_build_home_provision_start_url_requires_complete_config(self):
+        with self.assertRaisesMessage(
+            HomeProvisioningError,
+            "La configuration du provisioning Home est incomplète.",
+        ):
+            build_home_provision_start_url()
+
     @override_settings(
         AUTH_MOCK_SHARED_SECRET="shared-secret", AUTH_MOCK_MAX_AGE_SECONDS=300
     )
@@ -477,6 +534,116 @@ class AuthFlowTests(TestCase):
 
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn("No matching user found in users.users.", messages)
+        self.assertNotIn("lss_user", self.client.session)
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=UnknownUserError("No matching user found in users.users."),
+    )
+    @patch(
+        "app_main.views.build_home_provision_start_url",
+        return_value="https://carthographie.fr/provision/start?ticket=1",
+    )
+    @patch(
+        "app_main.views.validate_keycloak_callback",
+        return_value={
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "username": None,
+            "email": None,
+            "first_name": None,
+            "last_name": None,
+        },
+    )
+    def test_keycloak_callback_redirects_unknown_user_to_home_provisioning(
+        self,
+        _validate_keycloak_callback_mock,
+        build_home_provision_start_url_mock,
+        _get_directory_user_mock,
+    ):
+        response = self.client.get(
+            reverse("auth_callback"),
+            {"code": "auth-code", "state": "state"},
+        )
+
+        self.assertRedirects(
+            response,
+            "https://carthographie.fr/provision/start?ticket=1",
+            fetch_redirect_response=False,
+        )
+        self.assertNotIn("lss_user", self.client.session)
+        build_home_provision_start_url_mock.assert_called_once_with()
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=UnknownUserError("No matching user found in users.users."),
+    )
+    @patch(
+        "app_main.views.build_home_provision_start_url",
+        side_effect=HomeProvisioningError(
+            "La configuration du provisioning Home est incomplète."
+        ),
+    )
+    @patch(
+        "app_main.views.validate_keycloak_callback",
+        return_value={
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "username": None,
+            "email": None,
+            "first_name": None,
+            "last_name": None,
+        },
+    )
+    def test_keycloak_callback_falls_back_homepage_when_provisioning_config_fails(
+        self,
+        _validate_keycloak_callback_mock,
+        _build_home_provision_start_url_mock,
+        _get_directory_user_mock,
+    ):
+        response = self.client.get(
+            reverse("auth_callback"),
+            {"code": "auth-code", "state": "state"},
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("La configuration du provisioning Home est incomplète.", messages)
+        self.assertNotIn("lss_user", self.client.session)
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=DisabledUserError("This user is disabled in users.users."),
+    )
+    @patch("app_main.views.build_home_provision_start_url")
+    @patch(
+        "app_main.views.validate_keycloak_callback",
+        return_value={
+            "external_id": "44444444-4444-4444-4444-444444444444",
+            "username": None,
+            "email": None,
+            "first_name": None,
+            "last_name": None,
+        },
+    )
+    def test_keycloak_callback_does_not_provision_disabled_user(
+        self,
+        _validate_keycloak_callback_mock,
+        build_home_provision_start_url_mock,
+        _get_directory_user_mock,
+    ):
+        response = self.client.get(
+            reverse("auth_callback"),
+            {"code": "auth-code", "state": "state"},
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("This user is disabled in users.users.", messages)
+        build_home_provision_start_url_mock.assert_not_called()
         self.assertNotIn("lss_user", self.client.session)
 
     @override_settings(AUTH_MODE="unsupported")

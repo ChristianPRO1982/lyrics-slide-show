@@ -48,6 +48,12 @@ KEYCLOAK_CLIENT_SECRET = env_value("KEYCLOAK_CLIENT_SECRET", "")
 KEYCLOAK_REDIRECT_URI = os.environ.get("KEYCLOAK_REDIRECT_URI", "")
 KEYCLOAK_LOGOUT_REDIRECT_URI = os.environ.get("KEYCLOAK_LOGOUT_REDIRECT_URI", "")
 KEYCLOAK_SCOPES = os.environ.get("KEYCLOAK_SCOPES", "openid")
+HOME_PROVISION_START_URL = os.environ.get(
+    "HOME_PROVISION_START_URL", "https://carthographie.fr/provision/start"
+)
+HOME_PROVISION_APP_ID = os.environ.get("HOME_PROVISION_APP_ID", "lss")
+HOME_PROVISION_SHARED_SECRET = env_value("HOME_PROVISION_SHARED_SECRET", "")
+HOME_PROVISION_RETURN_URL = os.environ.get("HOME_PROVISION_RETURN_URL", "")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
 
