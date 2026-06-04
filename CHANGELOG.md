@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.6.0...v2.6.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* update dark theme icon assets for improved visual consistency ([900d4d4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/900d4d445cdf23635c7f04cdeafec33b1311607d))
+
 # [2.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.2...v2.6.0) (2026-06-04)
 
 
