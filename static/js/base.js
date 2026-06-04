@@ -5,9 +5,7 @@
     const floatingHelpConfig = window.LSS_FLOATING_HELP_CONFIG || {};
     const sitePopupConfigElement = document.getElementById("lss-site-popup-config");
     const themeStylesheet = document.querySelector("#site-theme-stylesheet");
-    const faviconLink = document.querySelector("#site-favicon");
     const themeButtons = document.querySelectorAll("[data-theme-select]");
-    const colorSchemeQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
     let sitePopupConfig = {};
 
     if (sitePopupConfigElement) {
@@ -33,31 +31,6 @@
 
     const buildThemeIconPath = (theme, size, mode, iconName) => {
         return `${themeConfig.iconBasePath}/${theme}/${size}/${mode}/${iconName}.png`;
-    };
-
-    const buildFaviconPath = (theme, mode) => {
-        return buildThemeIconPath(theme, "64", mode, "lss");
-    };
-
-    const updateFavicon = (theme) => {
-        if (!themeConfig || !faviconLink) {
-            return;
-        }
-
-        const mode = colorSchemeQuery && colorSchemeQuery.matches ? "dark" : "light";
-        const candidatePath = buildFaviconPath(theme, mode);
-        const fallbackPath = themeConfig.faviconFallbackPath;
-        const probe = new window.Image();
-
-        probe.onload = () => {
-            faviconLink.href = candidatePath;
-        };
-
-        probe.onerror = () => {
-            faviconLink.href = fallbackPath;
-        };
-
-        probe.src = candidatePath;
     };
 
     const applyThemeIcons = (theme) => {
@@ -111,7 +84,6 @@
         }
 
         applyThemeIcons(theme);
-        updateFavicon(theme);
         applyThemeSelectionState(theme);
 
         if (persist) {
@@ -131,12 +103,6 @@
                 applyTheme(button.dataset.themeSelect, true);
             });
         });
-
-        if (colorSchemeQuery) {
-            colorSchemeQuery.addEventListener("change", () => {
-                updateFavicon(root.dataset.theme || getStoredTheme());
-            });
-        }
     }
 
     const drawer = document.querySelector("[data-nav-drawer]");

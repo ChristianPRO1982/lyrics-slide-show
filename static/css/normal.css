@@ -1680,11 +1680,19 @@ body.lss-messagebox-open {
     .site-mobile-side {
         display: block;
     }
+
+    .site-nav-rail .site-nav-group:last-child {
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 720px) {
     :root {
         --site-rail-width: 48px;
+    }
+
+    .site-workspace {
+        padding: 8px 8px 12px 4px;
     }
 
     .site-nav-rail {

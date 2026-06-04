@@ -17,9 +17,11 @@ from django.urls import reverse
 from app_group.services import get_selected_group_state
 from app_main.auth import (
     DisabledUserError,
+    HomeProvisioningError,
     InvalidCallbackError,
     KeycloakAuthError,
     UnknownUserError,
+    build_home_provision_start_url,
     build_keycloak_login_url,
     build_keycloak_logout_url,
     clear_session_user,
@@ -342,6 +344,7 @@ def login(request: HttpRequest) -> HttpResponse:
 
 
 def auth_callback(request: HttpRequest) -> HttpResponse:
+    payload = None
     try:
         if settings.AUTH_MODE == "mock":
             payload = validate_callback_payload(request.GET)
@@ -361,12 +364,36 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         clear_session_user(request.session)
         return redirect("homepage")
     except UnknownUserError as exc:
+        clear_session_user(request.session)
+        external_id = ""
+        if isinstance(payload, dict):
+            external_id = str(payload.get("external_id", "")).strip()
+        if settings.AUTH_MODE == "keycloak":
+            try:
+                provision_url = build_home_provision_start_url()
+            except HomeProvisioningError as provision_exc:
+                logger.warning(
+                    "login_provision_redirect_failed external_id=%s detail=%s",
+                    external_id,
+                    provision_exc,
+                )
+                messages.error(request, str(provision_exc))
+                return redirect("homepage")
+
+            logger.info("login_provision_redirect external_id=%s", external_id)
+            messages.info(
+                request,
+                _(
+                    "Votre compte Lyrics Slide Show est en cours de création. Vous serez redirigé vers l'accueil après le provisioning."
+                ),
+            )
+            return redirect(provision_url)
+
         logger.warning(
             "login_refused reason=unknown_user external_id=%s",
-            request.GET.get("external_id", ""),
+            external_id or request.GET.get("external_id", ""),
         )
         messages.error(request, str(exc))
-        clear_session_user(request.session)
         return redirect("homepage")
     except DisabledUserError as exc:
         logger.warning(

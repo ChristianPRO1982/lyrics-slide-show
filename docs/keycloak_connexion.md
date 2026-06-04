@@ -27,7 +27,7 @@ The current goal is only the connection layer. It does not yet cover full busine
 - `email` and `username` are informative fields and must not be the main authorization key.
 - External authentication is not enough to enter `LSS`.
 - A user must also be accepted locally through `users.users`.
-- A user absent from `users.users` must be refused.
+- A user absent from `users.users` must not receive a local LSS session.
 - A user present with `enabled = false` must be refused.
 
 ## Security Model
@@ -37,7 +37,7 @@ The model is:
 1. `Keycloak` proves identity
 2. `LSS` receives that identity
 3. `LSS` checks `users.users`
-4. `LSS` opens or refuses the local Django session
+4. `LSS` opens the local Django session, refuses access, or redirects to provisioning
 
 The core rule is:
 
@@ -59,7 +59,8 @@ Implication:
 5. `LSS` validates the callback
 6. `LSS` reads `users.users` by `Keycloak` UUID
 7. if accepted, `LSS` opens a Django session
-8. if rejected, `LSS` keeps the user anonymous and shows a clear error
+8. if the user is missing, `LSS` redirects to `home` provisioning with a signed ticket
+9. if rejected for another reason, `LSS` keeps the user anonymous and shows a clear error
 
 ### DEV
 
@@ -186,6 +187,13 @@ Manual verification:
 6. verify `Connected` or a clear refusal
 7. click `Logout`
 8. verify return to `Guest`
+
+Provisioning variables for production:
+
+- `HOME_PROVISION_START_URL=https://carthographie.fr/provision/start`
+- `HOME_PROVISION_APP_ID=lss`
+- `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
+- `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/`
 
 Expected refusal cases:
 

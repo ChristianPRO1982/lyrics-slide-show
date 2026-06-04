@@ -89,12 +89,13 @@ The callback flow must:
 - in mock mode, validate the callback signature, timestamp freshness, and UUID format,
 - in keycloak mode, validate `state`, exchange the authorization code, and fetch user info,
 - resolve the user from the external directory using the received external identifier,
-- reject unknown users,
+- reject unknown users in mock mode,
+- redirect unknown Keycloak users to the external `home` provisioning flow when that flow is configured,
 - reject disabled users,
 - cycle the session key on successful login,
 - store a session representation of the authenticated user,
 - clear the local session user on callback failure,
-- redirect to the homepage after success or failure,
+- redirect to the homepage after local success or failure,
 - emit a flash message describing the result,
 - log authentication success and failure events.
 
