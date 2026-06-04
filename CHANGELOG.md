@@ -1,3 +1,20 @@
+# [2.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.2...v2.6.0) (2026-06-04)
+
+
+### Bug Fixes
+
+* add padding to site workspace for improved layout ([d5e2554](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d5e2554164bf06893dd259697cb88c23b88dfa06))
+* adjust margin for last child in site navigation rail ([87aadeb](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/87aadeb653ea4956bb0ef1d48717e53f888475c0))
+* remove language selection links from navigation ([1327bb3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1327bb30c2d15323f2f8edfd57ea1d12f52546c3))
+* remove unused favicon handling and related code ([65cae95](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/65cae954b2c068f579d9bad6c6e517197866d0b4))
+* update dark theme icon assets for improved visual consistency ([8905456](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/890545609c1face5d47a951d8e1780668b18331c))
+* update icon assets for dark and light themes across multiple resolutions ([a371ea5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a371ea548bad70b95cceabe577a45718260e7394))
+
+
+### Features
+
+* implement home provisioning flow and related settings ([a745daf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a745daf8209e7bb07186fab6b6c6d91fccde7cfa))
+
 ## [2.5.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.5.1...v2.5.2) (2026-06-03)
 
 
