@@ -1691,6 +1691,10 @@ body.lss-messagebox-open {
         --site-rail-width: 48px;
     }
 
+    .site-workspace {
+        padding: 8px 8px 12px 4px;
+    }
+
     .site-nav-rail {
         padding: 8px 3px;
     }
