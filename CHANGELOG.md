@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.6.1...v2.7.0) (2026-06-05)
+
+
+### Features
+
+* implement home provisioning redirect flow with intermediate page ([debb4c7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/debb4c70e30fe9dccc2c4f7b5c7a0d271fb35dfc))
+
 ## [2.6.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.6.0...v2.6.1) (2026-06-04)
 
 
