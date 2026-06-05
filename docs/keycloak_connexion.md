@@ -59,7 +59,7 @@ Implication:
 5. `LSS` validates the callback
 6. `LSS` reads `users.users` by `Keycloak` UUID
 7. if accepted, `LSS` opens a Django session
-8. if the user is missing, `LSS` redirects to `home` provisioning with a signed ticket
+8. if the user is missing, `LSS` shows an intermediate provisioning page with a link and automatic redirect to `home`
 9. if rejected for another reason, `LSS` keeps the user anonymous and shows a clear error
 
 ### DEV
@@ -194,6 +194,10 @@ Provisioning variables for production:
 - `HOME_PROVISION_APP_ID=lss`
 - `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
 - `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/`
+- `HOME_PROVISION_FALLBACK_URL=https://carthographie.fr/`
+
+If the signed provisioning URL cannot be built, `LSS` must still send the user to
+the intermediate provisioning page and target `HOME_PROVISION_FALLBACK_URL`.
 
 Expected refusal cases:
 

@@ -90,7 +90,9 @@ The callback flow must:
 - in keycloak mode, validate `state`, exchange the authorization code, and fetch user info,
 - resolve the user from the external directory using the received external identifier,
 - reject unknown users in mock mode,
-- redirect unknown Keycloak users to the external `home` provisioning flow when that flow is configured,
+- redirect unknown Keycloak users to an intermediate LSS provisioning page,
+- expose an explicit link and automatic redirect from that intermediate page to `home`,
+- use a signed `home` provisioning URL when it can be built, otherwise use the configured `home` fallback URL,
 - reject disabled users,
 - cycle the session key on successful login,
 - store a session representation of the authenticated user,
@@ -108,6 +110,20 @@ The logout entry point must:
 - redirect to the homepage by default,
 - redirect to the Keycloak logout URL when `AUTH_MODE=keycloak` and logout configuration is complete,
 - fall back to the homepage if the Keycloak logout URL cannot be built.
+
+### Home Provisioning Redirect
+
+When a Keycloak callback is valid but the user does not yet exist in `users.users`,
+`app_main` stores a temporary provisioning target in the session and redirects to
+`/provision/redirect/`.
+
+The intermediate page must:
+
+- keep the user anonymous in LSS,
+- show a visible link to cARThographie,
+- trigger an automatic browser redirect to the same target,
+- prefer the signed `home` provisioning URL,
+- fall back to `HOME_PROVISION_FALLBACK_URL` when the signed URL cannot be built.
 
 ## Directory User Resolution
 

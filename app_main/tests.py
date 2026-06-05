@@ -564,17 +564,19 @@ class AuthFlowTests(TestCase):
         response = self.client.get(
             reverse("auth_callback"),
             {"code": "auth-code", "state": "state"},
+            follow=True,
         )
 
-        self.assertRedirects(
-            response,
-            "https://carthographie.fr/provision/start?ticket=1",
-            fetch_redirect_response=False,
-        )
+        self.assertRedirects(response, reverse("provision_redirect"))
+        self.assertContains(response, "https://carthographie.fr/provision/start?ticket=1")
+        self.assertContains(response, "Continuer vers cARThographie")
+        self.assertContains(response, "window.location.assign")
         self.assertNotIn("lss_user", self.client.session)
         build_home_provision_start_url_mock.assert_called_once_with()
 
-    @override_settings(AUTH_MODE="keycloak")
+    @override_settings(
+        AUTH_MODE="keycloak", HOME_PROVISION_FALLBACK_URL="https://carthographie.fr/"
+    )
     @patch(
         "app_main.views.get_directory_user",
         side_effect=UnknownUserError("No matching user found in users.users."),
@@ -607,10 +609,20 @@ class AuthFlowTests(TestCase):
             follow=True,
         )
 
+        self.assertRedirects(response, reverse("provision_redirect"))
+        self.assertContains(response, "https://carthographie.fr/")
+        self.assertContains(response, "Continuer vers cARThographie")
+        self.assertNotContains(
+            response, "La configuration du provisioning Home est incomplète."
+        )
+        self.assertNotIn("lss_user", self.client.session)
+
+    def test_provision_redirect_without_session_target_returns_homepage(self):
+        response = self.client.get(reverse("provision_redirect"), follow=True)
+
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("La configuration du provisioning Home est incomplète.", messages)
-        self.assertNotIn("lss_user", self.client.session)
+        self.assertIn("Aucune synchronisation de compte n'est en attente.", messages)
 
     @override_settings(AUTH_MODE="keycloak")
     @patch(

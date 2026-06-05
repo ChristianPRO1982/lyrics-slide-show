@@ -17,6 +17,7 @@ from django.urls import reverse
 from app_group.services import get_selected_group_state
 from app_main.auth import (
     DisabledUserError,
+    HOME_PROVISION_TARGET_SESSION_KEY,
     HomeProvisioningError,
     InvalidCallbackError,
     KeycloakAuthError,
@@ -343,6 +344,11 @@ def login(request: HttpRequest) -> HttpResponse:
     )
 
 
+def _store_home_provision_target(request: HttpRequest, target_url: str) -> None:
+    request.session[HOME_PROVISION_TARGET_SESSION_KEY] = str(target_url or "").strip()
+    request.session.modified = True
+
+
 def auth_callback(request: HttpRequest) -> HttpResponse:
     payload = None
     try:
@@ -373,21 +379,24 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
                 provision_url = build_home_provision_start_url()
             except HomeProvisioningError as provision_exc:
                 logger.warning(
-                    "login_provision_redirect_failed external_id=%s detail=%s",
+                    "login_provision_signed_url_failed external_id=%s detail=%s",
                     external_id,
                     provision_exc,
                 )
-                messages.error(request, str(provision_exc))
-                return redirect("homepage")
+                provision_url = (
+                    str(settings.HOME_PROVISION_FALLBACK_URL or "").strip()
+                    or "https://carthographie.fr/"
+                )
 
             logger.info("login_provision_redirect external_id=%s", external_id)
             messages.info(
                 request,
                 _(
-                    "Votre compte Lyrics Slide Show est en cours de création. Vous serez redirigé vers l'accueil après le provisioning."
+                    "Votre compte Lyrics Slide Show doit être synchronisé depuis cARThographie."
                 ),
             )
-            return redirect(provision_url)
+            _store_home_provision_target(request, provision_url)
+            return redirect("provision_redirect")
 
         logger.warning(
             "login_refused reason=unknown_user external_id=%s",
@@ -413,6 +422,28 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         request, _("Connecté en tant que %(username)s.") % {"username": user.username}
     )
     return redirect("homepage")
+
+
+def provision_redirect(request: HttpRequest) -> HttpResponse:
+    provision_url = str(
+        request.session.pop(HOME_PROVISION_TARGET_SESSION_KEY, "") or ""
+    ).strip()
+    request.session.modified = True
+    if not provision_url:
+        messages.info(
+            request,
+            _("Aucune synchronisation de compte n'est en attente."),
+        )
+        return redirect("homepage")
+
+    return render(
+        request,
+        "main/provision_redirect.html",
+        {
+            "selected_group": _get_selected_group(request),
+            "provision_url": provision_url,
+        },
+    )
 
 
 def logout(request: HttpRequest) -> HttpResponse:
