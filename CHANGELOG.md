@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.0...v2.7.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* enhance home provisioning secret handling and update error messages ([4b13296](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4b13296d80bdf5e485f79ff7969aeb12599df30d))
+
 # [2.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.6.1...v2.7.0) (2026-06-05)
 
 
