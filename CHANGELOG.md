@@ -1,3 +1,10 @@
+## [2.7.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.1...v2.7.2) (2026-06-05)
+
+
+### Bug Fixes
+
+* enhance Keycloak error handling and logging in authentication flow ([709db32](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/709db3295354c3eea682315fa242b2f6845a97d0))
+
 ## [2.7.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.0...v2.7.1) (2026-06-05)
 
 
