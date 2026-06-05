@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from urllib.error import HTTPError
 from unittest.mock import MagicMock, patch
+from io import BytesIO
 from urllib.parse import parse_qs, urlparse
 
 from django.contrib.messages import get_messages
@@ -20,6 +22,7 @@ from app_main.auth import (
     build_home_provision_start_url,
     build_keycloak_logout_url,
     get_directory_user,
+    _load_json_response,
     refresh_request_user,
     sign_callback_data,
     validate_keycloak_callback,
@@ -203,6 +206,94 @@ class CallbackValidationTests(SimpleTestCase):
             "L'URL de retour du provisioning Home est invalide.",
         ):
             build_home_provision_start_url()
+
+    @patch("app_main.auth.urlopen")
+    def test_keycloak_token_exchange_401_has_actionable_message_and_safe_logs(
+        self, urlopen_mock
+    ):
+        request = MagicMock()
+        request.full_url = "https://auth.example.com/realms/carthographie/protocol/openid-connect/token"
+        error_body = (
+            b'{"error":"invalid_client","error_description":"Invalid client secret"}'
+        )
+        urlopen_mock.side_effect = HTTPError(
+            request.full_url,
+            401,
+            "Unauthorized",
+            {},
+            BytesIO(error_body),
+        )
+
+        with self.assertLogs("app_main.auth", level="WARNING") as logs:
+            with self.assertRaisesMessage(
+                KeycloakAuthError,
+                "La connexion Keycloak a échoué pendant l'échange du code. Vérifiez la configuration du client LSS côté Keycloak.",
+            ):
+                _load_json_response(request, stage="token_exchange")
+
+        log_output = "\n".join(logs.output)
+        self.assertIn("stage=token_exchange", log_output)
+        self.assertIn("status=401", log_output)
+        self.assertIn("error=invalid_client", log_output)
+        self.assertIn("error_description=Invalid client secret", log_output)
+        self.assertNotIn("client_secret=", log_output)
+        self.assertNotIn("access_token", log_output)
+        self.assertNotIn("code=", log_output)
+
+    @patch("app_main.auth.urlopen")
+    def test_keycloak_userinfo_401_has_distinct_message(self, urlopen_mock):
+        request = MagicMock()
+        request.full_url = "https://auth.example.com/realms/carthographie/protocol/openid-connect/userinfo"
+        error_body = b'{"error":"invalid_token","error_description":"Token invalid"}'
+        urlopen_mock.side_effect = HTTPError(
+            request.full_url,
+            401,
+            "Unauthorized",
+            {},
+            BytesIO(error_body),
+        )
+
+        with self.assertLogs("app_main.auth", level="WARNING") as logs:
+            with self.assertRaisesMessage(
+                KeycloakAuthError,
+                "La connexion Keycloak a échoué pendant la lecture du profil utilisateur.",
+            ):
+                _load_json_response(request, stage="userinfo")
+
+        log_output = "\n".join(logs.output)
+        self.assertIn("stage=userinfo", log_output)
+        self.assertIn("status=401", log_output)
+        self.assertIn("error=invalid_token", log_output)
+
+    @patch("app_main.auth.urlopen")
+    def test_keycloak_http_error_log_strips_query_from_url(self, urlopen_mock):
+        request = MagicMock()
+        request.full_url = (
+            "https://auth.example.com/realms/carthographie/protocol/openid-connect/token?"
+            "code=auth-code&client_secret=secret-value"
+        )
+        urlopen_mock.side_effect = HTTPError(
+            request.full_url,
+            400,
+            "Bad Request",
+            {},
+            BytesIO(b'{"error":"invalid_grant"}'),
+        )
+
+        with self.assertLogs("app_main.auth", level="WARNING") as logs:
+            with self.assertRaisesMessage(
+                KeycloakAuthError,
+                "La requête Keycloak a échoué pendant l'échange du code avec HTTP 400.",
+            ):
+                _load_json_response(request, stage="token_exchange")
+
+        log_output = "\n".join(logs.output)
+        self.assertIn(
+            "url=https://auth.example.com/realms/carthographie/protocol/openid-connect/token",
+            log_output,
+        )
+        self.assertNotIn("auth-code", log_output)
+        self.assertNotIn("secret-value", log_output)
 
     @override_settings(
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
