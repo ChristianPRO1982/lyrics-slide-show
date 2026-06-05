@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
 from urllib.parse import parse_qs, urlparse
 
@@ -6,6 +9,7 @@ from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
+from lyrics_slide_show.settings import env_secret_with_default_file
 from app_main.auth import (
     AnonymousSessionUser,
     DirectoryUser,
@@ -64,6 +68,84 @@ def create_directory_user(**overrides):
 
 
 class CallbackValidationTests(SimpleTestCase):
+    def test_env_secret_with_default_file_prefers_explicit_file(self):
+        with TemporaryDirectory() as temp_dir:
+            explicit_path = Path(temp_dir) / "explicit-secret.txt"
+            default_path = Path(temp_dir) / "default-secret.txt"
+            explicit_path.write_text("explicit-secret\n", encoding="utf-8")
+            default_path.write_text("default-secret\n", encoding="utf-8")
+
+            with patch.dict(
+                os.environ,
+                {"HOME_PROVISION_SHARED_SECRET_FILE": str(explicit_path)},
+                clear=False,
+            ):
+                value = env_secret_with_default_file(
+                    "HOME_PROVISION_SHARED_SECRET", str(default_path)
+                )
+
+        self.assertEqual(value, "explicit-secret")
+
+    def test_env_secret_with_default_file_uses_env_value_before_default_file(self):
+        with TemporaryDirectory() as temp_dir:
+            default_path = Path(temp_dir) / "default-secret.txt"
+            default_path.write_text("default-secret\n", encoding="utf-8")
+
+            with patch.dict(
+                os.environ,
+                {
+                    "HOME_PROVISION_SHARED_SECRET": "env-secret",
+                    "HOME_PROVISION_SHARED_SECRET_FILE": "",
+                },
+                clear=False,
+            ):
+                value = env_secret_with_default_file(
+                    "HOME_PROVISION_SHARED_SECRET", str(default_path)
+                )
+
+        self.assertEqual(value, "env-secret")
+
+    def test_env_secret_with_default_file_uses_default_file_when_env_is_missing(self):
+        with TemporaryDirectory() as temp_dir:
+            default_path = Path(temp_dir) / "default-secret.txt"
+            default_path.write_text("default-secret\n", encoding="utf-8")
+
+            with patch.dict(
+                os.environ,
+                {
+                    "HOME_PROVISION_SHARED_SECRET": "",
+                    "HOME_PROVISION_SHARED_SECRET_FILE": "",
+                },
+                clear=False,
+            ):
+                value = env_secret_with_default_file(
+                    "HOME_PROVISION_SHARED_SECRET", str(default_path)
+                )
+
+        self.assertEqual(value, "default-secret")
+
+    def test_env_secret_with_default_file_uses_default_file_when_explicit_file_is_missing(
+        self,
+    ):
+        with TemporaryDirectory() as temp_dir:
+            missing_path = Path(temp_dir) / "missing-secret.txt"
+            default_path = Path(temp_dir) / "default-secret.txt"
+            default_path.write_text("default-secret\n", encoding="utf-8")
+
+            with patch.dict(
+                os.environ,
+                {
+                    "HOME_PROVISION_SHARED_SECRET": "",
+                    "HOME_PROVISION_SHARED_SECRET_FILE": str(missing_path),
+                },
+                clear=False,
+            ):
+                value = env_secret_with_default_file(
+                    "HOME_PROVISION_SHARED_SECRET", str(default_path)
+                )
+
+        self.assertEqual(value, "default-secret")
+
     @override_settings(
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
         HOME_PROVISION_APP_ID="lss",
@@ -128,10 +210,10 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_SHARED_SECRET="",
         HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
     )
-    def test_build_home_provision_start_url_requires_complete_config(self):
+    def test_build_home_provision_start_url_requires_secret(self):
         with self.assertRaisesMessage(
             HomeProvisioningError,
-            "La configuration du provisioning Home est incomplète.",
+            "Le secret de provisioning Home est absent côté serveur Lyrics Slide Show.",
         ):
             build_home_provision_start_url()
 
@@ -611,7 +693,7 @@ class AuthFlowTests(TestCase):
     @patch(
         "app_main.views.build_home_provision_start_url",
         side_effect=HomeProvisioningError(
-            "La configuration du provisioning Home est incomplète."
+            "Le secret de provisioning Home est absent côté serveur Lyrics Slide Show."
         ),
     )
     @patch(
@@ -638,7 +720,10 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("La configuration du provisioning Home est incomplète.", messages)
+        self.assertIn(
+            "Le secret de provisioning Home est absent côté serveur Lyrics Slide Show.",
+            messages,
+        )
         self.assertNotContains(response, "Continuer vers cARThographie")
         self.assertNotIn("lss_user", self.client.session)
 
