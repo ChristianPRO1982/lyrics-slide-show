@@ -92,7 +92,8 @@ The callback flow must:
 - reject unknown users in mock mode,
 - redirect unknown Keycloak users to an intermediate LSS provisioning page,
 - expose an explicit link and automatic redirect from that intermediate page to `home`,
-- use a signed `home` provisioning URL when it can be built, otherwise use the configured `home` fallback URL,
+- use only a signed `home` provisioning URL,
+- return to the homepage with a configuration error when the signed URL cannot be built,
 - reject disabled users,
 - cycle the session key on successful login,
 - store a session representation of the authenticated user,
@@ -122,8 +123,11 @@ The intermediate page must:
 - keep the user anonymous in LSS,
 - show a visible link to cARThographie,
 - trigger an automatic browser redirect to the same target,
-- prefer the signed `home` provisioning URL,
-- fall back to `HOME_PROVISION_FALLBACK_URL` when the signed URL cannot be built.
+- target the signed `home` provisioning URL only.
+
+If the signed provisioning URL cannot be built, the callback must keep the user
+anonymous and return to the homepage with a configuration error instead of
+linking to the generic `home` homepage.
 
 ## Directory User Resolution
 

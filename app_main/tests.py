@@ -96,6 +96,23 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="shared-secret",
+        HOME_PROVISION_RETURN_URL="",
+        KEYCLOAK_LOGOUT_REDIRECT_URI="https://lss.carthographie.fr/",
+    )
+    @patch("app_main.auth.secrets.token_urlsafe", return_value="nonce-value")
+    @patch("app_main.auth.time.time", return_value=1700000100)
+    def test_build_home_provision_start_url_uses_logout_redirect_as_return_fallback(
+        self, _time_mock, _nonce_mock
+    ):
+        provision_url = build_home_provision_start_url()
+
+        params = parse_qs(urlparse(provision_url).query)
+        self.assertEqual(params["return_url"], ["https://lss.carthographie.fr/"])
+
+    @override_settings(
+        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+        HOME_PROVISION_APP_ID="lss",
+        HOME_PROVISION_SHARED_SECRET="shared-secret",
         HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/#fragment",
     )
     def test_build_home_provision_start_url_rejects_fragment_in_return_url(self):
@@ -543,7 +560,14 @@ class AuthFlowTests(TestCase):
     )
     @patch(
         "app_main.views.build_home_provision_start_url",
-        return_value="https://carthographie.fr/provision/start?ticket=1",
+        return_value=(
+            "https://carthographie.fr/provision/start?"
+            "app_id=lss&"
+            "return_url=https%3A%2F%2Flss.carthographie.fr%2F&"
+            "ts=1700000100&"
+            "nonce=nonce-value&"
+            "sig=sig-value"
+        ),
     )
     @patch(
         "app_main.views.validate_keycloak_callback",
@@ -568,15 +592,18 @@ class AuthFlowTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("provision_redirect"))
-        self.assertContains(response, "https://carthographie.fr/provision/start?ticket=1")
+        self.assertContains(response, "https://carthographie.fr/provision/start?")
+        self.assertContains(response, "app_id=lss")
+        self.assertContains(response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F")
+        self.assertContains(response, "ts=1700000100")
+        self.assertContains(response, "nonce=nonce-value")
+        self.assertContains(response, "sig=sig-value")
         self.assertContains(response, "Continuer vers cARThographie")
         self.assertContains(response, "window.location.assign")
         self.assertNotIn("lss_user", self.client.session)
         build_home_provision_start_url_mock.assert_called_once_with()
 
-    @override_settings(
-        AUTH_MODE="keycloak", HOME_PROVISION_FALLBACK_URL="https://carthographie.fr/"
-    )
+    @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
         side_effect=UnknownUserError("No matching user found in users.users."),
@@ -597,7 +624,7 @@ class AuthFlowTests(TestCase):
             "last_name": None,
         },
     )
-    def test_keycloak_callback_falls_back_homepage_when_provisioning_config_fails(
+    def test_keycloak_callback_returns_homepage_when_provisioning_config_fails(
         self,
         _validate_keycloak_callback_mock,
         _build_home_provision_start_url_mock,
@@ -609,12 +636,10 @@ class AuthFlowTests(TestCase):
             follow=True,
         )
 
-        self.assertRedirects(response, reverse("provision_redirect"))
-        self.assertContains(response, "https://carthographie.fr/")
-        self.assertContains(response, "Continuer vers cARThographie")
-        self.assertNotContains(
-            response, "La configuration du provisioning Home est incomplète."
-        )
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("La configuration du provisioning Home est incomplète.", messages)
+        self.assertNotContains(response, "Continuer vers cARThographie")
         self.assertNotIn("lss_user", self.client.session)
 
     def test_provision_redirect_without_session_target_returns_homepage(self):

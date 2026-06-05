@@ -194,10 +194,10 @@ Provisioning variables for production:
 - `HOME_PROVISION_APP_ID=lss`
 - `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
 - `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/`
-- `HOME_PROVISION_FALLBACK_URL=https://carthographie.fr/`
 
-If the signed provisioning URL cannot be built, `LSS` must still send the user to
-the intermediate provisioning page and target `HOME_PROVISION_FALLBACK_URL`.
+If the signed provisioning URL cannot be built, `LSS` must not send the user to
+the generic `home` homepage because it does not trigger provisioning. It must keep
+the user anonymous and show a configuration error.
 
 Expected refusal cases:
 
