@@ -161,7 +161,14 @@ def build_home_provision_start_url() -> str:
         or ""
     ).strip()
 
-    if not start_url or not app_id or not shared_secret or not return_url:
+    if not shared_secret:
+        raise HomeProvisioningError(
+            _(
+                "Le secret de provisioning Home est absent côté serveur Lyrics Slide Show."
+            )
+        )
+
+    if not start_url or not app_id or not return_url:
         raise HomeProvisioningError(
             _("La configuration du provisioning Home est incomplète.")
         )

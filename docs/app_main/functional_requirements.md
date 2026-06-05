@@ -129,6 +129,9 @@ If the signed provisioning URL cannot be built, the callback must keep the user
 anonymous and return to the homepage with a configuration error instead of
 linking to the generic `home` homepage.
 
+When only the Home provisioning secret is missing, the error message must identify
+that missing server-side secret explicitly.
+
 ## Directory User Resolution
 
 `app_main` owns the runtime mapping between an external authenticated identifier and the site user record.

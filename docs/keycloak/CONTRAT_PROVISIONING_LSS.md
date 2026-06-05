@@ -43,6 +43,9 @@ Pour LSS, le secret partagé est stocké côté serveur dans :
 
 Ce secret ne doit jamais être envoyé au navigateur.
 
+Si `HOME_PROVISION_SHARED_SECRET_FILE` n'est pas défini dans LSS, LSS tente
+automatiquement de lire ce chemin contractuel.
+
 ## Fenêtre de validité
 
 - `ts` est accepté pendant 120 secondes.

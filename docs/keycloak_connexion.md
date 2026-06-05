@@ -195,6 +195,10 @@ Provisioning variables for production:
 - `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
 - `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/`
 
+If `HOME_PROVISION_SHARED_SECRET_FILE` is not set, `LSS` also tries the same
+contractual file path automatically:
+`/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`.
+
 If the signed provisioning URL cannot be built, `LSS` must not send the user to
 the generic `home` homepage because it does not trigger provisioning. It must keep
 the user anonymous and show a configuration error.

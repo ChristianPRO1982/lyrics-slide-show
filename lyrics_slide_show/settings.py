@@ -11,6 +11,32 @@ def env_value(name: str, default: str | None = None) -> str | None:
     return os.environ.get(name, default)
 
 
+def env_secret_with_default_file(
+    name: str, default_file_path: str, default: str = ""
+) -> str:
+    def read_secret_file(path_value: str) -> str:
+        try:
+            return Path(path_value).read_text(encoding="utf-8").strip()
+        except OSError:
+            return ""
+
+    file_path = os.environ.get(f"{name}_FILE", "").strip()
+    if file_path:
+        file_value = read_secret_file(file_path)
+        if file_value:
+            return file_value
+
+    value = os.environ.get(name, "").strip()
+    if value:
+        return value
+
+    default_value = read_secret_file(default_file_path)
+    if default_value:
+        return default_value
+
+    return default
+
+
 def env_bool(name: str, default: bool) -> bool:
     return os.environ.get(name, str(default)).strip().lower() in {
         "1",
@@ -52,7 +78,12 @@ HOME_PROVISION_START_URL = os.environ.get(
     "HOME_PROVISION_START_URL", "https://carthographie.fr/provision/start"
 )
 HOME_PROVISION_APP_ID = os.environ.get("HOME_PROVISION_APP_ID", "lss")
-HOME_PROVISION_SHARED_SECRET = env_value("HOME_PROVISION_SHARED_SECRET", "")
+HOME_PROVISION_SHARED_SECRET_DEFAULT_FILE = (
+    "/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt"
+)
+HOME_PROVISION_SHARED_SECRET = env_secret_with_default_file(
+    "HOME_PROVISION_SHARED_SECRET", HOME_PROVISION_SHARED_SECRET_DEFAULT_FILE
+)
 HOME_PROVISION_RETURN_URL = os.environ.get("HOME_PROVISION_RETURN_URL", "")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
