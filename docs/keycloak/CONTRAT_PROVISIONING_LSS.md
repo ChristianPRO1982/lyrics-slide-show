@@ -91,13 +91,18 @@ url = "https://carthographie.fr/provision/start?" + urlencode({
 1. LSS détecte que l'utilisateur Keycloak n'existe pas encore dans
    `users.users`.
 2. LSS génère le ticket signé côté serveur.
-3. LSS redirige le navigateur vers `/provision/start`.
-4. `home` vérifie le ticket.
-5. Si l'utilisateur n'a pas de session `home`, `home` le renvoie vers Keycloak.
-6. `home` vérifie les claims Keycloak, puis demande au receiver
+3. LSS affiche une page intermédiaire avec un lien visible vers `home` et une
+   redirection automatique.
+4. Le navigateur arrive sur `/provision/start`.
+5. `home` vérifie le ticket.
+6. Si l'utilisateur n'a pas de session `home`, `home` le renvoie vers Keycloak.
+7. `home` vérifie les claims Keycloak, puis demande au receiver
    `keycloak-user-sync` de provisionner l'utilisateur.
-7. En cas de succès, `home` affiche le lien de retour et redirige
+8. En cas de succès, `home` affiche le lien de retour et redirige
    automatiquement après 5 secondes.
+
+Si LSS ne peut pas générer le ticket signé parce que sa configuration est
+incomplète, la page intermédiaire doit cibler `https://carthographie.fr/`.
 
 ## Erreurs gérées
 

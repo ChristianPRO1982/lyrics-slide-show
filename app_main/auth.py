@@ -21,6 +21,7 @@ from app_member.services import get_member_role_flags_safe
 
 SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
+HOME_PROVISION_TARGET_SESSION_KEY = "lss_home_provision_target"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
 logger = logging.getLogger("app_main.auth")
