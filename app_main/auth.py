@@ -7,7 +7,7 @@ import secrets
 import time
 from dataclasses import dataclass, replace
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import urlsplit, urlunsplit, urlencode
 from urllib.request import Request, urlopen
 import uuid
 from typing import Any
@@ -290,7 +290,50 @@ def build_keycloak_logout_url() -> str:
     return f"{_keycloak_oidc_base_url()}/logout?{query_string}"
 
 
-def _load_json_response(request: Request) -> dict[str, Any]:
+def _safe_request_url(request: Request) -> str:
+    parsed = urlsplit(request.full_url)
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+
+
+def _parse_keycloak_error_payload(response_body: str) -> tuple[str, str]:
+    try:
+        payload = json.loads(response_body)
+    except (TypeError, json.JSONDecodeError):
+        return "", ""
+
+    if not isinstance(payload, dict):
+        return "", ""
+
+    return (
+        str(payload.get("error") or "")[:120],
+        str(payload.get("error_description") or "")[:300],
+    )
+
+
+def _keycloak_stage_label(stage: str) -> str:
+    if stage == "token_exchange":
+        return _("l'échange du code")
+    if stage == "userinfo":
+        return _("la lecture du profil utilisateur")
+    return _("la requête")
+
+
+def _keycloak_http_error_message(stage: str, status_code: int) -> str:
+    if status_code == 401 and stage == "token_exchange":
+        return _(
+            "La connexion Keycloak a échoué pendant l'échange du code. Vérifiez la configuration du client LSS côté Keycloak."
+        )
+    if status_code == 401 and stage == "userinfo":
+        return _(
+            "La connexion Keycloak a échoué pendant la lecture du profil utilisateur."
+        )
+    return (
+        _("La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s.")
+        % {"stage": _keycloak_stage_label(stage), "code": status_code}
+    )
+
+
+def _load_json_response(request: Request, *, stage: str) -> dict[str, Any]:
     try:
         with urlopen(request, timeout=10) as response:
             return json.loads(response.read().decode("utf-8"))
@@ -300,26 +343,33 @@ def _load_json_response(request: Request) -> dict[str, Any]:
             response_body = exc.read().decode("utf-8", errors="replace").strip()
         except Exception:
             response_body = ""
+        error, error_description = _parse_keycloak_error_payload(response_body)
         logger.warning(
-            "keycloak_http_error url=%s status=%s reason=%s body=%s",
-            request.full_url,
+            "keycloak_http_error stage=%s url=%s status=%s reason=%s error=%s error_description=%s body=%s",
+            stage,
+            _safe_request_url(request),
             exc.code,
             exc.reason,
+            error,
+            error_description,
             response_body[:500],
         )
-        raise KeycloakAuthError(
-            _("La requête Keycloak a échoué avec HTTP %(code)s.") % {"code": exc.code}
-        ) from exc
+        raise KeycloakAuthError(_keycloak_http_error_message(stage, exc.code)) from exc
     except URLError as exc:
         logger.warning(
-            "keycloak_url_error url=%s reason=%s", request.full_url, exc.reason
+            "keycloak_url_error stage=%s url=%s reason=%s",
+            stage,
+            _safe_request_url(request),
+            exc.reason,
         )
         raise KeycloakAuthError(_("La requête Keycloak a échoué.")) from exc
     except TimeoutError as exc:
-        logger.warning("keycloak_timeout url=%s", request.full_url)
+        logger.warning("keycloak_timeout stage=%s url=%s", stage, _safe_request_url(request))
         raise KeycloakAuthError(_("La requête Keycloak a expiré.")) from exc
     except json.JSONDecodeError as exc:
-        logger.warning("keycloak_invalid_json url=%s", request.full_url)
+        logger.warning(
+            "keycloak_invalid_json stage=%s url=%s", stage, _safe_request_url(request)
+        )
         raise KeycloakAuthError(_("La requête Keycloak a échoué.")) from exc
 
 
@@ -341,13 +391,21 @@ def _exchange_keycloak_code(code: str) -> dict[str, Any]:
             "client_secret": settings.KEYCLOAK_CLIENT_SECRET,
         }
     ).encode("utf-8")
+    logger.info(
+        "keycloak_config stage=token_exchange server_url=%s realm=%s client_id=%s redirect_uri=%s client_secret_configured=%s",
+        settings.KEYCLOAK_SERVER_URL,
+        settings.KEYCLOAK_REALM,
+        settings.KEYCLOAK_CLIENT_ID,
+        settings.KEYCLOAK_REDIRECT_URI,
+        bool(settings.KEYCLOAK_CLIENT_SECRET),
+    )
     request = Request(
         f"{_keycloak_oidc_base_url()}/token",
         data=body,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         method="POST",
     )
-    payload = _load_json_response(request)
+    payload = _load_json_response(request, stage="token_exchange")
     if not payload.get("access_token"):
         raise KeycloakAuthError(_("Keycloak n'a pas renvoyé de jeton d'accès."))
     return payload
@@ -359,7 +417,7 @@ def _fetch_keycloak_userinfo(access_token: str) -> dict[str, Any]:
         headers={"Authorization": f"Bearer {access_token}"},
         method="GET",
     )
-    return _load_json_response(request)
+    return _load_json_response(request, stage="userinfo")
 
 
 def validate_keycloak_callback(params: dict[str, str], session) -> dict[str, str]:
