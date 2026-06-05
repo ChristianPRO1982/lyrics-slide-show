@@ -155,7 +155,11 @@ def build_home_provision_start_url() -> str:
     start_url = str(settings.HOME_PROVISION_START_URL or "").strip()
     app_id = str(settings.HOME_PROVISION_APP_ID or "").strip()
     shared_secret = str(settings.HOME_PROVISION_SHARED_SECRET or "").strip()
-    return_url = str(settings.HOME_PROVISION_RETURN_URL or "").strip()
+    return_url = str(
+        settings.HOME_PROVISION_RETURN_URL
+        or settings.KEYCLOAK_LOGOUT_REDIRECT_URI
+        or ""
+    ).strip()
 
     if not start_url or not app_id or not shared_secret or not return_url:
         raise HomeProvisioningError(

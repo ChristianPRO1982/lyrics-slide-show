@@ -383,10 +383,8 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
                     external_id,
                     provision_exc,
                 )
-                provision_url = (
-                    str(settings.HOME_PROVISION_FALLBACK_URL or "").strip()
-                    or "https://carthographie.fr/"
-                )
+                messages.error(request, str(provision_exc))
+                return redirect("homepage")
 
             logger.info("login_provision_redirect external_id=%s", external_id)
             messages.info(

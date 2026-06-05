@@ -69,7 +69,7 @@ import time
 from urllib.parse import urlencode
 
 app_id = "lss"
-return_url = "https://carthographie.fr/"
+return_url = "https://lss.carthographie.fr/"
 ts = str(int(time.time()))
 nonce = secrets.token_urlsafe(24)
 secret = "SECRET_FROM_SERVER_FILE"
@@ -102,7 +102,8 @@ url = "https://carthographie.fr/provision/start?" + urlencode({
    automatiquement après 5 secondes.
 
 Si LSS ne peut pas générer le ticket signé parce que sa configuration est
-incomplète, la page intermédiaire doit cibler `https://carthographie.fr/`.
+incomplète, il ne doit pas rediriger vers l'accueil générique de `home`, car
+cette URL ne déclenche pas le provisioning.
 
 ## Erreurs gérées
 
