@@ -4,6 +4,7 @@ from app_main import views
 urlpatterns = [
     path("", views.homepage, name="homepage"),
     path("login/", views.login, name="login"),
+    path("login/diagnostic/", views.keycloak_diagnostic, name="keycloak_diagnostic"),
     path("account/", views.account, name="account"),
     path("site-params/", views.site_params, name="site_params"),
     path("themes/", views.theme_preferences, name="theme_preferences"),

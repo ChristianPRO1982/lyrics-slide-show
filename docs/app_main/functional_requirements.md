@@ -102,6 +102,27 @@ The callback flow must:
 - emit a flash message describing the result,
 - log authentication success and failure events.
 
+### Keycloak Expert Diagnostic
+
+When a Keycloak authentication error occurs, `app_main` stores a non-sensitive
+diagnostic snapshot in the browser session under `lss_keycloak_diagnostic`.
+
+The diagnostic page `/login/diagnostic/` must:
+
+- remain accessible without authentication,
+- show the last Keycloak failure for the current browser session,
+- expose only non-sensitive values such as stage, HTTP status, Keycloak error,
+  Keycloak server URL, realm, client ID, redirect URI, and secret presence flags,
+- never expose client secrets, access tokens, OAuth codes, cookies, or raw
+  sensitive payloads,
+- show targeted likely causes for common failures such as `token_exchange`
+  `401 invalid_client`, `token_exchange` `400 invalid_grant`, and `userinfo`
+  `401`,
+- show a link to relaunch Keycloak login.
+
+A global link to this diagnostic page is eligible when a diagnostic snapshot is
+present in the session.
+
 ### Logout Flow
 
 The logout entry point must:

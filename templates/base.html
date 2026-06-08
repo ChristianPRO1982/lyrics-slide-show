@@ -172,6 +172,13 @@
                         {% endfor %}
                     </ul>
                 {% endif %}
+                {% if request.session.lss_keycloak_diagnostic %}
+                    <ul class="site-global-messages" aria-label="{% trans 'Diagnostic' %}">
+                        <li class="site-global-message site-global-message-info">
+                            <a href="{% url 'keycloak_diagnostic' %}">{% trans "Diagnostic expert Keycloak" %}</a>
+                        </li>
+                    </ul>
+                {% endif %}
 
                 <div class="site-layout">
                     <aside class="site-side-stack">

@@ -203,6 +203,19 @@ If the signed provisioning URL cannot be built, `LSS` must not send the user to
 the generic `home` homepage because it does not trigger provisioning. It must keep
 the user anonymous and show a configuration error.
 
+Keycloak expert diagnostics:
+
+- after a Keycloak callback failure, `LSS` stores a session-scoped diagnostic at
+  `/login/diagnostic/`,
+- the diagnostic page shows the failing stage, HTTP status, Keycloak
+  `error`/`error_description`, public client settings, and secret presence flags,
+- a `token_exchange` `401 invalid_client` usually points to the client secret,
+  client ID, or confidential-client settings,
+- a `token_exchange` `400 invalid_grant` usually points to the redirect URI, an
+  expired/consumed code, or server clock drift,
+- `LSS` must never expose the client secret, OAuth code, access token, cookies,
+  or full sensitive payloads in that page.
+
 Expected refusal cases:
 
 - user UUID missing from `users.users`

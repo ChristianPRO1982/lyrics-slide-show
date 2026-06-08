@@ -228,9 +228,14 @@ class CallbackValidationTests(SimpleTestCase):
             with self.assertRaisesMessage(
                 KeycloakAuthError,
                 "La connexion Keycloak a échoué pendant l'échange du code. Vérifiez la configuration du client LSS côté Keycloak.",
-            ):
+            ) as captured:
                 _load_json_response(request, stage="token_exchange")
 
+        diagnostic = captured.exception.diagnostic
+        self.assertEqual(diagnostic["stage"], "token_exchange")
+        self.assertEqual(diagnostic["status_code"], 401)
+        self.assertEqual(diagnostic["error"], "invalid_client")
+        self.assertEqual(diagnostic["error_description"], "Invalid client secret")
         log_output = "\n".join(logs.output)
         self.assertIn("stage=token_exchange", log_output)
         self.assertIn("status=401", log_output)
@@ -277,7 +282,9 @@ class CallbackValidationTests(SimpleTestCase):
             400,
             "Bad Request",
             {},
-            BytesIO(b'{"error":"invalid_grant"}'),
+            BytesIO(
+                b'{"error":"invalid_grant","client_secret":"secret-value","access_token":"token-value","code":"auth-code"}'
+            ),
         )
 
         with self.assertLogs("app_main.auth", level="WARNING") as logs:
@@ -294,6 +301,7 @@ class CallbackValidationTests(SimpleTestCase):
         )
         self.assertNotIn("auth-code", log_output)
         self.assertNotIn("secret-value", log_output)
+        self.assertNotIn("token-value", log_output)
 
     @override_settings(
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
@@ -767,7 +775,9 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("provision_redirect"))
         self.assertContains(response, "https://carthographie.fr/provision/start?")
         self.assertContains(response, "app_id=lss")
-        self.assertContains(response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F")
+        self.assertContains(
+            response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F"
+        )
         self.assertContains(response, "ts=1700000100")
         self.assertContains(response, "nonce=nonce-value")
         self.assertContains(response, "sig=sig-value")
@@ -923,6 +933,84 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn("Invalid Keycloak state.", messages)
+
+    @override_settings(AUTH_MODE="keycloak")
+    @patch(
+        "app_main.views.validate_keycloak_callback",
+        side_effect=KeycloakAuthError(
+            "La connexion Keycloak a échoué pendant l'échange du code. Vérifiez la configuration du client LSS côté Keycloak.",
+            diagnostic={
+                "stage": "token_exchange",
+                "status_code": 401,
+                "error": "invalid_client",
+                "error_description": "Invalid client secret",
+                "message": "La connexion Keycloak a échoué pendant l'échange du code. Vérifiez la configuration du client LSS côté Keycloak.",
+                "safe_url": "https://auth.example.com/realms/carthographie/protocol/openid-connect/token",
+                "server_url": "https://auth.example.com",
+                "realm": "carthographie",
+                "client_id": "app_lss",
+                "redirect_uri": "https://lss.carthographie.fr/auth/callback/",
+                "client_secret_configured": True,
+                "client_secret_file_configured": True,
+                "client_secret_file_exists": False,
+                "home_secret_file_exists": True,
+                "created_at": "2026-06-08T10:00:00+00:00",
+            },
+        ),
+    )
+    def test_keycloak_callback_stores_expert_diagnostic(
+        self, _validate_keycloak_callback_mock
+    ):
+        response = self.client.get(
+            reverse("auth_callback"), {"code": "auth-code", "state": "bad"}, follow=True
+        )
+
+        self.assertRedirects(response, reverse("homepage"))
+        self.assertContains(response, reverse("keycloak_diagnostic"))
+        diagnostic = self.client.session["lss_keycloak_diagnostic"]
+        self.assertEqual(diagnostic["stage"], "token_exchange")
+        self.assertEqual(diagnostic["status_code"], 401)
+        self.assertEqual(diagnostic["error"], "invalid_client")
+
+    def test_keycloak_diagnostic_page_without_session_diagnostic_shows_empty_state(
+        self,
+    ):
+        response = self.client.get(reverse("keycloak_diagnostic"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Aucune tentative Keycloak récente")
+
+    def test_keycloak_diagnostic_page_hides_sensitive_values(self):
+        session = self.client.session
+        session["lss_keycloak_diagnostic"] = {
+            "stage": "token_exchange",
+            "status_code": 401,
+            "error": "invalid_client",
+            "error_description": "Invalid client secret",
+            "message": "La connexion Keycloak a échoué pendant l'échange du code.",
+            "safe_url": "https://auth.example.com/realms/carthographie/protocol/openid-connect/token",
+            "server_url": "https://auth.example.com",
+            "realm": "carthographie",
+            "client_id": "app_lss",
+            "redirect_uri": "https://lss.carthographie.fr/auth/callback/",
+            "client_secret_configured": True,
+            "client_secret_file_configured": True,
+            "client_secret_file_exists": False,
+            "home_secret_file_exists": True,
+            "created_at": "2026-06-08T10:00:00+00:00",
+        }
+        session.save()
+
+        response = self.client.get(reverse("keycloak_diagnostic"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "token_exchange")
+        self.assertContains(response, "invalid_client")
+        self.assertContains(response, "app_lss")
+        self.assertContains(response, "Fichier secret client présent")
+        self.assertNotContains(response, "client_secret=")
+        self.assertNotContains(response, "access_token")
+        self.assertNotContains(response, "auth-code")
 
     def test_logout_clears_session(self):
         session = self.client.session

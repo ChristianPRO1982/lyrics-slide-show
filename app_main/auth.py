@@ -2,10 +2,12 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 import re
 import secrets
 import time
 from dataclasses import dataclass, replace
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit, urlunsplit, urlencode
 from urllib.request import Request, urlopen
@@ -14,6 +16,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db import connection
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from app_main.models import DirectoryUserRecord
@@ -22,9 +25,17 @@ from app_member.services import get_member_role_flags_safe
 SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
 HOME_PROVISION_TARGET_SESSION_KEY = "lss_home_provision_target"
+KEYCLOAK_DIAGNOSTIC_SESSION_KEY = "lss_keycloak_diagnostic"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
 logger = logging.getLogger("app_main.auth")
+SENSITIVE_KEYCLOAK_LOG_KEYS = (
+    "client_secret",
+    "access_token",
+    "refresh_token",
+    "id_token",
+    "code",
+)
 
 
 class AuthError(Exception):
@@ -44,7 +55,9 @@ class DisabledUserError(AuthError):
 
 
 class KeycloakAuthError(AuthError):
-    pass
+    def __init__(self, message: object, *, diagnostic: dict[str, Any] | None = None):
+        super().__init__(message)
+        self.diagnostic = diagnostic or {}
 
 
 class HomeProvisioningError(AuthError):
@@ -295,6 +308,50 @@ def _safe_request_url(request: Request) -> str:
     return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
 
 
+def _configured_file_exists(env_name: str, default_path: str = "") -> tuple[bool, bool]:
+    file_path = os.environ.get(env_name, "").strip()
+    if not file_path and default_path:
+        file_path = default_path
+    if not file_path:
+        return False, False
+    return True, Path(file_path).is_file()
+
+
+def build_keycloak_diagnostic(
+    *,
+    stage: str,
+    message: str,
+    status_code: int | None = None,
+    error: str = "",
+    error_description: str = "",
+    safe_url: str = "",
+) -> dict[str, Any]:
+    client_secret_file_configured, client_secret_file_exists = _configured_file_exists(
+        "KEYCLOAK_CLIENT_SECRET_FILE"
+    )
+    _home_secret_file_configured, home_secret_file_exists = _configured_file_exists(
+        "HOME_PROVISION_SHARED_SECRET_FILE",
+        settings.HOME_PROVISION_SHARED_SECRET_DEFAULT_FILE,
+    )
+    return {
+        "stage": str(stage or ""),
+        "status_code": status_code,
+        "error": str(error or ""),
+        "error_description": str(error_description or ""),
+        "message": str(message or ""),
+        "safe_url": str(safe_url or ""),
+        "server_url": settings.KEYCLOAK_SERVER_URL,
+        "realm": settings.KEYCLOAK_REALM,
+        "client_id": settings.KEYCLOAK_CLIENT_ID,
+        "redirect_uri": settings.KEYCLOAK_REDIRECT_URI,
+        "client_secret_configured": bool(settings.KEYCLOAK_CLIENT_SECRET),
+        "client_secret_file_configured": client_secret_file_configured,
+        "client_secret_file_exists": client_secret_file_exists,
+        "home_secret_file_exists": home_secret_file_exists,
+        "created_at": timezone.now().isoformat(),
+    }
+
+
 def _parse_keycloak_error_payload(response_body: str) -> tuple[str, str]:
     try:
         payload = json.loads(response_body)
@@ -305,9 +362,27 @@ def _parse_keycloak_error_payload(response_body: str) -> tuple[str, str]:
         return "", ""
 
     return (
-        str(payload.get("error") or "")[:120],
-        str(payload.get("error_description") or "")[:300],
+        _redact_keycloak_log_text(str(payload.get("error") or ""))[:120],
+        _redact_keycloak_log_text(str(payload.get("error_description") or ""))[:300],
     )
+
+
+def _redact_keycloak_log_text(value: str) -> str:
+    output = str(value or "")
+    for key in SENSITIVE_KEYCLOAK_LOG_KEYS:
+        output = re.sub(
+            rf'("{re.escape(key)}"\s*:\s*")[^"]*(")',
+            r"\1[redacted]\2",
+            output,
+            flags=re.IGNORECASE,
+        )
+        output = re.sub(
+            rf"({re.escape(key)}=)[^\s&]+",
+            r"\1[redacted]",
+            output,
+            flags=re.IGNORECASE,
+        )
+    return output
 
 
 def _keycloak_stage_label(stage: str) -> str:
@@ -327,10 +402,10 @@ def _keycloak_http_error_message(stage: str, status_code: int) -> str:
         return _(
             "La connexion Keycloak a échoué pendant la lecture du profil utilisateur."
         )
-    return (
-        _("La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s.")
-        % {"stage": _keycloak_stage_label(stage), "code": status_code}
-    )
+    return _("La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s.") % {
+        "stage": _keycloak_stage_label(stage),
+        "code": status_code,
+    }
 
 
 def _load_json_response(request: Request, *, stage: str) -> dict[str, Any]:
@@ -344,33 +419,65 @@ def _load_json_response(request: Request, *, stage: str) -> dict[str, Any]:
         except Exception:
             response_body = ""
         error, error_description = _parse_keycloak_error_payload(response_body)
+        message = str(_keycloak_http_error_message(stage, exc.code))
+        safe_url = _safe_request_url(request)
         logger.warning(
             "keycloak_http_error stage=%s url=%s status=%s reason=%s error=%s error_description=%s body=%s",
             stage,
-            _safe_request_url(request),
+            safe_url,
             exc.code,
             exc.reason,
             error,
             error_description,
-            response_body[:500],
+            _redact_keycloak_log_text(response_body)[:500],
         )
-        raise KeycloakAuthError(_keycloak_http_error_message(stage, exc.code)) from exc
+        raise KeycloakAuthError(
+            message,
+            diagnostic=build_keycloak_diagnostic(
+                stage=stage,
+                message=message,
+                status_code=exc.code,
+                error=error,
+                error_description=error_description,
+                safe_url=safe_url,
+            ),
+        ) from exc
     except URLError as exc:
+        message = str(_("La requête Keycloak a échoué."))
         logger.warning(
             "keycloak_url_error stage=%s url=%s reason=%s",
             stage,
             _safe_request_url(request),
             exc.reason,
         )
-        raise KeycloakAuthError(_("La requête Keycloak a échoué.")) from exc
+        raise KeycloakAuthError(
+            message,
+            diagnostic=build_keycloak_diagnostic(
+                stage=stage, message=message, safe_url=_safe_request_url(request)
+            ),
+        ) from exc
     except TimeoutError as exc:
-        logger.warning("keycloak_timeout stage=%s url=%s", stage, _safe_request_url(request))
-        raise KeycloakAuthError(_("La requête Keycloak a expiré.")) from exc
+        message = str(_("La requête Keycloak a expiré."))
+        logger.warning(
+            "keycloak_timeout stage=%s url=%s", stage, _safe_request_url(request)
+        )
+        raise KeycloakAuthError(
+            message,
+            diagnostic=build_keycloak_diagnostic(
+                stage=stage, message=message, safe_url=_safe_request_url(request)
+            ),
+        ) from exc
     except json.JSONDecodeError as exc:
+        message = str(_("La requête Keycloak a échoué."))
         logger.warning(
             "keycloak_invalid_json stage=%s url=%s", stage, _safe_request_url(request)
         )
-        raise KeycloakAuthError(_("La requête Keycloak a échoué.")) from exc
+        raise KeycloakAuthError(
+            message,
+            diagnostic=build_keycloak_diagnostic(
+                stage=stage, message=message, safe_url=_safe_request_url(request)
+            ),
+        ) from exc
 
 
 def _exchange_keycloak_code(code: str) -> dict[str, Any]:
