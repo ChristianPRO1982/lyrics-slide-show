@@ -31,7 +31,7 @@ from app_main.auth import (
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
 from app_member.services import MemberRoleFlags
-from app_main.views import account
+from app_main.views import _keycloak_diagnostic_causes, account
 
 
 def create_site_params(**overrides):
@@ -244,6 +244,18 @@ class CallbackValidationTests(SimpleTestCase):
         self.assertNotIn("client_secret=", log_output)
         self.assertNotIn("access_token", log_output)
         self.assertNotIn("code=", log_output)
+
+    def test_keycloak_diagnostic_causes_include_unauthorized_client(self):
+        causes = _keycloak_diagnostic_causes(
+            {
+                "stage": "token_exchange",
+                "status_code": 401,
+                "error": "unauthorized_client",
+            }
+        )
+
+        self.assertIn("Secret client Keycloak invalide", causes[0])
+        self.assertNotIn("Consultez les logs LSS", causes)
 
     @patch("app_main.auth.urlopen")
     def test_keycloak_userinfo_401_has_distinct_message(self, urlopen_mock):

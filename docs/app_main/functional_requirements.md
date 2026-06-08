@@ -116,8 +116,8 @@ The diagnostic page `/login/diagnostic/` must:
 - never expose client secrets, access tokens, OAuth codes, cookies, or raw
   sensitive payloads,
 - show targeted likely causes for common failures such as `token_exchange`
-  `401 invalid_client`, `token_exchange` `400 invalid_grant`, and `userinfo`
-  `401`,
+  `401 invalid_client`, `token_exchange` `401 unauthorized_client`,
+  `token_exchange` `400 invalid_grant`, and `userinfo` `401`,
 - show a link to relaunch Keycloak login.
 
 A global link to this diagnostic page is eligible when a diagnostic snapshot is

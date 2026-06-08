@@ -209,8 +209,8 @@ Keycloak expert diagnostics:
   `/login/diagnostic/`,
 - the diagnostic page shows the failing stage, HTTP status, Keycloak
   `error`/`error_description`, public client settings, and secret presence flags,
-- a `token_exchange` `401 invalid_client` usually points to the client secret,
-  client ID, or confidential-client settings,
+- a `token_exchange` `401 invalid_client` or `401 unauthorized_client` usually
+  points to the client secret, client ID, or confidential-client settings,
 - a `token_exchange` `400 invalid_grant` usually points to the redirect URI, an
   expired/consumed code, or server clock drift,
 - `LSS` must never expose the client secret, OAuth code, access token, cookies,

@@ -439,7 +439,15 @@ def _keycloak_diagnostic_causes(diagnostic: dict[str, object]) -> list[str]:
     status_code = diagnostic.get("status_code")
     error = str(diagnostic.get("error") or "")
 
-    if stage == "token_exchange" and status_code == 401 and error == "invalid_client":
+    if (
+        stage == "token_exchange"
+        and status_code == 401
+        and error
+        in {
+            "invalid_client",
+            "unauthorized_client",
+        }
+    ):
         return [
             _("Secret client Keycloak invalide ou non monté dans le conteneur LSS."),
             _("Client ID différent entre LSS et Keycloak."),
