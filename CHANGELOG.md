@@ -1,3 +1,15 @@
+# [2.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.2...v2.8.0) (2026-06-08)
+
+
+### Bug Fixes
+
+* improve formatting and readability in Keycloak diagnostic messages and tests ([9240972](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/92409724119ca5705db007a5b55a568bb3380b55))
+
+
+### Features
+
+* add Keycloak diagnostic feature with detailed error reporting and UI integration ([33328b0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/33328b04fe183cdf6d421cba6a0a5bc9687c53e3))
+
 ## [2.7.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.1...v2.7.2) (2026-06-05)
 
 
