@@ -775,7 +775,9 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("provision_redirect"))
         self.assertContains(response, "https://carthographie.fr/provision/start?")
         self.assertContains(response, "app_id=lss")
-        self.assertContains(response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F")
+        self.assertContains(
+            response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F"
+        )
         self.assertContains(response, "ts=1700000100")
         self.assertContains(response, "nonce=nonce-value")
         self.assertContains(response, "sig=sig-value")
@@ -970,7 +972,9 @@ class AuthFlowTests(TestCase):
         self.assertEqual(diagnostic["status_code"], 401)
         self.assertEqual(diagnostic["error"], "invalid_client")
 
-    def test_keycloak_diagnostic_page_without_session_diagnostic_shows_empty_state(self):
+    def test_keycloak_diagnostic_page_without_session_diagnostic_shows_empty_state(
+        self,
+    ):
         response = self.client.get(reverse("keycloak_diagnostic"))
 
         self.assertEqual(response.status_code, 200)

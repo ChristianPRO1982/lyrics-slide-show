@@ -468,7 +468,9 @@ def keycloak_diagnostic(request: HttpRequest) -> HttpResponse:
     diagnostic = request.session.get(KEYCLOAK_DIAGNOSTIC_SESSION_KEY) or {}
     causes = _keycloak_diagnostic_causes(diagnostic) if diagnostic else []
     checks = [
-        _("Vérifier que KEYCLOAK_CLIENT_SECRET_FILE pointe vers un fichier monté dans le conteneur LSS."),
+        _(
+            "Vérifier que KEYCLOAK_CLIENT_SECRET_FILE pointe vers un fichier monté dans le conteneur LSS."
+        ),
         _("Vérifier KEYCLOAK_CLIENT_ID et KEYCLOAK_REDIRECT_URI dans .env.prod."),
         _("Chercher keycloak_http_error dans les logs LSS."),
         _("Vérifier le chemin du secret Home si le flux de provisioning est atteint."),

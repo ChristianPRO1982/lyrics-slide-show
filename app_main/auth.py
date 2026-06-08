@@ -372,13 +372,13 @@ def _redact_keycloak_log_text(value: str) -> str:
     for key in SENSITIVE_KEYCLOAK_LOG_KEYS:
         output = re.sub(
             rf'("{re.escape(key)}"\s*:\s*")[^"]*(")',
-            rf"\1[redacted]\2",
+            r"\1[redacted]\2",
             output,
             flags=re.IGNORECASE,
         )
         output = re.sub(
             rf"({re.escape(key)}=)[^\s&]+",
-            rf"\1[redacted]",
+            r"\1[redacted]",
             output,
             flags=re.IGNORECASE,
         )
@@ -402,10 +402,10 @@ def _keycloak_http_error_message(stage: str, status_code: int) -> str:
         return _(
             "La connexion Keycloak a échoué pendant la lecture du profil utilisateur."
         )
-    return (
-        _("La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s.")
-        % {"stage": _keycloak_stage_label(stage), "code": status_code}
-    )
+    return _("La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s.") % {
+        "stage": _keycloak_stage_label(stage),
+        "code": status_code,
+    }
 
 
 def _load_json_response(request: Request, *, stage: str) -> dict[str, Any]:
