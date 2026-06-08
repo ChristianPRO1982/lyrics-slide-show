@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.8.0...v2.8.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* update paths for Django secret key and Keycloak client secret in environment configuration ([eabf4ff](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/eabf4ff00832839e5a3604a0f5b1e1c110de62be))
+
 # [2.8.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.7.2...v2.8.0) (2026-06-08)
 
 
