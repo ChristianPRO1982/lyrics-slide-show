@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.8.1...v2.9.0) (2026-06-08)
+
+
+### Features
+
+* enhance Keycloak diagnostic handling for unauthorized client errors ([118b89a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/118b89ab60e5c70d64a9936e60a2a3e2f78066b7))
+
 ## [2.8.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.8.0...v2.8.1) (2026-06-08)
 
 
