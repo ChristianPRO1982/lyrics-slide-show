@@ -18,10 +18,12 @@ from app_group.services import get_selected_group_state
 from app_main.auth import (
     DisabledUserError,
     HOME_PROVISION_TARGET_SESSION_KEY,
+    KEYCLOAK_DIAGNOSTIC_SESSION_KEY,
     HomeProvisioningError,
     InvalidCallbackError,
     KeycloakAuthError,
     UnknownUserError,
+    build_keycloak_diagnostic,
     build_home_provision_start_url,
     build_keycloak_login_url,
     build_keycloak_logout_url,
@@ -325,6 +327,7 @@ def login(request: HttpRequest) -> HttpResponse:
             try:
                 return redirect(build_keycloak_login_url(request.session))
             except KeycloakAuthError as exc:
+                _store_keycloak_diagnostic(request, exc)
                 messages.error(request, str(exc))
                 logger.warning(
                     "login_refused auth_mode=keycloak reason=configuration detail=%s",
@@ -349,6 +352,14 @@ def _store_home_provision_target(request: HttpRequest, target_url: str) -> None:
     request.session.modified = True
 
 
+def _store_keycloak_diagnostic(request: HttpRequest, exc: KeycloakAuthError) -> None:
+    diagnostic = getattr(exc, "diagnostic", {}) or {}
+    if not diagnostic:
+        diagnostic = build_keycloak_diagnostic(stage="callback", message=str(exc))
+    request.session[KEYCLOAK_DIAGNOSTIC_SESSION_KEY] = diagnostic
+    request.session.modified = True
+
+
 def auth_callback(request: HttpRequest) -> HttpResponse:
     payload = None
     try:
@@ -366,6 +377,7 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         return redirect("homepage")
     except KeycloakAuthError as exc:
         logger.warning("login_refused reason=keycloak_callback detail=%s", exc)
+        _store_keycloak_diagnostic(request, exc)
         messages.error(request, str(exc))
         clear_session_user(request.session)
         return redirect("homepage")
@@ -420,6 +432,58 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         request, _("Connecté en tant que %(username)s.") % {"username": user.username}
     )
     return redirect("homepage")
+
+
+def _keycloak_diagnostic_causes(diagnostic: dict[str, object]) -> list[str]:
+    stage = str(diagnostic.get("stage") or "")
+    status_code = diagnostic.get("status_code")
+    error = str(diagnostic.get("error") or "")
+
+    if stage == "token_exchange" and status_code == 401 and error == "invalid_client":
+        return [
+            _("Secret client Keycloak invalide ou non monté dans le conteneur LSS."),
+            _("Client ID différent entre LSS et Keycloak."),
+            _("Client Keycloak non configuré comme client confidentiel."),
+        ]
+    if stage == "token_exchange" and status_code == 400 and error == "invalid_grant":
+        return [
+            _("URL de retour Keycloak différente de celle déclarée dans le client."),
+            _("Code OAuth déjà consommé ou expiré."),
+            _("Décalage d'horloge entre les services."),
+        ]
+    if stage == "userinfo" and status_code == 401:
+        return [
+            _("Jeton d'accès refusé par l'endpoint userinfo."),
+            _("Realm ou endpoint userinfo incohérent avec le jeton reçu."),
+        ]
+    if stage:
+        return [
+            _("Consultez les logs LSS autour de keycloak_http_error."),
+            _("Vérifiez la configuration Keycloak non sensible affichée ci-dessous."),
+        ]
+    return []
+
+
+def keycloak_diagnostic(request: HttpRequest) -> HttpResponse:
+    diagnostic = request.session.get(KEYCLOAK_DIAGNOSTIC_SESSION_KEY) or {}
+    causes = _keycloak_diagnostic_causes(diagnostic) if diagnostic else []
+    checks = [
+        _("Vérifier que KEYCLOAK_CLIENT_SECRET_FILE pointe vers un fichier monté dans le conteneur LSS."),
+        _("Vérifier KEYCLOAK_CLIENT_ID et KEYCLOAK_REDIRECT_URI dans .env.prod."),
+        _("Chercher keycloak_http_error dans les logs LSS."),
+        _("Vérifier le chemin du secret Home si le flux de provisioning est atteint."),
+    ]
+
+    return render(
+        request,
+        "main/keycloak_diagnostic.html",
+        {
+            "selected_group": _get_selected_group(request),
+            "diagnostic": diagnostic,
+            "causes": causes,
+            "checks": checks,
+        },
+    )
 
 
 def provision_redirect(request: HttpRequest) -> HttpResponse:
