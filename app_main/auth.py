@@ -6,6 +6,7 @@ import os
 import re
 import secrets
 import time
+from datetime import datetime, timezone as datetime_timezone
 from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -25,9 +26,11 @@ from app_member.services import get_member_role_flags_safe
 SESSION_USER_KEY = "lss_user"
 KEYCLOAK_STATE_SESSION_KEY = "lss_keycloak_state"
 HOME_PROVISION_TARGET_SESSION_KEY = "lss_home_provision_target"
+PENDING_PROVISION_SESSION_KEY = "lss_pending_provision"
 KEYCLOAK_DIAGNOSTIC_SESSION_KEY = "lss_keycloak_diagnostic"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
+PENDING_PROVISION_TTL_SECONDS = 15 * 60
 logger = logging.getLogger("app_main.auth")
 SENSITIVE_KEYCLOAK_LOG_KEYS = (
     "client_secret",
@@ -659,6 +662,59 @@ def clear_session_user(session) -> None:
 
 def get_session_user(session) -> dict[str, Any] | None:
     return session.get(SESSION_USER_KEY)
+
+
+def store_pending_provision_state(
+    session, *, external_id: str, auth_mode: str = "keycloak"
+) -> None:
+    session[PENDING_PROVISION_SESSION_KEY] = {
+        "external_id": str(external_id or "").strip(),
+        "created_at": timezone.now().isoformat(),
+        "auth_mode": str(auth_mode or "").strip(),
+    }
+    _mark_session_modified(session)
+
+
+def clear_pending_provision_state(session) -> None:
+    session.pop(PENDING_PROVISION_SESSION_KEY, None)
+    _mark_session_modified(session)
+
+
+def get_pending_provision_state(
+    session, *, clear_expired: bool = True
+) -> dict[str, Any] | None:
+    payload = session.get(PENDING_PROVISION_SESSION_KEY)
+    if not isinstance(payload, dict):
+        return None
+
+    external_id = str(payload.get("external_id") or "").strip()
+    auth_mode = str(payload.get("auth_mode") or "").strip()
+    created_at_raw = str(payload.get("created_at") or "").strip()
+    if not external_id or auth_mode != "keycloak" or not created_at_raw:
+        if clear_expired:
+            clear_pending_provision_state(session)
+        return None
+
+    try:
+        created_at = datetime.fromisoformat(created_at_raw)
+        if timezone.is_naive(created_at):
+            created_at = timezone.make_aware(created_at, datetime_timezone.utc)
+    except ValueError:
+        if clear_expired:
+            clear_pending_provision_state(session)
+        return None
+
+    age_seconds = (timezone.now() - created_at).total_seconds()
+    if age_seconds > PENDING_PROVISION_TTL_SECONDS:
+        if clear_expired:
+            clear_pending_provision_state(session)
+        return None
+
+    return {
+        "external_id": external_id,
+        "created_at": created_at_raw,
+        "auth_mode": auth_mode,
+    }
 
 
 def get_request_user(session) -> SessionUser | AnonymousSessionUser:

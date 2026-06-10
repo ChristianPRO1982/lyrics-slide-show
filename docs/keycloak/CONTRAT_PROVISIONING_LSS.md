@@ -72,7 +72,7 @@ import time
 from urllib.parse import urlencode
 
 app_id = "lss"
-return_url = "https://lss.carthographie.fr/"
+return_url = "https://lss.carthographie.fr/provision/complete/"
 ts = str(int(time.time()))
 nonce = secrets.token_urlsafe(24)
 secret = "SECRET_FROM_SERVER_FILE"
@@ -103,6 +103,26 @@ url = "https://carthographie.fr/provision/start?" + urlencode({
    `keycloak-user-sync` de provisionner l'utilisateur.
 8. En cas de succès, `home` affiche le lien de retour et redirige
    automatiquement après 5 secondes.
+9. Le retour final doit viser l'URL exacte `return_url`, qui pointe vers
+   `LSS /provision/complete/`.
+
+## Contrat de retour final
+
+Le retour final vers `LSS` n'est pas un callback OIDC.
+
+Il doit permettre à `LSS` de relire `users.users` dans la même session
+navigateur, grâce à l'état temporaire `lss_pending_provision` stocké après le
+premier callback Keycloak valide.
+
+Règles :
+
+- `home` ou `cARThographie` doit renvoyer le navigateur vers `return_url`
+  exactement ;
+- il ne faut pas renvoyer vers `/`, `/auth/callback/` ou `/login/?start=1` ;
+- aucun identifiant utilisateur ou jeton spécifique à `LSS` n'est requis dans
+  ce retour ;
+- si la session navigateur `LSS` a été perdue, le flux nominal n'est plus
+  récupérable sans nouvelle connexion Keycloak.
 
 Si LSS ne peut pas générer le ticket signé parce que sa configuration est
 incomplète, il ne doit pas rediriger vers l'accueil générique de `home`, car

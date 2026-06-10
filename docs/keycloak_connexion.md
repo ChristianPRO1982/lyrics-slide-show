@@ -193,7 +193,7 @@ Provisioning variables for production:
 - `HOME_PROVISION_START_URL=https://carthographie.fr/provision/start`
 - `HOME_PROVISION_APP_ID=lss`
 - `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
-- `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/`
+- `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/provision/complete/`
 
 If `HOME_PROVISION_SHARED_SECRET_FILE` is not set, `LSS` also tries the same
 contractual file path automatically:
@@ -202,6 +202,20 @@ contractual file path automatically:
 If the signed provisioning URL cannot be built, `LSS` must not send the user to
 the generic `home` homepage because it does not trigger provisioning. It must keep
 the user anonymous and show a configuration error.
+
+Post-provisioning return:
+
+- after a valid Keycloak callback for an unknown local user, `LSS` stores a
+  temporary `lss_pending_provision` session state with the validated
+  `external_id`,
+- `cARThographie` must redirect the browser back to the exact signed
+  `HOME_PROVISION_RETURN_URL`,
+- for `LSS`, that URL must target `/provision/complete/`,
+- `/provision/complete/` is not an OIDC callback; it is a local resume step
+  where `LSS` retries the `users.users` lookup with the `external_id` stored in
+  the same browser session,
+- if the user now exists and is enabled, `LSS` opens the local session without
+  a second Keycloak round trip.
 
 Keycloak expert diagnostics:
 
