@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -176,9 +178,18 @@ class CallbackValidationTests(SimpleTestCase):
         )
         self.assertEqual(params["ts"], ["1700000100"])
         self.assertEqual(params["nonce"], ["nonce-value"])
-        expected_sig = (
-            "5ca6278e62e6c5408ca411f0dff4ef080f8f9ba4b734cc999a99cb0b58e44df6"
-        )
+        expected_sig = hmac.new(
+            b"shared-secret",
+            "\n".join(
+                [
+                    "lss",
+                    "https://lss.carthographie.fr/provision/complete/",
+                    "1700000100",
+                    "nonce-value",
+                ]
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
         self.assertEqual(params["sig"], [expected_sig])
 
     @override_settings(
@@ -186,30 +197,37 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="shared-secret",
         HOME_PROVISION_RETURN_URL="",
-        KEYCLOAK_LOGOUT_REDIRECT_URI="https://lss.carthographie.fr/",
     )
-    @patch("app_main.auth.secrets.token_urlsafe", return_value="nonce-value")
-    @patch("app_main.auth.time.time", return_value=1700000100)
-    def test_build_home_provision_start_url_uses_logout_redirect_as_return_fallback(
-        self, _time_mock, _nonce_mock
-    ):
-        provision_url = build_home_provision_start_url()
-
-        params = parse_qs(urlparse(provision_url).query)
-        self.assertEqual(params["return_url"], ["https://lss.carthographie.fr/"])
-
-    @override_settings(
-        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
-        HOME_PROVISION_APP_ID="lss",
-        HOME_PROVISION_SHARED_SECRET="shared-secret",
-        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/#fragment",
-    )
-    def test_build_home_provision_start_url_rejects_fragment_in_return_url(self):
+    def test_build_home_provision_start_url_requires_explicit_return_url(self):
         with self.assertRaisesMessage(
             HomeProvisioningError,
-            "L'URL de retour du provisioning Home est invalide.",
+            "L'URL HOME_PROVISION_RETURN_URL doit être une URL HTTPS absolue pointant vers /provision/complete/.",
         ):
             build_home_provision_start_url()
+
+    def test_build_home_provision_start_url_rejects_invalid_return_url_targets(self):
+        invalid_return_urls = (
+            "https://lss.carthographie.fr/",
+            "https://lss.carthographie.fr/auth/callback/",
+            "https://lss.carthographie.fr/login/?start=1",
+            "https://lss.carthographie.fr/provision/complete/#fragment",
+            "http://lss.carthographie.fr/provision/complete/",
+            "https://lss.carthographie.fr/provision/complete/?step=1",
+        )
+
+        for invalid_return_url in invalid_return_urls:
+            with self.subTest(return_url=invalid_return_url):
+                with override_settings(
+                    HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+                    HOME_PROVISION_APP_ID="lss",
+                    HOME_PROVISION_SHARED_SECRET="shared-secret",
+                    HOME_PROVISION_RETURN_URL=invalid_return_url,
+                ):
+                    with self.assertRaisesMessage(
+                        HomeProvisioningError,
+                        "L'URL HOME_PROVISION_RETURN_URL doit être une URL HTTPS absolue pointant vers /provision/complete/.",
+                    ):
+                        build_home_provision_start_url()
 
     @patch("app_main.auth.urlopen")
     def test_keycloak_token_exchange_401_has_actionable_message_and_safe_logs(
@@ -323,7 +341,7 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="",
-        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/provision/complete/",
     )
     def test_build_home_provision_start_url_requires_secret(self):
         with self.assertRaisesMessage(
@@ -833,6 +851,15 @@ class AuthFlowTests(TestCase):
         _build_home_provision_start_url_mock,
         _get_directory_user_mock,
     ):
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "stale-user",
+            "created_at": timezone.now().isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session["lss_home_provision_target"] = "https://stale.example.test/"
+        session.save()
+
         response = self.client.get(
             reverse("auth_callback"),
             {"code": "auth-code", "state": "state"},
@@ -847,6 +874,8 @@ class AuthFlowTests(TestCase):
         )
         self.assertNotContains(response, "Continuer vers cARThographie")
         self.assertNotIn("lss_user", self.client.session)
+        self.assertNotIn("lss_pending_provision", self.client.session)
+        self.assertNotIn("lss_home_provision_target", self.client.session)
 
     def test_provision_redirect_without_session_target_returns_homepage(self):
         response = self.client.get(reverse("provision_redirect"), follow=True)

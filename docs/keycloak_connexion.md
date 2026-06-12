@@ -195,6 +195,12 @@ Provisioning variables for production:
 - `HOME_PROVISION_SHARED_SECRET_FILE=/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`
 - `HOME_PROVISION_RETURN_URL=https://lss.carthographie.fr/provision/complete/`
 
+Separation of responsibilities:
+
+- `KEYCLOAK_LOGOUT_REDIRECT_URI` is used only for the logout flow,
+- `HOME_PROVISION_RETURN_URL` is used only for the signed post-provisioning return,
+- `LSS` must never reuse the logout redirect URL as a fallback provisioning return URL.
+
 If `HOME_PROVISION_SHARED_SECRET_FILE` is not set, `LSS` also tries the same
 contractual file path automatically:
 `/opt/stacks/_shared/secrets/home-provisioning/redirect_lss_secret.txt`.
@@ -211,6 +217,8 @@ Post-provisioning return:
 - `cARThographie` must redirect the browser back to the exact signed
   `HOME_PROVISION_RETURN_URL`,
 - for `LSS`, that URL must target `/provision/complete/`,
+- `LSS` must reject any `HOME_PROVISION_RETURN_URL` that points to `/`,
+  `/auth/callback/`, `/login/`, or another non-dedicated endpoint,
 - `/provision/complete/` is not an OIDC callback; it is a local resume step
   where `LSS` retries the `users.users` lookup with the `external_id` stored in
   the same browser session,

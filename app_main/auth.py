@@ -31,6 +31,7 @@ KEYCLOAK_DIAGNOSTIC_SESSION_KEY = "lss_keycloak_diagnostic"
 VALID_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAX_TEXT_FIELD_LENGTH = 255
 PENDING_PROVISION_TTL_SECONDS = 15 * 60
+HOME_PROVISION_RETURN_PATH = "/provision/complete/"
 logger = logging.getLogger("app_main.auth")
 SENSITIVE_KEYCLOAK_LOG_KEYS = (
     "client_secret",
@@ -167,15 +168,33 @@ def _home_provision_signature_payload(
     return "\n".join([app_id, return_url, ts, nonce])
 
 
+def _validate_home_provision_return_url(return_url: str) -> str:
+    normalized_return_url = str(return_url or "").strip()
+    error_message = _(
+        "L'URL HOME_PROVISION_RETURN_URL doit être une URL HTTPS absolue pointant vers /provision/complete/."
+    )
+
+    if not normalized_return_url:
+        raise HomeProvisioningError(error_message)
+
+    parsed = urlsplit(normalized_return_url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.netloc
+        or parsed.path != HOME_PROVISION_RETURN_PATH
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise HomeProvisioningError(error_message)
+
+    return normalized_return_url
+
+
 def build_home_provision_start_url() -> str:
     start_url = str(settings.HOME_PROVISION_START_URL or "").strip()
     app_id = str(settings.HOME_PROVISION_APP_ID or "").strip()
     shared_secret = str(settings.HOME_PROVISION_SHARED_SECRET or "").strip()
-    return_url = str(
-        settings.HOME_PROVISION_RETURN_URL
-        or settings.KEYCLOAK_LOGOUT_REDIRECT_URI
-        or ""
-    ).strip()
+    return_url = _validate_home_provision_return_url(settings.HOME_PROVISION_RETURN_URL)
 
     if not shared_secret:
         raise HomeProvisioningError(
@@ -187,11 +206,6 @@ def build_home_provision_start_url() -> str:
     if not start_url or not app_id or not return_url:
         raise HomeProvisioningError(
             _("La configuration du provisioning Home est incomplète.")
-        )
-
-    if urlsplit(return_url).fragment:
-        raise HomeProvisioningError(
-            _("L'URL de retour du provisioning Home est invalide.")
         )
 
     ts = str(int(time.time()))

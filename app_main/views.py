@@ -398,9 +398,12 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
             try:
                 provision_url = build_home_provision_start_url()
             except HomeProvisioningError as provision_exc:
+                clear_pending_provision_state(request.session)
+                _clear_home_provision_target(request)
                 logger.warning(
-                    "login_provision_signed_url_failed external_id=%s detail=%s",
+                    "login_provision_signed_url_failed external_id=%s home_provision_return_url=%s detail=%s",
                     external_id,
+                    str(settings.HOME_PROVISION_RETURN_URL or "").strip(),
                     provision_exc,
                 )
                 messages.error(request, str(provision_exc))

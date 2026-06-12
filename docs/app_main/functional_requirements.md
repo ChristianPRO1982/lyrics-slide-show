@@ -155,6 +155,10 @@ linking to the generic `home` homepage.
 When only the Home provisioning secret is missing, the error message must identify
 that missing server-side secret explicitly.
 
+`HOME_PROVISION_RETURN_URL` is a dedicated provisioning-resume URL. It must not
+reuse the logout redirect URL and, for `LSS`, it must be an absolute HTTPS URL
+that targets `/provision/complete/` exactly.
+
 When the same callback also proves a valid Keycloak identity for an unknown local
 user, `app_main` must store a temporary `lss_pending_provision` session payload
 containing:
