@@ -1,4 +1,7 @@
+import hashlib
+import hmac
 import os
+from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.error import HTTPError
@@ -10,6 +13,7 @@ from django.contrib.messages import get_messages
 from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from lyrics_slide_show.settings import env_secret_with_default_file
 from app_main.auth import (
@@ -153,7 +157,7 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="shared-secret",
-        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/provision/complete/",
     )
     @patch("app_main.auth.secrets.token_urlsafe", return_value="nonce-value")
     @patch("app_main.auth.time.time", return_value=1700000100)
@@ -169,12 +173,23 @@ class CallbackValidationTests(SimpleTestCase):
             "https://carthographie.fr/provision/start",
         )
         self.assertEqual(params["app_id"], ["lss"])
-        self.assertEqual(params["return_url"], ["https://lss.carthographie.fr/"])
+        self.assertEqual(
+            params["return_url"], ["https://lss.carthographie.fr/provision/complete/"]
+        )
         self.assertEqual(params["ts"], ["1700000100"])
         self.assertEqual(params["nonce"], ["nonce-value"])
-        expected_sig = (
-            "ba32c6339442ffe80b7b36ff7f82afe5baf3721a0a9efd673f9337ef885a3a93"
-        )
+        expected_sig = hmac.new(
+            b"shared-secret",
+            "\n".join(
+                [
+                    "lss",
+                    "https://lss.carthographie.fr/provision/complete/",
+                    "1700000100",
+                    "nonce-value",
+                ]
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
         self.assertEqual(params["sig"], [expected_sig])
 
     @override_settings(
@@ -182,30 +197,37 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="shared-secret",
         HOME_PROVISION_RETURN_URL="",
-        KEYCLOAK_LOGOUT_REDIRECT_URI="https://lss.carthographie.fr/",
     )
-    @patch("app_main.auth.secrets.token_urlsafe", return_value="nonce-value")
-    @patch("app_main.auth.time.time", return_value=1700000100)
-    def test_build_home_provision_start_url_uses_logout_redirect_as_return_fallback(
-        self, _time_mock, _nonce_mock
-    ):
-        provision_url = build_home_provision_start_url()
-
-        params = parse_qs(urlparse(provision_url).query)
-        self.assertEqual(params["return_url"], ["https://lss.carthographie.fr/"])
-
-    @override_settings(
-        HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
-        HOME_PROVISION_APP_ID="lss",
-        HOME_PROVISION_SHARED_SECRET="shared-secret",
-        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/#fragment",
-    )
-    def test_build_home_provision_start_url_rejects_fragment_in_return_url(self):
+    def test_build_home_provision_start_url_requires_explicit_return_url(self):
         with self.assertRaisesMessage(
             HomeProvisioningError,
-            "L'URL de retour du provisioning Home est invalide.",
+            "L'URL HOME_PROVISION_RETURN_URL doit être une URL HTTPS absolue pointant vers /provision/complete/.",
         ):
             build_home_provision_start_url()
+
+    def test_build_home_provision_start_url_rejects_invalid_return_url_targets(self):
+        invalid_return_urls = (
+            "https://lss.carthographie.fr/",
+            "https://lss.carthographie.fr/auth/callback/",
+            "https://lss.carthographie.fr/login/?start=1",
+            "https://lss.carthographie.fr/provision/complete/#fragment",
+            "http://lss.carthographie.fr/provision/complete/",
+            "https://lss.carthographie.fr/provision/complete/?step=1",
+        )
+
+        for invalid_return_url in invalid_return_urls:
+            with self.subTest(return_url=invalid_return_url):
+                with override_settings(
+                    HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
+                    HOME_PROVISION_APP_ID="lss",
+                    HOME_PROVISION_SHARED_SECRET="shared-secret",
+                    HOME_PROVISION_RETURN_URL=invalid_return_url,
+                ):
+                    with self.assertRaisesMessage(
+                        HomeProvisioningError,
+                        "L'URL HOME_PROVISION_RETURN_URL doit être une URL HTTPS absolue pointant vers /provision/complete/.",
+                    ):
+                        build_home_provision_start_url()
 
     @patch("app_main.auth.urlopen")
     def test_keycloak_token_exchange_401_has_actionable_message_and_safe_logs(
@@ -319,7 +341,7 @@ class CallbackValidationTests(SimpleTestCase):
         HOME_PROVISION_START_URL="https://carthographie.fr/provision/start",
         HOME_PROVISION_APP_ID="lss",
         HOME_PROVISION_SHARED_SECRET="",
-        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/",
+        HOME_PROVISION_RETURN_URL="https://lss.carthographie.fr/provision/complete/",
     )
     def test_build_home_provision_start_url_requires_secret(self):
         with self.assertRaisesMessage(
@@ -756,7 +778,7 @@ class AuthFlowTests(TestCase):
         return_value=(
             "https://carthographie.fr/provision/start?"
             "app_id=lss&"
-            "return_url=https%3A%2F%2Flss.carthographie.fr%2F&"
+            "return_url=https%3A%2F%2Flss.carthographie.fr%2Fprovision%2Fcomplete%2F&"
             "ts=1700000100&"
             "nonce=nonce-value&"
             "sig=sig-value"
@@ -788,7 +810,8 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "https://carthographie.fr/provision/start?")
         self.assertContains(response, "app_id=lss")
         self.assertContains(
-            response, "return_url=https%3A%2F%2Flss.carthographie.fr%2F"
+            response,
+            "return_url=https%3A%2F%2Flss.carthographie.fr%2Fprovision%2Fcomplete%2F",
         )
         self.assertContains(response, "ts=1700000100")
         self.assertContains(response, "nonce=nonce-value")
@@ -796,6 +819,9 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "Continuer vers cARThographie")
         self.assertContains(response, "window.location.assign")
         self.assertNotIn("lss_user", self.client.session)
+        pending = self.client.session["lss_pending_provision"]
+        self.assertEqual(pending["external_id"], "33333333-3333-3333-3333-333333333333")
+        self.assertEqual(pending["auth_mode"], "keycloak")
         build_home_provision_start_url_mock.assert_called_once_with()
 
     @override_settings(AUTH_MODE="keycloak")
@@ -825,6 +851,15 @@ class AuthFlowTests(TestCase):
         _build_home_provision_start_url_mock,
         _get_directory_user_mock,
     ):
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "stale-user",
+            "created_at": timezone.now().isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session["lss_home_provision_target"] = "https://stale.example.test/"
+        session.save()
+
         response = self.client.get(
             reverse("auth_callback"),
             {"code": "auth-code", "state": "state"},
@@ -839,6 +874,8 @@ class AuthFlowTests(TestCase):
         )
         self.assertNotContains(response, "Continuer vers cARThographie")
         self.assertNotIn("lss_user", self.client.session)
+        self.assertNotIn("lss_pending_provision", self.client.session)
+        self.assertNotIn("lss_home_provision_target", self.client.session)
 
     def test_provision_redirect_without_session_target_returns_homepage(self):
         response = self.client.get(reverse("provision_redirect"), follow=True)
@@ -846,6 +883,109 @@ class AuthFlowTests(TestCase):
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
         self.assertIn("Aucune synchronisation de compte n'est en attente.", messages)
+
+    def test_provision_complete_without_pending_state_returns_homepage(self):
+        response = self.client.get(reverse("provision_complete"), follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn(
+            "Aucune finalisation de synchronisation n'est en attente.",
+            messages,
+        )
+
+    def test_provision_complete_creates_session_when_user_is_now_available(self):
+        create_directory_user(id="33333333-3333-3333-3333-333333333333")
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "created_at": timezone.now().isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session["lss_home_provision_target"] = (
+            "https://carthographie.fr/provision/start"
+        )
+        session.save()
+
+        response = self.client.get(reverse("provision_complete"), follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        self.assertContains(
+            response,
+            "Connecté en tant que known.user après synchronisation du compte.",
+        )
+        self.assertNotIn("lss_pending_provision", self.client.session)
+        self.assertNotIn("lss_home_provision_target", self.client.session)
+        self.assertEqual(
+            self.client.session["lss_user"]["external_id"],
+            "33333333-3333-3333-3333-333333333333",
+        )
+
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=UnknownUserError("No matching user found in users.users."),
+    )
+    def test_provision_complete_renders_retry_page_when_user_is_still_missing(
+        self, _get_directory_user_mock
+    ):
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "created_at": timezone.now().isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session.save()
+
+        response = self.client.get(reverse("provision_complete"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "R\u00e9essayer la synchronisation")
+        self.assertContains(response, reverse("provision_complete"))
+        self.assertContains(response, reverse("login") + "?start=1")
+        self.assertIn("lss_pending_provision", self.client.session)
+        self.assertNotIn("lss_user", self.client.session)
+
+    @patch(
+        "app_main.views.get_directory_user",
+        side_effect=DisabledUserError("This user is disabled in users.users."),
+    )
+    def test_provision_complete_clears_pending_state_for_disabled_user(
+        self, _get_directory_user_mock
+    ):
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "created_at": timezone.now().isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session.save()
+
+        response = self.client.get(reverse("provision_complete"), follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("This user is disabled in users.users.", messages)
+        self.assertNotIn("lss_pending_provision", self.client.session)
+        self.assertNotIn("lss_user", self.client.session)
+
+    def test_provision_complete_rejects_expired_pending_state(self):
+        session = self.client.session
+        session["lss_pending_provision"] = {
+            "external_id": "33333333-3333-3333-3333-333333333333",
+            "created_at": (timezone.now() - timedelta(minutes=16)).isoformat(),
+            "auth_mode": "keycloak",
+        }
+        session.save()
+
+        response = self.client.get(reverse("provision_complete"), follow=True)
+
+        self.assertRedirects(response, reverse("homepage"))
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn(
+            "Aucune finalisation de synchronisation n'est en attente.",
+            messages,
+        )
+        self.assertNotIn("lss_pending_provision", self.client.session)
 
     @override_settings(AUTH_MODE="keycloak")
     @patch(

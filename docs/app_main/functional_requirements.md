@@ -46,6 +46,8 @@ Those concerns belong elsewhere, mainly in `app_member` or the other domain apps
 - `/` as the public homepage,
 - `/login/`,
 - `/auth/callback/`,
+- `/provision/redirect/`,
+- `/provision/complete/`,
 - `/logout/`,
 - `/account/`,
 - `/themes/`,
@@ -152,6 +154,41 @@ linking to the generic `home` homepage.
 
 When only the Home provisioning secret is missing, the error message must identify
 that missing server-side secret explicitly.
+
+`HOME_PROVISION_RETURN_URL` is a dedicated provisioning-resume URL. It must not
+reuse the logout redirect URL and, for `LSS`, it must be an absolute HTTPS URL
+that targets `/provision/complete/` exactly.
+
+When the same callback also proves a valid Keycloak identity for an unknown local
+user, `app_main` must store a temporary `lss_pending_provision` session payload
+containing:
+
+- the validated `external_id`,
+- a creation timestamp,
+- `auth_mode=keycloak`.
+
+That pending state must never authenticate the user by itself.
+
+The pending provisioning state must expire after 15 minutes.
+
+### Home Provisioning Completion
+
+The signed `HOME_PROVISION_RETURN_URL` used for `LSS` must target
+`/provision/complete/`.
+
+The completion entry point must:
+
+- remain accessible without authentication,
+- require the same browser session that previously received
+  `lss_pending_provision`,
+- retry the `users.users` lookup using the `external_id` stored in that session,
+- open the normal local session when the user now exists and is enabled,
+- clear `lss_pending_provision` and the temporary provisioning target on success,
+- keep the user anonymous and show recovery actions when the user is still
+  absent,
+- clear `lss_pending_provision` and refuse access when the user exists but is
+  disabled,
+- clear expired `lss_pending_provision` state and ask for a fresh login flow.
 
 ## Directory User Resolution
 

@@ -27,9 +27,12 @@ from app_main.auth import (
     build_home_provision_start_url,
     build_keycloak_login_url,
     build_keycloak_logout_url,
+    clear_pending_provision_state,
     clear_session_user,
+    get_pending_provision_state,
     get_directory_user,
     get_session_user,
+    store_pending_provision_state,
     store_session_user,
     validate_callback_payload,
     validate_keycloak_callback,
@@ -352,6 +355,11 @@ def _store_home_provision_target(request: HttpRequest, target_url: str) -> None:
     request.session.modified = True
 
 
+def _clear_home_provision_target(request: HttpRequest) -> None:
+    request.session.pop(HOME_PROVISION_TARGET_SESSION_KEY, None)
+    request.session.modified = True
+
+
 def _store_keycloak_diagnostic(request: HttpRequest, exc: KeycloakAuthError) -> None:
     diagnostic = getattr(exc, "diagnostic", {}) or {}
     if not diagnostic:
@@ -390,9 +398,12 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
             try:
                 provision_url = build_home_provision_start_url()
             except HomeProvisioningError as provision_exc:
+                clear_pending_provision_state(request.session)
+                _clear_home_provision_target(request)
                 logger.warning(
-                    "login_provision_signed_url_failed external_id=%s detail=%s",
+                    "login_provision_signed_url_failed external_id=%s home_provision_return_url=%s detail=%s",
                     external_id,
+                    str(settings.HOME_PROVISION_RETURN_URL or "").strip(),
                     provision_exc,
                 )
                 messages.error(request, str(provision_exc))
@@ -404,6 +415,9 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
                 _(
                     "Votre compte Lyrics Slide Show doit être synchronisé depuis cARThographie."
                 ),
+            )
+            store_pending_provision_state(
+                request.session, external_id=external_id, auth_mode="keycloak"
             )
             _store_home_provision_target(request, provision_url)
             return redirect("provision_redirect")
@@ -425,6 +439,8 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
 
     request.session.cycle_key()
     store_session_user(request.session, user)
+    clear_pending_provision_state(request.session)
+    _clear_home_provision_target(request)
     logger.info(
         "login_success external_id=%s username=%s", user.external_id, user.username
     )
@@ -518,6 +534,54 @@ def provision_redirect(request: HttpRequest) -> HttpResponse:
     )
 
 
+def provision_complete(request: HttpRequest) -> HttpResponse:
+    pending = get_pending_provision_state(request.session)
+    if pending is None:
+        messages.info(
+            request,
+            _("Aucune finalisation de synchronisation n'est en attente."),
+        )
+        return redirect("homepage")
+
+    external_id = str(pending.get("external_id") or "").strip()
+    try:
+        user = get_directory_user(external_id)
+    except UnknownUserError:
+        return render(
+            request,
+            "main/provision_complete.html",
+            {
+                "selected_group": _get_selected_group(request),
+            },
+        )
+    except DisabledUserError as exc:
+        logger.warning(
+            "login_refused reason=disabled_user_after_provision external_id=%s",
+            external_id,
+        )
+        clear_pending_provision_state(request.session)
+        _clear_home_provision_target(request)
+        clear_session_user(request.session)
+        messages.error(request, str(exc))
+        return redirect("homepage")
+
+    request.session.cycle_key()
+    store_session_user(request.session, user)
+    clear_pending_provision_state(request.session)
+    _clear_home_provision_target(request)
+    logger.info(
+        "login_success_after_provision external_id=%s username=%s",
+        user.external_id,
+        user.username,
+    )
+    messages.success(
+        request,
+        _("Connecté en tant que %(username)s après synchronisation du compte.")
+        % {"username": user.username},
+    )
+    return redirect("homepage")
+
+
 def logout(request: HttpRequest) -> HttpResponse:
     session_user = get_session_user(request.session)
     if session_user:
@@ -526,6 +590,8 @@ def logout(request: HttpRequest) -> HttpResponse:
             session_user.get("external_id", ""),
             session_user.get("username", ""),
         )
+    clear_pending_provision_state(request.session)
+    _clear_home_provision_target(request)
     clear_session_user(request.session)
     request.session.cycle_key()
     messages.info(request, _("Vous êtes déconnecté."))
