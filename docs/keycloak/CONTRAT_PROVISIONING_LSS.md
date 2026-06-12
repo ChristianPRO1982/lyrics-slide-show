@@ -62,6 +62,11 @@ Pour `app_id=lss`, `home` accepte uniquement les URLs HTTPS dont l'hôte est :
 L'URL signée peut contenir un chemin et une query string. Les fragments `#...`
 sont refusés.
 
+Pour `LSS`, cette URL ne doit pas pointer vers la racine du site (`/`).
+Elle doit pointer vers un endpoint applicatif dédié a la reprise
+post-provisioning, charge d'executer la derniere action locale attendue par
+`LSS`.
+
 ## Exemple Python
 
 ```python
@@ -101,10 +106,14 @@ url = "https://carthographie.fr/provision/start?" + urlencode({
 6. Si l'utilisateur n'a pas de session `home`, `home` le renvoie vers Keycloak.
 7. `home` vérifie les claims Keycloak, puis demande au receiver
    `keycloak-user-sync` de provisionner l'utilisateur.
-8. En cas de succès, `home` affiche le lien de retour et redirige
-   automatiquement après 5 secondes.
-9. Le retour final doit viser l'URL exacte `return_url`, qui pointe vers
-   `LSS /provision/complete/`.
+8. En cas de succès confirmé par le receiver, `home` redirige directement le
+   navigateur vers l'URL exacte `return_url`.
+9. Le retour final doit viser cette URL exacte, qui pointe vers
+   `LSS /provision/complete/` ou tout autre endpoint LSS explicitement dédié
+   a la finalisation locale.
+10. Cet endpoint LSS exécute lui-même la dernière action applicative :
+    relecture de `users.users`, ouverture de session locale, affichage d'une
+    reprise, ou relance contrôlée d'un flux interne LSS si nécessaire.
 
 ## Contrat de retour final
 
@@ -114,13 +123,22 @@ Il doit permettre à `LSS` de relire `users.users` dans la même session
 navigateur, grâce à l'état temporaire `lss_pending_provision` stocké après le
 premier callback Keycloak valide.
 
+`home` ne doit ni deviner, ni recalculer, ni compléter cette dernière étape.
+La responsabilité de la dernière action fonctionnelle appartient entièrement a
+`LSS`, via l'URL `return_url` qu'il a lui-même signée.
+
 Règles :
 
 - `home` ou `cARThographie` doit renvoyer le navigateur vers `return_url`
   exactement ;
+- `LSS` doit signer une `return_url` qui declenche une reprise applicative
+  réelle, et non une simple page d'accueil ;
 - il ne faut pas renvoyer vers `/`, `/auth/callback/` ou `/login/?start=1` ;
+- le succès final ne passe pas par une page HTML intermédiaire ;
 - aucun identifiant utilisateur ou jeton spécifique à `LSS` n'est requis dans
   ce retour ;
+- en cas d'échec de provisioning, `home` ne doit pas renvoyer vers
+  `return_url` ;
 - si la session navigateur `LSS` a été perdue, le flux nominal n'est plus
   récupérable sans nouvelle connexion Keycloak.
 

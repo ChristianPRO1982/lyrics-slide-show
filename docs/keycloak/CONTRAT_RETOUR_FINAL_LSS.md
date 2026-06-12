@@ -11,10 +11,13 @@ Il sert à permettre à `LSS` de reprendre localement une connexion déjà valid
 par `Keycloak`, après que `cARThographie` a créé ou synchronisé l'utilisateur
 dans `users.users`.
 
+La dernière action fonctionnelle n'est jamais exécutée par `cARThographie`.
+Elle doit être exécutée par `LSS`, sur son propre endpoint de reprise.
+
 ## Endpoint de retour LSS
 
-`cARThographie` doit rediriger le navigateur vers l'URL exacte signée par LSS
-dans le paramètre `return_url`.
+`cARThographie` doit répondre au provisioning réussi par une redirection HTTP
+vers l'URL exacte signée par LSS dans le paramètre `return_url`.
 
 Pour `LSS`, cette URL doit pointer vers :
 
@@ -27,6 +30,17 @@ Exemple production attendu :
 ```text
 https://lss.carthographie.fr/provision/complete/
 ```
+
+Cette URL ne doit pas pointer vers `https://lss.carthographie.fr/`, car la
+racine du site n'est pas un endpoint de finalisation de provisioning et ne
+porte pas, a elle seule, la reprise locale attendue.
+
+Exception de diagnostic :
+
+- en mode `DEBUG=true` sur `home`, la redirection finale peut etre remplacee
+  par une page intermediaire avec un bouton manuel vers `return_url` ;
+- ce mode sert uniquement au debogage du flux et ne fait pas partie du
+  contrat nominal de production.
 
 ## Pré-requis de session navigateur
 
@@ -59,10 +73,14 @@ La reprise post-provisioning dépend exclusivement de cet état de session.
    redirige vers `cARThographie /provision/start`
 7. `cARThographie` termine la synchronisation nécessaire pour que `users.users`
    contienne bien l'utilisateur
-8. `cARThographie` redirige le navigateur vers l'URL exacte `return_url`
+8. `cARThographie` répond par une redirection HTTP vers l'URL exacte
+   `return_url`
 9. `LSS /provision/complete/` relit `users.users` avec le `external_id` mémorisé
    en session
 10. si l'utilisateur existe et est `enabled`, `LSS` ouvre la session locale
+11. si une action applicative supplementaire est requise apres ouverture de
+    session, elle est declenchee par `LSS` depuis cet endpoint ou depuis une
+    redirection interne controlee par `LSS`
 
 ## Obligations de cARThographie avant la redirection finale
 
@@ -73,7 +91,14 @@ Avant de rediriger vers `return_url`, `cARThographie` doit :
 - utiliser l'URL exacte `return_url` fournie par `LSS`.
 
 `cARThographie` ne doit pas enrichir ce retour avec un identifiant utilisateur
-ou un jeton spécifique à `LSS`.
+ou un jeton spécifique à `LSS`, ni ajouter de paramètre métier `LSS`.
+
+`cARThographie` ne doit pas remplacer une `return_url` incorrecte par une URL
+par défaut de `LSS`. Si `LSS` signe une mauvaise URL, c'est un défaut de
+contrat côté `LSS` à corriger à la source.
+
+En cas d'échec de provisioning, `cARThographie` ne doit pas rediriger le
+navigateur vers `return_url`.
 
 ## Comportements interdits
 
@@ -82,12 +107,14 @@ ou un jeton spécifique à `LSS`.
 - `/`
 - `/auth/callback/`
 - `/login/?start=1`
+- `https://lss.carthographie.fr/`
 
 Le retour final n'est pas :
 
 - un nouveau callback OIDC ;
 - une relance forcée de login ;
-- une API serveur-à-serveur.
+- une API serveur-à-serveur ;
+- une page HTML intermédiaire avec redirection différée.
 
 ## Cas d'échec et récupération
 
