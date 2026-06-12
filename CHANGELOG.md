@@ -1,3 +1,12 @@
+## [2.9.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.0...v2.9.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* clarify provisioning return URL requirements and endpoint responsibilities ([ea73ea2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ea73ea22ecc4f894e85de2d9e0b916b36d6f232f))
+* implement provisioning completion flow with session management and user state handling ([a393036](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a3930365c77d177fd993c2ea4e8f80e3573b9950))
+* update HOME_PROVISION_RETURN_URL to point to /provision/complete/ and validate its format ([8c3cc1e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8c3cc1ecd95d138c3fac3c2a887c4394f7cd60f7))
+
 # [2.9.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.8.1...v2.9.0) (2026-06-08)
 
 
