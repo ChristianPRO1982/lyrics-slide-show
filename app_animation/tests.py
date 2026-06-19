@@ -127,6 +127,71 @@ class AnimationRenderBundleTests(TestCase):
         source_verse_ids = [slide.source_verse_id for slide in bundle]
         self.assertIn(chorus.verse_id, source_verse_ids)
 
+    def test_bundle_marks_chorus_and_chorus_like_as_bold(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session C",
+            scheduled_at=timezone.now(),
+        )
+
+        verse_song = Song.objects.create(
+            title="Verse Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        verse = Verse.objects.create(
+            song=verse_song, num=2, num_verse=1, chorus=False, text="Couplet"
+        )
+
+        chorus_song = Song.objects.create(
+            title="Chorus Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus = Verse.objects.create(
+            song=chorus_song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+
+        chorus_like_song = Song.objects.create(
+            title="Bridge Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus_like = Verse.objects.create(
+            song=chorus_like_song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont",
+        )
+
+        AnimationSong.objects.create(animation=animation, song=verse_song, position=2)
+        AnimationSong.objects.create(animation=animation, song=chorus_song, position=4)
+        AnimationSong.objects.create(
+            animation=animation, song=chorus_like_song, position=6
+        )
+
+        bundle = build_animation_render_bundle(animation)
+        slide_by_source_verse_id = {
+            slide.source_verse_id: slide for slide in bundle if slide.source_verse_id
+        }
+
+        self.assertEqual(
+            slide_by_source_verse_id[verse.verse_id].style.font_weight, "normal"
+        )
+        self.assertEqual(
+            slide_by_source_verse_id[chorus.verse_id].style.font_weight, "bold"
+        )
+        self.assertEqual(
+            slide_by_source_verse_id[chorus_like.verse_id].style.font_weight, "bold"
+        )
+
 
 class AnimationViewsTests(TestCase):
     def _select_group(self, group: Group, secret: str | None = None) -> None:
@@ -950,6 +1015,22 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    def test_lyrics_slide_show_display_loads_google_fonts_stylesheet(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "abcd1234-valid"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, GOOGLE_FONTS_STYLESHEET_HREF.replace("&", "&amp;")
+        )
+
     def test_lyrics_slide_show_public_is_accessible_without_group_selection(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -1006,6 +1087,279 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(slides[0]["sourceVerseId"], verse.verse_id)
         self.assertIn("[...]", slides[0]["excerpt"])
         self.assertLessEqual(len(slides[0]["excerpt"]), 55)
+        self.assertEqual(
+            slides[0]["style"],
+            {
+                "textColor": "#FFFFFF",
+                "bgColor": "#000000",
+                "fontFamily": "Source Sans Pro",
+                "fontWeight": "normal",
+                "fontSize": 72,
+                "horizontalPadding": 80,
+                "backgroundAssetCode": "",
+                "backgroundUrl": "",
+            },
+        )
+
+    def test_lyrics_slide_show_runtime_payload_exposes_resolved_style_and_font_weight(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#123456",
+            bg_color="#654321",
+            font_family="Ubuntu",
+            font_size=72,
+            horizontal_padding=24,
+        )
+
+        verse_song = Song.objects.create(
+            title="Verse Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        verse = Verse.objects.create(
+            song=verse_song, num=2, num_verse=1, chorus=False, text="Couplet"
+        )
+        verse_item = AnimationSong.objects.create(
+            animation=animation, song=verse_song, position=2
+        )
+
+        chorus_song = Song.objects.create(
+            title="Chorus Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus = Verse.objects.create(
+            song=chorus_song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        chorus_item = AnimationSong.objects.create(
+            animation=animation,
+            song=chorus_song,
+            position=4,
+            font_family_override="Raleway",
+            font_size_override=68,
+        )
+
+        chorus_like_song = Song.objects.create(
+            title="Bridge Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus_like = Verse.objects.create(
+            song=chorus_like_song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont",
+        )
+        chorus_like_item = AnimationSong.objects.create(
+            animation=animation, song=chorus_like_song, position=6
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=chorus_like_item,
+            source_verse_id=chorus_like.verse_id,
+            font_family_override="Anton",
+            font_size_override=64,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        slides = response.context["runtime_payload"]["slides"]
+        slide_by_animation_song_id = {
+            slide["animationSongId"]: slide for slide in slides
+        }
+
+        self.assertEqual(
+            slide_by_animation_song_id[verse_item.animation_song_id]["style"],
+            {
+                "textColor": "#123456",
+                "bgColor": "#654321",
+                "fontFamily": "Ubuntu",
+                "fontWeight": "normal",
+                "fontSize": 72,
+                "horizontalPadding": 24,
+                "backgroundAssetCode": "",
+                "backgroundUrl": "",
+            },
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_item.animation_song_id]["style"][
+                "fontWeight"
+            ],
+            "bold",
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_item.animation_song_id]["style"][
+                "fontFamily"
+            ],
+            "Raleway",
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_item.animation_song_id]["style"][
+                "fontSize"
+            ],
+            68,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_like_item.animation_song_id]["style"][
+                "fontWeight"
+            ],
+            "bold",
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_like_item.animation_song_id]["style"][
+                "fontFamily"
+            ],
+            "Anton",
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_like_item.animation_song_id]["style"][
+                "fontSize"
+            ],
+            64,
+        )
+
+        self.assertEqual(
+            slide_by_animation_song_id[verse_item.animation_song_id]["sourceVerseId"],
+            verse.verse_id,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_item.animation_song_id]["sourceVerseId"],
+            chorus.verse_id,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[chorus_like_item.animation_song_id][
+                "sourceVerseId"
+            ],
+            chorus_like.verse_id,
+        )
+
+    def test_lyrics_slide_show_runtime_payload_preserves_zero_animation_padding(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            horizontal_padding=0,
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="Texte")
+        animation_song = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        slide = next(
+            item
+            for item in response.context["runtime_payload"]["slides"]
+            if item["animationSongId"] == animation_song.animation_song_id
+        )
+        self.assertEqual(slide["style"]["horizontalPadding"], 0)
+
+    def test_lyrics_slide_show_runtime_payload_preserves_zero_song_and_verse_padding(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            horizontal_padding=24,
+        )
+
+        song_with_song_override = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_override_verse = Verse.objects.create(
+            song=song_with_song_override,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Song override",
+        )
+        song_override_item = AnimationSong.objects.create(
+            animation=animation,
+            song=song_with_song_override,
+            position=2,
+            horizontal_padding_override=0,
+        )
+
+        song_with_verse_override = Song.objects.create(
+            title="Song C", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse_override_verse = Verse.objects.create(
+            song=song_with_verse_override,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Verse override",
+        )
+        verse_override_item = AnimationSong.objects.create(
+            animation=animation,
+            song=song_with_verse_override,
+            position=4,
+            horizontal_padding_override=36,
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=verse_override_item,
+            source_verse_id=verse_override_verse.verse_id,
+            horizontal_padding_override=0,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        slides = response.context["runtime_payload"]["slides"]
+        slide_by_animation_song_id = {
+            slide["animationSongId"]: slide for slide in slides
+        }
+        self.assertEqual(
+            slide_by_animation_song_id[song_override_item.animation_song_id]["style"][
+                "horizontalPadding"
+            ],
+            0,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[verse_override_item.animation_song_id]["style"][
+                "horizontalPadding"
+            ],
+            0,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[song_override_item.animation_song_id][
+                "sourceVerseId"
+            ],
+            song_override_verse.verse_id,
+        )
+        self.assertEqual(
+            slide_by_animation_song_id[verse_override_item.animation_song_id][
+                "sourceVerseId"
+            ],
+            verse_override_verse.verse_id,
+        )
 
     def test_lyrics_slide_show_runtime_matches_render_bundle_order_and_visibility(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

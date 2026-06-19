@@ -59,6 +59,11 @@
         slideNode.style.backgroundPosition = "center center";
     };
 
+    const readIntegerWithFallback = (value, fallback) => {
+        const parsed = Number.parseInt(String(value ?? ""), 10);
+        return Number.isNaN(parsed) ? fallback : parsed;
+    };
+
     const persistFrame = (frame) => {
         try {
             window.localStorage.setItem(frameStorageKey, JSON.stringify(frame));
@@ -73,6 +78,7 @@
         slideNode.style.backgroundColor = "#000000";
         slideNode.style.color = "#FFFFFF";
         slideNode.style.fontFamily = "'Source Sans Pro', sans-serif";
+        slideNode.style.fontWeight = "normal";
         slideNode.style.fontSize = "64px";
         slideNode.style.paddingLeft = "80px";
         slideNode.style.paddingRight = "80px";
@@ -86,6 +92,7 @@
         slideNode.style.backgroundImage = "";
         slideNode.style.backgroundColor = "#000000";
         slideNode.style.color = "#000000";
+        slideNode.style.fontWeight = "normal";
         slideNode.textContent = "";
     };
 
@@ -96,6 +103,7 @@
         slideNode.style.backgroundColor = "#000000";
         slideNode.style.color = "rgb(200, 200, 200)";
         slideNode.style.fontFamily = "'Source Sans Pro', sans-serif";
+        slideNode.style.fontWeight = "normal";
         slideNode.style.fontSize = "64px";
         slideNode.style.paddingLeft = "80px";
         slideNode.style.paddingRight = "80px";
@@ -109,6 +117,7 @@
         slideNode.style.backgroundColor = "#000000";
         slideNode.style.color = "#FFFFFF";
         slideNode.style.fontFamily = "'Source Sans Pro', sans-serif";
+        slideNode.style.fontWeight = "normal";
         slideNode.style.fontSize = "42px";
         slideNode.style.paddingLeft = "60px";
         slideNode.style.paddingRight = "60px";
@@ -152,9 +161,10 @@
         slideNode.style.color = String(style.textColor || "#FFFFFF");
         slideNode.style.backgroundColor = String(style.bgColor || "#000000");
         slideNode.style.fontFamily = `'${String(style.fontFamily || "Source Sans Pro")}', sans-serif`;
-        slideNode.style.fontSize = `${Number.parseInt(String(style.fontSize || "72"), 10) || 72}px`;
-        slideNode.style.paddingLeft = `${Number.parseInt(String(style.horizontalPadding || "80"), 10) || 80}px`;
-        slideNode.style.paddingRight = `${Number.parseInt(String(style.horizontalPadding || "80"), 10) || 80}px`;
+        slideNode.style.fontWeight = String(style.fontWeight || "normal");
+        slideNode.style.fontSize = `${readIntegerWithFallback(style.fontSize, 72)}px`;
+        slideNode.style.paddingLeft = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
+        slideNode.style.paddingRight = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
         slideNode.style.backgroundImage = bgUrl ? `url('${bgUrl.replace(/'/g, "\\'")}')` : "";
         slideNode.textContent = text;
     };

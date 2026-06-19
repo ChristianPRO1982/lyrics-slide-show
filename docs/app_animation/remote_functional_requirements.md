@@ -27,6 +27,7 @@ Paramétrage :
 - couleur du fond
 - couleur de la police
 - police d'écriture
+- poids de la police (`normal` / `bold`)
 - marge (gauche = droite)
 - alignement du texte
 - Texte à afficher
@@ -34,6 +35,7 @@ Paramétrage :
 > Note : Le texte envoyé est du texte brut, pas du HTML.
 > Côté display, il est injecté via textContent (pas innerHTML), puis l’affichage multi-lignes est géré par CSS (white-space: pre-wrap).
 > Donc les <br> sont traités comme des caractères texte, pas comme des retours HTML.
+> Le payload peut en revanche transporter un style résolu pour dire si la slide est à afficher en gras ou non.
 
 ## Template général de la remote
 
