@@ -32,6 +32,8 @@ from .rendering import (
     build_song_full_title_with_tags,
     build_song_text_artifacts,
     render_song_blocks,
+    render_song_popup_plain_text,
+    render_song_text,
     normalize_lyrics_linebreaks,
 )
 from .search import (
@@ -1256,6 +1258,8 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             ),
             "print_single_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain",
             "print_full_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain",
+            "popup_single_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain&layout=popup-copy",
+            "popup_full_plain_url": f"{reverse('song_text', args=[song_object.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain&layout=popup-copy",
         },
     )
 
@@ -1558,7 +1562,24 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
         else text_artifacts.long_text_html
     )
     if request.GET.get("format") == "plain":
-        return HttpResponse(text_html, content_type="text/plain; charset=utf-8")
+        if request.GET.get("layout") == "popup-copy":
+            return HttpResponse(
+                render_song_popup_plain_text(
+                    song,
+                    render_mode,
+                    settings=render_settings,
+                ),
+                content_type="text/plain; charset=utf-8",
+            )
+        return HttpResponse(
+            render_song_text(
+                song,
+                render_mode,
+                settings=render_settings,
+                include_title=False,
+            ),
+            content_type="text/plain; charset=utf-8",
+        )
 
     return render(
         request,

@@ -168,6 +168,7 @@ Version 1 supports up to five text fields:
   label: "Adresse e-mail",
   type: "text" | "email" | "password" | "textarea",
   value: "",
+  readonly: false,
   placeholder: "",
   required: true,
   autocomplete: "email",
@@ -183,6 +184,7 @@ Normalization rules:
 - invalid `type` falls back to `"text"`
 - `label` falls back to `id`
 - `value`, `placeholder`, and `autocomplete` are normalized to strings
+- `readonly` is coerced to boolean
 - `required` is coerced to boolean
 - `maxLength` is used only if it is a positive integer
 - `rows` is used only for `textarea` and only if it is a positive integer, otherwise it defaults to `4`
@@ -191,6 +193,7 @@ Rendered field behavior:
 
 - fields are rendered inside a `<form novalidate>`
 - textareas are vertically resizable
+- `readonly: true` makes `input` and `textarea` fields non-editable while keeping their value focusable and selectable
 - validation errors are rendered inline below the field
 - current field values are always returned as strings
 

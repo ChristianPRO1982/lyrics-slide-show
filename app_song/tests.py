@@ -17,6 +17,7 @@ from .rendering import (
     build_song_full_title,
     build_song_full_title_with_tags,
     build_song_text_artifacts,
+    render_song_popup_plain_text,
     render_song_blocks,
     render_song_text,
 )
@@ -281,6 +282,24 @@ class ModifySongBlockLabelTests(SimpleTestCase):
         self.assertIn("Suite du couplet", text)
         self.assertNotIn("Couplet 1", text)
 
+    def test_popup_plain_text_puts_chorus_like_prefix_on_its_own_line(self):
+        text = render_song_popup_plain_text(
+            make_song(),
+            ChorusRenderMode.SINGLE,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(
+                    2, 4, "Pont final", num_verse=1, chorus_like=True, prefix="Pont"
+                ),
+                make_verse(
+                    3, 6, "Sans préfixe", num_verse=2, chorus_like=True, prefix=""
+                ),
+            ],
+        )
+
+        self.assertEqual(text, "Refrain Refrain\n\nPont\nPont final\n\nSans préfixe\n")
+
 
 class SongSearchParamsTests(SimpleTestCase):
     def test_guest_search_ignores_advanced_filters(self):
@@ -447,7 +466,7 @@ class SongTextArtifactsTests(SimpleTestCase):
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="")],
         )
         self.assertIn(
-            '<th scope="row">Refrain</th><td>Pont final</td>',
+            '<th scope="row"></th><td>Pont final</td>',
             artifacts_no_prefix.long_text_html,
         )
 
@@ -573,6 +592,46 @@ class SongViewsRenderingTests(TestCase):
         )
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
+    def test_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "<p>copier le texte sans mise en forme</p>",
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-plain-copy-trigger",
+            count=4,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "single-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "full-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-label="un seul refrain"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-label="toutes les répétitions de refrain"',
+            count=2,
+            html=False,
+        )
+
     def test_song_text_print_page_uses_full_title_without_tags(self):
         self._login()
         response = self.client.get(
@@ -587,7 +646,7 @@ class SongViewsRenderingTests(TestCase):
             html=False,
         )
 
-    def test_song_text_plain_endpoint_returns_html_fragment(self):
+    def test_song_text_plain_endpoint_returns_plain_text_blocks(self):
         self._login()
         response = self.client.get(
             reverse("song_text", args=[self.song.song_id, "single-chorus"])
@@ -596,8 +655,32 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
         body = response.content.decode("utf-8")
-        self.assertIn('<th scope="row">Refrain</th><td>On dirait le Sud</td>', body)
+        self.assertEqual(
+            body, "Refrain On dirait le Sud\n\nCouplet 1 C'est un endroit\n"
+        )
+        self.assertNotIn("<th", body)
+        self.assertNotIn("<td", body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
+
+    def test_song_text_popup_copy_layout_puts_chorus_like_prefix_on_separate_line(self):
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=2,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+        self._login()
+        response = self.client.get(
+            reverse("song_text", args=[self.song.song_id, "full-chorus"])
+            + "?format=plain&layout=popup-copy"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
+        body = response.content.decode("utf-8")
+        self.assertIn("\n\nPont\nPont final\n", body)
+        self.assertNotIn("\n\nPont Pont final\n", body)
 
     def test_song_text_popup_endpoint_returns_full_chorus_markdown(self):
         self._login()

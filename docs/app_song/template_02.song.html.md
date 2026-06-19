@@ -10,6 +10,8 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
 - Affiche les cartes de métadonnées (`_song_metadata.html`) et liens (`_song_links.html`).
 - Affiche le rendu paroles principal (`text_long_html`).
 - Monte le panneau d’actions (`_song_actions.html`) selon le contexte de page.
+- Ajoute deux actions dédiées de copie texte brut (`un seul refrain`, `toutes les répétitions de refrain`) dans le panneau d’actions et le panneau mobile.
+- Ouvre une popup avec `textarea` readonly, croix de fermeture, et boutons `Copier` / `Fermer` pour le texte brut récupéré depuis les URLs plain text.
 - Gère les interactions UI associées (toggle description, actions mobile, etc.).
 
 ## Contrat d’interface (variables attendues)
