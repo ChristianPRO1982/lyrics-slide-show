@@ -634,6 +634,13 @@ body.lss-messagebox-open {
     resize: vertical;
 }
 
+.lss-messagebox-input[readonly],
+.lss-messagebox-textarea[readonly] {
+    background: var(--site-surface-alt);
+    color: var(--site-ink);
+    cursor: text;
+}
+
 .lss-messagebox-input[type="color"] {
     min-height: 52px;
     padding: 6px 8px;

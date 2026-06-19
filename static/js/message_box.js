@@ -306,6 +306,7 @@
                 label: String(field.label ?? field.id),
                 type,
                 value: String(field.value ?? ""),
+                readonly: Boolean(field.readonly),
                 placeholder: String(field.placeholder ?? ""),
                 required: Boolean(field.required),
                 autocomplete: String(field.autocomplete ?? ""),
@@ -489,6 +490,11 @@
             input.type = field.type;
         } else if (isTextArea) {
             input.rows = field.rows;
+        }
+
+        if (field.readonly && (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) {
+            input.readOnly = true;
+            input.setAttribute("aria-readonly", "true");
         }
 
         if (!isSelect) {

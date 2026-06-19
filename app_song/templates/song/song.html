@@ -19,6 +19,30 @@
 {% block tools_title %}{% trans "Chant" %}{% endblock %}
 {% block page_tools %}
     {% include "song/includes/_song_actions.html" %}
+    <hr>
+    <p>{% trans "copier le texte sans mise en forme" %}</p>
+    <p>
+        <button
+            type="button"
+            class="song-tool-button site-action site-action--primary"
+            data-song-plain-copy-trigger
+            data-plain-url="{{ popup_single_plain_url }}"
+            data-popup-label="{% trans 'un seul refrain' %}"
+        >
+            {% trans "un seul refrain" %}
+        </button>
+    </p>
+    <p>
+        <button
+            type="button"
+            class="song-tool-button site-action site-action--primary"
+            data-song-plain-copy-trigger
+            data-plain-url="{{ popup_full_plain_url }}"
+            data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
+        >
+            {% trans "toutes les répétitions de refrain" %}
+        </button>
+    </p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
 {% block mobile_side_content %}
@@ -39,6 +63,30 @@
     </p>
     <div data-song-mobile-actions hidden>
         {% include "song/includes/_song_actions.html" %}
+        <hr>
+        <p>{% trans "copier le texte sans mise en forme" %}</p>
+        <p>
+            <button
+                type="button"
+                class="song-tool-button site-action site-action--primary"
+                data-song-plain-copy-trigger
+                data-plain-url="{{ popup_single_plain_url }}"
+                data-popup-label="{% trans 'un seul refrain' %}"
+            >
+                {% trans "un seul refrain" %}
+            </button>
+        </p>
+        <p>
+            <button
+                type="button"
+                class="song-tool-button site-action site-action--primary"
+                data-song-plain-copy-trigger
+                data-plain-url="{{ popup_full_plain_url }}"
+                data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
+            >
+                {% trans "toutes les répétitions de refrain" %}
+            </button>
+        </p>
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}

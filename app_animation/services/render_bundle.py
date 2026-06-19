@@ -12,6 +12,7 @@ class ResolvedVisualStyle:
     text_color: str
     bg_color: str
     font_family: str
+    font_weight: str
     font_size: int
     horizontal_padding: int
     background_asset_code: str | None
@@ -33,6 +34,7 @@ def _resolve_style(
     animation: Animation,
     animation_song: AnimationSong,
     verse_override: AnimationVerseOverride | None,
+    block_kind: str,
 ) -> ResolvedVisualStyle:
     return ResolvedVisualStyle(
         text_color=(
@@ -50,16 +52,24 @@ def _resolve_style(
             if verse_override and verse_override.font_family_override
             else animation_song.font_family_override or animation.font_family
         ),
+        font_weight="bold" if block_kind in {"chorus", "chorus_like"} else "normal",
         font_size=(
             verse_override.font_size_override
             if verse_override and verse_override.font_size_override is not None
-            else animation_song.font_size_override or animation.font_size
+            else (
+                animation_song.font_size_override
+                if animation_song.font_size_override is not None
+                else animation.font_size
+            )
         ),
         horizontal_padding=(
             verse_override.horizontal_padding_override
             if verse_override and verse_override.horizontal_padding_override is not None
-            else animation_song.horizontal_padding_override
-            or animation.horizontal_padding
+            else (
+                animation_song.horizontal_padding_override
+                if animation_song.horizontal_padding_override is not None
+                else animation.horizontal_padding
+            )
         ),
         background_asset_code=(
             verse_override.background_asset_code_override
@@ -112,7 +122,9 @@ def build_animation_render_bundle(animation: Animation) -> list[RenderedAnimatio
             ):
                 continue
 
-            style = _resolve_style(animation, animation_song, verse_override)
+            style = _resolve_style(
+                animation, animation_song, verse_override, str(block.kind)
+            )
             slides.append(
                 RenderedAnimationSlide(
                     animation_song_id=animation_song.animation_song_id,

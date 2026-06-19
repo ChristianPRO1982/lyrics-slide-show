@@ -17,7 +17,6 @@ import { init as initReorder } from "./reorder-list.module.js";
 
     const template = form.querySelector("template[data-song-block-template]");
     const addFirstButton = form.querySelector("[data-add-block-before='first']");
-    const previewButtons = Array.from(document.querySelectorAll("[data-song-preview-action]"));
     const dirtyStatus = form.querySelector("[data-dirty-status]");
     const nextUrlInput = form.querySelector("[data-next-url-input]");
     const deletedContainer = document.createElement("div");
@@ -100,6 +99,7 @@ import { init as initReorder } from "./reorder-list.module.js";
         const openButton = item.querySelector("[data-block-open]");
         const typeSelect = item.querySelector("[data-block-type]");
         const prefixInput = item.querySelector("[data-block-prefix]");
+        const noContinueNumberingCheckbox = item.querySelector("[data-block-no-continue-numbering-checkbox]");
         if (!(readonlyContainer instanceof HTMLElement) || !(textInput instanceof HTMLTextAreaElement)) {
             return;
         }
@@ -114,8 +114,16 @@ import { init as initReorder } from "./reorder-list.module.js";
         if (openButton instanceof HTMLElement && typeSelect instanceof HTMLSelectElement) {
             const typeLabel = typeSelect.options[typeSelect.selectedIndex]?.text || "";
             const prefix = prefixInput instanceof HTMLInputElement ? String(prefixInput.value || "").trim() : "";
-            const heading = typeSelect.value === "special" && prefix ? prefix : typeLabel;
-            openButton.textContent = heading || typeLabel;
+            const hidesLabel = (
+                (typeSelect.value === "special" && !prefix)
+                || (
+                    typeSelect.value === "verse"
+                    && noContinueNumberingCheckbox instanceof HTMLInputElement
+                    && noContinueNumberingCheckbox.checked
+                )
+            );
+            const heading = typeSelect.value === "special" ? prefix : typeLabel;
+            openButton.textContent = hidesLabel ? "" : heading;
         }
     };
 
@@ -331,46 +339,6 @@ import { init as initReorder } from "./reorder-list.module.js";
         setDirty(false);
         form.requestSubmit();
     };
-
-    previewButtons.forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) {
-            return;
-        }
-        button.addEventListener("click", async () => {
-            if (!messageBox) {
-                return;
-            }
-
-            try {
-                const formData = new FormData(form);
-                const response = await fetch(String(form.dataset.previewUrl || ""), {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Preview request failed");
-                }
-
-                const payload = await response.json();
-                await messageBox.alert({
-                    title: String(payload.title || label("previewTitle")),
-                    messageMarkdown: String(payload.markdown || label("previewError")),
-                    showCloseButton: true,
-                    size: "wide",
-                });
-            } catch (_error) {
-                await messageBox.alert({
-                    title: label("previewTitle"),
-                    messageMarkdown: label("previewFetchError"),
-                    showCloseButton: true,
-                });
-            }
-        });
-    });
 
     document.addEventListener("click", (event) => {
         const target = event.target;

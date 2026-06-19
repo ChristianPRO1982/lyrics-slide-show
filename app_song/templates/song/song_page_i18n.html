@@ -14,6 +14,13 @@
 {% trans "Le texte a été copié." as song_copy_success %}
 {% trans "La copie automatique a échoué." as song_copy_failed %}
 {% trans "Description du chant" as song_summary_title %}
+{% trans "copier le texte sans mise en forme" as song_plain_copy_tools_label %}
+{% trans "un seul refrain" as song_plain_copy_single_button_label %}
+{% trans "toutes les répétitions de refrain" as song_plain_copy_full_button_label %}
+{% trans "Texte sans mise en forme" as song_plain_copy_popup_title %}
+{% trans "Copier" as song_plain_copy_button_label %}
+{% trans "Fermer" as song_plain_close_button_label %}
+{% trans "Texte" as song_plain_copy_field_label %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -29,6 +36,13 @@
         copyTitle: "{{ song_copy_title|escapejs }}",
         copySuccess: "{{ song_copy_success|escapejs }}",
         copyFailed: "{{ song_copy_failed|escapejs }}",
-        summaryTitle: "{{ song_summary_title|escapejs }}"
+        summaryTitle: "{{ song_summary_title|escapejs }}",
+        plainCopyToolsLabel: "{{ song_plain_copy_tools_label|escapejs }}",
+        plainCopySingleButtonLabel: "{{ song_plain_copy_single_button_label|escapejs }}",
+        plainCopyFullButtonLabel: "{{ song_plain_copy_full_button_label|escapejs }}",
+        plainCopyPopupTitle: "{{ song_plain_copy_popup_title|escapejs }}",
+        plainCopyButtonLabel: "{{ song_plain_copy_button_label|escapejs }}",
+        plainCloseButtonLabel: "{{ song_plain_close_button_label|escapejs }}",
+        plainCopyFieldLabel: "{{ song_plain_copy_field_label|escapejs }}"
     };
 </script>

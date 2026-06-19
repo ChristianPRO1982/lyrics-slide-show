@@ -1,10 +1,11 @@
 import uuid
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase, override_settings
 
-from app_main.models import DirectoryUserRecord
+from app_main.models import DirectoryUserRecord, SiteParams
+from app_member.forms import SiteParamsAdminForm
 from app_member.models import (
     MemberPreferences,
     MemberRole,
@@ -21,8 +22,12 @@ from app_member.services import (
     can_validate_songs,
     get_member_role_flags,
     get_member_role_flags_safe,
+    get_site_params_for_language,
     search_directory_members,
     set_member_role,
+    _search_directory_users_with_sql,
+    _user_table_has_column,
+    _validate_identifier,
 )
 
 
@@ -235,3 +240,164 @@ class PermissionHelperTests(SimpleTestCase):
         self.assertTrue(can_manage_groups_globally(moderator_user))
 
         self.assertFalse(can_manage_moderator_popup(member_user))
+
+
+class MemberValidationCoverageTests(SimpleTestCase):
+    def test_song_search_rejects_wrong_container_and_scalar_types(self):
+        with self.assertRaisesMessage(ValidationError, "objet JSON"):
+            validate_song_search([])
+
+        invalid_payloads = (
+            ({**default_song_search(), "text": 12}, "chaîne de caractères"),
+            ({**default_song_search(), "everywhere": "yes"}, "booléen"),
+            ({**default_song_search(), "genre_ids": "1,2"}, "doit être une liste"),
+        )
+        for payload, message in invalid_payloads:
+            with self.subTest(message=message):
+                with self.assertRaisesMessage(ValidationError, message):
+                    validate_song_search(payload)
+
+    def test_identifier_validation_accepts_safe_names_and_rejects_unsafe_names(self):
+        self.assertEqual(_validate_identifier("users_table"), "users_table")
+        for value in ("1users", "users-table", ""):
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    _validate_identifier(value)
+
+    def test_site_params_admin_form_parses_cards_and_builds_clean_payload(self):
+        parsed = SiteParamsAdminForm._parse_home_cards(
+            '{"cards": [null, {"title": " T ", "text": " X "}]}'
+        )
+        self.assertEqual(parsed, [{"title": "T", "text": "X"}])
+        self.assertEqual(SiteParamsAdminForm._parse_home_cards("bad-json"), [])
+        self.assertEqual(SiteParamsAdminForm._parse_home_cards('{"cards": "bad"}'), [])
+
+        form = SiteParamsAdminForm(
+            data={
+                "title": "Site",
+                "title_h1": "Titre",
+                "bloc1_text": "Bloc 1",
+                "bloc2_text": "Bloc 2",
+                "verse_max_lines": "4",
+                "verse_max_characters_for_a_line": "42",
+                "chorus_prefix": "R.",
+                "verse_prefix1": "C",
+                "verse_prefix2": ".",
+                "admin_message_cooldown_minutes": "5",
+                "moderator_message_cooldown_minutes": "60",
+                "bg_img_max_bytes": "2097152",
+                "bg_img_min_w": "800",
+                "bg_img_min_h": "600",
+                "bg_img_max_w": "4096",
+                "bg_img_max_h": "3072",
+                "bg_img_ratio_min": "1.3",
+                "bg_img_ratio_max": "2.0",
+                "bg_img_allowed_ext": ".jpg,.png",
+                "bg_img_allowed_mime": "image/jpeg,image/png",
+                "home_card_1_title": " Carte ",
+                "home_card_1_text": " Texte ",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertIn('"title": "Carte"', form.cleaned_data["home_text"])
+
+
+class MemberServiceCompatibilityCoverageTests(TestCase):
+    member_id = "99999999-9999-9999-9999-999999999999"
+
+    def test_user_table_column_lookup_executes_information_schema_query(self):
+        cursor = MagicMock()
+        cursor.fetchone.return_value = (1,)
+        cursor_factory = MagicMock()
+        cursor_factory.return_value.__enter__.return_value = cursor
+
+        with patch("app_member.services.connection.cursor", cursor_factory):
+            self.assertTrue(_user_table_has_column("enabled"))
+
+        cursor.execute.assert_called_once()
+
+    def test_site_params_language_lookup_uses_requested_fallback_and_first_record(self):
+        fr = SiteParams.objects.create(
+            language="fr",
+            title="FR",
+            title_h1="FR",
+            home_text="",
+            bloc1_text="",
+            bloc2_text="",
+            verse_max_lines=4,
+            verse_max_characters_for_a_line=42,
+            chorus_prefix="R.",
+            verse_prefix1="C",
+            verse_prefix2=".",
+            admin_message="",
+            moderator_message="",
+        )
+        en = SiteParams.objects.create(
+            language="en",
+            title="EN",
+            title_h1="EN",
+            home_text="",
+            bloc1_text="",
+            bloc2_text="",
+            verse_max_lines=4,
+            verse_max_characters_for_a_line=42,
+            chorus_prefix="C.",
+            verse_prefix1="V",
+            verse_prefix2=".",
+            admin_message="",
+            moderator_message="",
+        )
+
+        self.assertEqual(get_site_params_for_language("en"), en)
+        self.assertEqual(get_site_params_for_language("de"), fr)
+        fr.delete()
+        self.assertEqual(get_site_params_for_language("de"), en)
+
+        with patch(
+            "app_member.services.SiteParams.objects.filter",
+            side_effect=RuntimeError("db down"),
+        ):
+            self.assertIsNone(get_site_params_for_language("fr"))
+
+    @override_settings(USER_SCHEMA="legacy_users", USER_TABLE="legacy_users")
+    def test_legacy_sql_member_search_merges_roles(self):
+        cursor = MagicMock()
+        cursor.fetchall.return_value = [
+            (
+                self.member_id,
+                "legacy.user",
+                "legacy@example.test",
+                "Legacy",
+                "User",
+                True,
+            )
+        ]
+        role = type(
+            "RoleStub",
+            (),
+            {
+                "member_id": uuid.UUID(self.member_id),
+                "is_moderator": True,
+                "is_admin": True,
+            },
+        )()
+        with (
+            patch("app_member.services._user_table_has_column", return_value=True),
+            patch("app_member.services.connection.cursor") as cursor_factory,
+            patch(
+                "app_member.services.MemberRole.objects.filter",
+                return_value=[role],
+            ),
+        ):
+            cursor_factory.return_value.__enter__.return_value = cursor
+            direct_results = _search_directory_users_with_sql("legacy", 5)
+            routed_results = search_directory_members("legacy", limit=5)
+
+        self.assertEqual(direct_results[0].username, "legacy.user")
+        self.assertTrue(direct_results[0].is_moderator)
+        self.assertTrue(direct_results[0].is_admin)
+        self.assertEqual(routed_results, direct_results)
+        self.assertEqual(cursor.execute.call_count, 2)
+
+    def test_empty_member_search_returns_no_results(self):
+        self.assertEqual(search_directory_members("   "), [])
