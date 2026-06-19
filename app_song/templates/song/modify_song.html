@@ -251,7 +251,12 @@
                                                             </p>
                                                             <p data-song-block-no-continue-numbering-option {% if block.type == 'chorus' %}hidden{% endif %}>
                                                                 <label>
-                                                                    <input type="checkbox" {% if block.not_c_num %}checked{% endif %} data-song-block-no-continue-numbering-checkbox>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        {% if block.not_c_num %}checked{% endif %}
+                                                                        {% if block.type == 'special' %}disabled{% endif %}
+                                                                        data-song-block-no-continue-numbering-checkbox
+                                                                    >
                                                                     {% trans "Not C. num" %}
                                                                 </label>
                                                             </p>

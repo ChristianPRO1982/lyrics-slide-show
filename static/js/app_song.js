@@ -316,10 +316,10 @@
                 return label("chorusPrefix") || label("chorusLabel");
             }
             if (state.type === "special") {
-                return state.prefix.trim() || label("specialSectionFallbackLabel");
+                return state.prefix.trim();
             }
             if (state.notCNum) {
-                return label("verseNoNumberingLabel");
+                return "";
             }
             const original = card?.getAttribute("data-song-block-default-label") || "";
             return original || label("verseLabel");

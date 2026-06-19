@@ -99,6 +99,7 @@ import { init as initReorder } from "./reorder-list.module.js";
         const openButton = item.querySelector("[data-block-open]");
         const typeSelect = item.querySelector("[data-block-type]");
         const prefixInput = item.querySelector("[data-block-prefix]");
+        const noContinueNumberingCheckbox = item.querySelector("[data-block-no-continue-numbering-checkbox]");
         if (!(readonlyContainer instanceof HTMLElement) || !(textInput instanceof HTMLTextAreaElement)) {
             return;
         }
@@ -113,8 +114,16 @@ import { init as initReorder } from "./reorder-list.module.js";
         if (openButton instanceof HTMLElement && typeSelect instanceof HTMLSelectElement) {
             const typeLabel = typeSelect.options[typeSelect.selectedIndex]?.text || "";
             const prefix = prefixInput instanceof HTMLInputElement ? String(prefixInput.value || "").trim() : "";
-            const heading = typeSelect.value === "special" && prefix ? prefix : typeLabel;
-            openButton.textContent = heading || typeLabel;
+            const hidesLabel = (
+                (typeSelect.value === "special" && !prefix)
+                || (
+                    typeSelect.value === "verse"
+                    && noContinueNumberingCheckbox instanceof HTMLInputElement
+                    && noContinueNumberingCheckbox.checked
+                )
+            );
+            const heading = typeSelect.value === "special" ? prefix : typeLabel;
+            openButton.textContent = hidesLabel ? "" : heading;
         }
     };
 

@@ -135,6 +135,83 @@ class SongRenderingServiceTests(SimpleTestCase):
             ],
         )
 
+
+class ModifySongBlockLabelTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_not_c_num_hides_modify_song_display_and_drag_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="a",
+            block_id=1,
+            position=2,
+            block_type="verse",
+            text="Suite du couplet",
+            prefix="",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=False,
+            num=2,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), ""
+        )
+        self.assertEqual(song_views._build_block_drag_label(block, self.settings), "")
+
+    def test_chorus_like_without_prefix_hides_modify_song_display_and_drag_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="b",
+            block_id=2,
+            position=4,
+            block_type="special",
+            text="Pont final",
+            prefix="",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=True,
+            num=4,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), ""
+        )
+        self.assertEqual(song_views._build_block_drag_label(block, self.settings), "")
+
+    def test_chorus_like_with_prefix_keeps_prefix_for_modify_song_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="c",
+            block_id=3,
+            position=6,
+            block_type="special",
+            text="Pont final",
+            prefix="Pont",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=True,
+            num=6,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), "Pont"
+        )
+        self.assertEqual(
+            song_views._build_block_drag_label(block, self.settings), "Pont"
+        )
+
     def test_followed_skips_next_chorus_insertion_point(self):
         blocks = render_song_blocks(
             make_song(),
@@ -826,6 +903,8 @@ class ModifySongViewTests(TestCase):
         )
         self.assertContains(response, "data-song-block-open-text")
         self.assertContains(response, "data-song-block-open-prefix")
+        self.assertNotContains(response, "Couplet (sans numérotation)")
+        self.assertNotContains(response, "Section spéciale")
 
     def test_member_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -961,6 +1040,27 @@ class ModifySongViewTests(TestCase):
 
         chorus_like_block = Verse.objects.get(song=self.song, chorus_like=True)
         self.assertTrue(chorus_like_block.notcontinuenumbering)
+
+    def test_chorus_like_modify_editor_shows_not_c_num_checked_and_disabled(self):
+        self._login()
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode("utf-8")
+        self.assertIn(
+            'type="checkbox"\n                                                                        checked\n                                                                        disabled\n                                                                        data-song-block-no-continue-numbering-checkbox',
+            html,
+        )
 
     def test_non_chorus_like_verse_clears_prefix_to_null(self):
         self._login()

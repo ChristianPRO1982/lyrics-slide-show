@@ -485,9 +485,9 @@ def _build_block_display_label(
     if block.chorus:
         return settings.chorus_prefix
     if block.chorus_like:
-        return block.prefix or _("Section spéciale")
+        return str(block.prefix or "").strip()
     if block.not_c_num:
-        return _("Couplet (sans numérotation)")
+        return ""
     return settings.verse_label(block.display_num)
 
 
@@ -503,6 +503,8 @@ def _build_block_drag_label(
         return prefix
     if block.chorus:
         return settings.chorus_prefix
+    if block.chorus_like or block.not_c_num:
+        return ""
     return settings.verse_label(block.display_num)
 
 

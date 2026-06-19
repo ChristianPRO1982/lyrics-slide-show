@@ -12,8 +12,6 @@
 {% trans "Texte" as add_block_text_field_label %}
 {% trans "Couplet" as verse_label %}
 {% trans "Refrain" as chorus_label_default %}
-{% trans "Section spéciale" as special_section_fallback_label %}
-{% trans "Couplet (sans numérotation)" as verse_no_numbering_label %}
 {% trans "Supprimer" as delete_block_label %}
 {% trans "Préfixe" as prefix_field_label %}
 {% trans "Suivi" as followed_label %}
@@ -40,8 +38,6 @@
         verseLabel: "{{ verse_label|escapejs }}",
         chorusLabel: "{{ chorus_label_default|escapejs }}",
         chorusPrefix: "{{ chorus_prefix|default:chorus_label_default|escapejs }}",
-        specialSectionFallbackLabel: "{{ special_section_fallback_label|escapejs }}",
-        verseNoNumberingLabel: "{{ verse_no_numbering_label|escapejs }}",
         deleteBlockLabel: "{{ delete_block_label|escapejs }}",
         prefixFieldLabel: "{{ prefix_field_label|escapejs }}",
         followedLabel: "{{ followed_label|escapejs }}",
