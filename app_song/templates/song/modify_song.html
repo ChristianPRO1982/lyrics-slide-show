@@ -23,7 +23,6 @@
     {% if can_devalidate %}
         <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
     {% endif %}
-    <p><button type="button" class="song-tool-button site-action site-action--primary" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
     <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
     <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
 {% endblock %}
@@ -50,7 +49,6 @@
         {% if can_devalidate %}
             <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
         {% endif %}
-        <p><button type="button" class="song-tool-button site-action site-action--primary" data-song-preview-action>{% trans "Aperçu du rendu" %}</button></p>
         <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
         <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
     </div>
@@ -144,7 +142,7 @@
 
 {% endblock %}
 {% block content_footer %}
-    <form method="post" id="modify-song-form" data-song-edit-form data-preview-url="{{ preview_url }}">
+    <form method="post" id="modify-song-form" data-song-edit-form>
         {% csrf_token %}
         <input type="hidden" name="next_url" value="" data-next-url-input>
         <input type="hidden" name="title" value="{{ song.title }}" data-song-title-hidden>

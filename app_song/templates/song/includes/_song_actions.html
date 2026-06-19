@@ -1,44 +1,45 @@
 {% load i18n %}
-<div class="song-actions-list">
-    <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "← Retour à la liste" %}</a></p>
-    <hr>
-    {% if request.resolver_match.url_name != "song" %}
-        <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song' song.song_id %}">{% trans "Afficher" %}</a></p>
-    {% endif %}
-    {% if request.user.is_authenticated %}
-        {% if not song.is_validated or request.user.is_moderator %}
-            {% if request.resolver_match.url_name != "modify_song" %}
-                <p><a class="song-tool-link site-action site-action--primary" href="{% url 'modify_song' song.song_id %}">{% trans "Modifier" %}</a></p>
-            {% endif %}
-            {% if request.resolver_match.url_name != "song_metadata" %}
-                <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song_metadata' song.song_id %}">{% trans "Métadonnées" %}</a></p>
-            {% endif %}
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="toggle_favorite">
-                <p>
-                    <a href="#" class="song-tool-link site-action site-action--primary" onclick="this.closest('form').submit(); return false;">
-                        {% if is_favorite %}
-                            {% trans "⭐ Favori" %}
-                        {% else %}
-                            {% trans "☆ Pas encore favori" %}
-                        {% endif %}
-                    </a>
-                </p>
-            </form>
-            <p>{% trans "Supprimer" %}</p>
+<p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "← Retour à la liste" %}</a></p>
+<div class="song-tools-separator" aria-hidden="true"></div>
+{% if request.resolver_match.url_name != "song" %}
+    <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song' song.song_id %}">{% trans "Afficher" %}</a></p>
+{% endif %}
+{% if request.user.is_authenticated %}
+    {% if not song.is_validated or request.user.is_moderator %}
+        {% if request.resolver_match.url_name != "modify_song" %}
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'modify_song' song.song_id %}">{% trans "Modifier" %}</a></p>
         {% endif %}
-    {% endif %}
-    {% if song.is_validated and can_report_message %}
-        <p><strong>{% trans "Signaler une correction" %}</strong></p>
-        {% if message_error %}
-            <p>{% trans "Le message ne peut pas être vide." %}</p>
+        {% if request.resolver_match.url_name != "song_metadata" %}
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song_metadata' song.song_id %}">{% trans "Métadonnées" %}</a></p>
         {% endif %}
-        <form method="post" class="song-message-form" id="song-correction-form">
+        <form method="post" class="song-tool-form">
             {% csrf_token %}
-            <input type="hidden" name="action" value="add_message">
-            <textarea name="message" rows="4" required placeholder="{% trans 'Expliquer la correction à apporter' %}"></textarea>
-            <p><button type="submit" class="site-action site-action--primary">{% trans "Envoyer" %}</button></p>
+            <input type="hidden" name="action" value="toggle_favorite">
+            <button type="submit" class="song-tool-button site-action site-action--primary">
+                {% if is_favorite %}
+                    {% trans "⭐ Favori" %}
+                {% else %}
+                    {% trans "☆ Pas encore favori" %}
+                {% endif %}
+            </button>
+        </form>
+        <form method="post" class="song-tool-form" data-song-delete-form data-song-title="{{ song.title_complete_with_tags }}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_song">
+            <input type="hidden" name="song_id" value="{{ song.song_id }}">
+            <button type="submit" class="song-danger-action site-action site-action--danger">{% trans "Supprimer" %}</button>
         </form>
     {% endif %}
-</div>
+{% endif %}
+{% if song.is_validated and can_report_message %}
+    <p><strong>{% trans "Signaler une correction" %}</strong></p>
+    {% if message_error %}
+        <p>{% trans "Le message ne peut pas être vide." %}</p>
+    {% endif %}
+    <form method="post" class="song-message-form" id="song-correction-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_message">
+        <textarea name="message" rows="4" required placeholder="{% trans 'Expliquer la correction à apporter' %}"></textarea>
+        <p><button type="submit" class="site-action site-action--primary">{% trans "Envoyer" %}</button></p>
+    </form>
+{% endif %}

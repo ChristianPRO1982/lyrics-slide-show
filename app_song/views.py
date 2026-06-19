@@ -595,7 +595,6 @@ def _build_modify_song_context(
         "can_edit": _can_edit_song(request.user, song),
         "can_devalidate": bool(song.is_validated and _is_moderator(request.user)),
         "display_url": reverse("song", args=[song.song_id]),
-        "preview_url": reverse("modify_song_preview", args=[song.song_id]),
         "verse_max_lines": verse_max_lines,
         "verse_max_characters_for_line": verse_max_characters_for_line,
         "song_blocks": [
@@ -1301,59 +1300,6 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
     )
 
 
-def modify_song_preview(request: HttpRequest, song_id: int) -> JsonResponse:
-    if request.method != "POST":
-        raise Http404
-
-    song_object = get_object_or_404(Song, song_id=song_id)
-    if not _can_edit_song(request.user, song_object):
-        raise Http404
-
-    preview_song = Song(
-        song_id=song_object.song_id,
-        title=_normalize_inline_text(request.POST.get("title")) or song_object.title,
-        subtitle=_normalize_inline_text(request.POST.get("subtitle")) or "",
-        description=_normalize_multiline_text(request.POST.get("description")),
-        status=song_object.status,
-        licensed=song_object.licensed,
-    )
-    parsed_blocks = _recalculate_song_blocks(
-        [block for block in _parse_song_blocks(request.POST) if not block.delete]
-    )
-    render_settings = SongRenderSettings.from_language(
-        getattr(request, "LANGUAGE_CODE", None)
-    )
-    artifacts = build_song_text_artifacts(
-        preview_song,
-        settings=render_settings,
-        verses=[
-            Verse(
-                verse_id=block.block_id or 0,
-                song=preview_song,
-                num=block.num,
-                num_verse=block.display_num,
-                chorus=block.chorus,
-                chorus_like=block.chorus_like,
-                followed=block.followed,
-                notcontinuenumbering=block.not_c_num,
-                text=block.text,
-                prefix=block.prefix,
-            )
-            for block in parsed_blocks
-        ],
-    )
-
-    return JsonResponse(
-        {
-            "title": artifacts.full_title_with_tags,
-            "markdown": _build_preview_markdown(
-                preview_song, parsed_blocks, settings=render_settings
-            ),
-            "html": artifacts.long_text_html,
-        }
-    )
-
-
 def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
     song_object = get_object_or_404(
@@ -1367,6 +1313,8 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         if action == "toggle_favorite":
             _toggle_song_favorite(song_object, get_member_id_from_user(request.user))
             return redirect("song_metadata", song_id=song_object.song_id)
+        if action == "delete_song":
+            return _handle_song_post(request, "songs")
         if not _can_edit_song(request.user, song_object):
             raise Http404
         _update_song_metadata_from_form(song_object, request)

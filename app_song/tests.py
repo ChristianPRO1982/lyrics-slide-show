@@ -557,6 +557,33 @@ class SongFavoriteActionsTests(TestCase):
         }
         session.save()
 
+    def _assert_shared_song_actions(self, response, *, active_page: str) -> None:
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "☆ Pas encore favori")
+        self.assertContains(response, "data-song-delete-form")
+        self.assertContains(response, 'name="action" value="delete_song"', html=False)
+        self.assertContains(
+            response, 'name="song_id" value="{}"'.format(self.song.song_id), html=False
+        )
+        self.assertNotContains(response, "song-actions-list")
+
+        html = response.content.decode("utf-8")
+        self.assertLess(html.find("☆ Pas encore favori"), html.find("Supprimer"))
+        if active_page != "song":
+            self.assertIn(
+                'href="{}"'.format(reverse("song", args=[self.song.song_id])), html
+            )
+        if active_page != "modify_song":
+            self.assertIn(
+                'href="{}"'.format(reverse("modify_song", args=[self.song.song_id])),
+                html,
+            )
+        if active_page != "song_metadata":
+            self.assertIn(
+                'href="{}"'.format(reverse("song_metadata", args=[self.song.song_id])),
+                html,
+            )
+
     def test_song_toggle_creates_and_deletes_favorite(self):
         self._login()
 
@@ -639,31 +666,35 @@ class SongFavoriteActionsTests(TestCase):
         self._login()
 
         song_response = self.client.get(reverse("song", args=[self.song.song_id]))
-        self.assertEqual(song_response.status_code, 200)
-        self.assertContains(song_response, "☆ Pas encore favori")
-        self.assertContains(song_response, "Supprimer")
-        song_html = song_response.content.decode("utf-8")
-        self.assertLess(
-            song_html.find("☆ Pas encore favori"), song_html.find("Supprimer")
-        )
+        self._assert_shared_song_actions(song_response, active_page="song")
 
         modify_response = self.client.get(
             reverse("modify_song", args=[self.song.song_id])
         )
-        self.assertEqual(modify_response.status_code, 200)
-        self.assertContains(modify_response, "☆ Pas encore favori")
+        self._assert_shared_song_actions(modify_response, active_page="modify_song")
 
         metadata_response = self.client.get(
             reverse("song_metadata", args=[self.song.song_id])
         )
-        self.assertEqual(metadata_response.status_code, 200)
-        self.assertContains(metadata_response, "☆ Pas encore favori")
+        self._assert_shared_song_actions(metadata_response, active_page="song_metadata")
+
+    def test_song_metadata_delete_song_uses_shared_action(self):
+        self._login()
+
+        response = self.client.post(
+            reverse("song_metadata", args=[self.song.song_id]),
+            data={"action": "delete_song", "song_id": self.song.song_id},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("songs"))
+        self.assertFalse(Song.objects.filter(song_id=self.song.song_id).exists())
 
     def test_song_view_hides_toggle_for_guest(self):
         response = self.client.get(reverse("song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "☆ Pas encore favori")
         self.assertNotContains(response, "⭐ Favori")
+        self.assertNotContains(response, "data-song-delete-form")
 
 
 class ModifySongViewTests(TestCase):
@@ -1003,19 +1034,6 @@ class ModifySongViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("songs"))
-
-    def test_preview_endpoint_returns_current_unsaved_render(self):
-        self._login()
-        payload = self._base_payload()
-        payload["title"] = "Titre preview"
-        response = self.client.post(
-            reverse("modify_song_preview", args=[self.song.song_id]), data=payload
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertIn("Titre preview", data["title"])
-        self.assertIn("Couplet 1", data["markdown"])
-        self.assertIn("Refrain", data["markdown"])
 
 
 class ModifyGenresViewTests(TestCase):
