@@ -1,3 +1,14 @@
+## [2.9.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.1...v2.9.2) (2026-06-19)
+
+
+### Bug Fixes
+
+* Add comprehensive test coverage for main view helpers, member validation, and song metadata ([8d89f91](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8d89f919793ae6d8dd275d6aa0fe87f11a46a50f))
+* add font weight handling for chorus and chorus-like verses, update templates to load Google Fonts stylesheet ([1315700](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1315700f8ee037745b74439e6ddb14190fcc5f22))
+* add plain text copy functionality for song lyrics with popup interface ([b619c96](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b619c9643a768b4d0fd29848a6e3fbd5f0a11481))
+* add tests for song block label modifications and visibility logic ([5ad9989](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5ad998946478715ceb8d445bd1f3244d4504191c))
+* update chorus block rendering to use single line break and adjust related tests ([5447dae](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5447dae9345023f3ddc5292309b72e1bf31fc96a))
+
 ## [2.9.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.0...v2.9.1) (2026-06-12)
 
 
