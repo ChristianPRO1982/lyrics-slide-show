@@ -471,7 +471,7 @@ class SongTextArtifactsTests(SimpleTestCase):
             '<th scope="row"></th><td>Suite du couplet</td>', artifacts.long_text_html
         )
 
-    def test_chorus_multi_blocks_are_joined_with_blank_line(self):
+    def test_chorus_multi_blocks_are_joined_with_single_line_break(self):
         artifacts = build_song_text_artifacts(
             make_song(),
             settings=self.settings,
@@ -481,9 +481,22 @@ class SongTextArtifactsTests(SimpleTestCase):
             ],
         )
         self.assertIn(
-            '<th scope="row">Refrain</th><td>Ligne A<br><br>Ligne B</td>',
+            '<th scope="row">Refrain</th><td>Ligne A<br>Ligne B</td>',
             artifacts.long_text_html,
         )
+
+    def test_render_song_text_joins_multi_block_chorus_with_single_newline(self):
+        text = render_song_text(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            include_title=False,
+            verses=[
+                make_verse(1, 2, "Ligne A", chorus=True, num_verse=0),
+                make_verse(2, 4, "Ligne B", chorus=True, num_verse=0),
+            ],
+        )
+        self.assertEqual(text, "Refrain Ligne A\nLigne B\n")
 
     def test_html_output_escapes_dynamic_values(self):
         artifacts = build_song_text_artifacts(

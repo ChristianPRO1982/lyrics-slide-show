@@ -200,7 +200,7 @@ def _render_blocks_table_html(blocks: list[RenderedSongBlock]) -> str:
                 rows.append(
                     _render_table_row(
                         label=block.label,
-                        text_html="<br><br>".join(chorus_chunks),
+                        text_html="<br>".join(chorus_chunks),
                         kind=RenderedSongBlockKind.CHORUS,
                     )
                 )
