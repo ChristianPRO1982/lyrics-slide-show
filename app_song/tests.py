@@ -19,6 +19,10 @@ from .models import (
     Verse,
 )
 from . import views as song_views
+from .genre_labels import (
+    build_genre_display_label,
+    normalize_genre_group_display_name,
+)
 from .rendering import (
     ChorusRenderMode,
     RenderedSongBlockKind,
@@ -101,6 +105,65 @@ class SongRenderingServiceTests(SimpleTestCase):
         )
         self.assertEqual(blocks[0].label, "Refrain")
         self.assertTrue(blocks[2].is_repeated_chorus)
+
+
+class GenreDisplayLabelTests(SimpleTestCase):
+    def test_normalize_genre_group_display_name_removes_numeric_prefix(self):
+        self.assertEqual(
+            normalize_genre_group_display_name("1 - Scoutisme"), "Scoutisme"
+        )
+
+    def test_normalize_genre_group_display_name_keeps_non_matching_value(self):
+        self.assertEqual(
+            normalize_genre_group_display_name("Chretien / KTO"), "Chretien / KTO"
+        )
+
+    def test_build_genre_display_label_uses_clean_group_name(self):
+        self.assertEqual(
+            build_genre_display_label("2 - Chretien / KTO", "Louange"),
+            "Chretien / KTO / Louange",
+        )
+
+
+class SongMetadataLabelAssemblyTests(SimpleTestCase):
+    @patch("app_song.views._fetch_name_labels", return_value={})
+    @patch(
+        "app_song.views._fetch_genre_labels",
+        return_value={1: ("1 - Scoutisme", "Louange")},
+    )
+    @patch("app_song.views.SongArtist.objects.filter")
+    @patch("app_song.views.SongBand.objects.filter")
+    @patch("app_song.views.SongGenre.objects.filter")
+    def test_get_song_metadata_labels_builds_grouped_genres_without_crashing(
+        self,
+        song_genre_filter,
+        song_band_filter,
+        song_artist_filter,
+        _fetch_genre_labels,
+        _fetch_name_labels,
+    ):
+        song_genre_filter.return_value.values_list.return_value = (1,)
+        song_band_filter.return_value.values_list.return_value = ()
+        song_artist_filter.return_value.values_list.return_value = ()
+
+        bands, artists, genre_groups = song_views._get_song_metadata_labels(
+            SimpleNamespace(song_id=1)
+        )
+
+        self.assertEqual(bands, ())
+        self.assertEqual(artists, ())
+        self.assertEqual(genre_groups[0][0], "Scoutisme")
+        self.assertEqual(len(genre_groups[0][1]), 1)
+        self.assertTrue(genre_groups[0][1][0].endswith("Louange"))
+
+
+class SongRenderingMarkupTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
 
     def test_table_html_to_plain_text_removes_table_markup_and_decodes_entities(self):
         self.assertEqual(
@@ -616,6 +679,15 @@ class SongViewsRenderingTests(TestCase):
             followed=False,
         )
 
+    def _insert_genre(self, group: str, name: str) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") '
+                "VALUES (%s, %s) RETURNING genre_id",
+                [group, name],
+            )
+            return cursor.fetchone()[0]
+
     def _login(self) -> None:
         session = self.client.session
         session["lss_user"] = {
@@ -680,6 +752,22 @@ class SongViewsRenderingTests(TestCase):
             count=2,
             html=False,
         )
+
+    def test_song_view_hides_numeric_prefix_from_genre_group_heading(self):
+        genre_id = self._insert_genre("1 - Scoutisme", "Louange")
+        SongGenre.objects.create(song=self.song, genre_id=genre_id)
+
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, '<h4 class="song-tag-group">Scoutisme</h4>', html=False
+        )
+        self.assertNotContains(response, "1 - Scoutisme")
+        self.assertEqual(response.context["genre_groups"][0][0], "Scoutisme")
+        self.assertEqual(len(response.context["genre_groups"][0][1]), 1)
+        self.assertTrue(response.context["genre_groups"][0][1][0].endswith("Louange"))
 
     def test_song_text_print_page_uses_full_title_without_tags(self):
         self._login()
@@ -1609,6 +1697,68 @@ class SongFavoritesQuickViewTests(TestCase):
         self.assertFalse(preferences.song_search["favorites_only"])
 
 
+class SongGenresDisplayViewTests(TestCase):
+    user_id = "55555555-5555-5555-5555-555555555555"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="genre.display.user",
+            first_name="Genre",
+            last_name="Display",
+            email="genre.display@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song = Song.objects.create(
+            title="Chant de groupe",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") '
+                "VALUES (%s, %s) RETURNING genre_id",
+                ["2 - Chretien / KTO", "Louange"],
+            )
+            genre_id = cursor.fetchone()[0]
+        SongGenre.objects.create(song=self.song, genre_id=genre_id)
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "genre.display.user",
+            "email": "genre.display@example.test",
+            "first_name": "Genre",
+            "last_name": "Display",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_songs_page_displays_clean_genre_labels_in_filters_and_cards(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Chretien / KTO / Louange")
+        self.assertNotContains(response, "2 - Chretien / KTO / Louange")
+        self.assertEqual(
+            response.context["reference_options"].genres[0].label,
+            "Chretien / KTO / Louange",
+        )
+        self.assertEqual(len(response.context["song_cards"][0]["genres"]), 1)
+        self.assertTrue(
+            response.context["song_cards"][0]["genres"][0].endswith(
+                "Chretien / KTO / Louange"
+            )
+        )
+
+
 class SongCreateFromSongsPageTests(TestCase):
     def setUp(self):
         self.user_id = "88888888-8888-8888-8888-888888888888"
@@ -1787,6 +1937,17 @@ class ReferenceCatalogViewsTests(TestCase):
         session.save()
         self.assertEqual(self.client.get(reverse("modify_genres")).status_code, 404)
 
+    def test_modify_genres_keeps_full_group_prefix_visible(self):
+        self._insert_reference(
+            "genres", ("group", "name"), ("1 - Scoutisme", "Louange")
+        )
+
+        response = self.client.get(reverse("modify_genres"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="1 - Scoutisme"', html=False)
+        self.assertContains(response, "Louange")
+
     def test_unknown_catalog_actions_redirect_with_error(self):
         for route_name in ("modify_genres", "modify_artists", "modify_bands"):
             with self.subTest(route=route_name):
@@ -1939,7 +2100,7 @@ class SongMetadataPersistenceTests(TestCase):
 
     def test_metadata_get_splits_selected_options_and_normalizes_audio_video(self):
         genre_selected = self._insert_reference(
-            "genres", "genre_id", "Pop", group="Style"
+            "genres", "genre_id", "Pop", group="1 - Scoutisme"
         )
         genre_available = self._insert_reference(
             "genres", "genre_id", "Rock", group="Style"
@@ -1959,12 +2120,22 @@ class SongMetadataPersistenceTests(TestCase):
             response.context["metadata_genres_selected"][0]["id"], genre_selected
         )
         self.assertEqual(
+            response.context["metadata_genres_selected"][0]["label"],
+            "Scoutisme / Pop",
+        )
+        self.assertEqual(
             response.context["metadata_genres_available"][0]["id"], genre_available
+        )
+        self.assertEqual(
+            response.context["metadata_genres_available"][0]["label"],
+            "Style / Rock",
         )
         self.assertEqual(
             response.context["metadata_artists_selected"][0]["id"], artist_id
         )
         self.assertEqual(response.context["metadata_bands_available"][0]["id"], band_id)
+        self.assertContains(response, "Scoutisme / Pop")
+        self.assertNotContains(response, "1 - Scoutisme / Pop")
 
     def test_metadata_post_synchronizes_links_and_reference_relations(self):
         genre_old = self._insert_reference("genres", "genre_id", "Old", group="Style")
