@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import re
 from dataclasses import dataclass
 from enum import StrEnum
@@ -65,6 +66,7 @@ class RenderedSongBlock:
     text: str
     source_verse_id: int | None
     display_num: int | None
+    explicit_prefix: str = ""
     is_repeated_chorus: bool = False
 
 
@@ -200,7 +202,7 @@ def _render_blocks_table_html(blocks: list[RenderedSongBlock]) -> str:
                 rows.append(
                     _render_table_row(
                         label=block.label,
-                        text_html="<br><br>".join(chorus_chunks),
+                        text_html="<br>".join(chorus_chunks),
                         kind=RenderedSongBlockKind.CHORUS,
                     )
                 )
@@ -231,12 +233,58 @@ def _render_song_html(
     )
 
 
+def _render_blocks_plain_text(
+    blocks: list[RenderedSongBlock], *, chorus_like_label_on_own_line: bool = False
+) -> str:
+    plain_blocks: list[str] = []
+    index = 0
+
+    while index < len(blocks):
+        block = blocks[index]
+        if block.kind == RenderedSongBlockKind.CHORUS:
+            chorus_chunks: list[str] = []
+            while (
+                index < len(blocks)
+                and blocks[index].kind == RenderedSongBlockKind.CHORUS
+                and blocks[index].is_repeated_chorus == block.is_repeated_chorus
+            ):
+                chorus_text = normalize_lyrics_linebreaks(blocks[index].text).strip()
+                if chorus_text:
+                    chorus_chunks.append(chorus_text)
+                index += 1
+            if chorus_chunks:
+                chorus_block = "\n".join(chorus_chunks)
+                if block.label:
+                    chorus_block = f"{block.label} {chorus_block}"
+                plain_blocks.append(chorus_block.strip())
+            continue
+
+        text = normalize_lyrics_linebreaks(block.text).strip()
+        if text:
+            if (
+                chorus_like_label_on_own_line
+                and block.kind == RenderedSongBlockKind.CHORUS_LIKE
+            ):
+                if block.explicit_prefix:
+                    plain_blocks.append(f"{block.explicit_prefix}\n{text}")
+                else:
+                    plain_blocks.append(text)
+            elif block.label:
+                plain_blocks.append(f"{block.label} {text}".strip())
+            else:
+                plain_blocks.append(text)
+        index += 1
+
+    return "\n\n".join(item.strip() for item in plain_blocks if item.strip()).strip()
+
+
 def _table_html_to_plain_text(text_html: str) -> str:
     text = normalize_lyrics_linebreaks(text_html)
     text = text.replace("<br><br>", "\n\n").replace("<br>", "\n")
     text = text.replace("</th><td>", " ")
     text = text.replace("</td></tr>", "\n\n")
     text = re.sub(r"</?(table|tbody|tr|th|td)(?:\s[^>]*)?>", "", text)
+    text = html.unescape(text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
@@ -262,12 +310,11 @@ def render_song_blocks(
                 blocks.append(
                     RenderedSongBlock(
                         kind=RenderedSongBlockKind.CHORUS_LIKE,
-                        label=(
-                            verse.prefix or render_settings.chorus_like_default_prefix
-                        ).strip(),
+                        label=(verse.prefix or "").strip(),
                         text=text,
                         source_verse_id=verse.verse_id,
                         display_num=verse.num_verse,
+                        explicit_prefix=(verse.prefix or "").strip(),
                     )
                 )
             elif text:
@@ -342,17 +389,35 @@ def render_song_text(
     include_title: bool = True,
     verses: Iterable[Verse] | None = None,
 ) -> str:
-    artifacts = build_song_text_artifacts(song, settings=settings, verses=verses)
-    text_html = (
-        artifacts.short_text_html
-        if ChorusRenderMode(mode) == ChorusRenderMode.SINGLE
-        else artifacts.long_text_html
+    render_mode = ChorusRenderMode(mode)
+    render_settings = settings or SongRenderSettings.defaults()
+    blocks = render_song_blocks(
+        song, render_mode, settings=render_settings, verses=verses
     )
-    text = _table_html_to_plain_text(text_html)
+    text = _render_blocks_plain_text(blocks)
+    artifacts = build_song_text_artifacts(song, settings=render_settings, verses=verses)
 
     output = []
     if include_title:
         output.extend([artifacts.full_title_with_tags, ""])
+    output.append(text.strip())
+
+    return "\n".join(output).strip() + "\n"
+
+
+def render_song_popup_plain_text(
+    song: Song,
+    mode: ChorusRenderMode | str,
+    settings: SongRenderSettings | None = None,
+    verses: Iterable[Verse] | None = None,
+) -> str:
+    render_mode = ChorusRenderMode(mode)
+    render_settings = settings or SongRenderSettings.defaults()
+    blocks = render_song_blocks(
+        song, render_mode, settings=render_settings, verses=verses
+    )
+    text = _render_blocks_plain_text(blocks, chorus_like_label_on_own_line=True)
+    output = []
     output.append(text.strip())
 
     return "\n".join(output).strip() + "\n"

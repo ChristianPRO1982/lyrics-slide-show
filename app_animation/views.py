@@ -18,7 +18,11 @@ from app_group.services import get_member_id_from_user
 from app_song.rendering import SongRenderSettings, render_song_blocks
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
-from .font_catalog import list_font_choices, list_font_previews
+from .font_catalog import (
+    GOOGLE_FONTS_STYLESHEET_HREF,
+    list_font_choices,
+    list_font_previews,
+)
 from .forms import AnimationForm
 from .models import Animation
 from .services.render_bundle import build_animation_render_bundle
@@ -293,8 +297,13 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
                 "textColor": str(slide.style.text_color or "#FFFFFF"),
                 "bgColor": str(slide.style.bg_color or "#000000"),
                 "fontFamily": str(slide.style.font_family or "Source Sans Pro"),
-                "fontSize": int(slide.style.font_size or 72),
-                "horizontalPadding": int(slide.style.horizontal_padding or 80),
+                "fontWeight": str(slide.style.font_weight or "normal"),
+                "fontSize": int(slide.style.font_size)
+                if slide.style.font_size is not None
+                else 72,
+                "horizontalPadding": int(slide.style.horizontal_padding)
+                if slide.style.horizontal_padding is not None
+                else 80,
                 "backgroundAssetCode": str(slide.style.background_asset_code or ""),
                 "backgroundUrl": background_url,
             },
@@ -371,6 +380,7 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
             "selected_group": selected_group,
             "animation": animation,
             "display_session_id": display_session_id,
+            "google_fonts_stylesheet_href": GOOGLE_FONTS_STYLESHEET_HREF,
             "runtime_payload": runtime_payload,
             "lyrics_i18n": {
                 "openSecondScreenLabel": _("Ouvrir le second écran"),
@@ -441,6 +451,7 @@ def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpRe
         {
             "animation": animation,
             "display_session_id": session_id,
+            "google_fonts_stylesheet_href": GOOGLE_FONTS_STYLESHEET_HREF,
             "display_i18n": {
                 "waitingLabel": _("En attente du maître"),
                 "f11ReminderLabel": _("APPUYEZ SUR F11 SUR CETTE ÉCRAN"),

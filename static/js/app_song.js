@@ -153,7 +153,7 @@
         });
     });
 
-    const copyTextFromUrl = async (url) => {
+    const fetchTextFromUrl = async (url) => {
         const response = await fetch(url, {
             credentials: "same-origin",
             headers: {
@@ -163,8 +163,82 @@
         if (!response.ok) {
             throw new Error("Unable to fetch song text.");
         }
-        await navigator.clipboard.writeText(await response.text());
+        return await response.text();
     };
+
+    const copyTextFromUrl = async (url) => {
+        await navigator.clipboard.writeText(await fetchTextFromUrl(url));
+    };
+
+    document.querySelectorAll("[data-song-plain-copy-trigger]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            if (!messageBox) {
+                return;
+            }
+
+            const plainUrl = String(button.getAttribute("data-plain-url") || "").trim();
+            const popupLabel = String(
+                button.getAttribute("data-popup-label") || label("plainCopyFieldLabel"),
+            ).trim();
+
+            if (!plainUrl) {
+                return;
+            }
+
+            try {
+                const text = await fetchTextFromUrl(plainUrl);
+                await messageBox.show({
+                    title: label("plainCopyPopupTitle"),
+                    showCloseButton: true,
+                    size: "wide",
+                    buttons: [
+                        {
+                            id: "copy",
+                            label: label("plainCopyButtonLabel"),
+                            tone: "warning",
+                            validate: true,
+                            onClick: async ({ values, keepOpen, setFieldError }) => {
+                                try {
+                                    await navigator.clipboard.writeText(String(values.text || ""));
+                                    keepOpen();
+                                } catch (_error) {
+                                    keepOpen();
+                                    setFieldError("text", label("copyFailed"));
+                                    return false;
+                                }
+                                return false;
+                            },
+                        },
+                        {
+                            id: "close",
+                            label: label("plainCloseButtonLabel"),
+                            tone: "neutral",
+                            validate: false,
+                        },
+                    ],
+                    fields: [
+                        {
+                            id: "text",
+                            label: popupLabel || label("plainCopyFieldLabel"),
+                            type: "textarea",
+                            value: text,
+                            rows: 12,
+                            readonly: true,
+                        },
+                    ],
+                    initialFocus: "field:text",
+                    enterButtonId: "copy",
+                    escapeButtonId: "close",
+                });
+            } catch (_error) {
+                await messageBox.alert({
+                    title: label("plainCopyPopupTitle"),
+                    messageMarkdown: label("copyFailed"),
+                    showCloseButton: true,
+                });
+            }
+        });
+    });
 
     document.querySelectorAll("[data-song-print-menu]").forEach((button) => {
         button.addEventListener("click", async () => {
@@ -316,10 +390,10 @@
                 return label("chorusPrefix") || label("chorusLabel");
             }
             if (state.type === "special") {
-                return state.prefix.trim() || label("specialSectionFallbackLabel");
+                return state.prefix.trim();
             }
             if (state.notCNum) {
-                return label("verseNoNumberingLabel");
+                return "";
             }
             const original = card?.getAttribute("data-song-block-default-label") || "";
             return original || label("verseLabel");

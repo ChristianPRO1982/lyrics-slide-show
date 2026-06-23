@@ -34,8 +34,14 @@ from app_main.auth import (
 )
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
+from app_member.forms import SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
-from app_main.views import _keycloak_diagnostic_causes, account
+from app_main.views import (
+    _collect_heavy_images,
+    _keycloak_diagnostic_causes,
+    _parse_home_cards,
+    account,
+)
 
 
 def create_site_params(**overrides):
@@ -1485,3 +1491,323 @@ class SitePopupContextTests(TestCase):
 
         self.assertContains(response, "Message admin")
         self.assertNotContains(response, "Message moderation")
+
+
+class MainViewHelperCoverageTests(SimpleTestCase):
+    def test_home_card_parser_handles_plain_invalid_and_structured_payloads(self):
+        self.assertEqual(_parse_home_cards(None), [])
+        self.assertEqual(
+            _parse_home_cards("Texte historique"),
+            [{"title": "", "text": "Texte historique"}],
+        )
+        self.assertEqual(_parse_home_cards("[]"), [])
+        self.assertEqual(_parse_home_cards('{"cards": "bad"}'), [])
+        self.assertEqual(
+            _parse_home_cards(
+                '{"cards": [null, {}, {"title": " T ", "text": " X "}, '
+                '{"title": "", "text": ""}]}'
+            ),
+            [{"title": "T", "text": "X"}],
+        )
+
+    def test_collect_heavy_images_filters_sorts_and_builds_both_url_types(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "nested").mkdir()
+            (root / "nested" / "b.PNG").write_bytes(b"png")
+            (root / "a.jpg").write_bytes(b"jpg")
+            (root / "ignore.txt").write_text("ignore", encoding="utf-8")
+
+            lss_images = _collect_heavy_images(root, source="lss")
+            static_images = _collect_heavy_images(root, source="static")
+
+        self.assertEqual(
+            [item["relative_path"] for item in lss_images],
+            ["a.jpg", "nested/b.PNG"],
+        )
+        self.assertEqual(lss_images[0]["url"], "/heavy/assets/a.jpg")
+        self.assertEqual(static_images[0]["url"], "/static/a.jpg")
+
+    def test_collect_heavy_images_returns_empty_for_missing_or_non_directory(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            file_path = root / "file.jpg"
+            file_path.write_bytes(b"jpg")
+            self.assertEqual(_collect_heavy_images(file_path, source="lss"), [])
+            self.assertEqual(_collect_heavy_images(root / "missing", source="lss"), [])
+
+
+class HeavyAssetCoverageTests(SimpleTestCase):
+    @override_settings(DEBUG=True)
+    def test_heavy_page_prefers_lss_and_asset_endpoint_serves_images(self):
+        with TemporaryDirectory() as temp_dir:
+            base_dir = Path(temp_dir)
+            lss_dir = base_dir / "LSS"
+            lss_dir.mkdir()
+            (lss_dir / "image.png").write_bytes(b"image-bytes")
+            (lss_dir / "not-image.txt").write_text("text", encoding="utf-8")
+
+            with override_settings(BASE_DIR=base_dir):
+                page = self.client.get(reverse("heavy"))
+                asset = self.client.get(
+                    reverse("heavy_asset", kwargs={"asset_path": "image.png"})
+                )
+                missing = self.client.get(
+                    reverse("heavy_asset", kwargs={"asset_path": "not-image.txt"})
+                )
+
+        self.assertEqual(page.status_code, 200)
+        self.assertEqual(page.context["image_source"], "LSS")
+        self.assertContains(page, "image.png")
+        self.assertEqual(asset.status_code, 200)
+        self.assertEqual(b"".join(asset.streaming_content), b"image-bytes")
+        self.assertTrue(asset.headers["Content-Type"].startswith("image/png"))
+        self.assertEqual(missing.status_code, 404)
+
+    @override_settings(DEBUG=False)
+    def test_heavy_asset_is_hidden_outside_debug(self):
+        response = self.client.get(
+            reverse("heavy_asset", kwargs={"asset_path": "image.png"})
+        )
+        self.assertEqual(response.status_code, 404)
+
+
+class AccountActionCoverageTests(TestCase):
+    admin_id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    target_id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+
+    def setUp(self):
+        create_directory_user(
+            id=self.admin_id,
+            username="admin.user",
+            email="admin@example.test",
+            first_name="Admin",
+            last_name="User",
+        )
+        create_directory_user(
+            id=self.target_id,
+            username="target.user",
+            email="target@example.test",
+            first_name="Target",
+            last_name="User",
+        )
+
+    def _login(self, *, moderator=False, admin=False):
+        MemberRole.objects.filter(member_id=self.admin_id).delete()
+        if moderator or admin:
+            MemberRole.objects.create(
+                member_id=self.admin_id,
+                is_moderator=moderator or admin,
+                is_admin=admin,
+            )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.admin_id,
+            "username": "admin.user",
+            "email": "admin@example.test",
+            "first_name": "Admin",
+            "last_name": "User",
+            "is_moderator": moderator or admin,
+            "is_admin": admin,
+        }
+        session.save()
+
+    def _admin_form_payload(self, instance, *, language="fr"):
+        form = SiteParamsAdminForm(instance=instance, prefix="admin-settings")
+        payload = {"action": "save_site_settings", "language": language}
+        for name in form.fields:
+            value = form.initial.get(name, "")
+            if value is None:
+                value = ""
+            payload[f"admin-settings-{name}"] = str(value)
+        return payload
+
+    def test_account_rejects_privileged_actions_for_plain_member(self):
+        self._login()
+        for action in (
+            "save_moderation_settings",
+            "save_site_settings",
+            "update_member_role",
+        ):
+            with self.subTest(action=action):
+                response = self.client.post(reverse("account"), {"action": action})
+                self.assertEqual(response.status_code, 403)
+
+    def test_moderator_missing_params_redirects_and_valid_form_saves(self):
+        self._login(moderator=True)
+        missing = self.client.post(
+            reverse("account"),
+            {
+                "action": "save_moderation_settings",
+                "member_search": "target",
+                "moderation-moderator_message": "Message",
+                "moderation-moderator_message_cooldown_minutes": "10",
+            },
+        )
+        self.assertRedirects(missing, reverse("account") + "?member_search=target")
+
+        params = create_site_params()
+        saved = self.client.post(
+            reverse("account"),
+            {
+                "action": "save_moderation_settings",
+                "moderation-moderator_message": "Nouveau message",
+                "moderation-moderator_message_cooldown_minutes": "15",
+            },
+        )
+        self.assertRedirects(saved, reverse("account"))
+        params.refresh_from_db()
+        self.assertEqual(params.moderator_message, "Nouveau message")
+        self.assertEqual(params.moderator_message_cooldown_minutes, 15)
+
+    def test_admin_invalid_forms_render_with_search_results(self):
+        params = create_site_params()
+        self._login(admin=True)
+
+        invalid_moderation = self.client.post(
+            reverse("account"),
+            {
+                "action": "save_moderation_settings",
+                "member_search": "target",
+                "moderation-moderator_message": "Message",
+                "moderation-moderator_message_cooldown_minutes": "bad",
+            },
+        )
+        self.assertEqual(invalid_moderation.status_code, 200)
+        self.assertEqual(len(invalid_moderation.context["member_results"]), 1)
+
+        invalid_admin = self._admin_form_payload(params)
+        invalid_admin["member_search"] = "target"
+        invalid_admin["admin-settings-title"] = ""
+        response = self.client.post(reverse("account"), invalid_admin)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["member_results"]), 1)
+        self.assertIn("title", response.context["admin_form"].errors)
+
+    def test_admin_saves_site_settings_and_searches_members(self):
+        params = create_site_params()
+        self._login(admin=True)
+        payload = self._admin_form_payload(params)
+        payload["member_search"] = "target"
+        payload["admin-settings-title"] = "Nouveau titre"
+
+        response = self.client.post(reverse("account"), payload)
+        self.assertRedirects(response, reverse("account") + "?member_search=target")
+        params.refresh_from_db()
+        self.assertEqual(params.title, "Nouveau titre")
+
+        search = self.client.get(reverse("account"), {"member_search": "target"})
+        self.assertEqual(search.status_code, 200)
+        self.assertEqual(len(search.context["member_results"]), 1)
+
+    def test_admin_role_actions_cover_remove_invalid_and_unknown(self):
+        create_site_params()
+        self._login(admin=True)
+        MemberRole.objects.create(
+            member_id=self.target_id, is_moderator=True, is_admin=False
+        )
+        removed = self.client.post(
+            reverse("account"),
+            {
+                "action": "update_member_role",
+                "member_id": self.target_id,
+                "role_name": "moderator",
+                "enabled": "",
+                "member_search": "target",
+            },
+        )
+        self.assertRedirects(removed, reverse("account") + "?member_search=target")
+        self.assertFalse(MemberRole.objects.filter(member_id=self.target_id).exists())
+
+        invalid = self.client.post(
+            reverse("account"),
+            {
+                "action": "update_member_role",
+                "member_id": "invalid",
+                "role_name": "invalid",
+                "member_search": "target",
+            },
+        )
+        self.assertEqual(invalid.status_code, 200)
+        self.assertEqual(len(invalid.context["member_results"]), 1)
+
+        unknown = self.client.post(
+            reverse("account"),
+            {"action": "unknown", "member_search": " target "},
+        )
+        self.assertRedirects(unknown, reverse("account") + "?member_search=target")
+
+
+class SiteParamsViewCoverageTests(TestCase):
+    admin_id = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+
+    def setUp(self):
+        create_directory_user(
+            id=self.admin_id,
+            username="site.admin",
+            email="site.admin@example.test",
+            first_name="Site",
+            last_name="Admin",
+        )
+
+    def _login(self, *, admin):
+        MemberRole.objects.filter(member_id=self.admin_id).delete()
+        if admin:
+            MemberRole.objects.create(
+                member_id=self.admin_id, is_moderator=True, is_admin=True
+            )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.admin_id,
+            "username": "site.admin",
+            "email": "site.admin@example.test",
+            "first_name": "Site",
+            "last_name": "Admin",
+            "is_moderator": admin,
+            "is_admin": admin,
+        }
+        session.save()
+
+    def _payload(self, params, language="en"):
+        form = SiteParamsAdminForm(instance=params, prefix="admin-settings")
+        payload = {"language": language}
+        for name in form.fields:
+            value = form.initial.get(name, "")
+            payload[f"admin-settings-{name}"] = "" if value is None else str(value)
+        return payload
+
+    def test_site_params_requires_admin_and_normalizes_language(self):
+        self.assertRedirects(self.client.get(reverse("site_params")), reverse("login"))
+        self._login(admin=False)
+        self.assertEqual(self.client.get(reverse("site_params")).status_code, 404)
+
+        self._login(admin=True)
+        response = self.client.get(reverse("site_params"), {"language": "zz"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_language"], "fr")
+
+    def test_site_params_valid_post_creates_language_record(self):
+        source = create_site_params(language="FR")
+        self._login(admin=True)
+        payload = self._payload(source, language="en")
+        payload["admin-settings-title"] = "English title"
+
+        response = self.client.post(reverse("site_params"), payload)
+        self.assertRedirects(
+            response,
+            reverse("site_params") + "?language=en",
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(SiteParams.objects.get(language="EN").title, "English title")
+
+    def test_site_params_invalid_post_reports_named_fields(self):
+        params = create_site_params(language="FR")
+        self._login(admin=True)
+        payload = self._payload(params, language="invalid")
+        payload["admin-settings-title"] = ""
+
+        response = self.client.post(reverse("site_params"), payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_language"], "fr")
+        self.assertContains(response, "informations manquantes ou invalides")
+        self.assertContains(response, "Titre du site")

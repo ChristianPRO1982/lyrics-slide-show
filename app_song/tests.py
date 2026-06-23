@@ -3,12 +3,21 @@ from types import SimpleNamespace
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
-from django.db import IntegrityError
+from django.db import IntegrityError, connection
 
 from app_main.models import DirectoryUserRecord
 from app_member.models import MemberPreferences, MemberRole
 
-from .models import Song, SongFavorite, SongStatus, Verse
+from .models import (
+    Song,
+    SongArtist,
+    SongBand,
+    SongFavorite,
+    SongGenre,
+    SongLink,
+    SongStatus,
+    Verse,
+)
 from . import views as song_views
 from .rendering import (
     ChorusRenderMode,
@@ -17,8 +26,10 @@ from .rendering import (
     build_song_full_title,
     build_song_full_title_with_tags,
     build_song_text_artifacts,
+    render_song_popup_plain_text,
     render_song_blocks,
     render_song_text,
+    _table_html_to_plain_text,
 )
 from .search import (
     SongSearchParams,
@@ -91,6 +102,45 @@ class SongRenderingServiceTests(SimpleTestCase):
         self.assertEqual(blocks[0].label, "Refrain")
         self.assertTrue(blocks[2].is_repeated_chorus)
 
+    def test_table_html_to_plain_text_removes_table_markup_and_decodes_entities(self):
+        self.assertEqual(
+            _table_html_to_plain_text(
+                "<table><tbody><tr><th>Couplet 1</th><td>A &amp; B<br>C</td></tr>"
+                "</tbody></table>"
+            ),
+            "Couplet 1 A & B\nC",
+        )
+
+    def test_empty_chorus_blocks_are_ignored(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "", chorus=True, num_verse=0),
+                make_verse(2, 4, "Couplet", num_verse=1),
+            ],
+        )
+        self.assertEqual([block.text for block in blocks], ["Couplet"])
+
+    def test_song_model_display_properties_cover_markers_subtitle_and_license(self):
+        song = Song(
+            title="Titre",
+            subtitle="Sous-titre",
+            status=SongStatus.VALIDATED,
+            licensed=True,
+        )
+        self.assertEqual(str(song), "Titre - Sous-titre ✔️ ©")
+        self.assertTrue(song.is_validated)
+        self.assertEqual(song.validation_marker, "✔️")
+
+        song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.assertEqual(song.validation_marker, "✔️⁉️")
+        song.status = SongStatus.NOT_VALIDATED
+        song.subtitle = ""
+        song.licensed = False
+        self.assertEqual(song.display_title, "Titre")
+
     def test_full_mode_repeats_chorus_after_each_eligible_verse(self):
         blocks = render_song_blocks(
             make_song(),
@@ -133,6 +183,83 @@ class SongRenderingServiceTests(SimpleTestCase):
                 RenderedSongBlockKind.VERSE,
                 RenderedSongBlockKind.VERSE,
             ],
+        )
+
+
+class ModifySongBlockLabelTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_not_c_num_hides_modify_song_display_and_drag_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="a",
+            block_id=1,
+            position=2,
+            block_type="verse",
+            text="Suite du couplet",
+            prefix="",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=False,
+            num=2,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), ""
+        )
+        self.assertEqual(song_views._build_block_drag_label(block, self.settings), "")
+
+    def test_chorus_like_without_prefix_hides_modify_song_display_and_drag_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="b",
+            block_id=2,
+            position=4,
+            block_type="special",
+            text="Pont final",
+            prefix="",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=True,
+            num=4,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), ""
+        )
+        self.assertEqual(song_views._build_block_drag_label(block, self.settings), "")
+
+    def test_chorus_like_with_prefix_keeps_prefix_for_modify_song_labels(self):
+        block = song_views.ParsedSongBlock(
+            row_key="c",
+            block_id=3,
+            position=6,
+            block_type="special",
+            text="Pont final",
+            prefix="Pont",
+            followed=False,
+            not_c_num=True,
+            chorus=False,
+            chorus_like=True,
+            num=6,
+            display_num=3,
+            delete=False,
+        )
+
+        self.assertEqual(
+            song_views._build_block_display_label(block, self.settings), "Pont"
+        )
+        self.assertEqual(
+            song_views._build_block_drag_label(block, self.settings), "Pont"
         )
 
     def test_followed_skips_next_chorus_insertion_point(self):
@@ -203,6 +330,24 @@ class SongRenderingServiceTests(SimpleTestCase):
 
         self.assertIn("Suite du couplet", text)
         self.assertNotIn("Couplet 1", text)
+
+    def test_popup_plain_text_puts_chorus_like_prefix_on_its_own_line(self):
+        text = render_song_popup_plain_text(
+            make_song(),
+            ChorusRenderMode.SINGLE,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 2, "Refrain", chorus=True, num_verse=0),
+                make_verse(
+                    2, 4, "Pont final", num_verse=1, chorus_like=True, prefix="Pont"
+                ),
+                make_verse(
+                    3, 6, "Sans préfixe", num_verse=2, chorus_like=True, prefix=""
+                ),
+            ],
+        )
+
+        self.assertEqual(text, "Refrain Refrain\n\nPont\nPont final\n\nSans préfixe\n")
 
 
 class SongSearchParamsTests(SimpleTestCase):
@@ -370,7 +515,7 @@ class SongTextArtifactsTests(SimpleTestCase):
             verses=[make_verse(1, 2, "Pont final", chorus_like=True, prefix="")],
         )
         self.assertIn(
-            '<th scope="row">Refrain</th><td>Pont final</td>',
+            '<th scope="row"></th><td>Pont final</td>',
             artifacts_no_prefix.long_text_html,
         )
 
@@ -394,7 +539,7 @@ class SongTextArtifactsTests(SimpleTestCase):
             '<th scope="row"></th><td>Suite du couplet</td>', artifacts.long_text_html
         )
 
-    def test_chorus_multi_blocks_are_joined_with_blank_line(self):
+    def test_chorus_multi_blocks_are_joined_with_single_line_break(self):
         artifacts = build_song_text_artifacts(
             make_song(),
             settings=self.settings,
@@ -404,9 +549,22 @@ class SongTextArtifactsTests(SimpleTestCase):
             ],
         )
         self.assertIn(
-            '<th scope="row">Refrain</th><td>Ligne A<br><br>Ligne B</td>',
+            '<th scope="row">Refrain</th><td>Ligne A<br>Ligne B</td>',
             artifacts.long_text_html,
         )
+
+    def test_render_song_text_joins_multi_block_chorus_with_single_newline(self):
+        text = render_song_text(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            include_title=False,
+            verses=[
+                make_verse(1, 2, "Ligne A", chorus=True, num_verse=0),
+                make_verse(2, 4, "Ligne B", chorus=True, num_verse=0),
+            ],
+        )
+        self.assertEqual(text, "Refrain Ligne A\nLigne B\n")
 
     def test_html_output_escapes_dynamic_values(self):
         artifacts = build_song_text_artifacts(
@@ -483,6 +641,46 @@ class SongViewsRenderingTests(TestCase):
         )
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
+    def test_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "<p>copier le texte sans mise en forme</p>",
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-plain-copy-trigger",
+            count=4,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "single-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "full-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-label="un seul refrain"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-label="toutes les répétitions de refrain"',
+            count=2,
+            html=False,
+        )
+
     def test_song_text_print_page_uses_full_title_without_tags(self):
         self._login()
         response = self.client.get(
@@ -497,7 +695,7 @@ class SongViewsRenderingTests(TestCase):
             html=False,
         )
 
-    def test_song_text_plain_endpoint_returns_html_fragment(self):
+    def test_song_text_plain_endpoint_returns_plain_text_blocks(self):
         self._login()
         response = self.client.get(
             reverse("song_text", args=[self.song.song_id, "single-chorus"])
@@ -506,8 +704,32 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
         body = response.content.decode("utf-8")
-        self.assertIn('<th scope="row">Refrain</th><td>On dirait le Sud</td>', body)
+        self.assertEqual(
+            body, "Refrain On dirait le Sud\n\nCouplet 1 C'est un endroit\n"
+        )
+        self.assertNotIn("<th", body)
+        self.assertNotIn("<td", body)
         self.assertNotIn("Le Sud - Nino Ferrer", body)
+
+    def test_song_text_popup_copy_layout_puts_chorus_like_prefix_on_separate_line(self):
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=2,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+        self._login()
+        response = self.client.get(
+            reverse("song_text", args=[self.song.song_id, "full-chorus"])
+            + "?format=plain&layout=popup-copy"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.headers["Content-Type"].startswith("text/plain"))
+        body = response.content.decode("utf-8")
+        self.assertIn("\n\nPont\nPont final\n", body)
+        self.assertNotIn("\n\nPont Pont final\n", body)
 
     def test_song_text_popup_endpoint_returns_full_chorus_markdown(self):
         self._login()
@@ -556,6 +778,33 @@ class SongFavoriteActionsTests(TestCase):
             "is_admin": False,
         }
         session.save()
+
+    def _assert_shared_song_actions(self, response, *, active_page: str) -> None:
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "☆ Pas encore favori")
+        self.assertContains(response, "data-song-delete-form")
+        self.assertContains(response, 'name="action" value="delete_song"', html=False)
+        self.assertContains(
+            response, 'name="song_id" value="{}"'.format(self.song.song_id), html=False
+        )
+        self.assertNotContains(response, "song-actions-list")
+
+        html = response.content.decode("utf-8")
+        self.assertLess(html.find("☆ Pas encore favori"), html.find("Supprimer"))
+        if active_page != "song":
+            self.assertIn(
+                'href="{}"'.format(reverse("song", args=[self.song.song_id])), html
+            )
+        if active_page != "modify_song":
+            self.assertIn(
+                'href="{}"'.format(reverse("modify_song", args=[self.song.song_id])),
+                html,
+            )
+        if active_page != "song_metadata":
+            self.assertIn(
+                'href="{}"'.format(reverse("song_metadata", args=[self.song.song_id])),
+                html,
+            )
 
     def test_song_toggle_creates_and_deletes_favorite(self):
         self._login()
@@ -639,31 +888,35 @@ class SongFavoriteActionsTests(TestCase):
         self._login()
 
         song_response = self.client.get(reverse("song", args=[self.song.song_id]))
-        self.assertEqual(song_response.status_code, 200)
-        self.assertContains(song_response, "☆ Pas encore favori")
-        self.assertContains(song_response, "Supprimer")
-        song_html = song_response.content.decode("utf-8")
-        self.assertLess(
-            song_html.find("☆ Pas encore favori"), song_html.find("Supprimer")
-        )
+        self._assert_shared_song_actions(song_response, active_page="song")
 
         modify_response = self.client.get(
             reverse("modify_song", args=[self.song.song_id])
         )
-        self.assertEqual(modify_response.status_code, 200)
-        self.assertContains(modify_response, "☆ Pas encore favori")
+        self._assert_shared_song_actions(modify_response, active_page="modify_song")
 
         metadata_response = self.client.get(
             reverse("song_metadata", args=[self.song.song_id])
         )
-        self.assertEqual(metadata_response.status_code, 200)
-        self.assertContains(metadata_response, "☆ Pas encore favori")
+        self._assert_shared_song_actions(metadata_response, active_page="song_metadata")
+
+    def test_song_metadata_delete_song_uses_shared_action(self):
+        self._login()
+
+        response = self.client.post(
+            reverse("song_metadata", args=[self.song.song_id]),
+            data={"action": "delete_song", "song_id": self.song.song_id},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("songs"))
+        self.assertFalse(Song.objects.filter(song_id=self.song.song_id).exists())
 
     def test_song_view_hides_toggle_for_guest(self):
         response = self.client.get(reverse("song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "☆ Pas encore favori")
         self.assertNotContains(response, "⭐ Favori")
+        self.assertNotContains(response, "data-song-delete-form")
 
 
 class ModifySongViewTests(TestCase):
@@ -795,6 +1048,8 @@ class ModifySongViewTests(TestCase):
         )
         self.assertContains(response, "data-song-block-open-text")
         self.assertContains(response, "data-song-block-open-prefix")
+        self.assertNotContains(response, "Couplet (sans numérotation)")
+        self.assertNotContains(response, "Section spéciale")
 
     def test_member_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -931,6 +1186,27 @@ class ModifySongViewTests(TestCase):
         chorus_like_block = Verse.objects.get(song=self.song, chorus_like=True)
         self.assertTrue(chorus_like_block.notcontinuenumbering)
 
+    def test_chorus_like_modify_editor_shows_not_c_num_checked_and_disabled(self):
+        self._login()
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode("utf-8")
+        self.assertIn(
+            'type="checkbox"\n                                                                        checked\n                                                                        disabled\n                                                                        data-song-block-no-continue-numbering-checkbox',
+            html,
+        )
+
     def test_non_chorus_like_verse_clears_prefix_to_null(self):
         self._login()
         payload = self._base_payload()
@@ -1003,19 +1279,6 @@ class ModifySongViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("songs"))
-
-    def test_preview_endpoint_returns_current_unsaved_render(self):
-        self._login()
-        payload = self._base_payload()
-        payload["title"] = "Titre preview"
-        response = self.client.post(
-            reverse("modify_song_preview", args=[self.song.song_id]), data=payload
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertIn("Titre preview", data["title"])
-        self.assertIn("Couplet 1", data["markdown"])
-        self.assertIn("Refrain", data["markdown"])
 
 
 class ModifyGenresViewTests(TestCase):
@@ -1445,3 +1708,344 @@ class SongCreateFromSongsPageTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("songs"))
         self.assertFalse(Song.objects.filter(subtitle="Sous", title="").exists())
+
+
+class ReferenceCatalogViewsTests(TestCase):
+    user_id = "77777777-7777-7777-7777-777777777777"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="catalog.moderator",
+            first_name="Catalog",
+            last_name="Moderator",
+            email="catalog@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        MemberRole.objects.create(
+            member_id=self.user_id, is_moderator=True, is_admin=False
+        )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "catalog.moderator",
+            "email": "catalog@example.test",
+            "first_name": "Catalog",
+            "last_name": "Moderator",
+            "is_moderator": True,
+            "is_admin": False,
+        }
+        session.save()
+
+    def _insert_reference(self, table, columns, values):
+        column_sql = ", ".join(f'"{column}"' for column in columns)
+        placeholders = ", ".join(["%s"] * len(values))
+        id_column = {
+            "genres": "genre_id",
+            "artists": "artist_id",
+            "bands": "band_id",
+        }[table]
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f'INSERT INTO "common"."{table}" ({column_sql}) '
+                f'VALUES ({placeholders}) RETURNING "{id_column}"',
+                values,
+            )
+            return cursor.fetchone()[0]
+
+    def _fetch_reference(self, table, id_column, item_id):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f'SELECT * FROM "common"."{table}" WHERE "{id_column}" = %s',
+                [item_id],
+            )
+            return cursor.fetchone()
+
+    def test_catalog_pages_require_moderator_and_render_database_rows(self):
+        genre_id = self._insert_reference("genres", ("group", "name"), ("Style", "Pop"))
+        artist_id = self._insert_reference("artists", ("name",), ("Artist A",))
+        band_id = self._insert_reference("bands", ("name",), ("Band A",))
+
+        for route_name, expected in (
+            ("modify_genres", "Pop"),
+            ("modify_artists", "Artist A"),
+            ("modify_bands", "Band A"),
+        ):
+            with self.subTest(route=route_name):
+                response = self.client.get(reverse(route_name))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, expected)
+
+        self.assertIsNotNone(self._fetch_reference("genres", "genre_id", genre_id))
+        self.assertIsNotNone(self._fetch_reference("artists", "artist_id", artist_id))
+        self.assertIsNotNone(self._fetch_reference("bands", "band_id", band_id))
+
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        session = self.client.session
+        session["lss_user"]["is_moderator"] = False
+        session.save()
+        self.assertEqual(self.client.get(reverse("modify_genres")).status_code, 404)
+
+    def test_unknown_catalog_actions_redirect_with_error(self):
+        for route_name in ("modify_genres", "modify_artists", "modify_bands"):
+            with self.subTest(route=route_name):
+                response = self.client.post(
+                    reverse(route_name), {"action": "unknown"}, follow=True
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "Action inconnue")
+
+    def test_genre_save_creates_updates_deletes_and_reports_invalid_rows(self):
+        update_id = self._insert_reference(
+            "genres", ("group", "name"), ("Old", "Update")
+        )
+        delete_id = self._insert_reference(
+            "genres", ("group", "name"), ("Old", "Delete")
+        )
+        unchanged_id = self._insert_reference(
+            "genres", ("group", "name"), ("Same", "Same")
+        )
+
+        response = self.client.post(
+            reverse("modify_genres"),
+            {
+                "action": "save",
+                "new_group": "New",
+                "new_name": "Created",
+                f"rows[{update_id}][group]": "Updated",
+                f"rows[{update_id}][name]": "Renamed",
+                f"rows[{delete_id}][delete]": "1",
+                f"rows[{unchanged_id}][group]": "Same",
+                f"rows[{unchanged_id}][name]": "Same",
+                "rows[999999][group]": "Missing",
+                "rows[999999][name]": "Ignored",
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Genres enregistrés")
+        self.assertIsNone(self._fetch_reference("genres", "genre_id", delete_id))
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'SELECT "group", "name" FROM "common"."genres" WHERE genre_id = %s',
+                [update_id],
+            )
+            self.assertEqual(cursor.fetchone(), ("Updated", "Renamed"))
+            cursor.execute(
+                'SELECT 1 FROM "common"."genres" WHERE "group" = %s AND "name" = %s',
+                ["New", "Created"],
+            )
+            self.assertIsNotNone(cursor.fetchone())
+
+        invalid = self.client.post(
+            reverse("modify_genres"),
+            {
+                "action": "save",
+                "new_group": "Incomplete",
+                f"rows[{update_id}][group]": "",
+                f"rows[{update_id}][name]": "",
+            },
+            follow=True,
+        )
+        self.assertContains(invalid, "renseignez à la fois")
+        self.assertContains(invalid, "groupe et nom obligatoires")
+
+    def test_artist_and_band_save_cover_create_update_delete_and_invalid_name(self):
+        for route_name, table, id_column, prefix in (
+            ("modify_artists", "artists", "artist_id", "Artist"),
+            ("modify_bands", "bands", "band_id", "Band"),
+        ):
+            with self.subTest(route=route_name):
+                update_id = self._insert_reference(table, ("name",), (f"{prefix} old",))
+                delete_id = self._insert_reference(
+                    table, ("name",), (f"{prefix} delete",)
+                )
+                unchanged_id = self._insert_reference(
+                    table, ("name",), (f"{prefix} same",)
+                )
+                response = self.client.post(
+                    reverse(route_name),
+                    {
+                        "action": "save",
+                        "new_name": f"{prefix} created",
+                        f"rows[{update_id}][name]": f"{prefix} updated",
+                        f"rows[{delete_id}][delete]": "1",
+                        f"rows[{unchanged_id}][name]": f"{prefix} same",
+                        "rows[999999][name]": "Ignored",
+                    },
+                    follow=True,
+                )
+                self.assertContains(response, "enregistrés")
+                self.assertIsNone(self._fetch_reference(table, id_column, delete_id))
+
+                invalid = self.client.post(
+                    reverse(route_name),
+                    {
+                        "action": "save",
+                        f"rows[{update_id}][name]": "",
+                    },
+                    follow=True,
+                )
+                self.assertContains(invalid, "nom obligatoire")
+
+
+class SongMetadataPersistenceTests(TestCase):
+    user_id = "88888888-8888-8888-8888-888888888888"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="metadata.user",
+            first_name="Metadata",
+            last_name="User",
+            email="metadata@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "metadata.user",
+            "email": "metadata@example.test",
+            "first_name": "Metadata",
+            "last_name": "User",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+        self.song = Song.objects.create(
+            title="Metadata song",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+
+    def _insert_reference(self, table, id_column, name, group=None):
+        with connection.cursor() as cursor:
+            if table == "genres":
+                cursor.execute(
+                    'INSERT INTO "common"."genres" ("group", "name") '
+                    "VALUES (%s, %s) RETURNING genre_id",
+                    [group, name],
+                )
+            else:
+                cursor.execute(
+                    f'INSERT INTO "common"."{table}" ("name") '
+                    f'VALUES (%s) RETURNING "{id_column}"',
+                    [name],
+                )
+            return cursor.fetchone()[0]
+
+    def test_metadata_get_splits_selected_options_and_normalizes_audio_video(self):
+        genre_selected = self._insert_reference(
+            "genres", "genre_id", "Pop", group="Style"
+        )
+        genre_available = self._insert_reference(
+            "genres", "genre_id", "Rock", group="Style"
+        )
+        artist_id = self._insert_reference("artists", "artist_id", "Artist")
+        band_id = self._insert_reference("bands", "band_id", "Band")
+        SongGenre.objects.create(song=self.song, genre_id=genre_selected)
+        SongArtist.objects.create(song=self.song, artist_id=artist_id)
+        SongLink.objects.create(
+            song=self.song, link="https://audio.test", type="audio-video"
+        )
+
+        response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["metadata_links"][0].display_type, "audio")
+        self.assertEqual(
+            response.context["metadata_genres_selected"][0]["id"], genre_selected
+        )
+        self.assertEqual(
+            response.context["metadata_genres_available"][0]["id"], genre_available
+        )
+        self.assertEqual(
+            response.context["metadata_artists_selected"][0]["id"], artist_id
+        )
+        self.assertEqual(response.context["metadata_bands_available"][0]["id"], band_id)
+
+    def test_metadata_post_synchronizes_links_and_reference_relations(self):
+        genre_old = self._insert_reference("genres", "genre_id", "Old", group="Style")
+        genre_new = self._insert_reference("genres", "genre_id", "New", group="Style")
+        artist_id = self._insert_reference("artists", "artist_id", "Artist")
+        band_id = self._insert_reference("bands", "band_id", "Band")
+        SongGenre.objects.create(song=self.song, genre_id=genre_old)
+        SongLink.objects.create(song=self.song, link="https://a.test", type="web")
+        SongLink.objects.create(song=self.song, link="https://b.test", type="score")
+        SongLink.objects.create(song=self.song, link="https://c.test", type="internal")
+
+        response = self.client.post(
+            reverse("song_metadata", args=[self.song.song_id]),
+            {
+                "existing_0_original": "https://a.test",
+                "existing_0_link": "https://renamed.test",
+                "existing_0_type": "audio-video",
+                "existing_1_original": "https://b.test",
+                "existing_1_link": "",
+                "existing_1_type": "score",
+                "existing_1_delete": "1",
+                "existing_2_original": "https://c.test",
+                "existing_2_link": "https://c.test",
+                "existing_2_type": "youtube",
+                "new_link": "https://new.test",
+                "new_type": "invalid-type",
+                "genre_ids": [str(genre_new), str(genre_new), "bad", "-1"],
+                "artist_ids": [str(artist_id)],
+                "band_ids": [str(band_id)],
+            },
+        )
+        self.assertRedirects(
+            response, reverse("song_metadata", args=[self.song.song_id])
+        )
+        links = {
+            item.link: item.type for item in SongLink.objects.filter(song=self.song)
+        }
+        self.assertEqual(
+            links,
+            {
+                "https://renamed.test": "audio",
+                "https://c.test": "youtube",
+                "https://new.test": "web",
+            },
+        )
+        self.assertEqual(
+            set(
+                SongGenre.objects.filter(song=self.song).values_list(
+                    "genre_id", flat=True
+                )
+            ),
+            {genre_new},
+        )
+        self.assertTrue(
+            SongArtist.objects.filter(song=self.song, artist_id=artist_id).exists()
+        )
+        self.assertTrue(
+            SongBand.objects.filter(song=self.song, band_id=band_id).exists()
+        )
+
+    def test_metadata_post_removes_colliding_link_targets(self):
+        SongLink.objects.create(song=self.song, link="https://a.test", type="web")
+        SongLink.objects.create(song=self.song, link="https://b.test", type="score")
+
+        response = self.client.post(
+            reverse("song_metadata", args=[self.song.song_id]),
+            {
+                "existing_0_original": "https://a.test",
+                "existing_0_link": "https://b.test",
+                "existing_0_type": "web",
+                "existing_1_original": "https://b.test",
+                "existing_1_link": "https://b.test",
+                "existing_1_type": "score",
+                "new_link": "https://b.test",
+                "new_type": "web",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            list(
+                SongLink.objects.filter(song=self.song).values_list("link", flat=True)
+            ),
+            [],
+        )

@@ -2,6 +2,46 @@
     width: 100%;
 }
 
+.song-tool-form,
+.song-message-form {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.song-tool-form button,
+.song-message-form button,
+.site-tools-panel .song-tool-link,
+.site-tools-panel .song-tool-button,
+.site-tools-panel .song-secondary-action,
+.site-tools-panel .song-danger-action,
+.site-mobile-side .song-tool-link,
+.site-mobile-side .song-tool-button,
+.site-mobile-side .song-secondary-action,
+.site-mobile-side .song-danger-action {
+    box-sizing: border-box;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.site-tools-panel .song-tool-link,
+.site-mobile-side .song-tool-link {
+    justify-content: center;
+}
+
+.site-tools-panel .song-tools-separator,
+.site-mobile-side .song-tools-separator {
+    min-height: 1px;
+    padding: 0;
+    border: 0;
+    background: var(--site-line);
+}
+
+.song-message-form p {
+    margin: 0;
+}
+
 [data-song-mobile-actions][hidden] {
     display: none !important;
 }
