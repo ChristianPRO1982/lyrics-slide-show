@@ -29,11 +29,13 @@ Contrainte d’unicité : `title + subtitle`.
 
 ## Statut de validation
 
+Cette section décrit la cible fonctionnelle attendue pour `app_song`.
+
 Le statut de validation est numérique :
 
-- `0` : non validé
+- `0` : libre
 - `1` : validé
-- `2` : validé avec attention/messages
+- `2` : validé avec messages
 
 Marqueurs :
 
@@ -48,6 +50,25 @@ Constantes Python exposées :
 - `SONG_STATUS_VALIDATED_WITH_CONCERN = 2`
 
 `status=1` et `status=2` sont traités comme états validés.
+
+### Règles métier cibles
+
+- un nouveau chant est créé en `status=0` (`libre`) ;
+- un chant `libre` est modifiable librement dans le sens fonctionnel cible ;
+- seul un `Moderator` peut passer un chant en `status=1` ; un `Admin` peut également le faire car un admin hérite des capacités modérateur ;
+- un chant `status=1` peut recevoir des demandes de correction ;
+- dès qu’un chant validé reçoit un message de correction, il passe en `status=2` ;
+- un chant `status=2` ne peut pas revenir directement en `status=0` ;
+- pour quitter `status=2`, tous les messages encore `nouveau` doivent d’abord être traités ;
+- lorsqu’il n’existe plus de message `nouveau`, le chant revient en `status=1` ;
+- une fois revenu en `status=1`, le chant peut alors être repassé en `status=0`.
+
+### Transition cible résumée
+
+- `0 -> 1` : validation par modérateur/admin
+- `1 -> 2` : arrivée d’un message de correction
+- `2 -> 1` : tous les messages `nouveau` sont passés à `traité`
+- `1 -> 0` : dévalidation possible après retour à `status=1`
 
 ## Modèle de texte
 
@@ -176,14 +197,15 @@ Favoris stockés dans `m_songs_users` (`SongFavorite`).
 
 Rôles applicatifs utilisés : `Guest`, `Member`, `Moderator`, `Admin`.
 
-Le code applique les règles suivantes :
+La cible fonctionnelle de `app_song` applique les règles suivantes :
 
 - lecture chant : authentifié OU chant non licencié
-- édition chant : authentifié ET (chant non validé OU modérateur)
+- édition chant `libre` : tout utilisateur au sens fonctionnel visé
+- édition chant validé ou validé avec messages : modérateur/admin uniquement
 - toggle favori : authentifié
 - suppression chant : même droit que édition
 - édition métadonnées (`/metadata/`) : même droit que édition
-- modification du statut : modérateur (validation/dévalidation)
+- modification du statut : modérateur ; les admins disposent du même pouvoir car ils héritent du rôle modérateur
 
 ## Demandes de correction
 
@@ -201,8 +223,12 @@ Constantes :
 
 Comportement actuel :
 
-- formulaire affiché uniquement pour chants validés (`status in {1,2}`)
-- et seulement si l’utilisateur ne peut pas éditer directement
+- le formulaire est un simple `textarea`
+- le formulaire est affiché pour les chants validés (`status in {1,2}`)
+- il sert à déposer une demande de modification à faire sur le chant
+- dans la terminologie documentaire cible, `vu` correspond à `traité`
+- un message `nouveau` est bloquant pour le retour d’un chant `status=2` vers `status=0`
+- les messages `rejeté` ne sont pas documentés comme équivalents de `vu`
 - message vide refusé
 - auteur du message non stocké
 

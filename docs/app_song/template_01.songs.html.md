@@ -11,6 +11,9 @@ Page racine front de consultation et recherche des chants (`/songs/`).
 - Expose l’action `💫 Afficher mes favoris` et l’état visuel du mode favoris temporaire.
 - Affiche le formulaire de recherche simple et avancée.
 - Affiche la liste des cartes chant, leurs marqueurs et actions UI.
+- Affiche sur chaque carte le titre du chant avec le marqueur de validation à la suite du titre :
+  - `✔️` pour `status=1`
+  - `✔️⁉️` pour `status=2`
 - Affiche les états vides (aucun résultat backend/local).
 
 ## Contrat d’interface (variables attendues)

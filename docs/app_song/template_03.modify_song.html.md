@@ -26,3 +26,4 @@ Page front d’édition d’un chant (`/songs/<song_id>/modify/`).
 ## Notes
 
 - La logique métier de sauvegarde, recalcul de numérotation et permissions est décrite dans `functional_requirements.md`.
+- Dans la cible fonctionnelle documentée, la dévalidation complète d’un chant ayant atteint `status=2` est contrainte par l’état des messages : le chant doit d’abord revenir en `status=1` après traitement de tous les messages `nouveau`.
