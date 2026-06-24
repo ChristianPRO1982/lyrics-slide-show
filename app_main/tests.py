@@ -124,6 +124,14 @@ class SyncAuthMockAccountsCommandTests(TestCase):
             last_name="Admin",
             enabled=False,
         )
+        create_directory_user(
+            id="33333333-3333-3333-3333-333333333333",
+            username="unknown.user",
+            email="unknown.user@example.test",
+            first_name="Unknown",
+            last_name="User",
+            enabled=True,
+        )
         MemberRole.objects.create(
             member_id="33333333-3333-3333-3333-333333333333",
             is_moderator=True,
