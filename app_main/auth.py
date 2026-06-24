@@ -41,6 +41,12 @@ SENSITIVE_KEYCLOAK_LOG_KEYS = (
     "code",
 )
 
+DISABLED_USER_MESSAGE = _("Cet utilisateur est désactivé dans Lyrics Slide Show.")
+UNKNOWN_USER_MESSAGE = _(
+    "Aucun utilisateur correspondant n'a été trouvé dans Lyrics Slide Show. "
+    "Si ce problème est toujours d'actualité au bout de 24 heures, contacter l'administrateur"
+)
+
 
 class AuthError(Exception):
     pass
@@ -621,7 +627,7 @@ def _directory_user_from_record(record: DirectoryUserRecord) -> DirectoryUser:
     )
 
     if not user.enabled:
-        raise DisabledUserError(_("Cet utilisateur est désactivé dans users.users."))
+        raise DisabledUserError(DISABLED_USER_MESSAGE)
 
     return user
 
@@ -630,17 +636,13 @@ def get_directory_user(external_id: str) -> DirectoryUser:
     try:
         normalized_id = uuid.UUID(str(external_id))
     except (TypeError, ValueError) as exc:
-        raise UnknownUserError(
-            _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
-        ) from exc
+        raise UnknownUserError(UNKNOWN_USER_MESSAGE) from exc
 
     if settings.USER_SCHEMA == "users" and settings.USER_TABLE == "users":
         try:
             record = DirectoryUserRecord.objects.get(pk=normalized_id)
         except DirectoryUserRecord.DoesNotExist as exc:
-            raise UnknownUserError(
-                _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
-            ) from exc
+            raise UnknownUserError(UNKNOWN_USER_MESSAGE) from exc
         return _directory_user_from_record(record)
 
     with connection.cursor() as cursor:
@@ -648,9 +650,7 @@ def get_directory_user(external_id: str) -> DirectoryUser:
         row = cursor.fetchone()
 
     if row is None:
-        raise UnknownUserError(
-            _("Aucun utilisateur correspondant n'a été trouvé dans users.users.")
-        )
+        raise UnknownUserError(UNKNOWN_USER_MESSAGE)
 
     return _directory_user_from_record(
         DirectoryUserRecord(

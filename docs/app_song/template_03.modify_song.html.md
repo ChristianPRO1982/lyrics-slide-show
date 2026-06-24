@@ -4,6 +4,14 @@
 
 Page front d’édition d’un chant (`/songs/<song_id>/modify/`).
 
+Dans la cible documentaire, cette page sert :
+
+- à l’édition directe des chants non validés pour les utilisateurs authentifiés ;
+- à l’édition directe des chants validés et non validés pour les modérateurs et admins ;
+- les utilisateurs authentifiés non modérateurs n’y disposent pas du droit d’édition directe sur un chant validé.
+
+Cette page n’est pas une page de lecture.
+
 ## Responsabilité front
 
 - Affiche les actions de page (enregistrer, enregistrer et quitter, dévalider si disponible).
@@ -26,3 +34,6 @@ Page front d’édition d’un chant (`/songs/<song_id>/modify/`).
 ## Notes
 
 - La logique métier de sauvegarde, recalcul de numérotation et permissions est décrite dans `functional_requirements.md`.
+- Dans la cible fonctionnelle documentée, la dévalidation complète d’un chant est bloquée tant qu’au moins un message lié au chant reste avec `vu = false`.
+- Une autorisation visible côté front reste provisoire ; le back fait la dernière vérification et peut refuser finalement une modification devenue interdite si un modérateur a validé le chant pendant la session.
+- En cas de refus final pour ce motif sur un utilisateur non modérateur, la cible documentaire attend une redirection vers `song` avec un message explicite indiquant que les modifications n’ont pas été prises en compte et qu’il faut utiliser le formulaire de demande de modification du chant.

@@ -113,7 +113,14 @@ Prerequisites:
 - shared PostgreSQL is running
 - `users.users` exists in database `carthographie`
 - the SQL user configured for `LSS` can read `users.users`
-- `AUTH_MOCK_USERS_JSON` contains at least one UUID that really exists in `users.users`
+- `AUTH_MOCK_USERS_JSON` contains five dev accounts:
+  three successful logins plus one disabled user and one unknown user
+- the successful login UUIDs exist in `users.users`, and the disabled UUID also
+  exists there with `enabled = false`
+- the unknown UUID intentionally stays absent from `users.users`
+- local roles in `lss.m_member_roles` are aligned so `testmock` is `admin`,
+  `testmock_moderateur` is `moderator`, and `testmock_simpletuser` stays a
+  simple member
 
 Useful local variables:
 
@@ -141,6 +148,7 @@ Basic local run:
 ```bash
 cp .env.dev.example .env.dev
 docker compose -f compose.yaml -f compose.dev.yaml up --build
+docker compose exec web python manage.py sync_auth_mock_accounts
 ```
 
 ## PROD Docker Preparation
@@ -182,11 +190,14 @@ Manual verification:
 1. open `http://localhost:8000`
 2. verify `Guest`
 3. click the mock login entrypoint currently labeled `Ouvrir la simulation`
-4. choose a user in `auth_mock`
-5. return to `LSS`
-6. verify `Connected` or a clear refusal
-7. click `Logout`
-8. verify return to `Guest`
+4. choose `testmock` in `auth_mock` and verify the `Admin` account UI
+5. click `Logout` and verify return to `Guest`
+6. choose `testmock_moderateur` and verify `Moderator` UI without `Admin`
+7. click `Logout` and verify return to `Guest`
+8. choose `testmock_simpletuser` and verify a simple member account UI
+9. click `Logout` and verify return to `Guest`
+10. choose `disabled.user` and verify a clear refusal for disabled local user
+11. choose `unknown.user` and verify a clear refusal for unknown local user
 
 Provisioning variables for production:
 

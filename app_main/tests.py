@@ -9,19 +9,23 @@ from unittest.mock import MagicMock, patch
 from io import BytesIO
 from urllib.parse import parse_qs, urlparse
 
+from django.core.management import call_command
 from django.contrib.messages import get_messages
 from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+from auth_mock.server import load_mock_users
 from lyrics_slide_show.settings import env_secret_with_default_file
 from app_main.auth import (
     AnonymousSessionUser,
+    DISABLED_USER_MESSAGE,
     DirectoryUser,
     DisabledUserError,
     HomeProvisioningError,
     KeycloakAuthError,
+    UNKNOWN_USER_MESSAGE,
     UnknownUserError,
     build_home_provision_start_url,
     build_keycloak_logout_url,
@@ -32,6 +36,7 @@ from app_main.auth import (
     validate_keycloak_callback,
     validate_callback_payload,
 )
+from app_main.mock_accounts import DEV_MOCK_ACCOUNTS, dev_mock_accounts_json
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
 from app_member.forms import SiteParamsAdminForm
@@ -78,6 +83,96 @@ def create_directory_user(**overrides):
     }
     defaults.update(overrides)
     return DirectoryUserRecord.objects.create(**defaults)
+
+
+class AuthMockAccountConfigTests(SimpleTestCase):
+    def test_load_mock_users_defaults_to_three_supported_profiles(self):
+        with patch.dict(os.environ, {"AUTH_MOCK_USERS_JSON": ""}, clear=False):
+            users = load_mock_users()
+
+        self.assertEqual(users, DEV_MOCK_ACCOUNTS)
+        self.assertEqual(
+            [entry["username"] for entry in users],
+            [
+                "testmock",
+                "disabled.user",
+                "unknown.user",
+                "testmock_moderateur",
+                "testmock_simpletuser",
+            ],
+        )
+
+    def test_env_dev_example_lists_same_mock_accounts_as_python_defaults(self):
+        env_file = Path(__file__).resolve().parent.parent / ".env.dev.example"
+        content = env_file.read_text(encoding="utf-8")
+        auth_mock_users_json = next(
+            line.split("=", 1)[1]
+            for line in content.splitlines()
+            if line.startswith("AUTH_MOCK_USERS_JSON=")
+        )
+
+        self.assertEqual(auth_mock_users_json, dev_mock_accounts_json())
+
+
+class SyncAuthMockAccountsCommandTests(TestCase):
+    def test_sync_auth_mock_accounts_upserts_directory_users_and_local_roles(self):
+        create_directory_user(
+            id="11111111-1111-1111-1111-111111111111",
+            username="legacy-admin",
+            email="legacy-admin@example.test",
+            first_name="Legacy",
+            last_name="Admin",
+            enabled=False,
+        )
+        create_directory_user(
+            id="33333333-3333-3333-3333-333333333333",
+            username="unknown.user",
+            email="unknown.user@example.test",
+            first_name="Unknown",
+            last_name="User",
+            enabled=True,
+        )
+        MemberRole.objects.create(
+            member_id="33333333-3333-3333-3333-333333333333",
+            is_moderator=True,
+            is_admin=False,
+        )
+
+        call_command("sync_auth_mock_accounts")
+
+        admin_user = DirectoryUserRecord.objects.get(
+            pk="11111111-1111-1111-1111-111111111111"
+        )
+        disabled_user = DirectoryUserRecord.objects.get(
+            pk="22222222-2222-2222-2222-222222222222"
+        )
+        moderator_user = DirectoryUserRecord.objects.get(
+            pk="44444444-4444-4444-4444-444444444444"
+        )
+        simple_user = DirectoryUserRecord.objects.get(
+            pk="55555555-5555-5555-5555-555555555555"
+        )
+
+        self.assertEqual(admin_user.username, "testmock")
+        self.assertTrue(admin_user.enabled)
+        self.assertEqual(disabled_user.username, "disabled.user")
+        self.assertFalse(disabled_user.enabled)
+        self.assertEqual(moderator_user.username, "testmock_moderateur")
+        self.assertEqual(simple_user.username, "testmock_simpletuser")
+
+        admin_role = MemberRole.objects.get(member_id=admin_user.id)
+        moderator_role = MemberRole.objects.get(member_id=moderator_user.id)
+        self.assertTrue(admin_role.is_admin)
+        self.assertTrue(admin_role.is_moderator)
+        self.assertFalse(moderator_role.is_admin)
+        self.assertTrue(moderator_role.is_moderator)
+        self.assertFalse(
+            DirectoryUserRecord.objects.filter(
+                pk="33333333-3333-3333-3333-333333333333"
+            ).exists()
+        )
+        self.assertFalse(MemberRole.objects.filter(member_id=disabled_user.id).exists())
+        self.assertFalse(MemberRole.objects.filter(member_id=simple_user.id).exists())
 
 
 class CallbackValidationTests(SimpleTestCase):
@@ -610,7 +705,7 @@ class RequestUserRefreshTests(SimpleTestCase):
     @patch("app_main.auth.get_member_role_flags_safe")
     @patch(
         "app_main.auth.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     def test_refresh_request_user_clears_session_when_directory_user_is_disabled(
         self,
@@ -754,7 +849,7 @@ class AuthFlowTests(TestCase):
     )
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     def test_callback_rejects_unknown_user(self, _get_directory_user_mock):
         params = {
@@ -771,13 +866,13 @@ class AuthFlowTests(TestCase):
             response = self.client.get(reverse("auth_callback"), params, follow=True)
 
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("No matching user found in users.users.", messages)
+        self.assertIn(str(UNKNOWN_USER_MESSAGE), messages)
         self.assertNotIn("lss_user", self.client.session)
 
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     @patch(
         "app_main.views.build_home_provision_start_url",
@@ -833,7 +928,7 @@ class AuthFlowTests(TestCase):
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     @patch(
         "app_main.views.build_home_provision_start_url",
@@ -953,7 +1048,7 @@ class AuthFlowTests(TestCase):
 
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     def test_provision_complete_clears_pending_state_for_disabled_user(
         self, _get_directory_user_mock
@@ -970,7 +1065,7 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("This user is disabled in users.users.", messages)
+        self.assertIn(str(DISABLED_USER_MESSAGE), messages)
         self.assertNotIn("lss_pending_provision", self.client.session)
         self.assertNotIn("lss_user", self.client.session)
 
@@ -996,7 +1091,7 @@ class AuthFlowTests(TestCase):
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     @patch("app_main.views.build_home_provision_start_url")
     @patch(
@@ -1023,7 +1118,7 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("This user is disabled in users.users.", messages)
+        self.assertIn(str(DISABLED_USER_MESSAGE), messages)
         build_home_provision_start_url_mock.assert_not_called()
         self.assertNotIn("lss_user", self.client.session)
 
@@ -1295,6 +1390,23 @@ class AccountRoleTests(TestCase):
 
         self.assertContains(response, "Message de modération")
         self.assertNotContains(response, "Paramètres administrateur")
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
+        )
+        self.assertNotRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
+        )
+
+    def test_account_page_hides_role_banners_for_plain_member(self):
+        create_site_params()
+        create_directory_user(id=self.member_id)
+        request = self._build_request(is_moderator=False, is_admin=False)
+
+        response = account(request)
+
+        self.assertNotIn('class="site-role-banner"', response.content.decode())
 
     def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
         create_site_params(
@@ -1311,6 +1423,18 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "Message de modération")
         self.assertContains(response, "Paramètres administrateur")
         self.assertContains(response, "Membres du site")
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
+        )
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
+        )
+        self.assertRegex(
+            response.content.decode(),
+            r'👑\s*Administrateur</p>\s*<p class="site-role-banner song-tag-badge">⚖️\s*Modérateur',
+        )
 
     @patch("app_main.views.messages.success")
     def test_admin_can_update_member_role_from_account_page(
@@ -1428,7 +1552,11 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("👑", rendered)
-        self.assertNotIn("⚖️", rendered)
+        self.assertIn("⚖️", rendered)
+        self.assertIn("site-nav-role-marker--admin", rendered)
+        self.assertIn("site-nav-role-marker--moderator", rendered)
+        self.assertIn("site-nav-role-marker--top", rendered)
+        self.assertIn("site-nav-role-marker--bottom", rendered)
 
     def test_navigation_shows_moderator_role_marker_on_account_link(self):
         request = RequestFactory().get("/")
@@ -1449,6 +1577,9 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("⚖️", rendered)
         self.assertNotIn("👑", rendered)
+        self.assertIn("site-nav-role-marker--moderator", rendered)
+        self.assertIn("site-nav-role-marker--bottom", rendered)
+        self.assertNotIn("site-nav-role-marker--admin", rendered)
 
 
 class HeavyPageTests(SimpleTestCase):

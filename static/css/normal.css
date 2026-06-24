@@ -933,7 +933,31 @@ body.lss-messagebox-open {
     margin-bottom: 10px;
 }
 
-.site-main-heading p:last-child,
+.site-role-banner-stack {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.site-role-banner {
+    margin: 0;
+}
+
+.site-role-banner.song-tag-badge {
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-sm);
+    background: linear-gradient(180deg, var(--site-surface-strong), var(--site-surface));
+    color: var(--site-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 0.35rem 0.55rem;
+}
+
+.site-main-heading > p:last-child,
 .site-main-aside p {
     color: var(--site-ink-soft);
 }
@@ -1390,6 +1414,7 @@ body.lss-messagebox-open {
 }
 
 .site-nav-rail .site-nav-group > a {
+    position: relative;
     width: 42px;
     min-height: 42px;
     margin: 0 auto;
@@ -1405,8 +1430,21 @@ body.lss-messagebox-open {
 }
 
 .site-nav-rail .site-nav-role-marker {
-    margin-top: -6px;
+    position: absolute;
+    left: 50%;
     font-size: 0.9rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.site-nav-rail .site-nav-role-marker--top {
+    top: 0;
+    transform: translate(-50%, -42%);
+}
+
+.site-nav-rail .site-nav-role-marker--bottom {
+    bottom: 0;
+    transform: translate(-50%, 42%);
 }
 
 .site-nav-drawer .site-nav-role-marker {
@@ -1615,8 +1653,15 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -9px;
         font-size: 1rem;
+    }
+
+    .site-nav-rail .site-nav-role-marker--top {
+        transform: translate(-50%, -48%);
+    }
+
+    .site-nav-rail .site-nav-role-marker--bottom {
+        transform: translate(-50%, 48%);
     }
 
     .site-nav-drawer {
@@ -1713,8 +1758,15 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -4px;
         font-size: 0.78rem;
+    }
+
+    .site-nav-rail .site-nav-role-marker--top {
+        transform: translate(-50%, -38%);
+    }
+
+    .site-nav-rail .site-nav-role-marker--bottom {
+        transform: translate(-50%, 38%);
     }
 
     .site-nav-button-icon {

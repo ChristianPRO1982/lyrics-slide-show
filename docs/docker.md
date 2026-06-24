@@ -22,6 +22,12 @@ Le but est la parite d'architecture, pas la copie Django.
 - `compose.prod.yaml` lance un conteneur image prebuild, monte secrets en lecture seule, rejoint `shared_backend` + `proxy`, configure labels Traefik.
 - `.env.dev.example` et `.env.prod.example` separent clairement dev/prod.
 - usage de `*_FILE` pour secrets en production.
+- en dev, le mock expose cinq comptes: `testmock`,
+  `testmock_moderateur`, `testmock_simpletuser`, `disabled.user` et
+  `unknown.user`
+- `python manage.py sync_auth_mock_accounts` synchronise les trois connexions
+  utiles, garde `disabled.user` desactive dans `users.users`, et supprime
+  `unknown.user` du repertoire local pour tester le refus
 
 ## Decisions recommandees pour FastAPI
 

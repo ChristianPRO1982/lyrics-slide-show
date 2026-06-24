@@ -13,6 +13,7 @@ from django.utils.translation import gettext as _
 from app_group.services import get_member_id_from_user, get_selected_group_state
 from app_member.services import get_site_params_for_language
 
+from .genre_labels import normalize_genre_group_display_name
 from .models import (
     Song,
     SongArtist,
@@ -443,7 +444,9 @@ def _get_song_metadata_labels(
         if not label:
             continue
         group_name, genre_name = label
-        grouped_genres.setdefault(group_name, []).append(genre_name)
+        grouped_genres.setdefault(
+            normalize_genre_group_display_name(group_name), []
+        ).append(genre_name)
 
     return (
         tuple(

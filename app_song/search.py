@@ -25,6 +25,7 @@ from django.utils.translation import gettext as _
 
 from app_member.models import MemberPreferences, default_song_search
 
+from .genre_labels import build_genre_display_label
 from .models import (
     SONG_STATUS_VALIDATED,
     SONG_STATUS_VALIDATED_WITH_CONCERN,
@@ -425,7 +426,7 @@ def _fetch_genre_labels(ids: set[int]) -> dict[int, str]:
             [list(ids)],
         )
         return {
-            row[0]: f"{row[1]} / {row[2]}" if row[1] else row[2]
+            row[0]: build_genre_display_label(row[1], row[2])
             for row in cursor.fetchall()
         }
 
@@ -562,7 +563,7 @@ def get_reference_options() -> SongReferenceOptions:
             SongReferenceOption(
                 id=row[0],
                 group=row[1] or "",
-                label=f"{row[1]} / {row[2]}" if row[1] else row[2],
+                label=build_genre_display_label(row[1], row[2]),
             )
             for row in cursor.fetchall()
         )
