@@ -20,10 +20,12 @@ from auth_mock.server import load_mock_users
 from lyrics_slide_show.settings import env_secret_with_default_file
 from app_main.auth import (
     AnonymousSessionUser,
+    DISABLED_USER_MESSAGE,
     DirectoryUser,
     DisabledUserError,
     HomeProvisioningError,
     KeycloakAuthError,
+    UNKNOWN_USER_MESSAGE,
     UnknownUserError,
     build_home_provision_start_url,
     build_keycloak_logout_url,
@@ -695,7 +697,7 @@ class RequestUserRefreshTests(SimpleTestCase):
     @patch("app_main.auth.get_member_role_flags_safe")
     @patch(
         "app_main.auth.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     def test_refresh_request_user_clears_session_when_directory_user_is_disabled(
         self,
@@ -839,7 +841,7 @@ class AuthFlowTests(TestCase):
     )
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     def test_callback_rejects_unknown_user(self, _get_directory_user_mock):
         params = {
@@ -856,13 +858,13 @@ class AuthFlowTests(TestCase):
             response = self.client.get(reverse("auth_callback"), params, follow=True)
 
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("No matching user found in users.users.", messages)
+        self.assertIn(str(UNKNOWN_USER_MESSAGE), messages)
         self.assertNotIn("lss_user", self.client.session)
 
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     @patch(
         "app_main.views.build_home_provision_start_url",
@@ -918,7 +920,7 @@ class AuthFlowTests(TestCase):
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=UnknownUserError("No matching user found in users.users."),
+        side_effect=UnknownUserError(UNKNOWN_USER_MESSAGE),
     )
     @patch(
         "app_main.views.build_home_provision_start_url",
@@ -1038,7 +1040,7 @@ class AuthFlowTests(TestCase):
 
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     def test_provision_complete_clears_pending_state_for_disabled_user(
         self, _get_directory_user_mock
@@ -1055,7 +1057,7 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("This user is disabled in users.users.", messages)
+        self.assertIn(str(DISABLED_USER_MESSAGE), messages)
         self.assertNotIn("lss_pending_provision", self.client.session)
         self.assertNotIn("lss_user", self.client.session)
 
@@ -1081,7 +1083,7 @@ class AuthFlowTests(TestCase):
     @override_settings(AUTH_MODE="keycloak")
     @patch(
         "app_main.views.get_directory_user",
-        side_effect=DisabledUserError("This user is disabled in users.users."),
+        side_effect=DisabledUserError(DISABLED_USER_MESSAGE),
     )
     @patch("app_main.views.build_home_provision_start_url")
     @patch(
@@ -1108,7 +1110,7 @@ class AuthFlowTests(TestCase):
 
         self.assertRedirects(response, reverse("homepage"))
         messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("This user is disabled in users.users.", messages)
+        self.assertIn(str(DISABLED_USER_MESSAGE), messages)
         build_home_provision_start_url_mock.assert_not_called()
         self.assertNotIn("lss_user", self.client.session)
 
