@@ -361,6 +361,8 @@ The base `account` page for an authenticated member shows:
 - the current UI language summary,
 - the active visual theme summary for the current browser.
 
+When `request.user.is_admin` is true, the account page header also shows the explicit marker `👑 Administrateur` directly below the main `Mon profil` title, inside the main header rather than in the summary aside.
+
 ### Moderator Section
 
 When `request.user.is_moderator` is true, the account page must expose a moderation section.
@@ -387,6 +389,14 @@ This section currently includes:
 - granting or revoking the local `admin` role.
 
 When an administrator edits site settings for a language that does not yet have a `SiteParams` row, saving the form creates that row.
+
+## Shared Navigation Role Marker
+
+The shared navigation keeps the `account` link available to authenticated members.
+
+When `request.user.is_admin` is true, the navigation rail account button shows a `👑` marker positioned on the upper edge of the button.
+
+When `request.user.is_moderator` is true and `request.user.is_admin` is false, the account link instead shows the moderator marker `⚖️`.
 
 ## Dedicated Site Params Page
 
