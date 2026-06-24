@@ -1,3 +1,20 @@
+## [2.9.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.2...v2.9.3) (2026-06-24)
+
+
+### Bug Fixes
+
+* add admin and moderator role markers to account page and navigation ([aeef439](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/aeef4398f834df0c5dbfe9f1ceb11a330aa52e7c))
+* add site role banner for admin users on account page and update styles ([684ea59](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/684ea59af17b3ebbe60628541b35312a31f815e1))
+* add test case for unknown user in SyncAuthMockAccountsCommandTests ([02b2b5a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/02b2b5a05007818a37dac90e13bb3fb21ce6b779))
+* adjust positioning and styles for site navigation role markers ([e44317d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e44317d659f13e10762639ae99bf2c2d40cb8188))
+* clarify editing rights and access for song modification pages in documentation ([a6bf8f7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a6bf8f7cf5b0d4dc3f05c41d156f6315baeecff0))
+* enhance role display for admin and moderator on account page and navigation ([d49451e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d49451e2459d212e24b7d4678250ba131211995a))
+* implement genre display label normalization and related tests ([ec15e04](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ec15e04c2e471f41187ee21f4bfe9864bb730aa2))
+* implement mock user accounts and synchronization command for development ([264b390](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/264b390a795ce70ffc5ee1e5e615624d61eca40d))
+* standardize user error messages for disabled and unknown users ([fe5bdc2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fe5bdc2791a5c92970fc642bbc3cead8ab46d181))
+* update functional requirements and templates to clarify editing rights and message handling for songs ([7802130](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7802130c25c76f7fd787c1d59a1398c738b48d54))
+* update functional requirements and templates to clarify song validation statuses and editing rules ([d6789a1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d6789a1b464dd811d5d8890ef57a343741183370))
+
 ## [2.9.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.1...v2.9.2) (2026-06-19)
 
 
