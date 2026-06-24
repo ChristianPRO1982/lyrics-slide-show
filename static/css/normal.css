@@ -933,6 +933,20 @@ body.lss-messagebox-open {
     margin-bottom: 10px;
 }
 
+.site-role-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.72rem;
+    border: 1px solid rgba(139, 30, 30, 0.24);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--site-accent);
+    font-family: var(--site-font-ui);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
 .site-main-heading p:last-child,
 .site-main-aside p {
     color: var(--site-ink-soft);
@@ -1405,8 +1419,10 @@ body.lss-messagebox-open {
 }
 
 .site-nav-rail .site-nav-role-marker {
-    margin-top: -6px;
+    margin-top: -34px;
+    margin-bottom: 18px;
     font-size: 0.9rem;
+    pointer-events: none;
 }
 
 .site-nav-drawer .site-nav-role-marker {
@@ -1615,7 +1631,8 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -9px;
+        margin-top: -46px;
+        margin-bottom: 26px;
         font-size: 1rem;
     }
 
@@ -1713,7 +1730,8 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -4px;
+        margin-top: -28px;
+        margin-bottom: 14px;
         font-size: 0.78rem;
     }
 

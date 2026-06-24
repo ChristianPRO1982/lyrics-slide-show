@@ -1295,6 +1295,10 @@ class AccountRoleTests(TestCase):
 
         self.assertContains(response, "Message de modération")
         self.assertNotContains(response, "Paramètres administrateur")
+        self.assertNotRegex(
+            response.content.decode(),
+            r'class="site-role-banner">👑\s*Administrateur</p>',
+        )
 
     def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
         create_site_params(
@@ -1311,6 +1315,10 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "Message de modération")
         self.assertContains(response, "Paramètres administrateur")
         self.assertContains(response, "Membres du site")
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner">👑\s*Administrateur</p>',
+        )
 
     @patch("app_main.views.messages.success")
     def test_admin_can_update_member_role_from_account_page(
@@ -1428,6 +1436,7 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("👑", rendered)
+        self.assertIn('class="site-nav-role-marker"', rendered)
         self.assertNotIn("⚖️", rendered)
 
     def test_navigation_shows_moderator_role_marker_on_account_link(self):

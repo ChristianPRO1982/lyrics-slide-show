@@ -123,7 +123,11 @@
     {% endif %}
 {% endblock %}
 
-{% block page_intro %}{% endblock %}
+{% block page_intro %}
+    {% if page_mode == "account" and is_admin %}
+        <p class="site-role-banner">👑 {% trans "Administrateur" %}</p>
+    {% endif %}
+{% endblock %}
 
 {% block page_summary %}
     {% if page_mode == "account" %}
