@@ -21,26 +21,6 @@ Note de suivi :
 - la question ouverte initiale sur la contradiction documentaire des droits d’édition des chants a été traitée ensuite par une mise à jour des docs ; elle ne figure donc plus dans les questions ouvertes ci-dessous.
 - la question ouverte initiale sur le statut de `/metadata/` comme éventuelle page de lecture a également été tranchée ensuite : `song_metadata` est désormais documentée comme page de modification soumise au même contrat d’accès que `modify_song`.
 
-## Dérives non liées à la nouvelle fonctionnalité de validation / non validation / messages liés au chant validé
-
-### 1. Quelques libellés front restent hardcodés au lieu de passer par l'i18n
-
-Constat :
-
-- la page `song.html` contient un titre `# tags` en dur ;
-- la page `metadata.html` contient plusieurs libellés d'options de type de lien écrits directement dans le template sans `{% trans %}`.
-
-Pourquoi c'est une dérive :
-
-- `general_overview.md` impose que les labels visibles utilisateur restent translatables ;
-- cette exigence vaut pour l'interface front en général, pas seulement pour le JavaScript.
-
-Références :
-
-- `app_song/templates/song/song.html:108`
-- `app_song/templates/song/metadata.html:74`
-- `docs/general_overview.md:50`
-
 ## Dérives liées à la nouvelle fonctionnalité de validation / non validation d'un chant et des messages utilisateurs liés au chant validé
 
 ### 1. L'ajout d'un message de correction ne fait pas passer un chant validé de `status=1` à `status=2`

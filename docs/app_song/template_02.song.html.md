@@ -11,6 +11,7 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
   - `✔️⁉️` pour `status=2`
 - Affiche le résumé de description.
 - Affiche les cartes de métadonnées (`_song_metadata.html`) et liens (`_song_links.html`).
+- Le bloc métadonnées visible porte le libellé `# Tags`.
 - Affiche chaque lien avec son type visible en clair, à côté de l’URL.
 - Utilise pour ce type les 5 libellés utilisateur localisés :
   - `partition`

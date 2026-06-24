@@ -1147,6 +1147,14 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(len(response.context["genre_groups"][0][1]), 1)
         self.assertTrue(response.context["genre_groups"][0][1][0].endswith("Louange"))
 
+    def test_song_view_uses_translated_tags_heading(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<h2># Tags</h2>", html=False)
+        self.assertNotContains(response, "<h2># tags</h2>", html=False)
+
     def test_song_text_print_page_uses_full_title_without_tags(self):
         self._login()
         response = self.client.get(
@@ -1569,6 +1577,8 @@ class ModifySongViewTests(TestCase):
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<h2># Tags</h2>", html=False)
+        self.assertNotContains(response, "<h2># tags</h2>", html=False)
         self.assertContains(response, "☆ Pas encore favori")
         self.assertNotContains(response, "data-song-delete-form")
         self.assertNotContains(response, "Ajouter un couplet/refrain")

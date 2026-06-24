@@ -16,6 +16,7 @@ Cette page n’est pas une page de lecture.
 
 - Affiche les actions de page (enregistrer, enregistrer et quitter, dévalider si disponible).
 - Affiche/masque les cartes d’édition du titre, sous-titre et description.
+- Le bloc métadonnées visible porte le libellé `# Tags`.
 - Porte le formulaire principal `#modify-song-form`.
 - Affiche la liste des blocs de paroles et la vue de réorganisation.
 - Transporte les valeurs de blocs au format `blocks[<row_key>][field]`.
