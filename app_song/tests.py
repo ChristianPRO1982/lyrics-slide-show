@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+from django.http import QueryDict
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
@@ -37,8 +38,17 @@ from .rendering import (
 )
 from .search import (
     SongSearchParams,
+    _apply_filters,
+    _apply_reference_filter,
+    _fetch_name_labels,
+    _get_relation_maps,
+    _normalize_ids,
+    _params_from_query,
+    _validation_label,
     build_song_search_query,
     get_active_song_search,
+    load_member_song_search,
+    save_song_search,
     search_songs,
 )
 
@@ -414,6 +424,10 @@ class ModifySongBlockLabelTests(SimpleTestCase):
 
 
 class SongSearchParamsTests(SimpleTestCase):
+    def test_normalize_ids_handles_none_and_scalar_values(self):
+        self.assertEqual(_normalize_ids(None), ())
+        self.assertEqual(_normalize_ids(7), (7,))
+
     def test_guest_search_ignores_advanced_filters(self):
         request = RequestFactory().get(
             "/songs/",
@@ -430,6 +444,33 @@ class SongSearchParamsTests(SimpleTestCase):
         params = get_active_song_search(request, member_id=None)
 
         self.assertEqual(params, SongSearchParams(text="été"))
+
+    def test_params_from_query_supports_aliases_and_invalid_validation(self):
+        query = QueryDict("", mutable=True)
+        query["q"] = " ete "
+        query["extended"] = "yes"
+        query["search_logic"] = "and"
+        query["validation"] = "unsupported"
+        query["favorites_only"] = "on"
+        query.setlist("genre_ids", ["1,2", "3"])
+        query.setlist("band_ids", ["4"])
+        query.setlist("artist_ids", ["5,nope"])
+
+        params = _params_from_query(query)
+
+        self.assertEqual(
+            params,
+            SongSearchParams(
+                text="ete",
+                everywhere=True,
+                match_all_selected_refs=True,
+                genre_ids=(1, 2, 3),
+                band_ids=(4,),
+                artist_ids=(5,),
+                validation="all",
+                favorites_only=True,
+            ),
+        )
 
     def test_params_from_mapping_normalizes_invalid_values(self):
         params = SongSearchParams.from_mapping(
@@ -450,6 +491,35 @@ class SongSearchParamsTests(SimpleTestCase):
         self.assertEqual(params.genre_ids, (3, 5))
         self.assertEqual(params.band_ids, (7, 9))
         self.assertEqual(params.validation, "all")
+
+    def test_validation_label_covers_validated_states(self):
+        validated = Song(
+            song_id=1,
+            title="Validé",
+            subtitle="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        with_concern = Song(
+            song_id=2,
+            title="Avec message",
+            subtitle="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        free = Song(
+            song_id=3,
+            title="Libre",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+
+        self.assertEqual(_validation_label(validated), "Chant validé")
+        self.assertEqual(
+            _validation_label(with_concern), "Chant validé avec des messages"
+        )
+        self.assertEqual(_validation_label(free), "Chant non validé")
 
     def test_build_search_query_serializes_multi_value_filters(self):
         query = build_song_search_query(
@@ -475,6 +545,313 @@ class SongSearchParamsTests(SimpleTestCase):
         self.assertIn("artist_ids=9", query)
         self.assertIn("validation=validated_only", query)
         self.assertIn("favorites_only=0", query)
+
+    def test_build_search_query_keeps_enabled_favorites_flag(self):
+        query = build_song_search_query(SongSearchParams(favorites_only=True))
+
+        self.assertEqual(query, "favorites_only=1")
+
+
+class SongSearchPersistenceTests(TestCase):
+    member_id = "88888888-8888-8888-8888-888888888888"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.member_id,
+            username="search.persistence.user",
+            first_name="Search",
+            last_name="Persistence",
+            email="search.persistence.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+
+    def test_load_member_song_search_returns_empty_for_missing_invalid_and_errors(self):
+        self.assertEqual(load_member_song_search(None), SongSearchParams.empty())
+        self.assertEqual(
+            load_member_song_search("not-a-uuid"), SongSearchParams.empty()
+        )
+        with patch(
+            "app_song.search.MemberPreferences.objects.filter",
+            side_effect=RuntimeError("db down"),
+        ):
+            self.assertEqual(
+                load_member_song_search(self.member_id), SongSearchParams.empty()
+            )
+
+    def test_save_song_search_ignores_missing_and_invalid_member_id(self):
+        params = SongSearchParams(text="ignored", favorites_only=True)
+
+        save_song_search(None, params)
+        save_song_search("not-a-uuid", params)
+
+        self.assertEqual(MemberPreferences.objects.count(), 0)
+
+    def test_get_active_song_search_reset_saves_empty_preferences_for_member(self):
+        MemberPreferences.objects.create(
+            member_id=self.member_id,
+            song_search=SongSearchParams(
+                text="ancien", favorites_only=True
+            ).to_preferences(),
+        )
+        request = RequestFactory().get("/songs/", {"reset_search": "1"})
+        request.user = SimpleNamespace(is_authenticated=True)
+
+        params = get_active_song_search(request, member_id=self.member_id)
+
+        self.assertEqual(params, SongSearchParams.empty())
+        preferences = MemberPreferences.objects.get(member_id=self.member_id)
+        self.assertEqual(
+            preferences.song_search, SongSearchParams.empty().to_preferences()
+        )
+
+    def test_get_active_song_search_query_saves_authenticated_filters(self):
+        request = RequestFactory().get(
+            "/songs/",
+            {
+                "q": "louange",
+                "extended": "1",
+                "search_logic": "and",
+                "genre_ids": ["2,3"],
+                "validation": "non_validated_only",
+                "favorites_only": "true",
+            },
+        )
+        request.user = SimpleNamespace(is_authenticated=True)
+
+        params = get_active_song_search(request, member_id=self.member_id)
+
+        self.assertEqual(
+            params,
+            SongSearchParams(
+                text="louange",
+                everywhere=True,
+                match_all_selected_refs=True,
+                genre_ids=(2, 3),
+                validation="non_validated_only",
+                favorites_only=True,
+            ),
+        )
+        preferences = MemberPreferences.objects.get(member_id=self.member_id)
+        self.assertEqual(preferences.song_search, params.to_preferences())
+
+
+class SongSearchFilteringCoverageTests(TestCase):
+    member_id = "99999999-9999-9999-9999-999999999999"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.member_id,
+            username="search.filter.user",
+            first_name="Search",
+            last_name="Filter",
+            email="search.filter.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song_title = Song.objects.create(
+            title="Titre simple",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        self.song_description = Song.objects.create(
+            title="Description",
+            subtitle="",
+            description="Un été de lumière",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        self.song_verse = Song.objects.create(
+            title="Couplet",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        self.song_both_refs = Song.objects.create(
+            title="Double liens",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        self.song_one_ref = Song.objects.create(
+            title="Référence unique",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(
+            song=self.song_verse,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Encore la lumière revient",
+        )
+
+        SongFavorite.objects.create(
+            song=self.song_description, member_id=self.member_id
+        )
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Test", "Genre A"],
+            )
+            self.genre_a_id = cursor.fetchone()[0]
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Test", "Genre B"],
+            )
+            self.genre_b_id = cursor.fetchone()[0]
+
+        SongGenre.objects.create(song=self.song_both_refs, genre_id=self.genre_a_id)
+        SongGenre.objects.create(song=self.song_both_refs, genre_id=self.genre_b_id)
+        SongGenre.objects.create(song=self.song_one_ref, genre_id=self.genre_a_id)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."bands" ("name") VALUES (%s) RETURNING band_id',
+                ["Les Testeurs"],
+            )
+            self.band_id = cursor.fetchone()[0]
+            cursor.execute(
+                'INSERT INTO "common"."artists" ("name") VALUES (%s) RETURNING artist_id',
+                ["Artiste Test"],
+            )
+            self.artist_id = cursor.fetchone()[0]
+
+        SongBand.objects.create(song=self.song_both_refs, band_id=self.band_id)
+        SongArtist.objects.create(song=self.song_both_refs, artist_id=self.artist_id)
+
+    def test_search_songs_everywhere_matches_description_and_verse_text(self):
+        results = search_songs(
+            SongSearchParams(text="lumiere", everywhere=True),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+
+        self.assertEqual(
+            [item.song.title for item in results.results],
+            ["Couplet", "Description"],
+        )
+
+    def test_apply_reference_filter_supports_passthrough_any_and_all(self):
+        queryset = Song.objects.filter(
+            song_id__in=[self.song_both_refs.song_id, self.song_one_ref.song_id]
+        )
+
+        self.assertCountEqual(
+            list(
+                _apply_reference_filter(
+                    queryset,
+                    "genre_relations",
+                    "genre_id",
+                    (),
+                    match_all=False,
+                ).values_list("song_id", flat=True)
+            ),
+            [self.song_both_refs.song_id, self.song_one_ref.song_id],
+        )
+        self.assertCountEqual(
+            list(
+                _apply_reference_filter(
+                    queryset,
+                    "genre_relations",
+                    "genre_id",
+                    (self.genre_a_id, self.genre_b_id),
+                    match_all=False,
+                ).values_list("song_id", flat=True)
+            ),
+            [
+                self.song_both_refs.song_id,
+                self.song_both_refs.song_id,
+                self.song_one_ref.song_id,
+            ],
+        )
+        self.assertEqual(
+            list(
+                _apply_reference_filter(
+                    queryset,
+                    "genre_relations",
+                    "genre_id",
+                    (self.genre_a_id, self.genre_b_id),
+                    match_all=True,
+                ).values_list("song_id", flat=True)
+            ),
+            [self.song_both_refs.song_id],
+        )
+
+    def test_apply_filters_handles_validation_and_favorites(self):
+        queryset = Song.objects.filter(
+            song_id__in=[
+                self.song_title.song_id,
+                self.song_description.song_id,
+                self.song_verse.song_id,
+            ]
+        )
+
+        self.assertCountEqual(
+            list(
+                _apply_filters(
+                    queryset,
+                    SongSearchParams(validation="validated_only"),
+                    member_id=self.member_id,
+                ).values_list("song_id", flat=True)
+            ),
+            [self.song_description.song_id, self.song_verse.song_id],
+        )
+        self.assertEqual(
+            list(
+                _apply_filters(
+                    queryset,
+                    SongSearchParams(validation="non_validated_only"),
+                    member_id=self.member_id,
+                ).values_list("song_id", flat=True)
+            ),
+            [self.song_title.song_id],
+        )
+        self.assertEqual(
+            list(
+                _apply_filters(
+                    queryset,
+                    SongSearchParams(favorites_only=True),
+                    member_id=self.member_id,
+                ).values_list("song_id", flat=True)
+            ),
+            [self.song_description.song_id],
+        )
+
+    def test_fetch_name_labels_and_relation_maps_cover_band_and_artist_paths(self):
+        self.assertEqual(_fetch_name_labels("bands", "band_id", set()), {})
+        self.assertEqual(
+            _fetch_name_labels("bands", "band_id", {self.band_id}),
+            {self.band_id: "Les Testeurs"},
+        )
+        self.assertEqual(
+            _fetch_name_labels("artists", "artist_id", {self.artist_id}),
+            {self.artist_id: "Artiste Test"},
+        )
+
+        _genre_map, band_map, artist_map, _genres, _bands, _artists = (
+            _get_relation_maps([self.song_both_refs.song_id])
+        )
+
+        self.assertEqual(band_map[self.song_both_refs.song_id], [self.band_id])
+        self.assertEqual(artist_map[self.song_both_refs.song_id], [self.artist_id])
+
+    def test_search_songs_without_matches_uses_empty_relation_maps_path(self):
+        results = search_songs(
+            SongSearchParams(text="introuvable"),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+
+        self.assertEqual(results.displayed_count, 0)
+        self.assertEqual(results.search_count, 0)
 
 
 class SongTextArtifactsTests(SimpleTestCase):
