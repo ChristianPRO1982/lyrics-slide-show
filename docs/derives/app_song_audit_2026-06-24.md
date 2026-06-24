@@ -16,6 +16,10 @@ Contrainte de cet audit :
 - aucune modification des docs ;
 - comparaison entre le comportement réel de `app_song` et les contrats documentaires.
 
+Note de suivi :
+
+- la question ouverte initiale sur la contradiction documentaire des droits d’édition des chants a été traitée ensuite par une mise à jour des docs ; elle ne figure donc plus dans les questions ouvertes ci-dessous.
+
 ## Dérives non liées à la nouvelle fonctionnalité de validation / non validation / messages liés au chant validé
 
 ### 1. Le toggle favori est masqué sur les chants validés pour un membre non modérateur
@@ -141,21 +145,7 @@ Références :
 
 ## Questions ouvertes relevées pendant l'audit
 
-### 1. La règle d'édition des chants libres est contradictoire entre docs
-
-Observation :
-
-- `docs/app_song/functional_requirements.md` dit : `édition chant libre : tout utilisateur au sens fonctionnel visé` ;
-- `docs/general_overview.md` dit au contraire que les guests ne créent, n'éditent ni ne suppriment de chants ;
-- le code suit actuellement la ligne stricte authentifié-only.
-
-Références :
-
-- `app_song/views.py:93`
-- `docs/app_song/functional_requirements.md:203`
-- `docs/general_overview.md` section `Songs`
-
-### 2. La page `/metadata/` est utilisée aussi comme page de lecture
+### 1. La page `/metadata/` est utilisée aussi comme page de lecture
 
 Observation :
 

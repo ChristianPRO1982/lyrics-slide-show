@@ -54,20 +54,20 @@ Constantes Python exposées :
 ### Règles métier cibles
 
 - un nouveau chant est créé en `status=0` (`libre`) ;
-- un chant `libre` est modifiable librement dans le sens fonctionnel cible ;
+- un chant `libre` est créable, modifiable et supprimable par un utilisateur authentifié ;
 - seul un `Moderator` peut passer un chant en `status=1` ; un `Admin` peut également le faire car un admin hérite des capacités modérateur ;
 - un chant `status=1` peut recevoir des demandes de correction ;
 - dès qu’un chant validé reçoit un message de correction, il passe en `status=2` ;
 - un chant `status=2` ne peut pas revenir directement en `status=0` ;
-- pour quitter `status=2`, tous les messages encore `nouveau` doivent d’abord être traités ;
-- lorsqu’il n’existe plus de message `nouveau`, le chant revient en `status=1` ;
+- pour quitter `status=2`, tous les messages encore avec `vu = false` doivent d’abord être passés à `vu = true` ;
+- lorsqu’il n’existe plus de message avec `vu = false`, le chant revient en `status=1` ;
 - une fois revenu en `status=1`, le chant peut alors être repassé en `status=0`.
 
 ### Transition cible résumée
 
 - `0 -> 1` : validation par modérateur/admin
 - `1 -> 2` : arrivée d’un message de correction
-- `2 -> 1` : tous les messages `nouveau` sont passés à `traité`
+- `2 -> 1` : tous les messages sont passés à `vu = true`
 - `1 -> 0` : dévalidation possible après retour à `status=1`
 
 ## Modèle de texte
@@ -200,35 +200,30 @@ Rôles applicatifs utilisés : `Guest`, `Member`, `Moderator`, `Admin`.
 La cible fonctionnelle de `app_song` applique les règles suivantes :
 
 - lecture chant : authentifié OU chant non licencié
-- édition chant `libre` : tout utilisateur au sens fonctionnel visé
+- création chant : utilisateur authentifié
+- édition/suppression chant non validé : utilisateur authentifié
 - édition chant validé ou validé avec messages : modérateur/admin uniquement
-- toggle favori : authentifié
-- suppression chant : même droit que édition
+- l’accès au formulaire de demande de modification sur chant validé est autorisé aux utilisateurs sans droit d’édition directe, y compris aux non connectés lorsque le chant est lisible
 - édition métadonnées (`/metadata/`) : même droit que édition
+- toggle favori : authentifié
 - modification du statut : modérateur ; les admins disposent du même pouvoir car ils héritent du rôle modérateur
+- `Admin` hérite toujours des droits `Moderator`
 
 ## Demandes de correction
 
-Les messages de correction (`s_song_messages`) utilisent :
-
-- `0` nouveau
-- `1` traité
-- `2` rejeté
-
-Constantes :
-
-- `MESSAGE_STATUS_NEW = 0`
-- `MESSAGE_STATUS_HANDLED = 1`
-- `MESSAGE_STATUS_REJECTED = 2`
-
-Comportement actuel :
+Les messages de correction (`s_song_messages`) suivent le workflow métier suivant :
 
 - le formulaire est un simple `textarea`
 - le formulaire est affiché pour les chants validés (`status in {1,2}`)
 - il sert à déposer une demande de modification à faire sur le chant
-- dans la terminologie documentaire cible, `vu` correspond à `traité`
-- un message `nouveau` est bloquant pour le retour d’un chant `status=2` vers `status=0`
-- les messages `rejeté` ne sont pas documentés comme équivalents de `vu`
+- un message possède un état booléen `vu`
+- à la création d’un nouveau message, `vu = false`
+- un modérateur peut passer un message à `vu = true`
+- un modérateur peut aussi faire repasser un ancien message à `vu = false`
+- après chaque modification de `vu`, le statut final du chant est recalculé à partir de l’ensemble des messages du chant
+- si un chant est en `status=0`, son statut ne change jamais à cause des messages
+- si un chant est en `status=0`, aucun indicateur visuel supplémentaire n’apparaît dans son titre à cause de messages non vus
+- la remise d’un chant à `status=0` est bloquée tant qu’au moins un message reste avec `vu = false`
 - message vide refusé
 - auteur du message non stocké
 

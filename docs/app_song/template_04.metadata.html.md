@@ -9,6 +9,7 @@ Page front d’édition des métadonnées d’un chant (`/songs/<song_id>/metada
 - Affiche les sélections courantes et options disponibles pour genres, artistes et groupes.
 - Affiche et édite les liens associés au chant.
 - Monte le panneau d’actions partagé et l’état favori.
+- L’édition des métadonnées suit exactement les mêmes droits que l’édition directe du chant.
 
 ## Contrat d’interface (variables attendues)
 
