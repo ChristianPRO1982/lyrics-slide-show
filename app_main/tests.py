@@ -1380,10 +1380,23 @@ class AccountRoleTests(TestCase):
 
         self.assertContains(response, "Message de modération")
         self.assertNotContains(response, "Paramètres administrateur")
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
+        )
         self.assertNotRegex(
             response.content.decode(),
-            r'class="site-role-banner">👑\s*Administrateur</p>',
+            r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
         )
+
+    def test_account_page_hides_role_banners_for_plain_member(self):
+        create_site_params()
+        create_directory_user(id=self.member_id)
+        request = self._build_request(is_moderator=False, is_admin=False)
+
+        response = account(request)
+
+        self.assertNotIn('class="site-role-banner"', response.content.decode())
 
     def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
         create_site_params(
@@ -1402,7 +1415,15 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "Membres du site")
         self.assertRegex(
             response.content.decode(),
-            r'class="site-role-banner">👑\s*Administrateur</p>',
+            r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
+        )
+        self.assertRegex(
+            response.content.decode(),
+            r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
+        )
+        self.assertRegex(
+            response.content.decode(),
+            r'👑\s*Administrateur</p>\s*<p class="site-role-banner song-tag-badge">⚖️\s*Modérateur',
         )
 
     @patch("app_main.views.messages.success")
@@ -1521,8 +1542,11 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("👑", rendered)
-        self.assertIn('class="site-nav-role-marker"', rendered)
-        self.assertNotIn("⚖️", rendered)
+        self.assertIn("⚖️", rendered)
+        self.assertIn("site-nav-role-marker--admin", rendered)
+        self.assertIn("site-nav-role-marker--moderator", rendered)
+        self.assertIn("site-nav-role-marker--top", rendered)
+        self.assertIn("site-nav-role-marker--bottom", rendered)
 
     def test_navigation_shows_moderator_role_marker_on_account_link(self):
         request = RequestFactory().get("/")
@@ -1543,6 +1567,9 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertIn('data-django-alias="account"', rendered)
         self.assertIn("⚖️", rendered)
         self.assertNotIn("👑", rendered)
+        self.assertIn("site-nav-role-marker--moderator", rendered)
+        self.assertIn("site-nav-role-marker--bottom", rendered)
+        self.assertNotIn("site-nav-role-marker--admin", rendered)
 
 
 class HeavyPageTests(SimpleTestCase):

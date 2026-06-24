@@ -124,8 +124,15 @@
 {% endblock %}
 
 {% block page_intro %}
-    {% if page_mode == "account" and is_admin %}
-        <p class="site-role-banner">👑 {% trans "Administrateur" %}</p>
+    {% if page_mode == "account" and is_admin or page_mode == "account" and is_moderator %}
+        <div class="site-role-banner-stack">
+            {% if is_admin %}
+                <p class="site-role-banner song-tag-badge">👑 {% trans "Administrateur" %}</p>
+            {% endif %}
+            {% if is_moderator %}
+                <p class="site-role-banner song-tag-badge">⚖️ {% trans "Modérateur" %}</p>
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
 

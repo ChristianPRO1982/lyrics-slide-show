@@ -361,7 +361,14 @@ The base `account` page for an authenticated member shows:
 - the current UI language summary,
 - the active visual theme summary for the current browser.
 
-When `request.user.is_admin` is true, the account page header also shows the explicit marker `👑 Administrateur` directly below the main `Mon profil` title, inside the main header rather than in the summary aside.
+When `request.user.is_moderator` is true, the account page header also shows the explicit marker `⚖️ Modérateur` directly below the main `Mon profil` title, inside the main header rather than in the summary aside.
+
+When `request.user.is_admin` is true, the same header shows two role markers in this order:
+
+- `👑 Administrateur`,
+- `⚖️ Modérateur`.
+
+These header role markers use the same visual style as the `app_song` tag badges and are rendered inline in reading order when both are present.
 
 ### Moderator Section
 
@@ -394,9 +401,14 @@ When an administrator edits site settings for a language that does not yet have 
 
 The shared navigation keeps the `account` link available to authenticated members.
 
-When `request.user.is_admin` is true, the navigation rail account button shows a `👑` marker positioned on the upper edge of the button.
+When `request.user.is_moderator` is true, the navigation rail account button shows a `⚖️` marker positioned on the lower edge of the button.
 
-When `request.user.is_moderator` is true and `request.user.is_admin` is false, the account link instead shows the moderator marker `⚖️`.
+When `request.user.is_admin` is true, the same account button also shows a `👑` marker positioned on the upper edge of the button.
+
+Because `admin` implies `moderator`, an administrator sees both markers on the account button:
+
+- `👑` on the upper edge,
+- `⚖️` on the lower edge.
 
 ## Dedicated Site Params Page
 

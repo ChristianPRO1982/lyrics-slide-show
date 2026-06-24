@@ -69,9 +69,10 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                             <span>{{ nav_view_profile_label }}</span>
                             {% if request.user.is_admin %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
-                            {% elif request.user.is_moderator %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                                <span class="site-nav-role-marker site-nav-role-marker--admin site-nav-role-marker--top" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% endif %}
+                            {% if request.user.is_moderator %}
+                                <span class="site-nav-role-marker site-nav-role-marker--moderator site-nav-role-marker--bottom" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
                             {% endif %}
                         </a>
                     {% else %}
@@ -151,9 +152,10 @@
                         <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                             {% if request.user.is_admin %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
-                            {% elif request.user.is_moderator %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                                <span class="site-nav-role-marker site-nav-role-marker--admin site-nav-role-marker--top" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% endif %}
+                            {% if request.user.is_moderator %}
+                                <span class="site-nav-role-marker site-nav-role-marker--moderator site-nav-role-marker--bottom" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
                             {% endif %}
                         </a>
                     {% else %}
@@ -214,9 +216,10 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                             <span>{{ nav_view_profile_label }}</span>
                             {% if request.user.is_admin %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
-                            {% elif request.user.is_moderator %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                                <span class="site-nav-role-marker site-nav-role-marker--admin site-nav-role-marker--top" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% endif %}
+                            {% if request.user.is_moderator %}
+                                <span class="site-nav-role-marker site-nav-role-marker--moderator site-nav-role-marker--bottom" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
                             {% endif %}
                         </a>
                     {% else %}
@@ -296,9 +299,10 @@
                         <a href="{% url 'account' %}" title="{{ nav_view_profile_label }}" data-django-alias="account">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="account" icon_alt=nav_view_profile_label %}
                             {% if request.user.is_admin %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_admin_role_label }}">👑</span>
-                            {% elif request.user.is_moderator %}
-                                <span class="site-nav-role-marker" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
+                                <span class="site-nav-role-marker site-nav-role-marker--admin site-nav-role-marker--top" aria-label="{{ nav_admin_role_label }}">👑</span>
+                            {% endif %}
+                            {% if request.user.is_moderator %}
+                                <span class="site-nav-role-marker site-nav-role-marker--moderator site-nav-role-marker--bottom" aria-label="{{ nav_moderator_role_label }}">⚖️</span>
                             {% endif %}
                         </a>
                     {% else %}
