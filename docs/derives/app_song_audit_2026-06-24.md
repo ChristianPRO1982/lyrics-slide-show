@@ -23,26 +23,7 @@ Note de suivi :
 
 ## Dérives non liées à la nouvelle fonctionnalité de validation / non validation / messages liés au chant validé
 
-### 1. Le toggle favori est masqué sur les chants validés pour un membre non modérateur
-
-Constat :
-
-- le backend autorise bien le toggle favori pour tout utilisateur authentifié ;
-- les routes `song`, `modify_song` et `song_metadata` acceptent l'action `toggle_favorite` même sans droit d'édition ;
-- mais le panneau d'actions partagé masque visuellement ce bouton dès que le chant est validé et que l'utilisateur n'est pas modérateur, car le bouton est inclus dans le même bloc conditionnel que `Modifier`, `Métadonnées` et `Supprimer`.
-
-Pourquoi c'est une dérive :
-
-- la doc fonctionnelle dit explicitement : `toggle favori : authentifié` ;
-- cette règle n'est pas présentée comme dépendante du droit d'édition.
-
-Références :
-
-- `app_song/templates/song/includes/_song_actions.html:7`
-- `app_song/tests.py:935`
-- `docs/app_song/functional_requirements.md:205`
-
-### 2. Les types de liens exposés en métadonnées restent centrés sur les valeurs legacy `audio` / `youtube`
+### 1. Les types de liens exposés en métadonnées restent centrés sur les valeurs legacy `audio` / `youtube`
 
 Constat :
 
@@ -62,7 +43,7 @@ Références :
 - `app_song/models.py:16`
 - `docs/app_song/functional_requirements.md:244`
 
-### 3. Quelques libellés front restent hardcodés au lieu de passer par l'i18n
+### 2. Quelques libellés front restent hardcodés au lieu de passer par l'i18n
 
 Constat :
 
