@@ -3,10 +3,17 @@ import hmac
 import html
 import json
 import os
+import sys
 import time
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs, quote, urlencode, urlparse
+
+# `python auth_mock/server.py` puts `/app/auth_mock` on sys.path, not the repo root.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 
 def get_env(name: str, default: str) -> str:
@@ -18,32 +25,9 @@ def load_mock_users() -> list[dict[str, str]]:
     if raw:
         return json.loads(raw)
 
-    return [
-        {
-            "label": "Known user",
-            "external_id": "11111111-1111-1111-1111-111111111111",
-            "username": "known.user",
-            "email": "known.user@example.test",
-            "first_name": "Known",
-            "last_name": "User",
-        },
-        {
-            "label": "Disabled user",
-            "external_id": "22222222-2222-2222-2222-222222222222",
-            "username": "disabled.user",
-            "email": "disabled.user@example.test",
-            "first_name": "Disabled",
-            "last_name": "User",
-        },
-        {
-            "label": "Unknown user",
-            "external_id": "33333333-3333-3333-3333-333333333333",
-            "username": "unknown.user",
-            "email": "unknown.user@example.test",
-            "first_name": "Unknown",
-            "last_name": "User",
-        },
-    ]
+    from app_main.mock_accounts import DEV_MOCK_ACCOUNTS
+
+    return DEV_MOCK_ACCOUNTS
 
 
 def callback_signature(user: dict[str, str], secret: str, ts: str) -> str:

@@ -9,12 +9,14 @@ from unittest.mock import MagicMock, patch
 from io import BytesIO
 from urllib.parse import parse_qs, urlparse
 
+from django.core.management import call_command
 from django.contrib.messages import get_messages
 from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+from auth_mock.server import load_mock_users
 from lyrics_slide_show.settings import env_secret_with_default_file
 from app_main.auth import (
     AnonymousSessionUser,
@@ -32,6 +34,7 @@ from app_main.auth import (
     validate_keycloak_callback,
     validate_callback_payload,
 )
+from app_main.mock_accounts import DEV_MOCK_ACCOUNTS, dev_mock_accounts_json
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
 from app_member.forms import SiteParamsAdminForm
@@ -78,6 +81,88 @@ def create_directory_user(**overrides):
     }
     defaults.update(overrides)
     return DirectoryUserRecord.objects.create(**defaults)
+
+
+class AuthMockAccountConfigTests(SimpleTestCase):
+    def test_load_mock_users_defaults_to_three_supported_profiles(self):
+        with patch.dict(os.environ, {"AUTH_MOCK_USERS_JSON": ""}, clear=False):
+            users = load_mock_users()
+
+        self.assertEqual(users, DEV_MOCK_ACCOUNTS)
+        self.assertEqual(
+            [entry["username"] for entry in users],
+            [
+                "testmock",
+                "disabled.user",
+                "unknown.user",
+                "testmock_moderateur",
+                "testmock_simpletuser",
+            ],
+        )
+
+    def test_env_dev_example_lists_same_mock_accounts_as_python_defaults(self):
+        env_file = Path(__file__).resolve().parent.parent / ".env.dev.example"
+        content = env_file.read_text(encoding="utf-8")
+        auth_mock_users_json = next(
+            line.split("=", 1)[1]
+            for line in content.splitlines()
+            if line.startswith("AUTH_MOCK_USERS_JSON=")
+        )
+
+        self.assertEqual(auth_mock_users_json, dev_mock_accounts_json())
+
+
+class SyncAuthMockAccountsCommandTests(TestCase):
+    def test_sync_auth_mock_accounts_upserts_directory_users_and_local_roles(self):
+        create_directory_user(
+            id="11111111-1111-1111-1111-111111111111",
+            username="legacy-admin",
+            email="legacy-admin@example.test",
+            first_name="Legacy",
+            last_name="Admin",
+            enabled=False,
+        )
+        MemberRole.objects.create(
+            member_id="33333333-3333-3333-3333-333333333333",
+            is_moderator=True,
+            is_admin=False,
+        )
+
+        call_command("sync_auth_mock_accounts")
+
+        admin_user = DirectoryUserRecord.objects.get(
+            pk="11111111-1111-1111-1111-111111111111"
+        )
+        disabled_user = DirectoryUserRecord.objects.get(
+            pk="22222222-2222-2222-2222-222222222222"
+        )
+        moderator_user = DirectoryUserRecord.objects.get(
+            pk="44444444-4444-4444-4444-444444444444"
+        )
+        simple_user = DirectoryUserRecord.objects.get(
+            pk="55555555-5555-5555-5555-555555555555"
+        )
+
+        self.assertEqual(admin_user.username, "testmock")
+        self.assertTrue(admin_user.enabled)
+        self.assertEqual(disabled_user.username, "disabled.user")
+        self.assertFalse(disabled_user.enabled)
+        self.assertEqual(moderator_user.username, "testmock_moderateur")
+        self.assertEqual(simple_user.username, "testmock_simpletuser")
+
+        admin_role = MemberRole.objects.get(member_id=admin_user.id)
+        moderator_role = MemberRole.objects.get(member_id=moderator_user.id)
+        self.assertTrue(admin_role.is_admin)
+        self.assertTrue(admin_role.is_moderator)
+        self.assertFalse(moderator_role.is_admin)
+        self.assertTrue(moderator_role.is_moderator)
+        self.assertFalse(
+            DirectoryUserRecord.objects.filter(
+                pk="33333333-3333-3333-3333-333333333333"
+            ).exists()
+        )
+        self.assertFalse(MemberRole.objects.filter(member_id=disabled_user.id).exists())
+        self.assertFalse(MemberRole.objects.filter(member_id=simple_user.id).exists())
 
 
 class CallbackValidationTests(SimpleTestCase):
