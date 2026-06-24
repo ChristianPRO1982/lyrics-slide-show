@@ -17,6 +17,8 @@ from .models import (
     SongGenre,
     SongLink,
     SongLinkType,
+    SongMessage,
+    SongMessageStatus,
     SongStatus,
     Verse,
 )
@@ -1243,6 +1245,76 @@ class SongViewsRenderingTests(TestCase):
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
         response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 404)
+
+    def test_add_message_moves_validated_song_to_validated_with_concern(self):
+        self._login()
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "add_message", "message": "Corriger le refrain"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"], reverse("song", args=[self.song.song_id])
+        )
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+        created_message = SongMessage.objects.get(song=self.song)
+        self.assertEqual(created_message.message, "Corriger le refrain")
+        self.assertEqual(created_message.status, SongMessageStatus.NEW)
+
+    def test_add_message_keeps_validated_with_concern_song_status(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        self._login()
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "add_message", "message": "Autre correction"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+        self.assertEqual(SongMessage.objects.filter(song=self.song).count(), 1)
+
+    def test_add_message_rejects_blank_message_without_status_change(self):
+        self._login()
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "add_message", "message": "   "},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
+        self.assertFalse(SongMessage.objects.filter(song=self.song).exists())
+
+
+class SongStatusWorkflowTests(TestCase):
+    def test_recalculate_status_keeps_not_validated_song_unchanged_with_new_messages(
+        self,
+    ):
+        song = Song.objects.create(
+            title="Workflow",
+            subtitle="Libre",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        SongMessage.objects.create(
+            song=song,
+            message="Message en attente",
+            status=SongMessageStatus.NEW,
+            date="2026-06-24T12:00:00Z",
+        )
+
+        song_views._recalculate_song_status_from_messages(song)
+
+        song.refresh_from_db()
+        self.assertEqual(song.status, SongStatus.NOT_VALIDATED)
 
 
 class SongFavoriteActionsTests(TestCase):

@@ -489,6 +489,22 @@ def _get_song_validation_label(song: Song) -> str:
     return _("Chant non validé")
 
 
+def _recalculate_song_status_from_messages(song: Song) -> None:
+    if song.status == SongStatus.NOT_VALIDATED:
+        next_status = SongStatus.NOT_VALIDATED
+    elif SongMessage.objects.filter(
+        song_id=song.song_id,
+        status=SongMessageStatus.NEW,
+    ).exists():
+        next_status = SongStatus.VALIDATED_WITH_CONCERN
+    else:
+        next_status = SongStatus.VALIDATED
+
+    if song.status != next_status:
+        song.status = next_status
+        song.save(update_fields=["status"])
+
+
 def _build_block_display_label(
     block: ParsedSongBlock, settings: SongRenderSettings
 ) -> str:
@@ -1185,12 +1201,14 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
                 raise Http404
             message = (request.POST.get("message") or "").strip()
             if message:
-                SongMessage.objects.create(
-                    song=song_object,
-                    message=message,
-                    status=SongMessageStatus.NEW,
-                    date=timezone.now(),
-                )
+                with transaction.atomic():
+                    SongMessage.objects.create(
+                        song=song_object,
+                        message=message,
+                        status=SongMessageStatus.NEW,
+                        date=timezone.now(),
+                    )
+                    _recalculate_song_status_from_messages(song_object)
                 return redirect("song", song_id=song_object.song_id)
 
     description_summary, description_rest = _split_description_for_display(
