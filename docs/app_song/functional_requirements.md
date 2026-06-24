@@ -203,11 +203,16 @@ La cible fonctionnelle de `app_song` applique les règles suivantes :
 - création chant : utilisateur authentifié
 - édition/suppression chant non validé : utilisateur authentifié
 - édition chant validé ou validé avec messages : modérateur/admin uniquement
+- les pages de modification d’un chant (`modify_song`, `song_metadata`) sont des pages de modification, pas des pages de lecture
+- `modify_song` et `song_metadata` sont accessibles seulement à un utilisateur connecté et seulement si le chant n’est pas validé, sauf exception `Moderator`/`Admin` qui conservent l’accès aux chants validés
 - l’accès au formulaire de demande de modification sur chant validé est autorisé aux utilisateurs sans droit d’édition directe, y compris aux non connectés lorsque le chant est lisible
 - édition métadonnées (`/metadata/`) : même droit que édition
 - toggle favori : authentifié
 - modification du statut : modérateur ; les admins disposent du même pouvoir car ils héritent du rôle modérateur
 - `Admin` hérite toujours des droits `Moderator`
+- en cas de concurrence entre front et back, le back fait toujours la dernière vérification du droit réel au moment du `GET` utile et surtout du `POST`
+- si un modérateur a validé le chant pendant la session d’un utilisateur non modérateur, l’état backend le plus récent prévaut et les modifications de cet utilisateur ne sont pas prises en compte
+- dans ce cas, l’utilisateur est redirigé vers la page `song` avec un message explicite indiquant qu’un modérateur a validé le chant pendant sa session et l’invitant à utiliser le formulaire de demande de modification du chant
 
 ## Demandes de correction
 

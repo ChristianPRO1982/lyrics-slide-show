@@ -5,6 +5,17 @@
     <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song' song.song_id %}">{% trans "Afficher" %}</a></p>
 {% endif %}
 {% if request.user.is_authenticated %}
+    <form method="post" class="song-tool-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="toggle_favorite">
+        <button type="submit" class="song-tool-button site-action site-action--primary">
+            {% if is_favorite %}
+                {% trans "⭐ Favori" %}
+            {% else %}
+                {% trans "☆ Pas encore favori" %}
+            {% endif %}
+        </button>
+    </form>
     {% if not song.is_validated or request.user.is_moderator %}
         {% if request.resolver_match.url_name != "modify_song" %}
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'modify_song' song.song_id %}">{% trans "Modifier" %}</a></p>
@@ -12,17 +23,6 @@
         {% if request.resolver_match.url_name != "song_metadata" %}
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'song_metadata' song.song_id %}">{% trans "Métadonnées" %}</a></p>
         {% endif %}
-        <form method="post" class="song-tool-form">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="toggle_favorite">
-            <button type="submit" class="song-tool-button site-action site-action--primary">
-                {% if is_favorite %}
-                    {% trans "⭐ Favori" %}
-                {% else %}
-                    {% trans "☆ Pas encore favori" %}
-                {% endif %}
-            </button>
-        </form>
         <form method="post" class="song-tool-form" data-song-delete-form data-song-title="{{ song.title_complete_with_tags }}">
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_song">

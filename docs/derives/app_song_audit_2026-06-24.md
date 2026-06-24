@@ -19,6 +19,7 @@ Contrainte de cet audit :
 Note de suivi :
 
 - la question ouverte initiale sur la contradiction documentaire des droits d’édition des chants a été traitée ensuite par une mise à jour des docs ; elle ne figure donc plus dans les questions ouvertes ci-dessous.
+- la question ouverte initiale sur le statut de `/metadata/` comme éventuelle page de lecture a également été tranchée ensuite : `song_metadata` est désormais documentée comme page de modification soumise au même contrat d’accès que `modify_song`.
 
 ## Dérives non liées à la nouvelle fonctionnalité de validation / non validation / messages liés au chant validé
 
@@ -145,15 +146,4 @@ Références :
 
 ## Questions ouvertes relevées pendant l'audit
 
-### 1. La page `/metadata/` est utilisée aussi comme page de lecture
-
-Observation :
-
-- la route `song_metadata` est accessible en lecture à tout lecteur autorisé du chant ;
-- la doc template la présente principalement comme page d'édition des métadonnées ;
-- ce n'est pas forcément une anomalie, mais le contrat documentaire n'exprime pas clairement ce mode lecture seule.
-
-Références :
-
-- `app_song/views.py:1317`
-- `docs/app_song/template_04.metadata.html.md:5`
+Aucune question ouverte restante dans ce rapport.

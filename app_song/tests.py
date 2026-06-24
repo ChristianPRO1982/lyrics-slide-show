@@ -988,6 +988,27 @@ class SongFavoriteActionsTests(TestCase):
         )
         self._assert_shared_song_actions(metadata_response, active_page="song_metadata")
 
+    def test_validated_song_page_keeps_toggle_for_member_without_edit_rights(self):
+        self._login()
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "☆ Pas encore favori")
+        self.assertNotContains(response, "data-song-delete-form")
+        self.assertNotContains(
+            response,
+            'href="{}"'.format(reverse("modify_song", args=[self.song.song_id])),
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            'href="{}"'.format(reverse("song_metadata", args=[self.song.song_id])),
+            html=False,
+        )
+
     def test_song_metadata_delete_song_uses_shared_action(self):
         self._login()
 
@@ -1145,6 +1166,8 @@ class ModifySongViewTests(TestCase):
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "☆ Pas encore favori")
+        self.assertNotContains(response, "data-song-delete-form")
         self.assertNotContains(response, "Ajouter un couplet/refrain")
         self.assertNotContains(response, "data-song-add-block-action")
         self.assertNotContains(response, "data-song-block-delete-action")
@@ -2136,6 +2159,21 @@ class SongMetadataPersistenceTests(TestCase):
         self.assertEqual(response.context["metadata_bands_available"][0]["id"], band_id)
         self.assertContains(response, "Scoutisme / Pop")
         self.assertNotContains(response, "1 - Scoutisme / Pop")
+
+    def test_validated_metadata_page_keeps_toggle_without_edit_actions(self):
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+
+        response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "☆ Pas encore favori")
+        self.assertNotContains(response, "data-song-delete-form")
+        self.assertNotContains(
+            response,
+            'href="{}"'.format(reverse("modify_song", args=[self.song.song_id])),
+            html=False,
+        )
 
     def test_metadata_post_synchronizes_links_and_reference_relations(self):
         genre_old = self._insert_reference("genres", "genre_id", "Old", group="Style")
