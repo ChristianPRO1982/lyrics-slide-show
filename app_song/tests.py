@@ -16,6 +16,7 @@ from .models import (
     SongFavorite,
     SongGenre,
     SongLink,
+    SongLinkType,
     SongStatus,
     Verse,
 )
@@ -1204,6 +1205,31 @@ class SongViewsRenderingTests(TestCase):
         self.assertIn("title", payload)
         self.assertIn("markdown", payload)
         self.assertIn("Refrain", payload["markdown"])
+
+    def test_song_view_displays_distinct_localized_link_type_labels(self):
+        SongLink.objects.create(song=self.song, link="https://score.test", type="score")
+        SongLink.objects.create(song=self.song, link="https://audio.test", type="audio")
+        SongLink.objects.create(
+            song=self.song, link="https://youtube.test", type="youtube"
+        )
+        SongLink.objects.create(song=self.song, link="https://web.test", type="web")
+        SongLink.objects.create(
+            song=self.song, link="https://internal.test", type="internal"
+        )
+
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "(partition)")
+        self.assertContains(response, "(audio)")
+        self.assertContains(response, "(YouTube)")
+        self.assertContains(response, "(page Web)")
+        self.assertContains(response, "(lien interne - Lyrics Slide Show)")
+        self.assertNotContains(response, "(Internal)")
+        self.assertNotContains(response, "(Web)")
+        self.assertNotContains(response, "(Score)")
+        self.assertNotContains(response, "(Audio/video)")
 
     @patch("app_song.views._can_read_song", return_value=False)
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
@@ -2498,7 +2524,11 @@ class SongMetadataPersistenceTests(TestCase):
                 )
             return cursor.fetchone()[0]
 
-    def test_metadata_get_splits_selected_options_and_normalizes_audio_video(self):
+    def test_song_link_defaults_to_score(self):
+        link = SongLink.objects.create(song=self.song, link="https://default.test")
+        self.assertEqual(link.type, SongLinkType.SCORE)
+
+    def test_metadata_get_splits_selected_options_and_keeps_distinct_types(self):
         genre_selected = self._insert_reference(
             "genres", "genre_id", "Pop", group="1 - Scoutisme"
         )
@@ -2516,6 +2546,17 @@ class SongMetadataPersistenceTests(TestCase):
         response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["metadata_links"][0].display_type, "audio")
+        self.assertEqual(response.context["new_link_default_type"], SongLinkType.SCORE)
+        self.assertEqual(
+            response.context["link_type_options"],
+            (
+                ("score", "partition"),
+                ("audio", "audio"),
+                ("youtube", "YouTube"),
+                ("web", "page Web"),
+                ("internal", "lien interne - Lyrics Slide Show"),
+            ),
+        )
         self.assertEqual(
             response.context["metadata_genres_selected"][0]["id"], genre_selected
         )
@@ -2536,6 +2577,17 @@ class SongMetadataPersistenceTests(TestCase):
         self.assertEqual(response.context["metadata_bands_available"][0]["id"], band_id)
         self.assertContains(response, "Scoutisme / Pop")
         self.assertNotContains(response, "1 - Scoutisme / Pop")
+        html = response.content.decode("utf-8")
+        self.assertLess(html.find(">partition</option>"), html.find(">audio</option>"))
+        self.assertLess(html.find(">audio</option>"), html.find(">YouTube</option>"))
+        self.assertLess(html.find(">YouTube</option>"), html.find(">page Web</option>"))
+        self.assertLess(
+            html.find(">page Web</option>"),
+            html.find(">lien interne - Lyrics Slide Show</option>"),
+        )
+        self.assertIn('<option value="score" selected>partition</option>', html)
+        self.assertNotIn(">lien</option>", html)
+        self.assertNotIn(">lien interne</option>", html)
 
     def test_validated_metadata_page_keeps_toggle_without_edit_actions(self):
         self.song.status = SongStatus.VALIDATED
@@ -2593,7 +2645,7 @@ class SongMetadataPersistenceTests(TestCase):
             {
                 "https://renamed.test": "audio",
                 "https://c.test": "youtube",
-                "https://new.test": "web",
+                "https://new.test": "score",
             },
         )
         self.assertEqual(

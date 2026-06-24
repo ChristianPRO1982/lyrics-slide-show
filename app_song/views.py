@@ -63,6 +63,7 @@ NAME_ROW_FIELD_PATTERN = re.compile(
 )
 MULTISPACE_PATTERN = re.compile(r"[ \t]+")
 FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
+LEGACY_LINK_TYPE_AUDIO_VIDEO = "audio-video"
 
 
 @dataclass
@@ -102,6 +103,10 @@ def _can_read_song(user, song: Song) -> bool:
 
 def _can_report_message(user, song: Song) -> bool:
     return _can_read_song(user, song) and not _can_edit_song(user, song)
+
+
+def _get_song_link_type_options() -> tuple[tuple[str, str], ...]:
+    return tuple((choice.value, str(choice.label)) for choice in SongLinkType)
 
 
 def _is_song_favorite(song_id: int, member_id: str | None) -> bool:
@@ -1330,11 +1335,15 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         return redirect("song_metadata", song_id=song_object.song_id)
 
     metadata_links = list(song_object.links.all().order_by("link"))
+    link_type_options = _get_song_link_type_options()
+    valid_link_types = {value for value, _label in link_type_options}
     for item in metadata_links:
-        display_type = str(item.type or SongLinkType.WEB)
-        if display_type == SongLinkType.AUDIO_VIDEO:
-            # Legacy fallback kept for pre-migration values.
-            display_type = "audio"
+        display_type = str(item.type or SongLinkType.SCORE)
+        if display_type == LEGACY_LINK_TYPE_AUDIO_VIDEO:
+            # Short-lived fallback for rows not migrated yet.
+            display_type = SongLinkType.AUDIO
+        if display_type not in valid_link_types:
+            display_type = SongLinkType.SCORE
         setattr(item, "display_type", display_type)
     bands, artists, genre_groups = _get_song_metadata_labels(song_object)
     reference_options = get_reference_options()
@@ -1388,6 +1397,8 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
             "song": song_object,
             "title_complete_with_tags": build_song_full_title_with_tags(song_object),
             "metadata_links": metadata_links,
+            "link_type_options": link_type_options,
+            "new_link_default_type": SongLinkType.SCORE,
             "genre_groups": genre_groups,
             "artists": artists,
             "bands": bands,
@@ -1444,17 +1455,17 @@ def _update_song_metadata_from_form(song: Song, request: HttpRequest) -> None:
     def normalize_link_type(raw_value: str | None) -> str:
         value = str(raw_value or "").strip().lower()
         if value in {
-            SongLinkType.WEB,
             SongLinkType.SCORE,
+            SongLinkType.AUDIO,
+            SongLinkType.YOUTUBE,
+            SongLinkType.WEB,
             SongLinkType.INTERNAL,
-            "youtube",
-            "audio",
         }:
             return value
-        if value == SongLinkType.AUDIO_VIDEO:
-            # Legacy fallback kept for pre-migration values.
-            return "audio"
-        return SongLinkType.WEB
+        if value == LEGACY_LINK_TYPE_AUDIO_VIDEO:
+            # Short-lived fallback for stale clients during rollout.
+            return SongLinkType.AUDIO
+        return SongLinkType.SCORE
 
     existing_links_by_value = {item.link: item for item in song.links.all()}
     consumed_targets: set[str] = set()

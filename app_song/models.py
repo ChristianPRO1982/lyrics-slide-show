@@ -13,7 +13,8 @@ MESSAGE_STATUS_REJECTED = 2
 LINK_TYPE_INTERNAL = "internal"
 LINK_TYPE_WEB = "web"
 LINK_TYPE_SCORE = "score"
-LINK_TYPE_AUDIO_VIDEO = "audio-video"
+LINK_TYPE_AUDIO = "audio"
+LINK_TYPE_YOUTUBE = "youtube"
 
 
 class SongStatus(models.IntegerChoices):
@@ -32,10 +33,11 @@ class SongMessageStatus(models.IntegerChoices):
 
 
 class SongLinkType(models.TextChoices):
-    INTERNAL = LINK_TYPE_INTERNAL, _("Internal")
-    WEB = LINK_TYPE_WEB, _("Web")
-    SCORE = LINK_TYPE_SCORE, _("Score")
-    AUDIO_VIDEO = LINK_TYPE_AUDIO_VIDEO, _("Audio/video")
+    SCORE = LINK_TYPE_SCORE, _("partition")
+    AUDIO = LINK_TYPE_AUDIO, _("audio")
+    YOUTUBE = LINK_TYPE_YOUTUBE, _("YouTube")
+    WEB = LINK_TYPE_WEB, _("page Web")
+    INTERNAL = LINK_TYPE_INTERNAL, _("lien interne - Lyrics Slide Show")
 
 
 class Song(models.Model):
@@ -126,7 +128,7 @@ class SongLink(models.Model):
     type = models.CharField(
         max_length=20,
         choices=SongLinkType.choices,
-        default=SongLinkType.WEB,
+        default=SongLinkType.SCORE,
     )
 
     class Meta:

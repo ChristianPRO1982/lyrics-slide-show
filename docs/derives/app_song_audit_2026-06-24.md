@@ -23,27 +23,7 @@ Note de suivi :
 
 ## Dérives non liées à la nouvelle fonctionnalité de validation / non validation / messages liés au chant validé
 
-### 1. Les types de liens exposés en métadonnées restent centrés sur les valeurs legacy `audio` / `youtube`
-
-Constat :
-
-- la page `metadata.html` affiche les choix `audio` et `youtube` ;
-- la normalisation backend conserve ces valeurs et reconvertit `audio-video` vers `audio` ;
-- le modèle expose pourtant `audio-video` comme type canonique.
-
-Pourquoi c'est une dérive :
-
-- la doc fonctionnelle décrit `audio-video` comme type principal ;
-- les valeurs `audio` / `youtube` sont documentées comme legacy encore acceptées, pas comme référence cible.
-
-Références :
-
-- `app_song/templates/song/metadata.html:76`
-- `app_song/views.py:1444`
-- `app_song/models.py:16`
-- `docs/app_song/functional_requirements.md:244`
-
-### 2. Quelques libellés front restent hardcodés au lieu de passer par l'i18n
+### 1. Quelques libellés front restent hardcodés au lieu de passer par l'i18n
 
 Constat :
 

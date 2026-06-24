@@ -11,6 +11,13 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
   - `✔️⁉️` pour `status=2`
 - Affiche le résumé de description.
 - Affiche les cartes de métadonnées (`_song_metadata.html`) et liens (`_song_links.html`).
+- Affiche chaque lien avec son type visible en clair, à côté de l’URL.
+- Utilise pour ce type les 5 libellés utilisateur localisés :
+  - `partition`
+  - `audio`
+  - `YouTube`
+  - `page Web`
+  - `lien interne - Lyrics Slide Show`
 - Affiche le rendu paroles principal (`text_long_html`).
 - Monte le panneau d’actions (`_song_actions.html`) selon le contexte de page.
 - Inclut, pour un chant validé (`status in {1,2}`), un formulaire simple de demande de modification avec un `textarea`.

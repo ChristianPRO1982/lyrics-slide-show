@@ -62,57 +62,61 @@
             {% csrf_token %}
             {% if metadata_links %}
                 {% for link in metadata_links %}
-                    <p>
-                        <input
-                            id="existing-{{ forloop.counter0 }}-link"
-                            type="text"
-                            name="existing_{{ forloop.counter0 }}_link"
-                            value="{{ link.link }}"
-                            {% if not can_edit %}readonly{% endif %}
-                        >
-                        <select name="existing_{{ forloop.counter0 }}_type" {% if not can_edit %}disabled{% endif %}>
-                            <option value="web" {% if link.display_type == 'web' %}selected{% endif %}>lien</option>
-                            <option value="score" {% if link.display_type == 'score' %}selected{% endif %}>partition</option>
-                            <option value="audio" {% if link.display_type == 'audio' %}selected{% endif %}>audio</option>
-                            <option value="youtube" {% if link.display_type == 'youtube' %}selected{% endif %}>YouTube</option>
-                            <option value="internal" {% if link.display_type == 'internal' %}selected{% endif %}>lien interne</option>
-                        </select>
-                        <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
-                        <label for="existing-{{ forloop.counter0 }}-delete">
+                    <div class="song-meta-row song-meta-row--link">
+                        <div class="song-meta-link-url">
                             <input
-                                id="existing-{{ forloop.counter0 }}-delete"
-                                type="checkbox"
-                                name="existing_{{ forloop.counter0 }}_delete"
-                                value="1"
-                                data-meta-delete-checkbox
-                                data-meta-kind="{% trans 'lien' %}"
-                                data-meta-label="{{ link.link|escape }}"
-                                {% if not can_edit %}disabled{% endif %}
+                                id="existing-{{ forloop.counter0 }}-link"
+                                type="text"
+                                name="existing_{{ forloop.counter0 }}_link"
+                                value="{{ link.link }}"
+                                {% if not can_edit %}readonly{% endif %}
                             >
-                            {% trans "Supprimer" %}
-                        </label>
-                    </p>
+                        </div>
+                        <div class="song-meta-link-controls">
+                            <select name="existing_{{ forloop.counter0 }}_type" {% if not can_edit %}disabled{% endif %}>
+                                {% for option_value, option_label in link_type_options %}
+                                    <option value="{{ option_value }}" {% if link.display_type == option_value %}selected{% endif %}>{{ option_label }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
+                            <label class="song-meta-link-delete" for="existing-{{ forloop.counter0 }}-delete">
+                                <input
+                                    id="existing-{{ forloop.counter0 }}-delete"
+                                    type="checkbox"
+                                    name="existing_{{ forloop.counter0 }}_delete"
+                                    value="1"
+                                    data-meta-delete-checkbox
+                                    data-meta-kind="{% trans 'lien' %}"
+                                    data-meta-label="{{ link.link|escape }}"
+                                    {% if not can_edit %}disabled{% endif %}
+                                >
+                                <span>{% trans "Supprimer" %}</span>
+                            </label>
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
                 <p><em>{% trans "Aucun lien associé." %}</em></p>
             {% endif %}
-            <p>
-                <input
-                    id="new-link"
-                    type="text"
-                    name="new_link"
-                    value=""
-                    placeholder="{% trans 'Nouveau lien' %}"
-                    {% if not can_edit %}readonly{% endif %}
-                >
-                <select name="new_type" {% if not can_edit %}disabled{% endif %}>
-                    <option value="web" selected>lien</option>
-                    <option value="score">partition</option>
-                    <option value="audio">audio</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="internal">lien interne</option>
-                </select>
-            </p>
+            <div class="song-meta-row song-meta-row--link song-meta-row--link-new">
+                <div class="song-meta-link-url">
+                    <input
+                        id="new-link"
+                        type="text"
+                        name="new_link"
+                        value=""
+                        placeholder="{% trans 'Nouveau lien' %}"
+                        {% if not can_edit %}readonly{% endif %}
+                    >
+                </div>
+                <div class="song-meta-link-controls">
+                    <select name="new_type" {% if not can_edit %}disabled{% endif %}>
+                        {% for option_value, option_label in link_type_options %}
+                            <option value="{{ option_value }}" {% if new_link_default_type == option_value %}selected{% endif %}>{{ option_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
         </form>
     </article>
 

@@ -236,17 +236,44 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 
 ### Liens de chant (`s_song_links`)
 
-Types principaux :
+Les types canoniques stockés en backend et en base sont exactement :
 
-- `internal`
-- `web`
 - `score`
-- `audio-video`
+- `audio`
+- `youtube`
+- `web`
+- `internal`
 
-Comportement legacy géré par le code :
+Ces 5 types sont distincts de bout en bout :
 
-- valeurs `audio` / `youtube` encore acceptées
-- `audio-video` peut être affiché en `audio` pour compatibilité
+- en front dans les formulaires ;
+- en front à l’affichage ;
+- en backend dans la validation ;
+- en base dans la valeur stockée.
+
+Le type canonique `audio-video` n’est plus utilisé.
+
+Règle de migration :
+
+- toute ancienne ligne `audio-video` doit être migrée vers `audio`.
+
+Valeur par défaut à la création d’un nouveau lien :
+
+- `score`
+
+Ordre obligatoire des options dans les formulaires de métadonnées :
+
+1. `partition` (`score`)
+2. `audio` (`audio`)
+3. `YouTube` (`youtube`)
+4. `page Web` (`web`)
+5. `lien interne - Lyrics Slide Show` (`internal`)
+
+Rendu front attendu :
+
+- le type d’un lien reste visible à l’affichage ;
+- les libellés utilisateur doivent être localisés et ne doivent pas retomber sur des libellés anglais ;
+- `audio` et `YouTube` ne sont jamais fusionnés dans un type unique.
 
 ### Tables de référence partagées
 
