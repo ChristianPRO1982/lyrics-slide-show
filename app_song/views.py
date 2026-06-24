@@ -105,6 +105,10 @@ def _can_report_message(user, song: Song) -> bool:
     return _can_read_song(user, song) and not _can_edit_song(user, song)
 
 
+def _can_devalidate_song(user, song: Song) -> bool:
+    return bool(_is_moderator(user) and song.status == SongStatus.VALIDATED)
+
+
 def _song_title_with_validation_marker(song: Song) -> str:
     title = song.title
     if song.subtitle:
@@ -698,7 +702,7 @@ def _build_modify_song_context(
         "genre_groups": genre_groups,
         "is_favorite": _is_song_favorite(song.song_id, member_id),
         "can_edit": _can_edit_song(request.user, song),
-        "can_devalidate": bool(song.is_validated and _is_moderator(request.user)),
+        "can_devalidate": _can_devalidate_song(request.user, song),
         "show_all_messages_link": bool(
             _is_moderator(request.user) and _song_has_messages(song)
         ),
@@ -1406,8 +1410,27 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
         if action == "devalidate_song":
             if not (_is_moderator(request.user) and song_object.is_validated):
                 raise Http404
-            song_object.status = SongStatus.NOT_VALIDATED
-            song_object.save(update_fields=["status"])
+            original_status = song_object.status
+            if song_object.status == SongStatus.VALIDATED_WITH_CONCERN:
+                _recalculate_song_status_from_messages(song_object)
+            if _can_devalidate_song(request.user, song_object):
+                if original_status == SongStatus.VALIDATED_WITH_CONCERN:
+                    messages.info(
+                        request,
+                        _(
+                            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide."
+                        ),
+                    )
+                    return redirect("modify_song", song_id=song_object.song_id)
+                song_object.status = SongStatus.NOT_VALIDATED
+                song_object.save(update_fields=["status"])
+                return redirect("modify_song", song_id=song_object.song_id)
+            messages.info(
+                request,
+                _(
+                    "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues."
+                ),
+            )
             return redirect("modify_song", song_id=song_object.song_id)
 
         if not _can_edit_song(request.user, song_object):

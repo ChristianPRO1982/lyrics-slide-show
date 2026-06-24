@@ -40,5 +40,7 @@ Cette page n’est pas une page de lecture.
 
 - La logique métier de sauvegarde, recalcul de numérotation et permissions est décrite dans `functional_requirements.md`.
 - Dans la cible fonctionnelle documentée, la dévalidation complète d’un chant est bloquée tant qu’au moins un message lié au chant reste avec `vu = false`.
+- Le bouton `Dévalider` n’est visible que si la transition `1 -> 0` est actuellement autorisée, donc uniquement pour un chant en `status=1` côté modérateur/admin.
+- Si une tentative backend de dévalidation arrive malgré tout sur un chant en `status=2`, elle est refusée avec un message explicite et sans retour direct à `status=0`.
 - Une autorisation visible côté front reste provisoire ; le back fait la dernière vérification et peut refuser finalement une modification devenue interdite si un modérateur a validé le chant pendant la session.
 - En cas de refus final pour ce motif sur un utilisateur non modérateur, la cible documentaire attend une redirection vers `song` avec un message explicite indiquant que les modifications n’ont pas été prises en compte et qu’il faut utiliser le formulaire de demande de modification du chant.

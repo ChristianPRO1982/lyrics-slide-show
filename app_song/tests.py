@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from django.http import QueryDict
+from django.contrib.messages import get_messages
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
@@ -1753,6 +1754,91 @@ class ModifySongViewTests(TestCase):
         self.assertEqual(self.song.title, "Chant")
         self.assertEqual(self.song.subtitle, "Base")
         self.assertEqual(self.song.description, "Description")
+
+    def test_moderator_cannot_devalidate_song_with_unread_messages(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Correction en attente",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "devalidate_song"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+        flash_messages = [
+            str(message) for message in get_messages(response.wsgi_request)
+        ]
+        self.assertIn(
+            "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues.",
+            flash_messages,
+        )
+
+    def test_devalidate_normalizes_inconsistent_status_two_without_direct_devalidation(
+        self,
+    ):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Ancienne demande traitee",
+            is_read=True,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "devalidate_song"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
+        flash_messages = [
+            str(message) for message in get_messages(response.wsgi_request)
+        ]
+        self.assertIn(
+            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide.",
+            flash_messages,
+        )
+
+        second_response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data={"action": "devalidate_song"},
+        )
+
+        self.assertEqual(second_response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
+
+    def test_devalidate_button_hidden_for_status_two(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertNotContains(response, 'value="devalidate_song"', html=False)
+
+    def test_devalidate_button_visible_for_status_one(self):
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, 'value="devalidate_song"', html=False)
 
     def test_post_save_updates_identity_and_verses(self):
         self._login()

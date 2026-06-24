@@ -62,6 +62,9 @@ Constantes Python exposées :
 - pour quitter `status=2`, tous les messages encore avec `vu = false` doivent d’abord être passés à `vu = true` ;
 - lorsqu’il n’existe plus de message avec `vu = false`, le chant revient en `status=1` ;
 - une fois revenu en `status=1`, le chant peut alors être repassé en `status=0`.
+- l’action de dévalidation depuis la page de modification n’autorise donc la transition que pour un chant actuellement en `status=1` ;
+- une tentative backend de dévalidation sur un chant encore en `status=2` est refusée ;
+- si un chant a été remis incohérent manuellement en `status=2` alors que tous ses messages sont lus, une tentative de dévalidation commence par le recalculer en `status=1`, sans enchaîner `2 -> 0` dans la même requête.
 
 ### Transition cible résumée
 
