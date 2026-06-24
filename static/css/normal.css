@@ -1404,6 +1404,7 @@ body.lss-messagebox-open {
 }
 
 .site-nav-rail .site-nav-group > a {
+    position: relative;
     width: 42px;
     min-height: 42px;
     margin: 0 auto;
@@ -1419,10 +1420,13 @@ body.lss-messagebox-open {
 }
 
 .site-nav-rail .site-nav-role-marker {
-    margin-top: -34px;
-    margin-bottom: 18px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -42%);
     font-size: 0.9rem;
     pointer-events: none;
+    z-index: 1;
 }
 
 .site-nav-drawer .site-nav-role-marker {
@@ -1631,8 +1635,7 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -46px;
-        margin-bottom: 26px;
+        transform: translate(-50%, -48%);
         font-size: 1rem;
     }
 
@@ -1730,8 +1733,7 @@ body.lss-messagebox-open {
     }
 
     .site-nav-rail .site-nav-role-marker {
-        margin-top: -28px;
-        margin-bottom: 14px;
+        transform: translate(-50%, -38%);
         font-size: 0.78rem;
     }
 
