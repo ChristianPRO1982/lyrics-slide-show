@@ -12,6 +12,7 @@ from django.db.models import (
     Count,
     Exists,
     Func,
+    Max,
     OuterRef,
     Q,
     QuerySet,
@@ -520,6 +521,16 @@ def _build_result(song: Song, relation_maps) -> SongSearchResult:
     )
 
 
+def _build_results_from_songs(
+    songs: list[Song],
+) -> tuple[SongSearchResult, ...]:
+    song_ids = [song.song_id for song in songs]
+    relation_maps = (
+        _get_relation_maps(song_ids) if song_ids else ({}, {}, {}, {}, {}, {})
+    )
+    return tuple(_build_result(song, relation_maps) for song in songs)
+
+
 def search_songs(
     params: SongSearchParams,
     user,
@@ -535,14 +546,43 @@ def search_songs(
     songs = list(
         _with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle")
     )
-    song_ids = [song.song_id for song in songs]
-    relation_maps = (
-        _get_relation_maps(song_ids) if song_ids else ({}, {}, {}, {}, {}, {})
-    )
-    results = tuple(_build_result(song, relation_maps) for song in songs)
+    results = _build_results_from_songs(songs)
 
     return SongSearchResults(
         params=active_params,
+        results=results,
+        displayed_count=len(results),
+        search_count=search_count,
+        catalog_count=catalog_count,
+    )
+
+
+def search_songs_to_moderate(user, member_id: str | None) -> SongSearchResults:
+    accessible_songs = _base_accessible_songs(user)
+    catalog_count = accessible_songs.count()
+    filtered_songs = (
+        accessible_songs.filter(status=SONG_STATUS_VALIDATED_WITH_CONCERN)
+        .filter(messages__is_read=False)
+        .annotate(
+            latest_unread_message_date=Max(
+                "messages__date",
+                filter=Q(messages__is_read=False),
+            )
+        )
+        .distinct()
+    )
+    search_count = filtered_songs.count()
+    songs = list(
+        _with_favorite_state(filtered_songs, member_id).order_by(
+            "-latest_unread_message_date",
+            "title",
+            "subtitle",
+        )
+    )
+    results = _build_results_from_songs(songs)
+
+    return SongSearchResults(
+        params=SongSearchParams.empty(),
         results=results,
         displayed_count=len(results),
         search_count=search_count,

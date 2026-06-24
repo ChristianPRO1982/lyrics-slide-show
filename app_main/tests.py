@@ -41,6 +41,7 @@ from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
 from app_member.forms import SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
+from app_song.models import Song, SongMessage, SongStatus
 from app_main.views import (
     _collect_heavy_images,
     _keycloak_diagnostic_causes,
@@ -1622,6 +1623,79 @@ class SitePopupContextTests(TestCase):
 
         self.assertContains(response, "Message admin")
         self.assertNotContains(response, "Message moderation")
+
+
+class HomepageModerationCardTests(TestCase):
+    user_id = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+
+    def setUp(self):
+        create_site_params()
+        create_directory_user(
+            id=self.user_id,
+            username="homepage.moderator",
+            email="homepage.moderator@example.test",
+        )
+
+    def _login(self, *, moderator=False):
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if moderator:
+            MemberRole.objects.create(
+                member_id=self.user_id,
+                is_moderator=True,
+                is_admin=False,
+            )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "homepage.moderator",
+            "email": "homepage.moderator@example.test",
+            "first_name": "Homepage",
+            "last_name": "Moderator",
+            "is_moderator": moderator,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_homepage_shows_moderation_card_for_moderator(self):
+        song = Song.objects.create(
+            title="Moderation homepage",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        SongMessage.objects.create(
+            song=song,
+            message="A moderer",
+            is_read=False,
+            date=timezone.now(),
+        )
+        self._login(moderator=True)
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, "Chants à modérer")
+        self.assertContains(response, "Moderation homepage ✔️⁉️")
+
+    def test_homepage_hides_moderation_card_for_plain_member(self):
+        song = Song.objects.create(
+            title="Moderation homepage",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        SongMessage.objects.create(
+            song=song,
+            message="A moderer",
+            is_read=False,
+            date=timezone.now(),
+        )
+        self._login(moderator=False)
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertNotContains(response, "Chants à modérer")
 
 
 class MainViewHelperCoverageTests(SimpleTestCase):

@@ -185,6 +185,14 @@ Vue temporaire favoris (`favorites_quick=1`) :
 - n’écrase pas la recherche persistée
 - le formulaire reste rempli avec la recherche persistée
 
+Vue temporaire modération (`moderation_quick=1`) :
+
+- disponible uniquement pour modérateur/admin et seulement s’il existe des chants à modérer ;
+- applique uniquement la liste des chants à modérer ;
+- un chant est à modérer s’il est en `status=2` et possède au moins un message avec `vu = false` ;
+- n’écrase pas la recherche persistée ;
+- le formulaire reste rempli avec la recherche persistée.
+
 ## Favoris
 
 Favoris stockés dans `m_songs_users` (`SongFavorite`).
@@ -228,6 +236,8 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 - après chaque modification de `vu`, le statut final du chant est recalculé à partir de l’ensemble des messages du chant
 - si un chant est en `status=0`, son statut ne change jamais à cause des messages
 - si un chant est en `status=0`, aucun indicateur visuel supplémentaire n’apparaît dans son titre à cause de messages non vus
+- si un chant est en `status=0`, ses messages non lus sont cachés dans les listes et popups de modération comme s’ils n’existaient pas
+- si un chant repasse depuis `status=0` vers un état validé alors qu’il existe encore des messages avec `vu = false`, il doit passer directement en `status=2`
 - la remise d’un chant à `status=0` est bloquée tant qu’au moins un message reste avec `vu = false`
 - message vide refusé
 - auteur du message non stocké

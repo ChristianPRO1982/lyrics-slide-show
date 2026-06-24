@@ -23,7 +23,6 @@ from .models import (
     SongLink,
     SongLinkType,
     SongMessage,
-    SongMessageStatus,
     SongStatus,
     Verse,
 )
@@ -46,6 +45,7 @@ from .search import (
     get_reference_options,
     load_member_song_search,
     search_songs,
+    search_songs_to_moderate,
 )
 from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
 
@@ -103,6 +103,15 @@ def _can_read_song(user, song: Song) -> bool:
 
 def _can_report_message(user, song: Song) -> bool:
     return _can_read_song(user, song) and not _can_edit_song(user, song)
+
+
+def _song_title_with_validation_marker(song: Song) -> str:
+    title = song.title
+    if song.subtitle:
+        title = f"{title} - {song.subtitle}"
+    if song.validation_marker:
+        title = f"{title} {song.validation_marker}"
+    return title
 
 
 def _get_song_link_type_options() -> tuple[tuple[str, str], ...]:
@@ -471,16 +480,6 @@ def _get_song_metadata_labels(
     )
 
 
-def _get_song_message_status_label(status: int) -> str:
-    if status == SongMessageStatus.NEW:
-        return _("Nouveau")
-    if status == SongMessageStatus.HANDLED:
-        return _("Traité")
-    if status == SongMessageStatus.REJECTED:
-        return _("Rejeté")
-    return _("Inconnu")
-
-
 def _get_song_validation_label(song: Song) -> str:
     if song.status == SongStatus.VALIDATED:
         return _("Chant validé")
@@ -494,7 +493,7 @@ def _recalculate_song_status_from_messages(song: Song) -> None:
         next_status = SongStatus.NOT_VALIDATED
     elif SongMessage.objects.filter(
         song_id=song.song_id,
-        status=SongMessageStatus.NEW,
+        is_read=False,
     ).exists():
         next_status = SongStatus.VALIDATED_WITH_CONCERN
     else:
@@ -503,6 +502,84 @@ def _recalculate_song_status_from_messages(song: Song) -> None:
     if song.status != next_status:
         song.status = next_status
         song.save(update_fields=["status"])
+
+
+def _get_song_messages_queryset(
+    song: Song,
+    *,
+    unread_only: bool = False,
+    unread_first: bool = False,
+):
+    if song.status == SongStatus.NOT_VALIDATED:
+        return SongMessage.objects.none()
+
+    if unread_only:
+        return song.messages.filter(is_read=False).order_by("-date", "-message_id")
+
+    ordering = ["-date", "-message_id"]
+    if unread_first:
+        ordering = ["is_read", *ordering]
+    queryset = song.messages.all().order_by(*ordering)
+    return queryset
+
+
+def _song_has_messages(song: Song) -> bool:
+    return song.status != SongStatus.NOT_VALIDATED and song.messages.exists()
+
+
+def _song_has_unread_messages(song: Song) -> bool:
+    return (
+        song.status != SongStatus.NOT_VALIDATED
+        and song.messages.filter(is_read=False).exists()
+    )
+
+
+def _format_song_message_date(message_date) -> str:
+    return timezone.localtime(message_date).strftime("%d/%m/%Y %H:%M")
+
+
+def _build_song_message_toggle_anchor(message_id: int, *, is_read: bool) -> str:
+    return f"#song-message-toggle-{message_id}-{1 if is_read else 0}"
+
+
+def _build_song_messages_popup_markdown(
+    song: Song,
+    *,
+    unread_only: bool,
+    include_actions: bool,
+) -> str:
+    entries: list[str] = []
+    for item in _get_song_messages_queryset(
+        song,
+        unread_only=unread_only,
+        unread_first=include_actions and not unread_only,
+    ):
+        message_text = str(item.message or "").strip()
+        if item.is_read:
+            message_body = message_text
+        else:
+            message_body = f"**{message_text}**"
+
+        lines = [
+            f"### {_format_song_message_date(item.date)}",
+            message_body,
+        ]
+        if include_actions:
+            if item.is_read:
+                action_label = _("Marquer non lu")
+                action_target = _build_song_message_toggle_anchor(
+                    item.message_id,
+                    is_read=False,
+                )
+            else:
+                action_label = _("Marquer lu")
+                action_target = _build_song_message_toggle_anchor(
+                    item.message_id,
+                    is_read=True,
+                )
+            lines.append(f"[{action_label}]({action_target})")
+        entries.append("\n\n".join(lines))
+    return "\n\n".join(entries)
 
 
 def _build_block_display_label(
@@ -622,6 +699,14 @@ def _build_modify_song_context(
         "is_favorite": _is_song_favorite(song.song_id, member_id),
         "can_edit": _can_edit_song(request.user, song),
         "can_devalidate": bool(song.is_validated and _is_moderator(request.user)),
+        "show_all_messages_link": bool(
+            _is_moderator(request.user) and _song_has_messages(song)
+        ),
+        "all_messages_popup_markdown": _build_song_messages_popup_markdown(
+            song,
+            unread_only=False,
+            include_actions=True,
+        ),
         "display_url": reverse("song", args=[song.song_id]),
         "verse_max_lines": verse_max_lines,
         "verse_max_characters_for_line": verse_max_characters_for_line,
@@ -651,12 +736,9 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
     existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
     song_update_fields = ["title", "subtitle", "description"]
     if _is_moderator(request.user):
-        next_status = SongStatus.NOT_VALIDATED
-        if validated_checked:
-            if song.status == SongStatus.VALIDATED_WITH_CONCERN:
-                next_status = SongStatus.VALIDATED_WITH_CONCERN
-            else:
-                next_status = SongStatus.VALIDATED
+        next_status = (
+            SongStatus.VALIDATED if validated_checked else SongStatus.NOT_VALIDATED
+        )
         if song.status != next_status:
             song.status = next_status
             song_update_fields.append("status")
@@ -679,6 +761,9 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
 
         if existing_by_id:
             Verse.objects.filter(verse_id__in=tuple(existing_by_id.keys())).delete()
+
+        if _is_moderator(request.user) and validated_checked:
+            _recalculate_song_status_from_messages(song)
 
 
 def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
@@ -734,14 +819,25 @@ def songs(request: HttpRequest) -> HttpResponse:
         return _handle_song_post(request, "songs")
 
     favorites_quick = bool(member_id and _is_truthy(request.GET.get("favorites_quick")))
-    if favorites_quick:
+    moderation_search_results = search_songs_to_moderate(request.user, member_id)
+    moderation_quick = bool(
+        _is_moderator(request.user)
+        and member_id
+        and _is_truthy(request.GET.get("moderation_quick"))
+    )
+    if moderation_quick:
+        applied_search_params = SongSearchParams.empty()
+        display_search_params = load_member_song_search(member_id)
+        search_results = moderation_search_results
+    elif favorites_quick:
         # Temporary view: ignore and do not overwrite the persisted member search.
         applied_search_params = SongSearchParams(favorites_only=True)
         display_search_params = load_member_song_search(member_id)
+        search_results = search_songs(applied_search_params, request.user, member_id)
     else:
         applied_search_params = get_active_song_search(request, member_id)
         display_search_params = applied_search_params
-    search_results = search_songs(applied_search_params, request.user, member_id)
+        search_results = search_songs(applied_search_params, request.user, member_id)
     song_cards = _build_song_cards(search_results.results, request.user)
     reference_options = (
         get_reference_options()
@@ -763,11 +859,16 @@ def songs(request: HttpRequest) -> HttpResponse:
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
             "can_create_song": _is_authenticated(request.user),
+            "can_use_moderation_quick": bool(
+                _is_moderator(request.user) and moderation_search_results.results
+            ),
             "song_identity_pairs": list(Song.objects.values_list("title", "subtitle"))
             if _is_authenticated(request.user)
             else [],
             "favorites_toggle_query": "favorites_quick=1",
             "favorites_quick_active": favorites_quick,
+            "moderation_toggle_query": "moderation_quick=1",
+            "moderation_quick_active": moderation_quick,
         },
     )
 
@@ -1205,7 +1306,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
                     SongMessage.objects.create(
                         song=song_object,
                         message=message,
-                        status=SongMessageStatus.NEW,
+                        is_read=False,
                         date=timezone.now(),
                     )
                     _recalculate_song_status_from_messages(song_object)
@@ -1233,7 +1334,11 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         getattr(request, "LANGUAGE_CODE", None)
     )
     text_artifacts = build_song_text_artifacts(song_object, settings=render_settings)
-    messages_history = song_object.messages.all().order_by("-date", "-message_id")
+    unread_messages_popup_markdown = _build_song_messages_popup_markdown(
+        song_object,
+        unread_only=True,
+        include_actions=False,
+    )
 
     return render(
         request,
@@ -1254,19 +1359,14 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             else _("Chant hors licence"),
             "is_favorite": is_favorite,
             "can_edit": _can_edit_song(request.user, song_object),
-            "can_view_messages": bool(member_id),
             "can_report_message": can_report,
             "message_error": request.method == "POST"
             and request.POST.get("action") == "add_message"
             and not bool((request.POST.get("message") or "").strip()),
-            "messages_history": messages_history,
-            "messages_with_status": [
-                {
-                    "item": item,
-                    "status_label": _get_song_message_status_label(item.status),
-                }
-                for item in messages_history
-            ],
+            "show_unread_messages_link": bool(
+                member_id and unread_messages_popup_markdown
+            ),
+            "unread_messages_popup_markdown": unread_messages_popup_markdown,
             "links": song_object.links.all().order_by("link"),
             "bands": bands,
             "artists": artists,
@@ -1330,6 +1430,27 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
         "song/modify_song.html",
         _build_modify_song_context(request, selected_group, song_object),
     )
+
+
+def update_song_message_read_state(
+    request: HttpRequest,
+    message_id: int,
+) -> HttpResponse:
+    if request.method != "POST" or not _is_moderator(request.user):
+        raise Http404
+
+    message = get_object_or_404(
+        SongMessage.objects.select_related("song"), message_id=message_id
+    )
+    is_read = _is_truthy(request.POST.get("is_read"))
+
+    with transaction.atomic():
+        if message.is_read != is_read:
+            message.is_read = is_read
+            message.save(update_fields=["is_read"])
+        _recalculate_song_status_from_messages(message.song)
+
+    return HttpResponse(status=204)
 
 
 def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:

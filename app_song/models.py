@@ -6,10 +6,6 @@ SONG_STATUS_NOT_VALIDATED = 0
 SONG_STATUS_VALIDATED = 1
 SONG_STATUS_VALIDATED_WITH_CONCERN = 2
 
-MESSAGE_STATUS_NEW = 0
-MESSAGE_STATUS_HANDLED = 1
-MESSAGE_STATUS_REJECTED = 2
-
 LINK_TYPE_INTERNAL = "internal"
 LINK_TYPE_WEB = "web"
 LINK_TYPE_SCORE = "score"
@@ -24,12 +20,6 @@ class SongStatus(models.IntegerChoices):
         SONG_STATUS_VALIDATED_WITH_CONCERN,
         _("Validated with concern"),
     )
-
-
-class SongMessageStatus(models.IntegerChoices):
-    NEW = MESSAGE_STATUS_NEW, _("New")
-    HANDLED = MESSAGE_STATUS_HANDLED, _("Handled")
-    REJECTED = MESSAGE_STATUS_REJECTED, _("Rejected")
 
 
 class SongLinkType(models.TextChoices):
@@ -103,10 +93,7 @@ class SongMessage(models.Model):
         db_index=False,
     )
     message = models.TextField()
-    status = models.IntegerField(
-        choices=SongMessageStatus.choices,
-        default=SongMessageStatus.NEW,
-    )
+    is_read = models.BooleanField(db_column="vu", default=False)
     date = models.DateTimeField()
 
     class Meta:

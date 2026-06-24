@@ -14,7 +14,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from app_group.services import get_selected_group_state
+from app_group.services import get_member_id_from_user, get_selected_group_state
 from app_main.auth import (
     DisabledUserError,
     HOME_PROVISION_TARGET_SESSION_KEY,
@@ -37,6 +37,7 @@ from app_main.auth import (
     validate_callback_payload,
     validate_keycloak_callback,
 )
+from app_song.search import search_songs_to_moderate
 from app_main.models import SiteParams
 from app_member.forms import (
     MemberRoleActionForm,
@@ -90,10 +91,30 @@ def _get_selected_group(request: HttpRequest):
     return selected_group
 
 
+def _build_moderation_song_popup_markdown(results) -> str:
+    entries: list[str] = []
+    for item in results:
+        song = item.song
+        title = song.title
+        if song.subtitle:
+            title = f"{title} - {song.subtitle}"
+        title = f"{title} {song.validation_marker}".strip()
+        entries.append(f"- [{title}]({reverse('modify_song', args=[song.song_id])})")
+    return "\n".join(entries)
+
+
 def homepage(request: HttpRequest) -> HttpResponse:
     current_language = _current_language_code(request)
     site_params = get_site_params_for_language(current_language)
     home_cards = _parse_home_cards(site_params.home_text if site_params else "")
+    moderation_results = (
+        search_songs_to_moderate(
+            request.user,
+            get_member_id_from_user(request.user),
+        )
+        if getattr(request.user, "is_moderator", False)
+        else None
+    )
 
     return render(
         request,
@@ -120,6 +141,12 @@ def homepage(request: HttpRequest) -> HttpResponse:
             ),
             "home_bloc2_text": (
                 site_params.bloc2_text if site_params and site_params.bloc2_text else ""
+            ),
+            "moderation_song_results": moderation_results.results
+            if moderation_results
+            else (),
+            "moderation_song_popup_markdown": _build_moderation_song_popup_markdown(
+                moderation_results.results if moderation_results else ()
             ),
         },
     )

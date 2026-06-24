@@ -18,7 +18,6 @@ from .models import (
     SongLink,
     SongLinkType,
     SongMessage,
-    SongMessageStatus,
     SongStatus,
     Verse,
 )
@@ -1246,6 +1245,40 @@ class SongViewsRenderingTests(TestCase):
         response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 404)
 
+    def test_song_view_shows_unread_messages_link_for_authenticated_user(self):
+        SongMessage.objects.create(
+            song=self.song,
+            message="Corriger ce couplet",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login()
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertContains(
+            response,
+            "Il y a des modifications demandées pour ce chant, voir les demandes ici",
+        )
+
+    def test_song_view_hides_unread_messages_link_for_status_zero_song(self):
+        self.song.status = SongStatus.NOT_VALIDATED
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message caché",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login()
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertNotContains(
+            response,
+            "Il y a des modifications demandées pour ce chant, voir les demandes ici",
+        )
+
     def test_add_message_moves_validated_song_to_validated_with_concern(self):
         self._login()
 
@@ -1262,7 +1295,7 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
         created_message = SongMessage.objects.get(song=self.song)
         self.assertEqual(created_message.message, "Corriger le refrain")
-        self.assertEqual(created_message.status, SongMessageStatus.NEW)
+        self.assertFalse(created_message.is_read)
 
     def test_add_message_keeps_validated_with_concern_song_status(self):
         self.song.status = SongStatus.VALIDATED_WITH_CONCERN
@@ -1307,7 +1340,7 @@ class SongStatusWorkflowTests(TestCase):
         SongMessage.objects.create(
             song=song,
             message="Message en attente",
-            status=SongMessageStatus.NEW,
+            is_read=False,
             date="2026-06-24T12:00:00Z",
         )
 
@@ -1840,6 +1873,75 @@ class ModifySongViewTests(TestCase):
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.VALIDATED)
 
+    def test_moderator_validation_with_unread_messages_sets_status_with_concern(self):
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message en attente",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+        payload = self._base_payload()
+        payload["status_validated"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+
+    def test_modify_song_shows_messages_link_for_moderator(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message visible",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, "Voir toutes les demandes de modification")
+
+    def test_modify_song_popup_orders_unread_messages_first_then_newest(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Lu le plus recent",
+            is_read=True,
+            date="2026-06-24T14:00:00Z",
+        )
+        SongMessage.objects.create(
+            song=self.song,
+            message="Non lu ancien",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        SongMessage.objects.create(
+            song=self.song,
+            message="Non lu recent",
+            is_read=False,
+            date="2026-06-24T13:00:00Z",
+        )
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        popup_markdown = response.context["all_messages_popup_markdown"]
+        self.assertLess(
+            popup_markdown.index("Non lu recent"),
+            popup_markdown.index("Non lu ancien"),
+        )
+        self.assertLess(
+            popup_markdown.index("Non lu ancien"),
+            popup_markdown.index("Lu le plus recent"),
+        )
+
     def test_post_save_deletes_blocks_marked_for_deletion(self):
         self._login()
         payload = self._base_payload()
@@ -1875,6 +1977,80 @@ class ModifySongViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("songs"))
+
+
+class SongMessageReadStateViewTests(TestCase):
+    user_id = "66666666-6666-6666-6666-666666666666"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="message.moderator",
+            first_name="Message",
+            last_name="Moderator",
+            email="message.moderator@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song = Song.objects.create(
+            title="Message song",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        self.message = SongMessage.objects.create(
+            song=self.song,
+            message="A lire",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+
+    def _login(self, *, is_moderator=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "message.moderator",
+            "email": "message.moderator@example.test",
+            "first_name": "Message",
+            "last_name": "Moderator",
+            "is_moderator": is_moderator,
+            "is_admin": False,
+        }
+        session.save()
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if is_moderator:
+            MemberRole.objects.create(
+                member_id=self.user_id,
+                is_moderator=True,
+                is_admin=False,
+            )
+
+    def test_moderator_can_mark_message_read_and_song_returns_to_validated(self):
+        self._login(is_moderator=True)
+
+        response = self.client.post(
+            reverse("song_message_read_state", args=[self.message.message_id]),
+            data={"is_read": "1"},
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.message.refresh_from_db()
+        self.song.refresh_from_db()
+        self.assertTrue(self.message.is_read)
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
+
+    def test_non_moderator_cannot_toggle_message_read_state(self):
+        self._login(is_moderator=False)
+
+        response = self.client.post(
+            reverse("song_message_read_state", args=[self.message.message_id]),
+            data={"is_read": "1"},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.message.refresh_from_db()
+        self.assertFalse(self.message.is_read)
 
 
 class ModifyGenresViewTests(TestCase):
@@ -2203,6 +2379,90 @@ class SongFavoritesQuickViewTests(TestCase):
         preferences = MemberPreferences.objects.get(member_id=self.user_id)
         self.assertEqual(preferences.song_search["text"], "Saved Search")
         self.assertFalse(preferences.song_search["favorites_only"])
+
+
+class SongModerationQuickViewTests(TestCase):
+    user_id = "77777777-7777-7777-7777-777777777777"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="quick.moderation.user",
+            first_name="Quick",
+            last_name="Moderation",
+            email="quick.moderation.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        MemberPreferences.objects.create(
+            member_id=self.user_id,
+            song_search={
+                "text": "Saved Search",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+        self.song_to_moderate = Song.objects.create(
+            title="A moderer",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED_WITH_CONCERN,
+            licensed=False,
+        )
+        SongMessage.objects.create(
+            song=self.song_to_moderate,
+            message="Message en attente",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        Song.objects.create(
+            title="Autre chant",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "quick.moderation.user",
+            "email": "quick.moderation.user@example.test",
+            "first_name": "Quick",
+            "last_name": "Moderation",
+            "is_moderator": True,
+            "is_admin": False,
+        }
+        session.save()
+        MemberRole.objects.create(
+            member_id=self.user_id,
+            is_moderator=True,
+            is_admin=False,
+        )
+
+    def test_moderation_quick_view_ignores_and_does_not_overwrite_saved_search(self):
+        self._login()
+
+        response = self.client.get(reverse("songs") + "?moderation_quick=1")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "A moderer")
+        self.assertContains(response, "Mode modération temporaire actif.")
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(displayed_titles, ["A moderer"])
+        self.assertEqual(response.context["search_params"].text, "Saved Search")
+        self.assertTrue(response.context["moderation_quick_active"])
+
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        self.assertEqual(preferences.song_search["text"], "Saved Search")
 
 
 class SongGenresDisplayViewTests(TestCase):

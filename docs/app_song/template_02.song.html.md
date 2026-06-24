@@ -23,6 +23,9 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
 - Monte le panneau d’actions (`_song_actions.html`) selon le contexte de page.
 - Inclut, pour un chant validé (`status in {1,2}`), un formulaire simple de demande de modification avec un `textarea`.
 - Ce formulaire est destiné aux utilisateurs qui n’ont pas de droit d’édition directe sur le chant validé, notamment les guests et les membres non modérateurs.
+- Pour tout utilisateur connecté, affiche sous le titre principal, dans l’en-tête principal, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici` lorsqu’il existe au moins un message non lu visible pour le chant.
+- Ce lien ouvre une popup affichant uniquement les messages non lus, du plus récent au plus ancien.
+- Si le chant est en `status=0`, les messages non lus éventuels sont considérés comme invisibles et ce lien n’apparaît pas.
 - Ajoute deux actions dédiées de copie texte brut (`un seul refrain`, `toutes les répétitions de refrain`) dans le panneau d’actions et le panneau mobile.
 - Ouvre une popup avec `textarea` readonly, croix de fermeture, et boutons `Copier` / `Fermer` pour le texte brut récupéré depuis les URLs plain text.
 - Gère les interactions UI associées (toggle description, actions mobile, etc.).

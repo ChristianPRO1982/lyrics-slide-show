@@ -379,6 +379,12 @@ This section currently includes:
 - editing the public moderator popup message,
 - editing `moderator_message_cooldown_minutes`.
 
+The public homepage may also expose moderation-specific song signals for moderators:
+
+- when at least one song is pending moderation, the homepage main content starts with a `Chants à modérer` card,
+- this card lists up to 5 songs ordered by most recent unread correction request first,
+- `[...]` opens a popup with the exhaustive list.
+
 If no `SiteParams` row can be resolved for the active language context, moderator message editing is temporarily unavailable.
 
 ### Admin Section

@@ -22,6 +22,8 @@
 {% trans "Êtes-vous sûr de vouloir supprimer ce couplet/refrain ? Cette suppression sera enregistrée uniquement après clic sur Enregistrer." as delete_block_message %}
 {% trans "Oui" as yes_label %}
 {% trans "Non" as no_label %}
+{% trans "Demandes de modification" as song_message_popup_title %}
+{% trans "Impossible de mettre à jour l'état de lecture du message." as song_message_toggle_failed %}
 <script>
     window.LSS_SONG_I18N = {
         summaryTitle: "{{ song_summary_title|escapejs }}",
@@ -48,6 +50,9 @@
         deleteBlockTitle: "{{ delete_block_title|escapejs }}",
         deleteBlockMessage: "{{ delete_block_message|escapejs }}",
         yesLabel: "{{ yes_label|escapejs }}",
-        noLabel: "{{ no_label|escapejs }}"
+        noLabel: "{{ no_label|escapejs }}",
+        messagePopupTitle: "{{ song_message_popup_title|escapejs }}",
+        messageToggleFailed: "{{ song_message_toggle_failed|escapejs }}",
+        messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
     };
 </script>

@@ -56,6 +56,18 @@
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{{ title_complete_with_tags }}{% endblock %}
 {% block page_intro %}
+    {% if show_all_messages_link %}
+        <p>
+            <a
+                href="#"
+                data-song-markdown-popup
+                data-popup-title="{% trans 'Demandes de modification' %}"
+                data-popup-json-id="modify-song-all-messages-popup-markdown"
+            >
+                {% trans "Voir toutes les demandes de modification" %}
+            </a>
+        </p>
+    {% endif %}
     {% if can_edit %}
         <p>
             <button type="button" class="song-tool-button site-action site-action--primary" data-song-edit-meta-open>
@@ -321,6 +333,7 @@
 {% endblock %}
 {% block page_scripts %}
     {% include "song/modify_song_page_i18n.html" %}
+    {{ all_messages_popup_markdown|json_script:"modify-song-all-messages-popup-markdown" }}
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
         (() => {
