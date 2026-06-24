@@ -1959,6 +1959,20 @@ class ModifySongViewTests(TestCase):
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.VALIDATED)
 
+    def test_moderator_can_unvalidate_status_one_with_checkbox(self):
+        self.song.status = SongStatus.VALIDATED
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data=self._base_payload(),
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.NOT_VALIDATED)
+
     def test_moderator_validation_with_unread_messages_sets_status_with_concern(self):
         SongMessage.objects.create(
             song=self.song,
@@ -1978,6 +1992,84 @@ class ModifySongViewTests(TestCase):
         self.song.refresh_from_db()
         self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
 
+    def test_moderator_save_keeps_status_two_when_checkbox_checked_and_unread_messages(
+        self,
+    ):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message en attente",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+        payload = self._base_payload()
+        payload["status_validated"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+
+    def test_moderator_save_normalizes_status_two_to_one_when_all_messages_are_read(
+        self,
+    ):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message traite",
+            is_read=True,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+        payload = self._base_payload()
+        payload["status_validated"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
+
+    def test_moderator_save_ignores_status_two_to_zero_attempt_and_saves_other_changes(
+        self,
+    ):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        SongMessage.objects.create(
+            song=self.song,
+            message="Message en attente",
+            is_read=False,
+            date="2026-06-24T12:00:00Z",
+        )
+        self._login(is_moderator=True)
+        payload = self._base_payload()
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]),
+            data=payload,
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED_WITH_CONCERN)
+        self.assertEqual(self.song.title, "Nouveau\u00a0: titre\u00a0?")
+        flash_messages = [
+            str(message) for message in get_messages(response.wsgi_request)
+        ]
+        self.assertIn(
+            "La devalidation directe depuis status=2 est ignoree. Le chant doit d'abord revenir explicitement a status=1.",
+            flash_messages,
+        )
+
     def test_modify_song_shows_messages_link_for_moderator(self):
         self.song.status = SongStatus.VALIDATED_WITH_CONCERN
         self.song.save(update_fields=["status"])
@@ -1992,6 +2084,26 @@ class ModifySongViewTests(TestCase):
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
 
         self.assertContains(response, "Voir toutes les demandes de modification")
+
+    def test_modify_song_status_two_checkbox_is_checked_disabled_and_preserved(self):
+        self.song.status = SongStatus.VALIDATED_WITH_CONCERN
+        self.song.save(update_fields=["status"])
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(
+            response,
+            'id="song-status-validated-edit"',
+            html=False,
+        )
+        self.assertContains(response, "checked", html=False)
+        self.assertContains(response, "disabled", html=False)
+        self.assertContains(
+            response,
+            '<input type="hidden" name="status_validated" form="modify-song-form" value="1">',
+            html=False,
+        )
 
     def test_modify_song_popup_orders_unread_messages_first_then_newest(self):
         self.song.status = SongStatus.VALIDATED_WITH_CONCERN

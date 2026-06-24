@@ -129,7 +129,11 @@
                         type="checkbox"
                         value="1"
                         {% if song.is_validated %}checked{% endif %}
+                        {% if song.status == 2 %}disabled{% endif %}
                     >
+                    {% if song.status == 2 %}
+                        <input type="hidden" name="status_validated" form="modify-song-form" value="1">
+                    {% endif %}
                     {% trans "Chant validé. Ce chant ne pourra être modifié que par les modérateurs" %}
                 </label>
             </p>

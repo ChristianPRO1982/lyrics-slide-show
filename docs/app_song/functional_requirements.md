@@ -242,6 +242,10 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 - si un chant est en `status=0`, ses messages non lus sont cachés dans les listes et popups de modération comme s’ils n’existaient pas
 - si un chant repasse depuis `status=0` vers un état validé alors qu’il existe encore des messages avec `vu = false`, il doit passer directement en `status=2`
 - la remise d’un chant à `status=0` est bloquée tant qu’au moins un message reste avec `vu = false`
+- dans `modify_song`, la checkbox `Chant validé` n’est donc pas un simple mapping brut `checked=1 / unchecked=0`
+- pour un chant en `status=2`, cette checkbox reste affichée comme cochée mais non modifiable
+- la soumission normale d’un chant en `status=2` doit continuer à poster `status_validated=1` via un champ caché ou équivalent
+- si un POST technique tente malgré tout de retirer `status_validated=1` alors que le chant est en `status=2`, la sauvegarde des autres champs reste autorisée mais la tentative `2 -> 0` est ignorée
 - message vide refusé
 - auteur du message non stocké
 

@@ -42,5 +42,8 @@ Cette page n’est pas une page de lecture.
 - Dans la cible fonctionnelle documentée, la dévalidation complète d’un chant est bloquée tant qu’au moins un message lié au chant reste avec `vu = false`.
 - Le bouton `Dévalider` n’est visible que si la transition `1 -> 0` est actuellement autorisée, donc uniquement pour un chant en `status=1` côté modérateur/admin.
 - Si une tentative backend de dévalidation arrive malgré tout sur un chant en `status=2`, elle est refusée avec un message explicite et sans retour direct à `status=0`.
+- Pour un chant en `status=2`, la checkbox `Chant validé` reste visible, cochée et désactivée.
+- Un champ caché ou mécanisme équivalent préserve la soumission normale de `status_validated=1` quand cette checkbox est désactivée.
+- Si un POST technique tente quand même de décocher cet état sur un chant en `status=2`, le backend enregistre le reste du formulaire mais ignore la tentative `2 -> 0` avec un message flash explicite.
 - Une autorisation visible côté front reste provisoire ; le back fait la dernière vérification et peut refuser finalement une modification devenue interdite si un modérateur a validé le chant pendant la session.
 - En cas de refus final pour ce motif sur un utilisateur non modérateur, la cible documentaire attend une redirection vers `song` avec un message explicite indiquant que les modifications n’ont pas été prises en compte et qu’il faut utiliser le formulaire de demande de modification du chant.

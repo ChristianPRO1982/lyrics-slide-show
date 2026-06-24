@@ -508,6 +508,35 @@ def _recalculate_song_status_from_messages(song: Song) -> None:
         song.save(update_fields=["status"])
 
 
+def _resolve_song_status_from_form(
+    song: Song,
+    user,
+    *,
+    validated_checked: bool,
+) -> tuple[int, bool, str | None]:
+    if not _is_moderator(user):
+        return song.status, False, None
+
+    if validated_checked:
+        if song.status == SongStatus.NOT_VALIDATED:
+            return SongStatus.VALIDATED, True, None
+        return song.status, True, None
+
+    if song.status == SongStatus.VALIDATED:
+        return SongStatus.NOT_VALIDATED, False, None
+
+    if song.status == SongStatus.VALIDATED_WITH_CONCERN:
+        return (
+            SongStatus.VALIDATED_WITH_CONCERN,
+            False,
+            _(
+                "La devalidation directe depuis status=2 est ignoree. Le chant doit d'abord revenir explicitement a status=1."
+            ),
+        )
+
+    return SongStatus.NOT_VALIDATED, False, None
+
+
 def _get_song_messages_queryset(
     song: Song,
     *,
@@ -739,13 +768,16 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
     )
     existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
     song_update_fields = ["title", "subtitle", "description"]
-    if _is_moderator(request.user):
-        next_status = (
-            SongStatus.VALIDATED if validated_checked else SongStatus.NOT_VALIDATED
+    next_status, should_recalculate_status, status_message = (
+        _resolve_song_status_from_form(
+            song,
+            request.user,
+            validated_checked=validated_checked,
         )
-        if song.status != next_status:
-            song.status = next_status
-            song_update_fields.append("status")
+    )
+    if song.status != next_status:
+        song.status = next_status
+        song_update_fields.append("status")
 
     with transaction.atomic():
         song.save(update_fields=song_update_fields)
@@ -766,8 +798,11 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
         if existing_by_id:
             Verse.objects.filter(verse_id__in=tuple(existing_by_id.keys())).delete()
 
-        if _is_moderator(request.user) and validated_checked:
+        if should_recalculate_status:
             _recalculate_song_status_from_messages(song)
+
+    if status_message:
+        messages.info(request, status_message)
 
 
 def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
