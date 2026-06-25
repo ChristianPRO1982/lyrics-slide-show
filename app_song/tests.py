@@ -169,6 +169,51 @@ class SongMetadataLabelAssemblyTests(SimpleTestCase):
         self.assertEqual(len(genre_groups[0][1]), 1)
         self.assertTrue(genre_groups[0][1][0].endswith("Louange"))
 
+    @patch("app_song.views._fetch_name_labels", return_value={})
+    @patch(
+        "app_song.views._fetch_genre_labels",
+        return_value={
+            13: ("1 - Scoutisme", "SGDF"),
+            14: ("1 - Scoutisme", "SGDF - Compagnons"),
+            15: ("2 - Chrétien - KTO", "prière"),
+            11: ("3 - #", "en langue étrangère"),
+            12: ("3 - #", "variété française"),
+        },
+    )
+    @patch("app_song.views.SongArtist.objects.filter")
+    @patch("app_song.views.SongBand.objects.filter")
+    @patch("app_song.views.SongGenre.objects.filter")
+    def test_get_song_metadata_labels_keeps_database_group_order_before_display_cleanup(
+        self,
+        song_genre_filter,
+        song_band_filter,
+        song_artist_filter,
+        _fetch_genre_labels,
+        _fetch_name_labels,
+    ):
+        song_genre_filter.return_value.values_list.return_value = (12, 15, 11, 14, 13)
+        song_band_filter.return_value.values_list.return_value = ()
+        song_artist_filter.return_value.values_list.return_value = ()
+
+        _bands, _artists, genre_groups = song_views._get_song_metadata_labels(
+            SimpleNamespace(song_id=1)
+        )
+
+        self.assertEqual(
+            tuple(group_name for group_name, _names in genre_groups),
+            ("Scoutisme", "Chrétien - KTO", "#"),
+        )
+        self.assertEqual(
+            tuple(name.endswith("SGDF") for name in genre_groups[0][1]), (True, False)
+        )
+        self.assertTrue(genre_groups[0][1][1].endswith("SGDF - Compagnons"))
+        self.assertTrue(genre_groups[1][1][0].endswith("prière"))
+        self.assertEqual(
+            tuple(name.endswith("en langue étrangère") for name in genre_groups[2][1]),
+            (True, False),
+        )
+        self.assertTrue(genre_groups[2][1][1].endswith("variété française"))
+
 
 class SongRenderingMarkupTests(SimpleTestCase):
     settings = SongRenderSettings(

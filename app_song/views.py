@@ -457,11 +457,7 @@ def _get_song_metadata_labels(
     artist_labels = _fetch_name_labels("artists", "artist_id", set(artist_ids))
 
     grouped_genres: dict[str, list[str]] = {}
-    for item in genre_ids:
-        label = genre_labels.get(item)
-        if not label:
-            continue
-        group_name, genre_name = label
+    for group_name, genre_name in genre_labels.values():
         grouped_genres.setdefault(
             normalize_genre_group_display_name(group_name), []
         ).append(genre_name)
