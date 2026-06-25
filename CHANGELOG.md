@@ -1,3 +1,10 @@
+## [2.9.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.4...v2.9.5) (2026-06-25)
+
+
+### Bug Fixes
+
+* Add signup URL field to SiteParams model and update related templates and tests ([41a2c12](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/41a2c12245184ee80228ebef7068bea5d24233dd))
+
 ## [2.9.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.3...v2.9.4) (2026-06-25)
 
 
