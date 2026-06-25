@@ -15,6 +15,34 @@
             .trim();
     };
 
+    const readJsonScriptString = (id) => {
+        const node = document.getElementById(String(id || ""));
+        if (!node) {
+            return "";
+        }
+        try {
+            return String(JSON.parse(node.textContent || "\"\"") || "");
+        } catch (_error) {
+            return "";
+        }
+    };
+
+    const getCsrfToken = () => {
+        const field = document.querySelector("input[name=csrfmiddlewaretoken]");
+        if (field && typeof field.value === "string" && field.value) {
+            return field.value;
+        }
+        return "";
+    };
+
+    const buildMessageReadStateUrl = (messageId) => {
+        const template = String(label("messageReadStateUrlTemplate") || "").trim();
+        if (!template) {
+            return "";
+        }
+        return template.replace(/0\/read-state\/?$/, `${messageId}/read-state/`);
+    };
+
     const searchInput = document.querySelector("[data-song-local-search]");
     const songCards = Array.from(document.querySelectorAll("[data-song-card]"));
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
@@ -109,6 +137,54 @@
         });
     });
 
+    document.querySelectorAll("[data-song-inline-popup]").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+            if (!messageBox) {
+                return;
+            }
+
+            event.preventDefault();
+            const popupTitle = String(
+                link.getAttribute("data-popup-title") || label("infoPopupTitle"),
+            ).trim();
+            const popupMessage = String(link.getAttribute("data-popup-message") || "").trim();
+            if (!popupMessage) {
+                return;
+            }
+
+            await messageBox.alert({
+                title: popupTitle || label("infoPopupTitle"),
+                messageMarkdown: popupMessage,
+                showCloseButton: true,
+            });
+        });
+    });
+
+    document.querySelectorAll("[data-song-markdown-popup]").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+            if (!messageBox) {
+                return;
+            }
+
+            event.preventDefault();
+            const popupTitle = String(
+                link.getAttribute("data-popup-title") || label("messagePopupTitle"),
+            ).trim();
+            const popupJsonId = String(link.getAttribute("data-popup-json-id") || "").trim();
+            const popupMarkdown = readJsonScriptString(popupJsonId);
+            if (!popupMarkdown) {
+                return;
+            }
+
+            await messageBox.alert({
+                title: popupTitle,
+                messageMarkdown: popupMarkdown,
+                showCloseButton: true,
+                size: "wide",
+            });
+        });
+    });
+
     const mobileActionsToggle = document.querySelector("[data-song-mobile-actions-toggle]");
     const mobileActionsContainer = document.querySelector("[data-song-mobile-actions]");
     if (mobileActionsToggle && mobileActionsContainer) {
@@ -151,6 +227,134 @@
                 form.submit();
             }
         });
+    });
+
+    const correctionForm = document.getElementById("song-correction-form");
+    const correctionMessageField = correctionForm
+        ? correctionForm.querySelector('input[name="message"]')
+        : null;
+    const openCorrectionPopup = async (initialValue = "") => {
+        if (!messageBox || !correctionForm || !correctionMessageField) {
+            return;
+        }
+
+        const result = await messageBox.show({
+            title: label("reportPopupTitle"),
+            messageMarkdown: label("reportPopupMessage"),
+            showCloseButton: true,
+            buttons: [
+                {
+                    id: "submit",
+                    label: label("reportSubmitLabel"),
+                    tone: "success",
+                    validate: true,
+                },
+                {
+                    id: "cancel",
+                    label: label("reportCancelLabel"),
+                    tone: "neutral",
+                    validate: false,
+                },
+            ],
+            fields: [
+                {
+                    id: "message",
+                    label: label("reportFieldLabel"),
+                    type: "textarea",
+                    value: initialValue,
+                    placeholder: label("reportFieldPlaceholder"),
+                    required: true,
+                    rows: 6,
+                },
+            ],
+            initialFocus: "first-field",
+            enterButtonId: "submit",
+            escapeButtonId: "cancel",
+        });
+
+        if (result.buttonId !== "submit") {
+            return;
+        }
+
+        correctionMessageField.value = String(result.values.message || "");
+        correctionForm.submit();
+    };
+
+    document.querySelectorAll("[data-song-report-trigger]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            await openCorrectionPopup("");
+        });
+    });
+
+    if (
+        messageBox &&
+        correctionForm &&
+        correctionMessageField &&
+        correctionForm.dataset.messageError === "true"
+    ) {
+        window.setTimeout(() => {
+            void (async () => {
+                await messageBox.alert({
+                    title: label("reportPopupTitle"),
+                    messageMarkdown: label("reportEmptyError"),
+                    showCloseButton: true,
+                });
+                await openCorrectionPopup(correctionMessageField.value || "");
+            })();
+        }, 0);
+    }
+
+    document.addEventListener("click", async (event) => {
+        const toggleLink = event.target instanceof Element
+            ? event.target.closest('a[href^="#song-message-toggle-"]')
+            : null;
+        if (!toggleLink) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const href = String(toggleLink.getAttribute("href") || "");
+        const match = href.match(/^#song-message-toggle-(\d+)-(0|1)$/);
+        if (!match) {
+            return;
+        }
+
+        const messageId = match[1];
+        const isRead = match[2];
+        const endpoint = buildMessageReadStateUrl(messageId);
+        const csrfToken = getCsrfToken();
+        if (!endpoint || !csrfToken) {
+            return;
+        }
+
+        const body = new URLSearchParams();
+        body.set("is_read", isRead);
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: body.toString(),
+            });
+            if (!response.ok) {
+                throw new Error("Unable to update message read state.");
+            }
+            window.location.reload();
+        } catch (_error) {
+            if (messageBox) {
+                await messageBox.alert({
+                    title: label("messagePopupTitle"),
+                    messageMarkdown: label("messageToggleFailed"),
+                    showCloseButton: true,
+                });
+            }
+        }
     });
 
     const fetchTextFromUrl = async (url) => {
@@ -270,11 +474,23 @@
                         id: "show-single",
                         label: label("showSingleLabel"),
                         tone: "neutral",
+                        onClick: () => {
+                            const newTab = window.open(singleUrl, "_blank", "noopener");
+                            if (newTab) {
+                                newTab.opener = null;
+                            }
+                        },
                     },
                     {
                         id: "show-full",
                         label: label("showFullLabel"),
                         tone: "neutral",
+                        onClick: () => {
+                            const newTab = window.open(fullUrl, "_blank", "noopener");
+                            if (newTab) {
+                                newTab.opener = null;
+                            }
+                        },
                     },
                 ],
             });
@@ -286,10 +502,6 @@
                 } else if (result.buttonId === "copy-full") {
                     await copyTextFromUrl(fullPlainUrl);
                     await messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("copySuccess") });
-                } else if (result.buttonId === "show-single") {
-                    window.location.href = singleUrl;
-                } else if (result.buttonId === "show-full") {
-                    window.location.href = fullUrl;
                 }
             } catch (_error) {
                 await messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("copyFailed") });

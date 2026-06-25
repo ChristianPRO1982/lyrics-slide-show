@@ -182,6 +182,12 @@
                 continue;
             }
 
+            if (/^([-*_])\1{2,}$/.test(trimmed)) {
+                blocks.push("<hr>");
+                index += 1;
+                continue;
+            }
+
             if (/^>\s?/.test(trimmed)) {
                 const quoteLines = [];
 

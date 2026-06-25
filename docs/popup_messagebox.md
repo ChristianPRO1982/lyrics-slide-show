@@ -253,6 +253,7 @@ Supported formatting:
 
 - paragraphs
 - headings `#` to `######`
+- horizontal rules using `---`, `***`, or `___`
 - unordered lists using `-` or `*`
 - ordered lists using `1.`
 - blockquotes using `>`

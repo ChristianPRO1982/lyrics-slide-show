@@ -24,15 +24,36 @@
                 {% trans "💫 Afficher mes favoris" %}
             </a>
         </p>
+        {% if can_use_moderation_quick %}
+            <p>
+                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ moderation_toggle_query }}">
+                    {% trans "⚖️ Afficher les chants à modérer" %}
+                </a>
+            </p>
+        {% endif %}
         {% if favorites_quick_active %}
             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
+        {% if moderation_quick_active %}
+            <p><em>{% trans "Mode modération temporaire actif." %}</em></p>
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+        {% endif %}
     {% endif %}
     <hr>
-    <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
-    <p>{% trans "Recherche ⓘ" %} : <strong>{{ search_count }}</strong></p>
-    <p>{% trans "Total ⓘ" %} : <strong>{{ catalog_count }}</strong></p>
+    <div class="song-tools-stats">
+        <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
+        <p>
+            <a class="song-inline-info-link" href="#" data-song-inline-popup data-popup-title="{% trans 'Recherche ⓘ' %}" data-popup-message="{{ song_search_count_help|escape }}">
+                {% trans "Recherche ⓘ" %}
+            </a> : <strong>{{ search_count }}</strong>
+        </p>
+        <p>
+            <a class="song-inline-info-link" href="#" data-song-inline-popup data-popup-title="{% trans 'Total ⓘ' %}" data-popup-message="{{ song_catalog_count_help|escape }}">
+                {% trans "Total ⓘ" %}
+            </a> : <strong>{{ catalog_count }}</strong>
+        </p>
+    </div>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
 {% block mobile_side_content %}
@@ -246,7 +267,7 @@
                         <div class="song-card-actions-left">
                             <a class="song-action-link site-action site-action--primary" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                             {% if item.can_edit %}
-                                <button type="button" class="site-action site-action--primary" disabled>{% trans "Modifier" %}</button>
+                                <a class="song-action-link site-action site-action--primary" href="{{ item.modify_url }}">{% trans "Modifier" %}</a>
                                 <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.title_complete_with_tags }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="delete_song">

@@ -6,14 +6,11 @@ SONG_STATUS_NOT_VALIDATED = 0
 SONG_STATUS_VALIDATED = 1
 SONG_STATUS_VALIDATED_WITH_CONCERN = 2
 
-MESSAGE_STATUS_NEW = 0
-MESSAGE_STATUS_HANDLED = 1
-MESSAGE_STATUS_REJECTED = 2
-
 LINK_TYPE_INTERNAL = "internal"
 LINK_TYPE_WEB = "web"
 LINK_TYPE_SCORE = "score"
-LINK_TYPE_AUDIO_VIDEO = "audio-video"
+LINK_TYPE_AUDIO = "audio"
+LINK_TYPE_YOUTUBE = "youtube"
 
 
 class SongStatus(models.IntegerChoices):
@@ -25,17 +22,12 @@ class SongStatus(models.IntegerChoices):
     )
 
 
-class SongMessageStatus(models.IntegerChoices):
-    NEW = MESSAGE_STATUS_NEW, _("New")
-    HANDLED = MESSAGE_STATUS_HANDLED, _("Handled")
-    REJECTED = MESSAGE_STATUS_REJECTED, _("Rejected")
-
-
 class SongLinkType(models.TextChoices):
-    INTERNAL = LINK_TYPE_INTERNAL, _("Internal")
-    WEB = LINK_TYPE_WEB, _("Web")
-    SCORE = LINK_TYPE_SCORE, _("Score")
-    AUDIO_VIDEO = LINK_TYPE_AUDIO_VIDEO, _("Audio/video")
+    SCORE = LINK_TYPE_SCORE, _("partition")
+    AUDIO = LINK_TYPE_AUDIO, _("audio")
+    YOUTUBE = LINK_TYPE_YOUTUBE, _("YouTube")
+    WEB = LINK_TYPE_WEB, _("page Web")
+    INTERNAL = LINK_TYPE_INTERNAL, _("lien interne - Lyrics Slide Show")
 
 
 class Song(models.Model):
@@ -101,10 +93,7 @@ class SongMessage(models.Model):
         db_index=False,
     )
     message = models.TextField()
-    status = models.IntegerField(
-        choices=SongMessageStatus.choices,
-        default=SongMessageStatus.NEW,
-    )
+    is_read = models.BooleanField(db_column="vu", default=False)
     date = models.DateTimeField()
 
     class Meta:
@@ -126,7 +115,7 @@ class SongLink(models.Model):
     type = models.CharField(
         max_length=20,
         choices=SongLinkType.choices,
-        default=SongLinkType.WEB,
+        default=SongLinkType.SCORE,
     )
 
     class Meta:

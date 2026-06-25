@@ -21,6 +21,16 @@
 {% trans "Copier" as song_plain_copy_button_label %}
 {% trans "Fermer" as song_plain_close_button_label %}
 {% trans "Texte" as song_plain_copy_field_label %}
+{% trans "Demandes de modification" as song_message_popup_title %}
+{% trans "Impossible de mettre à jour l'état de lecture du message." as song_message_toggle_failed %}
+{% trans "Signaler une correction" as song_report_popup_title %}
+{% trans "Ce chant est validé : les modérateurs l'ont estimé de qualité. Les modifications communautaires sont donc bloquées et seuls les modérateurs peuvent désormais le modifier. Si vous voyez une correction à faire, vous pouvez envoyer un message totalement anonyme." as song_report_popup_message %}
+{% trans "Votre message" as song_report_field_label %}
+{% trans "Expliquer la correction à apporter" as song_report_field_placeholder %}
+{% trans "Envoyer" as song_report_submit_label %}
+{% trans "Annuler" as song_report_cancel_label %}
+{% trans "Le message ne peut pas être vide." as song_report_empty_error %}
+{% trans "Information" as song_info_popup_title %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -43,6 +53,17 @@
         plainCopyPopupTitle: "{{ song_plain_copy_popup_title|escapejs }}",
         plainCopyButtonLabel: "{{ song_plain_copy_button_label|escapejs }}",
         plainCloseButtonLabel: "{{ song_plain_close_button_label|escapejs }}",
-        plainCopyFieldLabel: "{{ song_plain_copy_field_label|escapejs }}"
+        plainCopyFieldLabel: "{{ song_plain_copy_field_label|escapejs }}",
+        messagePopupTitle: "{{ song_message_popup_title|escapejs }}",
+        messageToggleFailed: "{{ song_message_toggle_failed|escapejs }}",
+        reportPopupTitle: "{{ song_report_popup_title|escapejs }}",
+        reportPopupMessage: "{{ song_report_popup_message|escapejs }}",
+        reportFieldLabel: "{{ song_report_field_label|escapejs }}",
+        reportFieldPlaceholder: "{{ song_report_field_placeholder|escapejs }}",
+        reportSubmitLabel: "{{ song_report_submit_label|escapejs }}",
+        reportCancelLabel: "{{ song_report_cancel_label|escapejs }}",
+        reportEmptyError: "{{ song_report_empty_error|escapejs }}",
+        infoPopupTitle: "{{ song_info_popup_title|escapejs }}",
+        messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
     };
 </script>

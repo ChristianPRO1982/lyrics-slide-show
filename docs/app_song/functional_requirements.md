@@ -62,6 +62,9 @@ Constantes Python exposées :
 - pour quitter `status=2`, tous les messages encore avec `vu = false` doivent d’abord être passés à `vu = true` ;
 - lorsqu’il n’existe plus de message avec `vu = false`, le chant revient en `status=1` ;
 - une fois revenu en `status=1`, le chant peut alors être repassé en `status=0`.
+- l’action de dévalidation depuis la page de modification n’autorise donc la transition que pour un chant actuellement en `status=1` ;
+- une tentative backend de dévalidation sur un chant encore en `status=2` est refusée ;
+- si un chant a été remis incohérent manuellement en `status=2` alors que tous ses messages sont lus, une tentative de dévalidation commence par le recalculer en `status=1`, sans enchaîner `2 -> 0` dans la même requête.
 
 ### Transition cible résumée
 
@@ -185,6 +188,14 @@ Vue temporaire favoris (`favorites_quick=1`) :
 - n’écrase pas la recherche persistée
 - le formulaire reste rempli avec la recherche persistée
 
+Vue temporaire modération (`moderation_quick=1`) :
+
+- disponible uniquement pour modérateur/admin et seulement s’il existe des chants à modérer ;
+- applique uniquement la liste des chants à modérer ;
+- un chant est à modérer s’il est en `status=2` et possède au moins un message avec `vu = false` ;
+- n’écrase pas la recherche persistée ;
+- le formulaire reste rempli avec la recherche persistée.
+
 ## Favoris
 
 Favoris stockés dans `m_songs_users` (`SongFavorite`).
@@ -228,7 +239,13 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 - après chaque modification de `vu`, le statut final du chant est recalculé à partir de l’ensemble des messages du chant
 - si un chant est en `status=0`, son statut ne change jamais à cause des messages
 - si un chant est en `status=0`, aucun indicateur visuel supplémentaire n’apparaît dans son titre à cause de messages non vus
+- si un chant est en `status=0`, ses messages non lus sont cachés dans les listes et popups de modération comme s’ils n’existaient pas
+- si un chant repasse depuis `status=0` vers un état validé alors qu’il existe encore des messages avec `vu = false`, il doit passer directement en `status=2`
 - la remise d’un chant à `status=0` est bloquée tant qu’au moins un message reste avec `vu = false`
+- dans `modify_song`, la checkbox `Chant validé` n’est donc pas un simple mapping brut `checked=1 / unchecked=0`
+- pour un chant en `status=2`, cette checkbox reste affichée comme cochée mais non modifiable
+- la soumission normale d’un chant en `status=2` doit continuer à poster `status_validated=1` via un champ caché ou équivalent
+- si un POST technique tente malgré tout de retirer `status_validated=1` alors que le chant est en `status=2`, la sauvegarde des autres champs reste autorisée mais la tentative `2 -> 0` est ignorée
 - message vide refusé
 - auteur du message non stocké
 
@@ -236,17 +253,44 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 
 ### Liens de chant (`s_song_links`)
 
-Types principaux :
+Les types canoniques stockés en backend et en base sont exactement :
 
-- `internal`
-- `web`
 - `score`
-- `audio-video`
+- `audio`
+- `youtube`
+- `web`
+- `internal`
 
-Comportement legacy géré par le code :
+Ces 5 types sont distincts de bout en bout :
 
-- valeurs `audio` / `youtube` encore acceptées
-- `audio-video` peut être affiché en `audio` pour compatibilité
+- en front dans les formulaires ;
+- en front à l’affichage ;
+- en backend dans la validation ;
+- en base dans la valeur stockée.
+
+Le type canonique `audio-video` n’est plus utilisé.
+
+Règle de migration :
+
+- toute ancienne ligne `audio-video` doit être migrée vers `audio`.
+
+Valeur par défaut à la création d’un nouveau lien :
+
+- `score`
+
+Ordre obligatoire des options dans les formulaires de métadonnées :
+
+1. `partition` (`score`)
+2. `audio` (`audio`)
+3. `YouTube` (`youtube`)
+4. `page Web` (`web`)
+5. `lien interne - Lyrics Slide Show` (`internal`)
+
+Rendu front attendu :
+
+- le type d’un lien reste visible à l’affichage ;
+- les libellés utilisateur doivent être localisés et ne doivent pas retomber sur des libellés anglais ;
+- `audio` et `YouTube` ne sont jamais fusionnés dans un type unique.
 
 ### Tables de référence partagées
 

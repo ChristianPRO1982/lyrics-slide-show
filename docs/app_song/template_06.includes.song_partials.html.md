@@ -12,9 +12,9 @@ Partiels front partagés par plusieurs pages de `app_song`.
 
 ## Responsabilité front
 
-- `_song_actions.html` : structure visuelle plate du panneau d’actions, formulaires d’actions contextuelles, toggle favori et suppression partagée, avec disponibilité variable selon les droits réels de l’utilisateur et l’état de validation du chant.
+- `_song_actions.html` : structure visuelle plate du panneau d’actions, actions contextuelles, toggle favori, suppression partagée, et bouton `Signaler une correction` ouvrant une popup, avec disponibilité variable selon les droits réels de l’utilisateur et l’état de validation du chant.
 - `_song_metadata.html` : rendu des informations métadonnées chant.
-- `_song_links.html` : rendu des liens et, selon contexte de page, champs associés.
+- `_song_links.html` : rendu des liens et, selon contexte de page, champs associés, avec type toujours visible et libellé utilisateur localisé (`partition`, `audio`, `YouTube`, `page Web`, `lien interne - Lyrics Slide Show`).
 
 ## Notes
 

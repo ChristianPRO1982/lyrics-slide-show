@@ -109,6 +109,30 @@
 
 {% block content %}
     <section class="site-theme-selection" aria-label="{% trans 'Présentation de Lyrics Slide Show' %}">
+        {% if request.user.is_authenticated and request.user.is_moderator and moderation_song_results %}
+            <article class="site-theme-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{% trans "Chants à modérer" %}</h2>
+                    </div>
+                </header>
+                {% for item in moderation_song_results|slice:":5" %}
+                    <p><a href="{% url 'modify_song' item.song.song_id %}">{{ item.song.title }}{% if item.song.subtitle %} - {{ item.song.subtitle }}{% endif %} ✔️⁉️</a></p>
+                {% endfor %}
+                {% if moderation_song_results|length > 5 %}
+                    <p>
+                        <a
+                            href="#"
+                            data-song-markdown-popup
+                            data-popup-title="{% trans 'Tous les chants à modérer' %}"
+                            data-popup-json-id="homepage-moderation-popup-markdown"
+                        >
+                            [...]
+                        </a>
+                    </p>
+                {% endif %}
+            </article>
+        {% endif %}
         {% for home_card in home_cards %}
             <article class="site-theme-card">
                 {% if home_card.title %}
@@ -190,4 +214,9 @@
             </div>
         </article>
     </section>
+{% endblock %}
+{% block page_scripts %}
+    {% include "song/song_page_i18n.html" %}
+    {{ moderation_song_popup_markdown|json_script:"homepage-moderation-popup-markdown" }}
+    <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}
