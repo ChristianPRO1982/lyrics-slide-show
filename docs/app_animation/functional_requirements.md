@@ -98,6 +98,18 @@ Champs par couplet et par chant d'animation :
 - `is_visible`,
 - overrides texte/fond/police/taille/padding/image de fond.
 
+### AnimationRemoteShortcut
+
+Ce modèle persiste les raccourcis personnalisés de la remote `lyrics_slide_show`.
+
+Champs gérés :
+- `member_id` (PK UUID),
+- `lyrics_slide_show_bindings` (JSON complet par action),
+- `created_at`, `updated_at`.
+
+Table :
+- `lss"."m_animation_remote_shortcuts`.
+
 ## Playlist Et Ordonnancement
 
 La synchronisation de playlist repose sur une entrée ordonnée tokenisée :
@@ -170,6 +182,8 @@ Contrats d'entrée/sortie gérés côté back et consommés par le front :
 - synchronisation playlist via `ordered_mix` (`asid`/`sid`),
 - synchronisation des overrides via `songs_payload`,
 - bundle runtime `lyrics_slide_show` (slides, songs, cardGroups, backgroundUrls, publicUrl, qrCodePngBase64),
+- configuration structurée de raccourcis pour la remote (`siteBindings`, `effectiveBindings`, `formBindings`, `actionOrder`, `actionToRemoteAction`, `actionLabels`, `canCustomizeShortcuts`, `customizeUrl`),
+- endpoint JSON de personnalisation des raccourcis `lyrics_slide_show_shortcuts`,
 - vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet.
 
 Les comportements UI détaillés de ces contrats sont décrits dans les documents template dédiés.

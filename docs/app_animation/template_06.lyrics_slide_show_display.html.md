@@ -8,7 +8,7 @@ Afficher l'écran projeté piloté par la page maître `lyrics_slide_show.html`.
 
 - page volontairement minimaliste,
 - aucune action utilisateur opérateur,
-- rendu du frame reçu (idle, slide, black, qr).
+- rendu du frame reçu (`idle`, `slide`, `black`, `qr`, `f11-reminder`).
 
 ## Contrat de données (back -> template)
 
@@ -23,4 +23,5 @@ Afficher l'écran projeté piloté par la page maître `lyrics_slide_show.html`.
 - charge `static/js/lyrics_slide_show_display.js`,
 - écoute les messages runtime via `BroadcastChannel` puis fallback `storage`,
 - restaure la dernière frame persistée par session.
+- injecte le texte projeté via `textContent` puis laisse CSS gérer les retours à la ligne (`white-space: pre-wrap`),
 - applique sur les frames `slide` le style résolu reçu: couleur texte, couleur fond, police, poids, taille, marge horizontale et image de fond.
