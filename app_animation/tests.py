@@ -155,6 +155,13 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
             stylesheet,
         )
 
+    def test_normal_and_taize_themes_define_shared_action_radius(self):
+        normal_stylesheet = Path("static/css/normal.css").read_text()
+        taize_stylesheet = Path("static/css/taize.css").read_text()
+        self.assertIn("--site-action-radius: 18px;", normal_stylesheet)
+        self.assertIn("border-radius: var(--site-action-radius);", normal_stylesheet)
+        self.assertIn("--site-action-radius: 18px;", taize_stylesheet)
+
 
 class ShortcutValidationTests(SimpleTestCase):
     def test_validation_rejects_escape_and_combinations_but_keeps_other_values(self):

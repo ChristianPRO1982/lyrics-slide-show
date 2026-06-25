@@ -45,6 +45,7 @@
     --site-action-border-hover: var(--site-accent-gold);
     --site-action-ink: var(--site-accent);
     --site-action-ink-hover: var(--site-accent-gold);
+    --site-action-radius: 18px;
     --site-action-disabled-opacity: 0.62;
     --site-action-danger-bg: var(--site-popup-danger-bg);
     --site-action-danger-border: var(--site-popup-danger-border);
@@ -103,7 +104,7 @@ a:hover {
     min-height: 2.75rem;
     padding: 0.55rem 0.85rem;
     border: 1px solid var(--site-action-border);
-    border-radius: 999px;
+    border-radius: var(--site-action-radius);
     background: var(--site-action-bg);
     color: var(--site-action-ink);
     box-shadow: 0 8px 20px rgba(66, 24, 11, 0.08);
