@@ -2798,6 +2798,103 @@ class SongGenresDisplayViewTests(TestCase):
         )
 
 
+class SongModifyActionOnSongsPageTests(TestCase):
+    def setUp(self):
+        self.user_id = "12121212-1212-1212-1212-121212121212"
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="songs.modify.user",
+            first_name="Songs",
+            last_name="Modify",
+            email="songs.modify.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.non_validated_song = Song.objects.create(
+            title="Chant libre",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        self.validated_song = Song.objects.create(
+            title="Chant validé",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+
+    def _login(self, *, is_moderator=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "songs.modify.user",
+            "email": "songs.modify.user@example.test",
+            "first_name": "Songs",
+            "last_name": "Modify",
+            "is_moderator": is_moderator,
+            "is_admin": False,
+        }
+        session.save()
+        MemberRole.objects.filter(member_id=self.user_id).delete()
+        if is_moderator:
+            MemberRole.objects.create(
+                member_id=self.user_id,
+                is_moderator=True,
+                is_admin=False,
+            )
+
+    def test_non_moderator_sees_clickable_modify_link_for_non_validated_song(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertContains(
+            response,
+            'href="{}"'.format(
+                reverse("modify_song", args=[self.non_validated_song.song_id])
+            ),
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            '<button type="button" class="site-action site-action--primary" disabled>Modifier</button>',
+            html=False,
+        )
+
+    def test_non_moderator_does_not_see_modify_link_for_validated_song(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertNotContains(
+            response,
+            'href="{}"'.format(
+                reverse("modify_song", args=[self.validated_song.song_id])
+            ),
+            html=False,
+        )
+
+    def test_moderator_sees_clickable_modify_link_for_validated_song(self):
+        self._login(is_moderator=True)
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertContains(
+            response,
+            'href="{}"'.format(
+                reverse("modify_song", args=[self.validated_song.song_id])
+            ),
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            '<button type="button" class="site-action site-action--primary" disabled>Modifier</button>',
+            html=False,
+        )
+
+
 class SongCreateFromSongsPageTests(TestCase):
     def setUp(self):
         self.user_id = "88888888-8888-8888-8888-888888888888"

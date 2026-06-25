@@ -16,6 +16,10 @@ Page racine front de consultation et recherche des chants (`/songs/`).
 - Affiche sur chaque carte le titre du chant avec le marqueur de validation à la suite du titre :
   - `✔️` pour `status=1`
   - `✔️⁉️` pour `status=2`
+- Affiche sur chaque carte un lien `Modifier` uniquement quand l’utilisateur a un droit réel d’édition directe :
+  - chant non validé : tout utilisateur connecté ;
+  - chant validé : modérateur/admin uniquement ;
+  - sinon : le lien n’est pas affiché du tout.
 - Affiche les états vides (aucun résultat backend/local).
 
 ## Contrat d’interface (variables attendues)

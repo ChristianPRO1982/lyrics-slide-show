@@ -390,6 +390,7 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
                 "bands": result.bands,
                 "artists": result.artists,
                 "display_url": result.display_url,
+                "modify_url": reverse("modify_song", args=[song.song_id]),
                 "print_single_url": result.print_single_url,
                 "print_full_url": result.print_full_url,
                 "print_single_plain_url": result.print_single_plain_url,

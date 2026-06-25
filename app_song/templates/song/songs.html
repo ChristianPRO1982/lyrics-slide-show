@@ -257,7 +257,7 @@
                         <div class="song-card-actions-left">
                             <a class="song-action-link site-action site-action--primary" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                             {% if item.can_edit %}
-                                <button type="button" class="site-action site-action--primary" disabled>{% trans "Modifier" %}</button>
+                                <a class="song-action-link site-action site-action--primary" href="{{ item.modify_url }}">{% trans "Modifier" %}</a>
                                 <form method="post" class="song-delete-form" data-song-delete-form data-song-title="{{ item.title_complete_with_tags }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="delete_song">
