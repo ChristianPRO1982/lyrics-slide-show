@@ -1475,7 +1475,15 @@
         }
 
         const key = normalizeShortcutToken(event.key || "");
-        const scrollBlockKeys = ["arrowup", "arrowdown", "arrowleft", "arrowright", "space"];
+        const scrollBlockKeys = [
+            "arrowup",
+            "arrowdown",
+            "arrowleft",
+            "arrowright",
+            "space",
+            "pageup",
+            "pagedown",
+        ];
         if (state.blockScrollKeys && scrollBlockKeys.includes(key)) {
             event.preventDefault();
         }
