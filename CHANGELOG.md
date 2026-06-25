@@ -1,3 +1,21 @@
+# [2.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.5...v2.10.0) (2026-06-25)
+
+
+### Bug Fixes
+
+* Extend scroll block keys to include pageup and pagedown ([518d19f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/518d19f9d6cc5afcfef748a3c243e0da68f1b9fd))
+* Implement customizable keyboard shortcuts for lyrics slide show ([0323ad4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0323ad4ca447f28dab07a231ef9635dd580eddb5))
+* Implement unsaved changes detection across forms and add related tests ([319e8e8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/319e8e88e1a5ad651439983e86ccdd0626d538a9))
+* Update POT-Creation-Date and adjust template references in translation files ([1f4fe12](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1f4fe120ec7d04bff937c8b14309e60036d9e5d5))
+* Update POT-Creation-Date and adjust translation file references ([419689a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/419689a9f12936afe5df92d6e0ef27a07dbc332b))
+* Update POT-Creation-Date and adjust translation file references ([464fc7e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/464fc7eb6fefa0cd454af79d4ea2eee358d6083b))
+
+
+### Features
+
+* Define shared action radius for normal and taize themes ([c344653](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c344653b5b7930adb5419b3af684248614dedc8c))
+* Enhance shortcut slot functionality and UI for message box ([058b5fc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/058b5fc6e7f03881d7dc520d49028acaae579e45))
+
 ## [2.9.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.4...v2.9.5) (2026-06-25)
 
 
