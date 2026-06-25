@@ -1,3 +1,23 @@
+## [2.9.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.3...v2.9.4) (2026-06-25)
+
+
+### Bug Fixes
+
+* Add inline popups for search and total counts on songs page ([fee9973](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fee9973cdba99da69e27e05bc2cb6e280e43c762))
+* add message handling and status recalculation for songs ([b521a82](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b521a82d5c6d229294e0519c47c029a0b1a97b21))
+* enhance song search functionality with additional test cases and validation handling ([d121c4b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d121c4b2c3d060c9426d9f60ad21168042f0afa5))
+* Enhance song validation logic for moderators and update functional requirements ([6a53500](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6a53500bbecc96398ab3ea7ed8a8cf336f08773d))
+* Implement correction reporting feature with popup for validated songs ([9509515](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9509515966ee27651233363db089dc0e43b0bdb9))
+* Implement song devalidation logic with unread message restrictions and update documentation ([808e34b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/808e34b4c1b6c0a8990ced1d8ad1a8bf2b91032c))
+* Implement song moderation feature with unread message tracking ([6888592](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/68885927cee04914311123efec4f0f6a5ed4f6b4))
+* Refactor genre label grouping logic in song metadata retrieval ([ae06151](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ae0615116602c080f837e7818d64a63e6d28f89f))
+* Refactor song text rendering to use plain text and update tests for HTML structure ([f392d1e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f392d1eaac71c07bf3a11828de448004bdda65b5))
+* translate "# Tags" heading in song and modify_song templates ([110d88b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/110d88b58f7c44b452ac246f813282fa34a024a2))
+* update audit documentation to reflect changes in metadata link types and front-end labels ([00d5820](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/00d582054792bc47df2eb14bd734f11295a6b1ba))
+* Update POT-Creation-Date and adjust line references in translation files ([d06cae3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d06cae372076f07952996d38cfe270deb1a77d8c))
+* update song link types to distinct values and enhance metadata display ([7ae5423](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7ae542358854b7b64dfb7723df9672580cdca940))
+* Update song modification link to be clickable for non-validated songs and add tests for user permissions ([0f59ec2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0f59ec248e5dd456cace75a9b38a2400f3b71846))
+
 ## [2.9.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.2...v2.9.3) (2026-06-24)
 
 
