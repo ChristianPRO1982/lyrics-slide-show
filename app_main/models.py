@@ -5,6 +5,7 @@ class SiteParams(models.Model):
     language = models.CharField(max_length=2, primary_key=True)
     title = models.CharField(max_length=100)
     title_h1 = models.CharField(max_length=255)
+    signup_url = models.URLField(blank=True, default="")
     home_text = models.TextField()
     bloc1_text = models.TextField()
     bloc2_text = models.TextField()

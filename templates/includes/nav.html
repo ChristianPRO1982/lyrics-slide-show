@@ -80,7 +80,7 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
                             <span>{{ nav_login_label }}</span>
                         </a>
-                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                        <a href="{{ lss_signup_url|default:'#' }}" title="{{ nav_signup_label }}" data-django-alias="signup">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
                             <span>{{ nav_signup_label }}</span>
                         </a>
@@ -162,7 +162,7 @@
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
                         </a>
-                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                        <a href="{{ lss_signup_url|default:'#' }}" title="{{ nav_signup_label }}" data-django-alias="signup">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
                         </a>
                     {% endif %}
@@ -227,7 +227,7 @@
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="login" icon_alt=nav_login_label %}
                             <span>{{ nav_login_label }}</span>
                         </a>
-                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                        <a href="{{ lss_signup_url|default:'#' }}" title="{{ nav_signup_label }}" data-django-alias="signup">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="signup" icon_alt=nav_signup_label %}
                             <span>{{ nav_signup_label }}</span>
                         </a>
@@ -309,7 +309,7 @@
                         <a href="{% url 'login' %}" title="{{ nav_login_label }}" data-django-alias="login">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="login" icon_alt=nav_login_label %}
                         </a>
-                        <a href="#" title="{{ nav_signup_label }}" data-django-alias="signup">
+                        <a href="{{ lss_signup_url|default:'#' }}" title="{{ nav_signup_label }}" data-django-alias="signup">
                             {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="signup" icon_alt=nav_signup_label %}
                         </a>
                     {% endif %}

@@ -104,6 +104,7 @@ class SiteParamsAdminForm(forms.ModelForm):
         fields = [
             "title",
             "title_h1",
+            "signup_url",
             "home_text",
             "bloc1_text",
             "bloc2_text",
@@ -128,6 +129,7 @@ class SiteParamsAdminForm(forms.ModelForm):
         labels = {
             "title": _("Titre du site"),
             "title_h1": _("Titre principal"),
+            "signup_url": _("URL d'inscription"),
             "home_text": _("Texte d'accueil"),
             "bloc1_text": _("Texte du bloc 1"),
             "bloc2_text": _("Texte du bloc 2"),
@@ -156,6 +158,7 @@ class SiteParamsAdminForm(forms.ModelForm):
             "bg_img_allowed_mime": _("Types MIME d'images autorisés"),
         }
         widgets = {
+            "signup_url": forms.URLInput(attrs={"placeholder": "https://..."}),
             "home_text": forms.Textarea(attrs={"rows": 5}),
             "bloc1_text": forms.Textarea(attrs={"rows": 4}),
             "bloc2_text": forms.Textarea(attrs={"rows": 4}),

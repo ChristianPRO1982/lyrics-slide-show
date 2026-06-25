@@ -31,6 +31,7 @@ Le formulaire admin expose les champs `SiteParams` utilisés par le projet:
 - `language` (clé, transportée via champ caché),
 - `title`,
 - `title_h1`,
+- `signup_url`,
 - `home_text` (alimenté via cartes homepage dans le formulaire admin),
 - `bloc1_text`,
 - `bloc2_text`,

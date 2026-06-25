@@ -55,6 +55,7 @@ def create_site_params(**overrides):
         "language": "fr",
         "title": "Lyrics Slide Show",
         "title_h1": "Lyrics Slide Show",
+        "signup_url": "",
         "home_text": "Bienvenue",
         "bloc1_text": "Bloc 1",
         "bloc2_text": "Bloc 2",
@@ -734,6 +735,14 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, reverse("language"))
         self.assertContains(response, 'data-django-alias="login"')
         self.assertContains(response, 'data-django-alias="signup"')
+        self.assertContains(response, 'href="#"')
+
+    def test_homepage_uses_signup_url_from_site_params(self):
+        create_site_params(signup_url="https://signup.example.test/register")
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, 'href="https://signup.example.test/register"')
 
     def test_homepage_shows_expected_marketing_content(self):
         response = self.client.get(reverse("homepage"))
@@ -1582,6 +1591,26 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertIn("site-nav-role-marker--bottom", rendered)
         self.assertNotIn("site-nav-role-marker--admin", rendered)
 
+    def test_navigation_uses_signup_url_when_provided(self):
+        request = RequestFactory().get("/")
+        request.user = type(
+            "AnonymousUserStub",
+            (),
+            {
+                "is_authenticated": False,
+            },
+        )()
+
+        template = engines["django"].get_template("includes/nav.html")
+        rendered = template.render(
+            {
+                "request": request,
+                "lss_signup_url": "https://signup.example.test/register",
+            }
+        )
+
+        self.assertIn('href="https://signup.example.test/register"', rendered)
+
 
 class HeavyPageTests(SimpleTestCase):
     @override_settings(DEBUG=True)
@@ -1895,11 +1924,13 @@ class AccountActionCoverageTests(TestCase):
         payload = self._admin_form_payload(params)
         payload["member_search"] = "target"
         payload["admin-settings-title"] = "Nouveau titre"
+        payload["admin-settings-signup_url"] = "https://signup.example.test/register"
 
         response = self.client.post(reverse("account"), payload)
         self.assertRedirects(response, reverse("account") + "?member_search=target")
         params.refresh_from_db()
         self.assertEqual(params.title, "Nouveau titre")
+        self.assertEqual(params.signup_url, "https://signup.example.test/register")
 
         search = self.client.get(reverse("account"), {"member_search": "target"})
         self.assertEqual(search.status_code, 200)
@@ -1996,6 +2027,7 @@ class SiteParamsViewCoverageTests(TestCase):
         self._login(admin=True)
         payload = self._payload(source, language="en")
         payload["admin-settings-title"] = "English title"
+        payload["admin-settings-signup_url"] = "https://signup.example.test/enroll"
 
         response = self.client.post(reverse("site_params"), payload)
         self.assertRedirects(
@@ -2004,6 +2036,10 @@ class SiteParamsViewCoverageTests(TestCase):
             fetch_redirect_response=False,
         )
         self.assertEqual(SiteParams.objects.get(language="EN").title, "English title")
+        self.assertEqual(
+            SiteParams.objects.get(language="EN").signup_url,
+            "https://signup.example.test/enroll",
+        )
 
     def test_site_params_invalid_post_reports_named_fields(self):
         params = create_site_params(language="FR")
