@@ -536,6 +536,20 @@ body.lss-messagebox-open {
     margin: 0;
 }
 
+.lss-messagebox-markdown hr {
+    display: block;
+    width: 100%;
+    height: 1px;
+    min-height: 0;
+    margin: 0.35rem 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--site-line);
+    border-radius: 0;
+    background: transparent;
+    justify-self: stretch;
+}
+
 @media (max-width: 720px) {
     .site-floating-actions {
         right: 12px;

@@ -139,6 +139,13 @@
     <article class="site-theme-card song-text-card" id="song-rendered-text">
         <div class="song-rendered-text">{{ text_long_html|safe }}</div>
     </article>
+    {% if song.is_validated and can_report_message %}
+        <form method="post" id="song-correction-form" hidden data-message-error="{% if message_error %}true{% else %}false{% endif %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_message">
+            <input type="hidden" name="message" value="{% if message_error %}{{ request.POST.message|default:'' }}{% endif %}">
+        </form>
+    {% endif %}
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}

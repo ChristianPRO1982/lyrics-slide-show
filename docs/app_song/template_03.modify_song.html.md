@@ -17,6 +17,7 @@ Cette page n’est pas une page de lecture.
 - Affiche les actions de page (enregistrer, enregistrer et quitter, dévalider si disponible).
 - Pour modérateur/admin, affiche sous le titre principal, dans l’en-tête principal, un lien ouvrant une popup de tous les messages du chant quand il existe au moins un message visible.
 - La popup affiche les messages dans l’ordre dé-chronologique ; chaque message non lu est en gras et chaque message lu est en style normal.
+- Quand la popup contient à la fois des messages non lus et lus, une ligne horizontale sépare les deux groupes.
 - Sous chaque message, une action permet de basculer `lu` / `non lu`.
 - Si le chant est en `status=0`, les messages éventuels sont considérés comme invisibles et ce lien n’apparaît pas.
 - Affiche/masque les cartes d’édition du titre, sous-titre et description.

@@ -21,7 +21,10 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
   - `lien interne - Lyrics Slide Show`
 - Affiche le rendu paroles principal (`text_long_html`).
 - Monte le panneau d’actions (`_song_actions.html`) selon le contexte de page.
-- Inclut, pour un chant validé (`status in {1,2}`), un formulaire simple de demande de modification avec un `textarea`.
+- Inclut, pour un chant validé (`status in {1,2}`), une action de demande de modification ouvrant une popup avec un `textarea`.
+- Dans le panneau d’actions et le panneau mobile, n’affiche qu’un bouton `Signaler une correction`.
+- Ce bouton ouvre une popup `window.LSSMessageBox` contenant le formulaire de message avec `textarea`.
+- La popup porte aussi une courte explication pédagogique indiquant qu’un chant validé est un chant que les modérateurs ont estimé de qualité, que les modifications communautaires sont alors bloquées, que seuls les modérateurs peuvent encore le modifier directement, et que le message envoyé est totalement anonyme.
 - Ce formulaire est destiné aux utilisateurs qui n’ont pas de droit d’édition directe sur le chant validé, notamment les guests et les membres non modérateurs.
 - Pour tout utilisateur connecté, affiche sous le titre principal, dans l’en-tête principal, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici` lorsqu’il existe au moins un message non lu visible pour le chant.
 - Ce lien ouvre une popup affichant uniquement les messages non lus, du plus récent au plus ancien.

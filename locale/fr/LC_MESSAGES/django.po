@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 09:33+0200\n"
+"POT-Creation-Date: 2026-06-25 10:23+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -269,7 +269,8 @@ msgid "Non"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:102
-#: app_song/templates/song/modify_song_page_i18n.html:9 templates/base.html:102
+#: app_song/templates/song/modify_song_page_i18n.html:9
+#: app_song/templates/song/song_page_i18n.html:31 templates/base.html:102
 msgid "Annuler"
 msgstr ""
 
@@ -3210,20 +3211,9 @@ msgstr ""
 msgid "Métadonnées"
 msgstr ""
 
-#: app_song/templates/song/includes/_song_actions.html:35
-msgid "Signaler une correction"
-msgstr ""
-
 #: app_song/templates/song/includes/_song_actions.html:37
-msgid "Le message ne peut pas être vide."
-msgstr ""
-
-#: app_song/templates/song/includes/_song_actions.html:42
-msgid "Expliquer la correction à apporter"
-msgstr ""
-
-#: app_song/templates/song/includes/_song_actions.html:43
-msgid "Envoyer"
+#: app_song/templates/song/song_page_i18n.html:26
+msgid "Signaler une correction"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_links.html:13
@@ -3639,6 +3629,30 @@ msgstr ""
 
 #: app_song/templates/song/song_page_i18n.html:22 templates/includes/nav.html:6
 msgid "Fermer"
+msgstr ""
+
+#: app_song/templates/song/song_page_i18n.html:27
+msgid ""
+"Ce chant est validé : les modérateurs l'ont estimé de qualité. Les "
+"modifications communautaires sont donc bloquées et seuls les modérateurs "
+"peuvent désormais le modifier. Si vous voyez une correction à faire, vous "
+"pouvez envoyer un message totalement anonyme."
+msgstr ""
+
+#: app_song/templates/song/song_page_i18n.html:28
+msgid "Votre message"
+msgstr ""
+
+#: app_song/templates/song/song_page_i18n.html:29
+msgid "Expliquer la correction à apporter"
+msgstr ""
+
+#: app_song/templates/song/song_page_i18n.html:30
+msgid "Envoyer"
+msgstr ""
+
+#: app_song/templates/song/song_page_i18n.html:32
+msgid "Le message ne peut pas être vide."
 msgstr ""
 
 #: app_song/templates/song/songs.html:5 app_song/templates/song/songs.html:12

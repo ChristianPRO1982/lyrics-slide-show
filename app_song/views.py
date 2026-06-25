@@ -582,11 +582,21 @@ def _build_song_messages_popup_markdown(
     include_actions: bool,
 ) -> str:
     entries: list[str] = []
+    inserted_read_separator = False
     for item in _get_song_messages_queryset(
         song,
         unread_only=unread_only,
         unread_first=include_actions and not unread_only,
     ):
+        if (
+            include_actions
+            and not unread_only
+            and item.is_read
+            and not inserted_read_separator
+        ):
+            if entries:
+                entries.append("---")
+            inserted_read_separator = True
         message_text = str(item.message or "").strip()
         if item.is_read:
             message_body = message_text

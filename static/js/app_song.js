@@ -206,6 +206,81 @@
         });
     });
 
+    const correctionForm = document.getElementById("song-correction-form");
+    const correctionMessageField = correctionForm
+        ? correctionForm.querySelector('input[name="message"]')
+        : null;
+    const openCorrectionPopup = async (initialValue = "") => {
+        if (!messageBox || !correctionForm || !correctionMessageField) {
+            return;
+        }
+
+        const result = await messageBox.show({
+            title: label("reportPopupTitle"),
+            messageMarkdown: label("reportPopupMessage"),
+            showCloseButton: true,
+            buttons: [
+                {
+                    id: "submit",
+                    label: label("reportSubmitLabel"),
+                    tone: "success",
+                    validate: true,
+                },
+                {
+                    id: "cancel",
+                    label: label("reportCancelLabel"),
+                    tone: "neutral",
+                    validate: false,
+                },
+            ],
+            fields: [
+                {
+                    id: "message",
+                    label: label("reportFieldLabel"),
+                    type: "textarea",
+                    value: initialValue,
+                    placeholder: label("reportFieldPlaceholder"),
+                    required: true,
+                    rows: 6,
+                },
+            ],
+            initialFocus: "first-field",
+            enterButtonId: "submit",
+            escapeButtonId: "cancel",
+        });
+
+        if (result.buttonId !== "submit") {
+            return;
+        }
+
+        correctionMessageField.value = String(result.values.message || "");
+        correctionForm.submit();
+    };
+
+    document.querySelectorAll("[data-song-report-trigger]").forEach((button) => {
+        button.addEventListener("click", async () => {
+            await openCorrectionPopup("");
+        });
+    });
+
+    if (
+        messageBox &&
+        correctionForm &&
+        correctionMessageField &&
+        correctionForm.dataset.messageError === "true"
+    ) {
+        window.setTimeout(() => {
+            void (async () => {
+                await messageBox.alert({
+                    title: label("reportPopupTitle"),
+                    messageMarkdown: label("reportEmptyError"),
+                    showCloseButton: true,
+                });
+                await openCorrectionPopup(correctionMessageField.value || "");
+            })();
+        }, 0);
+    }
+
     document.addEventListener("click", async (event) => {
         const toggleLink = event.target instanceof Element
             ? event.target.closest('a[href^="#song-message-toggle-"]')

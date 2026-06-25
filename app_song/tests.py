@@ -1280,6 +1280,25 @@ class SongViewsRenderingTests(TestCase):
             "Il y a des modifications demandées pour ce chant, voir les demandes ici",
         )
 
+    def test_song_view_uses_popup_button_for_correction_report(self):
+        self._login()
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertContains(response, "data-song-report-trigger", count=2)
+        self.assertContains(response, 'id="song-correction-form"', html=False)
+        self.assertNotContains(response, 'textarea name="message"', html=False)
+        self.assertContains(
+            response,
+            "reportPopupMessage:",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'reportPopupMessage: "Ce chant est validé : les modérateurs l\\u0027ont estimé de qualité. Les modifications communautaires sont donc bloquées et seuls les modérateurs peuvent désormais le modifier. Si vous voyez une correction à faire, vous pouvez envoyer un message totalement anonyme."',
+            html=False,
+        )
+
     def test_add_message_moves_validated_song_to_validated_with_concern(self):
         self._login()
 
@@ -2137,6 +2156,15 @@ class ModifySongViewTests(TestCase):
         )
         self.assertLess(
             popup_markdown.index("Non lu ancien"),
+            popup_markdown.index("Lu le plus recent"),
+        )
+        self.assertIn("\n\n---\n\n", popup_markdown)
+        self.assertLess(
+            popup_markdown.index("Non lu ancien"),
+            popup_markdown.index("---"),
+        )
+        self.assertLess(
+            popup_markdown.index("---"),
             popup_markdown.index("Lu le plus recent"),
         )
 
