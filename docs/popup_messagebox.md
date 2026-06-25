@@ -160,26 +160,30 @@ Behavior rules:
 
 ## Fields
 
-Version 1 supports up to five text fields:
+Version 1 supports up to twelve fields:
 
 ```js
 {
   id: "email",
   label: "Adresse e-mail",
-  type: "text" | "email" | "password" | "textarea",
+  type: "text" | "email" | "password" | "textarea" | "color" | "number" | "select" | "datetime-local" | "shortcut-slots",
   value: "",
   readonly: false,
   placeholder: "",
   required: true,
   autocomplete: "email",
   maxLength: 255,
-  rows: 4
+  rows: 4,
+  slotCount: 3,
+  emptySlotLabel: "Aucun",
+  captureSlotLabel: "Appuyer sur une touche",
+  clearSlotLabel: "Effacer ce raccourci"
 }
 ```
 
 Normalization rules:
 
-- maximum supported field count is `5`, otherwise an error is thrown
+- maximum supported field count is `12`, otherwise an error is thrown
 - `id` is required and must be a non-empty string, otherwise an error is thrown
 - invalid `type` falls back to `"text"`
 - `label` falls back to `id`
@@ -188,12 +192,16 @@ Normalization rules:
 - `required` is coerced to boolean
 - `maxLength` is used only if it is a positive integer
 - `rows` is used only for `textarea` and only if it is a positive integer, otherwise it defaults to `4`
+- `slotCount` is used only for `shortcut-slots`; it defaults to `3` and is capped at `3`
+- `emptySlotLabel`, `captureSlotLabel`, and `clearSlotLabel` are used only for `shortcut-slots`
 
 Rendered field behavior:
 
 - fields are rendered inside a `<form novalidate>`
 - textareas are vertically resizable
 - `readonly: true` makes `input` and `textarea` fields non-editable while keeping their value focusable and selectable
+- `shortcut-slots` renders three readonly clickable slots on one line, backed by one hidden string value serialized as CSV
+- when a `shortcut-slots` slot is armed, the next simple key press fills that slot, `Escape` cancels the capture, and the slot clear button removes only that slot
 - validation errors are rendered inline below the field
 - current field values are always returned as strings
 
@@ -207,7 +215,8 @@ Button callbacks receive:
   values,
   close(payload),
   keepOpen(),
-  setFieldError(fieldId, message)
+  setFieldError(fieldId, message),
+  setFieldValue(fieldId, value)
 }
 ```
 
@@ -217,6 +226,7 @@ Behavior rules:
 - `close(payload)` closes immediately with the current `reason`, `buttonId`, current field values, and `payload`
 - `keepOpen()` marks the popup to stay open after the callback resolves
 - `setFieldError(fieldId, message)` marks the target field invalid if it exists
+- `setFieldValue(fieldId, value)` updates the target field value if it exists and keeps composite field UI in sync
 - if a callback returns `false`, the popup stays open
 - if a callback resolves to anything other than `false`, the popup closes unless `keepOpen()` was called
 

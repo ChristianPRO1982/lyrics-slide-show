@@ -133,6 +133,9 @@
     const floatingUpButtonNode = document.querySelector("[data-lyrics-floating-up]");
     const floatingDownButtonNode = document.querySelector("[data-lyrics-floating-down]");
     const floatingSongLinksNode = document.querySelector("[data-lyrics-floating-song-links]");
+    const blackModeButtonNode = document.querySelector("[data-lyrics-action='black']");
+    const qrToggleButtonNode = document.querySelector("[data-lyrics-action='toggle-qr']");
+    const blackoutFrameNode = document.querySelector("[data-lyrics-blackout-frame]");
     if (floatingNavNode && document.body && floatingNavNode.parentElement !== document.body) {
         document.body.appendChild(floatingNavNode);
     }
@@ -241,7 +244,7 @@
         if (!Array.isArray(values) || !values.length) {
             return "";
         }
-        return values.map((value) => formatShortcutToken(value)).join(", ");
+        return values.join(",");
     };
 
     const buildSiteDefaultFieldValues = () => {
@@ -1076,6 +1079,17 @@
         setText(scrollToggleTextNode, state.blockScrollKeys ? label("scrollStopText") : label("scrollAllowText"));
         setText(chorusToggleEmojiNode, state.hideChorusesInGrid ? label("chorusHideEmoji") : label("chorusShowEmoji"));
         setText(chorusToggleTextNode, state.hideChorusesInGrid ? label("chorusHideText") : label("chorusShowText"));
+        if (blackModeButtonNode instanceof HTMLElement) {
+            blackModeButtonNode.classList.toggle("is-alert-active", state.blackMode);
+            blackModeButtonNode.setAttribute("aria-pressed", state.blackMode ? "true" : "false");
+        }
+        if (qrToggleButtonNode instanceof HTMLElement) {
+            qrToggleButtonNode.classList.toggle("is-alert-active", state.qrMode);
+            qrToggleButtonNode.setAttribute("aria-pressed", state.qrMode ? "true" : "false");
+        }
+        if (blackoutFrameNode instanceof HTMLElement) {
+            blackoutFrameNode.classList.toggle("is-visible", state.blackMode);
+        }
     };
 
     const refreshQrButton = () => {
@@ -1131,9 +1145,11 @@
         return actionOrder.map((action) => ({
             id: action,
             label: String(shortcutActionLabels[action] || action),
-            type: "text",
+            type: "shortcut-slots",
             value: serializeBindingsForField(state.shortcuts.formBindings?.[action]),
-            placeholder: "",
+            emptySlotLabel: "",
+            captureSlotLabel: label("shortcutsCaptureLabel"),
+            clearSlotLabel: label("shortcutsClearSlotLabel"),
             required: false,
         }));
     };

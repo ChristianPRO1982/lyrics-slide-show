@@ -98,6 +98,63 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
             script,
         )
 
+    def test_customize_popup_uses_shortcut_slot_fields(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn('type: "shortcut-slots"', script)
+        self.assertIn('emptySlotLabel: ""', script)
+        self.assertIn('captureSlotLabel: label("shortcutsCaptureLabel")', script)
+        self.assertIn('clearSlotLabel: label("shortcutsClearSlotLabel")', script)
+
+    def test_toggle_buttons_refresh_active_visual_states(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn(
+            'blackModeButtonNode.classList.toggle("is-alert-active", state.blackMode)',
+            script,
+        )
+        self.assertIn(
+            'qrToggleButtonNode.classList.toggle("is-alert-active", state.qrMode)',
+            script,
+        )
+        self.assertIn(
+            'blackoutFrameNode.classList.toggle("is-visible", state.blackMode)', script
+        )
+
+
+class MessageBoxShortcutSlotTests(SimpleTestCase):
+    def test_message_box_supports_shortcut_slot_field_type(self):
+        script = Path("static/js/message_box.js").read_text()
+        self.assertIn('"shortcut-slots"', script)
+        self.assertIn("serializeShortcutSlotTokens", script)
+        self.assertIn("normalizeShortcutCaptureToken", script)
+        self.assertIn('if (event.key === "Escape") {', script)
+        self.assertIn(
+            'hiddenInput.dispatchEvent(new Event("input", { bubbles: true }))', script
+        )
+        self.assertIn("dataset.shortcutSlotIndex", script)
+
+    def test_message_box_styles_define_shortcut_slot_layout(self):
+        stylesheet = Path("static/css/normal.css").read_text()
+        self.assertIn(".lss-messagebox-shortcut-slots", stylesheet)
+        self.assertIn(".lss-messagebox-shortcut-slot-wrapper", stylesheet)
+        self.assertIn(".lss-messagebox-shortcut-slot-clear", stylesheet)
+
+
+class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
+    def test_remote_template_contains_blackout_frame(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_slide_show.html"
+        ).read_text()
+        self.assertIn("data-lyrics-blackout-frame", template)
+
+    def test_remote_styles_define_alert_active_button_and_blackout_frame(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".lyrics-master-blackout-frame", stylesheet)
+        self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
+        self.assertIn(
+            ".lyrics-master-actions-row .animation-tool-button.is-alert-active",
+            stylesheet,
+        )
+
 
 class ShortcutValidationTests(SimpleTestCase):
     def test_validation_rejects_escape_and_combinations_but_keeps_other_values(self):
@@ -1618,6 +1675,10 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(
             response.context["lyrics_i18n"]["shortcutsPopupFooter"],
             "⌨️👈 in upper or lower case",
+        )
+        self.assertEqual(
+            response.context["lyrics_i18n"]["shortcutsCaptureLabel"],
+            "Appuyer sur une touche",
         )
         self.assertEqual(
             response.context["shortcuts_config"]["effectiveBindings"]["open_display"],

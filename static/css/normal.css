@@ -661,6 +661,61 @@ body.lss-messagebox-open {
     cursor: pointer;
 }
 
+.lss-messagebox-shortcut-slots {
+    display: grid;
+    gap: 8px;
+}
+
+.lss-messagebox-shortcut-slot-wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.lss-messagebox-shortcut-slot {
+    min-height: 46px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-surface-alt);
+    color: var(--site-ink);
+    font-family: var(--site-font-ui);
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.lss-messagebox-shortcut-slot.is-empty {
+    color: var(--site-ink-soft);
+    font-weight: 500;
+}
+
+.lss-messagebox-shortcut-slot.is-capturing {
+    border-color: var(--site-accent);
+    background: var(--site-popup-surface);
+    color: var(--site-accent);
+}
+
+.lss-messagebox-shortcut-slot-clear {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border: 1px solid var(--site-popup-border);
+    border-radius: 999px;
+    background: var(--site-popup-surface);
+    color: var(--site-ink-soft);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lss-messagebox-shortcut-slot-clear:hover:not(:disabled) {
+    color: var(--site-ink);
+    border-color: var(--site-accent);
+}
+
 .lss-messagebox-tabbed-select-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -690,7 +745,8 @@ body.lss-messagebox-open {
 
 .lss-messagebox-field.is-invalid .lss-messagebox-input,
 .lss-messagebox-field.is-invalid .lss-messagebox-textarea,
-.lss-messagebox-field.is-invalid .lss-messagebox-select {
+.lss-messagebox-field.is-invalid .lss-messagebox-select,
+.lss-messagebox-field.is-invalid .lss-messagebox-shortcut-slot {
     border-color: var(--site-popup-danger-border);
 }
 
@@ -765,7 +821,9 @@ body.lss-messagebox-open {
 .lss-messagebox-close:focus-visible,
 .lss-messagebox-input:focus-visible,
 .lss-messagebox-textarea:focus-visible,
-.lss-messagebox-select:focus-visible {
+.lss-messagebox-select:focus-visible,
+.lss-messagebox-shortcut-slot:focus-visible,
+.lss-messagebox-shortcut-slot-clear:focus-visible {
     outline: none;
     box-shadow: var(--site-focus-ring);
     border-radius: 12px;

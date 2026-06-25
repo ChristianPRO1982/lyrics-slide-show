@@ -186,6 +186,7 @@
                                     data-display-session-id="{{ display_session_id }}"
                                     data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
                                 >
+                                    <div class="lyrics-master-blackout-frame" data-lyrics-blackout-frame aria-hidden="true"></div>
                                     <nav class="site-floating-actions lyrics-master-floating-actions" aria-label="{% trans 'Navigation rapide remote' %}" data-lyrics-floating-nav>
                                         <a
                                             href="#lyrics-master-slides-anchor"
@@ -352,6 +353,8 @@
             shortcutsPopupFooter: "{{ lyrics_i18n.shortcutsPopupFooter|escapejs }}",
             shortcutsCustomizeTitle: "{{ lyrics_i18n.shortcutsCustomizeTitle|escapejs }}",
             shortcutsCustomizeHelp: "{{ lyrics_i18n.shortcutsCustomizeHelp|escapejs }}",
+            shortcutsCaptureLabel: "{{ lyrics_i18n.shortcutsCaptureLabel|escapejs }}",
+            shortcutsClearSlotLabel: "{{ lyrics_i18n.shortcutsClearSlotLabel|escapejs }}",
             shortcutsSaveLabel: "{{ lyrics_i18n.shortcutsSaveLabel|escapejs }}",
             shortcutsCancelLabel: "{{ lyrics_i18n.shortcutsCancelLabel|escapejs }}",
             shortcutsResetLabel: "{{ lyrics_i18n.shortcutsResetLabel|escapejs }}",

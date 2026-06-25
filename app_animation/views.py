@@ -481,11 +481,15 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "shortcutsPopupFooter": _("⌨️👈 in upper or lower case"),
                 "shortcutsCustomizeTitle": _("Personnaliser les raccourcis"),
                 "shortcutsCustomizeHelp": _(
-                    "Jusqu'à 3 touches par action, séparées par des virgules.\n"
+                    "Clique sur un slot puis appuie sur une touche simple.\n"
+                    "Jusqu'à 3 touches par action.\n"
+                    "La petite croix efface un slot.\n"
                     "Aucune combinaison n'est autorisée.\n"
                     "Escape n'est pas autorisé.\n"
                     "Laisser vide désactive l'action personnalisable."
                 ),
+                "shortcutsCaptureLabel": _("Appuyer sur une touche"),
+                "shortcutsClearSlotLabel": _("Effacer ce raccourci"),
                 "shortcutsSaveLabel": _("Enregistrer"),
                 "shortcutsCancelLabel": _("Annuler"),
                 "shortcutsResetLabel": _("Revenir aux raccourcis du site"),
