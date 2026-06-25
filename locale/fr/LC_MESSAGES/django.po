@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 16:45+0200\n"
+"POT-Creation-Date: 2026-06-25 09:33+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: app_animation/forms.py:43
 #: app_animation/templates/animation/modify_animation_page_i18n.html:6
-#: app_song/templates/song/modify_song.html:145
+#: app_song/templates/song/modify_song.html:149
 #: docs/app_animation/maquette.html:56
 msgid "Description"
 msgstr ""
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Code d'image de fond"
 msgstr ""
 
-#: app_animation/forms.py:69 app_song/views.py:764
+#: app_animation/forms.py:69 app_song/views.py:816
 msgid "Le titre est obligatoire."
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 #: app_animation/templates/animation/lyrics_slide_show.html:261
 #: app_animation/views.py:401 app_animation/views.py:413
 #: app_song/rendering.py:38 app_song/rendering.py:41
-#: app_song/templates/song/modify_song.html:255
+#: app_song/templates/song/modify_song.html:259
 #: app_song/templates/song/modify_song_page_i18n.html:14
 msgid "Refrain"
 msgstr ""
@@ -141,7 +141,7 @@ msgstr ""
 
 #: app_animation/templates/animation/add_animation.html:35
 #: app_animation/templates/animation/modify_animation.html:68
-#: app_song/templates/song/modify_song.html:244
+#: app_song/templates/song/modify_song.html:248
 #: app_song/templates/song/modify_song_page_i18n.html:12
 #: app_song/templates/song/song_page_i18n.html:23
 msgid "Texte"
@@ -172,7 +172,7 @@ msgstr ""
 #: app_animation/templates/animation/add_animation.html:139
 #: app_animation/templates/animation/lyrics_slide_show.html:99
 #: app_animation/templates/animation/modify_animation_page_i18n.html:14
-#: app_animation/views.py:396 app_song/templates/song/modify_song.html:283
+#: app_animation/views.py:396 app_song/templates/song/modify_song.html:287
 #: app_song/templates/song/modify_song_page_i18n.html:20 templates/base.html:99
 msgid "OK"
 msgstr ""
@@ -594,7 +594,7 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation.html:363
 #: app_animation/templates/animation/modify_animation.html:370
 #: app_animation/templates/animation/modify_animation_page_i18n.html:26
-#: app_song/templates/song/modify_song.html:188
+#: app_song/templates/song/modify_song.html:192
 #: app_song/templates/song/modify_song_page_i18n.html:3
 msgid "Déplacer"
 msgstr ""
@@ -607,7 +607,7 @@ msgstr ""
 #: app_song/templates/song/modify_artists.html:64
 #: app_song/templates/song/modify_bands.html:64
 #: app_song/templates/song/modify_genres.html:67
-#: app_song/templates/song/modify_song.html:294
+#: app_song/templates/song/modify_song.html:298
 #: app_song/templates/song/modify_song_page_i18n.html:15
 #: app_song/templates/song/songs.html:265
 msgid "Supprimer"
@@ -2794,150 +2794,150 @@ msgstr ""
 msgid "Palette métal avec des néons de couleurs"
 msgstr ""
 
-#: app_main/views.py:327
+#: app_main/views.py:331
 #, python-format
 msgid "Compte de %(username)s"
 msgstr ""
 
-#: app_main/views.py:339
+#: app_main/views.py:343
 msgid "La connexion interactive n'est pas configurée pour cet environnement."
 msgstr ""
 
-#: app_main/views.py:439
+#: app_main/views.py:443
 msgid ""
 "Votre compte Lyrics Slide Show doit être synchronisé depuis cARThographie."
 msgstr ""
 
-#: app_main/views.py:471
+#: app_main/views.py:475
 #, python-format
 msgid "Connecté en tant que %(username)s."
 msgstr ""
 
-#: app_main/views.py:491
+#: app_main/views.py:495
 msgid "Secret client Keycloak invalide ou non monté dans le conteneur LSS."
 msgstr ""
 
-#: app_main/views.py:492
+#: app_main/views.py:496
 msgid "Client ID différent entre LSS et Keycloak."
 msgstr ""
 
-#: app_main/views.py:493
+#: app_main/views.py:497
 msgid "Client Keycloak non configuré comme client confidentiel."
 msgstr ""
 
-#: app_main/views.py:497
+#: app_main/views.py:501
 msgid "URL de retour Keycloak différente de celle déclarée dans le client."
 msgstr ""
 
-#: app_main/views.py:498
+#: app_main/views.py:502
 msgid "Code OAuth déjà consommé ou expiré."
 msgstr ""
 
-#: app_main/views.py:499
+#: app_main/views.py:503
 msgid "Décalage d'horloge entre les services."
 msgstr ""
 
-#: app_main/views.py:503
+#: app_main/views.py:507
 msgid "Jeton d'accès refusé par l'endpoint userinfo."
 msgstr ""
 
-#: app_main/views.py:504
+#: app_main/views.py:508
 msgid "Realm ou endpoint userinfo incohérent avec le jeton reçu."
 msgstr ""
 
-#: app_main/views.py:508
+#: app_main/views.py:512
 msgid "Consultez les logs LSS autour de keycloak_http_error."
 msgstr ""
 
-#: app_main/views.py:509
+#: app_main/views.py:513
 msgid "Vérifiez la configuration Keycloak non sensible affichée ci-dessous."
 msgstr ""
 
-#: app_main/views.py:519
+#: app_main/views.py:523
 msgid ""
 "Vérifier que KEYCLOAK_CLIENT_SECRET_FILE pointe vers un fichier monté dans "
 "le conteneur LSS."
 msgstr ""
 
-#: app_main/views.py:521
+#: app_main/views.py:525
 msgid "Vérifier KEYCLOAK_CLIENT_ID et KEYCLOAK_REDIRECT_URI dans .env.prod."
 msgstr ""
 
-#: app_main/views.py:522
+#: app_main/views.py:526
 msgid "Chercher keycloak_http_error dans les logs LSS."
 msgstr ""
 
-#: app_main/views.py:523
+#: app_main/views.py:527
 msgid ""
 "Vérifier le chemin du secret Home si le flux de provisioning est atteint."
 msgstr ""
 
-#: app_main/views.py:546
+#: app_main/views.py:550
 msgid "Aucune synchronisation de compte n'est en attente."
 msgstr ""
 
-#: app_main/views.py:565
+#: app_main/views.py:569
 msgid "Aucune finalisation de synchronisation n'est en attente."
 msgstr ""
 
-#: app_main/views.py:602
+#: app_main/views.py:606
 #, python-format
 msgid "Connecté en tant que %(username)s après synchronisation du compte."
 msgstr ""
 
-#: app_main/views.py:620
+#: app_main/views.py:624
 msgid "Vous êtes déconnecté."
 msgstr ""
 
-#: app_main/views.py:644 app_main/views.py:680 app_main/views.py:716
+#: app_main/views.py:648 app_main/views.py:684 app_main/views.py:720
 msgid "Accès refusé."
 msgstr ""
 
-#: app_main/views.py:649
+#: app_main/views.py:653
 msgid "Les paramètres du site sont introuvables pour cette langue."
 msgstr ""
 
-#: app_main/views.py:659
+#: app_main/views.py:663
 msgid "Les réglages de modération ont été enregistrés."
 msgstr ""
 
-#: app_main/views.py:695
+#: app_main/views.py:699
 msgid "Les paramètres administrateur ont été enregistrés."
 msgstr ""
 
-#: app_main/views.py:727
+#: app_main/views.py:731
 msgid "administrateur"
 msgstr ""
 
-#: app_main/views.py:729
+#: app_main/views.py:733
 msgid "modérateur"
 msgstr ""
 
-#: app_main/views.py:734
+#: app_main/views.py:738
 #, python-format
 msgid "Le rôle %(role)s a été attribué."
 msgstr ""
 
-#: app_main/views.py:739
+#: app_main/views.py:743
 #, python-format
 msgid "Le rôle %(role)s a été retiré."
 msgstr ""
 
-#: app_main/views.py:746
+#: app_main/views.py:750
 msgid "La demande de mise à jour des rôles est invalide."
 msgstr ""
 
-#: app_main/views.py:760
+#: app_main/views.py:764
 msgid "Action de compte inconnue."
 msgstr ""
 
-#: app_main/views.py:841
+#: app_main/views.py:845
 #, python-format
 msgid ""
 "Enregistrement impossible: informations manquantes ou invalides (%(fields)s)."
 msgstr ""
 
-#: app_main/views.py:850
+#: app_main/views.py:854
 msgid "Enregistrement impossible: informations manquantes ou invalides."
 msgstr ""
 
@@ -3172,16 +3172,16 @@ msgid "Couplet "
 msgstr ""
 
 #: app_song/search.py:220 app_song/templates/song/songs.html:60
-#: app_song/views.py:485 app_song/views.py:1310
+#: app_song/views.py:489 app_song/views.py:1362
 msgid "Chant validé"
 msgstr ""
 
 #: app_song/search.py:222 app_song/templates/song/songs.html:61
-#: app_song/views.py:487 app_song/views.py:1312
+#: app_song/views.py:491 app_song/views.py:1364
 msgid "Chant validé avec des messages"
 msgstr ""
 
-#: app_song/search.py:223 app_song/views.py:488 app_song/views.py:1314
+#: app_song/search.py:223 app_song/views.py:492 app_song/views.py:1366
 msgid "Chant non validé"
 msgstr ""
 
@@ -3299,7 +3299,7 @@ msgstr ""
 
 #: app_song/templates/song/metadata.html:161
 #: app_song/templates/song/modify_artists.html:23
-#: app_song/templates/song/songs.html:252 app_song/views.py:898
+#: app_song/templates/song/songs.html:252 app_song/views.py:950
 msgid "Artistes"
 msgstr ""
 
@@ -3376,7 +3376,7 @@ msgstr ""
 msgid "Gestion des groupes de musiques"
 msgstr ""
 
-#: app_song/templates/song/modify_bands.html:23 app_song/views.py:933
+#: app_song/templates/song/modify_bands.html:23 app_song/views.py:985
 msgid "Groupes de musiques"
 msgstr ""
 
@@ -3463,62 +3463,62 @@ msgstr ""
 msgid "Sous-titre"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:133
+#: app_song/templates/song/modify_song.html:137
 msgid "Chant validé. Ce chant ne pourra être modifié que par les modérateurs"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:141
+#: app_song/templates/song/modify_song.html:145
 msgid "Modification de la description"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:150
+#: app_song/templates/song/modify_song.html:154
 msgid "Masquer les cartes d'édition"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:166
+#: app_song/templates/song/modify_song.html:170
 msgid "Couplets et refrains"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:170
+#: app_song/templates/song/modify_song.html:174
 msgid "Réorganiser les blocs"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:173
+#: app_song/templates/song/modify_song.html:177
 msgid "Annuler la réorganisation"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:224
-#: app_song/templates/song/modify_song.html:231
-#: app_song/templates/song/modify_song_page_i18n.html:4 app_song/views.py:604
-#: app_song/views.py:610
+#: app_song/templates/song/modify_song.html:228
+#: app_song/templates/song/modify_song.html:235
+#: app_song/templates/song/modify_song_page_i18n.html:4 app_song/views.py:650
+#: app_song/views.py:656
 msgid "Bloc vide"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:249
+#: app_song/templates/song/modify_song.html:253
 #: app_song/templates/song/modify_song_page_i18n.html:16
 msgid "Préfixe"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:261
+#: app_song/templates/song/modify_song.html:265
 #: app_song/templates/song/modify_song_page_i18n.html:17
 msgid "Suivi"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:272
+#: app_song/templates/song/modify_song.html:276
 #: app_song/templates/song/modify_song_page_i18n.html:18
 msgid "Not C. num"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:278
+#: app_song/templates/song/modify_song.html:282
 #: app_song/templates/song/modify_song_page_i18n.html:19
 msgid "Comme un refrain"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:314
+#: app_song/templates/song/modify_song.html:318
 msgid "Aucun bloc de paroles."
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:325
+#: app_song/templates/song/modify_song.html:329
 msgid "Ajouter un couplet/refrain"
 msgstr ""
 
@@ -3684,8 +3684,8 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: app_song/templates/song/songs.html:62 app_song/views.py:679
-#: app_song/views.py:1344
+#: app_song/templates/song/songs.html:62 app_song/views.py:725
+#: app_song/views.py:1396
 msgid "Chant sous licence"
 msgstr ""
 
@@ -3776,94 +3776,112 @@ msgstr ""
 msgid "Aucun chant ne correspond à la recherche."
 msgstr ""
 
-#: app_song/views.py:556
+#: app_song/views.py:533
+msgid ""
+"La devalidation directe depuis status=2 est ignoree. Le chant doit d'abord "
+"revenir explicitement a status=1."
+msgstr ""
+
+#: app_song/views.py:602
 msgid "Marquer non lu"
 msgstr ""
 
-#: app_song/views.py:562
+#: app_song/views.py:608
 msgid "Marquer lu"
 msgstr ""
 
-#: app_song/views.py:681 app_song/views.py:1346
+#: app_song/views.py:727 app_song/views.py:1398
 msgid "Chant hors licence"
 msgstr ""
 
-#: app_song/views.py:788
+#: app_song/views.py:840
 msgid "Impossible de créer le chant pour le moment."
 msgstr ""
 
-#: app_song/views.py:871 app_song/views.py:894 app_song/views.py:929
+#: app_song/views.py:923 app_song/views.py:946 app_song/views.py:981
 msgid "Action inconnue."
 msgstr ""
 
-#: app_song/views.py:1027
+#: app_song/views.py:1079
 #, python-format
 msgid "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
 msgstr ""
 
-#: app_song/views.py:1036
+#: app_song/views.py:1088
 msgid "Pour créer un genre, renseignez à la fois le groupe et le nom."
 msgstr ""
 
-#: app_song/views.py:1055
+#: app_song/views.py:1107
 #, python-format
 msgid "Suppression impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1065
+#: app_song/views.py:1117
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
 msgstr ""
 
-#: app_song/views.py:1087
+#: app_song/views.py:1139
 #, python-format
 msgid "Mise à jour impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1092 app_song/views.py:1252
+#: app_song/views.py:1144 app_song/views.py:1304
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_song/views.py:1094 app_song/views.py:1254
+#: app_song/views.py:1146 app_song/views.py:1306
 #, python-format
 msgid "%(count)s mise(s) à jour"
 msgstr ""
 
-#: app_song/views.py:1096 app_song/views.py:1256
+#: app_song/views.py:1148 app_song/views.py:1308
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
 
-#: app_song/views.py:1101
+#: app_song/views.py:1153
 #, python-format
 msgid "Genres enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1192
+#: app_song/views.py:1244
 #, python-format
 msgid "Création impossible pour %(item)s \"%(name)s\"."
 msgstr ""
 
-#: app_song/views.py:1212
+#: app_song/views.py:1264
 #, python-format
 msgid "Suppression impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1223
+#: app_song/views.py:1275
 #, python-format
 msgid "Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1244
+#: app_song/views.py:1296
 #, python-format
 msgid "Mise à jour impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1261
+#: app_song/views.py:1313
 #, python-format
 msgid "%(item)s enregistrés : %(summary)s."
+msgstr ""
+
+#: app_song/views.py:1456
+msgid ""
+"Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre "
+"devalide."
+msgstr ""
+
+#: app_song/views.py:1466
+msgid ""
+"Impossible de devalider ce chant tant qu'il reste des demandes de "
+"modification non lues."
 msgstr ""
 
 #: docs/app_animation/maquette.html:12
