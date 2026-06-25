@@ -44,7 +44,7 @@
         </article>
     </section>
 
-    <form method="post" class="site-theme-selection" aria-label="{% trans 'Édition des paramètres' %}">
+    <form method="post" class="site-theme-selection" aria-label="{% trans 'Édition des paramètres' %}" data-site-params-form data-unsaved-guard>
         {% csrf_token %}
         <input type="hidden" name="language" value="{{ selected_language }}">
         {% for hidden in admin_form.hidden_fields %}{{ hidden }}{% endfor %}
@@ -143,4 +143,15 @@
             <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer les paramètres" %}</button>
         </article>
     </form>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
+    <script>
+        (() => {
+            const form = document.querySelector("[data-site-params-form]");
+            if (window.LSSUnsavedChanges && form instanceof HTMLFormElement) {
+                window.LSSUnsavedChanges.attach(form);
+            }
+        })();
+    </script>
 {% endblock %}

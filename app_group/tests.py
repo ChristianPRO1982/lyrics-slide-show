@@ -633,6 +633,9 @@ class GroupViewsTests(TestCase):
         self._login(ADMIN_ID)
         response = self.client.get(reverse("modify_group", args=[group.group_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-group-settings-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertEqual(len(response.context["member_cards"]), 2)
         self.assertEqual(len(response.context["join_request_cards"]), 1)
         self.assertEqual(

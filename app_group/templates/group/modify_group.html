@@ -67,7 +67,7 @@
                 <h2>{% trans "Paramètres principaux" %}</h2>
             </div>
         </header>
-        <form method="post" class="group-stack-form">
+        <form method="post" class="group-stack-form" data-group-settings-form data-unsaved-guard>
             {% csrf_token %}
             <input type="hidden" name="action" value="save_group_settings">
             {% for hidden in settings_form.hidden_fields %}{{ hidden }}{% endfor %}
@@ -281,5 +281,6 @@
             rejectLabel: "{{ group_reject_label|escapejs }}"
         };
     </script>
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_group.js' %}"></script>
 {% endblock %}

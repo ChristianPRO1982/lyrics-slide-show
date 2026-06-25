@@ -278,6 +278,9 @@ class AnimationViewsTests(TestCase):
         self._select_group(group)
         response = self.client.get(reverse("add_animation"))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-animation-create-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'name="title"')
         self.assertContains(response, 'name="scheduled_at"')
 
@@ -359,6 +362,8 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "data-animation-edit-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'id="id_title"')
         self.assertContains(response, 'name="ordered_mix"')
         self.assertContains(response, 'name="songs_payload"')

@@ -536,10 +536,31 @@
         updateCreateSongState();
     }
 
+    const unsavedChanges = window.LSSUnsavedChanges;
+    const modifySongForm = document.querySelector("[data-song-edit-form]");
+    const metadataForm = document.querySelector("[data-song-metadata-form]");
+    const modifySongUnsavedController = (
+        unsavedChanges
+        && modifySongForm instanceof HTMLFormElement
+    ) ? unsavedChanges.attach(modifySongForm) : null;
+    const metadataUnsavedController = (
+        unsavedChanges
+        && metadataForm instanceof HTMLFormElement
+    ) ? unsavedChanges.attach(metadataForm) : null;
+
+    if (metadataUnsavedController) {
+        window.LSSSongMetadataUnsaved = metadataUnsavedController;
+    }
+
     const addBlockButton = document.querySelector("[data-song-add-block-action]");
     const reorderList = document.querySelector("[data-reorder-list]");
     if (addBlockButton && reorderList) {
         let newBlockCounter = 0;
+        const refreshUnsavedChanges = () => {
+            if (modifySongUnsavedController) {
+                modifySongUnsavedController.refresh();
+            }
+        };
 
         const escapeHtml = (value) => {
             return String(value || "")
@@ -659,6 +680,7 @@
             if (hiddenFollowed) hiddenFollowed.value = normalized.followed ? "1" : "0";
             if (hiddenNotCNum) hiddenNotCNum.value = normalized.notCNum ? "1" : "0";
             renderCardFromState(card, normalized);
+            refreshUnsavedChanges();
             return normalized;
         };
 
@@ -899,6 +921,7 @@
             article.classList.toggle("is-reorder-compact", reorderIsEnabled);
             writeStateToHidden(article, initialState);
             closeAllEditors();
+            refreshUnsavedChanges();
 
             article.scrollIntoView({ behavior: "smooth", block: "center" });
         };
@@ -954,6 +977,7 @@
                     if (hiddenDelete) hiddenDelete.value = "1";
                     card.hidden = true;
                     closeAllEditors();
+                    refreshUnsavedChanges();
                 }
                 return;
             }
@@ -1053,6 +1077,8 @@
 
         window.LSSModifySong = window.LSSModifySong || {};
         window.LSSModifySong.closeAllBlockEditors = closeAllEditors;
+        window.LSSModifySong.unsavedController = modifySongUnsavedController;
+        window.LSSModifySong.refreshUnsavedChanges = refreshUnsavedChanges;
         initializeCardDefaults();
     }
 })();

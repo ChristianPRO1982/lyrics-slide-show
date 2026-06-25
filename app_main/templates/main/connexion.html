@@ -217,7 +217,7 @@
                     {% if site_params_missing %}
                         <p>{% trans "Les paramètres du site ne sont pas encore disponibles pour cette langue. L'édition du message de modération est temporairement indisponible." %}</p>
                     {% elif moderator_form %}
-                        <form method="post">
+                        <form method="post" data-account-moderation-form data-unsaved-guard>
                             {% csrf_token %}
                             <input type="hidden" name="action" value="save_moderation_settings">
                             <input type="hidden" name="member_search" value="{{ member_search }}">
@@ -258,7 +258,7 @@
                         </div>
                     </header>
                     {% if admin_form %}
-                        <form method="post">
+                        <form method="post" data-account-admin-form data-unsaved-guard>
                             {% csrf_token %}
                             <input type="hidden" name="action" value="save_site_settings">
                             <input type="hidden" name="member_search" value="{{ member_search }}">
@@ -466,8 +466,19 @@
 
 {% block page_scripts %}
     {% if page_mode == "account" %}
+        <script src="{% static 'js/unsaved_changes.js' %}"></script>
         <script>
             (() => {
+                const unsavedChanges = window.LSSUnsavedChanges;
+                const moderationForm = document.querySelector("[data-account-moderation-form]");
+                const adminForm = document.querySelector("[data-account-admin-form]");
+                if (unsavedChanges && moderationForm instanceof HTMLFormElement) {
+                    unsavedChanges.attach(moderationForm);
+                }
+                if (unsavedChanges && adminForm instanceof HTMLFormElement) {
+                    unsavedChanges.attach(adminForm);
+                }
+
                 const themeName = document.getElementById("account-theme-name");
                 const labelsRoot = document.getElementById("account-theme-labels");
 

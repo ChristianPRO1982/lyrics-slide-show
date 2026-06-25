@@ -58,7 +58,7 @@
                 <h2>{% trans "Liens associés" %}</h2>
             </div>
         </header>
-        <form method="post" id="metadata-form">
+        <form method="post" id="metadata-form" data-song-metadata-form data-unsaved-guard>
             {% csrf_token %}
             {% if metadata_links %}
                 {% for link in metadata_links %}
@@ -226,10 +226,16 @@
     </article>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
         (() => {
             const messageBox = window.LSSMessageBox;
+            const refreshUnsaved = () => {
+                if (window.LSSSongMetadataUnsaved) {
+                    window.LSSSongMetadataUnsaved.refresh();
+                }
+            };
             const labels = {
                 title: "{% trans 'Confirmation' %}",
                 yes: "{% trans 'Oui' %}",
@@ -267,6 +273,7 @@
                     if (result.buttonId === "yes") {
                         checkbox.checked = true;
                     }
+                    refreshUnsaved();
                 });
             });
         })();
@@ -316,11 +323,17 @@
                     if (isSelected) {
                         item.querySelectorAll(`input[type="hidden"][name="${inputName}"]`).forEach((input) => input.remove());
                         availableList.appendChild(item);
+                        if (window.LSSSongMetadataUnsaved) {
+                            window.LSSSongMetadataUnsaved.refresh();
+                        }
                         return;
                     }
 
                     item.appendChild(createHiddenInput(inputName, itemId));
                     selectedList.appendChild(item);
+                    if (window.LSSSongMetadataUnsaved) {
+                        window.LSSSongMetadataUnsaved.refresh();
+                    }
                 });
             });
         })();
