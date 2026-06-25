@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 13:24+0200\n"
+"POT-Creation-Date: 2026-06-25 16:52+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -83,10 +83,40 @@ msgstr ""
 msgid "Sélectionnez d'abord un groupe pour gérer les animations."
 msgstr ""
 
+#: app_animation/services/shortcuts.py:293
+msgid "Aucune combinaison n'est autorisée."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:296
+msgid "Escape n'est pas personnalisable."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:300
+msgid "Une touche modificatrice seule n'est pas autorisée."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:304
+msgid "Cette touche n'est pas reconnue."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:310
+#, python-format
+msgid "La touche %(key)s est déjà utilisée pour %(action)s."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:320
+msgid "Maximum 3 touches par action."
+msgstr ""
+
+#: app_animation/services/shortcuts.py:338
+#, python-format
+msgid "Certaines touches n'ont pas été enregistrées : %(actions)s."
+msgstr ""
+
 #: app_animation/services/song_edits.py:53
-#: app_animation/templates/animation/lyrics_slide_show.html:252
-#: app_animation/templates/animation/lyrics_slide_show.html:261
-#: app_animation/views.py:401 app_animation/views.py:413
+#: app_animation/templates/animation/lyrics_slide_show.html:253
+#: app_animation/templates/animation/lyrics_slide_show.html:262
+#: app_animation/views.py:464 app_animation/views.py:476
 #: app_song/rendering.py:38 app_song/rendering.py:41
 #: app_song/templates/song/modify_song.html:259
 #: app_song/templates/song/modify_song_page_i18n.html:14
@@ -181,7 +211,7 @@ msgstr "Open the demo"
 #: app_animation/templates/animation/add_animation.html:139
 #: app_animation/templates/animation/lyrics_slide_show.html:99
 #: app_animation/templates/animation/modify_animation_page_i18n.html:14
-#: app_animation/views.py:396 app_song/templates/song/modify_song.html:287
+#: app_animation/views.py:459 app_song/templates/song/modify_song.html:287
 #: app_song/templates/song/modify_song_page_i18n.html:20 templates/base.html:99
 msgid "OK"
 msgstr "OK"
@@ -204,7 +234,7 @@ msgstr "Animations"
 #: app_animation/templates/animation/animation_history.html:33
 #: app_animation/templates/animation/animations.html:46
 #: app_animation/templates/animation/includes/_animation_actions.html:7
-#: app_animation/templates/animation/lyrics_slide_show.html:237
+#: app_animation/templates/animation/lyrics_slide_show.html:238
 #, fuzzy
 #| msgid "Confirmer cette action ?"
 msgid "Modifier cette animation"
@@ -261,10 +291,10 @@ msgstr "Close window"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:100
 #: app_animation/templates/animation/modify_animation_page_i18n.html:24
-#: app_song/templates/song/metadata.html:235
-#: app_song/templates/song/modify_artists.html:84
-#: app_song/templates/song/modify_bands.html:84
-#: app_song/templates/song/modify_genres.html:87
+#: app_song/templates/song/metadata.html:241
+#: app_song/templates/song/modify_artists.html:90
+#: app_song/templates/song/modify_bands.html:90
+#: app_song/templates/song/modify_genres.html:93
 #: app_song/templates/song/modify_song_page_i18n.html:23
 #: app_song/templates/song/song_page_i18n.html:4 templates/base.html:100
 msgid "Oui"
@@ -272,16 +302,17 @@ msgstr "Yes"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:101
 #: app_animation/templates/animation/modify_animation_page_i18n.html:25
-#: app_song/templates/song/metadata.html:236
-#: app_song/templates/song/modify_artists.html:85
-#: app_song/templates/song/modify_bands.html:85
-#: app_song/templates/song/modify_genres.html:88
+#: app_song/templates/song/metadata.html:242
+#: app_song/templates/song/modify_artists.html:91
+#: app_song/templates/song/modify_bands.html:91
+#: app_song/templates/song/modify_genres.html:94
 #: app_song/templates/song/modify_song_page_i18n.html:24
 #: app_song/templates/song/song_page_i18n.html:5 templates/base.html:101
 msgid "Non"
 msgstr "No"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:102
+#: app_animation/views.py:494
 #: app_song/templates/song/modify_song_page_i18n.html:9
 #: app_song/templates/song/song_page_i18n.html:31 templates/base.html:102
 msgid "Annuler"
@@ -329,10 +360,10 @@ msgstr "Copy"
 #: app_animation/templates/animation/lyrics_slide_show.html:110
 #: app_group/templates/group/groups.html:213
 #: app_group/templates/group/modify_group.html:251
-#: app_song/templates/song/metadata.html:234
-#: app_song/templates/song/modify_artists.html:83
-#: app_song/templates/song/modify_bands.html:83
-#: app_song/templates/song/modify_genres.html:86 templates/base.html:110
+#: app_song/templates/song/metadata.html:240
+#: app_song/templates/song/modify_artists.html:89
+#: app_song/templates/song/modify_bands.html:89
+#: app_song/templates/song/modify_genres.html:92 templates/base.html:110
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -341,44 +372,44 @@ msgstr "Confirmation"
 msgid "Messages"
 msgstr "Messages"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:189
+#: app_animation/templates/animation/lyrics_slide_show.html:190
 #, fuzzy
 #| msgid "Navigation principale"
 msgid "Navigation rapide remote"
 msgstr "Main navigation"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:194
 #: app_animation/templates/animation/lyrics_slide_show.html:195
+#: app_animation/templates/animation/lyrics_slide_show.html:196
 msgid "Diapo en cours / Diapo suivante"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:204
 #: app_animation/templates/animation/lyrics_slide_show.html:205
+#: app_animation/templates/animation/lyrics_slide_show.html:206
 #, fuzzy
 #| msgid "Afficher le lien vers le wiki"
 msgid "Afficher les chants précédents"
 msgstr "Show the wiki link"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:215
 #: app_animation/templates/animation/lyrics_slide_show.html:216
+#: app_animation/templates/animation/lyrics_slide_show.html:217
 #, fuzzy
 #| msgid "Afficher le lien vers le wiki"
 msgid "Afficher les chants suivants"
 msgstr "Show the wiki link"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:234
+#: app_animation/templates/animation/lyrics_slide_show.html:235
 #: app_animation/templates/animation/modify_animation.html:34
 #: app_animation/templates/animation/modify_animation_page_i18n.html:17
 msgid "Sans description."
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:239
+#: app_animation/templates/animation/lyrics_slide_show.html:240
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Session écran"
 msgstr "Groups"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:240
+#: app_animation/templates/animation/lyrics_slide_show.html:241
 #: app_animation/templates/animation/lyrics_slide_show_public.html:21
 #: app_animation/templates/animation/modify_animation_page_i18n.html:32
 #: app_song/templates/song/metadata.html:12
@@ -396,58 +427,57 @@ msgstr "Groups"
 msgid "Chant"
 msgstr "Songs"
 
-#: app_animation/templates/animation/lyrics_slide_show.html:240
-#: app_animation/views.py:397
+#: app_animation/templates/animation/lyrics_slide_show.html:241
+#: app_animation/views.py:460
 msgid "Aucun"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:241
+#: app_animation/templates/animation/lyrics_slide_show.html:242
 msgid "Diapo"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:241
+#: app_animation/templates/animation/lyrics_slide_show.html:242
 msgid "Aucune"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:250
-#: app_animation/views.py:400
+#: app_animation/templates/animation/lyrics_slide_show.html:251
+#: app_animation/views.py:61 app_animation/views.py:463
 msgid "BLACK MODE"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:251
+#: app_animation/templates/animation/lyrics_slide_show.html:252
 msgid "Diapo précédente"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:253
-#: app_animation/templates/animation/lyrics_slide_show.html:273
-#: app_animation/views.py:403
+#: app_animation/templates/animation/lyrics_slide_show.html:254
+#: app_animation/templates/animation/lyrics_slide_show.html:274
+#: app_animation/views.py:466
 msgid "Diapo suivante"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:258
+#: app_animation/templates/animation/lyrics_slide_show.html:259
 msgid "Ouvrir un second écran"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:259
-#: app_animation/views.py:416
-msgid "Raccourcis clavier"
+#: app_animation/templates/animation/lyrics_slide_show.html:260
+msgid "Raccourcis clavier (personnalisable)"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:260
-#: app_animation/views.py:411
+#: app_animation/templates/animation/lyrics_slide_show.html:261
+#: app_animation/views.py:474
 msgid "Stop scroll"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:262
+#: app_animation/templates/animation/lyrics_slide_show.html:263
 msgid "QR-code"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:268
-#: app_animation/views.py:402
+#: app_animation/templates/animation/lyrics_slide_show.html:269
+#: app_animation/views.py:465
 msgid "Diapo en cours"
 msgstr ""
 
-#: app_animation/templates/animation/lyrics_slide_show.html:302
+#: app_animation/templates/animation/lyrics_slide_show.html:303
 msgid "Aucune diapo disponible pour cette animation."
 msgstr ""
 
@@ -495,7 +525,7 @@ msgid "Modifier l'animation"
 msgstr "Confirmation word"
 
 #: app_animation/templates/animation/modify_animation.html:23
-#: app_song/templates/song/metadata.html:50
+#: app_animation/views.py:493 app_song/templates/song/metadata.html:50
 #: app_song/templates/song/modify_artists.html:35
 #: app_song/templates/song/modify_artists.html:73
 #: app_song/templates/song/modify_bands.html:35
@@ -803,97 +833,179 @@ msgid ""
 "Des modifications non enregistrées seront perdues. Voulez-vous continuer ?"
 msgstr ""
 
-#: app_animation/views.py:102
+#: app_animation/views.py:62
+msgid "Previous slide"
+msgstr ""
+
+#: app_animation/views.py:63
+msgid "Next slide"
+msgstr ""
+
+#: app_animation/views.py:64
+msgid "Chorus"
+msgstr ""
+
+#: app_animation/views.py:65
+msgid "Display current slide window"
+msgstr ""
+
+#: app_animation/views.py:66
+msgid "Previous song"
+msgstr ""
+
+#: app_animation/views.py:67
+msgid "Next song"
+msgstr ""
+
+#: app_animation/views.py:68
+msgid "Display/hide choruses"
+msgstr ""
+
+#: app_animation/views.py:69
+msgid "Scroll on ↕️ or not 🧱"
+msgstr ""
+
+#: app_animation/views.py:70
+msgid "📱 QR code for lyrics"
+msgstr ""
+
+#: app_animation/views.py:163
 #, fuzzy
 #| msgid "Le lien a été copié."
 msgid "L'animation a été créée."
 msgstr "The link has been copied."
 
-#: app_animation/views.py:189
+#: app_animation/views.py:250
 msgid "L'animation a été enregistrée."
 msgstr ""
 
-#: app_animation/views.py:386
+#: app_animation/views.py:449
 msgid "Ouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:387
+#: app_animation/views.py:450
 msgid "Rouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:388
+#: app_animation/views.py:451
 #, fuzzy
 #| msgid "Fenêtre de dialogue"
 msgid "Fenêtre bloquée"
 msgstr "Dialog window"
 
-#: app_animation/views.py:390
+#: app_animation/views.py:453
 msgid "Le navigateur a bloqué l'ouverture du second écran."
 msgstr ""
 
-#: app_animation/views.py:392
+#: app_animation/views.py:455
 msgid "Préchargement incomplet"
 msgstr ""
 
-#: app_animation/views.py:394
+#: app_animation/views.py:457
 msgid "Certaines images de fond n'ont pas pu être préchargées."
 msgstr ""
 
-#: app_animation/views.py:398
+#: app_animation/views.py:461
 msgid "Aucune diapo projetée."
 msgstr ""
 
-#: app_animation/views.py:399
+#: app_animation/views.py:462
 msgid "Aucune diapo suivante."
 msgstr ""
 
-#: app_animation/views.py:404
+#: app_animation/views.py:467
 msgid "QR code pour les paroles"
 msgstr ""
 
-#: app_animation/views.py:405
+#: app_animation/views.py:468
 msgid "Refrains masqués dans la grille."
 msgstr ""
 
-#: app_animation/views.py:406
+#: app_animation/views.py:469
 msgid "Scroll bloqué"
 msgstr ""
 
-#: app_animation/views.py:407
+#: app_animation/views.py:470
 msgid "Scroll autorisé"
 msgstr ""
 
-#: app_animation/views.py:409
+#: app_animation/views.py:472
 msgid "Scroll"
 msgstr ""
 
-#: app_animation/views.py:415
+#: app_animation/views.py:478
 msgid "Pas de refrain"
 msgstr ""
 
-#: app_animation/views.py:418
-msgid ""
-"- `O` : Ouvrir un second écran\n"
-"- `Esc` ou `M` : Activer/désactiver BLACK MODE\n"
-"- `B` ou `↑` : Diapo précédente\n"
-"- `S`, `V`, `Espace` ou `↓` : Diapo suivante\n"
-"- `R` ou `C` : Refrain\n"
-"- `F` ou `←` : Chant précédent\n"
-"- `N`, `Entrée` ou `→` : Chant suivant\n"
-"- `A` ou `D` : Afficher/masquer les refrains\n"
-"- `L` : Activer/bloquer le scroll\n"
-"- `Q` : Afficher/masquer le QR code"
+#: app_animation/views.py:479
+msgid "Raccourcis clavier"
 msgstr ""
 
-#: app_animation/views.py:456
+#: app_animation/views.py:480 app_animation/views.py:482
+msgid "Personnaliser les raccourcis"
+msgstr ""
+
+#: app_animation/views.py:481
+msgid "⌨️👈 in upper or lower case"
+msgstr ""
+
+#: app_animation/views.py:484
+msgid ""
+"Clique sur un slot puis appuie sur une touche simple.\n"
+"Jusqu'à 3 touches par action.\n"
+"La petite croix efface un slot.\n"
+"Aucune combinaison n'est autorisée.\n"
+"Escape n'est pas autorisé.\n"
+"Laisser vide désactive l'action personnalisable."
+msgstr ""
+
+#: app_animation/views.py:491
+msgid "Appuyer sur une touche"
+msgstr ""
+
+#: app_animation/views.py:492
+msgid "Effacer ce raccourci"
+msgstr ""
+
+#: app_animation/views.py:495
+msgid "Revenir aux raccourcis du site"
+msgstr ""
+
+#: app_animation/views.py:497
+msgid "La personnalisation des raccourcis nécessite une connexion."
+msgstr ""
+
+#: app_animation/views.py:499
+#, fuzzy
+#| msgid "Connexion sécurisée."
+msgid "Connexion requise"
+msgstr "Secure sign-in."
+
+#: app_animation/views.py:500
+msgid "Enregistrement impossible"
+msgstr ""
+
+#: app_animation/views.py:502
+msgid "Les raccourcis n'ont pas pu être enregistrés."
+msgstr ""
+
+#: app_animation/views.py:518
+msgid "Aucun groupe sélectionné."
+msgstr ""
+
+#: app_animation/views.py:527
+msgid "La personnalisation nécessite une connexion."
+msgstr ""
+
+#: app_animation/views.py:618
 msgid "En attente du maître"
 msgstr ""
 
-#: app_animation/views.py:457
+#: app_animation/views.py:619
 msgid "APPUYEZ SUR F11 SUR CETTE ÉCRAN"
 msgstr ""
 
-#: app_animation/views.py:515
+#: app_animation/views.py:677
 #, fuzzy
 #| msgid "Le lien a été copié."
 msgid "L'animation a été supprimée."
@@ -3586,10 +3698,10 @@ msgstr ""
 msgid "Groupes de musique"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:237
-#: app_song/templates/song/modify_artists.html:86
-#: app_song/templates/song/modify_bands.html:86
-#: app_song/templates/song/modify_genres.html:89
+#: app_song/templates/song/metadata.html:243
+#: app_song/templates/song/modify_artists.html:92
+#: app_song/templates/song/modify_bands.html:92
+#: app_song/templates/song/modify_genres.html:95
 msgid "Confirmer la suppression de cet élément ?"
 msgstr ""
 
@@ -3646,9 +3758,9 @@ msgstr ""
 msgid "Aucun artiste disponible."
 msgstr ""
 
-#: app_song/templates/song/modify_artists.html:87
-#: app_song/templates/song/modify_bands.html:87
-#: app_song/templates/song/modify_genres.html:90
+#: app_song/templates/song/modify_artists.html:93
+#: app_song/templates/song/modify_bands.html:93
+#: app_song/templates/song/modify_genres.html:96
 msgid "⚡ utilisé au moins une fois"
 msgstr ""
 

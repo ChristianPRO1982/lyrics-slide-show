@@ -186,6 +186,7 @@
                                     data-display-session-id="{{ display_session_id }}"
                                     data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
                                 >
+                                    <div class="lyrics-master-blackout-frame" data-lyrics-blackout-frame aria-hidden="true"></div>
                                     <nav class="site-floating-actions lyrics-master-floating-actions" aria-label="{% trans 'Navigation rapide remote' %}" data-lyrics-floating-nav>
                                         <a
                                             href="#lyrics-master-slides-anchor"
@@ -256,7 +257,7 @@
                                         </div>
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier (personnalisable)" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
@@ -317,6 +318,8 @@
     <div id="lss-messagebox-root" hidden></div>
     <script id="lss-site-popup-config" type="application/json">{{ lss_site_popup_json|default:"{}"|safe }}</script>
     {{ runtime_payload|json_script:"lss-lyrics-runtime-payload" }}
+    {{ shortcuts_config|json_script:"lss-lyrics-shortcuts-config" }}
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <script>
         window.LSS_LYRICS_I18N = {
             openSecondScreenLabel: "{{ lyrics_i18n.openSecondScreenLabel|escapejs }}",
@@ -346,7 +349,19 @@
             chorusHideEmoji: "{{ lyrics_i18n.chorusHideEmoji|escapejs }}",
             chorusHideText: "{{ lyrics_i18n.chorusHideText|escapejs }}",
             shortcutsPopupTitle: "{{ lyrics_i18n.shortcutsPopupTitle|escapejs }}",
-            shortcutsPopupMessage: "{{ lyrics_i18n.shortcutsPopupMessage|escapejs }}"
+            shortcutsCustomizeButtonLabel: "{{ lyrics_i18n.shortcutsCustomizeButtonLabel|escapejs }}",
+            shortcutsPopupFooter: "{{ lyrics_i18n.shortcutsPopupFooter|escapejs }}",
+            shortcutsCustomizeTitle: "{{ lyrics_i18n.shortcutsCustomizeTitle|escapejs }}",
+            shortcutsCustomizeHelp: "{{ lyrics_i18n.shortcutsCustomizeHelp|escapejs }}",
+            shortcutsCaptureLabel: "{{ lyrics_i18n.shortcutsCaptureLabel|escapejs }}",
+            shortcutsClearSlotLabel: "{{ lyrics_i18n.shortcutsClearSlotLabel|escapejs }}",
+            shortcutsSaveLabel: "{{ lyrics_i18n.shortcutsSaveLabel|escapejs }}",
+            shortcutsCancelLabel: "{{ lyrics_i18n.shortcutsCancelLabel|escapejs }}",
+            shortcutsResetLabel: "{{ lyrics_i18n.shortcutsResetLabel|escapejs }}",
+            shortcutsGuestCustomizeMessage: "{{ lyrics_i18n.shortcutsGuestCustomizeMessage|escapejs }}",
+            shortcutsGuestCustomizeTitle: "{{ lyrics_i18n.shortcutsGuestCustomizeTitle|escapejs }}",
+            shortcutsSaveFailedTitle: "{{ lyrics_i18n.shortcutsSaveFailedTitle|escapejs }}",
+            shortcutsSaveFailedMessage: "{{ lyrics_i18n.shortcutsSaveFailedMessage|escapejs }}"
         };
     </script>
     <script src="{% static 'js/base.js' %}"></script>

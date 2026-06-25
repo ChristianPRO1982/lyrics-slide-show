@@ -58,8 +58,6 @@
 
     let reorderController = null;
     let tempSongCounter = 0;
-    let dirty = false;
-    let isSubmitting = false;
 
     const summaryNodes = {
         title: document.querySelector("[data-animation-summary-title]"),
@@ -366,7 +364,7 @@
     };
 
     const confirmUnsavedChanges = async () => {
-        if (!dirty) {
+        if (!unsavedController || !unsavedController.isDirty()) {
             return true;
         }
         const result = await messageBox.show({
@@ -785,11 +783,23 @@
         });
     };
 
-    let initialSnapshot = getCurrentSnapshot();
+    const unsavedChanges = window.LSSUnsavedChanges;
+    const unsavedController = unsavedChanges ? unsavedChanges.attach(form, {
+        getSnapshot: () => {
+            return JSON.stringify({
+                fields: readCurrentValues(),
+                orderedMix: String(orderedMixInput?.value || ""),
+                songsPayload: String(songsPayloadInput?.value || ""),
+            });
+        },
+    }) : null;
 
-    function refreshDirtyState() {
-        dirty = getCurrentSnapshot() !== initialSnapshot;
-    }
+    const refreshDirtyState = () => {
+        if (!unsavedController) {
+            return false;
+        }
+        return unsavedController.refresh();
+    };
 
     const readAnimationBaseStyle = () => {
         const values = readCurrentValues();
@@ -1222,7 +1232,9 @@
                     if (!confirmed) {
                         return;
                     }
-                    dirty = false;
+                    if (unsavedController) {
+                        unsavedController.reset();
+                    }
                     window.location.assign(goToLink.href);
                 });
             }
@@ -1318,11 +1330,6 @@
         refreshDirtyState();
     });
 
-    form.addEventListener("submit", () => {
-        isSubmitting = true;
-        dirty = false;
-    });
-
     hiddenFieldNames.forEach((name) => {
         const field = hiddenFields[name];
         if (!(field instanceof HTMLInputElement)) {
@@ -1337,21 +1344,14 @@
         secondaryList.classList.add("is-reorder-enabled");
     }
 
-    window.addEventListener("beforeunload", (event) => {
-        if (!dirty || isSubmitting) {
-            return;
-        }
-        event.preventDefault();
-        event.returnValue = "";
-    });
-
     applySummaryPreview();
     bindMainSongCards();
     updateSongsPayloadInput();
     updateOrderedMix();
     renderInsertSlots();
     ensureModeOnLoad();
-    initialSnapshot = getCurrentSnapshot();
-    refreshDirtyState();
+    if (unsavedController) {
+        unsavedController.reset();
+    }
     void initReorderModule();
 })();

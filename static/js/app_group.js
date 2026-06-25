@@ -1,8 +1,14 @@
 (() => {
     const messageBox = window.LSSMessageBox;
     const i18n = window.LSS_GROUP_I18N || {};
+    const unsavedChanges = window.LSSUnsavedChanges;
+    const settingsForm = document.querySelector("[data-group-settings-form]");
     const floatingSearch = document.querySelector("[data-group-search-floating]");
     const label = (key) => String(i18n[key] || "");
+
+    if (unsavedChanges && settingsForm instanceof HTMLFormElement) {
+        unsavedChanges.attach(settingsForm);
+    }
 
     if (floatingSearch && document.body && floatingSearch.parentElement !== document.body) {
         document.body.appendChild(floatingSearch);

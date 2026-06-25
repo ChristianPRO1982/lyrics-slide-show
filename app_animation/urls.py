@@ -14,6 +14,11 @@ urlpatterns = [
         name="lyrics_slide_show",
     ),
     path(
+        "<int:animation_id>/lyrics-slide-show/shortcuts/",
+        views.lyrics_slide_show_shortcuts,
+        name="lyrics_slide_show_shortcuts",
+    ),
+    path(
         "<int:animation_id>/lyrics-slide-show/display/",
         views.lyrics_slide_show_display,
         name="lyrics_slide_show_display",

@@ -35,6 +35,7 @@
     --site-popup-danger-ink: #6e2119;
     --site-action-bg: linear-gradient(180deg, rgba(255, 248, 232, 0.98), rgba(247, 231, 199, 0.92));
     --site-action-bg-hover: linear-gradient(180deg, rgba(255, 235, 189, 0.98), rgba(247, 231, 199, 0.92));
+    --site-action-radius: 18px;
 }
 
 body {

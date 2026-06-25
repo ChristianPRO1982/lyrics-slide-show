@@ -158,7 +158,7 @@
 
 {% endblock %}
 {% block content_footer %}
-    <form method="post" id="modify-song-form" data-song-edit-form>
+    <form method="post" id="modify-song-form" data-song-edit-form data-unsaved-guard>
         {% csrf_token %}
         <input type="hidden" name="next_url" value="" data-next-url-input>
         <input type="hidden" name="title" value="{{ song.title }}" data-song-title-hidden>
@@ -338,6 +338,7 @@
 {% block page_scripts %}
     {% include "song/modify_song_page_i18n.html" %}
     {{ all_messages_popup_markdown|json_script:"modify-song-all-messages-popup-markdown" }}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
         (() => {
@@ -373,6 +374,9 @@
                 if (hiddenTitle && titleInput) hiddenTitle.value = titleInput.value;
                 if (hiddenSubtitle && subtitleInput) hiddenSubtitle.value = subtitleInput.value;
                 if (hiddenDescription && descriptionInput) hiddenDescription.value = descriptionInput.value;
+                if (window.LSSModifySong?.refreshUnsavedChanges) {
+                    window.LSSModifySong.refreshUnsavedChanges();
+                }
             };
 
             openButton.addEventListener("click", showCards);
@@ -408,9 +412,25 @@
                 positionStep: 2,
                 vibrateOnTargetChange: false,
                 scrollToMovedItemAfterDrop: true,
+                onChange: () => {
+                    closeBlockEditors();
+                    if (window.LSSModifySong?.refreshUnsavedChanges) {
+                        window.LSSModifySong.refreshUnsavedChanges();
+                    }
+                },
                 onStart: closeBlockEditors,
-                onEnd: closeBlockEditors,
-                onCancel: closeBlockEditors,
+                onEnd: () => {
+                    closeBlockEditors();
+                    if (window.LSSModifySong?.refreshUnsavedChanges) {
+                        window.LSSModifySong.refreshUnsavedChanges();
+                    }
+                },
+                onCancel: () => {
+                    closeBlockEditors();
+                    if (window.LSSModifySong?.refreshUnsavedChanges) {
+                        window.LSSModifySong.refreshUnsavedChanges();
+                    }
+                },
             });
         }
     </script>

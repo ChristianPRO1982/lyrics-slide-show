@@ -18,9 +18,21 @@
     if (!payload || !Array.isArray(payload.slides) || !Array.isArray(payload.songs)) {
         return;
     }
+    const shortcutsConfigNode = document.getElementById("lss-lyrics-shortcuts-config");
+    let shortcutsConfig = {};
+    if (shortcutsConfigNode && shortcutsConfigNode.textContent) {
+        try {
+            shortcutsConfig = JSON.parse(shortcutsConfigNode.textContent);
+        } catch (_error) {
+            shortcutsConfig = {};
+        }
+    }
 
     const i18n = window.LSS_LYRICS_I18N || {};
     const label = (key) => String(i18n[key] || "");
+    const shortcutActionLabels = shortcutsConfig && typeof shortcutsConfig === "object" && shortcutsConfig.actionLabels
+        ? shortcutsConfig.actionLabels
+        : {};
 
     const warnDroppedIndex = (context, value, reason) => {
         console.warn(`[LSS remote] Ignored index (${context}):`, value, `(${reason})`);
@@ -47,6 +59,14 @@
             return null;
         }
         return parsed;
+    };
+
+    const getCsrfToken = () => {
+        const field = document.querySelector("input[name=csrfmiddlewaretoken]");
+        if (field instanceof HTMLInputElement && field.value) {
+            return field.value;
+        }
+        return "";
     };
 
     const sanitizeIndexList = (values, options = {}) => {
@@ -113,6 +133,9 @@
     const floatingUpButtonNode = document.querySelector("[data-lyrics-floating-up]");
     const floatingDownButtonNode = document.querySelector("[data-lyrics-floating-down]");
     const floatingSongLinksNode = document.querySelector("[data-lyrics-floating-song-links]");
+    const blackModeButtonNode = document.querySelector("[data-lyrics-action='black']");
+    const qrToggleButtonNode = document.querySelector("[data-lyrics-action='toggle-qr']");
+    const blackoutFrameNode = document.querySelector("[data-lyrics-blackout-frame]");
     if (floatingNavNode && document.body && floatingNavNode.parentElement !== document.body) {
         document.body.appendChild(floatingNavNode);
     }
@@ -140,6 +163,15 @@
         chorusCursorBySong: {},
         progressCursorBySong: {},
         f11ReminderActive: false,
+        shortcuts: {
+            siteBindings: shortcutsConfig.siteBindings || {},
+            effectiveBindings: shortcutsConfig.effectiveBindings || {},
+            formBindings: shortcutsConfig.formBindings || {},
+            actionOrder: Array.isArray(shortcutsConfig.actionOrder) ? shortcutsConfig.actionOrder : [],
+            actionToRemoteAction: shortcutsConfig.actionToRemoteAction || {},
+            canCustomizeShortcuts: Boolean(shortcutsConfig.canCustomizeShortcuts),
+            customizeUrl: String(shortcutsConfig.customizeUrl || "").trim(),
+        },
     };
 
     const bridge = {
@@ -152,6 +184,205 @@
     let floatingSongWindowStart = 0;
 
     const slideCards = Array.from(document.querySelectorAll("[data-lyrics-slide-card]"));
+
+    const normalizeShortcutToken = (value) => {
+        const raw = String(value ?? "");
+        if (raw === " ") {
+            return "space";
+        }
+        const trimmed = raw.trim().toLowerCase();
+        if (!trimmed) {
+            return "";
+        }
+        const aliases = {
+            "space bar": "space",
+            espace: "space",
+            entrée: "enter",
+            entree: "enter",
+            "↑": "arrowup",
+            "↓": "arrowdown",
+            "←": "arrowleft",
+            "→": "arrowright",
+            "⬆️": "arrowup",
+            "⬇️": "arrowdown",
+            "⬅️": "arrowleft",
+            "➡️": "arrowright",
+        };
+        return aliases[trimmed] || trimmed;
+    };
+
+    const formatShortcutToken = (value) => {
+        const token = normalizeShortcutToken(value);
+        const labels = {
+            escape: "Esc",
+            space: "Espace",
+            enter: "Enter",
+            tab: "Tab",
+            arrowup: "↑",
+            arrowdown: "↓",
+            arrowleft: "←",
+            arrowright: "→",
+            delete: "Suppr",
+            backspace: "Retour arrière",
+            pageup: "Page Up",
+            pagedown: "Page Down",
+            capslock: "Caps Lock",
+        };
+        if (labels[token]) {
+            return labels[token];
+        }
+        if (token.length === 1 && /[a-z]/.test(token)) {
+            return token.toUpperCase();
+        }
+        if (/^f\d+$/i.test(token)) {
+            return token.toUpperCase();
+        }
+        return token;
+    };
+
+    const serializeBindingsForField = (values) => {
+        if (!Array.isArray(values) || !values.length) {
+            return "";
+        }
+        return values.join(",");
+    };
+
+    const buildSiteDefaultFieldValues = () => {
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        const values = {};
+        actionOrder.forEach((action) => {
+            const siteValues = Array.isArray(state.shortcuts.siteBindings?.[action])
+                ? state.shortcuts.siteBindings[action].filter((token) => !(action === "black" && token === "escape"))
+                : [];
+            values[action] = serializeBindingsForField(siteValues);
+        });
+        return values;
+    };
+
+    const normalizeBindingsMap = (rawBindings) => {
+        const normalized = {};
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        actionOrder.forEach((action) => {
+            const rawValues = Array.isArray(rawBindings?.[action]) ? rawBindings[action] : [];
+            const seen = new Set();
+            normalized[action] = rawValues
+                .map((value) => normalizeShortcutToken(value))
+                .filter((value) => {
+                    if (!value || seen.has(value)) {
+                        return false;
+                    }
+                    seen.add(value);
+                    return true;
+                });
+        });
+        return normalized;
+    };
+
+    const buildShortcutActionIndex = () => {
+        const index = new Map();
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        actionOrder.forEach((action) => {
+            const remoteAction = String(state.shortcuts.actionToRemoteAction?.[action] || "").trim();
+            if (!remoteAction) {
+                return;
+            }
+            const tokens = Array.isArray(state.shortcuts.effectiveBindings?.[action])
+                ? state.shortcuts.effectiveBindings[action]
+                : [];
+            tokens.forEach((token) => {
+                const normalized = normalizeShortcutToken(token);
+                if (!normalized || index.has(normalized)) {
+                    return;
+                }
+                index.set(normalized, remoteAction);
+            });
+        });
+        return index;
+    };
+
+    const setCustomizationPopupFeedback = (message, isError = false) => {
+        const rootNode = document.getElementById("lss-messagebox-root");
+        if (!(rootNode instanceof HTMLElement)) {
+            return;
+        }
+        const contentNode = rootNode.querySelector(".lss-messagebox-content");
+        if (!(contentNode instanceof HTMLElement)) {
+            return;
+        }
+        let feedbackNode = contentNode.querySelector(".lss-lyrics-shortcuts-feedback");
+        if (!message) {
+            if (feedbackNode instanceof HTMLElement) {
+                feedbackNode.remove();
+            }
+            return;
+        }
+        if (!(feedbackNode instanceof HTMLElement)) {
+            feedbackNode = document.createElement("p");
+            feedbackNode.className = "lss-lyrics-shortcuts-feedback";
+            contentNode.insertBefore(feedbackNode, contentNode.querySelector(".lss-messagebox-form"));
+        }
+        feedbackNode.textContent = String(message);
+        feedbackNode.style.color = isError ? "var(--site-color-danger, #b00020)" : "";
+        feedbackNode.style.fontWeight = isError ? "600" : "";
+    };
+
+    const clearCustomizationPopupFieldErrors = () => {
+        const rootNode = document.getElementById("lss-messagebox-root");
+        if (!(rootNode instanceof HTMLElement)) {
+            return;
+        }
+        rootNode.querySelectorAll(".lss-messagebox-field.is-invalid").forEach((wrapper) => {
+            wrapper.classList.remove("is-invalid");
+        });
+        rootNode.querySelectorAll(".lss-messagebox-error").forEach((errorNode) => {
+            if (errorNode instanceof HTMLElement) {
+                errorNode.textContent = "";
+            }
+        });
+        rootNode.querySelectorAll("[aria-invalid='true']").forEach((input) => {
+            if (input instanceof HTMLElement) {
+                input.removeAttribute("aria-invalid");
+                input.removeAttribute("aria-describedby");
+            }
+        });
+    };
+
+    const buildShortcutHelpMarkdown = () => {
+        const lines = [];
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        actionOrder.forEach((action) => {
+            const values = Array.isArray(state.shortcuts.effectiveBindings?.[action])
+                ? state.shortcuts.effectiveBindings[action]
+                : [];
+            if (!values.length) {
+                return;
+            }
+            lines.push(`- \`${values.map((value) => formatShortcutToken(value)).join("`, `")}\` : ${String(shortcutActionLabels[action] || action)}`);
+        });
+        const footer = label("shortcutsPopupFooter");
+        if (footer) {
+            lines.push("", footer);
+        }
+        return lines.join("\n");
+    };
+
+    const updateShortcutStateFromPayload = (payloadValue) => {
+        if (!payloadValue || typeof payloadValue !== "object") {
+            return;
+        }
+        if (payloadValue.siteBindings && typeof payloadValue.siteBindings === "object") {
+            state.shortcuts.siteBindings = normalizeBindingsMap(payloadValue.siteBindings);
+        }
+        if (payloadValue.effectiveBindings && typeof payloadValue.effectiveBindings === "object") {
+            state.shortcuts.effectiveBindings = normalizeBindingsMap(payloadValue.effectiveBindings);
+        }
+        if (payloadValue.savedBindings && typeof payloadValue.savedBindings === "object") {
+            state.shortcuts.formBindings = normalizeBindingsMap(payloadValue.savedBindings);
+        }
+        if (payloadValue.formBindings && typeof payloadValue.formBindings === "object") {
+            state.shortcuts.formBindings = normalizeBindingsMap(payloadValue.formBindings);
+        }
+    };
 
     const getSongByIndex = (songIndex) => {
         if (!Number.isInteger(songIndex) || songIndex < 0 || songIndex >= songs.length) {
@@ -848,6 +1079,17 @@
         setText(scrollToggleTextNode, state.blockScrollKeys ? label("scrollStopText") : label("scrollAllowText"));
         setText(chorusToggleEmojiNode, state.hideChorusesInGrid ? label("chorusHideEmoji") : label("chorusShowEmoji"));
         setText(chorusToggleTextNode, state.hideChorusesInGrid ? label("chorusHideText") : label("chorusShowText"));
+        if (blackModeButtonNode instanceof HTMLElement) {
+            blackModeButtonNode.classList.toggle("is-alert-active", state.blackMode);
+            blackModeButtonNode.setAttribute("aria-pressed", state.blackMode ? "true" : "false");
+        }
+        if (qrToggleButtonNode instanceof HTMLElement) {
+            qrToggleButtonNode.classList.toggle("is-alert-active", state.qrMode);
+            qrToggleButtonNode.setAttribute("aria-pressed", state.qrMode ? "true" : "false");
+        }
+        if (blackoutFrameNode instanceof HTMLElement) {
+            blackoutFrameNode.classList.toggle("is-visible", state.blackMode);
+        }
     };
 
     const refreshQrButton = () => {
@@ -889,6 +1131,170 @@
             showCloseButton: true,
             buttons: [{ id: "ok", label: label("okLabel"), tone: "neutral" }],
         });
+    };
+
+    const openShortcutsGuestInfoPopup = async () => {
+        await maybeShowPopup(
+            label("shortcutsGuestCustomizeTitle"),
+            label("shortcutsGuestCustomizeMessage"),
+        );
+    };
+
+    const buildShortcutFormFields = () => {
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        return actionOrder.map((action) => ({
+            id: action,
+            label: String(shortcutActionLabels[action] || action),
+            type: "shortcut-slots",
+            value: serializeBindingsForField(state.shortcuts.formBindings?.[action]),
+            emptySlotLabel: "",
+            captureSlotLabel: label("shortcutsCaptureLabel"),
+            clearSlotLabel: label("shortcutsClearSlotLabel"),
+            required: false,
+        }));
+    };
+
+    const saveShortcutBindings = async (values, options = {}) => {
+        const endpoint = String(state.shortcuts.customizeUrl || "").trim();
+        const csrfToken = getCsrfToken();
+        if (!endpoint || !csrfToken) {
+            throw new Error("Missing shortcut customization endpoint.");
+        }
+        const body = new URLSearchParams();
+        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+        actionOrder.forEach((action) => {
+            body.set(action, String(values?.[action] || ""));
+        });
+        if (options.useSiteDefaults) {
+            body.set("use_site_defaults", "1");
+        }
+        const response = await fetch(endpoint, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: body.toString(),
+        });
+        if (!response.ok) {
+            throw new Error("Unable to save shortcut bindings.");
+        }
+        return await response.json();
+    };
+
+    const openCustomizeShortcutsPopup = async () => {
+        if (!messageBox || typeof messageBox.show !== "function") {
+            return;
+        }
+
+        await messageBox.show({
+            title: label("shortcutsCustomizeTitle"),
+            messageMarkdown: label("shortcutsCustomizeHelp"),
+            size: "wide",
+            showCloseButton: true,
+            buttons: [
+                {
+                    id: "save",
+                    label: label("shortcutsSaveLabel"),
+                    tone: "success",
+                    validate: false,
+                    onClick: async ({ values, keepOpen, setFieldError, setFieldValue }) => {
+                        keepOpen();
+                        clearCustomizationPopupFieldErrors();
+                        setCustomizationPopupFeedback("");
+                        try {
+                            const siteDefaultFieldValues = buildSiteDefaultFieldValues();
+                            const useSiteDefaults = Object.keys(siteDefaultFieldValues).every(
+                                (action) => String(values?.[action] || "").trim() === String(siteDefaultFieldValues[action] || "").trim(),
+                            );
+                            const payloadValue = await saveShortcutBindings(values, { useSiteDefaults });
+                            updateShortcutStateFromPayload(payloadValue);
+                            const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+                            actionOrder.forEach((action) => {
+                                setFieldValue(action, serializeBindingsForField(state.shortcuts.formBindings?.[action]));
+                            });
+                            const fieldErrors = payloadValue && typeof payloadValue === "object" && payloadValue.fieldErrors
+                                ? payloadValue.fieldErrors
+                                : {};
+                            const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+                            Object.entries(fieldErrors).forEach(([fieldId, message]) => {
+                                setFieldError(fieldId, String(message || ""));
+                            });
+                            setCustomizationPopupFeedback(
+                                String(payloadValue?.globalMessage || ""),
+                                hasFieldErrors,
+                            );
+                            if (!hasFieldErrors) {
+                                state.shortcuts.formBindings = normalizeBindingsMap(state.shortcuts.formBindings);
+                                window.LSSMessageBox.close({
+                                    shortcutsSaved: true,
+                                });
+                            }
+                            return false;
+                        } catch (_error) {
+                            setCustomizationPopupFeedback(label("shortcutsSaveFailedMessage"), true);
+                            return false;
+                        }
+                    },
+                },
+                {
+                    id: "reset",
+                    label: label("shortcutsResetLabel"),
+                    tone: "warning",
+                    validate: false,
+                    onClick: ({ keepOpen, setFieldValue }) => {
+                        keepOpen();
+                        clearCustomizationPopupFieldErrors();
+                        setCustomizationPopupFeedback("");
+                        const siteFieldValues = buildSiteDefaultFieldValues();
+                        const actionOrder = Array.isArray(state.shortcuts.actionOrder) ? state.shortcuts.actionOrder : [];
+                        actionOrder.forEach((action) => {
+                            setFieldValue(action, String(siteFieldValues[action] || ""));
+                        });
+                        return false;
+                    },
+                },
+                {
+                    id: "cancel",
+                    label: label("shortcutsCancelLabel"),
+                    tone: "neutral",
+                    validate: false,
+                },
+            ],
+            fields: buildShortcutFormFields(),
+        });
+    };
+
+    const openShortcutsHelpPopup = async () => {
+        if (!messageBox || typeof messageBox.show !== "function") {
+            return;
+        }
+
+        const result = await messageBox.show({
+            title: label("shortcutsPopupTitle"),
+            messageMarkdown: buildShortcutHelpMarkdown(),
+            showCloseButton: true,
+            size: "wide",
+            buttons: [
+                {
+                    id: "customize",
+                    label: label("shortcutsCustomizeButtonLabel"),
+                    tone: "success",
+                    validate: false,
+                },
+                { id: "ok", label: label("okLabel"), tone: "neutral", validate: false },
+            ],
+        });
+        if (result.buttonId !== "customize") {
+            return;
+        }
+        if (!state.shortcuts.canCustomizeShortcuts) {
+            await openShortcutsGuestInfoPopup();
+            return;
+        }
+        await openCustomizeShortcutsPopup();
     };
 
     const openDisplayWindow = async () => {
@@ -941,7 +1347,7 @@
             return;
         }
         if (action === "show-shortcuts") {
-            await maybeShowPopup(label("shortcutsPopupTitle"), label("shortcutsPopupMessage"));
+            await openShortcutsHelpPopup();
             return;
         }
         if (action === "black") {
@@ -1065,8 +1471,18 @@
         if (target.isContentEditable) {
             return true;
         }
+        const popupRoot = target.closest("#lss-messagebox-root");
+        if (popupRoot instanceof HTMLElement && !popupRoot.hidden) {
+            return true;
+        }
         const tagName = target.tagName.toLowerCase();
-        return ["input", "textarea", "select", "button"].includes(tagName);
+        if (["input", "textarea", "select"].includes(tagName)) {
+            return true;
+        }
+        if (tagName === "button") {
+            return !Boolean(target.closest("[data-lyrics-master-root]"));
+        }
+        return false;
     };
 
     const keydownHandler = async (event) => {
@@ -1074,56 +1490,34 @@
             return;
         }
 
-        const key = String(event.key || "").toLowerCase();
-        const scrollBlockKeys = ["arrowup", "arrowdown", "arrowleft", "arrowright", " "];
+        const key = normalizeShortcutToken(event.key || "");
+        const scrollBlockKeys = [
+            "arrowup",
+            "arrowdown",
+            "arrowleft",
+            "arrowright",
+            "space",
+            "pageup",
+            "pagedown",
+        ];
         if (state.blockScrollKeys && scrollBlockKeys.includes(key)) {
             event.preventDefault();
         }
 
-        if (key === "escape" || key === "m") {
-            toggleBlackMode();
-            return;
-        }
-        if (key === "arrowup" || key === "b") {
-            navigateSlide(-1);
-            return;
-        }
-        if (key === "arrowdown" || key === "s" || key === "v" || key === " ") {
-            navigateSlide(1);
-            return;
-        }
-        if (key === "c" || key === "r") {
-            navigateChorus();
-            return;
-        }
-        if (key === "arrowleft" || key === "f") {
-            setCurrentSong(state.selectedSongIndex - 1);
-            return;
-        }
-        if (key === "arrowright" || key === "enter" || key === "n") {
-            setCurrentSong(state.selectedSongIndex + 1);
-            return;
-        }
-        if (key === "a" || key === "d") {
-            toggleChorusVisibility();
-            return;
-        }
-        if (key === "l") {
-            toggleScrollMode();
-            return;
-        }
-        if (key === "q") {
-            toggleQrMode();
-            return;
-        }
-        if (key === "o") {
-            await openDisplayWindow();
+        const actionByKey = buildShortcutActionIndex();
+        const resolvedAction = actionByKey.get(key);
+        if (resolvedAction) {
+            await handleAction(resolvedAction);
         }
     };
 
     window.addEventListener("keydown", (event) => {
         void keydownHandler(event);
     }, { passive: false });
+
+    state.shortcuts.siteBindings = normalizeBindingsMap(state.shortcuts.siteBindings);
+    state.shortcuts.effectiveBindings = normalizeBindingsMap(state.shortcuts.effectiveBindings);
+    state.shortcuts.formBindings = normalizeBindingsMap(state.shortcuts.formBindings);
 
     restoreState();
     normalizeState();

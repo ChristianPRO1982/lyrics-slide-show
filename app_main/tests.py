@@ -1399,6 +1399,9 @@ class AccountRoleTests(TestCase):
         response = account(request)
 
         self.assertContains(response, "Message de modération")
+        self.assertContains(response, "data-account-moderation-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertNotContains(response, "Paramètres administrateur")
         self.assertRegex(
             response.content.decode(),
@@ -1432,6 +1435,10 @@ class AccountRoleTests(TestCase):
 
         self.assertContains(response, "Message de modération")
         self.assertContains(response, "Paramètres administrateur")
+        self.assertContains(response, "data-account-moderation-form")
+        self.assertContains(response, "data-account-admin-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Membres du site")
         self.assertRegex(
             response.content.decode(),
@@ -2020,6 +2027,9 @@ class SiteParamsViewCoverageTests(TestCase):
         self._login(admin=True)
         response = self.client.get(reverse("site_params"), {"language": "zz"})
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-site-params-form")
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertEqual(response.context["selected_language"], "fr")
 
     def test_site_params_valid_post_creates_language_record(self):

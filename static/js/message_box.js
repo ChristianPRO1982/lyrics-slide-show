@@ -19,7 +19,7 @@
     };
 
     const allowedButtonTones = new Set(["neutral", "success", "warning", "danger"]);
-    const allowedFieldTypes = new Set(["text", "email", "password", "textarea", "color", "number", "select", "datetime-local"]);
+    const allowedFieldTypes = new Set(["text", "email", "password", "textarea", "color", "number", "select", "datetime-local", "shortcut-slots"]);
     const allowedSizes = new Set(["compact", "default", "wide"]);
     const themeConfig = window.LSS_THEME_CONFIG || null;
     const colorSchemeQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
@@ -42,6 +42,94 @@
         }
 
         return String(value).replace(/["\\]/g, "\\$&");
+    };
+
+    const parseCommaSeparatedTokens = (value, maxCount = 3) => {
+        const seen = new Set();
+        return String(value ?? "")
+            .split(",")
+            .map((item) => String(item || "").trim())
+            .filter((item) => {
+                if (!item || seen.has(item)) {
+                    return false;
+                }
+                seen.add(item);
+                return true;
+            })
+            .slice(0, maxCount);
+    };
+
+    const serializeShortcutSlotTokens = (tokens) => {
+        return (Array.isArray(tokens) ? tokens : [])
+            .map((token) => String(token || "").trim())
+            .filter(Boolean)
+            .join(",");
+    };
+
+    const normalizeShortcutCaptureToken = (rawValue) => {
+        const raw = String(rawValue ?? "");
+        if (raw === " ") {
+            return "space";
+        }
+
+        const trimmed = raw.trim();
+        if (!trimmed) {
+            return "";
+        }
+
+        const normalized = trimmed.toLowerCase();
+        const aliases = {
+            "space bar": "space",
+            spacebar: "space",
+            espace: "space",
+            entrée: "enter",
+            entree: "enter",
+            return: "enter",
+            esc: "escape",
+            del: "delete",
+            suppr: "delete",
+            "↑": "arrowup",
+            "⬆️": "arrowup",
+            "↓": "arrowdown",
+            "⬇️": "arrowdown",
+            "←": "arrowleft",
+            "⬅️": "arrowleft",
+            "→": "arrowright",
+            "➡️": "arrowright",
+            "page up": "pageup",
+            "page down": "pagedown",
+            "caps lock": "capslock",
+        };
+        return aliases[normalized] || normalized;
+    };
+
+    const formatShortcutDisplayToken = (value) => {
+        const token = normalizeShortcutCaptureToken(value);
+        const labels = {
+            escape: "Esc",
+            space: "Espace",
+            enter: "Enter",
+            tab: "Tab",
+            arrowup: "↑",
+            arrowdown: "↓",
+            arrowleft: "←",
+            arrowright: "→",
+            delete: "Suppr",
+            backspace: "Retour arrière",
+            pageup: "Page Up",
+            pagedown: "Page Down",
+            capslock: "Caps Lock",
+        };
+        if (labels[token]) {
+            return labels[token];
+        }
+        if (token.length === 1 && /[a-z]/.test(token)) {
+            return token.toUpperCase();
+        }
+        if (/^f\d+$/i.test(token)) {
+            return token.toUpperCase();
+        }
+        return token;
     };
 
     const findFieldInput = (container, fieldId) => {
@@ -306,6 +394,9 @@
             }
 
             const type = allowedFieldTypes.has(field.type) ? field.type : "text";
+            const slotCount = Number.isInteger(field.slotCount) && field.slotCount > 0
+                ? Math.min(field.slotCount, 3)
+                : 3;
 
             return {
                 id: field.id,
@@ -323,6 +414,10 @@
                 step: Number.isFinite(field.step) && Number(field.step) > 0 ? Number(field.step) : null,
                 size: type === "select" && Number.isInteger(field.size) && field.size > 1 ? field.size : null,
                 options: type === "select" ? normalizeSelectOptions(field.options) : [],
+                slotCount,
+                emptySlotLabel: String(field.emptySlotLabel ?? ""),
+                captureSlotLabel: String(field.captureSlotLabel ?? ""),
+                clearSlotLabel: String(field.clearSlotLabel ?? ""),
             };
         });
     };
@@ -471,7 +566,7 @@
 
         const label = document.createElement("label");
         label.className = "lss-messagebox-label";
-        label.htmlFor = `lss-messagebox-field-${field.id}`;
+        label.id = `lss-messagebox-field-label-${field.id}`;
         label.textContent = field.label;
 
         if (field.required) {
@@ -481,6 +576,157 @@
             label.appendChild(required);
         }
 
+        if (field.type === "shortcut-slots") {
+            const group = document.createElement("div");
+            group.className = "lss-messagebox-shortcut-slots";
+            group.setAttribute("role", "group");
+            group.setAttribute("aria-labelledby", label.id);
+
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.id = `lss-messagebox-field-${field.id}`;
+            hiddenInput.name = field.id;
+            hiddenInput.dataset.fieldId = field.id;
+
+            const slotButtons = [];
+            const clearButtons = [];
+            const tokens = new Array(field.slotCount).fill("");
+            let captureIndex = null;
+
+            const syncHiddenValue = () => {
+                hiddenInput.value = serializeShortcutSlotTokens(tokens);
+            };
+
+            const renderSlots = () => {
+                slotButtons.forEach((slotButton, index) => {
+                    const token = tokens[index];
+                    const isCapturing = captureIndex === index;
+                    slotButton.classList.toggle("is-capturing", isCapturing);
+                    slotButton.classList.toggle("is-empty", !token && !isCapturing);
+                    slotButton.textContent = isCapturing
+                        ? (field.captureSlotLabel || "...")
+                        : (token ? formatShortcutDisplayToken(token) : (field.emptySlotLabel || ""));
+                    slotButton.setAttribute(
+                        "aria-label",
+                        token
+                            ? `${field.label} ${index + 1}: ${formatShortcutDisplayToken(token)}`
+                            : `${field.label} ${index + 1}`,
+                    );
+                    if (clearButtons[index] instanceof HTMLButtonElement) {
+                        clearButtons[index].hidden = !token;
+                        clearButtons[index].disabled = !token;
+                    }
+                });
+                syncHiddenValue();
+            };
+
+            const applySerializedValue = (nextValue) => {
+                const nextTokens = parseCommaSeparatedTokens(nextValue, field.slotCount);
+                for (let index = 0; index < field.slotCount; index += 1) {
+                    tokens[index] = nextTokens[index] || "";
+                }
+                captureIndex = null;
+                renderSlots();
+            };
+
+            for (let index = 0; index < field.slotCount; index += 1) {
+                const slotWrapper = document.createElement("div");
+                slotWrapper.className = "lss-messagebox-shortcut-slot-wrapper";
+
+                const slotButton = document.createElement("button");
+                slotButton.type = "button";
+                slotButton.className = "lss-messagebox-shortcut-slot";
+                slotButton.dataset.shortcutSlotIndex = String(index);
+
+                const clearButton = document.createElement("button");
+                clearButton.type = "button";
+                clearButton.className = "lss-messagebox-shortcut-slot-clear";
+                clearButton.dataset.shortcutSlotClear = String(index);
+                clearButton.textContent = "×";
+                clearButton.setAttribute("aria-label", field.clearSlotLabel || "Effacer");
+                clearButton.title = field.clearSlotLabel || "Effacer";
+                clearButton.addEventListener("click", () => {
+                    tokens[index] = "";
+                    captureIndex = null;
+                    renderSlots();
+                    hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                    hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+
+                slotButton.addEventListener("click", () => {
+                    captureIndex = index;
+                    renderSlots();
+                    slotButton.focus();
+                });
+
+                slotButtons.push(slotButton);
+                clearButtons.push(clearButton);
+                slotWrapper.append(slotButton, clearButton);
+                group.appendChild(slotWrapper);
+            }
+
+            const error = document.createElement("p");
+            error.className = "lss-messagebox-error";
+            error.id = `lss-messagebox-error-${field.id}`;
+            error.setAttribute("aria-live", "polite");
+
+            wrapper.append(label, group, hiddenInput, error);
+            label.htmlFor = slotButtons[0].id = `lss-messagebox-shortcut-slot-${field.id}-0`;
+            slotButtons.forEach((slotButton, index) => {
+                if (!slotButton.id) {
+                    slotButton.id = `lss-messagebox-shortcut-slot-${field.id}-${index}`;
+                }
+            });
+            applySerializedValue(field.value);
+
+            return {
+                wrapper,
+                controller: {
+                    fieldId: field.id,
+                    getFocusTarget: () => slotButtons[0] || null,
+                    setValue: (nextValue) => {
+                        applySerializedValue(nextValue);
+                    },
+                    handleKeyDown: (event) => {
+                        if (captureIndex === null) {
+                            return false;
+                        }
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        if (event.key === "Escape") {
+                            captureIndex = null;
+                            renderSlots();
+                            return true;
+                        }
+
+                        if (event.ctrlKey || event.altKey || event.metaKey) {
+                            return true;
+                        }
+
+                        const token = normalizeShortcutCaptureToken(event.key);
+                        if (!token || token === "escape") {
+                            return true;
+                        }
+
+                        tokens.forEach((value, index) => {
+                            if (index !== captureIndex && value === token) {
+                                tokens[index] = "";
+                            }
+                        });
+                        tokens[captureIndex] = token;
+                        captureIndex = null;
+                        renderSlots();
+                        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+                        return true;
+                    },
+                },
+            };
+        }
+
+        label.htmlFor = `lss-messagebox-field-${field.id}`;
         const isTextArea = field.type === "textarea";
         const isSelect = field.type === "select";
         const input = document.createElement(isTextArea ? "textarea" : (isSelect ? "select" : "input"));
@@ -555,7 +801,7 @@
 
         wrapper.append(label, input, error);
 
-        return wrapper;
+        return { wrapper, controller: null };
     };
 
     const buildDialog = (normalizedConfig) => {
@@ -661,6 +907,7 @@
 
         let form = null;
         let tabbedSelectController = null;
+        const fieldControllers = new Map();
 
         if (normalizedConfig.fields.length) {
             form = document.createElement("form");
@@ -668,7 +915,11 @@
             form.noValidate = true;
 
             normalizedConfig.fields.forEach((field) => {
-                form.appendChild(createFieldElement(field));
+                const fieldElement = createFieldElement(field);
+                form.appendChild(fieldElement.wrapper);
+                if (fieldElement.controller && fieldElement.controller.fieldId) {
+                    fieldControllers.set(fieldElement.controller.fieldId, fieldElement.controller);
+                }
             });
 
             content.appendChild(form);
@@ -809,6 +1060,7 @@
             footer,
             previewElement,
             tabbedSelectController,
+            fieldControllers,
         };
     };
 
@@ -892,6 +1144,10 @@
         }
 
         input.value = nextValue;
+        const fieldController = state.fieldControllers instanceof Map ? state.fieldControllers.get(fieldId) : null;
+        if (fieldController && typeof fieldController.setValue === "function") {
+            fieldController.setValue(nextValue);
+        }
         return true;
     };
 
@@ -1102,16 +1358,24 @@
         if (initialFocus === "close" && state.closeButton) {
             target = state.closeButton;
         } else if (initialFocus === "first-field" && state.form) {
-            target = state.form.querySelector("input[data-field-id], textarea[data-field-id], select[data-field-id]");
+            target = state.form.querySelector(
+                "input[data-field-id]:not([type='hidden']), textarea[data-field-id], select[data-field-id], .lss-messagebox-shortcut-slot"
+            );
         } else if (initialFocus && initialFocus.startsWith("button:")) {
             target = state.panel.querySelector(`[data-button-id="${escapeSelectorValue(initialFocus.slice(7))}"]`);
         } else if (initialFocus && initialFocus.startsWith("field:")) {
-            target = findFieldInput(state.panel, initialFocus.slice(6));
+            const fieldId = initialFocus.slice(6);
+            const fieldController = state.fieldControllers instanceof Map ? state.fieldControllers.get(fieldId) : null;
+            target = fieldController && typeof fieldController.getFocusTarget === "function"
+                ? fieldController.getFocusTarget()
+                : findFieldInput(state.panel, fieldId);
         }
 
         if (!(target instanceof HTMLElement)) {
             if (state.form) {
-                target = state.form.querySelector("input[data-field-id], textarea[data-field-id], select[data-field-id]");
+                target = state.form.querySelector(
+                    "input[data-field-id]:not([type='hidden']), textarea[data-field-id], select[data-field-id], .lss-messagebox-shortcut-slot"
+                );
             }
         }
 
@@ -1165,6 +1429,14 @@
     const handleKeyDown = (state, event) => {
         if (!activeState || activeState !== state) {
             return;
+        }
+
+        if (state.fieldControllers instanceof Map) {
+            for (const controller of state.fieldControllers.values()) {
+                if (controller && typeof controller.handleKeyDown === "function" && controller.handleKeyDown(event)) {
+                    return;
+                }
+            }
         }
 
         trapFocus(state, event);

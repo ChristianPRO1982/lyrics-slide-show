@@ -29,7 +29,7 @@
 
 {% block content_footer %}
     <section class="song-list-section song-meta-crud">
-        <form method="post" class="song-meta-crud-form">
+        <form method="post" class="song-meta-crud-form" data-song-meta-crud-form data-unsaved-guard>
             {% csrf_token %}
             <input type="hidden" name="action" value="save">
             <p><button type="submit" class="site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
@@ -79,9 +79,15 @@
 {% endblock %}
 
 {% block page_scripts %}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script>
         (() => {
             const messageBox = window.LSSMessageBox;
+            const unsavedChanges = window.LSSUnsavedChanges;
+            const form = document.querySelector("[data-song-meta-crud-form]");
+            const unsavedController = (
+                unsavedChanges && form instanceof HTMLFormElement
+            ) ? unsavedChanges.attach(form) : null;
             const labels = {
                 title: "{% trans 'Confirmation' %}",
                 yes: "{% trans 'Oui' %}",
@@ -123,6 +129,9 @@
 
                     if (result.buttonId === "yes") {
                         checkbox.checked = true;
+                    }
+                    if (unsavedController) {
+                        unsavedController.refresh();
                     }
                 });
             });

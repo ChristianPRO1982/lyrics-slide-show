@@ -8,7 +8,7 @@ import uuid
 from django.contrib import messages
 from django.conf import settings
 from django.db import transaction
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -38,11 +38,72 @@ from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
 )
+from .services.shortcuts import (
+    SHORTCUT_ACTION_ORDER,
+    SHORTCUT_ACTION_TO_REMOTE_ACTION,
+    build_effective_shortcut_bindings,
+    build_form_shortcut_bindings,
+    build_site_shortcut_bindings,
+    format_shortcut_token,
+    load_member_shortcut_bindings,
+    save_member_shortcut_bindings,
+    validate_shortcut_submission,
+)
 
 try:
     import qrcode
 except Exception:  # pragma: no cover - optional dependency in dev envs
     qrcode = None
+
+
+def _shortcut_action_labels() -> dict[str, str]:
+    return {
+        "black": _("BLACK MODE"),
+        "prev_slide": _("Previous slide"),
+        "next_slide": _("Next slide"),
+        "chorus": _("Chorus"),
+        "open_display": _("Display current slide window"),
+        "prev_song": _("Previous song"),
+        "next_song": _("Next song"),
+        "toggle_chorus": _("Display/hide choruses"),
+        "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
+        "toggle_qr": _("📱 QR code for lyrics"),
+    }
+
+
+def _serialize_shortcut_bindings(
+    bindings: dict[str, list[str]],
+) -> dict[str, list[str]]:
+    return {
+        action: [str(token) for token in bindings.get(action, [])]
+        for action in SHORTCUT_ACTION_ORDER
+    }
+
+
+def _build_shortcuts_config(
+    request: HttpRequest,
+    animation: Animation,
+) -> dict[str, object]:
+    member_id = get_member_id_from_user(request.user)
+    saved_bindings = load_member_shortcut_bindings(member_id)
+    can_customize = bool(member_id)
+    action_labels = _shortcut_action_labels()
+    return {
+        "siteBindings": _serialize_shortcut_bindings(build_site_shortcut_bindings()),
+        "effectiveBindings": _serialize_shortcut_bindings(
+            build_effective_shortcut_bindings(saved_bindings)
+        ),
+        "formBindings": _serialize_shortcut_bindings(
+            build_form_shortcut_bindings(saved_bindings)
+        ),
+        "actionOrder": list(SHORTCUT_ACTION_ORDER),
+        "actionToRemoteAction": dict(SHORTCUT_ACTION_TO_REMOTE_ACTION),
+        "actionLabels": action_labels,
+        "canCustomizeShortcuts": can_customize,
+        "customizeUrl": reverse(
+            "lyrics_slide_show_shortcuts", args=[animation.animation_id]
+        ),
+    }
 
 
 def animations(request: HttpRequest) -> HttpResponse:
@@ -372,6 +433,7 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
     )
     runtime_payload = _build_runtime_payload(animation, public_url)
     display_session_id = f"{uuid.uuid4().hex[:16]}-{animation.animation_id}"
+    shortcuts_config = _build_shortcuts_config(request, animation)
 
     return render(
         request,
@@ -382,6 +444,7 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
             "display_session_id": display_session_id,
             "google_fonts_stylesheet_href": GOOGLE_FONTS_STYLESHEET_HREF,
             "runtime_payload": runtime_payload,
+            "shortcuts_config": shortcuts_config,
             "lyrics_i18n": {
                 "openSecondScreenLabel": _("Ouvrir le second écran"),
                 "reopenSecondScreenLabel": _("Rouvrir le second écran"),
@@ -414,20 +477,119 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "chorusHideEmoji": "🎼🔽",
                 "chorusHideText": _("Pas de refrain"),
                 "shortcutsPopupTitle": _("Raccourcis clavier"),
-                "shortcutsPopupMessage": _(
-                    "- `O` : Ouvrir un second écran\n"
-                    "- `Esc` ou `M` : Activer/désactiver BLACK MODE\n"
-                    "- `B` ou `↑` : Diapo précédente\n"
-                    "- `S`, `V`, `Espace` ou `↓` : Diapo suivante\n"
-                    "- `R` ou `C` : Refrain\n"
-                    "- `F` ou `←` : Chant précédent\n"
-                    "- `N`, `Entrée` ou `→` : Chant suivant\n"
-                    "- `A` ou `D` : Afficher/masquer les refrains\n"
-                    "- `L` : Activer/bloquer le scroll\n"
-                    "- `Q` : Afficher/masquer le QR code"
+                "shortcutsCustomizeButtonLabel": _("Personnaliser les raccourcis"),
+                "shortcutsPopupFooter": _("⌨️👈 in upper or lower case"),
+                "shortcutsCustomizeTitle": _("Personnaliser les raccourcis"),
+                "shortcutsCustomizeHelp": _(
+                    "Clique sur un slot puis appuie sur une touche simple.\n"
+                    "Jusqu'à 3 touches par action.\n"
+                    "La petite croix efface un slot.\n"
+                    "Aucune combinaison n'est autorisée.\n"
+                    "Escape n'est pas autorisé.\n"
+                    "Laisser vide désactive l'action personnalisable."
+                ),
+                "shortcutsCaptureLabel": _("Appuyer sur une touche"),
+                "shortcutsClearSlotLabel": _("Effacer ce raccourci"),
+                "shortcutsSaveLabel": _("Enregistrer"),
+                "shortcutsCancelLabel": _("Annuler"),
+                "shortcutsResetLabel": _("Revenir aux raccourcis du site"),
+                "shortcutsGuestCustomizeMessage": _(
+                    "La personnalisation des raccourcis nécessite une connexion."
+                ),
+                "shortcutsGuestCustomizeTitle": _("Connexion requise"),
+                "shortcutsSaveFailedTitle": _("Enregistrement impossible"),
+                "shortcutsSaveFailedMessage": _(
+                    "Les raccourcis n'ont pas pu être enregistrés."
                 ),
             },
         },
+    )
+
+
+def lyrics_slide_show_shortcuts(
+    request: HttpRequest, animation_id: int
+) -> JsonResponse:
+    if request.method != "POST":
+        raise Http404
+
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return JsonResponse({"message": _("Aucun groupe sélectionné.")}, status=404)
+
+    animation = get_object_or_404(Animation, animation_id=animation_id)
+    if animation.group_id != selected_group.group_id:
+        raise Http404
+
+    member_id = get_member_id_from_user(request.user)
+    if not member_id:
+        return JsonResponse(
+            {"message": _("La personnalisation nécessite une connexion.")}, status=403
+        )
+
+    if str(request.POST.get("use_site_defaults", "") or "").strip() == "1":
+        save_member_shortcut_bindings(
+            member_id,
+            build_form_shortcut_bindings(None),
+            use_site_defaults=True,
+        )
+        effective_bindings = build_effective_shortcut_bindings(None)
+        return JsonResponse(
+            {
+                "savedBindings": _serialize_shortcut_bindings(
+                    build_form_shortcut_bindings(None)
+                ),
+                "effectiveBindings": _serialize_shortcut_bindings(effective_bindings),
+                "fieldErrors": {},
+                "globalMessage": "",
+                "usedSiteDefaults": True,
+                "formattedBindings": {
+                    action: [
+                        format_shortcut_token(token)
+                        for token in effective_bindings.get(action, [])
+                    ]
+                    for action in SHORTCUT_ACTION_ORDER
+                },
+            }
+        )
+
+    action_labels = _shortcut_action_labels()
+    submitted_values = {
+        action: str(request.POST.get(action, "") or "")
+        for action in SHORTCUT_ACTION_ORDER
+    }
+    validation = validate_shortcut_submission(
+        submitted_values,
+        action_labels=action_labels,
+    )
+    used_site_defaults = save_member_shortcut_bindings(
+        member_id,
+        validation.saved_bindings,
+        use_site_defaults=validation.used_site_defaults,
+    )
+    effective_bindings = build_effective_shortcut_bindings(
+        None if used_site_defaults else validation.saved_bindings
+    )
+
+    return JsonResponse(
+        {
+            "savedBindings": _serialize_shortcut_bindings(
+                build_form_shortcut_bindings(
+                    None if used_site_defaults else validation.saved_bindings
+                )
+            ),
+            "effectiveBindings": _serialize_shortcut_bindings(effective_bindings),
+            "fieldErrors": validation.field_errors,
+            "globalMessage": validation.global_message,
+            "usedSiteDefaults": used_site_defaults,
+            "formattedBindings": {
+                action: [
+                    format_shortcut_token(token)
+                    for token in effective_bindings.get(action, [])
+                ]
+                for action in SHORTCUT_ACTION_ORDER
+            },
+        }
     )
 
 

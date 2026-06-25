@@ -1710,6 +1710,8 @@ class ModifySongViewTests(TestCase):
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-unsaved-guard")
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "data-reorder-list")
         self.assertContains(response, "data-reorder-drag-view hidden")
         self.assertContains(response, "data-reorder-normal-view")
@@ -3103,6 +3105,9 @@ class ReferenceCatalogViewsTests(TestCase):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, expected)
+                self.assertContains(response, "data-song-meta-crud-form", html=False)
+                self.assertContains(response, "data-unsaved-guard", html=False)
+                self.assertContains(response, "/static/js/unsaved_changes.js")
 
         self.assertIsNotNone(self._fetch_reference("genres", "genre_id", genre_id))
         self.assertIsNotNone(self._fetch_reference("artists", "artist_id", artist_id))
@@ -3296,6 +3301,9 @@ class SongMetadataPersistenceTests(TestCase):
 
         response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-song-metadata-form", html=False)
+        self.assertContains(response, "data-unsaved-guard", html=False)
+        self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertEqual(response.context["metadata_links"][0].display_type, "audio")
         self.assertEqual(response.context["new_link_default_type"], SongLinkType.SCORE)
         self.assertEqual(

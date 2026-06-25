@@ -44,7 +44,7 @@
             {% trans "Playlist" %}
         </button>
     </p>
-    <form method="post" id="modify-animation-form" data-animation-edit-form data-reorder-module-url="{% static 'js/reorder-list.module.js' %}" hidden>
+    <form method="post" id="modify-animation-form" data-animation-edit-form data-unsaved-guard data-reorder-module-url="{% static 'js/reorder-list.module.js' %}" hidden>
         {% csrf_token %}
         {{ form.title.as_hidden }}
         {{ form.description.as_hidden }}
@@ -382,5 +382,6 @@
 {% block page_scripts %}
     {% include "animation/modify_animation_page_i18n.html" %}
     {{ popup_data|json_script:"lss-modify-animation-data" }}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_animation.js' %}"></script>
 {% endblock %}

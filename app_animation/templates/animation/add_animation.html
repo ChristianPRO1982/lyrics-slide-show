@@ -44,7 +44,7 @@
     </p>
 {% endblock %}
 {% block content %}
-    <form method="post" class="site-theme-selection">
+    <form method="post" class="site-theme-selection" data-animation-create-form data-unsaved-guard>
         {% csrf_token %}
         {{ form.non_field_errors }}
 
@@ -138,12 +138,16 @@
     {% trans "Couleur de fond" as lss_add_anim_popup_bg_color %}
     {% trans "OK" as lss_add_anim_popup_ok %}
     {% trans "Abandonner" as lss_add_anim_popup_cancel %}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script>
         (() => {
-            const form = document.querySelector("form.site-theme-selection");
+            const form = document.querySelector("[data-animation-create-form]");
             if (!(form instanceof HTMLFormElement)) {
                 return;
             }
+            const unsavedController = window.LSSUnsavedChanges
+                ? window.LSSUnsavedChanges.attach(form)
+                : null;
 
             const textColorInput = form.querySelector("#id_text_color");
             const bgColorInput = form.querySelector("#id_bg_color");
@@ -258,6 +262,9 @@
                     bgColorInput.value = validHex(result.values?.bg_color) || defaults.bgColor;
                 }
                 applySummary();
+                if (unsavedController) {
+                    unsavedController.refresh();
+                }
             };
 
             if (colorsPopupTrigger instanceof HTMLButtonElement) {
