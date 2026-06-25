@@ -1210,11 +1210,18 @@ class SongViewsRenderingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
         self.assertContains(response, "<title>Le Sud - Nino Ferrer</title>", html=True)
+        self.assertContains(response, "<h1>Le Sud - Nino Ferrer</h1>", html=False)
         self.assertContains(
             response,
-            '<th scope="row">Refrain</th><td>On dirait le Sud</td>',
+            "<div>Refrain On dirait le Sud<br><br>Couplet 1 C&#x27;est un endroit<br><br>Refrain On dirait le Sud</div>",
             html=False,
         )
+        self.assertNotContains(response, "<table", html=False)
+        self.assertNotContains(response, "<th", html=False)
+        self.assertNotContains(response, "<td", html=False)
+        self.assertNotContains(response, "<strong", html=False)
+        self.assertNotContains(response, "<b>", html=False)
+        self.assertNotContains(response, "<i>", html=False)
 
     def test_song_text_plain_endpoint_returns_plain_text_blocks(self):
         self._login()

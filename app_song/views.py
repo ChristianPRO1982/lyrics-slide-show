@@ -1774,11 +1774,6 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
         getattr(request, "LANGUAGE_CODE", None)
     )
     text_artifacts = build_song_text_artifacts(song, settings=render_settings)
-    text_html = (
-        text_artifacts.short_text_html
-        if render_mode == ChorusRenderMode.SINGLE
-        else text_artifacts.long_text_html
-    )
     if request.GET.get("format") == "plain":
         if request.GET.get("layout") == "popup-copy":
             return HttpResponse(
@@ -1806,7 +1801,12 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
             "song": song,
             "mode": mode,
             "title_complete": text_artifacts.full_title,
-            "text_html": text_html,
+            "text_body": render_song_text(
+                song,
+                render_mode,
+                settings=render_settings,
+                include_title=False,
+            ).strip(),
         },
     )
 

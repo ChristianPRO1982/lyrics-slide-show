@@ -451,11 +451,23 @@
                         id: "show-single",
                         label: label("showSingleLabel"),
                         tone: "neutral",
+                        onClick: () => {
+                            const newTab = window.open(singleUrl, "_blank", "noopener");
+                            if (newTab) {
+                                newTab.opener = null;
+                            }
+                        },
                     },
                     {
                         id: "show-full",
                         label: label("showFullLabel"),
                         tone: "neutral",
+                        onClick: () => {
+                            const newTab = window.open(fullUrl, "_blank", "noopener");
+                            if (newTab) {
+                                newTab.opener = null;
+                            }
+                        },
                     },
                 ],
             });
@@ -467,10 +479,6 @@
                 } else if (result.buttonId === "copy-full") {
                     await copyTextFromUrl(fullPlainUrl);
                     await messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("copySuccess") });
-                } else if (result.buttonId === "show-single") {
-                    window.location.href = singleUrl;
-                } else if (result.buttonId === "show-full") {
-                    window.location.href = fullUrl;
                 }
             } catch (_error) {
                 await messageBox.alert({ title: label("copyTitle"), messageMarkdown: label("copyFailed") });

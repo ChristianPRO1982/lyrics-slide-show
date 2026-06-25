@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 10:23+0200\n"
+"POT-Creation-Date: 2026-06-25 11:12+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Code d'image de fond"
 msgstr ""
 
-#: app_animation/forms.py:69 app_song/views.py:816
+#: app_animation/forms.py:69 app_song/views.py:823
 msgid "Le titre est obligatoire."
 msgstr ""
 
@@ -3173,16 +3173,16 @@ msgid "Couplet "
 msgstr ""
 
 #: app_song/search.py:220 app_song/templates/song/songs.html:60
-#: app_song/views.py:489 app_song/views.py:1362
+#: app_song/views.py:486 app_song/views.py:1369
 msgid "Chant validé"
 msgstr ""
 
 #: app_song/search.py:222 app_song/templates/song/songs.html:61
-#: app_song/views.py:491 app_song/views.py:1364
+#: app_song/views.py:488 app_song/views.py:1371
 msgid "Chant validé avec des messages"
 msgstr ""
 
-#: app_song/search.py:223 app_song/views.py:492 app_song/views.py:1366
+#: app_song/search.py:223 app_song/views.py:489 app_song/views.py:1373
 msgid "Chant non validé"
 msgstr ""
 
@@ -3289,7 +3289,7 @@ msgstr ""
 
 #: app_song/templates/song/metadata.html:161
 #: app_song/templates/song/modify_artists.html:23
-#: app_song/templates/song/songs.html:252 app_song/views.py:950
+#: app_song/templates/song/songs.html:252 app_song/views.py:957
 msgid "Artistes"
 msgstr ""
 
@@ -3366,7 +3366,7 @@ msgstr ""
 msgid "Gestion des groupes de musiques"
 msgstr ""
 
-#: app_song/templates/song/modify_bands.html:23 app_song/views.py:985
+#: app_song/templates/song/modify_bands.html:23 app_song/views.py:992
 msgid "Groupes de musiques"
 msgstr ""
 
@@ -3479,8 +3479,8 @@ msgstr ""
 
 #: app_song/templates/song/modify_song.html:228
 #: app_song/templates/song/modify_song.html:235
-#: app_song/templates/song/modify_song_page_i18n.html:4 app_song/views.py:650
-#: app_song/views.py:656
+#: app_song/templates/song/modify_song_page_i18n.html:4 app_song/views.py:657
+#: app_song/views.py:663
 msgid "Bloc vide"
 msgstr ""
 
@@ -3698,8 +3698,8 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: app_song/templates/song/songs.html:62 app_song/views.py:725
-#: app_song/views.py:1396
+#: app_song/templates/song/songs.html:62 app_song/views.py:732
+#: app_song/views.py:1403
 msgid "Chant sous licence"
 msgstr ""
 
@@ -3790,109 +3790,109 @@ msgstr ""
 msgid "Aucun chant ne correspond à la recherche."
 msgstr ""
 
-#: app_song/views.py:533
+#: app_song/views.py:530
 msgid ""
 "La devalidation directe depuis status=2 est ignoree. Le chant doit d'abord "
 "revenir explicitement a status=1."
 msgstr ""
 
-#: app_song/views.py:602
+#: app_song/views.py:609
 msgid "Marquer non lu"
 msgstr ""
 
-#: app_song/views.py:608
+#: app_song/views.py:615
 msgid "Marquer lu"
 msgstr ""
 
-#: app_song/views.py:727 app_song/views.py:1398
+#: app_song/views.py:734 app_song/views.py:1405
 msgid "Chant hors licence"
 msgstr ""
 
-#: app_song/views.py:840
+#: app_song/views.py:847
 msgid "Impossible de créer le chant pour le moment."
 msgstr ""
 
-#: app_song/views.py:923 app_song/views.py:946 app_song/views.py:981
+#: app_song/views.py:930 app_song/views.py:953 app_song/views.py:988
 msgid "Action inconnue."
 msgstr ""
 
-#: app_song/views.py:1079
+#: app_song/views.py:1086
 #, python-format
 msgid "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
 msgstr ""
 
-#: app_song/views.py:1088
+#: app_song/views.py:1095
 msgid "Pour créer un genre, renseignez à la fois le groupe et le nom."
 msgstr ""
 
-#: app_song/views.py:1107
+#: app_song/views.py:1114
 #, python-format
 msgid "Suppression impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1117
+#: app_song/views.py:1124
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
 msgstr ""
 
-#: app_song/views.py:1139
+#: app_song/views.py:1146
 #, python-format
 msgid "Mise à jour impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1144 app_song/views.py:1304
+#: app_song/views.py:1151 app_song/views.py:1311
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_song/views.py:1146 app_song/views.py:1306
+#: app_song/views.py:1153 app_song/views.py:1313
 #, python-format
 msgid "%(count)s mise(s) à jour"
 msgstr ""
 
-#: app_song/views.py:1148 app_song/views.py:1308
+#: app_song/views.py:1155 app_song/views.py:1315
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
 
-#: app_song/views.py:1153
+#: app_song/views.py:1160
 #, python-format
 msgid "Genres enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1244
+#: app_song/views.py:1251
 #, python-format
 msgid "Création impossible pour %(item)s \"%(name)s\"."
 msgstr ""
 
-#: app_song/views.py:1264
+#: app_song/views.py:1271
 #, python-format
 msgid "Suppression impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1275
+#: app_song/views.py:1282
 #, python-format
 msgid "Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1296
+#: app_song/views.py:1303
 #, python-format
 msgid "Mise à jour impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1313
+#: app_song/views.py:1320
 #, python-format
 msgid "%(item)s enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1456
+#: app_song/views.py:1463
 msgid ""
 "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre "
 "devalide."
 msgstr ""
 
-#: app_song/views.py:1466
+#: app_song/views.py:1473
 msgid ""
 "Impossible de devalider ce chant tant qu'il reste des demandes de "
 "modification non lues."
