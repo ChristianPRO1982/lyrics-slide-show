@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
@@ -15,10 +16,20 @@ from app_song.models import Song, SongFavorite, SongStatus, Verse
 
 from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
-from .models import Animation, AnimationSong, AnimationVerseOverride
+from .models import (
+    Animation,
+    AnimationRemoteShortcut,
+    AnimationSong,
+    AnimationVerseOverride,
+)
 from . import views as animation_views
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.render_bundle import build_animation_render_bundle
+from .services.shortcuts import (
+    build_effective_shortcut_bindings,
+    build_form_shortcut_bindings,
+    validate_shortcut_submission,
+)
 
 
 class PlaylistParsingTests(SimpleTestCase):
@@ -63,6 +74,82 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn("font_family", form.errors)
+
+
+class LyricsSlideShowMasterScriptTests(SimpleTestCase):
+    def test_keydown_ignore_logic_keeps_remote_buttons_active_and_popup_buttons_ignored(
+        self,
+    ):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn(
+            'const popupRoot = target.closest("#lss-messagebox-root");',
+            script,
+        )
+        self.assertIn(
+            "if (popupRoot instanceof HTMLElement && !popupRoot.hidden) {",
+            script,
+        )
+        self.assertIn(
+            'if (tagName === "button") {',
+            script,
+        )
+        self.assertIn(
+            'return !Boolean(target.closest("[data-lyrics-master-root]"));',
+            script,
+        )
+
+
+class ShortcutValidationTests(SimpleTestCase):
+    def test_validation_rejects_escape_and_combinations_but_keeps_other_values(self):
+        labels = {
+            "black": "BLACK MODE",
+            "prev_slide": "Previous slide",
+            "next_slide": "Next slide",
+            "chorus": "Chorus",
+            "open_display": "Display current slide window",
+            "prev_song": "Previous song",
+            "next_song": "Next song",
+            "toggle_chorus": "Display/hide choruses",
+            "toggle_scroll": "Scroll on ↕️ or not 🧱",
+            "toggle_qr": "📱 QR code for lyrics",
+        }
+        result = validate_shortcut_submission(
+            {
+                "black": "Escape, x",
+                "prev_slide": "Ctrl+A, b",
+                "next_slide": "",
+                "chorus": "",
+                "open_display": "",
+                "prev_song": "",
+                "next_song": "",
+                "toggle_chorus": "",
+                "toggle_scroll": "",
+                "toggle_qr": "",
+            },
+            action_labels=labels,
+        )
+
+        self.assertEqual(result.saved_bindings["black"], ["x"])
+        self.assertEqual(result.saved_bindings["prev_slide"], ["b"])
+        self.assertIn("Escape", result.field_errors["black"])
+        self.assertIn("combinaison", result.field_errors["prev_slide"])
+
+    def test_effective_bindings_keep_escape_for_black_mode(self):
+        effective = build_effective_shortcut_bindings(
+            {
+                "black": ["x"],
+                "prev_slide": ["b"],
+                "next_slide": [],
+                "chorus": [],
+                "open_display": [],
+                "prev_song": [],
+                "next_song": [],
+                "toggle_chorus": [],
+                "toggle_scroll": [],
+                "toggle_qr": [],
+            }
+        )
+        self.assertEqual(effective["black"], ["escape", "x"])
 
 
 class AnimationRenderBundleTests(TestCase):
@@ -1105,6 +1192,61 @@ class AnimationViewsTests(TestCase):
                 "backgroundUrl": "",
             },
         )
+        self.assertFalse(response.context["shortcuts_config"]["canCustomizeShortcuts"])
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"]["black"],
+            ["escape", "m"],
+        )
+
+    def test_lyrics_slide_show_toolbar_mentions_customizable_shortcuts(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Raccourcis clavier (personnalisable)")
+
+    def test_lyrics_slide_show_uses_member_shortcuts_when_present(self):
+        user_id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        self._login(user_id=user_id, username="shortcut.member")
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        AnimationRemoteShortcut.objects.create(
+            member_id=user_id,
+            lyrics_slide_show_bindings={
+                "black": ["x"],
+                "prev_slide": ["k"],
+                "next_slide": ["j"],
+                "chorus": ["h"],
+                "open_display": ["p"],
+                "prev_song": ["u"],
+                "next_song": ["i"],
+                "toggle_chorus": ["y"],
+                "toggle_scroll": ["t"],
+                "toggle_qr": ["g"],
+            },
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["shortcuts_config"]["canCustomizeShortcuts"])
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"]["black"],
+            ["escape", "x"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["formBindings"]["open_display"],
+            ["p"],
+        )
 
     def test_lyrics_slide_show_runtime_payload_exposes_resolved_style_and_font_weight(
         self,
@@ -1453,7 +1595,130 @@ class AnimationViewsTests(TestCase):
         self.assertIsNotNone(first_song_entry)
         self.assertGreaterEqual(len(first_song_entry["slideIndexes"]), 1)
         self.assertEqual(first_song_entry["slideIndexes"][0], 0)
-        self.assertIn(0, first_song_entry["slideIndexes"])
+
+    def test_lyrics_slide_show_shortcuts_context_exposes_structured_help_data(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Couplet A"
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            response.context["lyrics_i18n"]["shortcutsPopupFooter"],
+            "⌨️👈 in upper or lower case",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"]["open_display"],
+            ["o"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionLabels"]["open_display"],
+            "Display current slide window",
+        )
+
+    def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+        response = self.client.post(
+            reverse("lyrics_slide_show_shortcuts", args=[animation.animation_id]),
+            data={"black": "x"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_lyrics_slide_show_shortcuts_endpoint_saves_partial_bindings(self):
+        user_id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        self._login(user_id=user_id, username="shortcut.save.member")
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+        response = self.client.post(
+            reverse("lyrics_slide_show_shortcuts", args=[animation.animation_id]),
+            data={
+                "black": "x, escape",
+                "prev_slide": "x, b",
+                "next_slide": "j",
+                "chorus": "r",
+                "open_display": "o",
+                "prev_song": "u",
+                "next_song": "i",
+                "toggle_chorus": "y",
+                "toggle_scroll": "t",
+                "toggle_qr": "g",
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertIn("Escape", payload["fieldErrors"]["black"])
+        self.assertIn("Previous slide", payload["globalMessage"])
+        self.assertEqual(payload["savedBindings"]["black"], ["x"])
+        self.assertEqual(payload["savedBindings"]["prev_slide"], ["b"])
+        self.assertEqual(payload["effectiveBindings"]["black"], ["escape", "x"])
+
+        record = AnimationRemoteShortcut.objects.get(member_id=user_id)
+        self.assertEqual(record.lyrics_slide_show_bindings["prev_slide"], ["b"])
+
+    def test_lyrics_slide_show_shortcuts_endpoint_deletes_record_when_reverting_to_site(
+        self,
+    ):
+        user_id = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+        self._login(user_id=user_id, username="shortcut.reset.member")
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        AnimationRemoteShortcut.objects.create(
+            member_id=user_id,
+            lyrics_slide_show_bindings={
+                "black": ["x"],
+                "prev_slide": ["k"],
+                "next_slide": ["j"],
+                "chorus": ["h"],
+                "open_display": ["p"],
+                "prev_song": ["u"],
+                "next_song": ["i"],
+                "toggle_chorus": ["y"],
+                "toggle_scroll": ["t"],
+                "toggle_qr": ["g"],
+            },
+        )
+        self._select_group(group)
+        site_defaults = build_form_shortcut_bindings(None)
+        response = self.client.post(
+            reverse("lyrics_slide_show_shortcuts", args=[animation.animation_id]),
+            data={
+                **{
+                    action: ", ".join(values)
+                    for action, values in site_defaults.items()
+                },
+                "use_site_defaults": "1",
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertTrue(payload["usedSiteDefaults"])
+        self.assertFalse(
+            AnimationRemoteShortcut.objects.filter(member_id=user_id).exists()
+        )
 
     def test_lyrics_slide_show_runtime_payload_has_contiguous_global_indexes(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

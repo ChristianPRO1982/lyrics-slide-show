@@ -103,3 +103,13 @@ class AnimationVerseOverride(models.Model):
             models.Index(fields=["animation_song"], name="a_anim_vo_anim_song_idx"),
             models.Index(fields=["source_verse_id"], name="a_anim_vo_source_idx"),
         ]
+
+
+class AnimationRemoteShortcut(models.Model):
+    member_id = models.UUIDField(primary_key=True, editable=False)
+    lyrics_slide_show_bindings = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'lss"."m_animation_remote_shortcuts'
