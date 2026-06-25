@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 13:24+0200\n"
+"POT-Creation-Date: 2026-06-25 14:08+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -261,10 +261,10 @@ msgstr "Close window"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:100
 #: app_animation/templates/animation/modify_animation_page_i18n.html:24
-#: app_song/templates/song/metadata.html:235
-#: app_song/templates/song/modify_artists.html:84
-#: app_song/templates/song/modify_bands.html:84
-#: app_song/templates/song/modify_genres.html:87
+#: app_song/templates/song/metadata.html:241
+#: app_song/templates/song/modify_artists.html:90
+#: app_song/templates/song/modify_bands.html:90
+#: app_song/templates/song/modify_genres.html:93
 #: app_song/templates/song/modify_song_page_i18n.html:23
 #: app_song/templates/song/song_page_i18n.html:4 templates/base.html:100
 msgid "Oui"
@@ -272,10 +272,10 @@ msgstr "Yes"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:101
 #: app_animation/templates/animation/modify_animation_page_i18n.html:25
-#: app_song/templates/song/metadata.html:236
-#: app_song/templates/song/modify_artists.html:85
-#: app_song/templates/song/modify_bands.html:85
-#: app_song/templates/song/modify_genres.html:88
+#: app_song/templates/song/metadata.html:242
+#: app_song/templates/song/modify_artists.html:91
+#: app_song/templates/song/modify_bands.html:91
+#: app_song/templates/song/modify_genres.html:94
 #: app_song/templates/song/modify_song_page_i18n.html:24
 #: app_song/templates/song/song_page_i18n.html:5 templates/base.html:101
 msgid "Non"
@@ -329,10 +329,10 @@ msgstr "Copy"
 #: app_animation/templates/animation/lyrics_slide_show.html:110
 #: app_group/templates/group/groups.html:213
 #: app_group/templates/group/modify_group.html:251
-#: app_song/templates/song/metadata.html:234
-#: app_song/templates/song/modify_artists.html:83
-#: app_song/templates/song/modify_bands.html:83
-#: app_song/templates/song/modify_genres.html:86 templates/base.html:110
+#: app_song/templates/song/metadata.html:240
+#: app_song/templates/song/modify_artists.html:89
+#: app_song/templates/song/modify_bands.html:89
+#: app_song/templates/song/modify_genres.html:92 templates/base.html:110
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -3586,10 +3586,10 @@ msgstr ""
 msgid "Groupes de musique"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:237
-#: app_song/templates/song/modify_artists.html:86
-#: app_song/templates/song/modify_bands.html:86
-#: app_song/templates/song/modify_genres.html:89
+#: app_song/templates/song/metadata.html:243
+#: app_song/templates/song/modify_artists.html:92
+#: app_song/templates/song/modify_bands.html:92
+#: app_song/templates/song/modify_genres.html:95
 msgid "Confirmer la suppression de cet élément ?"
 msgstr ""
 
@@ -3646,9 +3646,9 @@ msgstr ""
 msgid "Aucun artiste disponible."
 msgstr ""
 
-#: app_song/templates/song/modify_artists.html:87
-#: app_song/templates/song/modify_bands.html:87
-#: app_song/templates/song/modify_genres.html:90
+#: app_song/templates/song/modify_artists.html:93
+#: app_song/templates/song/modify_bands.html:93
+#: app_song/templates/song/modify_genres.html:96
 msgid "⚡ utilisé au moins une fois"
 msgstr ""
 
