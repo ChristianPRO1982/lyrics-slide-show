@@ -30,6 +30,7 @@
 {% trans "Envoyer" as song_report_submit_label %}
 {% trans "Annuler" as song_report_cancel_label %}
 {% trans "Le message ne peut pas être vide." as song_report_empty_error %}
+{% trans "Information" as song_info_popup_title %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -62,6 +63,7 @@
         reportSubmitLabel: "{{ song_report_submit_label|escapejs }}",
         reportCancelLabel: "{{ song_report_cancel_label|escapejs }}",
         reportEmptyError: "{{ song_report_empty_error|escapejs }}",
+        infoPopupTitle: "{{ song_info_popup_title|escapejs }}",
         messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
     };
 </script>

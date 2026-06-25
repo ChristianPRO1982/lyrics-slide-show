@@ -137,6 +137,29 @@
         });
     });
 
+    document.querySelectorAll("[data-song-inline-popup]").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+            if (!messageBox) {
+                return;
+            }
+
+            event.preventDefault();
+            const popupTitle = String(
+                link.getAttribute("data-popup-title") || label("infoPopupTitle"),
+            ).trim();
+            const popupMessage = String(link.getAttribute("data-popup-message") || "").trim();
+            if (!popupMessage) {
+                return;
+            }
+
+            await messageBox.alert({
+                title: popupTitle || label("infoPopupTitle"),
+                messageMarkdown: popupMessage,
+                showCloseButton: true,
+            });
+        });
+    });
+
     document.querySelectorAll("[data-song-markdown-popup]").forEach((link) => {
         link.addEventListener("click", async (event) => {
             if (!messageBox) {

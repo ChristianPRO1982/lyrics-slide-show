@@ -915,6 +915,10 @@ def songs(request: HttpRequest) -> HttpResponse:
             "favorites_quick_active": favorites_quick,
             "moderation_toggle_query": "moderation_quick=1",
             "moderation_quick_active": moderation_quick,
+            "song_search_count_help": _(
+                "Nombre de chants retournés par la recherche sauvegardée"
+            ),
+            "song_catalog_count_help": _("Nombre total de chants en base de données"),
         },
     )
 

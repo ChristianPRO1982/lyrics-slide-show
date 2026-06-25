@@ -38,6 +38,38 @@
     background: var(--site-line);
 }
 
+.site-tools-panel .song-tools-stats {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    text-align: center;
+}
+
+.site-tools-panel .song-tools-stats p {
+    margin: 0;
+    padding: 0;
+}
+
+.site-tools-panel .song-tools-stats p + p {
+    margin-top: 0.45rem;
+}
+
+.site-tools-panel .song-inline-info-link {
+    display: inline;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--site-link);
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+    text-align: inherit;
+    justify-content: initial;
+    box-shadow: none;
+}
+
 .song-message-form p {
     margin: 0;
 }

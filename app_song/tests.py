@@ -2804,6 +2804,40 @@ class SongGenresDisplayViewTests(TestCase):
             )
         )
 
+    def test_songs_page_exposes_info_popups_for_search_and_total_counts(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertContains(response, "data-song-inline-popup", count=2)
+        self.assertContains(response, 'class="song-tools-stats"', html=False)
+        self.assertContains(
+            response, 'class="song-inline-info-link"', count=2, html=False
+        )
+        self.assertNotContains(
+            response,
+            'class="song-inline-info-link site-action',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-title="Recherche ⓘ"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-popup-title="Total ⓘ"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "Nombre de chants retournés par la recherche sauvegardée",
+        )
+        self.assertContains(
+            response,
+            "Nombre total de chants en base de données",
+        )
+
 
 class SongModifyActionOnSongsPageTests(TestCase):
     def setUp(self):
