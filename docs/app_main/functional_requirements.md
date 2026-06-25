@@ -240,6 +240,7 @@ This table stores language-scoped shared site parameters, including:
 
 - `title`,
 - `title_h1`,
+- `signup_url`,
 - `home_text`,
 - `bloc1_text`,
 - `bloc2_text`,
@@ -274,6 +275,7 @@ The homepage remains accessible to guests.
 It renders shared navigation and language-scoped marketing content from `SiteParams`. It must continue to:
 
 - expose login access for guests,
+- expose the signup link for guests from `SiteParams.signup_url`, with empty fallback when unset,
 - expose account and logout access for authenticated users,
 - expose links to theme, language, and privacy pages,
 - load the shared popup root and popup client-side configuration,

@@ -61,6 +61,7 @@
             <header class="site-theme-card-header"><div><h3>{% trans "Identité du site" %}</h3></div></header>
             <div>{{ admin_form.title.label_tag }} {{ admin_form.title }}{% for error in admin_form.title.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.title_h1.label_tag }} {{ admin_form.title_h1 }}{% for error in admin_form.title_h1.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.signup_url.label_tag }} {{ admin_form.signup_url }}{% for error in admin_form.signup_url.errors %}<p>{{ error }}</p>{% endfor %}</div>
         </article>
 
         <article class="site-theme-card">

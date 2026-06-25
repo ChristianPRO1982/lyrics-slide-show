@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 11:29+0200\n"
+"POT-Creation-Date: 2026-06-25 13:24+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -429,7 +429,7 @@ msgid "Aucune diapo disponible pour cette animation."
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show_display.html:8
-#: app_main/templates/main/site_params.html:109
+#: app_main/templates/main/site_params.html:110
 msgid "Projection"
 msgstr ""
 
@@ -1159,7 +1159,7 @@ msgstr ""
 
 #: app_group/templates/group/modify_group.html:83
 #: app_main/templates/main/site_params.html:57
-#: app_main/templates/main/site_params.html:142
+#: app_main/templates/main/site_params.html:143
 msgid "Enregistrer les paramètres"
 msgstr ""
 
@@ -2673,43 +2673,43 @@ msgstr ""
 msgid "Identité du site"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:67
+#: app_main/templates/main/site_params.html:68
 msgid "Homepage"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:73
+#: app_main/templates/main/site_params.html:74
 msgid "Carte accueil 1 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:79
+#: app_main/templates/main/site_params.html:80
 msgid "Carte accueil 2 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:85
+#: app_main/templates/main/site_params.html:86
 msgid "Carte accueil 3 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:91
+#: app_main/templates/main/site_params.html:92
 msgid "Carte accueil 4 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:97
+#: app_main/templates/main/site_params.html:98
 msgid "Carte accueil 5 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:103
+#: app_main/templates/main/site_params.html:104
 msgid "Carte accueil 6 (HTML)"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:118
+#: app_main/templates/main/site_params.html:119
 msgid "Messages popup"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:124
+#: app_main/templates/main/site_params.html:125
 msgid "Contraintes images de fond"
 msgstr ""
 
-#: app_main/templates/main/site_params.html:131
+#: app_main/templates/main/site_params.html:132
 msgid "Dimensions et ratios images de fond"
 msgstr ""
 
@@ -2946,7 +2946,7 @@ msgstr ""
 msgid "Message des administrateurs"
 msgstr ""
 
-#: app_member/context_processors.py:58
+#: app_member/context_processors.py:59
 msgid "Informations du site"
 msgstr ""
 
@@ -3010,91 +3010,95 @@ msgstr ""
 msgid "Carte accueil 6 - Texte (HTML)"
 msgstr ""
 
-#: app_member/forms.py:129
+#: app_member/forms.py:130
 msgid "Titre du site"
 msgstr ""
 
-#: app_member/forms.py:130
+#: app_member/forms.py:131
 msgid "Titre principal"
 msgstr ""
 
-#: app_member/forms.py:131
-msgid "Texte d'accueil"
-msgstr ""
-
 #: app_member/forms.py:132
-msgid "Texte du bloc 1"
+msgid "URL d'inscription"
 msgstr ""
 
 #: app_member/forms.py:133
-msgid "Texte du bloc 2"
+msgid "Texte d'accueil"
 msgstr ""
 
 #: app_member/forms.py:134
-msgid "Nombre maximal de lignes par couplet"
+msgid "Texte du bloc 1"
+msgstr ""
+
+#: app_member/forms.py:135
+msgid "Texte du bloc 2"
 msgstr ""
 
 #: app_member/forms.py:136
-msgid "Nombre maximal de caractères par ligne"
+msgid "Nombre maximal de lignes par couplet"
 msgstr ""
 
 #: app_member/forms.py:138
-msgid "Préfixe du refrain"
-msgstr ""
-
-#: app_member/forms.py:139
-msgid "Préfixe de couplet"
+msgid "Nombre maximal de caractères par ligne"
 msgstr ""
 
 #: app_member/forms.py:140
-msgid "Suffixe de couplet"
+msgid "Préfixe du refrain"
 msgstr ""
 
 #: app_member/forms.py:141
-msgid "Message global administrateur"
+msgid "Préfixe de couplet"
+msgstr ""
+
+#: app_member/forms.py:142
+msgid "Suffixe de couplet"
 msgstr ""
 
 #: app_member/forms.py:143
+msgid "Message global administrateur"
+msgstr ""
+
+#: app_member/forms.py:145
 msgid "Délai de réaffichage du message administrateur (minutes)"
 msgstr ""
 
-#: app_member/forms.py:146
+#: app_member/forms.py:148
 msgid "Délai de réaffichage du message modérateur (minutes)"
 msgstr ""
 
-#: app_member/forms.py:148
+#: app_member/forms.py:150
 msgid "Taille maximale des images de fond (octets)"
 msgstr ""
 
-#: app_member/forms.py:149
+#: app_member/forms.py:151
 msgid "Largeur minimale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:150
+#: app_member/forms.py:152
 msgid "Hauteur minimale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:151
+#: app_member/forms.py:153
 msgid "Largeur maximale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:152
+#: app_member/forms.py:154
 msgid "Hauteur maximale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:153
+#: app_member/forms.py:155
 msgid "Ratio minimal des images de fond"
 msgstr ""
 
-#: app_member/forms.py:154
+#: app_member/forms.py:156
 msgid "Ratio maximal des images de fond"
 msgstr ""
 
-#: app_member/forms.py:155
+#: app_member/forms.py:157
 msgid "Extensions d'images autorisées"
 msgstr ""
 
-#: app_member/forms.py:156
+#: app_member/forms.py:158
 msgid "Types MIME d'images autorisés"
 msgstr ""
 
@@ -3173,16 +3177,16 @@ msgid "Couplet "
 msgstr ""
 
 #: app_song/search.py:220 app_song/templates/song/songs.html:70
-#: app_song/views.py:486 app_song/views.py:1375
+#: app_song/views.py:486 app_song/views.py:1373
 msgid "Chant validé"
 msgstr ""
 
 #: app_song/search.py:222 app_song/templates/song/songs.html:71
-#: app_song/views.py:488 app_song/views.py:1377
+#: app_song/views.py:488 app_song/views.py:1375
 msgid "Chant validé avec des messages"
 msgstr ""
 
-#: app_song/search.py:223 app_song/views.py:489 app_song/views.py:1379
+#: app_song/search.py:223 app_song/views.py:489 app_song/views.py:1377
 msgid "Chant non validé"
 msgstr ""
 
@@ -3289,7 +3293,7 @@ msgstr ""
 
 #: app_song/templates/song/metadata.html:161
 #: app_song/templates/song/modify_artists.html:23
-#: app_song/templates/song/songs.html:262 app_song/views.py:963
+#: app_song/templates/song/songs.html:262 app_song/views.py:961
 msgid "Artistes"
 msgstr ""
 
@@ -3366,7 +3370,7 @@ msgstr ""
 msgid "Gestion des groupes de musiques"
 msgstr ""
 
-#: app_song/templates/song/modify_bands.html:23 app_song/views.py:998
+#: app_song/templates/song/modify_bands.html:23 app_song/views.py:996
 msgid "Groupes de musiques"
 msgstr ""
 
@@ -3703,7 +3707,7 @@ msgid "Total"
 msgstr ""
 
 #: app_song/templates/song/songs.html:72 app_song/views.py:732
-#: app_song/views.py:1409
+#: app_song/views.py:1407
 msgid "Chant sous licence"
 msgstr ""
 
@@ -3808,7 +3812,7 @@ msgstr ""
 msgid "Marquer lu"
 msgstr ""
 
-#: app_song/views.py:734 app_song/views.py:1411
+#: app_song/views.py:734 app_song/views.py:1409
 msgid "Chant hors licence"
 msgstr ""
 
@@ -3820,91 +3824,91 @@ msgstr ""
 msgid "Nombre de chants retournés par la recherche sauvegardée"
 msgstr ""
 
-#: app_song/views.py:922
+#: app_song/views.py:921
 msgid "Nombre total de chants en base de données"
 msgstr ""
 
-#: app_song/views.py:936 app_song/views.py:959 app_song/views.py:994
+#: app_song/views.py:934 app_song/views.py:957 app_song/views.py:992
 msgid "Action inconnue."
 msgstr ""
 
-#: app_song/views.py:1092
+#: app_song/views.py:1090
 #, python-format
 msgid "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
 msgstr ""
 
-#: app_song/views.py:1101
+#: app_song/views.py:1099
 msgid "Pour créer un genre, renseignez à la fois le groupe et le nom."
 msgstr ""
 
-#: app_song/views.py:1120
+#: app_song/views.py:1118
 #, python-format
 msgid "Suppression impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1130
+#: app_song/views.py:1128
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
 msgstr ""
 
-#: app_song/views.py:1152
+#: app_song/views.py:1150
 #, python-format
 msgid "Mise à jour impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1157 app_song/views.py:1317
+#: app_song/views.py:1155 app_song/views.py:1315
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_song/views.py:1159 app_song/views.py:1319
+#: app_song/views.py:1157 app_song/views.py:1317
 #, python-format
 msgid "%(count)s mise(s) à jour"
 msgstr ""
 
-#: app_song/views.py:1161 app_song/views.py:1321
+#: app_song/views.py:1159 app_song/views.py:1319
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
 
-#: app_song/views.py:1166
+#: app_song/views.py:1164
 #, python-format
 msgid "Genres enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1257
+#: app_song/views.py:1255
 #, python-format
 msgid "Création impossible pour %(item)s \"%(name)s\"."
 msgstr ""
 
-#: app_song/views.py:1277
+#: app_song/views.py:1275
 #, python-format
 msgid "Suppression impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1288
+#: app_song/views.py:1286
 #, python-format
 msgid "Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1309
+#: app_song/views.py:1307
 #, python-format
 msgid "Mise à jour impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1326
+#: app_song/views.py:1324
 #, python-format
 msgid "%(item)s enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1469
+#: app_song/views.py:1467
 msgid ""
 "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre "
 "devalide."
 msgstr ""
 
-#: app_song/views.py:1479
+#: app_song/views.py:1477
 msgid ""
 "Impossible de devalider ce chant tant qu'il reste des demandes de "
 "modification non lues."

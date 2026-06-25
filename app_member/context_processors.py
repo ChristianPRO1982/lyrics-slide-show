@@ -53,10 +53,11 @@ def site_popup(request) -> dict[str, str]:
                 sections.append(moderator_section)
 
     return {
+        "lss_signup_url": str(getattr(params, "signup_url", "") or "").strip(),
         "lss_site_popup_json": json.dumps(
             {
                 "title": _("Informations du site"),
                 "sections": sections,
             }
-        )
+        ),
     }
