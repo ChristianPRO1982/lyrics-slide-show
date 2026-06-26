@@ -38,6 +38,42 @@
     margin: 0.35rem 0;
 }
 
+.song-detail-card {
+    display: grid;
+    gap: 1rem;
+}
+
+.song-tag-group {
+    margin: 0.25rem 0 0.4rem;
+    font-size: 0.95rem;
+}
+
+.song-tag-badge {
+    border: 1px solid var(--site-line);
+    border-radius: var(--site-radius-sm);
+    background: linear-gradient(180deg, var(--site-surface-strong), var(--site-surface));
+    color: var(--site-ink);
+    display: inline-flex;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 0.35rem 0.55rem;
+}
+
+[data-meta-transfer-source],
+[data-meta-transfer-target] {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+[data-meta-transfer-item] {
+    cursor: pointer;
+}
+
 .animation-create-form-row {
     display: grid;
     gap: 0.35rem;

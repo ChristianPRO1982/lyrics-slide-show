@@ -17,6 +17,7 @@ from app_animation.models import (
     BackgroundImageGenre,
     BackgroundImageStatus,
 )
+from app_song.genre_labels import build_genre_display_label
 from app_member.services import get_site_params_for_language
 
 
@@ -134,11 +135,7 @@ def fetch_genre_options() -> list[dict[str, object]]:
             "id": int(row[0]),
             "group": str(row[1] or "").strip(),
             "name": str(row[2] or "").strip(),
-            "label": " - ".join(
-                part
-                for part in [str(row[1] or "").strip(), str(row[2] or "").strip()]
-                if part
-            ),
+            "label": build_genre_display_label(row[1], row[2]),
         }
         for row in rows
     ]
@@ -159,11 +156,7 @@ def fetch_genre_labels(genre_ids: set[int]) -> dict[int, str]:
         rows = cursor.fetchall()
     output: dict[int, str] = {}
     for row in rows:
-        output[int(row[0])] = " - ".join(
-            part
-            for part in [str(row[1] or "").strip(), str(row[2] or "").strip()]
-            if part
-        )
+        output[int(row[0])] = build_genre_display_label(row[1], row[2])
     return output
 
 

@@ -88,7 +88,11 @@ class AnimationForm(forms.ModelForm):
 
 class BackgroundImageUploadForm(forms.Form):
     title = forms.CharField(max_length=255, label=_("Titre"))
-    target = forms.CharField(max_length=120, label=_("Cible"))
+    target = forms.CharField(
+        max_length=120,
+        label=_("Cible"),
+        widget=forms.TextInput(attrs={"placeholder": "scout / louange / ..."}),
+    )
     description = forms.CharField(
         required=False,
         label=_("Description"),
@@ -103,6 +107,36 @@ class BackgroundImageUploadForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        genre_options = tuple(fetch_genre_options())
         self.fields["genre_ids"].choices = [
-            (str(option["id"]), option["label"]) for option in fetch_genre_options()
+            (str(option["id"]), option["label"]) for option in genre_options
         ]
+
+        if self.is_bound:
+            selected_ids = {
+                str(value).strip()
+                for value in self.data.getlist(self.add_prefix("genre_ids"))
+                if str(value).strip()
+            }
+        else:
+            initial_values = self.initial.get("genre_ids", [])
+            if initial_values is None:
+                initial_values = []
+            selected_ids = {
+                str(value).strip() for value in initial_values if str(value).strip()
+            }
+
+        selected_options: list[dict[str, str]] = []
+        available_options: list[dict[str, str]] = []
+        for option in genre_options:
+            payload = {
+                "id": str(option["id"]),
+                "label": str(option["label"]),
+            }
+            if payload["id"] in selected_ids:
+                selected_options.append(payload)
+            else:
+                available_options.append(payload)
+
+        self.genre_selected_options = tuple(selected_options)
+        self.genre_available_options = tuple(available_options)
