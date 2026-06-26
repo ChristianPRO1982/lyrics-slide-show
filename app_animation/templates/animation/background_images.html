@@ -3,9 +3,18 @@
 {% load i18n %}
 
 {% block title %}{% trans "Banque d'images" %} | Lyrics Slide Show{% endblock %}
-{% block section_title %}{% trans "Animations" %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
 {% block section_intro %}
     <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
 {% endblock %}
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}

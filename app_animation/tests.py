@@ -255,12 +255,40 @@ class MessageBoxShortcutSlotTests(SimpleTestCase):
 
 
 class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
+    def test_animations_page_uses_homepage_style_main_grid(self):
+        template = Path("app_animation/templates/animation/animations.html").read_text()
+        self.assertIn('<section class="site-theme-selection">', template)
+        self.assertNotIn('<section class="animation-list-section">', template)
+
     def test_animation_actions_partial_uses_flat_song_like_panel_structure(self):
         template = Path(
             "app_animation/templates/animation/includes/_animation_actions.html"
         ).read_text()
         self.assertIn('class="animation-tools-separator"', template)
         self.assertNotIn('class="animation-actions-list"', template)
+
+    def test_background_image_pages_reuse_animation_section_panel_contract(self):
+        background_images_template = Path(
+            "app_animation/templates/animation/background_images.html"
+        ).read_text()
+        upload_background_image_template = Path(
+            "app_animation/templates/animation/upload_background_image.html"
+        ).read_text()
+        animation_history_template = Path(
+            "app_animation/templates/animation/animation_history.html"
+        ).read_text()
+
+        for template in (
+            background_images_template,
+            upload_background_image_template,
+            animation_history_template,
+        ):
+            self.assertIn(
+                '{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}',
+                template,
+            )
+            self.assertIn("{% block section_nav %}", template)
+            self.assertIn('data-theme-icon="animations"', template)
 
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
