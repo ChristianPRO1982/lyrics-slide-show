@@ -7,6 +7,10 @@ urlpatterns = [
     path("", views.animations, name="animations"),
     path("add/", views.add_animation, name="add_animation"),
     path("history/", views.animation_history, name="animation_history"),
+    path("images/", views.background_images, name="background_images"),
+    path(
+        "images/upload/", views.upload_background_image, name="upload_background_image"
+    ),
     path("<int:animation_id>/modify/", views.modify_animation, name="modify_animation"),
     path(
         "<int:animation_id>/lyrics-slide-show/",

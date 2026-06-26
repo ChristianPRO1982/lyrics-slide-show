@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Banque d'images" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% trans "Animations" %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Banque d'images" %}{% endblock %}
+{% block page_intro %}
+    <p>{% trans "Images de fond partagées pour les animations." %}</p>
+{% endblock %}
+{% block content %}
+    <article class="site-theme-card animation-list-card">
+        <form method="get" class="animation-image-filter-form">
+            <p>
+                <label for="background-image-search">{% trans "Nom" %}</label><br>
+                <input id="background-image-search" type="text" name="q" value="{{ query }}">
+            </p>
+            <fieldset>
+                <legend>{% trans "Genres" %}</legend>
+                {% for option in genre_options %}
+                    <label class="animation-checkbox-option">
+                        <input type="checkbox" name="genre_ids" value="{{ option.id }}" {% if option.id in selected_genre_ids %}checked{% endif %}>
+                        <span>{{ option.label }}</span>
+                    </label>
+                {% empty %}
+                    <p>{% trans "Aucun genre disponible." %}</p>
+                {% endfor %}
+            </fieldset>
+            {% if is_moderator %}
+                <p>
+                    <a class="animation-tool-link site-action {% if moderation_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?moderation_quick=1">{% trans "Images à modérer" %}</a>
+                    <a class="animation-tool-link site-action {% if inactive_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?inactive_quick=1">{% trans "Images inactives" %}</a>
+                </p>
+            {% endif %}
+            <p><button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Filtrer" %}</button></p>
+        </form>
+    </article>
+
+    <section class="animation-list-section">
+        {% for item in background_images %}
+            <article class="site-theme-card animation-list-card">
+                <header class="site-theme-card-header">
+                    <div>
+                        <h2>{{ item.title }}</h2>
+                        <p>{{ item.target }}</p>
+                        <p><code>{{ item.asset_code }}</code></p>
+                        {% if is_moderator %}<p>{% trans "Statut" %}: {{ item.status }}</p>{% endif %}
+                    </div>
+                </header>
+                {% if item.url %}
+                    <p><img src="{{ item.url }}" alt="{{ item.title }}" style="max-width: 100%; border-radius: 14px;"></p>
+                {% endif %}
+                {% if item.description %}
+                    <p>{{ item.description|linebreaksbr }}</p>
+                {% endif %}
+                {% if item.genres %}
+                    <p>{% trans "Genres" %}: {{ item.genres|join:", " }}</p>
+                {% endif %}
+                {% if is_moderator %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="image_id" value="{{ item.image_id }}">
+                        {% if item.status == "pending" %}
+                            <button type="submit" name="action" value="validate" class="animation-tool-button site-action site-action--primary">{% trans "Valider" %}</button>
+                            <button type="submit" name="action" value="invalidate" class="animation-tool-button site-action site-action--danger">{% trans "Invalider" %}</button>
+                        {% elif item.status == "active" %}
+                            <button type="submit" name="action" value="deactivate" class="animation-tool-button site-action site-action--secondary">{% trans "Désactiver" %}</button>
+                        {% elif item.status == "inactive" %}
+                            <button type="submit" name="action" value="activate" class="animation-tool-button site-action site-action--primary">{% trans "Réactiver" %}</button>
+                            <button type="submit" name="action" value="delete" class="animation-tool-button site-action site-action--danger">{% trans "Supprimer définitivement" %}</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </article>
+        {% empty %}
+            <article class="site-theme-card">
+                <p>{% trans "Aucune image ne correspond à ce filtre." %}</p>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}

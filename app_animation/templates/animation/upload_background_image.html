@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Ajouter une image de fond" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% trans "Animations" %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Ajouter une image de fond" %}{% endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data" class="site-theme-selection">
+        {% csrf_token %}
+        <article class="site-theme-card">
+            {{ form.non_field_errors }}
+            <p>{{ form.title.label_tag }} {{ form.title }} {{ form.title.errors }}</p>
+            <p>{{ form.target.label_tag }} {{ form.target }} {{ form.target.errors }}</p>
+            <p>{{ form.description.label_tag }} {{ form.description }} {{ form.description.errors }}</p>
+            <p>{{ form.image_file.label_tag }} {{ form.image_file }} {{ form.image_file.errors }}</p>
+            <fieldset>
+                <legend>{{ form.genre_ids.label }}</legend>
+                {{ form.genre_ids.errors }}
+                {{ form.genre_ids }}
+            </fieldset>
+            <p><button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Envoyer pour modération" %}</button></p>
+        </article>
+    </form>
+{% endblock %}

@@ -129,6 +129,11 @@ def build_main_song_cards(
                     if override and override.bg_color_override
                     else ""
                 ),
+                "background_asset_code_override": (
+                    str(override.background_asset_code_override).strip()
+                    if override and override.background_asset_code_override
+                    else ""
+                ),
             }
             if any(
                 [
@@ -136,6 +141,7 @@ def build_main_song_cards(
                     style_data["font_size_delta"] != 0,
                     style_data["text_color_override"],
                     style_data["bg_color_override"],
+                    style_data["background_asset_code_override"],
                 ]
             ):
                 verse_styles[str(verse.verse_id)] = style_data
@@ -152,6 +158,9 @@ def build_main_song_cards(
                         "font_size_delta": style_data["font_size_delta"],
                         "text_color_override": style_data["text_color_override"],
                         "bg_color_override": style_data["bg_color_override"],
+                        "background_asset_code_override": style_data[
+                            "background_asset_code_override"
+                        ],
                     }
                 )
 
@@ -166,6 +175,9 @@ def build_main_song_cards(
             "bg_color_override": str(animation_song.bg_color_override or "")
             .strip()
             .upper(),
+            "background_asset_code_override": str(
+                animation_song.background_asset_code_override or ""
+            ).strip(),
         }
         cards.append(
             {
@@ -202,6 +214,9 @@ def build_songs_payload_initial(
                     ),
                     "bg_color_override": str(
                         card["song_style"]["bg_color_override"] or ""
+                    ),
+                    "background_asset_code_override": str(
+                        card["song_style"]["background_asset_code_override"] or ""
                     ),
                 },
                 "verse_styles": card["verse_styles"],
@@ -251,17 +266,22 @@ def _set_song_style_overrides(
     bg_color_override = _normalize_optional_hex_color(
         song_style.get("bg_color_override")
     )
+    background_asset_code_override = _normalize_optional_text(
+        song_style.get("background_asset_code_override")
+    )
 
     animation_song.font_family_override = font_family_override
     animation_song.font_size_override = font_size_override
     animation_song.text_color_override = text_color_override
     animation_song.bg_color_override = bg_color_override
+    animation_song.background_asset_code_override = background_asset_code_override
     animation_song.save(
         update_fields=[
             "font_family_override",
             "font_size_override",
             "text_color_override",
             "bg_color_override",
+            "background_asset_code_override",
         ]
     )
 
@@ -287,6 +307,9 @@ def _set_verse_override(
     bg_color_override = _normalize_optional_hex_color(
         verse_style.get("bg_color_override")
     )
+    background_asset_code_override = _normalize_optional_text(
+        verse_style.get("background_asset_code_override")
+    )
 
     font_size_override = None
     if font_size_delta != 0:
@@ -298,6 +321,7 @@ def _set_verse_override(
             font_size_override is not None,
             bool(text_color_override),
             bool(bg_color_override),
+            bool(background_asset_code_override),
         ]
     )
 
@@ -316,6 +340,7 @@ def _set_verse_override(
     target.font_size_override = font_size_override
     target.text_color_override = text_color_override
     target.bg_color_override = bg_color_override
+    target.background_asset_code_override = background_asset_code_override
     target.save()
 
 

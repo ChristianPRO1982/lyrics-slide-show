@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from app_group.models import Group
 from app_song.models import Song
@@ -113,3 +114,59 @@ class AnimationRemoteShortcut(models.Model):
 
     class Meta:
         db_table = 'lss"."m_animation_remote_shortcuts'
+
+
+class BackgroundImageStatus(models.TextChoices):
+    PENDING = "pending", _("En attente")
+    INACTIVE = "inactive", _("Inactive")
+    ACTIVE = "active", _("Active")
+
+
+class BackgroundImage(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    asset_code = models.CharField(max_length=128, unique=True)
+    title = models.CharField(max_length=255)
+    target = models.CharField(max_length=120)
+    description = models.TextField(blank=True, null=True)
+    status = models.CharField(
+        max_length=16,
+        choices=BackgroundImageStatus.choices,
+        default=BackgroundImageStatus.PENDING,
+    )
+    stored_path = models.CharField(max_length=255)
+    original_name = models.CharField(max_length=255)
+    extension = models.CharField(max_length=16)
+    mime = models.CharField(max_length=100)
+    size_bytes = models.PositiveIntegerField(default=0)
+    width = models.PositiveIntegerField(default=0)
+    height = models.PositiveIntegerField(default=0)
+    member_id = models.UUIDField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    moderated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'lss"."a_background_images'
+        ordering = ["title", "image_id"]
+        indexes = [
+            models.Index(fields=["status"], name="a_bg_images_status_idx"),
+            models.Index(fields=["asset_code"], name="a_bg_images_asset_idx"),
+        ]
+
+
+class BackgroundImageGenre(models.Model):
+    image = models.ForeignKey(
+        BackgroundImage,
+        on_delete=models.CASCADE,
+        db_column="image_id",
+        related_name="genre_relations",
+    )
+    genre_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'lss"."a_background_image_genres'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["image", "genre_id"],
+                name="a_bg_image_genres_unique",
+            ),
+        ]

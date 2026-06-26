@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from app_animation.services.background_images import fetch_genre_options
+
 from .font_catalog import (
     is_allowed_font_family,
     list_font_choices,
@@ -82,3 +84,25 @@ class AnimationForm(forms.ModelForm):
         if not is_allowed_font_family(value):
             raise forms.ValidationError(_("Police invalide."))
         return value
+
+
+class BackgroundImageUploadForm(forms.Form):
+    title = forms.CharField(max_length=255, label=_("Titre"))
+    target = forms.CharField(max_length=120, label=_("Cible"))
+    description = forms.CharField(
+        required=False,
+        label=_("Description"),
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    image_file = forms.ImageField(label=_("Image"))
+    genre_ids = forms.MultipleChoiceField(
+        required=False,
+        label=_("Genres"),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["genre_ids"].choices = [
+            (str(option["id"]), option["label"]) for option in fetch_genre_options()
+        ]

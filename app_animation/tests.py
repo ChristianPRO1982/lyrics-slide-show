@@ -1,12 +1,17 @@
 import json
+import shutil
+import tempfile
+import uuid
+from io import BytesIO
 from pathlib import Path
 
-from django.test import SimpleTestCase, TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from app_main.models import DirectoryUserRecord
-from app_member.models import MemberPreferences
+from app_member.models import MemberPreferences, MemberRole
 from app_group.models import Group, GroupStatus
 from app_group.services import (
     SELECTED_GROUP_ID_SESSION_KEY,
@@ -21,7 +26,11 @@ from .models import (
     AnimationRemoteShortcut,
     AnimationSong,
     AnimationVerseOverride,
+    BackgroundImage,
+    BackgroundImageStatus,
 )
+from .services.background_images import resolve_background_asset_url
+from .utils import _open_image, validate_image
 from . import views as animation_views
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.render_bundle import build_animation_render_bundle
@@ -74,6 +83,112 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn("font_family", form.errors)
+
+
+class BackgroundImageValidationTests(SimpleTestCase):
+    def _build_upload(
+        self,
+        *,
+        size: tuple[int, int] = (1600, 900),
+        image_format: str = "PNG",
+        filename: str = "background.png",
+        content_type: str = "image/png",
+    ) -> SimpleUploadedFile:
+        from PIL import Image
+
+        buffer = BytesIO()
+        image = Image.new("RGB", size, color=(120, 60, 40))
+        image.save(buffer, format=image_format)
+        return SimpleUploadedFile(
+            filename,
+            buffer.getvalue(),
+            content_type=content_type,
+        )
+
+    def test_open_image_reads_dimensions_and_restores_cursor(self):
+        upload = self._build_upload()
+        upload.read(5)
+        width, height, fmt = _open_image(upload)
+        self.assertEqual((width, height, fmt), (1600, 900, "PNG"))
+        self.assertEqual(upload.tell(), 5)
+
+    def test_validate_image_accepts_valid_upload(self):
+        upload = self._build_upload()
+        result = validate_image(
+            upload,
+            {
+                "allowed_ext": [".png"],
+                "allowed_mime": ["image/png"],
+                "max_bytes": 2 * 1024 * 1024,
+                "min_w": 800,
+                "min_h": 600,
+                "max_w": 4096,
+                "max_h": 3072,
+                "ratio_min": 1.3,
+                "ratio_max": 2.0,
+            },
+        )
+        self.assertEqual(result, "")
+
+    def test_validate_image_rejects_extension_mime_dimensions_and_ratio(self):
+        valid_cfg = {
+            "allowed_ext": [".png"],
+            "allowed_mime": ["image/png"],
+            "max_bytes": 2 * 1024 * 1024,
+            "min_w": 800,
+            "min_h": 600,
+            "max_w": 4096,
+            "max_h": 3072,
+            "ratio_min": 1.3,
+            "ratio_max": 2.0,
+        }
+        self.assertEqual(
+            validate_image(
+                self._build_upload(filename="background.jpg"),
+                valid_cfg,
+            ),
+            "invalid_extension",
+        )
+        self.assertEqual(
+            validate_image(
+                self._build_upload(content_type="image/jpeg"),
+                valid_cfg,
+            ),
+            "invalid_mime",
+        )
+        self.assertEqual(
+            validate_image(
+                self._build_upload(size=(640, 480)),
+                valid_cfg,
+            ),
+            "too_small",
+        )
+        self.assertEqual(
+            validate_image(
+                self._build_upload(size=(5000, 2800)),
+                valid_cfg,
+            ),
+            "too_large_dimensions",
+        )
+        self.assertEqual(
+            validate_image(
+                self._build_upload(size=(800, 800)),
+                valid_cfg,
+            ),
+            "invalid_ratio",
+        )
+
+    def test_validate_image_rejects_corrupted_payload(self):
+        upload = SimpleUploadedFile(
+            "broken.png",
+            b"not-an-image",
+            content_type="image/png",
+        )
+        result = validate_image(
+            upload,
+            {"allowed_ext": [".png"], "allowed_mime": ["image/png"]},
+        )
+        self.assertEqual(result, "invalid_image")
 
 
 class LyricsSlideShowMasterScriptTests(SimpleTestCase):
@@ -352,7 +467,14 @@ class AnimationViewsTests(TestCase):
             session[SELECTED_GROUP_SECRET_SESSION_KEY] = secret
         session.save()
 
-    def _login(self, user_id: str, username: str = "member.user") -> None:
+    def _login(
+        self,
+        user_id: str,
+        username: str = "member.user",
+        *,
+        is_moderator: bool = False,
+        is_admin: bool = False,
+    ) -> None:
         DirectoryUserRecord.objects.create(
             id=user_id,
             username=username,
@@ -369,8 +491,8 @@ class AnimationViewsTests(TestCase):
             "email": f"{username}@example.test",
             "first_name": "Member",
             "last_name": "User",
-            "is_moderator": False,
-            "is_admin": False,
+            "is_moderator": is_moderator or is_admin,
+            "is_admin": is_admin,
         }
         session.save()
 
@@ -1891,6 +2013,249 @@ class AnimationViewsTests(TestCase):
         toolbar_pos = content.index("lyrics-master-toolbar")
         self.assertLess(context_pos, slides_anchor_pos)
         self.assertLess(slides_anchor_pos, toolbar_pos)
+
+
+class BackgroundImageViewsTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self._media_root_dir = tempfile.mkdtemp(prefix="lss-bg-images-")
+        self.override = override_settings(MEDIA_ROOT=self._media_root_dir)
+        self.override.enable()
+
+    def tearDown(self):
+        self.override.disable()
+        shutil.rmtree(self._media_root_dir, ignore_errors=True)
+        super().tearDown()
+
+    def _login(self, *, moderator: bool = False):
+        user_id = str(uuid.uuid4())
+        DirectoryUserRecord.objects.create(
+            id=user_id,
+            username="image.user",
+            first_name="Image",
+            last_name="User",
+            email="image.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": user_id,
+            "username": "image.user",
+            "email": "image.user@example.test",
+            "first_name": "Image",
+            "last_name": "User",
+            "is_moderator": moderator,
+            "is_admin": False,
+        }
+        session.save()
+        if moderator:
+            MemberRole.objects.create(member_id=user_id, is_moderator=True)
+        return user_id
+
+    def _build_upload(self, *, size=(1600, 900)):
+        from PIL import Image
+
+        buffer = BytesIO()
+        Image.new("RGB", size, color=(30, 50, 90)).save(buffer, format="PNG")
+        return SimpleUploadedFile(
+            "background.png",
+            buffer.getvalue(),
+            content_type="image/png",
+        )
+
+    def test_upload_background_image_requires_authenticated_user(self):
+        response = self.client.get(reverse("upload_background_image"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("login"))
+
+    def test_upload_background_image_creates_pending_row_with_member_id(self):
+        self._login()
+        response = self.client.post(
+            reverse("upload_background_image"),
+            data={
+                "title": "Sky",
+                "target": "Scout",
+                "description": "Blue sky",
+                "image_file": self._build_upload(),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        image = BackgroundImage.objects.get()
+        self.assertEqual(image.status, BackgroundImageStatus.PENDING)
+        self.assertIsNotNone(image.member_id)
+        self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
+
+    def test_moderator_validation_anonymizes_image(self):
+        member_id = uuid.uuid4()
+        image = BackgroundImage.objects.create(
+            asset_code="bg-test",
+            title="Sky",
+            target="Scout",
+            status=BackgroundImageStatus.PENDING,
+            stored_path="background-images/pending/example.png",
+            original_name="example.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+            member_id=member_id,
+        )
+        pending_path = Path(self._media_root_dir, image.stored_path)
+        pending_path.parent.mkdir(parents=True, exist_ok=True)
+        pending_path.write_bytes(b"png")
+
+        self._login(moderator=True)
+        response = self.client.post(
+            reverse("background_images"),
+            data={"image_id": image.image_id, "action": "validate"},
+        )
+        self.assertEqual(response.status_code, 302)
+        image.refresh_from_db()
+        self.assertEqual(image.status, BackgroundImageStatus.INACTIVE)
+        self.assertIsNone(image.member_id)
+        self.assertIn("/inactive/", image.stored_path)
+
+    def test_deactivate_image_clears_animation_references(self):
+        self._login(moderator=True)
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        image = BackgroundImage.objects.create(
+            asset_code="bg-test",
+            title="Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/example.png",
+            original_name="example.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+            member_id=None,
+        )
+        active_path = Path(self._media_root_dir, image.stored_path)
+        active_path.parent.mkdir(parents=True, exist_ok=True)
+        active_path.write_bytes(b"png")
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            background_asset_code=image.asset_code,
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        animation_song = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            background_asset_code_override=image.asset_code,
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=animation_song,
+            source_verse_id=verse.verse_id,
+            background_asset_code_override=image.asset_code,
+        )
+
+        response = self.client.post(
+            reverse("background_images"),
+            data={"image_id": image.image_id, "action": "deactivate"},
+        )
+        self.assertEqual(response.status_code, 302)
+        image.refresh_from_db()
+        animation.refresh_from_db()
+        animation_song.refresh_from_db()
+        override = AnimationVerseOverride.objects.get(
+            animation_song=animation_song,
+            source_verse_id=verse.verse_id,
+        )
+        self.assertEqual(image.status, BackgroundImageStatus.INACTIVE)
+        self.assertIsNone(animation.background_asset_code)
+        self.assertIsNone(animation_song.background_asset_code_override)
+        self.assertIsNone(override.background_asset_code_override)
+
+    def test_modify_animation_can_save_background_image_overrides(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id],
+                    "song_style": {"background_asset_code_override": "bg-song"},
+                    "verse_styles": {
+                        str(verse.verse_id): {
+                            "background_asset_code_override": "bg-verse"
+                        }
+                    },
+                }
+            ]
+        }
+        session = self.client.session
+        session[SELECTED_GROUP_ID_SESSION_KEY] = group.group_id
+        session.save()
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "bg-animation",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        animation.refresh_from_db()
+        item.refresh_from_db()
+        override = AnimationVerseOverride.objects.get(
+            animation_song=item,
+            source_verse_id=verse.verse_id,
+        )
+        self.assertEqual(animation.background_asset_code, "bg-animation")
+        self.assertEqual(item.background_asset_code_override, "bg-song")
+        self.assertEqual(override.background_asset_code_override, "bg-verse")
+
+    def test_resolve_background_asset_url_uses_library_entry(self):
+        image = BackgroundImage.objects.create(
+            asset_code="bg-test",
+            title="Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/example.png",
+            original_name="example.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self.assertEqual(
+            resolve_background_asset_url(image.asset_code),
+            "/media/background-images/active/example.png",
+        )
 
 
 class PlaylistSyncTests(TestCase):
