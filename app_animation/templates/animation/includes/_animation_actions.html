@@ -3,7 +3,7 @@
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animations' %}">{% trans "← Retour aux animations à venir" %}</a></p>
     <div class="animation-tools-separator" aria-hidden="true"></div>
 {% endif %}
-{% if request.resolver_match.url_name != "background_images" %}
+{% if request.user.is_moderator and request.resolver_match.url_name != "background_images" %}
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'background_images' %}">{% trans "Banque d'images" %}</a></p>
 {% endif %}
 {% if request.user.is_authenticated and request.resolver_match.url_name != "upload_background_image" %}

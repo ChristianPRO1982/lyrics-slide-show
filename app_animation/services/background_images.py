@@ -357,6 +357,7 @@ def list_background_images_for_view(
             "target": image.target,
             "description": image.description or "",
             "status": image.status,
+            "status_label": image.get_status_display(),
             "url": resolve_background_asset_url(image.asset_code),
             "genre_ids": tuple(sorted(genre_map.get(int(image.image_id), []))),
             "genres": tuple(

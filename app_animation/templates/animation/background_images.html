@@ -28,75 +28,144 @@
 {% block page_title %}{% trans "Banque d'images" %}{% endblock %}
 {% block page_intro %}
     <p>{% trans "Images de fond partagées pour les animations." %}</p>
+    <form id="background-images-search-form" method="get" hidden></form>
+{% endblock %}
+{% block page_summary %}
+    <div class="animation-background-summary-grid" data-background-summary-grid>
+        {% for item in summary_background_images %}
+            <div class="animation-background-summary-tile" data-background-summary-tile>
+                {% if item.url %}
+                    <img src="{{ item.url }}" alt="" loading="lazy">
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>{% trans "Aucune image active à mettre en avant." %}</p>
+        {% endfor %}
+    </div>
 {% endblock %}
 {% block content %}
-    <article class="site-theme-card animation-list-card">
-        <form method="get" class="animation-image-filter-form">
-            <p>
-                <label for="background-image-search">{% trans "Nom" %}</label><br>
-                <input id="background-image-search" type="text" name="q" value="{{ query }}">
-            </p>
-            <fieldset>
-                <legend>{% trans "Genres" %}</legend>
+    <article class="site-theme-card animation-background-search-card" data-background-search-card>
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Recherche" %}</h2>
+            </div>
+        </header>
+        <div class="animation-background-search-main">
+            <label for="background-image-search">{% trans "Nom" %}</label>
+            <input id="background-image-search" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Titre de l’image' %}" form="background-images-search-form">
+            <div class="animation-background-search-actions">
+                <button type="submit" class="site-action site-action--primary" form="background-images-search-form">{% trans "Filtrer" %}</button>
+                <a class="animation-secondary-action site-action site-action--secondary" href="{% url 'background_images' %}">{% trans "Réinitialiser" %}</a>
+            </div>
+            <div class="animation-background-search-quick-actions">
+                <a class="animation-tool-link site-action {% if moderation_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?moderation_quick=1">{% trans "Images à modérer" %}</a>
+                <a class="animation-tool-link site-action {% if inactive_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?inactive_quick=1">{% trans "Images inactives" %}</a>
+            </div>
+        </div>
+    </article>
+
+    <article class="site-theme-card animation-background-search-card" data-background-search-card>
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Genres" %}</h2>
+            </div>
+        </header>
+        <fieldset class="animation-background-genres-panel" data-background-genres-panel>
+            <input
+                type="search"
+                class="animation-background-genre-filter-input"
+                placeholder="{% trans 'Trouver un genre' %}"
+                data-background-genre-filter
+            >
+            <div class="animation-background-genres-scroll" data-background-genres-scroll>
                 {% for option in genre_options %}
-                    <label class="animation-checkbox-option">
-                        <input type="checkbox" name="genre_ids" value="{{ option.id }}" {% if option.id in selected_genre_ids %}checked{% endif %}>
+                    <label class="song-checkbox-option animation-background-genre-option" data-background-genre-option>
+                        <input type="checkbox" name="genre_ids" value="{{ option.id }}" {% if option.id in selected_genre_ids %}checked{% endif %} form="background-images-search-form">
                         <span>{{ option.label }}</span>
                     </label>
                 {% empty %}
                     <p>{% trans "Aucun genre disponible." %}</p>
                 {% endfor %}
-            </fieldset>
-            {% if is_moderator %}
-                <p>
-                    <a class="animation-tool-link site-action {% if moderation_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?moderation_quick=1">{% trans "Images à modérer" %}</a>
-                    <a class="animation-tool-link site-action {% if inactive_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?inactive_quick=1">{% trans "Images inactives" %}</a>
-                </p>
-            {% endif %}
-            <p><button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Filtrer" %}</button></p>
-        </form>
+            </div>
+        </fieldset>
     </article>
-
-    <section class="animation-list-section">
+{% endblock %}
+{% block content_footer %}
+    <section class="animation-background-results-grid" data-background-results-grid>
         {% for item in background_images %}
-            <article class="site-theme-card animation-list-card">
-                <header class="site-theme-card-header">
-                    <div>
-                        <h2>{{ item.title }}</h2>
-                        <p>{{ item.target }}</p>
-                        <p><code>{{ item.asset_code }}</code></p>
-                        {% if is_moderator %}<p>{% trans "Statut" %}: {{ item.status }}</p>{% endif %}
+            <article class="site-theme-card animation-background-result-card" data-background-result-card>
+                <div class="animation-background-result-main">
+                    <div class="animation-background-result-media-column">
+                        <div class="animation-background-result-media">
+                            {% if item.url %}
+                                <img src="{{ item.url }}" alt="{{ item.title }}" loading="lazy">
+                            {% else %}
+                                <div class="animation-background-result-media-placeholder" aria-hidden="true"></div>
+                            {% endif %}
+                        </div>
+                        <p class="animation-background-result-status"><strong>{% trans "Statut" %}:</strong> {{ item.status_label }}</p>
                     </div>
-                </header>
-                {% if item.url %}
-                    <p><img src="{{ item.url }}" alt="{{ item.title }}" style="max-width: 100%; border-radius: 14px;"></p>
-                {% endif %}
-                {% if item.description %}
-                    <p>{{ item.description|linebreaksbr }}</p>
-                {% endif %}
-                {% if item.genres %}
-                    <p>{% trans "Genres" %}: {{ item.genres|join:", " }}</p>
-                {% endif %}
-                {% if is_moderator %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="image_id" value="{{ item.image_id }}">
-                        {% if item.status == "pending" %}
-                            <button type="submit" name="action" value="validate" class="animation-tool-button site-action site-action--primary">{% trans "Valider" %}</button>
-                            <button type="submit" name="action" value="invalidate" class="animation-tool-button site-action site-action--danger">{% trans "Invalider" %}</button>
-                        {% elif item.status == "active" %}
-                            <button type="submit" name="action" value="deactivate" class="animation-tool-button site-action site-action--secondary">{% trans "Désactiver" %}</button>
-                        {% elif item.status == "inactive" %}
-                            <button type="submit" name="action" value="activate" class="animation-tool-button site-action site-action--primary">{% trans "Réactiver" %}</button>
-                            <button type="submit" name="action" value="delete" class="animation-tool-button site-action site-action--danger">{% trans "Supprimer définitivement" %}</button>
+                    <div class="animation-background-result-info">
+                        <h2><strong>{{ item.title }}</strong></h2>
+                        {% if item.description %}
+                            <p>{{ item.description|linebreaksbr }}</p>
                         {% endif %}
-                    </form>
-                {% endif %}
+                        <p><strong>{% trans "Cible" %}:</strong> {{ item.target }}</p>
+                        {% if item.genres %}
+                            <p>{% trans "Genres" %}: {{ item.genres|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <form method="post" class="animation-background-result-actions">
+                    {% csrf_token %}
+                    <input type="hidden" name="image_id" value="{{ item.image_id }}">
+                    {% if item.status == "pending" %}
+                        <button type="submit" name="action" value="validate" class="site-action site-action--primary">{% trans "Valider" %}</button>
+                        <button type="submit" name="action" value="invalidate" class="site-action site-action--danger">{% trans "Invalider" %}</button>
+                    {% elif item.status == "active" %}
+                        <button type="submit" name="action" value="deactivate" class="site-action site-action--secondary">{% trans "Désactiver" %}</button>
+                    {% elif item.status == "inactive" %}
+                        <button type="submit" name="action" value="activate" class="site-action site-action--primary">{% trans "Réactiver" %}</button>
+                        <button type="submit" name="action" value="delete" class="site-action site-action--danger">{% trans "Supprimer définitivement" %}</button>
+                    {% endif %}
+                </form>
             </article>
         {% empty %}
-            <article class="site-theme-card">
+            <article class="site-theme-card animation-background-empty-card">
                 <p>{% trans "Aucune image ne correspond à ce filtre." %}</p>
             </article>
         {% endfor %}
     </section>
+{% endblock %}
+{% block page_scripts %}
+    <script>
+        (() => {
+            const normalizeSearch = (value) =>
+                String(value || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+            const filterInput = document.querySelector("[data-background-genre-filter]");
+            const options = Array.from(document.querySelectorAll("[data-background-genre-option]"));
+            if (!filterInput || options.length === 0) {
+                return;
+            }
+
+            const applyFilter = () => {
+                const query = normalizeSearch(filterInput.value);
+                const shouldFilter = query.length >= 1;
+
+                options.forEach((option) => {
+                    const haystack = normalizeSearch(option.textContent || "");
+                    const isHidden = shouldFilter && !haystack.includes(query);
+                    option.style.display = isHidden ? "none" : "";
+                });
+            };
+
+            filterInput.addEventListener("input", applyFilter);
+            applyFilter();
+        })();
+    </script>
 {% endblock %}

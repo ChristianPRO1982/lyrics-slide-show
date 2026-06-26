@@ -365,6 +365,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
             )
             self.assertIn("{% block section_nav %}", template)
             self.assertIn('data-theme-icon="animations"', template)
+        self.assertIn("{% block page_summary %}", background_images_template)
+        self.assertIn("data-background-search-card", background_images_template)
+        self.assertIn("data-background-results-grid", background_images_template)
 
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
@@ -376,6 +379,8 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         stylesheet = Path("static/css/app_animation.css").read_text()
         self.assertIn(".site-tools-panel .animation-tool-link", stylesheet)
         self.assertIn(".site-tools-panel .animation-tools-separator", stylesheet)
+        self.assertIn(".animation-background-summary-grid", stylesheet)
+        self.assertIn(".animation-background-genres-scroll", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
         self.assertIn(
@@ -2190,6 +2195,17 @@ class BackgroundImageViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("login"))
 
+    def test_background_images_requires_moderator(self):
+        self._login(moderator=False)
+        response = self.client.get(reverse("background_images"))
+        self.assertEqual(response.status_code, 404)
+
+    def test_upload_page_hides_background_bank_link_for_non_moderator(self):
+        self._login(moderator=False)
+        response = self.client.get(reverse("upload_background_image"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, reverse("background_images"))
+
     def test_upload_background_image_creates_pending_row_with_member_id(self):
         self._login()
         response = self.client.post(
@@ -2207,6 +2223,78 @@ class BackgroundImageViewsTests(TestCase):
         self.assertIsNotNone(image.member_id)
         self.assertEqual(image.storage_filename, Path(image.stored_path).name)
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
+
+    def test_background_images_context_summary_shows_only_active_entries_and_caps_at_15(
+        self,
+    ):
+        self._login(moderator=True)
+        created_active_ids: list[int] = []
+        for index in range(18):
+            image = BackgroundImage.objects.create(
+                asset_code=f"bg-active-{index}",
+                storage_filename=f"active-{index}.png",
+                title=f"Active {index}",
+                target="Scout",
+                status=BackgroundImageStatus.ACTIVE,
+                stored_path=f"background-images/active/active-{index}.png",
+                original_name=f"active-{index}.png",
+                extension=".png",
+                mime="image/png",
+                size_bytes=100,
+                width=1600,
+                height=900,
+            )
+            created_active_ids.append(image.image_id)
+        BackgroundImage.objects.create(
+            asset_code="bg-inactive",
+            storage_filename="inactive.png",
+            title="Inactive",
+            target="Scout",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive.png",
+            original_name="inactive.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+
+        response = self.client.get(reverse("background_images"))
+        self.assertEqual(response.status_code, 200)
+        summary_items = response.context["summary_background_images"]
+        self.assertLessEqual(len(summary_items), 15)
+        self.assertEqual(len(summary_items), 15)
+        self.assertTrue(
+            all(int(item["image_id"]) in created_active_ids for item in summary_items)
+        )
+
+    def test_background_images_render_contains_summary_search_and_results_blocks(self):
+        self._login(moderator=True)
+        image = BackgroundImage.objects.create(
+            asset_code="bg-active",
+            storage_filename="active.png",
+            title="Active",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/active.png",
+            original_name="active.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+
+        response = self.client.get(reverse("background_images"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-background-summary-grid")
+        self.assertContains(response, "data-background-search-card")
+        self.assertContains(response, "data-background-genres-scroll")
+        self.assertContains(response, "data-background-results-grid")
+        self.assertContains(response, "Images à modérer")
+        self.assertContains(response, "Images inactives")
+        self.assertContains(response, image.title)
 
     def test_upload_background_image_retries_on_storage_name_collision(self):
         self._login()

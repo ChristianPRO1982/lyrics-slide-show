@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import io
+import random
 import re
 import uuid
 
@@ -192,21 +193,18 @@ def _background_image_popup_options() -> list[dict[str, object]]:
 
 
 def background_images(request: HttpRequest) -> HttpResponse:
+    is_moderator = bool(can_manage_moderator_popup(request.user))
+    if not is_moderator:
+        raise Http404
+
     query = str(request.GET.get("q") or "").strip()
     genre_ids = normalize_genre_ids(request.GET.getlist("genre_ids"))
     moderation_quick = bool(
-        getattr(request.user, "is_moderator", False)
-        and str(request.GET.get("moderation_quick") or "").strip() == "1"
+        str(request.GET.get("moderation_quick") or "").strip() == "1"
     )
-    inactive_quick = bool(
-        getattr(request.user, "is_moderator", False)
-        and str(request.GET.get("inactive_quick") or "").strip() == "1"
-    )
-    is_moderator = bool(can_manage_moderator_popup(request.user))
+    inactive_quick = bool(str(request.GET.get("inactive_quick") or "").strip() == "1")
 
     if request.method == "POST":
-        if not is_moderator:
-            raise Http404
         image = get_object_or_404(
             BackgroundImage, image_id=int(request.POST.get("image_id") or 0)
         )
@@ -268,17 +266,31 @@ def background_images(request: HttpRequest) -> HttpResponse:
                 )
         return redirect(redirect_url)
 
+    background_images_list = list_background_images_for_view(
+        include_all_statuses=True,
+        query=query,
+        genre_ids=genre_ids,
+        moderation_quick=moderation_quick,
+        inactive_quick=inactive_quick,
+    )
+    summary_candidates = list_background_images_for_view(
+        include_all_statuses=False,
+        query="",
+        genre_ids=[],
+        moderation_quick=False,
+        inactive_quick=False,
+    )
+    summary_background_images = random.sample(
+        summary_candidates,
+        min(15, len(summary_candidates)),
+    )
+
     return render(
         request,
         "animation/background_images.html",
         {
-            "background_images": list_background_images_for_view(
-                include_all_statuses=is_moderator,
-                query=query,
-                genre_ids=genre_ids,
-                moderation_quick=moderation_quick,
-                inactive_quick=inactive_quick,
-            ),
+            "background_images": background_images_list,
+            "summary_background_images": summary_background_images,
             "genre_options": fetch_genre_options(),
             "selected_genre_ids": set(genre_ids),
             "query": query,

@@ -3,6 +3,136 @@
     gap: 1rem;
 }
 
+.animation-background-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.animation-background-summary-tile {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--site-radius-md);
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(139, 30, 30, 0.18);
+}
+
+.animation-background-summary-tile img,
+.animation-background-result-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.animation-background-search-card,
+.animation-background-result-card,
+.animation-background-empty-card {
+    display: grid;
+    gap: 1rem;
+}
+
+.animation-background-search-main {
+    display: grid;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.animation-background-search-main input[type="search"] {
+    width: 100%;
+}
+
+.animation-background-search-actions,
+.animation-background-search-quick-actions,
+.animation-background-result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.animation-background-genres-panel {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(139, 30, 30, 0.2);
+    border-radius: var(--site-radius-md);
+    padding: 0.8rem;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.animation-background-genres-panel legend {
+    padding: 0 0.35rem;
+    font-weight: 700;
+}
+
+.animation-background-genre-filter-input {
+    min-height: 2.5rem;
+    width: 100%;
+}
+
+.animation-background-genres-scroll {
+    max-height: 14rem;
+    overflow-y: auto;
+    display: grid;
+    gap: 0.55rem;
+    padding-right: 0.2rem;
+}
+
+.animation-background-results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.animation-background-result-main {
+    display: grid;
+    grid-template-columns: minmax(8.5rem, 12rem) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.animation-background-result-media-column {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.animation-background-result-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--site-radius-md);
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(139, 30, 30, 0.18);
+}
+
+.animation-background-result-media-placeholder {
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(135deg, rgba(183, 65, 14, 0.18), rgba(255, 255, 255, 0.18)),
+        rgba(255, 255, 255, 0.42);
+}
+
+.animation-background-result-info {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.animation-background-result-status {
+    margin: 0;
+}
+
+.animation-background-result-info h2,
+.animation-background-result-info p {
+    margin: 0;
+}
+
+.animation-background-result-actions > * {
+    flex: 1 1 calc(50% - 0.3rem);
+}
+
 .animation-tool-button {
     width: 100%;
 }
@@ -181,8 +311,23 @@
 }
 
 @media (max-width: 900px) {
+    .animation-background-summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .animation-background-results-grid,
+    .animation-background-result-main {
+        grid-template-columns: 1fr;
+    }
+
     .animation-song-override-fieldset {
         padding: 0.6rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .animation-background-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
