@@ -27,6 +27,7 @@ from .forms import AnimationForm, BackgroundImageUploadForm
 from .models import Animation, BackgroundImage, BackgroundImageStatus
 from .services.background_images import (
     active_background_image_options,
+    build_background_context_slug,
     build_image_validation_config,
     clear_background_image_references,
     count_background_image_references,
@@ -307,10 +308,45 @@ def upload_background_image(request: HttpRequest) -> HttpResponse:
                     _translate_image_validation_error(validation_error, validation_cfg),
                 )
             else:
-                try:
-                    filename, destination = store_uploaded_image_file(
-                        image_file,
+                genre_ids = normalize_genre_ids(form.cleaned_data.get("genre_ids", []))
+                context_slug = build_background_context_slug(genre_ids)
+                width, height, _fmt = _open_image(image_file)
+
+                def create_background_image(
+                    filename: str, destination
+                ) -> BackgroundImage:
+                    return BackgroundImage.objects.create(
+                        asset_code=generate_asset_code(),
+                        storage_filename=filename,
+                        title=form.cleaned_data["title"].strip(),
+                        target=form.cleaned_data["target"].strip(),
+                        description=str(
+                            form.cleaned_data.get("description") or ""
+                        ).strip()
+                        or None,
                         status=BackgroundImageStatus.PENDING,
+                        stored_path=relative_stored_path(
+                            BackgroundImageStatus.PENDING, filename
+                        ),
+                        original_name=str(image_file.name or "")[:255],
+                        extension=destination.suffix.lower(),
+                        mime=str(image_file.content_type or "")[:100],
+                        size_bytes=int(getattr(image_file, "size", 0)),
+                        width=int(width or 0),
+                        height=int(height or 0),
+                        member_id=normalize_member_id(
+                            get_member_id_from_user(request.user)
+                        ),
+                    )
+
+                try:
+                    _filename, _destination, background_image = (
+                        store_uploaded_image_file(
+                            image_file,
+                            status=BackgroundImageStatus.PENDING,
+                            context_slug=context_slug,
+                            on_after_write=create_background_image,
+                        )
                     )
                 except RuntimeError:
                     form.add_error(
@@ -324,30 +360,9 @@ def upload_background_image(request: HttpRequest) -> HttpResponse:
                             "form": form,
                         },
                     )
-                width, height, _fmt = _open_image(image_file)
-                background_image = BackgroundImage.objects.create(
-                    asset_code=generate_asset_code(),
-                    title=form.cleaned_data["title"].strip(),
-                    target=form.cleaned_data["target"].strip(),
-                    description=str(form.cleaned_data.get("description") or "").strip()
-                    or None,
-                    status=BackgroundImageStatus.PENDING,
-                    stored_path=relative_stored_path(
-                        BackgroundImageStatus.PENDING, filename
-                    ),
-                    original_name=str(image_file.name or "")[:255],
-                    extension=destination.suffix.lower(),
-                    mime=str(image_file.content_type or "")[:100],
-                    size_bytes=int(getattr(image_file, "size", 0)),
-                    width=int(width or 0),
-                    height=int(height or 0),
-                    member_id=normalize_member_id(
-                        get_member_id_from_user(request.user)
-                    ),
-                )
                 replace_image_genres(
                     background_image,
-                    normalize_genre_ids(form.cleaned_data.get("genre_ids", [])),
+                    genre_ids,
                 )
                 messages.success(
                     request,

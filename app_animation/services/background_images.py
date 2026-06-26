@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+import re
 import secrets
 from pathlib import Path
 from uuid import UUID
 
 from django.conf import settings
-from django.db import connection
+from django.db import IntegrityError, connection, transaction
 from django.db.models import Case, IntegerField, Value, When
 from django.utils import timezone
+from django.utils.text import slugify
 
 from app_animation.models import (
     Animation,
@@ -22,6 +24,11 @@ from app_member.services import get_site_params_for_language
 
 
 BACKGROUND_IMAGES_DIR = "background-images"
+DEFAULT_BACKGROUND_CONTEXT_SLUG = "background"
+STORAGE_FILENAME_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"
+STORAGE_FILENAME_RANDOM_LENGTH = 10
+GROUP_SPACES_PATTERN = re.compile(r"\s+")
+BACKGROUND_GROUP_PREFIX_PATTERN = re.compile(r"^\s*\d+\s*-\s*")
 
 
 def build_image_validation_config(language_code: str | None) -> dict[str, object]:
@@ -73,31 +80,102 @@ def generate_asset_code() -> str:
     return f"bg-{secrets.token_hex(8)}"
 
 
-def generate_storage_name(original_name: str) -> str:
+def normalize_background_group_name(value: str | None) -> str:
+    raw_value = str(value or "").strip()
+    without_prefix = BACKGROUND_GROUP_PREFIX_PATTERN.sub("", raw_value)
+    return GROUP_SPACES_PATTERN.sub(" ", without_prefix.strip())
+
+
+def build_background_context_slug(genre_ids: list[int]) -> str:
+    normalized_ids = sorted(
+        {int(genre_id) for genre_id in genre_ids if int(genre_id) > 0}
+    )
+    if not normalized_ids:
+        return DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT genre_id, "group", "name"
+            FROM "common"."genres"
+            WHERE genre_id = ANY(%s)
+            ORDER BY "group", "name", genre_id
+            """,
+            [normalized_ids],
+        )
+        rows = cursor.fetchall()
+
+    group_labels: dict[str, str] = {}
+    for _genre_id, group_name, _genre_name in rows:
+        cleaned_group = normalize_background_group_name(group_name)
+        if not cleaned_group:
+            continue
+        group_key = cleaned_group.casefold()
+        if group_key not in group_labels:
+            group_labels[group_key] = cleaned_group
+
+    if len(group_labels) != 1:
+        return DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+    label = next(iter(group_labels.values()), DEFAULT_BACKGROUND_CONTEXT_SLUG)
+    return slugify(label) or DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+
+def generate_storage_name(context_slug: str, original_name: str) -> str:
+    normalized_slug = (
+        slugify(str(context_slug or "").strip()) or DEFAULT_BACKGROUND_CONTEXT_SLUG
+    )
     extension = Path(str(original_name or "")).suffix.lower()
-    return f"{secrets.token_hex(10)}{extension}"
+    random_part = "".join(
+        secrets.choice(STORAGE_FILENAME_ALPHABET)
+        for _index in range(STORAGE_FILENAME_RANDOM_LENGTH)
+    )
+    return f"{normalized_slug}_{random_part}{extension}"
 
 
 def store_uploaded_image_file(
     upload,
     *,
     status: str,
+    context_slug: str,
+    on_after_write,
     max_attempts: int = 20,
-) -> tuple[str, Path]:
+) -> tuple[str, Path, object]:
     attempts = max(1, int(max_attempts))
     destination_dir = status_dir(status)
     destination_dir.mkdir(parents=True, exist_ok=True)
 
     for _attempt_index in range(attempts):
-        filename = generate_storage_name(getattr(upload, "name", ""))
+        filename = generate_storage_name(context_slug, getattr(upload, "name", ""))
         destination = destination_dir / filename
         try:
+            try:
+                upload.seek(0)
+            except Exception:
+                pass
             with destination.open("xb") as handle:
                 for chunk in upload.chunks():
                     handle.write(chunk)
         except FileExistsError:
             continue
-        return filename, destination
+        try:
+            with transaction.atomic():
+                created_object = on_after_write(filename, destination)
+        except IntegrityError:
+            try:
+                if destination.exists():
+                    destination.unlink()
+            except Exception:
+                pass
+            continue
+        except Exception:
+            try:
+                if destination.exists():
+                    destination.unlink()
+            except Exception:
+                pass
+            raise
+        return filename, destination, created_object
 
     raise RuntimeError("Unable to allocate a unique storage name for upload.")
 
@@ -112,11 +190,12 @@ def absolute_stored_path(stored_path: str) -> Path:
 
 def move_image_to_status(image: BackgroundImage, status: str) -> None:
     source = absolute_stored_path(image.stored_path)
-    destination = status_dir(status) / source.name
+    filename = str(image.storage_filename or source.name).strip() or source.name
+    destination = status_dir(status) / filename
     destination.parent.mkdir(parents=True, exist_ok=True)
     if source.exists():
         source.replace(destination)
-    image.stored_path = relative_stored_path(status, source.name)
+    image.stored_path = relative_stored_path(status, filename)
     image.status = status
     image.moderated_at = timezone.now()
     image.member_id = None

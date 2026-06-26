@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import connection
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -30,7 +31,12 @@ from .models import (
     BackgroundImage,
     BackgroundImageStatus,
 )
-from .services.background_images import resolve_background_asset_url
+from .services.background_images import (
+    STORAGE_FILENAME_ALPHABET,
+    build_background_context_slug,
+    generate_storage_name,
+    resolve_background_asset_url,
+)
 from .utils import _open_image, validate_image
 from . import views as animation_views
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
@@ -130,6 +136,75 @@ class BackgroundImageValidationTests(SimpleTestCase):
             },
         )
         self.assertEqual(result, "")
+
+
+class BackgroundImageStorageNamingTests(TestCase):
+    def _build_upload(
+        self,
+        *,
+        size: tuple[int, int] = (1600, 900),
+        image_format: str = "PNG",
+        filename: str = "background.png",
+        content_type: str = "image/png",
+    ) -> SimpleUploadedFile:
+        from PIL import Image
+
+        buffer = BytesIO()
+        image = Image.new("RGB", size, color=(120, 60, 40))
+        image.save(buffer, format=image_format)
+        return SimpleUploadedFile(
+            filename,
+            buffer.getvalue(),
+            content_type=content_type,
+        )
+
+    def _insert_genre(self, group: str, name: str) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                [group, name],
+            )
+            return int(cursor.fetchone()[0])
+
+    def test_generate_storage_name_uses_business_format(self):
+        filename = generate_storage_name("scoutisme", "Mon image.JPEG")
+        stem, extension = filename.rsplit(".", 1)
+        prefix, random_part = stem.rsplit("_", 1)
+        self.assertEqual(prefix, "scoutisme")
+        self.assertEqual(extension, "jpeg")
+        self.assertEqual(len(random_part), 10)
+        self.assertTrue(set(random_part) <= set(STORAGE_FILENAME_ALPHABET))
+
+    def test_build_background_context_slug_uses_single_clean_group(self):
+        genre_id = self._insert_genre("1 - Scoutisme", "Veillee")
+        self.assertEqual(build_background_context_slug([genre_id]), "scoutisme")
+
+    def test_build_background_context_slug_uses_same_group_for_multiple_genres(self):
+        genre_one = self._insert_genre("1 - scoutisme", "Veillee")
+        genre_two = self._insert_genre("1  -  Scoutisme", "Camp")
+        self.assertEqual(
+            build_background_context_slug([genre_two, genre_one]),
+            "scoutisme",
+        )
+
+    def test_build_background_context_slug_falls_back_for_multiple_groups(self):
+        genre_one = self._insert_genre("1 - scoutisme", "Veillee")
+        genre_two = self._insert_genre("2 - liturgie", "Louange")
+        self.assertEqual(
+            build_background_context_slug([genre_one, genre_two]),
+            "background",
+        )
+
+    def test_build_background_context_slug_falls_back_for_empty_group(self):
+        genre_id = self._insert_genre("1 - ", "Veillee")
+        self.assertEqual(build_background_context_slug([genre_id]), "background")
+
+    def test_build_background_context_slug_slugifies_accents_and_punctuation(self):
+        genre_id = self._insert_genre("2 - Prière & louange", "Veillee")
+        self.assertEqual(
+            build_background_context_slug([genre_id]),
+            "priere-louange",
+        )
 
     def test_validate_image_rejects_extension_mime_dimensions_and_ratio(self):
         valid_cfg = {
@@ -2102,6 +2177,14 @@ class BackgroundImageViewsTests(TestCase):
             content_type="image/png",
         )
 
+    def _insert_genre(self, group: str, name: str) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                [group, name],
+            )
+            return int(cursor.fetchone()[0])
+
     def test_upload_background_image_requires_authenticated_user(self):
         response = self.client.get(reverse("upload_background_image"))
         self.assertEqual(response.status_code, 302)
@@ -2122,6 +2205,7 @@ class BackgroundImageViewsTests(TestCase):
         image = BackgroundImage.objects.get()
         self.assertEqual(image.status, BackgroundImageStatus.PENDING)
         self.assertIsNotNone(image.member_id)
+        self.assertEqual(image.storage_filename, Path(image.stored_path).name)
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
 
     def test_upload_background_image_retries_on_storage_name_collision(self):
@@ -2147,14 +2231,128 @@ class BackgroundImageViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         image = BackgroundImage.objects.get()
+        self.assertEqual(image.storage_filename, "unique.png")
         self.assertEqual(image.stored_path, "background-images/pending/unique.png")
         self.assertEqual(existing_path.read_bytes(), b"existing-file")
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
+
+    def test_upload_background_image_uses_group_slug_in_storage_filename(self):
+        self._login()
+        genre_id = self._insert_genre("1 - Scoutisme", "Veillee")
+        response = self.client.post(
+            reverse("upload_background_image"),
+            data={
+                "title": "Sky",
+                "target": "Scout",
+                "description": "Blue sky",
+                "genre_ids": [str(genre_id)],
+                "image_file": self._build_upload(),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        image = BackgroundImage.objects.get()
+        self.assertRegex(image.storage_filename, r"^scoutisme_[a-z2-9]{10}\.png$")
+
+    def test_upload_background_image_uses_background_slug_for_multiple_groups(self):
+        self._login()
+        genre_one = self._insert_genre("1 - Scoutisme", "Veillee")
+        genre_two = self._insert_genre("2 - Liturgie", "Louange")
+        response = self.client.post(
+            reverse("upload_background_image"),
+            data={
+                "title": "Sky",
+                "target": "Scout",
+                "description": "Blue sky",
+                "genre_ids": [str(genre_one), str(genre_two)],
+                "image_file": self._build_upload(),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        image = BackgroundImage.objects.get()
+        self.assertRegex(image.storage_filename, r"^background_[a-z2-9]{10}\.png$")
+
+    def test_upload_background_image_retries_on_storage_filename_db_collision(self):
+        self._login()
+        active_dir = Path(self._media_root_dir, "background-images", "active")
+        active_dir.mkdir(parents=True, exist_ok=True)
+        active_path = active_dir / "duplicate.png"
+        active_path.write_bytes(b"active-file")
+        BackgroundImage.objects.create(
+            asset_code="bg-existing",
+            storage_filename="duplicate.png",
+            title="Existing",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/duplicate.png",
+            original_name="duplicate.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+
+        with patch(
+            "app_animation.services.background_images.generate_storage_name",
+            side_effect=["duplicate.png", "unique.png"],
+        ):
+            response = self.client.post(
+                reverse("upload_background_image"),
+                data={
+                    "title": "Sky",
+                    "target": "Scout",
+                    "description": "Blue sky",
+                    "image_file": self._build_upload(),
+                },
+            )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BackgroundImage.objects.count(), 2)
+        image = BackgroundImage.objects.exclude(asset_code="bg-existing").get()
+        self.assertEqual(image.storage_filename, "unique.png")
+        self.assertFalse(
+            Path(
+                self._media_root_dir,
+                "background-images",
+                "pending",
+                "duplicate.png",
+            ).exists()
+        )
+
+    def test_upload_background_image_stops_after_twenty_attempts(self):
+        self._login()
+        pending_dir = Path(self._media_root_dir, "background-images", "pending")
+        pending_dir.mkdir(parents=True, exist_ok=True)
+        existing_path = pending_dir / "duplicate.png"
+        existing_path.write_bytes(b"existing-file")
+
+        with patch(
+            "app_animation.services.background_images.generate_storage_name",
+            side_effect=["duplicate.png"] * 20,
+        ):
+            response = self.client.post(
+                reverse("upload_background_image"),
+                data={
+                    "title": "Sky",
+                    "target": "Scout",
+                    "description": "Blue sky",
+                    "image_file": self._build_upload(),
+                },
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "Impossible d&#x27;enregistrer l&#x27;image pour le moment.",
+            response.content.decode("utf-8"),
+        )
+        self.assertEqual(BackgroundImage.objects.count(), 0)
+        self.assertEqual(existing_path.read_bytes(), b"existing-file")
 
     def test_moderator_validation_anonymizes_image(self):
         member_id = uuid.uuid4()
         image = BackgroundImage.objects.create(
             asset_code="bg-test",
+            storage_filename="example.png",
             title="Sky",
             target="Scout",
             status=BackgroundImageStatus.PENDING,
@@ -2180,6 +2378,7 @@ class BackgroundImageViewsTests(TestCase):
         image.refresh_from_db()
         self.assertEqual(image.status, BackgroundImageStatus.INACTIVE)
         self.assertIsNone(image.member_id)
+        self.assertEqual(image.storage_filename, "example.png")
         self.assertIn("/inactive/", image.stored_path)
 
     def test_deactivate_image_clears_animation_references(self):
@@ -2187,6 +2386,7 @@ class BackgroundImageViewsTests(TestCase):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         image = BackgroundImage.objects.create(
             asset_code="bg-test",
+            storage_filename="example.png",
             title="Sky",
             target="Scout",
             status=BackgroundImageStatus.ACTIVE,
@@ -2239,6 +2439,7 @@ class BackgroundImageViewsTests(TestCase):
             source_verse_id=verse.verse_id,
         )
         self.assertEqual(image.status, BackgroundImageStatus.INACTIVE)
+        self.assertEqual(image.storage_filename, "example.png")
         self.assertIsNone(animation.background_asset_code)
         self.assertIsNone(animation_song.background_asset_code_override)
         self.assertIsNone(override.background_asset_code_override)
@@ -2306,6 +2507,7 @@ class BackgroundImageViewsTests(TestCase):
     def test_resolve_background_asset_url_uses_library_entry(self):
         image = BackgroundImage.objects.create(
             asset_code="bg-test",
+            storage_filename="example.png",
             title="Sky",
             target="Scout",
             status=BackgroundImageStatus.ACTIVE,
