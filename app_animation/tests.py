@@ -4,6 +4,7 @@ import tempfile
 import uuid
 from io import BytesIO
 from pathlib import Path
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, TestCase, override_settings
@@ -2121,6 +2122,33 @@ class BackgroundImageViewsTests(TestCase):
         image = BackgroundImage.objects.get()
         self.assertEqual(image.status, BackgroundImageStatus.PENDING)
         self.assertIsNotNone(image.member_id)
+        self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
+
+    def test_upload_background_image_retries_on_storage_name_collision(self):
+        self._login()
+        pending_dir = Path(self._media_root_dir, "background-images", "pending")
+        pending_dir.mkdir(parents=True, exist_ok=True)
+        existing_path = pending_dir / "duplicate.png"
+        existing_path.write_bytes(b"existing-file")
+
+        with patch(
+            "app_animation.services.background_images.generate_storage_name",
+            side_effect=["duplicate.png", "unique.png"],
+        ):
+            response = self.client.post(
+                reverse("upload_background_image"),
+                data={
+                    "title": "Sky",
+                    "target": "Scout",
+                    "description": "Blue sky",
+                    "image_file": self._build_upload(),
+                },
+            )
+
+        self.assertEqual(response.status_code, 302)
+        image = BackgroundImage.objects.get()
+        self.assertEqual(image.stored_path, "background-images/pending/unique.png")
+        self.assertEqual(existing_path.read_bytes(), b"existing-file")
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
 
     def test_moderator_validation_anonymizes_image(self):

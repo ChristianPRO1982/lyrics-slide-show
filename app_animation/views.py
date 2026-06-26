@@ -34,7 +34,6 @@ from .services.background_images import (
     ensure_background_image_dirs,
     fetch_genre_options,
     generate_asset_code,
-    generate_storage_name,
     list_background_images_for_view,
     move_image_to_status,
     normalize_genre_ids,
@@ -42,7 +41,7 @@ from .services.background_images import (
     relative_stored_path,
     replace_image_genres,
     resolve_background_asset_url,
-    status_dir,
+    store_uploaded_image_file,
 )
 from .services.render_bundle import build_animation_render_bundle
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
@@ -308,11 +307,23 @@ def upload_background_image(request: HttpRequest) -> HttpResponse:
                     _translate_image_validation_error(validation_error, validation_cfg),
                 )
             else:
-                filename = generate_storage_name(image_file.name)
-                destination = status_dir(BackgroundImageStatus.PENDING) / filename
-                with destination.open("wb") as handle:
-                    for chunk in image_file.chunks():
-                        handle.write(chunk)
+                try:
+                    filename, destination = store_uploaded_image_file(
+                        image_file,
+                        status=BackgroundImageStatus.PENDING,
+                    )
+                except RuntimeError:
+                    form.add_error(
+                        "image_file",
+                        _("Impossible d'enregistrer l'image pour le moment."),
+                    )
+                    return render(
+                        request,
+                        "animation/upload_background_image.html",
+                        {
+                            "form": form,
+                        },
+                    )
                 width, height, _fmt = _open_image(image_file)
                 background_image = BackgroundImage.objects.create(
                     asset_code=generate_asset_code(),

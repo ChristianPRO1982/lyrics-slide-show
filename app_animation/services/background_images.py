@@ -78,6 +78,30 @@ def generate_storage_name(original_name: str) -> str:
     return f"{secrets.token_hex(10)}{extension}"
 
 
+def store_uploaded_image_file(
+    upload,
+    *,
+    status: str,
+    max_attempts: int = 20,
+) -> tuple[str, Path]:
+    attempts = max(1, int(max_attempts))
+    destination_dir = status_dir(status)
+    destination_dir.mkdir(parents=True, exist_ok=True)
+
+    for _attempt_index in range(attempts):
+        filename = generate_storage_name(getattr(upload, "name", ""))
+        destination = destination_dir / filename
+        try:
+            with destination.open("xb") as handle:
+                for chunk in upload.chunks():
+                    handle.write(chunk)
+        except FileExistsError:
+            continue
+        return filename, destination
+
+    raise RuntimeError("Unable to allocate a unique storage name for upload.")
+
+
 def relative_stored_path(status: str, filename: str) -> str:
     return f"{BACKGROUND_IMAGES_DIR}/{str(status).strip().lower()}/{filename}"
 
