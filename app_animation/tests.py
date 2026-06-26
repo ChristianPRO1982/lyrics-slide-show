@@ -255,6 +255,13 @@ class MessageBoxShortcutSlotTests(SimpleTestCase):
 
 
 class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
+    def test_animation_actions_partial_uses_flat_song_like_panel_structure(self):
+        template = Path(
+            "app_animation/templates/animation/includes/_animation_actions.html"
+        ).read_text()
+        self.assertIn('class="animation-tools-separator"', template)
+        self.assertNotIn('class="animation-actions-list"', template)
+
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
             "app_animation/templates/animation/lyrics_slide_show.html"
@@ -263,6 +270,8 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
 
     def test_remote_styles_define_alert_active_button_and_blackout_frame(self):
         stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".site-tools-panel .animation-tool-link", stylesheet)
+        self.assertIn(".site-tools-panel .animation-tools-separator", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
         self.assertIn(

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 09:50+0200\n"
+"POT-Creation-Date: 2026-06-26 10:50+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -151,7 +151,7 @@ msgstr ""
 #: app_animation/services/song_edits.py:53
 #: app_animation/templates/animation/lyrics_slide_show.html:253
 #: app_animation/templates/animation/lyrics_slide_show.html:262
-#: app_animation/views.py:672 app_animation/views.py:684
+#: app_animation/views.py:686 app_animation/views.py:698
 #: app_song/rendering.py:38 app_song/rendering.py:41
 #: app_song/templates/song/modify_song.html:259
 #: app_song/templates/song/modify_song_page_i18n.html:14
@@ -256,7 +256,7 @@ msgstr ""
 #: app_animation/templates/animation/add_animation.html:145
 #: app_animation/templates/animation/lyrics_slide_show.html:99
 #: app_animation/templates/animation/modify_animation_page_i18n.html:18
-#: app_animation/views.py:667 app_song/templates/song/modify_song.html:287
+#: app_animation/views.py:681 app_song/templates/song/modify_song.html:287
 #: app_song/templates/song/modify_song_page_i18n.html:20 templates/base.html:99
 msgid "OK"
 msgstr ""
@@ -366,7 +366,7 @@ msgstr ""
 msgid "Aucune image ne correspond à ce filtre."
 msgstr ""
 
-#: app_animation/templates/animation/includes/_animation_actions.html:4
+#: app_animation/templates/animation/includes/_animation_actions.html:3
 msgid "← Retour aux animations à venir"
 msgstr ""
 
@@ -421,7 +421,7 @@ msgid "Non"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:102
-#: app_animation/views.py:702
+#: app_animation/views.py:716
 #: app_song/templates/song/modify_song_page_i18n.html:9
 #: app_song/templates/song/song_page_i18n.html:31 templates/base.html:102
 msgid "Annuler"
@@ -527,7 +527,7 @@ msgid "Chant"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:241
-#: app_animation/views.py:668
+#: app_animation/views.py:682
 msgid "Aucun"
 msgstr ""
 
@@ -540,7 +540,7 @@ msgid "Aucune"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:251
-#: app_animation/views.py:81 app_animation/views.py:671
+#: app_animation/views.py:81 app_animation/views.py:685
 msgid "BLACK MODE"
 msgstr ""
 
@@ -550,7 +550,7 @@ msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:254
 #: app_animation/templates/animation/lyrics_slide_show.html:274
-#: app_animation/views.py:674
+#: app_animation/views.py:688
 msgid "Diapo suivante"
 msgstr ""
 
@@ -563,7 +563,7 @@ msgid "Raccourcis clavier (personnalisable)"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:261
-#: app_animation/views.py:682
+#: app_animation/views.py:696
 msgid "Stop scroll"
 msgstr ""
 
@@ -572,7 +572,7 @@ msgid "QR-code"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:269
-#: app_animation/views.py:673
+#: app_animation/views.py:687
 msgid "Diapo en cours"
 msgstr ""
 
@@ -614,7 +614,7 @@ msgid "Modifier l'animation"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation.html:23
-#: app_animation/views.py:701 app_song/templates/song/metadata.html:50
+#: app_animation/views.py:715 app_song/templates/song/metadata.html:50
 #: app_song/templates/song/modify_artists.html:35
 #: app_song/templates/song/modify_artists.html:73
 #: app_song/templates/song/modify_bands.html:35
@@ -947,7 +947,7 @@ msgstr ""
 msgid "📱 QR code for lyrics"
 msgstr ""
 
-#: app_animation/views.py:155
+#: app_animation/views.py:154
 #, python-format
 msgid "L'image dépasse la taille autorisée (%(size).1f Mo maximum)."
 msgstr ""
@@ -980,118 +980,118 @@ msgstr ""
 msgid "Cette image n'est pas conforme."
 msgstr ""
 
-#: app_animation/views.py:230
+#: app_animation/views.py:231
 msgid "L'image a été validée puis placée en inactif."
 msgstr ""
 
-#: app_animation/views.py:234
+#: app_animation/views.py:238
 msgid "L'image en attente a été supprimée."
 msgstr ""
 
-#: app_animation/views.py:237
+#: app_animation/views.py:243
 msgid "L'image a été activée."
 msgstr ""
 
-#: app_animation/views.py:244
+#: app_animation/views.py:252
 #, python-format
 msgid ""
 "L'image était utilisée dans %(animations)s animation(s), %(songs)s chant(s) "
 "d'animation et %(verses)s couplet(s). Les références ont été supprimées."
 msgstr ""
 
-#: app_animation/views.py:250
+#: app_animation/views.py:258
 msgid "L'image a été désactivée."
 msgstr ""
 
-#: app_animation/views.py:254
+#: app_animation/views.py:263
 msgid "L'image inactive a été supprimée définitivement."
 msgstr ""
 
-#: app_animation/views.py:256
+#: app_animation/views.py:267
 msgid "Action impossible pour l'état courant de l'image."
 msgstr ""
 
-#: app_animation/views.py:329
+#: app_animation/views.py:343
 msgid "L'image a été envoyée pour modération."
 msgstr ""
 
-#: app_animation/views.py:377
+#: app_animation/views.py:391
 msgid "L'animation a été créée."
 msgstr ""
 
-#: app_animation/views.py:465
+#: app_animation/views.py:479
 msgid "L'animation a été enregistrée."
 msgstr ""
 
-#: app_animation/views.py:657
+#: app_animation/views.py:671
 msgid "Ouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:658
+#: app_animation/views.py:672
 msgid "Rouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:659
+#: app_animation/views.py:673
 msgid "Fenêtre bloquée"
 msgstr ""
 
-#: app_animation/views.py:661
+#: app_animation/views.py:675
 msgid "Le navigateur a bloqué l'ouverture du second écran."
 msgstr ""
 
-#: app_animation/views.py:663
+#: app_animation/views.py:677
 msgid "Préchargement incomplet"
 msgstr ""
 
-#: app_animation/views.py:665
+#: app_animation/views.py:679
 msgid "Certaines images de fond n'ont pas pu être préchargées."
 msgstr ""
 
-#: app_animation/views.py:669
+#: app_animation/views.py:683
 msgid "Aucune diapo projetée."
 msgstr ""
 
-#: app_animation/views.py:670
+#: app_animation/views.py:684
 msgid "Aucune diapo suivante."
 msgstr ""
 
-#: app_animation/views.py:675
+#: app_animation/views.py:689
 msgid "QR code pour les paroles"
 msgstr ""
 
-#: app_animation/views.py:676
+#: app_animation/views.py:690
 msgid "Refrains masqués dans la grille."
 msgstr ""
 
-#: app_animation/views.py:677
+#: app_animation/views.py:691
 msgid "Scroll bloqué"
 msgstr ""
 
-#: app_animation/views.py:678
+#: app_animation/views.py:692
 msgid "Scroll autorisé"
 msgstr ""
 
-#: app_animation/views.py:680
+#: app_animation/views.py:694
 msgid "Scroll"
 msgstr ""
 
-#: app_animation/views.py:686
+#: app_animation/views.py:700
 msgid "Pas de refrain"
 msgstr ""
 
-#: app_animation/views.py:687
+#: app_animation/views.py:701
 msgid "Raccourcis clavier"
 msgstr ""
 
-#: app_animation/views.py:688 app_animation/views.py:690
+#: app_animation/views.py:702 app_animation/views.py:704
 msgid "Personnaliser les raccourcis"
 msgstr ""
 
-#: app_animation/views.py:689
+#: app_animation/views.py:703
 msgid "⌨️👈 in upper or lower case"
 msgstr ""
 
-#: app_animation/views.py:692
+#: app_animation/views.py:706
 msgid ""
 "Clique sur un slot puis appuie sur une touche simple.\n"
 "Jusqu'à 3 touches par action.\n"
@@ -1101,51 +1101,51 @@ msgid ""
 "Laisser vide désactive l'action personnalisable."
 msgstr ""
 
-#: app_animation/views.py:699
+#: app_animation/views.py:713
 msgid "Appuyer sur une touche"
 msgstr ""
 
-#: app_animation/views.py:700
+#: app_animation/views.py:714
 msgid "Effacer ce raccourci"
 msgstr ""
 
-#: app_animation/views.py:703
+#: app_animation/views.py:717
 msgid "Revenir aux raccourcis du site"
 msgstr ""
 
-#: app_animation/views.py:705
+#: app_animation/views.py:719
 msgid "La personnalisation des raccourcis nécessite une connexion."
 msgstr ""
 
-#: app_animation/views.py:707
+#: app_animation/views.py:721
 msgid "Connexion requise"
 msgstr ""
 
-#: app_animation/views.py:708
+#: app_animation/views.py:722
 msgid "Enregistrement impossible"
 msgstr ""
 
-#: app_animation/views.py:710
+#: app_animation/views.py:724
 msgid "Les raccourcis n'ont pas pu être enregistrés."
 msgstr ""
 
-#: app_animation/views.py:726
+#: app_animation/views.py:740
 msgid "Aucun groupe sélectionné."
 msgstr ""
 
-#: app_animation/views.py:735
+#: app_animation/views.py:749
 msgid "La personnalisation nécessite une connexion."
 msgstr ""
 
-#: app_animation/views.py:826
+#: app_animation/views.py:840
 msgid "En attente du maître"
 msgstr ""
 
-#: app_animation/views.py:827
+#: app_animation/views.py:841
 msgid "APPUYEZ SUR F11 SUR CETTE ÉCRAN"
 msgstr ""
 
-#: app_animation/views.py:885
+#: app_animation/views.py:899
 msgid "L'animation a été supprimée."
 msgstr ""
 

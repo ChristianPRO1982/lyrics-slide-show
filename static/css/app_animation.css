@@ -3,9 +3,35 @@
     gap: 1rem;
 }
 
-.animation-actions-list {
-    display: grid;
-    gap: 0.6rem;
+.animation-tool-button {
+    width: 100%;
+}
+
+.site-tools-panel .animation-tool-link,
+.site-tools-panel .animation-tool-button,
+.site-tools-panel .animation-secondary-action,
+.site-tools-panel .animation-danger-action,
+.site-mobile-side .animation-tool-link,
+.site-mobile-side .animation-tool-button,
+.site-mobile-side .animation-secondary-action,
+.site-mobile-side .animation-danger-action {
+    box-sizing: border-box;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.site-tools-panel .animation-tool-link,
+.site-mobile-side .animation-tool-link {
+    justify-content: center;
+}
+
+.site-tools-panel .animation-tools-separator,
+.site-mobile-side .animation-tools-separator {
+    min-height: 1px;
+    padding: 0;
+    border: 0;
+    background: var(--site-line);
 }
 
 .animation-list-card p {
