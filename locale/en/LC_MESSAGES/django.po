@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 15:38+0200\n"
+"POT-Creation-Date: 2026-06-26 15:55+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -87,7 +87,7 @@ msgid "Titre"
 msgstr ""
 
 #: app_animation/forms.py:93
-#: app_animation/templates/animation/background_images.html:113
+#: app_animation/templates/animation/background_images.html:128
 msgid "Cible"
 msgstr ""
 
@@ -98,8 +98,8 @@ msgid "Image"
 msgstr "Images"
 
 #: app_animation/forms.py:104
-#: app_animation/templates/animation/background_images.html:70
-#: app_animation/templates/animation/background_images.html:115
+#: app_animation/templates/animation/background_images.html:78
+#: app_animation/templates/animation/background_images.html:130
 #: app_song/templates/song/metadata.html:126
 #: app_song/templates/song/modify_genres.html:23
 #: app_song/templates/song/songs.html:260
@@ -343,11 +343,18 @@ msgstr ""
 msgid "Images de fond partagées pour les animations."
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:42
+#: app_animation/templates/animation/background_images.html:43
+#: app_animation/templates/animation/background_images.html:113
+#, fuzzy, python-format
+#| msgid "Afficher le lien vers le wiki"
+msgid "Afficher l'image %(title)s"
+msgstr "Show the wiki link"
+
+#: app_animation/templates/animation/background_images.html:50
 msgid "Aucune image active à mettre en avant."
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:50
+#: app_animation/templates/animation/background_images.html:58
 #: app_song/templates/song/songs.html:62 app_song/templates/song/songs.html:92
 #: app_song/templates/song/songs.html:97
 #, fuzzy
@@ -355,78 +362,84 @@ msgstr ""
 msgid "Recherche"
 msgstr "Groups"
 
-#: app_animation/templates/animation/background_images.html:54
+#: app_animation/templates/animation/background_images.html:62
 #, fuzzy
 #| msgid "Non"
 msgid "Nom"
 msgstr "No"
 
-#: app_animation/templates/animation/background_images.html:55
+#: app_animation/templates/animation/background_images.html:63
 #, fuzzy
 #| msgid "Liste des animations"
 msgid "Titre de l’image"
 msgstr "Animations"
 
-#: app_animation/templates/animation/background_images.html:57
+#: app_animation/templates/animation/background_images.html:65
 msgid "Filtrer"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:58
+#: app_animation/templates/animation/background_images.html:66
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
 #: app_song/templates/song/songs.html:113
 msgid "Réinitialiser"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:61
+#: app_animation/templates/animation/background_images.html:69
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Images à modérer"
 msgstr "Songs"
 
-#: app_animation/templates/animation/background_images.html:62
+#: app_animation/templates/animation/background_images.html:70
 #, fuzzy
 #| msgid "Langue active"
 msgid "Images inactives"
 msgstr "Active language"
 
-#: app_animation/templates/animation/background_images.html:77
+#: app_animation/templates/animation/background_images.html:85
 #, fuzzy
 #| msgid "Créer un compte"
 msgid "Trouver un genre"
 msgstr "Create an account"
 
-#: app_animation/templates/animation/background_images.html:87
+#: app_animation/templates/animation/background_images.html:95
 #: app_song/templates/song/modify_genres.html:72
 msgid "Aucun genre disponible."
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:106
+#: app_animation/templates/animation/background_images.html:121
 msgid "Statut"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:123
+#: app_animation/templates/animation/background_images.html:138
 msgid "Valider"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:124
+#: app_animation/templates/animation/background_images.html:139
 msgid "Invalider"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:126
+#: app_animation/templates/animation/background_images.html:141
 msgid "Désactiver"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:128
+#: app_animation/templates/animation/background_images.html:143
 msgid "Réactiver"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:129
+#: app_animation/templates/animation/background_images.html:144
 msgid "Supprimer définitivement"
 msgstr ""
 
-#: app_animation/templates/animation/background_images.html:135
+#: app_animation/templates/animation/background_images.html:150
 msgid "Aucune image ne correspond à ce filtre."
 msgstr ""
+
+#: app_animation/templates/animation/background_images.html:158
+#, fuzzy
+#| msgid "Liste des animations"
+msgid "Aperçu de l’image"
+msgstr "Animations"
 
 #: app_animation/templates/animation/includes/_animation_actions.html:3
 msgid "← Retour aux animations à venir"

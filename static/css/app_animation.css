@@ -11,11 +11,16 @@
 }
 
 .animation-background-summary-tile {
+    appearance: none;
+    display: block;
+    width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-radius: var(--site-radius-md);
+    border-radius: 0;
     background: rgba(255, 255, 255, 0.45);
     border: 1px solid rgba(139, 30, 30, 0.18);
+    padding: 0;
+    cursor: pointer;
 }
 
 .animation-background-summary-tile img,
@@ -99,11 +104,16 @@
 }
 
 .animation-background-result-media {
+    appearance: none;
+    display: block;
+    width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-radius: var(--site-radius-md);
     background: rgba(255, 255, 255, 0.45);
     border: 1px solid rgba(139, 30, 30, 0.18);
+    padding: 0;
+    cursor: pointer;
 }
 
 .animation-background-result-media-placeholder {
@@ -131,6 +141,17 @@
 
 .animation-background-result-actions > * {
     flex: 1 1 calc(50% - 0.3rem);
+}
+
+.animation-background-popup-preview {
+    width: 100%;
+}
+
+.animation-background-popup-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--site-radius-md);
 }
 
 .animation-tool-button {
