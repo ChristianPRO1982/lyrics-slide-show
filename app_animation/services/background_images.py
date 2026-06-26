@@ -1,0 +1,398 @@
+from __future__ import annotations
+
+import re
+import secrets
+from pathlib import Path
+from uuid import UUID
+
+from django.conf import settings
+from django.db import IntegrityError, connection, transaction
+from django.db.models import Case, IntegerField, Value, When
+from django.utils import timezone
+from django.utils.text import slugify
+
+from app_animation.models import (
+    Animation,
+    AnimationSong,
+    AnimationVerseOverride,
+    BackgroundImage,
+    BackgroundImageGenre,
+    BackgroundImageStatus,
+)
+from app_song.genre_labels import build_genre_display_label
+from app_member.services import get_site_params_for_language
+
+
+BACKGROUND_IMAGES_DIR = "background-images"
+DEFAULT_BACKGROUND_CONTEXT_SLUG = "background"
+STORAGE_FILENAME_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"
+STORAGE_FILENAME_RANDOM_LENGTH = 10
+GROUP_SPACES_PATTERN = re.compile(r"\s+")
+BACKGROUND_GROUP_PREFIX_PATTERN = re.compile(r"^\s*\d+\s*-\s*")
+
+
+def build_image_validation_config(language_code: str | None) -> dict[str, object]:
+    params = get_site_params_for_language(language_code)
+    return {
+        "max_bytes": int(getattr(params, "bg_img_max_bytes", 2 * 1024 * 1024)),
+        "min_w": int(getattr(params, "bg_img_min_w", 800)),
+        "min_h": int(getattr(params, "bg_img_min_h", 600)),
+        "max_w": int(getattr(params, "bg_img_max_w", 4096)),
+        "max_h": int(getattr(params, "bg_img_max_h", 3072)),
+        "ratio_min": float(getattr(params, "bg_img_ratio_min", 1.3)),
+        "ratio_max": float(getattr(params, "bg_img_ratio_max", 2.0)),
+        "allowed_ext": _parse_csv(
+            getattr(params, "bg_img_allowed_ext", ".jpg,.jpeg,.png")
+        ),
+        "allowed_mime": _parse_csv(
+            getattr(params, "bg_img_allowed_mime", "image/jpeg,image/png")
+        ),
+    }
+
+
+def _parse_csv(value: str) -> list[str]:
+    return [
+        item.strip().lower() for item in str(value or "").split(",") if item.strip()
+    ]
+
+
+def background_images_root() -> Path:
+    return Path(settings.MEDIA_ROOT) / BACKGROUND_IMAGES_DIR
+
+
+def status_dir(status: str) -> Path:
+    normalized = str(status or "").strip().lower()
+    if normalized not in {
+        BackgroundImageStatus.PENDING,
+        BackgroundImageStatus.INACTIVE,
+        BackgroundImageStatus.ACTIVE,
+    }:
+        normalized = BackgroundImageStatus.PENDING
+    return background_images_root() / normalized
+
+
+def ensure_background_image_dirs() -> None:
+    for status, _label in BackgroundImageStatus.choices:
+        status_dir(status).mkdir(parents=True, exist_ok=True)
+
+
+def generate_asset_code() -> str:
+    return f"bg-{secrets.token_hex(8)}"
+
+
+def normalize_background_group_name(value: str | None) -> str:
+    raw_value = str(value or "").strip()
+    without_prefix = BACKGROUND_GROUP_PREFIX_PATTERN.sub("", raw_value)
+    return GROUP_SPACES_PATTERN.sub(" ", without_prefix.strip())
+
+
+def build_background_context_slug(genre_ids: list[int]) -> str:
+    normalized_ids = sorted(
+        {int(genre_id) for genre_id in genre_ids if int(genre_id) > 0}
+    )
+    if not normalized_ids:
+        return DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT genre_id, "group", "name"
+            FROM "common"."genres"
+            WHERE genre_id = ANY(%s)
+            ORDER BY "group", "name", genre_id
+            """,
+            [normalized_ids],
+        )
+        rows = cursor.fetchall()
+
+    group_labels: dict[str, str] = {}
+    for _genre_id, group_name, _genre_name in rows:
+        cleaned_group = normalize_background_group_name(group_name)
+        if not cleaned_group:
+            continue
+        group_key = cleaned_group.casefold()
+        if group_key not in group_labels:
+            group_labels[group_key] = cleaned_group
+
+    if len(group_labels) != 1:
+        return DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+    label = next(iter(group_labels.values()), DEFAULT_BACKGROUND_CONTEXT_SLUG)
+    return slugify(label) or DEFAULT_BACKGROUND_CONTEXT_SLUG
+
+
+def generate_storage_name(context_slug: str, original_name: str) -> str:
+    normalized_slug = (
+        slugify(str(context_slug or "").strip()) or DEFAULT_BACKGROUND_CONTEXT_SLUG
+    )
+    extension = Path(str(original_name or "")).suffix.lower()
+    random_part = "".join(
+        secrets.choice(STORAGE_FILENAME_ALPHABET)
+        for _index in range(STORAGE_FILENAME_RANDOM_LENGTH)
+    )
+    return f"{normalized_slug}_{random_part}{extension}"
+
+
+def store_uploaded_image_file(
+    upload,
+    *,
+    status: str,
+    context_slug: str,
+    on_after_write,
+    max_attempts: int = 20,
+) -> tuple[str, Path, object]:
+    attempts = max(1, int(max_attempts))
+    destination_dir = status_dir(status)
+    destination_dir.mkdir(parents=True, exist_ok=True)
+
+    for _attempt_index in range(attempts):
+        filename = generate_storage_name(context_slug, getattr(upload, "name", ""))
+        destination = destination_dir / filename
+        try:
+            try:
+                upload.seek(0)
+            except Exception:
+                pass
+            with destination.open("xb") as handle:
+                for chunk in upload.chunks():
+                    handle.write(chunk)
+        except FileExistsError:
+            continue
+        try:
+            with transaction.atomic():
+                created_object = on_after_write(filename, destination)
+        except IntegrityError:
+            try:
+                if destination.exists():
+                    destination.unlink()
+            except Exception:
+                pass
+            continue
+        except Exception:
+            try:
+                if destination.exists():
+                    destination.unlink()
+            except Exception:
+                pass
+            raise
+        return filename, destination, created_object
+
+    raise RuntimeError("Unable to allocate a unique storage name for upload.")
+
+
+def relative_stored_path(status: str, filename: str) -> str:
+    return f"{BACKGROUND_IMAGES_DIR}/{str(status).strip().lower()}/{filename}"
+
+
+def absolute_stored_path(stored_path: str) -> Path:
+    return Path(settings.MEDIA_ROOT) / str(stored_path or "").lstrip("/")
+
+
+def move_image_to_status(image: BackgroundImage, status: str) -> None:
+    source = absolute_stored_path(image.stored_path)
+    filename = str(image.storage_filename or source.name).strip() or source.name
+    destination = status_dir(status) / filename
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source.exists():
+        source.replace(destination)
+    image.stored_path = relative_stored_path(status, filename)
+    image.status = status
+    image.moderated_at = timezone.now()
+    image.member_id = None
+    image.save(update_fields=["stored_path", "status", "moderated_at", "member_id"])
+
+
+def delete_image_file(image: BackgroundImage) -> None:
+    path = absolute_stored_path(image.stored_path)
+    if path.exists():
+        path.unlink()
+
+
+def resolve_background_asset_url(background_asset_code: str | None) -> str:
+    value = str(background_asset_code or "").strip()
+    if not value:
+        return ""
+    if value.startswith(("http://", "https://", "/")):
+        return value
+    image = BackgroundImage.objects.filter(asset_code=value).only("stored_path").first()
+    if image is None:
+        return f"{settings.MEDIA_URL}{value}"
+    path = str(image.stored_path or "").strip().lstrip("/")
+    if not path:
+        return ""
+    return f"{settings.MEDIA_URL}{path}"
+
+
+def fetch_genre_options() -> list[dict[str, object]]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT genre_id, "group", "name"
+            FROM "common"."genres"
+            ORDER BY "group", "name", genre_id
+            """
+        )
+        rows = cursor.fetchall()
+    return [
+        {
+            "id": int(row[0]),
+            "group": str(row[1] or "").strip(),
+            "name": str(row[2] or "").strip(),
+            "label": build_genre_display_label(row[1], row[2]),
+        }
+        for row in rows
+    ]
+
+
+def fetch_genre_labels(genre_ids: set[int]) -> dict[int, str]:
+    if not genre_ids:
+        return {}
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT genre_id, "group", "name"
+            FROM "common"."genres"
+            WHERE genre_id = ANY(%s)
+            """,
+            [list(sorted(genre_ids))],
+        )
+        rows = cursor.fetchall()
+    output: dict[int, str] = {}
+    for row in rows:
+        output[int(row[0])] = build_genre_display_label(row[1], row[2])
+    return output
+
+
+def replace_image_genres(image: BackgroundImage, genre_ids: list[int]) -> None:
+    normalized = sorted({int(genre_id) for genre_id in genre_ids if int(genre_id) > 0})
+    BackgroundImageGenre.objects.filter(image=image).delete()
+    BackgroundImageGenre.objects.bulk_create(
+        [
+            BackgroundImageGenre(image=image, genre_id=genre_id)
+            for genre_id in normalized
+        ]
+    )
+
+
+def clear_background_image_references(asset_code: str) -> dict[str, int]:
+    cleared_animation = Animation.objects.filter(
+        background_asset_code=asset_code
+    ).update(background_asset_code=None)
+    cleared_song = AnimationSong.objects.filter(
+        background_asset_code_override=asset_code
+    ).update(background_asset_code_override=None)
+    cleared_verse = AnimationVerseOverride.objects.filter(
+        background_asset_code_override=asset_code
+    ).update(background_asset_code_override=None)
+    return {
+        "animations": int(cleared_animation),
+        "songs": int(cleared_song),
+        "verses": int(cleared_verse),
+    }
+
+
+def count_background_image_references(asset_code: str) -> dict[str, int]:
+    return {
+        "animations": int(
+            Animation.objects.filter(background_asset_code=asset_code).count()
+        ),
+        "songs": int(
+            AnimationSong.objects.filter(
+                background_asset_code_override=asset_code
+            ).count()
+        ),
+        "verses": int(
+            AnimationVerseOverride.objects.filter(
+                background_asset_code_override=asset_code
+            ).count()
+        ),
+    }
+
+
+def list_background_images_for_view(
+    *,
+    include_all_statuses: bool,
+    query: str,
+    genre_ids: list[int],
+    moderation_quick: bool,
+    inactive_quick: bool,
+) -> list[dict[str, object]]:
+    queryset = BackgroundImage.objects.all().order_by("title", "image_id")
+    if not include_all_statuses:
+        queryset = queryset.filter(status=BackgroundImageStatus.ACTIVE)
+    if moderation_quick:
+        queryset = queryset.filter(status=BackgroundImageStatus.PENDING)
+    elif inactive_quick:
+        queryset = queryset.filter(status=BackgroundImageStatus.INACTIVE)
+    if query:
+        queryset = queryset.filter(title__icontains=query)
+    if genre_ids:
+        queryset = queryset.filter(genre_relations__genre_id__in=genre_ids).distinct()
+    if include_all_statuses and not moderation_quick and not inactive_quick:
+        queryset = queryset.annotate(
+            moderation_priority=Case(
+                When(status=BackgroundImageStatus.PENDING, then=Value(0)),
+                When(status=BackgroundImageStatus.ACTIVE, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        ).order_by("moderation_priority", "title", "image_id")
+
+    images = list(queryset)
+    relation_rows = BackgroundImageGenre.objects.filter(image__in=images).values_list(
+        "image_id", "genre_id"
+    )
+    genre_map: dict[int, list[int]] = {}
+    all_genre_ids: set[int] = set()
+    for image_id, genre_id in relation_rows:
+        genre_map.setdefault(int(image_id), []).append(int(genre_id))
+        all_genre_ids.add(int(genre_id))
+    labels = fetch_genre_labels(all_genre_ids)
+    return [
+        {
+            "image": image,
+            "image_id": int(image.image_id),
+            "asset_code": image.asset_code,
+            "title": image.title,
+            "target": image.target,
+            "description": image.description or "",
+            "status": image.status,
+            "status_label": image.get_status_display(),
+            "url": resolve_background_asset_url(image.asset_code),
+            "genre_ids": tuple(sorted(genre_map.get(int(image.image_id), []))),
+            "genres": tuple(
+                labels[genre_id]
+                for genre_id in sorted(genre_map.get(int(image.image_id), []))
+                if genre_id in labels
+            ),
+        }
+        for image in images
+    ]
+
+
+def active_background_image_options() -> list[dict[str, object]]:
+    return list_background_images_for_view(
+        include_all_statuses=False,
+        query="",
+        genre_ids=[],
+        moderation_quick=False,
+        inactive_quick=False,
+    )
+
+
+def normalize_genre_ids(raw_values: list[str]) -> list[int]:
+    output: list[int] = []
+    for value in raw_values:
+        try:
+            parsed = int(str(value).strip())
+        except (TypeError, ValueError):
+            continue
+        if parsed > 0:
+            output.append(parsed)
+    return sorted(set(output))
+
+
+def normalize_member_id(member_id: str | None) -> UUID | None:
+    if not member_id:
+        return None
+    return UUID(str(member_id))

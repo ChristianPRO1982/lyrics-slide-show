@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Ajouter une image de fond" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Ajouter une image de fond" %}{% endblock %}
+{% block content %}
+{% endblock %}
+{% block content_footer %}
+    <form id="background-image-upload-form" method="post" enctype="multipart/form-data" class="site-theme-selection">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <p>{{ form.title.label_tag }} {{ form.title }} {{ form.title.errors }}</p>
+        <p>{{ form.target.label_tag }} {{ form.target }} {{ form.target.errors }}</p>
+        <p>{{ form.description.label_tag }} {{ form.description }} {{ form.description.errors }}</p>
+        <p>{{ form.image_file.label_tag }} {{ form.image_file }} {{ form.image_file.errors }}</p>
+        <article class="site-theme-card song-detail-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{{ form.genre_ids.label }}</h2>
+                </div>
+            </header>
+            {{ form.genre_ids.errors }}
+            <div id="background-image-genres-transfer" data-meta-transfer-container data-input-name="genre_ids">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div>
+                        <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
+                        <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                            {% for item in form.genre_selected_options %}
+                                <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
+                                    <input type="hidden" name="genre_ids" value="{{ item.id }}">
+                                    {{ item.label }}
+                                </li>
+                            {% empty %}
+                                <li data-meta-transfer-empty><em>-</em></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
+                        <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                            {% for item in form.genre_available_options %}
+                                <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
+                            {% empty %}
+                                <li data-meta-transfer-empty><em>-</em></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <p><button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Envoyer pour modération" %}</button></p>
+    </form>
+{% endblock %}
+{% block page_scripts %}
+    <script>
+        (() => {
+            const createHiddenInput = (name, value) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = value;
+                return input;
+            };
+
+            const refreshEmptyState = (list) => {
+                if (!(list instanceof HTMLElement)) {
+                    return;
+                }
+                const items = list.querySelectorAll("[data-meta-transfer-item]");
+                const empty = list.querySelector("[data-meta-transfer-empty]");
+                if (items.length === 0) {
+                    if (!empty) {
+                        const placeholder = document.createElement("li");
+                        placeholder.setAttribute("data-meta-transfer-empty", "");
+                        const emphasis = document.createElement("em");
+                        emphasis.textContent = "-";
+                        placeholder.appendChild(emphasis);
+                        list.appendChild(placeholder);
+                    }
+                    return;
+                }
+                if (empty) {
+                    empty.remove();
+                }
+            };
+
+            document.querySelectorAll("[data-meta-transfer-container]").forEach((container) => {
+                if (!(container instanceof HTMLElement)) {
+                    return;
+                }
+
+                const inputName = container.getAttribute("data-input-name") || "";
+                const selectedList = container.querySelector("[data-meta-transfer-source]");
+                const availableList = container.querySelector("[data-meta-transfer-target]");
+                if (!(selectedList instanceof HTMLElement) || !(availableList instanceof HTMLElement)) {
+                    return;
+                }
+
+                refreshEmptyState(selectedList);
+                refreshEmptyState(availableList);
+
+                container.addEventListener("click", (event) => {
+                    const target = event.target;
+                    if (!(target instanceof Element)) {
+                        return;
+                    }
+                    const item = target.closest("[data-meta-transfer-item]");
+                    if (!(item instanceof HTMLElement)) {
+                        return;
+                    }
+                    const itemId = item.getAttribute("data-id") || "";
+                    if (!itemId) {
+                        return;
+                    }
+
+                    const isSelected = item.parentElement === selectedList;
+                    if (isSelected) {
+                        item.querySelectorAll(`input[type="hidden"][name="${inputName}"]`).forEach((input) => input.remove());
+                        availableList.appendChild(item);
+                    } else {
+                        item.appendChild(createHiddenInput(inputName, itemId));
+                        selectedList.appendChild(item);
+                    }
+
+                    refreshEmptyState(selectedList);
+                    refreshEmptyState(availableList);
+                });
+            });
+        })();
+    </script>
+{% endblock %}

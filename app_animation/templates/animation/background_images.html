@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Banque d'images" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Animation' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Animation' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Banque d'images" %}{% endblock %}
+{% block page_intro %}
+    <p>{% trans "Images de fond partagées pour les animations." %}</p>
+    <form id="background-images-search-form" method="get" hidden></form>
+{% endblock %}
+{% block page_summary %}
+    <div class="animation-background-summary-grid" data-background-summary-grid>
+        {% for item in summary_background_images %}
+            <button
+                type="button"
+                class="animation-background-summary-tile"
+                data-background-summary-tile
+                data-background-preview-trigger
+                data-background-preview-url="{{ item.url }}"
+                data-background-preview-title="{{ item.title }}"
+                aria-label="{% blocktrans with title=item.title %}Afficher l'image {{ title }}{% endblocktrans %}"
+            >
+                {% if item.url %}
+                    <img src="{{ item.url }}" alt="{{ item.title }}" loading="lazy">
+                {% endif %}
+            </button>
+        {% empty %}
+            <p>{% trans "Aucune image active à mettre en avant." %}</p>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block content %}
+    <article class="site-theme-card animation-background-search-card" data-background-search-card>
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Recherche" %}</h2>
+            </div>
+        </header>
+        <div class="animation-background-search-main">
+            <label for="background-image-search">{% trans "Nom" %}</label>
+            <input id="background-image-search" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Titre de l’image' %}" form="background-images-search-form">
+            <div class="animation-background-search-actions">
+                <button type="submit" class="site-action site-action--primary" form="background-images-search-form">{% trans "Filtrer" %}</button>
+                <a class="animation-secondary-action site-action site-action--secondary" href="{% url 'background_images' %}">{% trans "Réinitialiser" %}</a>
+            </div>
+            <div class="animation-background-search-quick-actions">
+                <a class="animation-tool-link site-action {% if moderation_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?moderation_quick=1">{% trans "Images à modérer" %}</a>
+                <a class="animation-tool-link site-action {% if inactive_quick_active %}site-action--primary{% else %}site-action--secondary{% endif %}" href="{% url 'background_images' %}?inactive_quick=1">{% trans "Images inactives" %}</a>
+            </div>
+        </div>
+    </article>
+
+    <article class="site-theme-card animation-background-search-card" data-background-search-card>
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Genres" %}</h2>
+            </div>
+        </header>
+        <fieldset class="animation-background-genres-panel" data-background-genres-panel>
+            <input
+                type="search"
+                class="animation-background-genre-filter-input"
+                placeholder="{% trans 'Trouver un genre' %}"
+                data-background-genre-filter
+            >
+            <div class="animation-background-genres-scroll" data-background-genres-scroll>
+                {% for option in genre_options %}
+                    <label class="song-checkbox-option animation-background-genre-option" data-background-genre-option>
+                        <input type="checkbox" name="genre_ids" value="{{ option.id }}" {% if option.id in selected_genre_ids %}checked{% endif %} form="background-images-search-form">
+                        <span>{{ option.label }}</span>
+                    </label>
+                {% empty %}
+                    <p>{% trans "Aucun genre disponible." %}</p>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </article>
+{% endblock %}
+{% block content_footer %}
+    <section class="animation-background-results-grid" data-background-results-grid>
+        {% for item in background_images %}
+            <article class="site-theme-card animation-background-result-card" data-background-result-card>
+                <div class="animation-background-result-main">
+                    <div class="animation-background-result-media-column">
+                        <button
+                            type="button"
+                            class="animation-background-result-media"
+                            data-background-preview-trigger
+                            data-background-preview-url="{{ item.url }}"
+                            data-background-preview-title="{{ item.title }}"
+                            aria-label="{% blocktrans with title=item.title %}Afficher l'image {{ title }}{% endblocktrans %}"
+                        >
+                            {% if item.url %}
+                                <img src="{{ item.url }}" alt="{{ item.title }}" loading="lazy">
+                            {% else %}
+                                <div class="animation-background-result-media-placeholder" aria-hidden="true"></div>
+                            {% endif %}
+                        </button>
+                        <p class="animation-background-result-status"><strong>{% trans "Statut" %}:</strong> {{ item.status_label }}</p>
+                    </div>
+                    <div class="animation-background-result-info">
+                        <h2><strong>{{ item.title }}</strong></h2>
+                        {% if item.description %}
+                            <p>{{ item.description|linebreaksbr }}</p>
+                        {% endif %}
+                        <p><strong>{% trans "Cible" %}:</strong> {{ item.target }}</p>
+                        {% if item.genres %}
+                            <p>{% trans "Genres" %}: {{ item.genres|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <form method="post" class="animation-background-result-actions">
+                    {% csrf_token %}
+                    <input type="hidden" name="image_id" value="{{ item.image_id }}">
+                    {% if item.status == "pending" %}
+                        <button type="submit" name="action" value="validate" class="site-action site-action--primary">{% trans "Valider" %}</button>
+                        <button type="submit" name="action" value="invalidate" class="site-action site-action--danger">{% trans "Invalider" %}</button>
+                    {% elif item.status == "active" %}
+                        <button type="submit" name="action" value="deactivate" class="site-action site-action--secondary">{% trans "Désactiver" %}</button>
+                    {% elif item.status == "inactive" %}
+                        <button type="submit" name="action" value="activate" class="site-action site-action--primary">{% trans "Réactiver" %}</button>
+                        <button type="submit" name="action" value="delete" class="site-action site-action--danger">{% trans "Supprimer définitivement" %}</button>
+                    {% endif %}
+                </form>
+            </article>
+        {% empty %}
+            <article class="site-theme-card animation-background-empty-card">
+                <p>{% trans "Aucune image ne correspond à ce filtre." %}</p>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}
+{% block page_scripts %}
+    <script>
+        (() => {
+            const previewTitleFallback = "{% trans 'Aperçu de l’image' %}";
+            const normalizeSearch = (value) =>
+                String(value || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+            const openPreview = (button) => {
+                const imageUrl = String(button?.getAttribute("data-background-preview-url") || "").trim();
+                if (!imageUrl || !window.LSSMessageBox || typeof window.LSSMessageBox.show !== "function") {
+                    return;
+                }
+
+                const previewTitle = String(button.getAttribute("data-background-preview-title") || "").trim() || previewTitleFallback;
+                const popupPromise = window.LSSMessageBox.show({
+                    title: previewTitle,
+                    size: "wide",
+                    showCloseButton: true,
+                });
+
+                window.requestAnimationFrame(() => {
+                    const root = document.getElementById("lss-messagebox-root");
+                    const content = root?.querySelector(".lss-messagebox-content");
+                    if (!(content instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "animation-background-popup-preview";
+
+                    const image = document.createElement("img");
+                    image.src = imageUrl;
+                    image.alt = previewTitle;
+                    image.loading = "eager";
+                    wrapper.appendChild(image);
+                    content.appendChild(wrapper);
+                });
+
+                return popupPromise;
+            };
+
+            document.querySelectorAll("[data-background-preview-trigger]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    openPreview(button);
+                });
+            });
+
+            const filterInput = document.querySelector("[data-background-genre-filter]");
+            const options = Array.from(document.querySelectorAll("[data-background-genre-option]"));
+            if (!filterInput || options.length === 0) {
+                return;
+            }
+
+            const applyFilter = () => {
+                const query = normalizeSearch(filterInput.value);
+                const shouldFilter = query.length >= 1;
+
+                options.forEach((option) => {
+                    const haystack = normalizeSearch(option.textContent || "");
+                    const isHidden = shouldFilter && !haystack.includes(query);
+                    option.style.display = isHidden ? "none" : "";
+                });
+            };
+
+            filterInput.addEventListener("input", applyFilter);
+            applyFilter();
+        })();
+    </script>
+{% endblock %}

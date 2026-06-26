@@ -114,6 +114,7 @@
                     data-song-title="{{ card.song_title|escape }}"
                     data-song-text-color="{{ card.song_style.text_color_override }}"
                     data-song-bg-color="{{ card.song_style.bg_color_override }}"
+                    data-song-background-asset-code="{{ card.song_style.background_asset_code_override }}"
                 >
                     <div data-song-collapsed>
                         <div class="animation-song-main-head">
@@ -221,6 +222,11 @@
                                 {% trans "Réinitialisation" %}
                             </div>
                             <div class="animation-song-style-grid-cell">
+                                <p>
+                                    <button type="button" class="animation-tool-button site-action site-action--primary" data-song-background-popup-trigger data-background-target-level="song">
+                                        {% trans "Image du chant" %}
+                                    </button>
+                                </p>
                                 <button type="button" class="animation-secondary-action site-action site-action--secondary" data-song-style-parent-reset-trigger data-style-target-level="song">
                                     {% trans "Réinitialiser le chant" %}
                                 </button>
@@ -235,6 +241,7 @@
                                     data-verse-id="{{ verse.verse_id }}"
                                     data-verse-text-color="{{ verse.text_color_override }}"
                                     data-verse-bg-color="{{ verse.bg_color_override }}"
+                                    data-verse-background-asset-code="{{ verse.background_asset_code_override }}"
                                 >
                                     <div class="animation-verse-tablelike">
                                         <div class="animation-verse-row-label">
@@ -315,6 +322,17 @@
                                         </div>
                                         <div class="animation-verse-row-control-label animation-verse-row-reset-label">{% trans "Réinitialisation" %}</div>
                                         <div class="animation-verse-row-control-input animation-verse-row-reset-input">
+                                            <p>
+                                                <button
+                                                    type="button"
+                                                    class="animation-tool-button site-action site-action--primary"
+                                                    data-song-background-popup-trigger
+                                                    data-background-target-level="verse"
+                                                    data-verse-id="{{ verse.verse_id }}"
+                                                >
+                                                    {% trans "Image du couplet" %}
+                                                </button>
+                                            </p>
                                             <button
                                                 type="button"
                                                 class="animation-secondary-action site-action site-action--secondary"

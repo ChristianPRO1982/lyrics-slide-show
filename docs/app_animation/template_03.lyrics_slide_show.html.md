@@ -29,6 +29,16 @@ La vue construit un bundle `runtime_payload` issu de `build_animation_render_bun
 
 Le payload est injecté via `json_script` (`lss-lyrics-runtime-payload`).
 
+Un second `json_script` expose `shortcuts_config` avec :
+- `siteBindings`,
+- `effectiveBindings`,
+- `formBindings`,
+- `actionOrder`,
+- `actionToRemoteAction`,
+- `actionLabels`,
+- `canCustomizeShortcuts`,
+- `customizeUrl`.
+
 ## Modèle De Session
 
 - chaque ouverture crée un `display_session_id` (`<16hex>-<animation_id>`),
@@ -38,6 +48,7 @@ Le payload est injecté via `json_script` (`lss-lyrics-runtime-payload`).
 ## Mise En Page
 
 La page contient :
+- surcouche visuelle de `BLACK MODE` non interactive,
 - barre d'actions,
 - panneau aperçu diapo courante,
 - panneau aperçu diapo suivante,
@@ -47,7 +58,6 @@ La page contient :
 
 Actions implémentées :
 - ouvrir second écran,
-- rouvrir second écran,
 - `BLACK MODE`,
 - diapo précédente,
 - refrain (cycle sur les refrains du chant courant),
@@ -56,7 +66,9 @@ Actions implémentées :
 - chant suivant,
 - toggle scroll (`↕️ / 🧱`),
 - toggle affichage cartes refrain,
-- toggle QR public.
+- toggle QR public,
+- affichage popup d'aide raccourcis,
+- personnalisation persistée des raccourcis membre.
 
 ## Comportement De Navigation
 
@@ -64,6 +76,9 @@ Actions implémentées :
 - cycle local dans les slides du chant courant,
 - action `Refrain` sur curseur de refrains par chant,
 - clic direct possible sur chaque carte de slide.
+
+Les raccourcis clavier restent actifs même si le focus est sur un bouton de la remote.
+Ils sont suspendus quand une popup `LSSMessageBox` est ouverte et focusée.
 
 ## Frames Envoyées À L'écran Projeté
 
@@ -84,6 +99,23 @@ La page display applique :
 - avertissement popup si préchargement incomplet,
 - persistance du dernier frame côté display (`lss-lyrics-display-lastframe:<sessionId>`),
 - heartbeat du remote pour continuité de synchro.
+
+## Popups Et Raccourcis
+
+Les popups de cette page passent par `window.LSSMessageBox`.
+
+Popup d'aide raccourcis :
+- affiche les raccourcis effectifs,
+- propose `Personnaliser les raccourcis`,
+- pour un invité, cette action ouvre une popup d'information de connexion requise.
+
+Popup de personnalisation :
+- 10 lignes d'actions,
+- 3 slots readonly par action,
+- capture par clic puis frappe clavier,
+- croix d'effacement par slot,
+- bouton `Revenir aux raccourcis du site`,
+- sauvegarde partielle en cas de conflit.
 
 ## Lien Smartphone Public
 

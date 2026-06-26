@@ -119,7 +119,13 @@
             <div class="animation-create-form-row">
                 <label for="{{ form.background_asset_code.id_for_label }}">{{ form.background_asset_code.label }}</label>
                 <div class="animation-create-form-control">
-                    {{ form.background_asset_code }}
+                    {{ form.background_asset_code.as_hidden }}
+                    <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-create-background-popup>
+                        {% trans "Choisir une image de fond" %}
+                    </button>
+                    <p data-animation-create-background-label>
+                        {% if form.background_asset_code.value %}<code>{{ form.background_asset_code.value }}</code>{% else %}{% trans "Aucune image" %}{% endif %}
+                    </p>
                     {{ form.background_asset_code.errors }}
                 </div>
             </div>
@@ -138,6 +144,9 @@
     {% trans "Couleur de fond" as lss_add_anim_popup_bg_color %}
     {% trans "OK" as lss_add_anim_popup_ok %}
     {% trans "Abandonner" as lss_add_anim_popup_cancel %}
+    {% trans "Image de fond" as lss_add_anim_popup_background %}
+    {% trans "Aucune image" as lss_add_anim_no_image %}
+    {{ background_image_options|json_script:"lss-add-animation-background-options" }}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script>
         (() => {
@@ -154,7 +163,19 @@
             const fontFamilyInput = form.querySelector("#id_font_family");
             const fontSizeInput = form.querySelector("#id_font_size");
             const paddingInput = form.querySelector("#id_horizontal_padding");
+            const backgroundAssetInput = form.querySelector("#id_background_asset_code");
             const colorsPopupTrigger = form.querySelector("[data-animation-create-colors-popup]");
+            const backgroundPopupTrigger = form.querySelector("[data-animation-create-background-popup]");
+            const backgroundLabelNode = document.querySelector("[data-animation-create-background-label]");
+            const backgroundOptionsNode = document.getElementById("lss-add-animation-background-options");
+            let backgroundOptions = [];
+            if (backgroundOptionsNode && backgroundOptionsNode.textContent) {
+                try {
+                    backgroundOptions = JSON.parse(backgroundOptionsNode.textContent);
+                } catch (_error) {
+                    backgroundOptions = [];
+                }
+            }
 
             const preview = document.querySelector("[data-animation-create-summary-preview]");
             const live = document.querySelector("[data-animation-create-summary-live]");
@@ -177,6 +198,8 @@
             const popupBgColorLabel = "{{ lss_add_anim_popup_bg_color|escapejs }}";
             const popupOkLabel = "{{ lss_add_anim_popup_ok|escapejs }}";
             const popupCancelLabel = "{{ lss_add_anim_popup_cancel|escapejs }}";
+            const popupBackgroundLabel = "{{ lss_add_anim_popup_background|escapejs }}";
+            const noImageLabel = "{{ lss_add_anim_no_image|escapejs }}";
 
             const validHex = (value) => {
                 const candidate = String(value || "").trim();
@@ -223,6 +246,13 @@
                     preview.style.paddingLeft = `${horizontalPadding}px`;
                     preview.style.paddingRight = `${horizontalPadding}px`;
                 }
+                if (backgroundLabelNode instanceof HTMLElement) {
+                    const currentValue = String(backgroundAssetInput?.value || "").trim();
+                    const matched = backgroundOptions.find((option) => option.value === currentValue);
+                    backgroundLabelNode.innerHTML = matched
+                        ? `<strong>${matched.title}</strong><br><code>${matched.value}</code>`
+                        : noImageLabel;
+                }
             };
 
             form.addEventListener("input", applySummary);
@@ -267,9 +297,51 @@
                 }
             };
 
+            const openBackgroundPopup = async () => {
+                const messageBox = window.LSSMessageBox;
+                if (!messageBox || typeof messageBox.show !== "function") {
+                    return;
+                }
+                const currentValue = String(backgroundAssetInput?.value || "").trim();
+                const result = await messageBox.show({
+                    title: popupBackgroundLabel,
+                    showCloseButton: true,
+                    buttons: [
+                        { id: "ok", label: popupOkLabel, tone: "success", validate: true },
+                        { id: "cancel", label: popupCancelLabel, tone: "neutral", validate: false },
+                    ],
+                    fields: [
+                        {
+                            id: "background_asset_code",
+                            label: popupBackgroundLabel,
+                            type: "select",
+                            value: currentValue,
+                            options: [{ value: "", label: noImageLabel }].concat(backgroundOptions),
+                        },
+                    ],
+                    enterButtonId: "ok",
+                    escapeButtonId: "cancel",
+                });
+                if (result.buttonId !== "ok") {
+                    return;
+                }
+                if (backgroundAssetInput instanceof HTMLInputElement) {
+                    backgroundAssetInput.value = String(result.values?.background_asset_code || "").trim();
+                }
+                applySummary();
+                if (unsavedController) {
+                    unsavedController.refresh();
+                }
+            };
+
             if (colorsPopupTrigger instanceof HTMLButtonElement) {
                 colorsPopupTrigger.addEventListener("click", () => {
                     void openColorsPopup();
+                });
+            }
+            if (backgroundPopupTrigger instanceof HTMLButtonElement) {
+                backgroundPopupTrigger.addEventListener("click", () => {
+                    void openBackgroundPopup();
                 });
             }
             applySummary();

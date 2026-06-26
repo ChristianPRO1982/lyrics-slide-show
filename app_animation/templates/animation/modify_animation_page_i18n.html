@@ -11,6 +11,10 @@
 {% trans "Taille de police" as lss_anim_label_font_size %}
 {% trans "Marge horizontale" as lss_anim_label_padding %}
 {% trans "Code d'image de fond" as lss_anim_label_bg_asset %}
+{% trans "Image de fond" as lss_anim_label_bg_image %}
+{% trans "Même image que l'animation" as lss_anim_same_as_animation %}
+{% trans "Même image que le chant" as lss_anim_same_as_song %}
+{% trans "Aucune image" as lss_anim_no_image %}
 {% trans "OK" as lss_anim_ok %}
 {% trans "Abandonner" as lss_anim_cancel %}
 {% trans "Réinitialiser" as lss_anim_reset %}
@@ -46,6 +50,7 @@
 {% trans "Réinitialiser le couplet" as lss_anim_verse_reset_action %}
 {% trans "Couleur texte" as lss_anim_text_color_short %}
 {% trans "Couleur fond" as lss_anim_bg_color_short %}
+{% trans "Image du fond" as lss_anim_bg_image_short %}
 {% trans "Voir le texte du chant" as lss_anim_song_view_text_title %}
 {% trans "Impossible de charger le texte du chant." as lss_anim_song_view_text_error %}
 {% trans "Navigation vers le chant" as lss_anim_song_navigation_title %}
@@ -69,6 +74,10 @@
         labelFontSize: "{{ lss_anim_label_font_size|escapejs }}",
         labelHorizontalPadding: "{{ lss_anim_label_padding|escapejs }}",
         labelBackgroundAssetCode: "{{ lss_anim_label_bg_asset|escapejs }}",
+        labelBackgroundImage: "{{ lss_anim_label_bg_image|escapejs }}",
+        sameAsAnimationLabel: "{{ lss_anim_same_as_animation|escapejs }}",
+        sameAsSongLabel: "{{ lss_anim_same_as_song|escapejs }}",
+        noImageLabel: "{{ lss_anim_no_image|escapejs }}",
         okLabel: "{{ lss_anim_ok|escapejs }}",
         cancelLabel: "{{ lss_anim_cancel|escapejs }}",
         resetLabel: "{{ lss_anim_reset|escapejs }}",
@@ -104,6 +113,7 @@
         verseResetActionLabel: "{{ lss_anim_verse_reset_action|escapejs }}",
         textColorShortLabel: "{{ lss_anim_text_color_short|escapejs }}",
         bgColorShortLabel: "{{ lss_anim_bg_color_short|escapejs }}",
+        bgImageShortLabel: "{{ lss_anim_bg_image_short|escapejs }}",
         songViewTextTitle: "{{ lss_anim_song_view_text_title|escapejs }}",
         songViewTextError: "{{ lss_anim_song_view_text_error|escapejs }}",
         songNavigationTitle: "{{ lss_anim_song_navigation_title|escapejs }}",

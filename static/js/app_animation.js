@@ -24,6 +24,7 @@
 
     const fontChoices = Array.isArray(popupData.fontChoices) ? popupData.fontChoices : [];
     const fontPreviews = Array.isArray(popupData.fontPreviews) ? popupData.fontPreviews : [];
+    const backgroundImageOptions = Array.isArray(popupData.backgroundImageOptions) ? popupData.backgroundImageOptions : [];
     const legacySongCatalog = Array.isArray(popupData.songCatalog) ? popupData.songCatalog : [];
     const advancedSongCatalog = Array.isArray(popupData.advancedSongCatalog) ? popupData.advancedSongCatalog : [];
     const favoriteSongCatalog = Array.isArray(popupData.favoriteSongCatalog) ? popupData.favoriteSongCatalog : [];
@@ -85,6 +86,21 @@
         horizontal_padding: 80,
     };
     const previewFontSizePx = 34;
+    const buildBackgroundSelectOptions = (inheritLabel) => {
+        return [{ value: "", label: inheritLabel || label("noImageLabel") }].concat(
+            backgroundImageOptions.map((option) => ({
+                value: String(option.value || ""),
+                label: String(option.label || option.value || ""),
+            }))
+        );
+    };
+    const findBackgroundOption = (assetCode) => {
+        const value = String(assetCode || "").trim();
+        if (!value) {
+            return null;
+        }
+        return backgroundImageOptions.find((option) => String(option.value || "").trim() === value) || null;
+    };
 
     const validHex = (value) => {
         const candidate = String(value || "").trim();
@@ -177,6 +193,10 @@
             summaryNodes.preview.style.background = bgColor;
             summaryNodes.preview.style.paddingLeft = `${horizontalPadding}px`;
             summaryNodes.preview.style.paddingRight = `${horizontalPadding}px`;
+            const backgroundOption = findBackgroundOption(values.background_asset_code);
+            summaryNodes.preview.style.backgroundImage = backgroundOption && backgroundOption.imageUrl ? `url('${String(backgroundOption.imageUrl).replace(/'/g, "\\'")}')` : "";
+            summaryNodes.preview.style.backgroundSize = "cover";
+            summaryNodes.preview.style.backgroundPosition = "center center";
         }
     };
 
@@ -197,6 +217,10 @@
         context.previewElement.style.fontSize = `${fontSize}px`;
         context.previewElement.style.paddingLeft = `${horizontalPadding}px`;
         context.previewElement.style.paddingRight = `${horizontalPadding}px`;
+        const backgroundOption = findBackgroundOption(values.background_asset_code);
+        context.previewElement.style.backgroundImage = backgroundOption && backgroundOption.imageUrl ? `url('${String(backgroundOption.imageUrl).replace(/'/g, "\\'")}')` : "";
+        context.previewElement.style.backgroundSize = "cover";
+        context.previewElement.style.backgroundPosition = "center center";
         context.previewElement.textContent = label("previewText");
     };
 
@@ -280,7 +304,7 @@
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
                 { id: "cancel", label: label("cancelLabel"), tone: "warning", validate: false },
-                makeResetButton(["text_color", "bg_color", "font_family", "font_size", "horizontal_padding"]),
+                makeResetButton(["text_color", "bg_color", "font_family", "font_size", "horizontal_padding", "background_asset_code"]),
             ],
             preview: {
                 label: label("previewLabel"),
@@ -331,6 +355,13 @@
                     max: 600,
                     step: 1,
                 },
+                {
+                    id: "background_asset_code",
+                    label: label("labelBackgroundImage"),
+                    type: "select",
+                    value: String(values.background_asset_code || ""),
+                    options: buildBackgroundSelectOptions(label("noImageLabel")),
+                },
             ],
             enterButtonId: "ok",
             escapeButtonId: "cancel",
@@ -347,6 +378,7 @@
             font_family: String(result.values?.font_family || "").trim(),
             font_size: String(result.values?.font_size || "").trim(),
             horizontal_padding: String(result.values?.horizontal_padding || "").trim(),
+            background_asset_code: String(result.values?.background_asset_code || "").trim(),
         });
         applySummaryPreview();
         refreshAllSongCardPreviews();
@@ -748,6 +780,7 @@
                     font_size_delta: Number.parseInt(String(verseFontSizeDelta?.value || "0"), 10) || 0,
                     text_color_override: String(row.getAttribute("data-verse-text-color") || "").trim(),
                     bg_color_override: String(row.getAttribute("data-verse-bg-color") || "").trim(),
+                    background_asset_code_override: String(row.getAttribute("data-verse-background-asset-code") || "").trim(),
                 };
             });
 
@@ -760,6 +793,7 @@
                     font_size_delta: Number.parseInt(String(songFontSizeDelta?.value || "0"), 10) || 0,
                     text_color_override: String(card.getAttribute("data-song-text-color") || "").trim(),
                     bg_color_override: String(card.getAttribute("data-song-bg-color") || "").trim(),
+                    background_asset_code_override: String(card.getAttribute("data-song-background-asset-code") || "").trim(),
                 },
                 verse_styles: verseStyles,
             };
@@ -840,6 +874,20 @@
         row.setAttribute("data-verse-bg-color", "");
     };
 
+    const clearSongBackgroundOverride = (card) => {
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+        card.setAttribute("data-song-background-asset-code", "");
+    };
+
+    const clearVerseBackgroundOverride = (row) => {
+        if (!(row instanceof HTMLElement)) {
+            return;
+        }
+        row.setAttribute("data-verse-background-asset-code", "");
+    };
+
     const resetSongStyleToParent = (card) => {
         if (!(card instanceof HTMLElement)) {
             return;
@@ -853,6 +901,7 @@
             songFontSizeDelta.value = "0";
         }
         clearSongColorOverrides(card);
+        clearSongBackgroundOverride(card);
     };
 
     const resetVerseStyleToParent = (row) => {
@@ -868,6 +917,7 @@
             verseFontSizeDelta.value = "0";
         }
         clearVerseColorOverrides(row);
+        clearVerseBackgroundOverride(row);
     };
 
     const confirmParentReset = async () => {
@@ -903,6 +953,10 @@
         const songBgSwatch = card.querySelector("[data-song-bg-swatch]");
         if (songPreview instanceof HTMLElement) {
             songPreview.style.background = songBgColor;
+            const backgroundOption = findBackgroundOption(card.getAttribute("data-song-background-asset-code"));
+            songPreview.style.backgroundImage = backgroundOption && backgroundOption.imageUrl ? `url('${String(backgroundOption.imageUrl).replace(/'/g, "\\'")}')` : "";
+            songPreview.style.backgroundSize = "cover";
+            songPreview.style.backgroundPosition = "center center";
         }
         if (songPreviewText instanceof HTMLElement) {
             songPreviewText.style.color = songTextColor;
@@ -945,6 +999,10 @@
             const verseBgSwatch = row.querySelector("[data-verse-bg-swatch]");
             if (versePreview instanceof HTMLElement) {
                 versePreview.style.background = verseBgColor;
+                const verseBackground = findBackgroundOption(row.getAttribute("data-verse-background-asset-code"));
+                versePreview.style.backgroundImage = verseBackground && verseBackground.imageUrl ? `url('${String(verseBackground.imageUrl).replace(/'/g, "\\'")}')` : "";
+                versePreview.style.backgroundSize = "cover";
+                versePreview.style.backgroundPosition = "center center";
                 const isVisible = verseCheckbox instanceof HTMLInputElement ? verseCheckbox.checked : true;
                 versePreview.classList.toggle("is-not-visible", !isVisible);
             }
@@ -1035,6 +1093,49 @@
 
         card.setAttribute("data-song-text-color", colorValueOrFallback(result.values?.text_color, fallbackValues.text_color));
         card.setAttribute("data-song-bg-color", colorValueOrFallback(result.values?.bg_color, fallbackValues.bg_color));
+        applySongCardPreviewStyles(card);
+        updateSongsPayloadInput();
+        refreshDirtyState();
+    };
+
+    const openBackgroundPopup = async ({ element, inheritLabel }) => {
+        if (!(element instanceof HTMLElement)) {
+            return;
+        }
+        const currentValue = String(
+            element.getAttribute("data-song-background-asset-code")
+            || element.getAttribute("data-verse-background-asset-code")
+            || ""
+        ).trim();
+        const result = await messageBox.show({
+            title: label("labelBackgroundImage"),
+            showCloseButton: true,
+            buttons: [
+                { id: "ok", label: label("okLabel"), tone: "success", validate: true },
+                { id: "cancel", label: label("cancelLabel"), tone: "warning" },
+            ],
+            fields: [
+                {
+                    id: "background_asset_code",
+                    label: label("labelBackgroundImage"),
+                    type: "select",
+                    value: currentValue,
+                    options: buildBackgroundSelectOptions(inheritLabel),
+                },
+            ],
+            enterButtonId: "ok",
+            escapeButtonId: "cancel",
+        });
+        if (result.buttonId !== "ok") {
+            return;
+        }
+        const selected = String(result.values?.background_asset_code || "").trim();
+        if (element.hasAttribute("data-song-background-asset-code")) {
+            element.setAttribute("data-song-background-asset-code", selected);
+        } else if (element.hasAttribute("data-verse-background-asset-code")) {
+            element.setAttribute("data-verse-background-asset-code", selected);
+        }
+        const card = element.closest("[data-main-song-card]");
         applySongCardPreviewStyles(card);
         updateSongsPayloadInput();
         refreshDirtyState();
@@ -1193,6 +1294,25 @@
                     applySongCardPreviewStyles(card);
                     updateSongsPayloadInput();
                     refreshDirtyState();
+                });
+            });
+
+            card.querySelectorAll("[data-song-background-popup-trigger]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const level = String(button.getAttribute("data-background-target-level") || "song");
+                    if (level === "verse") {
+                        const verseId = String(button.getAttribute("data-verse-id") || "");
+                        const row = card.querySelector(`[data-main-verse-row][data-verse-id="${verseId}"]`);
+                        await openBackgroundPopup({
+                            element: row,
+                            inheritLabel: label("sameAsSongLabel"),
+                        });
+                        return;
+                    }
+                    await openBackgroundPopup({
+                        element: card,
+                        inheritLabel: label("sameAsAnimationLabel"),
+                    });
                 });
             });
 

@@ -1,278 +1,282 @@
-# LSS remote for Animation, Functional Requirements
+# LSS Remote For Animation, Functional Requirements
 
 ## Objectif
 
-Explication des fonctionnalités de la remote, c'est-à-dire le template `lyrics_slide_show.html`.
+Ce document décrit les exigences fonctionnelles actuellement implémentées par la remote `lyrics_slide_show.html`.
 
-La porté principale de ce document est le back.
-
-Les éléments front sont sur des besoins pour la remote et non le site, son design ou sa charte.
+La portée principale est le comportement opérateur et le contrat back/front de la remote.
+Le design fin du template est documenté séparément dans `template_03.lyrics_slide_show.html.md`.
 
 ## Vocabulaire
 
-Remote : c'est l'interface HTML avec ses boutons sur le template `lyrics_slide_show.html`.
+Remote :
+- interface HTML opérateur du template `lyrics_slide_show.html`.
 
-Diapo en cours : C'est la diapo en mémoire de la remote. Si on demande d'afficher la 'diapo en cours' alors c'est celle-là qu'il faut afficher.
+Diapo en cours :
+- diapo actuellement projetée sur l'écran d'affichage.
 
-Ecran d'affichage : l'écran secondaire cible de la remote.
+Chant sélectionné :
+- chant préparé localement dans la remote pour la prochaine navigation, même s'il n'est pas encore projeté.
 
-## Echange entre la remote et les écrans d'affichage
+Écran d'affichage :
+- page `lyrics_slide_show_display.html` ouverte dans une autre fenêtre du navigateur et synchronisée avec la remote.
 
-Il peut y avoir plusieurs écrans d'affichage et il doivent être synchrone.
+## Échange Entre La Remote Et Les Écrans D'affichage
 
-La remote (smart) envoi des payload assez simple pour que la page d'affichage (dump) n'est rien à faire.
-Cependant, la remote n'envoi que du paramétrage pas du HTML.
+Plusieurs écrans d'affichage peuvent être ouverts simultanément.
+Ils sont synchronisés par un bridge navigateur local :
+- `BroadcastChannel` si disponible,
+- fallback `localStorage`.
 
-Paramétrage :
-- couleur du fond
-- couleur de la police
-- police d'écriture
-- poids de la police (`normal` / `bold`)
-- marge (gauche = droite)
-- alignement du texte
-- Texte à afficher
+La remote envoie des `frames` prêtes à afficher :
+- `idle`,
+- `slide`,
+- `black`,
+- `qr`,
+- `f11-reminder` au moment de l'ouverture d'un nouvel écran.
 
-> Note : Le texte envoyé est du texte brut, pas du HTML.
-> Côté display, il est injecté via textContent (pas innerHTML), puis l’affichage multi-lignes est géré par CSS (white-space: pre-wrap).
-> Donc les <br> sont traités comme des caractères texte, pas comme des retours HTML.
-> Le payload peut en revanche transporter un style résolu pour dire si la slide est à afficher en gras ou non.
+Le payload ne transporte pas de HTML de paroles.
+Le texte projeté est du texte brut injecté côté display via `textContent`.
 
-## Template général de la remote
+Le style résolu envoyé à l'écran d'affichage inclut :
+- couleur de fond,
+- couleur du texte,
+- police,
+- poids de police (`normal` / `bold`),
+- taille de police,
+- padding horizontal,
+- image de fond.
 
-Les panneaux sont tous les uns au dessus des autres et prennent 100% de la largeur.
+## Structure Générale De La Remote
 
-### Panneau 'en-tête'
+Les panneaux sont empilés verticalement sur toute la largeur utile.
 
-Ce panneau affiche des informations générale. Il disparait avec le scroll.
+### Panneau D'en-tête
 
-### Barre de fonctions
+Affiche le contexte d'animation :
+- date/heure,
+- titre,
+- description,
+- identifiant de session écran,
+- chant projeté,
+- diapo projetée,
+- état résumé du scroll et de la visibilité des refrains.
 
-Ce panneau a un design légèrement différent. Il monte avec le scroll mais reste en haut de la page sans disparaitre. Les autres panneaux passent en dessous de lui.
+Ce panneau scroll normalement avec la page.
 
-Il est composé d'une grille à deux lignes responsives contenant les boutons principaux de la remote.
+### Barre De Fonctions
+
+La barre d'actions est sticky en haut de page.
+Elle reste visible pendant le scroll.
+
+Elle contient deux lignes responsives de boutons.
+
 Première ligne :
-- ⚫ BLACK MODE
-- 🔙 Diapo précédente
-- 🎼 Refrain
-- 🔜 Diapo suivante
-- ⏮️
-- ⏭️
+- ⚫ `BLACK MODE`
+- 🔙 `Diapo précédente`
+- 🎼 `Refrain`
+- 🔜 `Diapo suivante`
+- ⏮️ `<chant précédent>`
+- ⏭️ `<chant suivant>`
 
 Deuxième ligne :
-- 🖥️📽️ Ouvrir un second écran
-- ⌨️👢 Raccourcis clavier
-- ↕️ / 🧱 Scroll
-- 🎼🔼 / 🎼🔽 Refrains
-- 📱 QR-code
+- 🖥️📽️ `Ouvrir un second écran`
+- ⌨️👢 `Raccourcis clavier (personnalisable)`
+- ↕️ / 🧱 `Scroll` / `Stop scroll`
+- 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
+- QR embarqué ou fallback 📱 `QR-code`
 
-### Prévisualidation
+### Prévisualisation
 
-Panneau affichant la slide en cours et la slide suivante.
+Un panneau affiche :
+- la diapo projetée en cours,
+- la prochaine diapo calculée localement.
 
-### Panneaux chanson
+### Panneaux Chant
 
-Ces panneaux affichent une chanson à la fois avec une grille responsive de 3 colonnes pour chaque couplet/refrain.
+La remote affiche un panneau par chant avec une grille responsive de cartes de diapos.
+
+Les refrains peuvent être masqués dans cette grille côté remote, sans impact sur l'écran projeté.
 
 ## Fonctionnalités
 
 ### BLACK MODE
 
-#### Label à afficher dans la remote
+Position :
+- bouton 1 de la première ligne.
 
-⚫ BLACK MODE
+Action :
+- si l'état courant n'est pas `black`, l'écran d'affichage passe en frame `black`,
+- si l'état courant est `black`, un nouveau clic revient à la diapo projetée normale,
+- si le QR public était affiché, l'activation du `BLACK MODE` force `qrMode = false`.
 
-#### Positionnement sur la remote
+État visuel remote :
+- le bouton actif passe en rouge sur rouge très foncé avec bordure rouge,
+- une surcouche visuelle fixe encadre toute la page en rouge,
+- cette surcouche est purement visuelle (`pointer-events: none`) et ne bloque aucun clic.
 
-Bouton 1 de la première barre de fonction.
+### Diapo Précédente
 
-#### Action
+Position :
+- bouton 2 de la première ligne.
 
-L'écran d'affichage passe de son état à un écran 100% noir. Si le mode en cours est `BLACK MODE` alors il faut revenir vers la diapo de l'animation 'en cours'.
+Action :
+- navigue dans les slides du chant sélectionné,
+- boucle sur la dernière slide du même chant si nécessaire.
 
-Si l'écran d'affichage affiche le QR-code, alors il faut afficher un écran 100% noir et un deuxième clic revient vers la diapo de l'animation 'en cours' et non le QR-code.
+### Refrain
 
-### Diapo précédente
-
-#### Label à afficher dans la remote
-
-🔙 Diapo précédente
-
-#### Positionnement sur la remote
-
-Bouton 2 de la première barre de fonction.
-
-#### Action
-
-Affiche la diapo précédente dans la chanson en cours de projection.
-
-Si la 'diapo en cours' est la première à être affichée dans une chanson alors la diapo précédente est la dernière diapo de la même chanson en-cour de projection.
-
-### Diapo refrain
-
-#### Label à afficher dans la remote
-
-🎼 Refrain
-
-#### Positionnement sur la remote
-
-Bouton 3 de la première barre de fonction.
-
-#### Action
-
-Le clic sur ce bouton envoi directement vers la première diapo refrain de la chanson en cours sauf si on est dans un des cas particuliers suivants :
-- la chanson possède plusieurs diapos refrain et l'affichage est déjà sur une des diapos refrain. Alors un clic sur ce bouton affiche la diapo refrain suivante.
-- si la diapo en cours d'affichage est la dernière diapo refrain à afficher, il faut afficher la première diapo refrain.
-- si la chanson n'a qu'une seule diapo refrain, alors tous les clic sur ce bouton afficheront la diapo refrain
-
-Note importante, le clic sur cette fonction n'affecte jamais le positionnement de la 'diapo en cours'. C'est une fonction pour reprendre rapidement le refrain pas pour sauter une étape de la chanson.
-
-### Diapo suivante
-
-#### Label à afficher dans la remote
-
-🔜 Diapo suivante
-
-#### Positionnement sur la remote
-
-Bouton 4 de la première barre de fonction.
-
-#### Action
-
-Affiche la diapo suivante dans la chanson en cours de projection.
-
-Si la 'diapo en cours' est la dernière à être affichée dans une chanson alors la diapo suivante est la première diapo de la même chanson en-cour de projection.
-
-### Chant précédent
-
-#### Label à afficher dans la remote
-
-⏮️ <titre de la chanson précédente>
-
-#### Positionnement sur la remote
-
-Bouton 5 de la première barre de fonction.
-
-#### Action
-
-Le changement n'est pas instantané sur l'écran d'affichage. Le clic sur cette option sélectionne la chanson précédente dans l'ordre de la playlist. Si la chanson en cours est la première, le bouton n'a pas d'effet.
-
-Cependant, les autres boutons sont près à afficher les diapos de la nouvelle chanson sélectionnée. Ceci permet de préparer la suite tout en affichant le 'en cours'.
-
-### Chant suivant
-
-#### Label à afficher dans la remote
-
-<titre de la chanson précédente> ⏭️
-
-#### Positionnement sur la remote
-
-Bouton 6 de la première barre de fonction.
-
-#### Action
-
-Le changement n'est pas instantané sur l'écran d'affichage. Le clic sur cette option sélectionne la chanson suivante dans l'ordre de la playlist. Si la chanson en cours est la dernière, le bouton n'a pas d'effet.
-
-Cependant, les autres boutons sont près à afficher les diapos de la nouvelle chanson sélectionnée. Ceci permet de préparer la suite tout en affichant le 'en cours'.
-
-### Ouverture d'un second écran
-
-#### Label à afficher dans la remote
-
-🖥️📽️ Ouvrir un second écran
-
-#### Positionnement sur la remote
-
-Bouton 1 de la deuxième barre de fonction.
-
-#### Action
-
-Une nouvelle fenêtre navigateur est ouverte avec un écran noir écrit en gris clair RGB(200,200,200) avec le message "APPUYEZ SUR F11 SUR CETTE ÉCRAN" même si une animation est en cours.
-
-Plusieurs écrans d'affichage peuvent être affiché. Ils seront synchronisés.
-
-### Raccourcis clavier
-
-#### Label à afficher dans la remote
-
-⌨️👢 Raccourcis clavier
-
-#### Positionnement sur la remote
-
-Bouton 2 de la deuxième barre de fonction.
-
-#### Action
-
-Affiche une popup avec une croix et le bouton "OK". La popup liste tous les raccourcis pour utiliser la popup.
-
-### Blocage du scroll
-
-#### Label à afficher dans la remote
-
-- ↕️ Scroll
-ou
-- 🧱 Stop scroll
-
-#### Positionnement sur la remote
-
-Bouton 3 de la deuxième barre de fonction.
-
-#### Action
-
-Bouton toggle switchant de :
-- ↕️ Scroll
-- 🧱 Stop scroll
-
-Quand l'affichage est "↕️ Scroll", le scrolling est possible.
-Quand l'affichage est "🧱 Stop scroll", le scrolling est impossible.
-
-Ceci est utile pour utiliser le bouton du clavier "flèche vers le haut" ou "flèche vers le bas" pour changer de chansons sans que le scroll soit modifié.
-
-Lorsqu'un nouvel écran d'affichage est créé, ce bouton bacule automatiquement sur "🧱 Stop scroll".
-
-### Affichage du refrain
-
-#### Label à afficher dans la remote
-
-- 🎼🔼 Refrain
-ou
-- 🎼🔽 Pas de refrain
-
-#### Positionnement sur la remote
-
-Bouton 4 de la deuxième barre de fonction.
-
-#### Action
-
-Bouton toggle switchant de :
-- 🎼🔼 Refrain
-- 🎼🔽 Pas de refrain
-
-Ce bouton permet d'afficher ou de masquer les cartes 'refrain' dans les panneaux 'chanson'.
-Ceci permet d'avoir moins de chose à afficher dans la remote.
-
-> Attention : les refrains sont toujours affichés et affichables dans l'écran d'affichage
+Position :
+- bouton 3 de la première ligne.
+
+Action :
+- va vers le premier refrain du chant sélectionné,
+- si plusieurs refrains existent et qu'un refrain est déjà projeté, l'action cycle sur les refrains du chant,
+- ce curseur de refrain n'altère pas la logique générale de progression du chant.
+
+### Diapo Suivante
+
+Position :
+- bouton 4 de la première ligne.
+
+Action :
+- navigue dans les slides du chant sélectionné,
+- boucle sur la première slide du même chant si nécessaire.
+
+### Chant Précédent
+
+Position :
+- bouton 5 de la première ligne.
+
+Action :
+- sélectionne le chant précédent dans la playlist,
+- ne projette pas immédiatement la première slide,
+- prépare la navigation suivante sur ce chant.
+
+### Chant Suivant
+
+Position :
+- bouton 6 de la première ligne.
+
+Action :
+- sélectionne le chant suivant dans la playlist,
+- ne projette pas immédiatement la première slide,
+- prépare la navigation suivante sur ce chant.
+
+### Ouverture D'un Second Écran
+
+Position :
+- bouton 1 de la deuxième ligne.
+
+Action :
+- ouvre une nouvelle fenêtre navigateur sur `lyrics_slide_show_display`,
+- injecte un message initial de rappel F11,
+- plusieurs écrans d'affichage peuvent coexister et restent synchronisés.
+
+### Raccourcis Clavier
+
+Position :
+- bouton 2 de la deuxième ligne.
+
+Label :
+- `⌨️👢 Raccourcis clavier (personnalisable)`.
+
+Action :
+- ouvre une popup `window.LSSMessageBox` listant les raccourcis effectifs,
+- le premier bouton de cette popup est `Personnaliser les raccourcis`.
+
+Personnalisation :
+- les invités voient le bouton mais obtiennent un message indiquant qu'une connexion est nécessaire,
+- un membre connecté peut enregistrer des raccourcis personnalisés en base,
+- le formulaire de personnalisation affiche 3 slots readonly par action,
+- cliquer un slot arme une capture clavier,
+- la touche simple suivante remplit ce slot,
+- une petite croix efface un slot,
+- `Escape` n'est jamais personnalisable,
+- laisser tous les slots vides pour une action désactive cette action côté utilisateur,
+- `Revenir aux raccourcis du site` recharge les raccourcis site et supprime l'override persistant à l'enregistrement.
+
+Règles de validation :
+- maximum 3 touches par action,
+- aucune combinaison (`Ctrl+`, `Alt+`, `Meta+`, `Shift+`) n'est autorisée,
+- les doublons inter-actions sont rejetés à partir de la seconde occurrence,
+- la sauvegarde est partielle : les touches valides non conflictuelles sont conservées.
+
+Raccourcis site par défaut :
+- `Esc`, `M` : `BLACK MODE`
+- `P`, `↑` : `Previous slide`
+- `Espace`, `↓` : `Next slide`
+- `R`, `C` : `Chorus`
+- `O` : `Display current slide window`
+- `F`, `←` : `Previous song`
+- `Enter`, `N`, `→` : `Next song`
+- `A`, `D` : `Display/hide choruses`
+- `L` : `Scroll on ↕️ or not 🧱`
+- `Q` : `📱 QR code for lyrics`
+
+### Blocage Du Scroll
+
+Position :
+- bouton 3 de la deuxième ligne.
+
+États :
+- `↕️ Scroll`
+- `🧱 Stop scroll`
+
+Action :
+- toggle local autorisant ou bloquant le scroll navigateur sur certaines touches physiques,
+- quand le blocage est actif, la remote empêche le scroll navigateur sur :
+  - `ArrowUp`,
+  - `ArrowDown`,
+  - `ArrowLeft`,
+  - `ArrowRight`,
+  - `Space`,
+  - `PageUp`,
+  - `PageDown`.
+
+Notes :
+- ce blocage reste actif même si le focus est sur un bouton de la toolbar de la remote,
+- les popups `LSSMessageBox` continuent en revanche à suspendre les raccourcis de la remote.
+
+### Affichage Des Refrains Dans La Grille
+
+Position :
+- bouton 4 de la deuxième ligne.
+
+États :
+- `🎼🔼 Refrain`
+- `🎼🔽 Pas de refrain`
+
+Action :
+- affiche ou masque les cartes de refrains dans la grille de la remote,
+- n'a aucun effet sur le rendu projeté : les refrains restent toujours disponibles sur l'écran d'affichage.
 
 ### QR-code
 
-#### Label à afficher dans la remote
+Position :
+- bouton 5 de la deuxième ligne.
 
-QR-code généré ou "📱 QR-code"
+Action :
+- affiche sur l'écran d'affichage une frame `qr` avec l'URL publique smartphone et son QR code,
+- si l'état courant est `qr`, un nouveau clic revient à la diapo projetée normale,
+- si le `BLACK MODE` était actif, l'activation du QR force `blackMode = false`.
 
-#### Positionnement sur la remote
+État visuel remote :
+- le bouton actif passe en rouge sur rouge très foncé avec bordure rouge,
+- si un QR PNG base64 est disponible, il est affiché directement dans le bouton ; sinon le fallback `📱 QR-code` est utilisé.
 
-Bouton 5 de la deuxième barre de fonction.
+## Comportements Clavier Et Focus
 
-#### Action
+Les raccourcis globaux restent actifs lorsque le focus est sur :
+- un bouton de la toolbar,
+- une carte de diapo,
+- un panneau preview focusable.
 
-S'il est impossible d'afficher une animation si l'utilisateur n'a pas les droits, cependant, une url spécifique permet d'aller vers une page affichant l'intégralité des textes des chansons de la playlist. Ce lien est convertie en QR-code.
+Ils sont suspendus lorsque le focus est dans une popup `LSSMessageBox`.
 
-Si l'écran d'affichage affiche le BLACK MODE, alors il faut afficher l'écran avec le lien et le QR-code et un deuxième clic revient vers la diapo de l'animation 'en cours' et non le BLACK MODE.
+## Lien Smartphone Public
 
-Ce QR-code est affiché sur le bouton et s'affiche en grand sur l'écran d'affichage, exemple :
-"""
-    <body>
-        <div id="slideContent" class="full-screen" style="text-align: center; color: white; background-color: black;">QR code pour les paroles des chants<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcIAAAHCAQAAAABUY/ToAAADh0lEQVR4nO2cXWrkOhCFT40M/ShDFpClyDu4SwqzM3spvYCA/BiQOfdBP5adBIa5adKde+qhu93Wh20oVKeqJBvxd7b8+ksQEClSpEiRIkWKvD/Sig3AYmZYzMwmoBwCgE1rHTV9892KvC9yyF9hBoD1CQhxhAXmw2SAS8A6AvkXAPuv1xT5M8m1zC82+QT+HgHAJ3DGZjZ55vQtT1VfdU2RP5RcbADCdYDZCCCQzP/d8JoifxYZoqPZcwKAzczGzUimm15T5EOTIEkikCSjI+ATEJjA2bcTTCCjYzd4fqznFHlzcjGzEryuFwLrhfZyHQCsA2xaL7QJW07Lvv9uRd4VmYVO1/BYRgcCb8ZldPmwDjm2RR7rOUXejqyxLAIAHMkIcG4BrUkhch+iWCayt+IRvsqeGajuEx13ZVTO+gT5kMijVR9KQIgAZzj281BW0glos5Q0tciD1cLPeqEtz0XxWLgOINYRBp9gYXY0+FcjPFWnFnmyfR4qYSwCOcGHT00FVQsRmodEnixr6qKVm4j2VWfvlSI0KSQ9JPJg1YfQ5qGih4qmzh9teBZK8iGRnRUfqr5RP5qroCVnAPoTj/WcIm9Hvut1hOhYsrGI4jTF2ln5kMjeiktENClU5xx4kjNQ9RCg+pDIj6x4BFwW1iWq1cko66FucIRimciT1VjW9FDW1K09X12q5GpU317k2WquXmpBta/R+h+xTFBVXSu3F3m2Mg9Fd14r1A0p9aHmV/Ihkb1VTd2cxpfW6u40p9q1YpnIo/U1Rp+6WFYHuIMyUiwT+QkZSOY1iy/XATatQ7d+iPNqBqyXMmT67rsVeVdk69s/JcC/DsS6GeDfjIs5GgAQcKn07de2nPGxnlPk7chuHWOXg+Vu/V5PRF1YpPqQyM/JUl7k7N/y6nwyIm8ys5cIAP6t2634sM8p8svJbvNhjVsAgW3A8s9r/sVldMny2PUpKZaJPBqP1mXve0CbgSq71S8T+TG5v/ejtFuxmU17Dw0up2R5E/X0zXcr8r7I9/tcT0s84LoqtmqMIj+wPS/rWqvw/eboOjcBWj8k8g/IEDcrKVl9cUPp6kdHLM8JNn31NUX+LHIZHW3KjXogb7W3sWb+vGq/vciT1dzeE8hF6HXI2buFq7Xt99uQX4sWZu0vE3m29/3V42agWE7sC2KlqUUezPSOc5EiRYoUKVLk/5z8FwKfZCI3fDlgAAAAAElFTkSuQmCC" alt="📱 Erreur lors de la génération du QR code" style="height: 100%;" class="object-contain"></div>
-
-
-    </body>
-"""
+La remote construit une URL publique `lyrics_slide_show_public` pour lecture smartphone :
+- sans synchronisation temps réel avec la diapo projetée,
+- avec navigation par chant,
+- avec réglages de lecture locaux.

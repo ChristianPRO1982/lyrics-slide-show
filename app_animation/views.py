@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import base64
 import io
+import random
 import re
 import uuid
 
 from django.contrib import messages
-from django.conf import settings
 from django.db import transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user
+from app_member.services import can_manage_moderator_popup
 from app_song.rendering import SongRenderSettings, render_song_blocks
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
@@ -23,8 +24,27 @@ from .font_catalog import (
     list_font_choices,
     list_font_previews,
 )
-from .forms import AnimationForm
-from .models import Animation
+from .forms import AnimationForm, BackgroundImageUploadForm
+from .models import Animation, BackgroundImage, BackgroundImageStatus
+from .services.background_images import (
+    active_background_image_options,
+    build_background_context_slug,
+    build_image_validation_config,
+    clear_background_image_references,
+    count_background_image_references,
+    delete_image_file,
+    ensure_background_image_dirs,
+    fetch_genre_options,
+    generate_asset_code,
+    list_background_images_for_view,
+    move_image_to_status,
+    normalize_genre_ids,
+    normalize_member_id,
+    relative_stored_path,
+    replace_image_genres,
+    resolve_background_asset_url,
+    store_uploaded_image_file,
+)
 from .services.render_bundle import build_animation_render_bundle
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.song_edits import (
@@ -34,6 +54,7 @@ from .services.song_edits import (
     parse_songs_payload,
     serialize_songs_payload,
 )
+from .utils import _open_image, validate_image
 from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
@@ -127,6 +148,251 @@ def animations(request: HttpRequest) -> HttpResponse:
     )
 
 
+def _translate_image_validation_error(error_code: str, cfg: dict[str, object]) -> str:
+    if error_code == "too_large":
+        max_bytes = int(cfg.get("max_bytes", 0))
+        max_mb = max_bytes / (1024 * 1024) if max_bytes else 0
+        return _("L'image dépasse la taille autorisée (%(size).1f Mo maximum).") % {
+            "size": max_mb
+        }
+    if error_code == "invalid_extension":
+        return _("L'extension de cette image n'est pas autorisée.")
+    if error_code == "invalid_mime":
+        return _("Le type MIME de cette image n'est pas autorisé.")
+    if error_code == "invalid_image":
+        return _("Le fichier envoyé n'est pas une image valide.")
+    if error_code == "too_small":
+        return _("L'image est trop petite pour être utilisée en fond.")
+    if error_code == "too_large_dimensions":
+        return _("L'image dépasse les dimensions autorisées.")
+    if error_code == "invalid_ratio":
+        return _("Le ratio de l'image n'est pas autorisé.")
+    return _("Cette image n'est pas conforme.")
+
+
+def _background_image_popup_options() -> list[dict[str, object]]:
+    return [
+        {
+            "value": item["asset_code"],
+            "label": " | ".join(
+                part
+                for part in [
+                    str(item["title"]),
+                    str(item["target"]),
+                    ", ".join(item["genres"]) if item["genres"] else "",
+                ]
+                if part
+            ),
+            "imageUrl": item["url"],
+            "title": item["title"],
+            "target": item["target"],
+            "genres": list(item["genres"]),
+        }
+        for item in active_background_image_options()
+    ]
+
+
+def background_images(request: HttpRequest) -> HttpResponse:
+    is_moderator = bool(can_manage_moderator_popup(request.user))
+    if not is_moderator:
+        raise Http404
+
+    query = str(request.GET.get("q") or "").strip()
+    genre_ids = normalize_genre_ids(request.GET.getlist("genre_ids"))
+    moderation_quick = bool(
+        str(request.GET.get("moderation_quick") or "").strip() == "1"
+    )
+    inactive_quick = bool(str(request.GET.get("inactive_quick") or "").strip() == "1")
+
+    if request.method == "POST":
+        image = get_object_or_404(
+            BackgroundImage, image_id=int(request.POST.get("image_id") or 0)
+        )
+        action = str(request.POST.get("action") or "").strip()
+        redirect_url = reverse("background_images")
+        query_parts: list[str] = []
+        if moderation_quick:
+            query_parts.append("moderation_quick=1")
+        if inactive_quick:
+            query_parts.append("inactive_quick=1")
+        if query:
+            query_parts.append(f"q={query}")
+        for genre_id in genre_ids:
+            query_parts.append(f"genre_ids={genre_id}")
+        if query_parts:
+            redirect_url = f"{redirect_url}?{'&'.join(query_parts)}"
+
+        with transaction.atomic():
+            if action == "validate" and image.status == BackgroundImageStatus.PENDING:
+                move_image_to_status(image, BackgroundImageStatus.INACTIVE)
+                messages.success(
+                    request, _("L'image a été validée puis placée en inactif.")
+                )
+            elif (
+                action == "invalidate" and image.status == BackgroundImageStatus.PENDING
+            ):
+                delete_image_file(image)
+                image.delete()
+                messages.success(request, _("L'image en attente a été supprimée."))
+            elif (
+                action == "activate" and image.status == BackgroundImageStatus.INACTIVE
+            ):
+                move_image_to_status(image, BackgroundImageStatus.ACTIVE)
+                messages.success(request, _("L'image a été activée."))
+            elif (
+                action == "deactivate" and image.status == BackgroundImageStatus.ACTIVE
+            ):
+                reference_counts = count_background_image_references(image.asset_code)
+                if any(reference_counts.values()):
+                    messages.warning(
+                        request,
+                        _(
+                            "L'image était utilisée dans %(animations)s animation(s), %(songs)s chant(s) d'animation et %(verses)s couplet(s). Les références ont été supprimées."
+                        )
+                        % reference_counts,
+                    )
+                clear_background_image_references(image.asset_code)
+                move_image_to_status(image, BackgroundImageStatus.INACTIVE)
+                messages.success(request, _("L'image a été désactivée."))
+            elif action == "delete" and image.status == BackgroundImageStatus.INACTIVE:
+                delete_image_file(image)
+                image.delete()
+                messages.success(
+                    request, _("L'image inactive a été supprimée définitivement.")
+                )
+            elif action:
+                messages.error(
+                    request, _("Action impossible pour l'état courant de l'image.")
+                )
+        return redirect(redirect_url)
+
+    background_images_list = list_background_images_for_view(
+        include_all_statuses=True,
+        query=query,
+        genre_ids=genre_ids,
+        moderation_quick=moderation_quick,
+        inactive_quick=inactive_quick,
+    )
+    summary_candidates = list_background_images_for_view(
+        include_all_statuses=False,
+        query="",
+        genre_ids=[],
+        moderation_quick=False,
+        inactive_quick=False,
+    )
+    summary_background_images = random.sample(
+        summary_candidates,
+        min(15, len(summary_candidates)),
+    )
+
+    return render(
+        request,
+        "animation/background_images.html",
+        {
+            "background_images": background_images_list,
+            "summary_background_images": summary_background_images,
+            "genre_options": fetch_genre_options(),
+            "selected_genre_ids": set(genre_ids),
+            "query": query,
+            "is_moderator": is_moderator,
+            "moderation_quick_active": moderation_quick,
+            "inactive_quick_active": inactive_quick,
+        },
+    )
+
+
+def upload_background_image(request: HttpRequest) -> HttpResponse:
+    if not getattr(request.user, "is_authenticated", False):
+        return redirect("login")
+
+    ensure_background_image_dirs()
+    if request.method == "POST":
+        form = BackgroundImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image_file = form.cleaned_data["image_file"]
+            validation_cfg = build_image_validation_config(
+                getattr(request, "LANGUAGE_CODE", None)
+            )
+            validation_error = validate_image(image_file, validation_cfg)
+            if validation_error:
+                form.add_error(
+                    "image_file",
+                    _translate_image_validation_error(validation_error, validation_cfg),
+                )
+            else:
+                genre_ids = normalize_genre_ids(form.cleaned_data.get("genre_ids", []))
+                context_slug = build_background_context_slug(genre_ids)
+                width, height, _fmt = _open_image(image_file)
+
+                def create_background_image(
+                    filename: str, destination
+                ) -> BackgroundImage:
+                    return BackgroundImage.objects.create(
+                        asset_code=generate_asset_code(),
+                        storage_filename=filename,
+                        title=form.cleaned_data["title"].strip(),
+                        target=form.cleaned_data["target"].strip(),
+                        description=str(
+                            form.cleaned_data.get("description") or ""
+                        ).strip()
+                        or None,
+                        status=BackgroundImageStatus.PENDING,
+                        stored_path=relative_stored_path(
+                            BackgroundImageStatus.PENDING, filename
+                        ),
+                        original_name=str(image_file.name or "")[:255],
+                        extension=destination.suffix.lower(),
+                        mime=str(image_file.content_type or "")[:100],
+                        size_bytes=int(getattr(image_file, "size", 0)),
+                        width=int(width or 0),
+                        height=int(height or 0),
+                        member_id=normalize_member_id(
+                            get_member_id_from_user(request.user)
+                        ),
+                    )
+
+                try:
+                    _filename, _destination, background_image = (
+                        store_uploaded_image_file(
+                            image_file,
+                            status=BackgroundImageStatus.PENDING,
+                            context_slug=context_slug,
+                            on_after_write=create_background_image,
+                        )
+                    )
+                except RuntimeError:
+                    form.add_error(
+                        "image_file",
+                        _("Impossible d'enregistrer l'image pour le moment."),
+                    )
+                    return render(
+                        request,
+                        "animation/upload_background_image.html",
+                        {
+                            "form": form,
+                        },
+                    )
+                replace_image_genres(
+                    background_image,
+                    genre_ids,
+                )
+                messages.success(
+                    request,
+                    _("L'image a été envoyée pour modération."),
+                )
+                return redirect("background_images")
+    else:
+        form = BackgroundImageUploadForm()
+
+    return render(
+        request,
+        "animation/upload_background_image.html",
+        {
+            "form": form,
+        },
+    )
+
+
 def animation_history(request: HttpRequest) -> HttpResponse:
     try:
         selected_group = get_selected_group_or_404(request)
@@ -171,6 +437,7 @@ def add_animation(request: HttpRequest) -> HttpResponse:
         {
             "selected_group": selected_group,
             "form": form,
+            "background_image_options": _background_image_popup_options(),
         },
     )
 
@@ -287,6 +554,8 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "popup_data": {
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
+                "backgroundImageOptions": _background_image_popup_options(),
+                "backgroundImageGenres": fetch_genre_options(),
                 # Backward compatibility key kept while consumers migrate.
                 "songCatalog": all_song_catalog,
                 "advancedSongCatalog": advanced_song_catalog,
@@ -306,15 +575,6 @@ def _truncate_excerpt(text: str, max_chars: int = 50) -> str:
     if len(flat) <= max_chars:
         return flat
     return f"{flat[:max_chars].rstrip()}[...]"
-
-
-def _resolve_background_url(background_asset_code: str | None) -> str:
-    value = str(background_asset_code or "").strip()
-    if not value:
-        return ""
-    if value.startswith(("http://", "https://", "/")):
-        return value
-    return f"{settings.MEDIA_URL}{value}"
 
 
 def _build_qr_png_base64(value: str) -> str:
@@ -338,7 +598,7 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
     card_groups: list[dict[str, object]] = []
 
     for index, slide in enumerate(rendered_slides):
-        background_url = _resolve_background_url(slide.style.background_asset_code)
+        background_url = resolve_background_asset_url(slide.style.background_asset_code)
         if background_url:
             background_urls.add(background_url)
         slide_payload = {
