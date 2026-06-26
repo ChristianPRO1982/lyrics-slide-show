@@ -1,3 +1,21 @@
+# [2.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.10.0...v2.11.0) (2026-06-26)
+
+
+### Bug Fixes
+
+* Add storage_filename field to BackgroundImage model and implement naming conventions for uploaded images ([d35b196](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d35b19641cd3bf1716f014d6e09c245cb6dd8b28))
+* Enhance animation templates with navigation section and update section titles ([1a88bba](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1a88bbac64effa2caaaee7ce8939af195bb9e392))
+* Refactor animation actions template and update styles for improved layout ([e2adb2d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e2adb2df07cda306da02a5f1bffbb5a7081f6dcb))
+* Update BackgroundImageUploadForm to include placeholder for target field and adjust content block structure in template ([786acd1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/786acd19bd8609b76b2b025875d044f800390bb1))
+
+
+### Features
+
+* Add background image support for animations ([ff6ad9e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ff6ad9edb1190f01c68df37e0260f2aca6ea7123))
+* Enhance background image interaction with preview functionality and improve styling ([b8c74f0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b8c74f06cdfbdfcd4902ff7ee0d861e9430205b3))
+* Enhance background images page with summary grid and search functionality ([fce7204](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/fce720413090a7f4ade2cc8253a5625c109a62ce))
+* Implement image upload handling with retries for storage name collisions ([c2c55be](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c2c55be390adc7b00b11eb7db71393bff31b5313))
+
 # [2.10.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.9.5...v2.10.0) (2026-06-25)
 
 
