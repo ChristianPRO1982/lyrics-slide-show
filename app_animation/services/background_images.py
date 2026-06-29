@@ -244,6 +244,26 @@ def fetch_genre_options() -> list[dict[str, object]]:
     ]
 
 
+def fetch_target_options() -> list[dict[str, object]]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT target_id, name, sort_order
+            FROM "common"."targets"
+            ORDER BY sort_order, target_id
+            """
+        )
+        rows = cursor.fetchall()
+    return [
+        {
+            "id": int(row[0]),
+            "name": str(row[1] or "").strip(),
+            "sort_order": int(row[2]),
+        }
+        for row in rows
+    ]
+
+
 def fetch_genre_labels(genre_ids: set[int]) -> dict[int, str]:
     if not genre_ids:
         return {}

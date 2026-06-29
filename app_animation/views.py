@@ -7,14 +7,14 @@ import re
 import uuid
 
 from django.contrib import messages
-from django.db import transaction
+from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from app_group.services import get_member_id_from_user
+from app_group.services import get_member_id_from_user, get_selected_group_state
 from app_member.services import can_manage_moderator_popup
 from app_song.rendering import SongRenderSettings, render_song_blocks
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
@@ -35,6 +35,7 @@ from .services.background_images import (
     delete_image_file,
     ensure_background_image_dirs,
     fetch_genre_options,
+    fetch_target_options,
     generate_asset_code,
     list_background_images_for_view,
     move_image_to_status,
@@ -75,6 +76,18 @@ try:
     import qrcode
 except Exception:  # pragma: no cover - optional dependency in dev envs
     qrcode = None
+
+
+TARGET_ROW_FIELD_PATTERN = re.compile(
+    r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
+)
+
+
+def _safe_int(value: str | None, fallback: int) -> int:
+    try:
+        return int(str(value or "").strip())
+    except (TypeError, ValueError):
+        return fallback
 
 
 def _shortcut_action_labels() -> dict[str, str]:
@@ -192,6 +205,144 @@ def _background_image_popup_options() -> list[dict[str, object]]:
     ]
 
 
+def _fetch_target_rows() -> list[dict[str, object]]:
+    return fetch_target_options()
+
+
+def _parse_target_rows(post_data) -> tuple[str, str, dict[int, dict[str, object]]]:
+    new_name = str(post_data.get("new_name") or "").strip()
+    new_sort_order = str(post_data.get("new_sort_order") or "").strip()
+    rows_by_id: dict[int, dict[str, object]] = {}
+
+    for key, value in post_data.items():
+        match = TARGET_ROW_FIELD_PATTERN.match(key)
+        if not match:
+            continue
+        target_id = int(match.group("target_id"))
+        field = match.group("field")
+        row = rows_by_id.setdefault(
+            target_id,
+            {"name": "", "sort_order": "", "delete": False},
+        )
+        if field == "delete":
+            row["delete"] = str(value or "").strip().lower() in {"1", "true", "on"}
+        else:
+            row[field] = str(value or "").strip()
+
+    return new_name, new_sort_order, rows_by_id
+
+
+def _save_target_rows(request: HttpRequest) -> None:
+    new_name, new_sort_order, parsed_rows = _parse_target_rows(request.POST)
+    success_parts: list[str] = []
+    error_parts: list[str] = []
+
+    created_count = 0
+    updated_count = 0
+    deleted_count = 0
+
+    existing_rows = _fetch_target_rows()
+    existing_by_id = {int(item["id"]): item for item in existing_rows}
+
+    if new_name or new_sort_order:
+        if new_name and new_sort_order:
+            sort_order_value = _safe_int(new_sort_order, fallback=0)
+            if str(sort_order_value) != new_sort_order:
+                error_parts.append(
+                    _("Pour créer une cible, l'ordre doit être un entier valide.")
+                )
+            else:
+                try:
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'INSERT INTO "common"."targets" ("name", "sort_order") VALUES (%s, %s)',
+                            [new_name, sort_order_value],
+                        )
+                    created_count += 1
+                except IntegrityError:
+                    error_parts.append(
+                        _('Création impossible pour la cible "%(name)s".')
+                        % {"name": new_name}
+                    )
+        else:
+            error_parts.append(
+                _("Pour créer une cible, renseignez à la fois le nom et l'ordre.")
+            )
+
+    for target_id, values in parsed_rows.items():
+        existing = existing_by_id.get(target_id)
+        if not existing:
+            continue
+
+        if bool(values.get("delete")):
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        'DELETE FROM "common"."targets" WHERE target_id = %s',
+                        [target_id],
+                    )
+                deleted_count += 1
+            except Exception:
+                error_parts.append(
+                    _("Suppression impossible pour la cible #%(target_id)s.")
+                    % {"target_id": target_id}
+                )
+            continue
+
+        new_name_value = str(values.get("name") or "").strip()
+        new_sort_order_value = str(values.get("sort_order") or "").strip()
+        if not new_name_value or not new_sort_order_value:
+            error_parts.append(
+                _(
+                    "Mise à jour ignorée pour la cible #%(target_id)s (nom et ordre obligatoires)."
+                )
+                % {"target_id": target_id}
+            )
+            continue
+
+        parsed_sort_order = _safe_int(new_sort_order_value, fallback=0)
+        if str(parsed_sort_order) != new_sort_order_value:
+            error_parts.append(
+                _("Mise à jour ignorée pour la cible #%(target_id)s (ordre invalide).")
+                % {"target_id": target_id}
+            )
+            continue
+
+        old_name = str(existing.get("name") or "").strip()
+        old_sort_order = int(existing.get("sort_order") or 0)
+        if old_name == new_name_value and old_sort_order == parsed_sort_order:
+            continue
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    'UPDATE "common"."targets" SET "name" = %s, "sort_order" = %s WHERE target_id = %s',
+                    [new_name_value, parsed_sort_order, target_id],
+                )
+            updated_count += 1
+        except IntegrityError:
+            error_parts.append(
+                _("Mise à jour impossible pour la cible #%(target_id)s.")
+                % {"target_id": target_id}
+            )
+
+    if created_count:
+        success_parts.append(_("%(count)s création(s)") % {"count": created_count})
+    if updated_count:
+        success_parts.append(_("%(count)s mise(s) à jour") % {"count": updated_count})
+    if deleted_count:
+        success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
+
+    if success_parts:
+        messages.success(
+            request,
+            _("Cibles enregistrées : %(summary)s.")
+            % {"summary": ", ".join(success_parts)},
+        )
+    if error_parts:
+        messages.error(request, " ".join(error_parts))
+
+
 def background_images(request: HttpRequest) -> HttpResponse:
     is_moderator = bool(can_manage_moderator_popup(request.user))
     if not is_moderator:
@@ -301,6 +452,29 @@ def background_images(request: HttpRequest) -> HttpResponse:
     )
 
 
+def modify_background_targets(request: HttpRequest) -> HttpResponse:
+    if not can_manage_moderator_popup(request.user):
+        raise Http404
+
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    if request.method == "POST":
+        action = str(request.POST.get("action") or "").strip()
+        if action != "save":
+            messages.error(request, _("Action inconnue."))
+            return redirect("modify_background_targets")
+        _save_target_rows(request)
+        return redirect("modify_background_targets")
+
+    return render(
+        request,
+        "animation/modify_background_targets.html",
+        {
+            "selected_group": selected_group,
+            "item_rows": _fetch_target_rows(),
+        },
+    )
+
+
 def upload_background_image(request: HttpRequest) -> HttpResponse:
     if not getattr(request.user, "is_authenticated", False):
         return redirect("login")
@@ -370,6 +544,8 @@ def upload_background_image(request: HttpRequest) -> HttpResponse:
                         "animation/upload_background_image.html",
                         {
                             "form": form,
+                            "upload_targets_missing": not form.has_target_options,
+                            "upload_targets_missing_message": BackgroundImageUploadForm.no_targets_message,
                         },
                     )
                 replace_image_genres(
@@ -389,6 +565,8 @@ def upload_background_image(request: HttpRequest) -> HttpResponse:
         "animation/upload_background_image.html",
         {
             "form": form,
+            "upload_targets_missing": not form.has_target_options,
+            "upload_targets_missing_message": BackgroundImageUploadForm.no_targets_message,
         },
     )
 

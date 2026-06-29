@@ -6,6 +6,9 @@
 {% if request.user.is_moderator and request.resolver_match.url_name != "background_images" %}
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'background_images' %}">{% trans "Banque d'images" %}</a></p>
 {% endif %}
+{% if request.user.is_moderator and request.resolver_match.url_name != "modify_background_targets" %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_background_targets' %}">{% trans "Cibles" %}</a></p>
+{% endif %}
 {% if request.user.is_authenticated and request.resolver_match.url_name != "upload_background_image" %}
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'upload_background_image' %}">{% trans "Ajouter une image" %}</a></p>
 {% endif %}

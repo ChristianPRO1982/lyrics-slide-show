@@ -29,25 +29,63 @@
 {% block content %}
 {% endblock %}
 {% block content_footer %}
-    <form id="background-image-upload-form" method="post" enctype="multipart/form-data" class="site-theme-selection">
+    <form id="background-image-upload-form" method="post" enctype="multipart/form-data" class="site-theme-selection animation-background-upload-form">
         {% csrf_token %}
-        {{ form.non_field_errors }}
-        <p>{{ form.title.label_tag }} {{ form.title }} {{ form.title.errors }}</p>
-        <p>{{ form.target.label_tag }} {{ form.target }} {{ form.target.errors }}</p>
-        <p>{{ form.description.label_tag }} {{ form.description }} {{ form.description.errors }}</p>
-        <p>{{ form.image_file.label_tag }} {{ form.image_file }} {{ form.image_file.errors }}</p>
+        <article class="site-theme-card animation-background-upload-card">
+            <header class="site-theme-card-header">
+                <div>
+                    <h2>{% trans "Préparer l'envoi" %}</h2>
+                    <p>{% trans "Renseignez les informations puis déposez l'image à envoyer pour modération." %}</p>
+                </div>
+            </header>
+            {{ form.non_field_errors }}
+            {% if upload_targets_missing %}
+                <p class="animation-field-error">{{ upload_targets_missing_message }}</p>
+            {% endif %}
+            <div class="animation-background-upload-stack">
+                <div class="animation-background-upload-field">
+                    <div class="animation-background-upload-label">{{ form.title.label_tag }}</div>
+                    <div class="animation-background-upload-control">
+                        {{ form.title }}
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="animation-background-upload-field">
+                    <div class="animation-background-upload-label">{{ form.target.label_tag }}</div>
+                    <div class="animation-background-upload-control">
+                        {{ form.target }}
+                        {{ form.target.errors }}
+                    </div>
+                </div>
+                <div class="animation-background-upload-field">
+                    <div class="animation-background-upload-label">{{ form.description.label_tag }}</div>
+                    <div class="animation-background-upload-control">
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    </div>
+                </div>
+                <div class="animation-background-upload-field">
+                    <div class="animation-background-upload-label">{{ form.image_file.label_tag }}</div>
+                    <div class="animation-background-upload-control">
+                        {{ form.image_file }}
+                        {{ form.image_file.errors }}
+                    </div>
+                </div>
+            </div>
+        </article>
         <article class="site-theme-card song-detail-card">
             <header class="site-theme-card-header">
                 <div>
                     <h2>{{ form.genre_ids.label }}</h2>
+                    <p>{% trans "Cliquez sur un genre pour le déplacer d'une colonne à l'autre." %}</p>
                 </div>
             </header>
             {{ form.genre_ids.errors }}
             <div id="background-image-genres-transfer" data-meta-transfer-container data-input-name="genre_ids">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                    <div>
+                <div class="animation-background-upload-transfer-grid">
+                    <div class="animation-background-upload-transfer-column">
                         <h4 class="song-tag-group">{% trans "Sélectionnés" %}</h4>
-                        <ul data-meta-transfer-source style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        <ul data-meta-transfer-source class="animation-background-upload-transfer-list">
                             {% for item in form.genre_selected_options %}
                                 <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">
                                     <input type="hidden" name="genre_ids" value="{{ item.id }}">
@@ -58,9 +96,9 @@
                             {% endfor %}
                         </ul>
                     </div>
-                    <div>
+                    <div class="animation-background-upload-transfer-column">
                         <h4 class="song-tag-group">{% trans "Disponibles" %}</h4>
-                        <ul data-meta-transfer-target style="min-height: 5em; max-height: 15em; overflow-y: auto;">
+                        <ul data-meta-transfer-target class="animation-background-upload-transfer-list">
                             {% for item in form.genre_available_options %}
                                 <li data-meta-transfer-item data-id="{{ item.id }}" class="song-tag-badge">{{ item.label }}</li>
                             {% empty %}
@@ -71,7 +109,9 @@
                 </div>
             </div>
         </article>
-        <p><button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Envoyer pour modération" %}</button></p>
+        <div class="animation-background-upload-actions">
+            <button type="submit" class="animation-tool-button site-action site-action--primary">{% trans "Envoyer pour modération" %}</button>
+        </div>
     </form>
 {% endblock %}
 {% block page_scripts %}

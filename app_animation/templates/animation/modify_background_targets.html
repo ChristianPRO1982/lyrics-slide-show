@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Gestion des cibles" %} | Lyrics Slide Show{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_song.css' %}");</style>
+{% endblock %}
+{% block section_nav %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Gestion des cibles' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Gestion des cibles' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
+{% block tools_title %}{% trans "Animations" %}{% endblock %}
+{% block page_tools %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_content %}
+    {% include "animation/includes/_animation_actions.html" %}
+{% endblock %}
+{% block page_kicker %}{% trans "Animations" %}{% endblock %}
+{% block page_title %}{% trans "Gestion des cibles" %}{% endblock %}
+{% block page_summary %}
+    <p>{% trans "L'ordre affiché du select d'upload suit d'abord l'ordre, puis l'identifiant technique." %}</p>
+{% endblock %}
+
+{% block content_footer %}
+    <section class="song-list-section song-meta-crud">
+        <form method="post" class="song-meta-crud-form" data-song-meta-crud-form data-unsaved-guard>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="save">
+            <p><button type="submit" class="site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
+            <div class="site-theme-card song-meta-sheet">
+                <div class="song-meta-row song-meta-row--head song-meta-row--genres">
+                    <label>{% trans "ordre" %}</label>
+                    <label>{% trans "nom" %}</label>
+                    <label>{% trans "actions" %}</label>
+                    <label></label>
+                </div>
+
+                <div class="song-meta-row song-meta-row--genres">
+                    <label><input type="number" name="new_sort_order" value=""></label>
+                    <label><input type="text" name="new_name" value=""></label>
+                    <label>{% trans "Nouvelle ligne" %}</label>
+                    <label>—</label>
+                </div>
+
+                {% for row in item_rows %}
+                    <div class="song-meta-row song-meta-row--genres">
+                        <label><input type="number" name="rows[{{ row.id }}][sort_order]" value="{{ row.sort_order }}"></label>
+                        <label><input type="text" name="rows[{{ row.id }}][name]" value="{{ row.name }}"></label>
+                        <label class="song-meta-crud-delete">
+                            <span>
+                                <input
+                                    type="checkbox"
+                                    name="rows[{{ row.id }}][delete]"
+                                    value="1"
+                                    data-meta-delete-checkbox
+                                    data-meta-kind="{% trans 'cible' %}"
+                                    data-meta-label="{{ row.name|escape }}"
+                                >
+                                {% trans "Supprimer" %}
+                            </span>
+                        </label>
+                        <label>#{{ row.id }}</label>
+                    </div>
+                {% empty %}
+                    <p>{% trans "Aucune cible disponible." %}</p>
+                {% endfor %}
+            </div>
+
+            <p><button type="submit" class="site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
+        </form>
+    </section>
+{% endblock %}
+
+{% block page_scripts %}
+    <script src="{% static 'js/unsaved_changes.js' %}"></script>
+    <script>
+        (() => {
+            const messageBox = window.LSSMessageBox;
+            const unsavedChanges = window.LSSUnsavedChanges;
+            const form = document.querySelector("[data-song-meta-crud-form]");
+            const unsavedController = (
+                unsavedChanges && form instanceof HTMLFormElement
+            ) ? unsavedChanges.attach(form) : null;
+            const labels = {
+                title: "{% trans 'Confirmation' %}",
+                yes: "{% trans 'Oui' %}",
+                no: "{% trans 'Non' %}",
+                confirmMessage: "{% trans 'Confirmer la suppression de cet élément ?' %}",
+            };
+
+            document.querySelectorAll("[data-meta-delete-checkbox]").forEach((checkbox) => {
+                checkbox.addEventListener("change", async () => {
+                    if (!(checkbox instanceof HTMLInputElement) || !checkbox.checked) {
+                        return;
+                    }
+                    if (!messageBox || typeof messageBox.show !== "function") {
+                        return;
+                    }
+
+                    checkbox.checked = false;
+                    const itemKind = checkbox.getAttribute("data-meta-kind") || "";
+                    const label = checkbox.getAttribute("data-meta-label") || "";
+                    const lines = [labels.confirmMessage];
+                    if (itemKind || label) {
+                        lines.push(`**${[itemKind, label].filter(Boolean).join(" : ")}**`);
+                    }
+
+                    const result = await messageBox.show({
+                        title: labels.title,
+                        messageMarkdown: lines.join("\n\n"),
+                        showCloseButton: false,
+                        buttons: [
+                            { id: "yes", label: labels.yes, tone: "warning" },
+                            { id: "no", label: labels.no, tone: "neutral" },
+                        ],
+                    });
+
+                    if (result.buttonId === "yes") {
+                        checkbox.checked = true;
+                    }
+                    if (unsavedController) {
+                        unsavedController.refresh();
+                    }
+                });
+            });
+        })();
+    </script>
+{% endblock %}
