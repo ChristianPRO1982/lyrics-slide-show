@@ -166,6 +166,14 @@ class BackgroundImageStorageNamingTests(TestCase):
             )
             return int(cursor.fetchone()[0])
 
+    def _insert_target(self, name: str, sort_order: int) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."targets" ("name", "sort_order") VALUES (%s, %s) RETURNING target_id',
+                [name, sort_order],
+            )
+            return int(cursor.fetchone()[0])
+
     def test_generate_storage_name_uses_business_format(self):
         filename = generate_storage_name("scoutisme", "Mon image.JPEG")
         stem, extension = filename.rsplit(".", 1)
@@ -2190,6 +2198,14 @@ class BackgroundImageViewsTests(TestCase):
             )
             return int(cursor.fetchone()[0])
 
+    def _insert_target(self, name: str, sort_order: int) -> int:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."targets" ("name", "sort_order") VALUES (%s, %s) RETURNING target_id',
+                [name, sort_order],
+            )
+            return int(cursor.fetchone()[0])
+
     def test_upload_background_image_requires_authenticated_user(self):
         response = self.client.get(reverse("upload_background_image"))
         self.assertEqual(response.status_code, 302)
@@ -2208,6 +2224,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_creates_pending_row_with_member_id(self):
         self._login()
+        self._insert_target("Scout", 10)
         response = self.client.post(
             reverse("upload_background_image"),
             data={
@@ -2223,6 +2240,50 @@ class BackgroundImageViewsTests(TestCase):
         self.assertIsNotNone(image.member_id)
         self.assertEqual(image.storage_filename, Path(image.stored_path).name)
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
+
+    def test_upload_background_image_page_renders_target_select_with_first_option_selected(self):
+        self._login()
+        self._insert_target("Louange", 20)
+        self._insert_target("Autre", 5)
+
+        response = self.client.get(reverse("upload_background_image"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<select name="target"', html=False)
+        self.assertContains(
+            response,
+            '<option value="Autre" selected>Autre</option>',
+            html=False,
+        )
+
+    def test_upload_background_image_page_shows_explicit_message_when_no_target_exists(self):
+        self._login()
+
+        response = self.client.get(reverse("upload_background_image"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Aucune cible n&#x27;est disponible. Un modérateur doit d&#x27;abord en créer une.",
+        )
+
+    def test_upload_background_image_rejects_unknown_target_value(self):
+        self._login()
+        self._insert_target("Scout", 10)
+
+        response = self.client.post(
+            reverse("upload_background_image"),
+            data={
+                "title": "Sky",
+                "target": "Inconnue",
+                "description": "Blue sky",
+                "image_file": self._build_upload(),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(BackgroundImage.objects.count(), 0)
+        self.assertContains(response, "Sélectionnez un choix valide")
 
     def test_background_images_context_summary_shows_only_active_entries_and_caps_at_15(
         self,
@@ -2298,6 +2359,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_retries_on_storage_name_collision(self):
         self._login()
+        self._insert_target("Scout", 10)
         pending_dir = Path(self._media_root_dir, "background-images", "pending")
         pending_dir.mkdir(parents=True, exist_ok=True)
         existing_path = pending_dir / "duplicate.png"
@@ -2326,6 +2388,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_uses_group_slug_in_storage_filename(self):
         self._login()
+        self._insert_target("Scout", 10)
         genre_id = self._insert_genre("1 - Scoutisme", "Veillee")
         response = self.client.post(
             reverse("upload_background_image"),
@@ -2343,6 +2406,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_uses_background_slug_for_multiple_groups(self):
         self._login()
+        self._insert_target("Scout", 10)
         genre_one = self._insert_genre("1 - Scoutisme", "Veillee")
         genre_two = self._insert_genre("2 - Liturgie", "Louange")
         response = self.client.post(
@@ -2361,6 +2425,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_retries_on_storage_filename_db_collision(self):
         self._login()
+        self._insert_target("Scout", 10)
         active_dir = Path(self._media_root_dir, "background-images", "active")
         active_dir.mkdir(parents=True, exist_ok=True)
         active_path = active_dir / "duplicate.png"
@@ -2409,6 +2474,7 @@ class BackgroundImageViewsTests(TestCase):
 
     def test_upload_background_image_stops_after_twenty_attempts(self):
         self._login()
+        self._insert_target("Scout", 10)
         pending_dir = Path(self._media_root_dir, "background-images", "pending")
         pending_dir.mkdir(parents=True, exist_ok=True)
         existing_path = pending_dir / "duplicate.png"
@@ -2435,6 +2501,94 @@ class BackgroundImageViewsTests(TestCase):
         )
         self.assertEqual(BackgroundImage.objects.count(), 0)
         self.assertEqual(existing_path.read_bytes(), b"existing-file")
+
+    def test_modify_background_targets_requires_moderator(self):
+        self._login(moderator=False)
+        response = self.client.get(reverse("modify_background_targets"))
+        self.assertEqual(response.status_code, 404)
+
+    def test_modify_background_targets_renders_rows_sorted_by_order(self):
+        self._login(moderator=True)
+        self._insert_target("Louange", 20)
+        self._insert_target("Autre", 5)
+
+        response = self.client.get(reverse("modify_background_targets"))
+
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index('value="5"'), content.index('value="20"'))
+        self.assertLess(content.index('value="Autre"'), content.index('value="Louange"'))
+
+    def test_modify_background_targets_can_create_update_and_delete_rows(self):
+        self._login(moderator=True)
+        keep_id = self._insert_target("Scout", 10)
+        delete_id = self._insert_target("Autre", 20)
+
+        response = self.client.post(
+            reverse("modify_background_targets"),
+            data={
+                "action": "save",
+                "new_sort_order": "5",
+                "new_name": "Louange",
+                f"rows[{keep_id}][sort_order]": "15",
+                f"rows[{keep_id}][name]": "Scouts",
+                f"rows[{delete_id}][sort_order]": "20",
+                f"rows[{delete_id}][name]": "Autre",
+                f"rows[{delete_id}][delete]": "1",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'SELECT name, sort_order FROM "common"."targets" ORDER BY sort_order, target_id'
+            )
+            rows = cursor.fetchall()
+        self.assertEqual(rows, [("Louange", 5), ("Scouts", 15)])
+
+    def test_modify_background_targets_rejects_duplicate_name(self):
+        self._login(moderator=True)
+        existing_id = self._insert_target("Scout", 10)
+
+        response = self.client.post(
+            reverse("modify_background_targets"),
+            data={
+                "action": "save",
+                f"rows[{existing_id}][sort_order]": "10",
+                f"rows[{existing_id}][name]": "Scout",
+                "new_sort_order": "20",
+                "new_name": "Scout",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Création impossible pour la cible &quot;Scout&quot;.')
+
+    def test_background_image_keeps_stored_target_after_catalog_change(self):
+        self._login()
+        target_id = self._insert_target("Scout", 10)
+        response = self.client.post(
+            reverse("upload_background_image"),
+            data={
+                "title": "Sky",
+                "target": "Scout",
+                "description": "Blue sky",
+                "image_file": self._build_upload(),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        image = BackgroundImage.objects.get()
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'UPDATE "common"."targets" SET name = %s WHERE target_id = %s',
+                ["Renamed", target_id],
+            )
+            cursor.execute('DELETE FROM "common"."targets" WHERE target_id = %s', [target_id])
+
+        image.refresh_from_db()
+        self.assertEqual(image.target, "Scout")
 
     def test_moderator_validation_anonymizes_image(self):
         member_id = uuid.uuid4()

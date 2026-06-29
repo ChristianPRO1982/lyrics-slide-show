@@ -72,6 +72,12 @@ Contrôles implémentés côté vues :
 - sans groupe sélectionné : redirection vers `groups` avec message,
 - accès inter-groupe : `404`.
 
+Règles spécifiques aux images de fond :
+- l'envoi d'une image de fond reste accessible à un utilisateur authentifié ;
+- la disponibilité des images de fond est une affaire de modération ;
+- la banque d'images et le catalogue des cibles de background sont gérés par les modérateurs ;
+- un admin dispose aussi de ces droits car il hérite du rôle `Moderator`.
+
 ## Contrat Du Modèle De Données (Actuel)
 
 ### Animation
@@ -109,6 +115,23 @@ Champs gérés :
 
 Table :
 - `lss"."m_animation_remote_shortcuts`.
+
+### BackgroundImage
+
+Les images de fond téléversées pour les animations sont des contenus modérés du site.
+
+Champs métier notables :
+- `title`,
+- `target`,
+- `description`,
+- `status`,
+- métadonnées techniques de stockage/image.
+
+La `target` affichée et stockée dans `lss.a_background_images.target` est un libellé texte figé copié au moment de l'upload.
+
+Le choix proposé à l'utilisateur connecté provient d'un catalogue modéré séparé dans `common.targets`, ordonné par `sort_order`, puis `target_id`.
+
+Une modification ultérieure de `common.targets` ne modifie pas rétroactivement le texte déjà stocké sur les images existantes.
 
 ## Playlist Et Ordonnancement
 

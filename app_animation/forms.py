@@ -1,7 +1,10 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from app_animation.services.background_images import fetch_genre_options
+from app_animation.services.background_images import (
+    fetch_genre_options,
+    fetch_target_options,
+)
 
 from .font_catalog import (
     is_allowed_font_family,
@@ -87,12 +90,9 @@ class AnimationForm(forms.ModelForm):
 
 
 class BackgroundImageUploadForm(forms.Form):
+    no_targets_message = _("Aucune cible n'est disponible. Un modérateur doit d'abord en créer une.")
     title = forms.CharField(max_length=255, label=_("Titre"))
-    target = forms.CharField(
-        max_length=120,
-        label=_("Cible"),
-        widget=forms.TextInput(attrs={"placeholder": "scout / louange / ..."}),
-    )
+    target = forms.ChoiceField(label=_("Cible"), choices=())
     description = forms.CharField(
         required=False,
         label=_("Description"),
@@ -107,6 +107,17 @@ class BackgroundImageUploadForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        target_options = tuple(fetch_target_options())
+        self.has_target_options = bool(target_options)
+        self.fields["target"].choices = [
+            (option["name"], option["name"]) for option in target_options
+        ]
+        if self.has_target_options and not self.is_bound and not self.initial.get("target"):
+            self.initial["target"] = str(target_options[0]["name"])
+        if not self.has_target_options:
+            self.fields["target"].required = False
+            self.fields["target"].widget.attrs["disabled"] = True
+
         genre_options = tuple(fetch_genre_options())
         self.fields["genre_ids"].choices = [
             (str(option["id"]), option["label"]) for option in genre_options
@@ -140,3 +151,8 @@ class BackgroundImageUploadForm(forms.Form):
 
         self.genre_selected_options = tuple(selected_options)
         self.genre_available_options = tuple(available_options)
+
+    def clean_target(self) -> str:
+        if not getattr(self, "has_target_options", False):
+            raise forms.ValidationError(self.no_targets_message)
+        return str(self.cleaned_data.get("target") or "").strip()

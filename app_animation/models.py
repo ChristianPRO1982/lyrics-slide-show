@@ -127,7 +127,7 @@ class BackgroundImage(models.Model):
     asset_code = models.CharField(max_length=128, unique=True)
     storage_filename = models.CharField(max_length=255, unique=True)
     title = models.CharField(max_length=255)
-    target = models.CharField(max_length=120)
+    target = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=16,

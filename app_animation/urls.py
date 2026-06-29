@@ -9,6 +9,11 @@ urlpatterns = [
     path("history/", views.animation_history, name="animation_history"),
     path("images/", views.background_images, name="background_images"),
     path(
+        "images/targets/modify/",
+        views.modify_background_targets,
+        name="modify_background_targets",
+    ),
+    path(
         "images/upload/", views.upload_background_image, name="upload_background_image"
     ),
     path("<int:animation_id>/modify/", views.modify_animation, name="modify_animation"),
