@@ -2241,7 +2241,9 @@ class BackgroundImageViewsTests(TestCase):
         self.assertEqual(image.storage_filename, Path(image.stored_path).name)
         self.assertTrue(Path(self._media_root_dir, image.stored_path).exists())
 
-    def test_upload_background_image_page_renders_target_select_with_first_option_selected(self):
+    def test_upload_background_image_page_renders_target_select_with_first_option_selected(
+        self,
+    ):
         self._login()
         self._insert_target("Louange", 20)
         self._insert_target("Autre", 5)
@@ -2256,7 +2258,9 @@ class BackgroundImageViewsTests(TestCase):
             html=False,
         )
 
-    def test_upload_background_image_page_shows_explicit_message_when_no_target_exists(self):
+    def test_upload_background_image_page_shows_explicit_message_when_no_target_exists(
+        self,
+    ):
         self._login()
 
         response = self.client.get(reverse("upload_background_image"))
@@ -2517,7 +2521,9 @@ class BackgroundImageViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         content = response.content.decode("utf-8")
         self.assertLess(content.index('value="5"'), content.index('value="20"'))
-        self.assertLess(content.index('value="Autre"'), content.index('value="Louange"'))
+        self.assertLess(
+            content.index('value="Autre"'), content.index('value="Louange"')
+        )
 
     def test_modify_background_targets_can_create_update_and_delete_rows(self):
         self._login(moderator=True)
@@ -2563,7 +2569,9 @@ class BackgroundImageViewsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Création impossible pour la cible &quot;Scout&quot;.')
+        self.assertContains(
+            response, "Création impossible pour la cible &quot;Scout&quot;."
+        )
 
     def test_background_image_keeps_stored_target_after_catalog_change(self):
         self._login()
@@ -2585,7 +2593,9 @@ class BackgroundImageViewsTests(TestCase):
                 'UPDATE "common"."targets" SET name = %s WHERE target_id = %s',
                 ["Renamed", target_id],
             )
-            cursor.execute('DELETE FROM "common"."targets" WHERE target_id = %s', [target_id])
+            cursor.execute(
+                'DELETE FROM "common"."targets" WHERE target_id = %s', [target_id]
+            )
 
         image.refresh_from_db()
         self.assertEqual(image.target, "Scout")
