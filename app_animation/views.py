@@ -253,11 +253,12 @@ def _save_target_rows(request: HttpRequest) -> None:
                 )
             else:
                 try:
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                            'INSERT INTO "common"."targets" ("name", "sort_order") VALUES (%s, %s)',
-                            [new_name, sort_order_value],
-                        )
+                    with transaction.atomic():
+                        with connection.cursor() as cursor:
+                            cursor.execute(
+                                'INSERT INTO "common"."targets" ("name", "sort_order") VALUES (%s, %s)',
+                                [new_name, sort_order_value],
+                            )
                     created_count += 1
                 except IntegrityError:
                     error_parts.append(
@@ -276,11 +277,12 @@ def _save_target_rows(request: HttpRequest) -> None:
 
         if bool(values.get("delete")):
             try:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        'DELETE FROM "common"."targets" WHERE target_id = %s',
-                        [target_id],
-                    )
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'DELETE FROM "common"."targets" WHERE target_id = %s',
+                            [target_id],
+                        )
                 deleted_count += 1
             except Exception:
                 error_parts.append(
@@ -314,11 +316,12 @@ def _save_target_rows(request: HttpRequest) -> None:
             continue
 
         try:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    'UPDATE "common"."targets" SET "name" = %s, "sort_order" = %s WHERE target_id = %s',
-                    [new_name_value, parsed_sort_order, target_id],
-                )
+            with transaction.atomic():
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        'UPDATE "common"."targets" SET "name" = %s, "sort_order" = %s WHERE target_id = %s',
+                        [new_name_value, parsed_sort_order, target_id],
+                    )
             updated_count += 1
         except IntegrityError:
             error_parts.append(
