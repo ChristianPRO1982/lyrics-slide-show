@@ -18,7 +18,7 @@ class Animation(models.Model):
     scheduled_at = models.DateTimeField()
 
     text_color = models.CharField(max_length=32, default="#FFFFFF")
-    bg_color = models.CharField(max_length=32, default="#000000")
+    bg_color = models.CharField(max_length=32, default="#000000", blank=True, null=True)
     font_family = models.CharField(max_length=120, default="Source Sans Pro")
     font_size = models.PositiveIntegerField(default=72)
     horizontal_padding = models.PositiveIntegerField(default=80)

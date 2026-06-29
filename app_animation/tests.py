@@ -91,6 +91,23 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("font_family", form.errors)
 
+    def test_animation_form_allows_empty_bg_color_when_background_image_is_set(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation C",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "bg-asset-01",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertIsNone(form.cleaned_data["bg_color"])
+
 
 class BackgroundImageValidationTests(SimpleTestCase):
     def _build_upload(
@@ -369,6 +386,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         background_images_template = Path(
             "app_animation/templates/animation/background_images.html"
         ).read_text()
+        background_picker_template = Path(
+            "app_animation/templates/animation/background_picker.html"
+        ).read_text()
         upload_background_image_template = Path(
             "app_animation/templates/animation/upload_background_image.html"
         ).read_text()
@@ -378,6 +398,7 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
 
         for template in (
             background_images_template,
+            background_picker_template,
             upload_background_image_template,
             animation_history_template,
         ):
@@ -390,6 +411,8 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("{% block page_summary %}", background_images_template)
         self.assertIn("data-background-search-card", background_images_template)
         self.assertIn("data-background-results-grid", background_images_template)
+        self.assertIn("data-picker-grid", background_picker_template)
+        self.assertIn("data-picker-overlay", background_picker_template)
 
     def test_animations_page_adds_history_as_contextual_action(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
@@ -418,6 +441,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn(".site-tools-panel .animation-tools-separator", stylesheet)
         self.assertIn(".animation-background-summary-grid", stylesheet)
         self.assertIn(".animation-background-genres-scroll", stylesheet)
+        self.assertIn(".animation-background-picker-grid", stylesheet)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", stylesheet)
+        self.assertIn(".animation-background-picker-overlay", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
         self.assertIn(
@@ -547,6 +573,33 @@ class AnimationRenderBundleTests(TestCase):
         bundle = build_animation_render_bundle(animation)
         source_verse_ids = [slide.source_verse_id for slide in bundle]
         self.assertIn(chorus.verse_id, source_verse_ids)
+
+    def test_song_color_override_masks_parent_background_image(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session Mask",
+            scheduled_at=timezone.now(),
+            bg_color="#000000",
+            background_asset_code="bg-animation",
+        )
+        song = Song.objects.create(
+            title="Song Mask", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            bg_color_override="#223344",
+        )
+
+        bundle = build_animation_render_bundle(animation)
+        slide = next(item for item in bundle if item.source_verse_id == verse.verse_id)
+        self.assertEqual(slide.style.bg_color, "#223344")
+        self.assertIsNone(slide.style.background_asset_code)
 
     def test_bundle_marks_chorus_and_chorus_like_as_bold(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -740,6 +793,30 @@ class AnimationViewsTests(TestCase):
             response.headers["Location"],
             reverse("modify_animation", args=[created.animation_id]),
         )
+
+    def test_add_animation_with_background_image_clears_bg_color(self):
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
+        self._select_group(selected_group)
+        response = self.client.post(
+            reverse("add_animation"),
+            data={
+                "title": "Nouvelle animation image",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "bg-asset-01",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        created = Animation.objects.get(title="Nouvelle animation image")
+        self.assertIsNone(created.bg_color)
+        self.assertEqual(created.background_asset_code, "bg-asset-01")
 
     def test_modify_animation_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -1239,6 +1316,82 @@ class AnimationViewsTests(TestCase):
         existing_override.refresh_from_db()
         self.assertFalse(existing_override.is_visible)
 
+    def test_modify_animation_post_redirects_to_background_picker_after_save(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps({"items": []}),
+                "background_picker_level": "verse",
+                "background_picker_animation_song_id": str(item.animation_song_id),
+                "background_picker_source_verse_id": str(verse.verse_id),
+                "background_picker_after_save": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            f"{reverse('animation_background_picker', args=[animation.animation_id])}?level=verse&animation_song_id={item.animation_song_id}&verse_id={verse.verse_id}",
+        )
+
+    def test_modify_animation_post_invalid_does_not_redirect_to_background_picker(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps({"items": []}),
+                "background_picker_level": "animation",
+                "background_picker_after_save": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Des erreurs empêchent l&#x27;enregistrement")
+
     def test_modify_animation_post_ignores_inaccessible_sid_token(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song_a = Song.objects.create(
@@ -1373,6 +1526,183 @@ class AnimationViewsTests(TestCase):
         self.assertContains(
             response, reverse("lyrics_slide_show", args=[animation.animation_id])
         )
+
+    def test_background_picker_requires_selected_group(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    def test_background_picker_refuses_animation_outside_selected_group(self):
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=other_group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(selected_group)
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_background_picker_filters_active_images_by_genre(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Veillée"],
+            )
+            selected_genre_id = int(cursor.fetchone()[0])
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["2 - Liturgie", "Louange"],
+            )
+            other_genre_id = int(cursor.fetchone()[0])
+        image_match = BackgroundImage.objects.create(
+            asset_code="bg-match",
+            storage_filename="match.png",
+            title="Match",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/match.png",
+            original_name="match.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        image_other = BackgroundImage.objects.create(
+            asset_code="bg-other",
+            storage_filename="other.png",
+            title="Other",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/other.png",
+            original_name="other.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        animation_views.replace_image_genres(image_match, [selected_genre_id])
+        animation_views.replace_image_genres(image_other, [other_genre_id])
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation", "genre_ids": [selected_genre_id]},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, image_match.title)
+        self.assertNotContains(response, image_other.title)
+
+    def test_background_picker_post_animation_saves_image_and_clears_bg_color(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            bg_color="#000000",
+        )
+        image = BackgroundImage.objects.create(
+            asset_code="bg-active",
+            storage_filename="active.png",
+            title="Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/active.png",
+            original_name="active.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            f"{reverse('animation_background_picker', args=[animation.animation_id])}?level=animation",
+            data={"selected_asset_code": image.asset_code},
+        )
+        self.assertEqual(response.status_code, 302)
+        animation.refresh_from_db()
+        self.assertEqual(animation.background_asset_code, image.asset_code)
+        self.assertIsNone(animation.bg_color)
+
+    def test_background_picker_post_song_and_verse_save_image_and_clear_bg_color_override(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            background_asset_code="bg-parent",
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            bg_color_override="#223344",
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=item,
+            source_verse_id=verse.verse_id,
+            bg_color_override="#445566",
+            is_visible=True,
+        )
+        image = BackgroundImage.objects.create(
+            asset_code="bg-active",
+            storage_filename="active.png",
+            title="Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/active.png",
+            original_name="active.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            f"{reverse('animation_background_picker', args=[animation.animation_id])}?level=song&animation_song_id={item.animation_song_id}",
+            data={"selected_asset_code": image.asset_code},
+        )
+        self.assertEqual(response.status_code, 302)
+        item.refresh_from_db()
+        self.assertEqual(item.background_asset_code_override, image.asset_code)
+        self.assertIsNone(item.bg_color_override)
+
+        response = self.client.post(
+            f"{reverse('animation_background_picker', args=[animation.animation_id])}?level=verse&animation_song_id={item.animation_song_id}&verse_id={verse.verse_id}",
+            data={"selected_asset_code": image.asset_code},
+        )
+        self.assertEqual(response.status_code, 302)
+        override = AnimationVerseOverride.objects.get(
+            animation_song=item,
+            source_verse_id=verse.verse_id,
+        )
+        self.assertEqual(override.background_asset_code_override, image.asset_code)
+        self.assertIsNone(override.bg_color_override)
 
     def test_lyrics_slide_show_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

@@ -224,6 +224,94 @@
     justify-content: flex-start;
 }
 
+.animation-background-picker-filters,
+.animation-background-picker-actions,
+.animation-background-picker-info {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.animation-background-picker-actions {
+    margin-top: 1rem;
+}
+
+.animation-background-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.animation-background-picker-card {
+    display: grid;
+    gap: 0.75rem;
+    border: 1px solid rgba(139, 30, 30, 0.18);
+}
+
+.animation-background-picker-card.is-selected {
+    border-color: #8b1e1e;
+    box-shadow: 0 0 0 3px rgba(139, 30, 30, 0.18);
+}
+
+.animation-background-picker-trigger {
+    width: 100%;
+}
+
+.animation-background-picker-info h2,
+.animation-background-picker-info p {
+    margin: 0;
+}
+
+.animation-background-picker-summary {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.animation-background-picker-summary p {
+    margin: 0;
+}
+
+.animation-background-picker-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(7, 7, 12, 0.86);
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+}
+
+.animation-background-picker-overlay[hidden] {
+    display: none;
+}
+
+.animation-background-picker-overlay-close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    width: auto;
+}
+
+.animation-background-picker-overlay-scene {
+    width: min(92vw, 1200px);
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    background-size: cover;
+    background-position: center center;
+    border-radius: var(--site-radius-md);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.animation-background-picker-overlay-text {
+    margin: 0;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+    overflow-wrap: anywhere;
+}
+
 .animation-tool-button {
     width: 100%;
 }
@@ -411,6 +499,10 @@
         grid-template-columns: 1fr;
     }
 
+    .animation-background-picker-grid {
+        grid-template-columns: 1fr;
+    }
+
     .animation-song-override-fieldset {
         padding: 0.6rem;
     }
@@ -583,6 +675,16 @@
     display: inline-block;
     border: 1px solid rgba(0, 0, 0, 0.35);
     border-radius: 0.12rem;
+}
+
+.animation-color-dot.is-background-image,
+.animation-color-square.is-background-image {
+    background:
+        linear-gradient(45deg, rgba(255, 255, 255, 0.9) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0.9)),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.9) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0.9)),
+        #b7bcc7;
+    background-position: 0 0, 0.35rem 0.35rem, 0 0;
+    background-size: 0.7rem 0.7rem, 0.7rem 0.7rem, auto;
 }
 
 .animation-verse-tablelike {

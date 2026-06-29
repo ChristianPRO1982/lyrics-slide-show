@@ -18,6 +18,11 @@ urlpatterns = [
     ),
     path("<int:animation_id>/modify/", views.modify_animation, name="modify_animation"),
     path(
+        "<int:animation_id>/background-picker/",
+        views.animation_background_picker,
+        name="animation_background_picker",
+    ),
+    path(
         "<int:animation_id>/lyrics-slide-show/",
         views.lyrics_slide_show,
         name="lyrics_slide_show",

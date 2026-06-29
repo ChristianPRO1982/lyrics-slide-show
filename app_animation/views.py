@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
 from app_member.services import can_manage_moderator_popup
+from app_song.models import Verse
 from app_song.rendering import SongRenderSettings, render_song_blocks
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
@@ -25,7 +26,13 @@ from .font_catalog import (
     list_font_previews,
 )
 from .forms import AnimationForm, BackgroundImageUploadForm
-from .models import Animation, BackgroundImage, BackgroundImageStatus
+from .models import (
+    Animation,
+    AnimationSong,
+    AnimationVerseOverride,
+    BackgroundImage,
+    BackgroundImageStatus,
+)
 from .services.background_images import (
     active_background_image_options,
     build_background_context_slug,
@@ -203,6 +210,196 @@ def _background_image_popup_options() -> list[dict[str, object]]:
         }
         for item in active_background_image_options()
     ]
+
+
+def _normalize_background_picker_level(value: str | None) -> str:
+    level = str(value or "").strip().lower()
+    if level in {"animation", "song", "verse"}:
+        return level
+    return "animation"
+
+
+def _build_background_picker_url(
+    animation: Animation,
+    *,
+    level: str,
+    animation_song_id: int | None = None,
+    verse_id: int | None = None,
+    selected_asset_code: str | None = None,
+    genre_ids: list[int] | None = None,
+) -> str:
+    query_parts = [f"level={_normalize_background_picker_level(level)}"]
+    if animation_song_id:
+        query_parts.append(f"animation_song_id={int(animation_song_id)}")
+    if verse_id:
+        query_parts.append(f"verse_id={int(verse_id)}")
+    if selected_asset_code:
+        query_parts.append(f"selected_asset_code={selected_asset_code}")
+    for genre_id in genre_ids or []:
+        if int(genre_id) > 0:
+            query_parts.append(f"genre_ids={int(genre_id)}")
+    return (
+        reverse("animation_background_picker", args=[animation.animation_id])
+        + "?"
+        + "&".join(query_parts)
+    )
+
+
+def _resolve_background_picker_target(
+    animation: Animation,
+    *,
+    level: str,
+    animation_song_id: int | None = None,
+    verse_id: int | None = None,
+) -> tuple[str, AnimationSong | None, Verse | None]:
+    normalized_level = _normalize_background_picker_level(level)
+    if normalized_level == "animation":
+        return normalized_level, None, None
+
+    parsed_animation_song_id = _safe_int(
+        str(animation_song_id or "").strip() or None,
+        fallback=0,
+    )
+    if parsed_animation_song_id <= 0:
+        raise Http404
+
+    animation_song = get_object_or_404(
+        AnimationSong.objects.select_related("song"),
+        animation=animation,
+        animation_song_id=parsed_animation_song_id,
+    )
+    if normalized_level == "song":
+        return normalized_level, animation_song, None
+
+    parsed_verse_id = _safe_int(str(verse_id or "").strip() or None, fallback=0)
+    if parsed_verse_id <= 0:
+        raise Http404
+    verse = get_object_or_404(
+        Verse.objects.filter(song_id=animation_song.song_id),
+        verse_id=parsed_verse_id,
+    )
+    return normalized_level, animation_song, verse
+
+
+def _resolve_picker_scope_style(
+    animation: Animation,
+    *,
+    level: str,
+    animation_song: AnimationSong | None = None,
+    verse: Verse | None = None,
+) -> dict[str, object]:
+    animation_bg_color = str(animation.bg_color or "").strip() or "#000000"
+    animation_bg_asset = str(animation.background_asset_code or "").strip()
+    animation_text_color = str(animation.text_color or "").strip() or "#FFFFFF"
+    animation_font_family = str(animation.font_family or "").strip() or "Source Sans Pro"
+    animation_font_size = int(animation.font_size or 72)
+
+    if level == "animation":
+        return {
+            "text_color": animation_text_color,
+            "font_family": animation_font_family,
+            "font_size": animation_font_size,
+            "bg_color": animation_bg_color,
+            "effective_background_asset_code": animation_bg_asset,
+            "local_background_asset_code": animation_bg_asset,
+            "scope_title": _("Image de fond de l'animation"),
+            "scope_label": animation.title,
+        }
+
+    if animation_song is None:
+        raise Http404
+
+    song_text_color = (
+        str(animation_song.text_color_override or "").strip() or animation_text_color
+    )
+    song_font_family = (
+        str(animation_song.font_family_override or "").strip() or animation_font_family
+    )
+    song_font_size = (
+        int(animation_song.font_size_override)
+        if animation_song.font_size_override is not None
+        else animation_font_size
+    )
+    song_bg_color_override = str(animation_song.bg_color_override or "").strip()
+    song_bg_asset_override = str(
+        animation_song.background_asset_code_override or ""
+    ).strip()
+    song_bg_color = song_bg_color_override or animation_bg_color
+
+    if song_bg_asset_override:
+        song_effective_bg_asset = song_bg_asset_override
+    elif song_bg_color_override:
+        song_effective_bg_asset = ""
+    else:
+        song_effective_bg_asset = animation_bg_asset
+
+    if level == "song":
+        return {
+            "text_color": song_text_color,
+            "font_family": song_font_family,
+            "font_size": song_font_size,
+            "bg_color": song_bg_color,
+            "effective_background_asset_code": song_effective_bg_asset,
+            "local_background_asset_code": song_bg_asset_override,
+            "scope_title": _("Image de fond du chant"),
+            "scope_label": animation_song.song.display_title,
+        }
+
+    if verse is None:
+        raise Http404
+
+    verse_override = AnimationVerseOverride.objects.filter(
+        animation_song=animation_song,
+        source_verse_id=verse.verse_id,
+    ).first()
+    verse_text_color = (
+        str(verse_override.text_color_override or "").strip()
+        if verse_override and verse_override.text_color_override
+        else song_text_color
+    )
+    verse_font_family = (
+        str(verse_override.font_family_override or "").strip()
+        if verse_override and verse_override.font_family_override
+        else song_font_family
+    )
+    verse_font_size = (
+        int(verse_override.font_size_override)
+        if verse_override and verse_override.font_size_override is not None
+        else song_font_size
+    )
+    verse_bg_color_override = (
+        str(verse_override.bg_color_override or "").strip() if verse_override else ""
+    )
+    verse_bg_asset_override = (
+        str(verse_override.background_asset_code_override or "").strip()
+        if verse_override
+        else ""
+    )
+    verse_bg_color = verse_bg_color_override or song_bg_color
+
+    if verse_bg_asset_override:
+        verse_effective_bg_asset = verse_bg_asset_override
+    elif verse_bg_color_override:
+        verse_effective_bg_asset = ""
+    else:
+        verse_effective_bg_asset = song_effective_bg_asset
+
+    verse_label = _("Couplet %(number)s") % {"number": int(verse.num_verse or 0)}
+    if verse.chorus:
+        verse_label = _("Refrain")
+    elif verse.chorus_like:
+        verse_label = str(verse.prefix or "").strip() or _("Section spéciale")
+
+    return {
+        "text_color": verse_text_color,
+        "font_family": verse_font_family,
+        "font_size": verse_font_size,
+        "bg_color": verse_bg_color,
+        "effective_background_asset_code": verse_effective_bg_asset,
+        "local_background_asset_code": verse_bg_asset_override,
+        "scope_title": _("Image de fond du couplet"),
+        "scope_label": f"{animation_song.song.display_title} - {verse_label}",
+    }
 
 
 def _fetch_target_rows() -> list[dict[str, object]]:
@@ -695,6 +892,23 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                     )
                 apply_songs_payload(form.instance, songs_payload)
                 form.instance.save()
+            if str(request.POST.get("background_picker_after_save") or "").strip() == "1":
+                return redirect(
+                    _build_background_picker_url(
+                        animation,
+                        level=request.POST.get("background_picker_level"),
+                        animation_song_id=_safe_int(
+                            request.POST.get("background_picker_animation_song_id"),
+                            fallback=0,
+                        )
+                        or None,
+                        verse_id=_safe_int(
+                            request.POST.get("background_picker_source_verse_id"),
+                            fallback=0,
+                        )
+                        or None,
+                    )
+                )
             messages.success(request, _("L'animation a été enregistrée."))
             return redirect("modify_animation", animation_id=animation.animation_id)
         songs_payload_initial_json = str(
@@ -736,6 +950,9 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
                 "backgroundImageOptions": _background_image_popup_options(),
+                "backgroundPickerUrl": reverse(
+                    "animation_background_picker", args=[animation.animation_id]
+                ),
                 "backgroundImageGenres": fetch_genre_options(),
                 # Backward compatibility key kept while consumers migrate.
                 "songCatalog": all_song_catalog,
@@ -744,6 +961,137 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "allSongCatalog": all_song_catalog,
                 "canUseMemberSongTabs": bool(member_id),
             },
+        },
+    )
+
+
+def animation_background_picker(
+    request: HttpRequest, animation_id: int
+) -> HttpResponse:
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return redirect_to_groups_when_no_selection(request)
+
+    animation = get_object_or_404(Animation, animation_id=animation_id)
+    if animation.group_id != selected_group.group_id:
+        raise Http404
+
+    raw_level = request.GET.get("level") or request.POST.get("level")
+    raw_animation_song_id = request.GET.get("animation_song_id") or request.POST.get(
+        "animation_song_id"
+    )
+    raw_verse_id = request.GET.get("verse_id") or request.POST.get("verse_id")
+    level, animation_song, verse = _resolve_background_picker_target(
+        animation,
+        level=raw_level,
+        animation_song_id=_safe_int(raw_animation_song_id, fallback=0) or None,
+        verse_id=_safe_int(raw_verse_id, fallback=0) or None,
+    )
+    selected_genre_ids = normalize_genre_ids(request.GET.getlist("genre_ids"))
+    scope_style = _resolve_picker_scope_style(
+        animation,
+        level=level,
+        animation_song=animation_song,
+        verse=verse,
+    )
+
+    background_images_list = list_background_images_for_view(
+        include_all_statuses=False,
+        query="",
+        genre_ids=selected_genre_ids,
+        moderation_quick=False,
+        inactive_quick=False,
+    )
+    active_asset_codes = {
+        str(item["asset_code"] or "").strip() for item in background_images_list
+    }
+    selected_asset_code = str(
+        request.GET.get("selected_asset_code")
+        or scope_style["local_background_asset_code"]
+        or ""
+    ).strip()
+    if selected_asset_code and selected_asset_code not in active_asset_codes:
+        selected_asset_code = ""
+
+    picker_error = ""
+    if request.method == "POST":
+        selected_asset_code = str(request.POST.get("selected_asset_code") or "").strip()
+        if not selected_asset_code:
+            picker_error = _("Choisissez une image de fond.")
+        else:
+            image = get_object_or_404(
+                BackgroundImage,
+                asset_code=selected_asset_code,
+                status=BackgroundImageStatus.ACTIVE,
+            )
+            if level == "animation":
+                animation.background_asset_code = image.asset_code
+                animation.bg_color = None
+                animation.save(update_fields=["background_asset_code", "bg_color"])
+            elif level == "song":
+                if animation_song is None:
+                    raise Http404
+                animation_song.background_asset_code_override = image.asset_code
+                animation_song.bg_color_override = None
+                animation_song.save(
+                    update_fields=[
+                        "background_asset_code_override",
+                        "bg_color_override",
+                    ]
+                )
+            else:
+                if animation_song is None or verse is None:
+                    raise Http404
+                verse_override, _created = AnimationVerseOverride.objects.get_or_create(
+                    animation_song=animation_song,
+                    source_verse_id=verse.verse_id,
+                    defaults={"is_visible": True},
+                )
+                verse_override.background_asset_code_override = image.asset_code
+                verse_override.bg_color_override = None
+                verse_override.save(
+                    update_fields=[
+                        "background_asset_code_override",
+                        "bg_color_override",
+                    ]
+                )
+            messages.success(request, _("L'image de fond a été enregistrée."))
+            return redirect("modify_animation", animation_id=animation.animation_id)
+
+    return render(
+        request,
+        "animation/background_picker.html",
+        {
+            "selected_group": selected_group,
+            "animation": animation,
+            "picker_level": level,
+            "picker_scope_style": scope_style,
+            "picker_scope_label": str(scope_style["scope_label"]),
+            "picker_scope_title": str(scope_style["scope_title"]),
+            "picker_selected_asset_code": selected_asset_code,
+            "picker_error": picker_error,
+            "picker_base_url": reverse(
+                "animation_background_picker", args=[animation.animation_id]
+            ),
+            "picker_animation_song_id": (
+                int(animation_song.animation_song_id) if animation_song else None
+            ),
+            "picker_verse_id": (int(verse.verse_id) if verse else None),
+            "background_images": background_images_list,
+            "genre_options": fetch_genre_options(),
+            "selected_genre_ids": set(selected_genre_ids),
+            "picker_back_url": reverse(
+                "modify_animation", args=[animation.animation_id]
+            ),
+            "picker_filter_action": _build_background_picker_url(
+                animation,
+                level=level,
+                animation_song_id=(
+                    int(animation_song.animation_song_id) if animation_song else None
+                ),
+                verse_id=(int(verse.verse_id) if verse else None),
+            ),
         },
     )
 

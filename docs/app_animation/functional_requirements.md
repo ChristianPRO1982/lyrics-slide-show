@@ -182,7 +182,17 @@ Ce que l'UI `modify_animation` expose actuellement :
 - overrides chant : texte/fond/police/taille,
 - overrides couplet : visibilité + texte/fond/police/taille.
 
-Les overrides `padding`/`background` au niveau chant/couplet existent dans le modèle, mais ne sont pas exposés dans l'UI d'édition actuelle.
+Les overrides `background` sont désormais pilotables via une page dédiée de choix d'image, pour les trois portées :
+- animation,
+- chant,
+- couplet.
+
+Règles métier de coexistence couleur / image :
+- si une image est choisie à un niveau, `bg_color` ou `bg_color_override` de ce même niveau est vidé ;
+- si une couleur de fond est choisie à un niveau, `background_asset_code` ou `background_asset_code_override` de ce même niveau est vidé ;
+- une image locale surcharge toujours une image parent ;
+- une couleur locale masque une image héritée du parent ;
+- l'héritage d'image ne reprend que si le niveau local n'a ni image locale ni couleur locale.
 
 ## Modèle De Session Runtime De Projection
 
@@ -204,6 +214,7 @@ Contrats d'entrée/sortie gérés côté back et consommés par le front :
 - formulaire `AnimationForm` pour création/mise à jour des propriétés animation,
 - synchronisation playlist via `ordered_mix` (`asid`/`sid`),
 - synchronisation des overrides via `songs_payload`,
+- route de choix d'image dédiée `animation_background_picker`,
 - bundle runtime `lyrics_slide_show` (slides, songs, cardGroups, backgroundUrls, publicUrl, qrCodePngBase64),
 - configuration structurée de raccourcis pour la remote (`siteBindings`, `effectiveBindings`, `formBindings`, `actionOrder`, `actionToRemoteAction`, `actionLabels`, `canCustomizeShortcuts`, `customizeUrl`),
 - endpoint JSON de personnalisation des raccourcis `lyrics_slide_show_shortcuts`,
