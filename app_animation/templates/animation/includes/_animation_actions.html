@@ -3,11 +3,14 @@
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animations' %}">{% trans "← Retour aux animations à venir" %}</a></p>
     <div class="animation-tools-separator" aria-hidden="true"></div>
 {% endif %}
+{% if request.resolver_match.url_name != "add_animation" %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'add_animation' %}">{% trans "Ajouter une animation" %}</a></p>
+{% endif %}
+{% if request.resolver_match.url_name != "animation_history" %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
+{% endif %}
 {% if request.user.is_moderator and request.resolver_match.url_name != "background_images" %}
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'background_images' %}">{% trans "Banque d'images" %}</a></p>
-{% endif %}
-{% if request.user.is_moderator and request.resolver_match.url_name != "modify_background_targets" %}
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_background_targets' %}">{% trans "Cibles" %}</a></p>
 {% endif %}
 {% if request.user.is_authenticated and request.resolver_match.url_name != "upload_background_image" %}
     <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'upload_background_image' %}">{% trans "Ajouter une image" %}</a></p>
