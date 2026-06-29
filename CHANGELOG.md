@@ -1,3 +1,11 @@
+## [2.11.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.0...v2.11.1) (2026-06-29)
+
+
+### Bug Fixes
+
+* Ensure atomic transactions for target row operations in the database ([d8a6cb6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d8a6cb6c3ec1255ca93a078dc39bd41e67b21852))
+* Implement background target management with CRUD functionality and UI enhancements ([9957c60](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9957c60978dc8f174f2eb024f93781b6719e9d46))
+
 # [2.11.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.10.0...v2.11.0) (2026-06-26)
 
 
