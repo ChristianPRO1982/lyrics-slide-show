@@ -19,12 +19,12 @@
 {% block tools_title %}{% trans "Animation" %}{% endblock %}
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
-    <hr>
-    <p><button type="submit" form="modify-animation-form" class="animation-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ animation.title }}{% endblock %}

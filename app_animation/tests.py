@@ -348,8 +348,22 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         template = Path(
             "app_animation/templates/animation/includes/_animation_actions.html"
         ).read_text()
-        self.assertIn('class="animation-tools-separator"', template)
         self.assertNotIn('class="animation-actions-list"', template)
+        add_index = template.index('{% trans "Ajouter une animation" %}')
+        background_index = template.index('{% trans "Banque d\'images" %}')
+        upload_index = template.index('{% trans "Ajouter une image" %}')
+        self.assertLess(add_index, background_index)
+        self.assertLess(background_index, upload_index)
+        self.assertNotIn('{% trans "Voir l\'historique" %}', template)
+        self.assertNotIn('{% trans "← Retour aux animations à venir" %}', template)
+
+    def test_animation_context_actions_partial_uses_separator_for_context_only(self):
+        template = Path(
+            "app_animation/templates/animation/includes/_animation_context_actions.html"
+        ).read_text()
+        self.assertIn('class="animation-tools-separator"', template)
+        self.assertIn('{% trans "Voir l\'historique" %}', template)
+        self.assertIn('{% trans "← Retour aux animations à venir" %}', template)
 
     def test_background_image_pages_reuse_animation_section_panel_contract(self):
         background_images_template = Path(
@@ -376,6 +390,21 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("{% block page_summary %}", background_images_template)
         self.assertIn("data-background-search-card", background_images_template)
         self.assertIn("data-background-results-grid", background_images_template)
+
+    def test_animations_page_adds_history_as_contextual_action(self):
+        template = Path("app_animation/templates/animation/animations.html").read_text()
+        self.assertIn(
+            '{% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}',
+            template,
+        )
+
+    def test_modify_animation_adds_contextual_tools_for_back_save_and_lyrics(self):
+        template = Path(
+            "app_animation/templates/animation/modify_animation.html"
+        ).read_text()
+        self.assertIn("show_back_to_animations_action=True", template)
+        self.assertIn("show_save_action=True", template)
+        self.assertIn("show_lyrics_slide_show_action=True", template)
 
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
@@ -2220,7 +2249,7 @@ class BackgroundImageViewsTests(TestCase):
         self._login(moderator=False)
         response = self.client.get(reverse("upload_background_image"))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, reverse("background_images"))
+        self.assertNotContains(response, "Banque d'images")
 
     def test_upload_background_image_creates_pending_row_with_member_id(self):
         self._login()
