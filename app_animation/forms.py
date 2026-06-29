@@ -90,7 +90,9 @@ class AnimationForm(forms.ModelForm):
 
 
 class BackgroundImageUploadForm(forms.Form):
-    no_targets_message = _("Aucune cible n'est disponible. Un modérateur doit d'abord en créer une.")
+    no_targets_message = _(
+        "Aucune cible n'est disponible. Un modérateur doit d'abord en créer une."
+    )
     title = forms.CharField(max_length=255, label=_("Titre"))
     target = forms.ChoiceField(label=_("Cible"), choices=())
     description = forms.CharField(
@@ -112,7 +114,11 @@ class BackgroundImageUploadForm(forms.Form):
         self.fields["target"].choices = [
             (option["name"], option["name"]) for option in target_options
         ]
-        if self.has_target_options and not self.is_bound and not self.initial.get("target"):
+        if (
+            self.has_target_options
+            and not self.is_bound
+            and not self.initial.get("target")
+        ):
             self.initial["target"] = str(target_options[0]["name"])
         if not self.has_target_options:
             self.fields["target"].required = False
