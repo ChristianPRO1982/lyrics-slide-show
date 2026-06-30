@@ -36,6 +36,29 @@ def _resolve_style(
     verse_override: AnimationVerseOverride | None,
     block_kind: str,
 ) -> ResolvedVisualStyle:
+    verse_bg_asset = (
+        str(verse_override.background_asset_code_override or "").strip()
+        if verse_override
+        else ""
+    )
+    verse_bg_color = (
+        str(verse_override.bg_color_override or "").strip() if verse_override else ""
+    )
+    song_bg_asset = str(animation_song.background_asset_code_override or "").strip()
+    song_bg_color = str(animation_song.bg_color_override or "").strip()
+    animation_bg_asset = str(animation.background_asset_code or "").strip()
+
+    if verse_bg_asset:
+        effective_bg_asset = verse_bg_asset
+    elif verse_bg_color:
+        effective_bg_asset = None
+    elif song_bg_asset:
+        effective_bg_asset = song_bg_asset
+    elif song_bg_color:
+        effective_bg_asset = None
+    else:
+        effective_bg_asset = animation_bg_asset or None
+
     return ResolvedVisualStyle(
         text_color=(
             verse_override.text_color_override
@@ -45,7 +68,7 @@ def _resolve_style(
         bg_color=(
             verse_override.bg_color_override
             if verse_override and verse_override.bg_color_override
-            else animation_song.bg_color_override or animation.bg_color
+            else animation_song.bg_color_override or animation.bg_color or "#000000"
         ),
         font_family=(
             verse_override.font_family_override
@@ -71,12 +94,7 @@ def _resolve_style(
                 else animation.horizontal_padding
             )
         ),
-        background_asset_code=(
-            verse_override.background_asset_code_override
-            if verse_override and verse_override.background_asset_code_override
-            else animation_song.background_asset_code_override
-            or animation.background_asset_code
-        ),
+        background_asset_code=effective_bg_asset,
     )
 
 

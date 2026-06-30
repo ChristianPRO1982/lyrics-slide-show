@@ -46,12 +46,14 @@ Le résumé affiche :
 Actions disponibles :
 - `Données générales`,
 - `Couleurs`,
+- `Image de fond`,
 - `Liste des polices`.
 
 ## Formulaire Et Données Persistées
 
 Le formulaire caché `#modify-animation-form` contient :
 - champs cachés `AnimationForm` : `title`, `description`, `scheduled_at`, `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`,
+- champs cachés de redirection : `background_picker_level`, `background_picker_animation_song_id`, `background_picker_source_verse_id`, `background_picker_after_save`,
 - `ordered_mix` (playlist sérialisée),
 - `songs_payload` (JSON des options par chant/couplet).
 
@@ -123,6 +125,13 @@ Boutons :
 
 Note : `background_asset_code` existe dans le modèle/formulaire mais n'est pas exposé dans cette popup actuellement.
 
+### Navigation vers le choix d'image
+
+- le résumé animation expose un bouton `Image de fond` ;
+- les blocs chant et couplet exposent `Image du chant` / `Image du couplet` ;
+- ces actions ouvrent une page dédiée de sélection d'image, pas une popup ;
+- si la page contient des modifications non enregistrées, une popup `LSSMessageBox` propose de sauvegarder avant la navigation.
+
 ### Popup `Liste des polices`
 
 Affiche les échantillons (`fontPreviews`) et un bouton `OK`.
@@ -134,6 +143,10 @@ Affiche les échantillons (`fontPreviews`) et un bouton `OK`.
 - confirmation reset vers paramètres parents,
 - popup options couleurs chant/couplet,
 - popup visualisation texte du chant (chargée depuis `song_text_popup`).
+
+Règles de reset associées :
+- `Reprendre les couleurs parentes` vide aussi l'image locale ;
+- `Réinitialiser le chant` / `Réinitialiser le couplet` réinitialisent aussi l'image locale.
 
 ## État De Modification
 

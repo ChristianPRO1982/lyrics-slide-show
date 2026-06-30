@@ -19,12 +19,12 @@
 {% block tools_title %}{% trans "Animation" %}{% endblock %}
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
-    <hr>
-    <p><button type="submit" form="modify-animation-form" class="animation-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ animation.title }}{% endblock %}
@@ -55,6 +55,10 @@
         {{ form.font_size.as_hidden }}
         {{ form.horizontal_padding.as_hidden }}
         {{ form.background_asset_code.as_hidden }}
+        <input type="hidden" name="background_picker_level" value="" data-background-picker-level>
+        <input type="hidden" name="background_picker_animation_song_id" value="" data-background-picker-animation-song-id>
+        <input type="hidden" name="background_picker_source_verse_id" value="" data-background-picker-source-verse-id>
+        <input type="hidden" name="background_picker_after_save" value="" data-background-picker-after-save>
         <input type="hidden" name="ordered_mix" value="{{ ordered_mix_initial }}" data-animation-ordered-mix>
         <input type="hidden" name="songs_payload" value="{{ songs_payload_initial_json }}" data-animation-songs-payload>
     </form>
@@ -78,6 +82,7 @@
     <div class="animation-summary-actions">
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-general">{% trans "Données générales" %}</button>
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-visual">{% trans "Couleurs" %}</button>
+        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-background-picker" data-background-target-level="animation">{% trans "Image de fond" %}</button>
         <button type="button" class="animation-secondary-action site-action site-action--secondary" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
     </div>
 {% endblock %}
@@ -223,7 +228,7 @@
                             </div>
                             <div class="animation-song-style-grid-cell">
                                 <p>
-                                    <button type="button" class="animation-tool-button site-action site-action--primary" data-song-background-popup-trigger data-background-target-level="song">
+                                    <button type="button" class="animation-tool-button site-action site-action--primary" data-song-background-picker-trigger data-background-target-level="song">
                                         {% trans "Image du chant" %}
                                     </button>
                                 </p>
@@ -326,7 +331,7 @@
                                                 <button
                                                     type="button"
                                                     class="animation-tool-button site-action site-action--primary"
-                                                    data-song-background-popup-trigger
+                                                    data-song-background-picker-trigger
                                                     data-background-target-level="verse"
                                                     data-verse-id="{{ verse.verse_id }}"
                                                 >

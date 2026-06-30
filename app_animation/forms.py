@@ -78,6 +78,10 @@ class AnimationForm(forms.ModelForm):
         value = str(self.cleaned_data.get("description") or "").strip()
         return value or None
 
+    def clean_bg_color(self) -> str | None:
+        value = str(self.cleaned_data.get("bg_color") or "").strip()
+        return value or None
+
     def clean_background_asset_code(self) -> str | None:
         value = str(self.cleaned_data.get("background_asset_code") or "").strip()
         return value or None

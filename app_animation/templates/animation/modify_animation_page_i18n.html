@@ -60,6 +60,9 @@
 {% trans "Abandonner" as lss_anim_song_navigation_abort %}
 {% trans "Modifications non enregistrées" as lss_anim_unsaved_changes_title %}
 {% trans "Des modifications non enregistrées seront perdues. Voulez-vous continuer ?" as lss_anim_unsaved_changes_message %}
+{% trans "Sauvegarder avant le choix d'image" as lss_anim_bg_picker_confirm_title %}
+{% trans "Cette navigation nécessite d'enregistrer l'animation avant d'ouvrir la page de choix d'image." as lss_anim_bg_picker_confirm_message %}
+{% trans "Enregistrer puis choisir l'image" as lss_anim_bg_picker_confirm_save %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -122,6 +125,9 @@
         songNavigationLoseAndGoLabel: "{{ lss_anim_song_navigation_lose_and_go|escapejs }}",
         songNavigationAbortLabel: "{{ lss_anim_song_navigation_abort|escapejs }}",
         unsavedChangesTitle: "{{ lss_anim_unsaved_changes_title|escapejs }}",
-        unsavedChangesMessage: "{{ lss_anim_unsaved_changes_message|escapejs }}"
+        unsavedChangesMessage: "{{ lss_anim_unsaved_changes_message|escapejs }}",
+        backgroundPickerConfirmTitle: "{{ lss_anim_bg_picker_confirm_title|escapejs }}",
+        backgroundPickerConfirmMessage: "{{ lss_anim_bg_picker_confirm_message|escapejs }}",
+        backgroundPickerConfirmSaveLabel: "{{ lss_anim_bg_picker_confirm_save|escapejs }}"
     };
 </script>

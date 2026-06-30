@@ -1,0 +1,19 @@
+{% load i18n %}
+{% if show_animation_history_action or show_back_to_animations_action or show_save_action or show_modify_animation_action or show_lyrics_slide_show_action %}
+    <div class="animation-tools-separator" aria-hidden="true"></div>
+{% endif %}
+{% if show_animation_history_action %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
+{% endif %}
+{% if show_back_to_animations_action %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animations' %}">{% trans "← Retour aux animations à venir" %}</a></p>
+{% endif %}
+{% if show_save_action %}
+    <p><button type="submit" form="{{ save_form_id|default:'modify-animation-form' }}" class="animation-tool-button site-action site-action--primary">{% trans "Enregistrer" %}</button></p>
+{% endif %}
+{% if animation and show_modify_animation_action %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+{% endif %}
+{% if animation and show_lyrics_slide_show_action %}
+    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'lyrics_slide_show' animation.animation_id %}">{% trans "Lyrics Slide Show" %}</a></p>
+{% endif %}

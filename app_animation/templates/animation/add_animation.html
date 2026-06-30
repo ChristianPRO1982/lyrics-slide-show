@@ -19,10 +19,12 @@
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
+    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
@@ -225,7 +227,9 @@
                     textDot.style.backgroundColor = textColor;
                 }
                 if (bgDot instanceof HTMLElement) {
-                    bgDot.style.backgroundColor = bgColor;
+                    const hasBackgroundImage = String(backgroundAssetInput?.value || "").trim().length > 0;
+                    bgDot.classList.toggle("is-background-image", hasBackgroundImage);
+                    bgDot.style.backgroundColor = hasBackgroundImage ? "" : bgColor;
                 }
                 if (fontNode instanceof HTMLElement) {
                     fontNode.textContent = fontFamily;
@@ -245,6 +249,11 @@
                     preview.style.background = bgColor;
                     preview.style.paddingLeft = `${horizontalPadding}px`;
                     preview.style.paddingRight = `${horizontalPadding}px`;
+                    const currentValue = String(backgroundAssetInput?.value || "").trim();
+                    const matched = backgroundOptions.find((option) => option.value === currentValue);
+                    preview.style.backgroundImage = matched && matched.imageUrl ? `url('${String(matched.imageUrl).replace(/'/g, "\\'")}')` : "";
+                    preview.style.backgroundSize = "cover";
+                    preview.style.backgroundPosition = "center center";
                 }
                 if (backgroundLabelNode instanceof HTMLElement) {
                     const currentValue = String(backgroundAssetInput?.value || "").trim();
@@ -291,6 +300,9 @@
                 if (bgColorInput instanceof HTMLInputElement) {
                     bgColorInput.value = validHex(result.values?.bg_color) || defaults.bgColor;
                 }
+                if (backgroundAssetInput instanceof HTMLInputElement) {
+                    backgroundAssetInput.value = "";
+                }
                 applySummary();
                 if (unsavedController) {
                     unsavedController.refresh();
@@ -327,6 +339,9 @@
                 }
                 if (backgroundAssetInput instanceof HTMLInputElement) {
                     backgroundAssetInput.value = String(result.values?.background_asset_code || "").trim();
+                    if (backgroundAssetInput.value && bgColorInput instanceof HTMLInputElement) {
+                        bgColorInput.value = "";
+                    }
                 }
                 applySummary();
                 if (unsavedController) {

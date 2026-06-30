@@ -19,14 +19,12 @@
 {% block tools_title %}{% trans "Animations" %}{% endblock %}
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'add_animation' %}">{% trans "Ajouter une animation" %}</a></p>
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
+    {% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'add_animation' %}">{% trans "Ajouter une animation" %}</a></p>
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'animation_history' %}">{% trans "Voir l'historique" %}</a></p>
+    {% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Liste des animations" %}{% endblock %}
