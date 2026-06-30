@@ -1,3 +1,14 @@
+## [2.11.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.1...v2.11.2) (2026-06-30)
+
+
+### Bug Fixes
+
+* add background picker functionality for animations ([e46c1a2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e46c1a23be28a5dce252f321509e0b7b1ff5e5a6))
+* Add contextual action tools for animation management and enhance navigation ([39bb2d9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/39bb2d9a94978ca58282d4169f263bdd13535ba0))
+* format code for improved readability and consistency in animation handling ([2ebff2d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2ebff2d819e82a7d84b64f2916f7acb4f3fb092b))
+* Remove redundant links from animation tools section ([4f3b54e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4f3b54e4a5950960c7e68c9c60450362da68515c))
+* Update animation actions template to improve navigation links and remove obsolete target modification link ([6a9ab09](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6a9ab09cf73c00e8f609fca856db01adc8503f46))
+
 ## [2.11.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.0...v2.11.1) (2026-06-29)
 
 
