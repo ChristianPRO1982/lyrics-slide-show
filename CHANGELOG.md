@@ -1,3 +1,10 @@
+## [2.11.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.2...v2.11.3) (2026-06-30)
+
+
+### Bug Fixes
+
+* update migration and documentation to clarify handling of common.targets in PostgreSQL ([a59a9a8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a59a9a88868f2996f267f40249c840472af0cc10))
+
 ## [2.11.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.1...v2.11.2) (2026-06-30)
 
 
