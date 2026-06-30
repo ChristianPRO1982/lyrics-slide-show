@@ -584,7 +584,10 @@ class AnimationRenderBundleTests(TestCase):
             background_asset_code="bg-animation",
         )
         song = Song.objects.create(
-            title="Song Mask", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+            title="Song Mask",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
         )
         verse = Verse.objects.create(
             song=song, num=2, num_verse=1, chorus=False, text="Verse"
@@ -1390,7 +1393,7 @@ class AnimationViewsTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Des erreurs empêchent l&#x27;enregistrement")
+        self.assertContains(response, "Des erreurs empêchent l'enregistrement")
 
     def test_modify_animation_post_ignores_inaccessible_sid_token(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -1641,7 +1644,9 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(animation.background_asset_code, image.asset_code)
         self.assertIsNone(animation.bg_color)
 
-    def test_background_picker_post_song_and_verse_save_image_and_clear_bg_color_override(self):
+    def test_background_picker_post_song_and_verse_save_image_and_clear_bg_color_override(
+        self,
+    ):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
             group=group,

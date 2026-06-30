@@ -291,7 +291,9 @@ def _resolve_picker_scope_style(
     animation_bg_color = str(animation.bg_color or "").strip() or "#000000"
     animation_bg_asset = str(animation.background_asset_code or "").strip()
     animation_text_color = str(animation.text_color or "").strip() or "#FFFFFF"
-    animation_font_family = str(animation.font_family or "").strip() or "Source Sans Pro"
+    animation_font_family = (
+        str(animation.font_family or "").strip() or "Source Sans Pro"
+    )
     animation_font_size = int(animation.font_size or 72)
 
     if level == "animation":
@@ -892,7 +894,10 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                     )
                 apply_songs_payload(form.instance, songs_payload)
                 form.instance.save()
-            if str(request.POST.get("background_picker_after_save") or "").strip() == "1":
+            if (
+                str(request.POST.get("background_picker_after_save") or "").strip()
+                == "1"
+            ):
                 return redirect(
                     _build_background_picker_url(
                         animation,
