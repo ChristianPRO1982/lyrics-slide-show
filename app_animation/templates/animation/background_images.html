@@ -138,12 +138,48 @@
                     <input type="hidden" name="image_id" value="{{ item.image_id }}">
                     {% if item.status == "pending" %}
                         <button type="submit" name="action" value="validate" class="site-action site-action--primary">{% trans "Valider" %}</button>
-                        <button type="submit" name="action" value="invalidate" class="site-action site-action--danger">{% trans "Invalider" %}</button>
+                        <button
+                            type="submit"
+                            name="action"
+                            value="invalidate"
+                            class="site-action site-action--danger"
+                            data-background-critical-action
+                        >
+                            {% trans "Invalider" %}
+                        </button>
                     {% elif item.status == "active" %}
-                        <button type="submit" name="action" value="deactivate" class="site-action site-action--secondary">{% trans "Désactiver" %}</button>
+                        <button
+                            type="submit"
+                            name="action"
+                            value="deactivate"
+                            class="site-action site-action--secondary"
+                            data-background-critical-action
+                        >
+                            {% trans "Désactiver" %}
+                        </button>
                     {% elif item.status == "inactive" %}
+                        <button
+                            type="button"
+                            class="site-action site-action--secondary"
+                            data-background-edit-trigger
+                            data-image-id="{{ item.image_id }}"
+                            data-image-title="{{ item.title }}"
+                            data-image-description="{{ item.description|default_if_none:'' }}"
+                            data-image-target="{{ item.target }}"
+                            data-image-genre-ids="{{ item.genre_ids|join:',' }}"
+                        >
+                            {% trans "Modifier" %}
+                        </button>
                         <button type="submit" name="action" value="activate" class="site-action site-action--primary">{% trans "Réactiver" %}</button>
-                        <button type="submit" name="action" value="delete" class="site-action site-action--danger">{% trans "Supprimer définitivement" %}</button>
+                        <button
+                            type="submit"
+                            name="action"
+                            value="delete"
+                            class="site-action site-action--danger"
+                            data-background-critical-action
+                        >
+                            {% trans "Supprimer définitivement" %}
+                        </button>
                     {% endif %}
                 </form>
             </article>
@@ -155,15 +191,46 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
+    {{ background_image_target_options|json_script:"lss-background-image-target-options" }}
+    {{ background_image_genre_options|json_script:"lss-background-image-genre-options" }}
+    {{ background_images_i18n|json_script:"lss-background-images-i18n" }}
     <script>
         (() => {
             const previewTitleFallback = "{% trans 'Aperçu de l’image' %}";
+            const criticalConfirmLabels = {
+                title: "{% trans 'Confirmation' %}",
+                cancel: "{% trans 'Annuler' %}",
+                invalidateLabel: "{% trans 'Invalider' %}",
+                invalidateMessage: "{% trans 'Confirmer l’invalidation de cette image ?' %}",
+                deactivateLabel: "{% trans 'Désactiver' %}",
+                deactivateMessage: "{% trans 'Confirmer la désactivation de cette image ?' %}",
+                deleteLabel: "{% trans 'Supprimer définitivement' %}",
+                deleteMessage: "{% trans 'Confirmer la suppression définitive de cette image ?' %}",
+            };
+            const i18nNode = document.getElementById("lss-background-images-i18n");
+            const targetOptionsNode = document.getElementById("lss-background-image-target-options");
+            const genreOptionsNode = document.getElementById("lss-background-image-genre-options");
+            const i18n = i18nNode ? JSON.parse(i18nNode.textContent || "{}") : {};
+            const targetOptions = targetOptionsNode ? JSON.parse(targetOptionsNode.textContent || "[]") : [];
+            const genreOptions = genreOptionsNode ? JSON.parse(genreOptionsNode.textContent || "[]") : [];
             const normalizeSearch = (value) =>
                 String(value || "")
                     .toLowerCase()
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
                     .trim();
+            const csrfToken = document.querySelector(
+                '.animation-background-result-actions input[name="csrfmiddlewaretoken"]'
+            )?.value || "";
+            const editEndpoint = "{% url 'background_images' %}";
+
+            const renderFieldError = (container, message) => {
+                if (!(container instanceof HTMLElement)) {
+                    return;
+                }
+                container.textContent = String(message || "").trim();
+                container.hidden = !container.textContent;
+            };
 
             const openPreview = (button) => {
                 const imageUrl = String(button?.getAttribute("data-background-preview-url") || "").trim();
@@ -205,25 +272,344 @@
                 });
             });
 
+            const openCriticalActionConfirm = async (button) => {
+                if (!window.LSSMessageBox || typeof window.LSSMessageBox.show !== "function") {
+                    return false;
+                }
+
+                const action = String(button?.value || "").trim();
+                const configByAction = {
+                    invalidate: {
+                        label: criticalConfirmLabels.invalidateLabel,
+                        message: criticalConfirmLabels.invalidateMessage,
+                    },
+                    deactivate: {
+                        label: criticalConfirmLabels.deactivateLabel,
+                        message: criticalConfirmLabels.deactivateMessage,
+                    },
+                    delete: {
+                        label: criticalConfirmLabels.deleteLabel,
+                        message: criticalConfirmLabels.deleteMessage,
+                    },
+                };
+                const config = configByAction[action];
+                if (!config) {
+                    return false;
+                }
+
+                const result = await window.LSSMessageBox.show({
+                    title: criticalConfirmLabels.title,
+                    messageMarkdown: config.message,
+                    showCloseButton: false,
+                    buttons: [
+                        { id: "confirm", label: config.label, tone: "danger" },
+                        { id: "cancel", label: criticalConfirmLabels.cancel, tone: "neutral" },
+                    ],
+                });
+                return result?.buttonId === "confirm";
+            };
+
+            document.querySelectorAll("[data-background-critical-action]").forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    event.preventDefault();
+                    const confirmed = await openCriticalActionConfirm(button);
+                    if (!confirmed) {
+                        return;
+                    }
+                    const form = button.closest("form");
+                    if (form instanceof HTMLFormElement) {
+                        form.requestSubmit(button);
+                    }
+                });
+            });
+
             const filterInput = document.querySelector("[data-background-genre-filter]");
             const options = Array.from(document.querySelectorAll("[data-background-genre-option]"));
-            if (!filterInput || options.length === 0) {
-                return;
+            if (filterInput && options.length > 0) {
+                const applyFilter = () => {
+                    const query = normalizeSearch(filterInput.value);
+                    const shouldFilter = query.length >= 1;
+
+                    options.forEach((option) => {
+                        const haystack = normalizeSearch(option.textContent || "");
+                        const isHidden = shouldFilter && !haystack.includes(query);
+                        option.style.display = isHidden ? "none" : "";
+                    });
+                };
+
+                filterInput.addEventListener("input", applyFilter);
+                applyFilter();
             }
 
-            const applyFilter = () => {
-                const query = normalizeSearch(filterInput.value);
-                const shouldFilter = query.length >= 1;
+            const openInactiveEditPopup = (button) => {
+                if (!window.LSSMessageBox || typeof window.LSSMessageBox.show !== "function") {
+                    return;
+                }
 
-                options.forEach((option) => {
-                    const haystack = normalizeSearch(option.textContent || "");
-                    const isHidden = shouldFilter && !haystack.includes(query);
-                    option.style.display = isHidden ? "none" : "";
+                const imageId = String(button.getAttribute("data-image-id") || "").trim();
+                if (!imageId) {
+                    return;
+                }
+                const currentTitle = String(button.getAttribute("data-image-title") || "");
+                const currentDescription = String(button.getAttribute("data-image-description") || "");
+                const currentTarget = String(button.getAttribute("data-image-target") || "").trim();
+                const selectedGenreIds = new Set(
+                    String(button.getAttribute("data-image-genre-ids") || "")
+                        .split(",")
+                        .map((value) => String(value || "").trim())
+                        .filter(Boolean)
+                        .filter((value) =>
+                            genreOptions.some((option) => String(option.id) === value)
+                        )
+                );
+                const targetExists = targetOptions.some(
+                    (option) => String(option.name || "") === currentTarget
+                );
+                const state = {
+                    titleInput: null,
+                    descriptionInput: null,
+                    targetSelect: null,
+                    titleError: null,
+                    targetError: null,
+                    genresError: null,
+                    generalError: null,
+                    genreRows: [],
+                };
+
+                window.LSSMessageBox.show({
+                    title: String(i18n.editTitle || "Modifier l'image inactive"),
+                    size: "wide",
+                    showCloseButton: false,
+                    buttons: [
+                        {
+                            id: "save",
+                            label: String(i18n.saveLabel || "Enregistrer"),
+                            tone: "success",
+                            async onClick(context) {
+                                const titleValue = String(state.titleInput?.value || "").trim();
+                                const targetValue = String(state.targetSelect?.value || "").trim();
+                                const selectedGenres = state.genreRows
+                                    .filter(({ checkbox }) => checkbox instanceof HTMLInputElement && checkbox.checked)
+                                    .map(({ checkbox }) => String(checkbox.value || "").trim())
+                                    .filter(Boolean);
+
+                                renderFieldError(state.titleError, "");
+                                renderFieldError(state.targetError, "");
+                                renderFieldError(state.genresError, "");
+                                renderFieldError(state.generalError, "");
+
+                                let hasErrors = false;
+                                if (!titleValue) {
+                                    renderFieldError(
+                                        state.titleError,
+                                        String(i18n.titleRequiredMessage || "Le titre est obligatoire.")
+                                    );
+                                    hasErrors = true;
+                                }
+                                if (!targetValue) {
+                                    renderFieldError(
+                                        state.targetError,
+                                        String(i18n.targetRequiredMessage || "Sélectionnez une cible.")
+                                    );
+                                    hasErrors = true;
+                                }
+                                if (hasErrors) {
+                                    context.keepOpen();
+                                    return false;
+                                }
+
+                                const formData = new FormData();
+                                formData.append("csrfmiddlewaretoken", csrfToken);
+                                formData.append("image_id", imageId);
+                                formData.append("action", "edit_inactive_metadata");
+                                formData.append("title", titleValue);
+                                formData.append(
+                                    "description",
+                                    String(state.descriptionInput?.value || "")
+                                );
+                                formData.append("target", targetValue);
+                                selectedGenres.forEach((genreId) => {
+                                    formData.append("genre_ids", genreId);
+                                });
+
+                                const response = await fetch(editEndpoint, {
+                                    method: "POST",
+                                    body: formData,
+                                    headers: {
+                                        "X-Requested-With": "XMLHttpRequest",
+                                    },
+                                });
+                                const payload = await response.json().catch(() => ({}));
+                                if (!response.ok) {
+                                    const fieldErrors = payload && typeof payload === "object"
+                                        ? (payload.fieldErrors || {})
+                                        : {};
+                                    renderFieldError(state.titleError, Array.isArray(fieldErrors.title) ? fieldErrors.title[0] : "");
+                                    renderFieldError(state.targetError, Array.isArray(fieldErrors.target) ? fieldErrors.target[0] : "");
+                                    renderFieldError(state.genresError, Array.isArray(fieldErrors.genre_ids) ? fieldErrors.genre_ids[0] : "");
+                                    renderFieldError(
+                                        state.generalError,
+                                        String(payload.message || i18n.saveFailedMessage || "Impossible d'enregistrer les modifications.")
+                                    );
+                                    context.keepOpen();
+                                    return false;
+                                }
+
+                                context.close({ saved: true });
+                                window.location.reload();
+                                return false;
+                            },
+                        },
+                        {
+                            id: "cancel",
+                            label: String(i18n.cancelLabel || "Annuler"),
+                            tone: "neutral",
+                        },
+                    ],
+                });
+
+                window.requestAnimationFrame(() => {
+                    const root = document.getElementById("lss-messagebox-root");
+                    const content = root?.querySelector(".lss-messagebox-content");
+                    if (!(content instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    const form = document.createElement("div");
+                    form.className = "animation-background-edit-form";
+
+                    const generalError = document.createElement("p");
+                    generalError.className = "animation-background-edit-error";
+                    generalError.hidden = true;
+                    form.appendChild(generalError);
+                    state.generalError = generalError;
+
+                    const createField = (labelText, inputNode) => {
+                        const wrapper = document.createElement("label");
+                        wrapper.className = "animation-background-edit-field";
+                        const label = document.createElement("span");
+                        label.className = "animation-background-edit-label";
+                        label.textContent = labelText;
+                        const error = document.createElement("p");
+                        error.className = "animation-background-edit-error";
+                        error.hidden = true;
+                        wrapper.appendChild(label);
+                        wrapper.appendChild(inputNode);
+                        wrapper.appendChild(error);
+                        form.appendChild(wrapper);
+                        return error;
+                    };
+
+                    const titleInput = document.createElement("input");
+                    titleInput.type = "text";
+                    titleInput.value = currentTitle;
+                    titleInput.maxLength = 255;
+                    titleInput.className = "animation-background-edit-input";
+                    state.titleInput = titleInput;
+                    state.titleError = createField(String(i18n.titleLabel || "Titre"), titleInput);
+
+                    const descriptionInput = document.createElement("textarea");
+                    descriptionInput.rows = 4;
+                    descriptionInput.value = currentDescription;
+                    descriptionInput.className = "animation-background-edit-textarea";
+                    state.descriptionInput = descriptionInput;
+                    createField(String(i18n.descriptionLabel || "Description"), descriptionInput);
+
+                    const targetWrapper = document.createElement("label");
+                    targetWrapper.className = "animation-background-edit-field";
+                    const targetLabel = document.createElement("span");
+                    targetLabel.className = "animation-background-edit-label";
+                    targetLabel.textContent = String(i18n.targetLabel || "Cible");
+                    const targetSelect = document.createElement("select");
+                    targetSelect.className = "animation-background-edit-select";
+                    const blankOption = document.createElement("option");
+                    blankOption.value = "";
+                    blankOption.textContent = "";
+                    targetSelect.appendChild(blankOption);
+                    targetOptions.forEach((option) => {
+                        const optionElement = document.createElement("option");
+                        optionElement.value = String(option.name || "");
+                        optionElement.textContent = String(option.name || "");
+                        optionElement.selected = targetExists && optionElement.value === currentTarget;
+                        targetSelect.appendChild(optionElement);
+                    });
+                    if (!targetExists) {
+                        targetSelect.value = "";
+                    }
+                    state.targetSelect = targetSelect;
+                    const targetHelp = document.createElement("p");
+                    targetHelp.className = "animation-background-edit-help";
+                    targetHelp.hidden = targetExists || !currentTarget;
+                    targetHelp.textContent = String(
+                        i18n.currentTargetMissing || "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
+                    );
+                    const targetError = document.createElement("p");
+                    targetError.className = "animation-background-edit-error";
+                    targetError.hidden = true;
+                    targetWrapper.appendChild(targetLabel);
+                    targetWrapper.appendChild(targetSelect);
+                    targetWrapper.appendChild(targetHelp);
+                    targetWrapper.appendChild(targetError);
+                    form.appendChild(targetWrapper);
+                    state.targetError = targetError;
+
+                    const genresWrapper = document.createElement("div");
+                    genresWrapper.className = "animation-background-edit-field";
+                    const genresLabel = document.createElement("span");
+                    genresLabel.className = "animation-background-edit-label";
+                    genresLabel.textContent = String(i18n.genresLabel || "Genres");
+                    const genresFilterInput = document.createElement("input");
+                    genresFilterInput.type = "search";
+                    genresFilterInput.className = "animation-background-edit-input";
+                    genresFilterInput.placeholder = String(
+                        i18n.genresFilterPlaceholder || "Trouver un genre"
+                    );
+                    const genresList = document.createElement("div");
+                    genresList.className = "animation-background-edit-genres";
+                    state.genreRows = genreOptions.map((option) => {
+                        const row = document.createElement("label");
+                        row.className = "song-checkbox-option animation-background-genre-option";
+                        row.dataset.genreLabel = normalizeSearch(option.label || "");
+                        const checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.value = String(option.id || "");
+                        checkbox.checked = selectedGenreIds.has(String(option.id || ""));
+                        const text = document.createElement("span");
+                        text.textContent = String(option.label || "");
+                        row.appendChild(checkbox);
+                        row.appendChild(text);
+                        genresList.appendChild(row);
+                        return { row, checkbox };
+                    });
+                    const genresError = document.createElement("p");
+                    genresError.className = "animation-background-edit-error";
+                    genresError.hidden = true;
+                    genresWrapper.appendChild(genresLabel);
+                    genresWrapper.appendChild(genresFilterInput);
+                    genresWrapper.appendChild(genresList);
+                    genresWrapper.appendChild(genresError);
+                    form.appendChild(genresWrapper);
+                    state.genresError = genresError;
+
+                    const applyPopupGenresFilter = () => {
+                        const query = normalizeSearch(genresFilterInput.value);
+                        state.genreRows.forEach(({ row }) => {
+                            const haystack = String(row.dataset.genreLabel || "");
+                            row.hidden = Boolean(query) && !haystack.includes(query);
+                        });
+                    };
+                    genresFilterInput.addEventListener("input", applyPopupGenresFilter);
+                    applyPopupGenresFilter();
+
+                    content.appendChild(form);
                 });
             };
 
-            filterInput.addEventListener("input", applyFilter);
-            applyFilter();
+            document.querySelectorAll("[data-background-edit-trigger]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    openInactiveEditPopup(button);
+                });
+            });
         })();
     </script>
 {% endblock %}

@@ -166,3 +166,64 @@ class BackgroundImageUploadForm(forms.Form):
         if not getattr(self, "has_target_options", False):
             raise forms.ValidationError(self.no_targets_message)
         return str(self.cleaned_data.get("target") or "").strip()
+
+
+class BackgroundImageInactiveEditForm(forms.Form):
+    no_targets_message = _(
+        "Aucune cible n'est disponible. Un modérateur doit d'abord en créer une."
+    )
+    invalid_current_target_message = _(
+        "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
+    )
+    title = forms.CharField(max_length=255, label=_("Titre"))
+    target = forms.ChoiceField(label=_("Cible"), choices=())
+    description = forms.CharField(
+        required=False,
+        label=_("Description"),
+        widget=forms.Textarea(attrs={"rows": 4}),
+    )
+    genre_ids = forms.MultipleChoiceField(
+        required=False,
+        label=_("Genres"),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    def __init__(self, *args, current_target: str | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        target_options = tuple(fetch_target_options())
+        self.has_target_options = bool(target_options)
+        self.current_target = str(current_target or "").strip()
+        self.current_target_exists = any(
+            str(option["name"]) == self.current_target for option in target_options
+        )
+        self.fields["target"].choices = [
+            (option["name"], option["name"]) for option in target_options
+        ]
+        if not self.has_target_options:
+            self.fields["target"].required = False
+            self.fields["target"].widget.attrs["disabled"] = True
+        elif not self.is_bound and self.current_target_exists and self.current_target:
+            self.initial["target"] = self.current_target
+
+        genre_options = tuple(fetch_genre_options())
+        self.fields["genre_ids"].choices = [
+            (str(option["id"]), option["label"]) for option in genre_options
+        ]
+
+    def clean_title(self) -> str:
+        value = str(self.cleaned_data.get("title") or "").strip()
+        if not value:
+            raise forms.ValidationError(_("Le titre est obligatoire."))
+        return value
+
+    def clean_description(self) -> str | None:
+        value = str(self.cleaned_data.get("description") or "").strip()
+        return value or None
+
+    def clean_target(self) -> str:
+        if not getattr(self, "has_target_options", False):
+            raise forms.ValidationError(self.no_targets_message)
+        value = str(self.cleaned_data.get("target") or "").strip()
+        if not value:
+            raise forms.ValidationError(self.invalid_current_target_message)
+        return value

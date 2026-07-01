@@ -9,5 +9,7 @@ class Migration(migrations.Migration):
     operations = [
         # `common.targets` belongs to the shared `common` schema and must be
         # provisioned outside LSS-owned Django migrations.
-        migrations.RunSQL(sql=migrations.RunSQL.noop, reverse_sql=migrations.RunSQL.noop),
+        migrations.RunSQL(
+            sql=migrations.RunSQL.noop, reverse_sql=migrations.RunSQL.noop
+        ),
     ]

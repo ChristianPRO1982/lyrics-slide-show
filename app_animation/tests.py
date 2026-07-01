@@ -413,6 +413,8 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("data-background-results-grid", background_images_template)
         self.assertIn("data-picker-grid", background_picker_template)
         self.assertIn("data-picker-overlay", background_picker_template)
+        self.assertIn('name="q"', background_picker_template)
+        self.assertIn("data-picker-query-input", background_picker_template)
 
     def test_animations_page_adds_history_as_contextual_action(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
@@ -1611,6 +1613,217 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, image_match.title)
         self.assertNotContains(response, image_other.title)
 
+    def test_background_picker_filters_active_images_by_case_insensitive_query(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        image_match = BackgroundImage.objects.create(
+            asset_code="bg-alpha",
+            storage_filename="alpha.png",
+            title="Alpha Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/alpha.png",
+            original_name="alpha.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        image_other = BackgroundImage.objects.create(
+            asset_code="bg-zebra",
+            storage_filename="zebra.png",
+            title="Zebra Night",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/zebra.png",
+            original_name="zebra.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation", "q": "aLP"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, image_match.title)
+        self.assertNotContains(response, image_other.title)
+        self.assertContains(response, 'value="aLP"', html=False)
+
+    def test_background_picker_ignores_query_shorter_than_three_characters(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        image_match = BackgroundImage.objects.create(
+            asset_code="bg-ab",
+            storage_filename="ab.png",
+            title="AB",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/ab.png",
+            original_name="ab.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        image_other = BackgroundImage.objects.create(
+            asset_code="bg-zebra-short",
+            storage_filename="zebra-short.png",
+            title="Zebra",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/zebra-short.png",
+            original_name="zebra-short.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation", "q": "ab"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, image_match.title)
+        self.assertContains(response, image_other.title)
+        self.assertContains(response, 'value="ab"', html=False)
+
+    def test_background_picker_combines_query_and_genre_filters(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Veillée"],
+            )
+            selected_genre_id = int(cursor.fetchone()[0])
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["2 - Liturgie", "Louange"],
+            )
+            other_genre_id = int(cursor.fetchone()[0])
+        image_match = BackgroundImage.objects.create(
+            asset_code="bg-alpha-match",
+            storage_filename="alpha-match.png",
+            title="Alpha Sky",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/alpha-match.png",
+            original_name="alpha-match.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        image_wrong_query = BackgroundImage.objects.create(
+            asset_code="bg-zebra-match",
+            storage_filename="zebra-match.png",
+            title="Zebra Night",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/zebra-match.png",
+            original_name="zebra-match.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        image_wrong_genre = BackgroundImage.objects.create(
+            asset_code="bg-alpha-other",
+            storage_filename="alpha-other.png",
+            title="Alpha River",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/alpha-other.png",
+            original_name="alpha-other.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        animation_views.replace_image_genres(image_match, [selected_genre_id])
+        animation_views.replace_image_genres(image_wrong_query, [selected_genre_id])
+        animation_views.replace_image_genres(image_wrong_genre, [other_genre_id])
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation", "q": "alp", "genre_ids": [selected_genre_id]},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, image_match.title)
+        self.assertNotContains(response, image_wrong_query.title)
+        self.assertNotContains(response, image_wrong_genre.title)
+
+    def test_background_picker_sorts_images_by_title_and_renders_picker_actions(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        BackgroundImage.objects.create(
+            asset_code="bg-zebra",
+            storage_filename="zebra.png",
+            title="Zebra",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/zebra.png",
+            original_name="zebra.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        BackgroundImage.objects.create(
+            asset_code="bg-alpha",
+            storage_filename="alpha.png",
+            title="Alpha",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/alpha.png",
+            original_name="alpha.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation"},
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertLess(content.index("Alpha"), content.index("Zebra"))
+        self.assertContains(response, "Sauvegarder et revenir à l'animation")
+        self.assertContains(response, "Revenir sans sauvegarder")
+        self.assertNotContains(response, "Modifier cette animation")
+        self.assertNotContains(
+            response, reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertContains(response, "data-picker-filter-form")
+        self.assertContains(response, "data-picker-query-input")
+
     def test_background_picker_post_animation_saves_image_and_clears_bg_color(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -2724,6 +2937,218 @@ class BackgroundImageViewsTests(TestCase):
         self.assertContains(response, "Images à modérer")
         self.assertContains(response, "Images inactives")
         self.assertContains(response, image.title)
+
+    def test_background_images_render_shows_edit_button_only_for_inactive_images(self):
+        self._login(moderator=True)
+        BackgroundImage.objects.create(
+            asset_code="bg-pending",
+            storage_filename="pending.png",
+            title="Pending",
+            target="Scout",
+            status=BackgroundImageStatus.PENDING,
+            stored_path="background-images/pending/pending.png",
+            original_name="pending.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        BackgroundImage.objects.create(
+            asset_code="bg-active",
+            storage_filename="active.png",
+            title="Active",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/active.png",
+            original_name="active.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        BackgroundImage.objects.create(
+            asset_code="bg-inactive",
+            storage_filename="inactive.png",
+            title="Inactive",
+            target="Scout",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive.png",
+            original_name="inactive.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+
+        response = self.client.get(reverse("background_images"))
+
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8")
+        self.assertIn("data-background-edit-trigger", content)
+        self.assertIn('action" value="delete"', content)
+        self.assertIn('action" value="activate"', content)
+
+    def test_background_images_edit_inactive_metadata_requires_moderator(self):
+        self._login(moderator=False)
+        image = BackgroundImage.objects.create(
+            asset_code="bg-inactive",
+            storage_filename="inactive.png",
+            title="Inactive",
+            target="Scout",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive.png",
+            original_name="inactive.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+
+        response = self.client.post(
+            reverse("background_images"),
+            data={
+                "image_id": image.image_id,
+                "action": "edit_inactive_metadata",
+                "title": "Edited",
+                "target": "Scout",
+            },
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_inactive_metadata_updates_fields_without_touching_storage(self):
+        self._login(moderator=True)
+        old_genre = self._insert_genre("1 - Scoutisme", "Veillee")
+        new_genre = self._insert_genre("2 - Liturgie", "Louange")
+        self._insert_target("Scout", 10)
+        self._insert_target("Louange", 20)
+        image = BackgroundImage.objects.create(
+            asset_code="bg-inactive",
+            storage_filename="inactive.png",
+            title="Inactive",
+            target="Scout",
+            description="Old description",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive.png",
+            original_name="inactive.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        animation_views.replace_image_genres(image, [old_genre])
+
+        response = self.client.post(
+            reverse("background_images"),
+            data={
+                "image_id": image.image_id,
+                "action": "edit_inactive_metadata",
+                "title": "Edited title",
+                "description": "New description",
+                "target": "Louange",
+                "genre_ids": [str(new_genre)],
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        image.refresh_from_db()
+        self.assertEqual(image.title, "Edited title")
+        self.assertEqual(image.description, "New description")
+        self.assertEqual(image.target, "Louange")
+        self.assertEqual(image.asset_code, "bg-inactive")
+        self.assertEqual(image.storage_filename, "inactive.png")
+        self.assertEqual(image.stored_path, "background-images/inactive/inactive.png")
+        self.assertEqual(
+            sorted(
+                image.genre_relations.order_by("genre_id").values_list(
+                    "genre_id", flat=True
+                )
+            ),
+            [new_genre],
+        )
+
+    def test_edit_inactive_metadata_rejects_non_inactive_images(self):
+        self._login(moderator=True)
+        self._insert_target("Scout", 10)
+        for status in (
+            BackgroundImageStatus.PENDING,
+            BackgroundImageStatus.ACTIVE,
+        ):
+            image = BackgroundImage.objects.create(
+                asset_code=f"bg-{status}",
+                storage_filename=f"{status}.png",
+                title=f"{status} image",
+                target="Scout",
+                status=status,
+                stored_path=f"background-images/{status}/{status}.png",
+                original_name=f"{status}.png",
+                extension=".png",
+                mime="image/png",
+                size_bytes=100,
+                width=1600,
+                height=900,
+            )
+            response = self.client.post(
+                reverse("background_images"),
+                data={
+                    "image_id": image.image_id,
+                    "action": "edit_inactive_metadata",
+                    "title": "Edited",
+                    "target": "Scout",
+                },
+                HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            )
+            self.assertEqual(response.status_code, 400)
+            image.refresh_from_db()
+            self.assertNotEqual(image.title, "Edited")
+
+    def test_edit_inactive_metadata_requires_current_target_when_legacy_target_missing(
+        self,
+    ):
+        self._login(moderator=True)
+        target_id = self._insert_target("Scout", 10)
+        self._insert_target("Louange", 20)
+        image = BackgroundImage.objects.create(
+            asset_code="bg-inactive",
+            storage_filename="inactive.png",
+            title="Inactive",
+            target="Scout",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive.png",
+            original_name="inactive.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'DELETE FROM "common"."targets" WHERE target_id = %s', [target_id]
+            )
+
+        response = self.client.post(
+            reverse("background_images"),
+            data={
+                "image_id": image.image_id,
+                "action": "edit_inactive_metadata",
+                "title": "Edited",
+                "target": "",
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        payload = response.json()
+        self.assertIn("target", payload["fieldErrors"])
+        image.refresh_from_db()
+        self.assertEqual(image.target, "Scout")
 
     def test_upload_background_image_retries_on_storage_name_collision(self):
         self._login()

@@ -5,6 +5,7 @@ import io
 import random
 import re
 import uuid
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
@@ -25,7 +26,11 @@ from .font_catalog import (
     list_font_choices,
     list_font_previews,
 )
-from .forms import AnimationForm, BackgroundImageUploadForm
+from .forms import (
+    AnimationForm,
+    BackgroundImageInactiveEditForm,
+    BackgroundImageUploadForm,
+)
 from .models import (
     Animation,
     AnimationSong,
@@ -227,21 +232,26 @@ def _build_background_picker_url(
     verse_id: int | None = None,
     selected_asset_code: str | None = None,
     genre_ids: list[int] | None = None,
+    query: str | None = None,
 ) -> str:
-    query_parts = [f"level={_normalize_background_picker_level(level)}"]
+    query_parts: list[tuple[str, str | int]] = [
+        ("level", _normalize_background_picker_level(level))
+    ]
     if animation_song_id:
-        query_parts.append(f"animation_song_id={int(animation_song_id)}")
+        query_parts.append(("animation_song_id", int(animation_song_id)))
     if verse_id:
-        query_parts.append(f"verse_id={int(verse_id)}")
+        query_parts.append(("verse_id", int(verse_id)))
     if selected_asset_code:
-        query_parts.append(f"selected_asset_code={selected_asset_code}")
+        query_parts.append(("selected_asset_code", selected_asset_code))
+    if query:
+        query_parts.append(("q", query))
     for genre_id in genre_ids or []:
         if int(genre_id) > 0:
-            query_parts.append(f"genre_ids={int(genre_id)}")
+            query_parts.append(("genre_ids", int(genre_id)))
     return (
         reverse("animation_background_picker", args=[animation.animation_id])
         + "?"
-        + "&".join(query_parts)
+        + urlencode(query_parts, doseq=True)
     )
 
 
@@ -562,6 +572,47 @@ def background_images(request: HttpRequest) -> HttpResponse:
             BackgroundImage, image_id=int(request.POST.get("image_id") or 0)
         )
         action = str(request.POST.get("action") or "").strip()
+        if action == "edit_inactive_metadata":
+            if image.status != BackgroundImageStatus.INACTIVE:
+                return JsonResponse(
+                    {
+                        "message": _(
+                            "Seules les images inactives peuvent être modifiées."
+                        )
+                    },
+                    status=400,
+                )
+            edit_form = BackgroundImageInactiveEditForm(
+                request.POST,
+                current_target=image.target,
+            )
+            if not edit_form.is_valid():
+                return JsonResponse(
+                    {
+                        "fieldErrors": {
+                            field: [
+                                str(error) for error in errors if str(error).strip()
+                            ]
+                            for field, errors in edit_form.errors.items()
+                        },
+                        "message": _("Impossible d'enregistrer les modifications."),
+                        "currentTargetMissing": (
+                            not edit_form.current_target_exists
+                            and bool(edit_form.current_target)
+                        ),
+                    },
+                    status=400,
+                )
+            image.title = edit_form.cleaned_data["title"]
+            image.description = edit_form.cleaned_data["description"]
+            image.target = edit_form.cleaned_data["target"]
+            with transaction.atomic():
+                image.save(update_fields=["title", "description", "target"])
+                replace_image_genres(
+                    image,
+                    normalize_genre_ids(edit_form.cleaned_data.get("genre_ids", [])),
+                )
+            return JsonResponse({"message": _("L'image inactive a été mise à jour.")})
         redirect_url = reverse("background_images")
         query_parts: list[str] = []
         if moderation_quick:
@@ -650,6 +701,26 @@ def background_images(request: HttpRequest) -> HttpResponse:
             "is_moderator": is_moderator,
             "moderation_quick_active": moderation_quick,
             "inactive_quick_active": inactive_quick,
+            "background_image_target_options": fetch_target_options(),
+            "background_image_genre_options": fetch_genre_options(),
+            "background_images_i18n": {
+                "editTitle": _("Modifier l'image inactive"),
+                "saveLabel": _("Enregistrer"),
+                "cancelLabel": _("Annuler"),
+                "titleLabel": _("Titre"),
+                "descriptionLabel": _("Description"),
+                "targetLabel": _("Cible"),
+                "genresLabel": _("Genres"),
+                "genresFilterPlaceholder": _("Trouver un genre"),
+                "currentTargetMissing": _(
+                    "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
+                ),
+                "saveFailedMessage": _("Impossible d'enregistrer les modifications."),
+                "targetRequiredMessage": _(
+                    "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
+                ),
+                "titleRequiredMessage": _("Le titre est obligatoire."),
+            },
         },
     )
 
@@ -993,6 +1064,8 @@ def animation_background_picker(
         animation_song_id=_safe_int(raw_animation_song_id, fallback=0) or None,
         verse_id=_safe_int(raw_verse_id, fallback=0) or None,
     )
+    raw_query = str(request.GET.get("q") or "").strip()
+    query = raw_query if len(raw_query) >= 3 else ""
     selected_genre_ids = normalize_genre_ids(request.GET.getlist("genre_ids"))
     scope_style = _resolve_picker_scope_style(
         animation,
@@ -1003,10 +1076,17 @@ def animation_background_picker(
 
     background_images_list = list_background_images_for_view(
         include_all_statuses=False,
-        query="",
+        query=query,
         genre_ids=selected_genre_ids,
         moderation_quick=False,
         inactive_quick=False,
+    )
+    background_images_list = sorted(
+        background_images_list,
+        key=lambda item: (
+            str(item.get("title") or "").casefold(),
+            int(item.get("image_id") or 0),
+        ),
     )
     active_asset_codes = {
         str(item["asset_code"] or "").strip() for item in background_images_list
@@ -1075,6 +1155,9 @@ def animation_background_picker(
             "picker_scope_label": str(scope_style["scope_label"]),
             "picker_scope_title": str(scope_style["scope_title"]),
             "picker_selected_asset_code": selected_asset_code,
+            "picker_query": raw_query,
+            "picker_focus_query": str(request.GET.get("focus_query") or "").strip()
+            == "1",
             "picker_error": picker_error,
             "picker_base_url": reverse(
                 "animation_background_picker", args=[animation.animation_id]
