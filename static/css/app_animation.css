@@ -78,11 +78,26 @@
 }
 
 .animation-background-genres-scroll {
-    max-height: 14rem;
+    max-height: 10rem;
     overflow-y: auto;
-    display: grid;
-    gap: 0.55rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0.55rem 0.9rem;
     padding-right: 0.2rem;
+}
+
+.animation-background-genre-option {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.animation-background-genre-option input {
+    margin: 0.15rem 0 0;
+    flex: 0 0 auto;
 }
 
 .animation-background-results-grid {
@@ -152,6 +167,50 @@
     width: 100%;
     height: auto;
     border-radius: var(--site-radius-md);
+}
+
+.animation-background-edit-form {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.animation-background-edit-field {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.animation-background-edit-label {
+    font-weight: 700;
+}
+
+.animation-background-edit-input,
+.animation-background-edit-select,
+.animation-background-edit-textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.animation-background-edit-textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+.animation-background-edit-genres {
+    max-height: 14rem;
+    overflow-y: auto;
+    display: grid;
+    gap: 0.45rem;
+    padding-right: 0.25rem;
+}
+
+.animation-background-edit-help {
+    margin: 0;
+    color: var(--site-ink-soft);
+}
+
+.animation-background-edit-error {
+    margin: 0;
+    color: #8b1e1e;
 }
 
 .animation-background-upload-form {
@@ -266,34 +325,88 @@
     gap: 0.45rem;
 }
 
+.animation-background-picker-summary h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
 .animation-background-picker-summary p {
     margin: 0;
+}
+
+.animation-background-picker-summary-color-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.animation-background-picker-summary-color-swatch {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 0.2rem;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    flex: 0 0 auto;
+}
+
+.animation-background-picker-wide-card {
+    grid-column: 1 / -1;
 }
 
 .animation-background-picker-overlay {
     position: fixed;
     inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
     z-index: 9999;
     background: rgba(7, 7, 12, 0.86);
     display: grid;
-    place-items: center;
-    padding: 1.25rem;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    margin: 0;
+    box-sizing: border-box;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .animation-background-picker-overlay[hidden] {
     display: none;
 }
 
-.animation-background-picker-overlay-close {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
+.animation-background-picker-overlay-actions {
     z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding-top: max(0px, env(safe-area-inset-top));
+    box-sizing: border-box;
+}
+
+.animation-background-picker-overlay-actions .site-action {
     width: auto;
+    min-width: min(100%, 260px);
+}
+
+.animation-background-picker-overlay-viewport {
+    width: 100%;
+    min-height: 0;
+    display: grid;
+    place-items: center;
 }
 
 .animation-background-picker-overlay-scene {
-    width: min(92vw, 1200px);
+    width: min(96vw, 1280px);
+    max-width: 100%;
+    max-height: calc(100dvh - 7.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     aspect-ratio: 16 / 9;
     background-color: #000;
     background-size: cover;
@@ -304,12 +417,18 @@
     place-items: center;
     padding: 2rem;
     text-align: center;
+    box-sizing: border-box;
+    justify-self: center;
 }
 
 .animation-background-picker-overlay-text {
     margin: 0;
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
     overflow-wrap: anywhere;
+}
+
+body.animation-background-picker-overlay-open {
+    overflow: hidden;
 }
 
 .animation-tool-button {
@@ -534,6 +653,11 @@
     margin-top: 0.6rem;
 }
 
+.animation-summary-actions > * {
+    flex: 1 1 100%;
+    width: 100%;
+}
+
 .animation-summary-preview {
     border: 1px solid rgba(0, 0, 0, 0.16);
     border-radius: 0.5rem;
@@ -638,6 +762,11 @@
     min-width: 0;
 }
 
+.animation-song-reset-actions {
+    display: grid;
+    gap: 0.4rem;
+}
+
 .animation-song-style-preview-cell {
     grid-column: 3;
     grid-row: 1 / span 4;
@@ -647,17 +776,27 @@
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 0.45rem;
     padding: 0.6rem;
-    min-height: 9.5rem;
+    width: 100%;
+    aspect-ratio: 4 / 3;
     overflow-wrap: anywhere;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .animation-song-style-preview-badge {
-    margin-bottom: 0.35rem;
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    margin: 0;
 }
 
 .animation-song-style-preview-text {
     margin: 0;
     line-height: 1.2;
+    width: 100%;
 }
 
 .animation-color-parent-controls {
@@ -665,6 +804,22 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 0.4rem;
+}
+
+.animation-song-style-grid-cell > p,
+.animation-verse-row-reset-input > p {
+    margin: 0;
+}
+
+.animation-song-style-grid-cell > .animation-tool-button,
+.animation-song-style-grid-cell > .animation-secondary-action,
+.animation-song-style-grid-cell > p > .animation-tool-button,
+.animation-song-style-grid-cell > p > .animation-secondary-action,
+.animation-verse-row-reset-input > .animation-tool-button,
+.animation-verse-row-reset-input > .animation-secondary-action,
+.animation-verse-row-reset-input > p > .animation-tool-button,
+.animation-verse-row-reset-input > p > .animation-secondary-action {
+    width: 100%;
 }
 
 .animation-color-square {
@@ -751,6 +906,8 @@
 .animation-verse-row-reset-input {
     grid-column: 2;
     grid-row: 6;
+    display: grid;
+    gap: 0.4rem;
 }
 
 .animation-verse-tablelike-preview {
@@ -762,17 +919,23 @@
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 0.45rem;
     padding: 0.55rem;
-    min-height: 10.5rem;
+    width: 100%;
+    aspect-ratio: 4 / 3;
     overflow-wrap: anywhere;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .animation-verse-style-preview-content {
     margin: 0;
     line-height: 1.2;
+    width: 100%;
 }
 
 .animation-verse-style-preview-hidden {
-    margin: 0 0 0.35rem;
+    margin: 0;
     font-size: 0.85rem;
     font-weight: 700;
     display: none;
@@ -920,10 +1083,6 @@
         grid-row: auto;
     }
 
-    .animation-song-style-preview {
-        min-height: 7rem;
-    }
-
     .animation-verse-tablelike {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
@@ -938,9 +1097,6 @@
         grid-row: auto;
     }
 
-    .animation-verse-style-preview {
-        min-height: 7rem;
-    }
 }
 
 @media (min-width: 981px) {

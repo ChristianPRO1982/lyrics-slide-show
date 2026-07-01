@@ -81,7 +81,7 @@
     </p>
     <div class="animation-summary-actions">
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-general">{% trans "Données générales" %}</button>
-        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-visual">{% trans "Couleurs" %}</button>
+        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-visual">{% trans "Police et couleurs" %}</button>
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-background-picker" data-background-target-level="animation">{% trans "Image de fond" %}</button>
         <button type="button" class="animation-secondary-action site-action site-action--secondary" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
     </div>
@@ -112,6 +112,7 @@
         <div class="animation-song-stack">
             {% for card in main_song_cards %}
                 <article
+                    id="animation-song-{{ card.animation_song_id }}"
                     class="site-theme-card animation-song-main-card"
                     data-main-song-card
                     data-animation-song-id="{{ card.animation_song_id }}"
@@ -169,7 +170,7 @@
                             <div class="animation-song-style-grid-cell">
                                 <label for="song-font-family-{{ card.animation_song_id }}">{% trans "Police du chant" %}</label>
                             </div>
-                            <div class="animation-song-style-grid-cell">
+                            <div class="animation-song-style-grid-cell animation-song-reset-actions">
                                 <select id="song-font-family-{{ card.animation_song_id }}" data-song-font-family>
                                     <option value="">{% trans "Même police que l'animation" %}</option>
                                     {% for option in font_choices %}
@@ -179,7 +180,6 @@
                             </div>
                             <div class="animation-song-style-grid-cell animation-song-style-preview-cell">
                                 <div class="animation-song-style-preview" data-song-style-preview>
-                                    <p class="animation-song-style-preview-badge"><strong>{% trans "Exemple" %}</strong></p>
                                     <p class="animation-song-style-preview-text" data-song-style-preview-text>{{ card.song_title }}</p>
                                 </div>
                             </div>
@@ -226,7 +226,7 @@
                             <div class="animation-song-style-grid-cell">
                                 {% trans "Réinitialisation" %}
                             </div>
-                            <div class="animation-song-style-grid-cell">
+                            <div class="animation-song-style-grid-cell animation-song-reset-actions">
                                 <p>
                                     <button type="button" class="animation-tool-button site-action site-action--primary" data-song-background-picker-trigger data-background-target-level="song">
                                         {% trans "Image du chant" %}

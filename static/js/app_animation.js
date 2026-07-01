@@ -1284,6 +1284,40 @@
         }
     };
 
+    const setSongCardExpandedState = (card, shouldOpen) => {
+        if (!(card instanceof HTMLElement)) {
+            return false;
+        }
+        const toggle = card.querySelector("[data-song-options-toggle]");
+        const expanded = card.querySelector("[data-song-expanded]");
+        if (!(toggle instanceof HTMLButtonElement) || !(expanded instanceof HTMLElement)) {
+            return false;
+        }
+        const isOpen = Boolean(shouldOpen);
+        expanded.hidden = !isOpen;
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        toggle.textContent = isOpen
+            ? String(toggle.getAttribute("data-close-label") || "")
+            : String(toggle.getAttribute("data-open-label") || "");
+        return true;
+    };
+
+    const restoreSongCardFromHash = () => {
+        const hash = String(window.location.hash || "").trim();
+        const match = /^#animation-song-(\d+)$/.exec(hash);
+        if (!match) {
+            return;
+        }
+        const card = document.getElementById(`animation-song-${match[1]}`);
+        if (!(card instanceof HTMLElement)) {
+            return;
+        }
+        if (!setSongCardExpandedState(card, true)) {
+            return;
+        }
+        card.scrollIntoView({ block: "start" });
+    };
+
     const bindMainSongCards = () => {
         document.querySelectorAll("[data-main-song-card]").forEach((card) => {
             if (!(card instanceof HTMLElement)) {
@@ -1291,15 +1325,16 @@
             }
 
             const toggle = card.querySelector("[data-song-options-toggle]");
-            const expanded = card.querySelector("[data-song-expanded]");
-            if (toggle instanceof HTMLButtonElement && expanded instanceof HTMLElement) {
+            if (toggle instanceof HTMLButtonElement) {
                 toggle.addEventListener("click", () => {
-                    const shouldOpen = expanded.hidden;
-                    expanded.hidden = !shouldOpen;
-                    toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
-                    toggle.textContent = shouldOpen
-                        ? String(toggle.getAttribute("data-close-label") || "")
-                        : String(toggle.getAttribute("data-open-label") || "");
+                    const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+                    const shouldOpen = !isExpanded;
+                    if (!setSongCardExpandedState(card, shouldOpen)) {
+                        return;
+                    }
+                    if (shouldOpen) {
+                        card.scrollIntoView({ block: "start" });
+                    }
                 });
             }
 
@@ -1532,6 +1567,7 @@
     updateOrderedMix();
     renderInsertSlots();
     ensureModeOnLoad();
+    restoreSongCardFromHash();
     if (unsavedController) {
         unsavedController.reset();
     }

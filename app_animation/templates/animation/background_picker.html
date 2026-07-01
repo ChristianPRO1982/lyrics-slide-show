@@ -19,12 +19,32 @@
 {% block tools_title %}{% trans "Animation" %}{% endblock %}
 {% block page_tools %}
     {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with animation=animation show_modify_animation_action=True show_lyrics_slide_show_action=True %}
+    <div class="animation-tools-separator" aria-hidden="true"></div>
+    <p>
+        <button
+            type="submit"
+            form="background-picker-save-form"
+            class="animation-tool-button site-action site-action--primary"
+        >
+            {% trans "Sauvegarder et revenir à l'animation" %}
+        </button>
+    </p>
+    <p><a class="animation-tool-link site-action site-action--secondary" href="{{ picker_back_url }}">{% trans "Revenir sans sauvegarder" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animation" %}{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with animation=animation show_modify_animation_action=True show_lyrics_slide_show_action=True %}
+    <div class="animation-tools-separator" aria-hidden="true"></div>
+    <p>
+        <button
+            type="submit"
+            form="background-picker-save-form"
+            class="animation-tool-button site-action site-action--primary"
+        >
+            {% trans "Sauvegarder et revenir à l'animation" %}
+        </button>
+    </p>
+    <p><a class="animation-tool-link site-action site-action--secondary" href="{{ picker_back_url }}">{% trans "Revenir sans sauvegarder" %}</a></p>
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ picker_scope_title }}{% endblock %}
@@ -33,7 +53,12 @@
 {% endblock %}
 {% block page_summary %}
     <div class="animation-background-picker-summary">
-        <p><strong>{% trans "Texte" %}:</strong> <code>{{ picker_scope_style.text_color }}</code></p>
+        <h2>{% trans "Texte" %}</h2>
+        <p class="animation-background-picker-summary-color-row">
+            <strong>{% trans "Couleur" %}:</strong>
+            <span class="animation-background-picker-summary-color-swatch" style="background-color: {{ picker_scope_style.text_color }};" aria-hidden="true"></span>
+            <code>{{ picker_scope_style.text_color }}</code>
+        </p>
         <p><strong>{% trans "Police" %}:</strong> {{ picker_scope_style.font_family }}</p>
         <p><strong>{% trans "Taille" %}:</strong> {{ picker_scope_style.font_size }}px</p>
     </div>
@@ -45,17 +70,31 @@
         </article>
     {% endif %}
 
-    <article class="site-theme-card animation-background-search-card">
+    <article class="site-theme-card animation-background-search-card animation-background-picker-wide-card">
         <header class="site-theme-card-header">
             <div>
                 <h2>{% trans "Filtres" %}</h2>
             </div>
         </header>
-        <form method="get" action="{{ picker_base_url }}" class="animation-background-picker-filters">
+        <form method="get" action="{{ picker_base_url }}" class="animation-background-picker-filters" data-picker-filter-form>
             <input type="hidden" name="level" value="{{ picker_level }}">
             {% if picker_animation_song_id %}<input type="hidden" name="animation_song_id" value="{{ picker_animation_song_id }}">{% endif %}
             {% if picker_verse_id %}<input type="hidden" name="verse_id" value="{{ picker_verse_id }}">{% endif %}
             <input type="hidden" name="selected_asset_code" value="{{ picker_selected_asset_code }}" data-picker-filter-selected-asset-code>
+            <input type="hidden" name="focus_query" value="{% if picker_focus_query %}1{% endif %}" data-picker-focus-query-flag>
+            <label class="animation-background-upload-control">
+                <span>{% trans "Nom" %}</span>
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ picker_query }}"
+                    class="animation-background-genre-filter-input"
+                    placeholder="{% trans 'Titre de l’image' %}"
+                    autocomplete="off"
+                    data-picker-query-input
+                    {% if picker_focus_query %}autofocus{% endif %}
+                >
+            </label>
             <fieldset class="animation-background-genres-panel">
                 <legend>{% trans "Tags" %}</legend>
                 <div class="animation-background-genres-scroll">
@@ -70,21 +109,30 @@
                 </div>
             </fieldset>
             <div class="animation-background-search-actions">
-                <button type="submit" class="site-action site-action--primary">{% trans "Filtrer" %}</button>
                 <a class="animation-secondary-action site-action site-action--secondary" href="{{ picker_filter_action }}">{% trans "Réinitialiser" %}</a>
             </div>
         </form>
     </article>
 
-    <form method="post" action="{{ picker_base_url }}" class="animation-background-picker-actions">
+    <form id="background-picker-save-form" method="post" action="{{ picker_base_url }}" hidden aria-hidden="true">
         {% csrf_token %}
         <input type="hidden" name="level" value="{{ picker_level }}">
         {% if picker_animation_song_id %}<input type="hidden" name="animation_song_id" value="{{ picker_animation_song_id }}">{% endif %}
         {% if picker_verse_id %}<input type="hidden" name="verse_id" value="{{ picker_verse_id }}">{% endif %}
         <input type="hidden" name="selected_asset_code" value="{{ picker_selected_asset_code }}" data-picker-selected-asset-code>
-        <button type="submit" class="site-action site-action--primary">{% trans "Sauvegarder et revenir à l'animation" %}</button>
-        <a class="animation-secondary-action site-action site-action--secondary" href="{{ picker_back_url }}">{% trans "Revenir sans sauvegarder" %}</a>
     </form>
+
+    <div class="animation-background-picker-overlay" data-picker-overlay hidden>
+        <div class="animation-background-picker-overlay-actions">
+            <button type="button" class="site-action site-action--primary" data-picker-overlay-select>{% trans "Sélectionner cette image" %}</button>
+            <button type="button" class="site-action site-action--secondary" data-picker-overlay-close>{% trans "Fermer l’aperçu" %}</button>
+        </div>
+        <div class="animation-background-picker-overlay-viewport">
+            <div class="animation-background-picker-overlay-scene" data-picker-overlay-scene>
+                <p class="animation-background-picker-overlay-text" data-picker-overlay-text>{% trans "Exemple" %}</p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block content_footer %}
     <section
@@ -125,13 +173,6 @@
             </article>
         {% endfor %}
     </section>
-
-    <div class="animation-background-picker-overlay" data-picker-overlay hidden>
-        <button type="button" class="site-action site-action--secondary animation-background-picker-overlay-close" data-picker-overlay-close>{% trans "Fermer l’aperçu" %}</button>
-        <div class="animation-background-picker-overlay-scene" data-picker-overlay-scene>
-            <p class="animation-background-picker-overlay-text" data-picker-overlay-text>{% trans "Exemple" %}</p>
-        </div>
-    </div>
 {% endblock %}
 {% block page_scripts %}
     <script>
@@ -144,12 +185,63 @@
             const overlay = document.querySelector("[data-picker-overlay]");
             const overlayScene = document.querySelector("[data-picker-overlay-scene]");
             const overlayClose = document.querySelector("[data-picker-overlay-close]");
+            const overlaySelect = document.querySelector("[data-picker-overlay-select]");
             const overlayText = document.querySelector("[data-picker-overlay-text]");
             const selectedInput = document.querySelector("[data-picker-selected-asset-code]");
             const filterSelectedInput = document.querySelector("[data-picker-filter-selected-asset-code]");
+            const filterForm = document.querySelector("[data-picker-filter-form]");
+            const queryInput = document.querySelector("[data-picker-query-input]");
+            const focusQueryFlag = document.querySelector("[data-picker-focus-query-flag]");
             const previewTextColor = String(grid.getAttribute("data-preview-text-color") || "#FFFFFF");
             const previewFontFamily = String(grid.getAttribute("data-preview-font-family") || "Source Sans Pro");
             const previewFontSize = String(grid.getAttribute("data-preview-font-size") || "72");
+            const queryFocusStorageKey = "lss-background-picker-query-focus";
+            let selectedAssetCode = selectedInput instanceof HTMLInputElement ? String(selectedInput.value || "").trim() : "";
+            let previewAssetCode = "";
+            let queryDebounce = 0;
+            let hadSubmittedQuery = queryInput instanceof HTMLInputElement
+                ? String(queryInput.defaultValue || "").trim().length >= 3
+                : false;
+
+            const runWhenPageReady = (callback) => {
+                const root = document.documentElement;
+                const isPageLoaderActive = root.classList.contains("lss-page-loading")
+                    && !root.classList.contains("lss-page-ready");
+                if (!isPageLoaderActive) {
+                    callback();
+                    return;
+                }
+                document.addEventListener("lss:page-ready", callback, { once: true });
+            };
+
+            if (overlay instanceof HTMLElement && overlay.parentElement !== document.body) {
+                document.body.appendChild(overlay);
+            }
+
+            if (queryInput instanceof HTMLInputElement) {
+                try {
+                    const savedFocusState = window.sessionStorage.getItem(queryFocusStorageKey);
+                    if (savedFocusState) {
+                        const parsedState = JSON.parse(savedFocusState);
+                        const nextPosition = Number(parsedState?.position);
+                        runWhenPageReady(() => {
+                            window.setTimeout(() => {
+                                queryInput.focus();
+                                if (Number.isFinite(nextPosition)) {
+                                    const safePosition = Math.max(
+                                        0,
+                                        Math.min(nextPosition, queryInput.value.length)
+                                    );
+                                    queryInput.setSelectionRange(safePosition, safePosition);
+                                }
+                            }, 0);
+                        });
+                        window.sessionStorage.removeItem(queryFocusStorageKey);
+                    }
+                } catch (_error) {
+                    window.sessionStorage.removeItem(queryFocusStorageKey);
+                }
+            }
 
             if (overlayText instanceof HTMLElement) {
                 overlayText.style.color = previewTextColor;
@@ -158,6 +250,7 @@
             }
 
             const applySelection = (assetCode) => {
+                selectedAssetCode = assetCode;
                 document.querySelectorAll("[data-picker-card]").forEach((card) => {
                     if (!(card instanceof HTMLElement)) {
                         return;
@@ -178,15 +271,18 @@
                 if (!assetCode || !imageUrl || !(overlay instanceof HTMLElement) || !(overlayScene instanceof HTMLElement)) {
                     return;
                 }
-                applySelection(assetCode);
+                previewAssetCode = assetCode;
                 overlayScene.style.backgroundImage = `url('${imageUrl.replace(/'/g, "\\'")}')`;
                 overlay.hidden = false;
+                document.body.classList.add("animation-background-picker-overlay-open");
             };
 
             const closeOverlay = () => {
                 if (overlay instanceof HTMLElement) {
                     overlay.hidden = true;
                 }
+                previewAssetCode = "";
+                document.body.classList.remove("animation-background-picker-overlay-open");
             };
 
             document.querySelectorAll("[data-picker-trigger]").forEach((button) => {
@@ -198,6 +294,15 @@
             if (overlayClose instanceof HTMLElement) {
                 overlayClose.addEventListener("click", closeOverlay);
             }
+            if (overlaySelect instanceof HTMLElement) {
+                overlaySelect.addEventListener("click", () => {
+                    if (!previewAssetCode) {
+                        return;
+                    }
+                    applySelection(previewAssetCode);
+                    closeOverlay();
+                });
+            }
             if (overlay instanceof HTMLElement) {
                 overlay.addEventListener("click", (event) => {
                     if (event.target === overlay) {
@@ -206,10 +311,67 @@
                 });
             }
             document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape") {
+                if (event.key === "Escape" && !overlay?.hidden) {
                     closeOverlay();
                 }
             });
+
+            if (selectedAssetCode) {
+                applySelection(selectedAssetCode);
+            }
+
+            if (filterForm instanceof HTMLFormElement) {
+                filterForm.querySelectorAll('input[type="checkbox"][name="genre_ids"]').forEach((input) => {
+                    input.addEventListener("change", () => {
+                        if (focusQueryFlag instanceof HTMLInputElement) {
+                            focusQueryFlag.value = "";
+                        }
+                        filterForm.requestSubmit();
+                    });
+                });
+            }
+
+            if (filterForm instanceof HTMLFormElement && queryInput instanceof HTMLInputElement) {
+                queryInput.addEventListener("input", () => {
+                    window.clearTimeout(queryDebounce);
+                    queryDebounce = window.setTimeout(() => {
+                        const value = String(queryInput.value || "").trim();
+                        if (value.length >= 3) {
+                            if (focusQueryFlag instanceof HTMLInputElement) {
+                                focusQueryFlag.value = "1";
+                            }
+                            try {
+                                window.sessionStorage.setItem(
+                                    queryFocusStorageKey,
+                                    JSON.stringify({
+                                        position: queryInput.selectionStart ?? queryInput.value.length,
+                                    })
+                                );
+                            } catch (_error) {
+                                // Ignore sessionStorage issues and keep the search working.
+                            }
+                            hadSubmittedQuery = true;
+                            filterForm.requestSubmit();
+                            return;
+                        }
+                        if (!value && hadSubmittedQuery) {
+                            if (focusQueryFlag instanceof HTMLInputElement) {
+                                focusQueryFlag.value = "1";
+                            }
+                            try {
+                                window.sessionStorage.setItem(
+                                    queryFocusStorageKey,
+                                    JSON.stringify({ position: 0 })
+                                );
+                            } catch (_error) {
+                                // Ignore sessionStorage issues and keep the search working.
+                            }
+                            hadSubmittedQuery = false;
+                            filterForm.requestSubmit();
+                        }
+                    }, 250);
+                });
+            }
         })();
     </script>
 {% endblock %}
