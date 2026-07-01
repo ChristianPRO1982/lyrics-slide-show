@@ -233,6 +233,33 @@ def fetch_genre_options() -> list[dict[str, object]]:
             """
         )
         rows = cursor.fetchall()
+    return _serialize_genre_option_rows(rows)
+
+
+def fetch_active_background_genre_options() -> list[dict[str, object]]:
+    genre_table = BackgroundImageGenre._meta.db_table
+    image_table = BackgroundImage._meta.db_table
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"""
+            SELECT DISTINCT g.genre_id, g."group", g."name"
+            FROM "common"."genres" AS g
+            INNER JOIN "{genre_table}" AS big
+                ON big.genre_id = g.genre_id
+            INNER JOIN "{image_table}" AS bi
+                ON bi.image_id = big.image_id
+            WHERE bi.status = %s
+            ORDER BY g."group", g."name", g.genre_id
+            """,
+            [BackgroundImageStatus.ACTIVE],
+        )
+        rows = cursor.fetchall()
+    return _serialize_genre_option_rows(rows)
+
+
+def _serialize_genre_option_rows(
+    rows: list[tuple[object, object, object]],
+) -> list[dict[str, object]]:
     return [
         {
             "id": int(row[0]),

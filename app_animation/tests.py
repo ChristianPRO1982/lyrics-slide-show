@@ -430,6 +430,23 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("show_back_to_animations_action=True", template)
         self.assertIn("show_save_action=True", template)
         self.assertIn("show_lyrics_slide_show_action=True", template)
+        self.assertIn('id="animation-song-{{ card.animation_song_id }}"', template)
+
+    def test_modify_animation_script_restores_targeted_song_from_hash(self):
+        script = Path("static/js/app_animation.js").read_text()
+        self.assertIn("const restoreSongCardFromHash = () => {", script)
+        self.assertIn("/^#animation-song-(\\d+)$/.exec(hash)", script)
+        self.assertIn("setSongCardExpandedState(card, true)", script)
+        self.assertIn(
+            'toggle.setAttribute("aria-expanded", isOpen ? "true" : "false")', script
+        )
+        self.assertIn('card.scrollIntoView({ block: "start" });', script)
+
+    def test_modify_animation_script_scrolls_only_when_opening_song_options(self):
+        script = Path("static/js/app_animation.js").read_text()
+        self.assertIn("const shouldOpen = !isExpanded;", script)
+        self.assertIn("if (shouldOpen) {", script)
+        self.assertIn('card.scrollIntoView({ block: "start" });', script)
 
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
@@ -1773,6 +1790,94 @@ class AnimationViewsTests(TestCase):
         self.assertNotContains(response, image_wrong_query.title)
         self.assertNotContains(response, image_wrong_genre.title)
 
+    def test_background_picker_shows_only_genres_used_by_active_images(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Visible active"],
+            )
+            active_genre_id = int(cursor.fetchone()[0])
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Inactive only"],
+            )
+            inactive_genre_id = int(cursor.fetchone()[0])
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Pending only"],
+            )
+            pending_genre_id = int(cursor.fetchone()[0])
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Unused"],
+            )
+            unused_genre_id = int(cursor.fetchone()[0])
+
+        active_image = BackgroundImage.objects.create(
+            asset_code="bg-active-genre",
+            storage_filename="active-genre.png",
+            title="Visible",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/active-genre.png",
+            original_name="active-genre.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        inactive_image = BackgroundImage.objects.create(
+            asset_code="bg-inactive-genre",
+            storage_filename="inactive-genre.png",
+            title="Inactive",
+            target="Scout",
+            status=BackgroundImageStatus.INACTIVE,
+            stored_path="background-images/inactive/inactive-genre.png",
+            original_name="inactive-genre.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        pending_image = BackgroundImage.objects.create(
+            asset_code="bg-pending-genre",
+            storage_filename="pending-genre.png",
+            title="Pending",
+            target="Scout",
+            status=BackgroundImageStatus.PENDING,
+            stored_path="background-images/pending/pending-genre.png",
+            original_name="pending-genre.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        animation_views.replace_image_genres(active_image, [active_genre_id])
+        animation_views.replace_image_genres(inactive_image, [inactive_genre_id])
+        animation_views.replace_image_genres(pending_image, [pending_genre_id])
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "animation"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Visible active")
+        self.assertNotContains(response, "Inactive only")
+        self.assertNotContains(response, "Pending only")
+        self.assertNotContains(response, "Unused")
+        self.assertContains(response, f'value="{active_genre_id}"', html=False)
+        self.assertNotContains(response, f'value="{inactive_genre_id}"', html=False)
+        self.assertNotContains(response, f'value="{pending_genre_id}"', html=False)
+        self.assertNotContains(response, f'value="{unused_genre_id}"', html=False)
+
     def test_background_picker_sorts_images_by_title_and_renders_picker_actions(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -1824,6 +1929,59 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-picker-filter-form")
         self.assertContains(response, "data-picker-query-input")
 
+    def test_background_picker_back_link_targets_song_anchor_for_song_scope(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {"level": "song", "animation_song_id": item.animation_song_id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'href="{reverse("modify_animation", args=[animation.animation_id])}#animation-song-{item.animation_song_id}"',
+            html=False,
+        )
+
+    def test_background_picker_back_link_targets_parent_song_anchor_for_verse_scope(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_background_picker", args=[animation.animation_id]),
+            {
+                "level": "verse",
+                "animation_song_id": item.animation_song_id,
+                "verse_id": verse.verse_id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'href="{reverse("modify_animation", args=[animation.animation_id])}#animation-song-{item.animation_song_id}"',
+            html=False,
+        )
+
     def test_background_picker_post_animation_saves_image_and_clears_bg_color(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -1853,6 +2011,10 @@ class AnimationViewsTests(TestCase):
             data={"selected_asset_code": image.asset_code},
         )
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_animation", args=[animation.animation_id]),
+        )
         animation.refresh_from_db()
         self.assertEqual(animation.background_asset_code, image.asset_code)
         self.assertIsNone(animation.bg_color)
@@ -1906,6 +2068,10 @@ class AnimationViewsTests(TestCase):
             data={"selected_asset_code": image.asset_code},
         )
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            f"{reverse('modify_animation', args=[animation.animation_id])}#animation-song-{item.animation_song_id}",
+        )
         item.refresh_from_db()
         self.assertEqual(item.background_asset_code_override, image.asset_code)
         self.assertIsNone(item.bg_color_override)
@@ -1915,6 +2081,10 @@ class AnimationViewsTests(TestCase):
             data={"selected_asset_code": image.asset_code},
         )
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            f"{reverse('modify_animation', args=[animation.animation_id])}#animation-song-{item.animation_song_id}",
+        )
         override = AnimationVerseOverride.objects.get(
             animation_song=item,
             source_verse_id=verse.verse_id,

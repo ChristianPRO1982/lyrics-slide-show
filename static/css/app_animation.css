@@ -80,9 +80,24 @@
 .animation-background-genres-scroll {
     max-height: 10rem;
     overflow-y: auto;
-    display: grid;
-    gap: 0.55rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0.55rem 0.9rem;
     padding-right: 0.2rem;
+}
+
+.animation-background-genre-option {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.animation-background-genre-option input {
+    margin: 0.15rem 0 0;
+    flex: 0 0 auto;
 }
 
 .animation-background-results-grid {
@@ -638,6 +653,11 @@ body.animation-background-picker-overlay-open {
     margin-top: 0.6rem;
 }
 
+.animation-summary-actions > * {
+    flex: 1 1 100%;
+    width: 100%;
+}
+
 .animation-summary-preview {
     border: 1px solid rgba(0, 0, 0, 0.16);
     border-radius: 0.5rem;
@@ -742,6 +762,11 @@ body.animation-background-picker-overlay-open {
     min-width: 0;
 }
 
+.animation-song-reset-actions {
+    display: grid;
+    gap: 0.4rem;
+}
+
 .animation-song-style-preview-cell {
     grid-column: 3;
     grid-row: 1 / span 4;
@@ -751,17 +776,27 @@ body.animation-background-picker-overlay-open {
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 0.45rem;
     padding: 0.6rem;
-    min-height: 9.5rem;
+    width: 100%;
+    aspect-ratio: 4 / 3;
     overflow-wrap: anywhere;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .animation-song-style-preview-badge {
-    margin-bottom: 0.35rem;
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    margin: 0;
 }
 
 .animation-song-style-preview-text {
     margin: 0;
     line-height: 1.2;
+    width: 100%;
 }
 
 .animation-color-parent-controls {
@@ -769,6 +804,22 @@ body.animation-background-picker-overlay-open {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.4rem;
+}
+
+.animation-song-style-grid-cell > p,
+.animation-verse-row-reset-input > p {
+    margin: 0;
+}
+
+.animation-song-style-grid-cell > .animation-tool-button,
+.animation-song-style-grid-cell > .animation-secondary-action,
+.animation-song-style-grid-cell > p > .animation-tool-button,
+.animation-song-style-grid-cell > p > .animation-secondary-action,
+.animation-verse-row-reset-input > .animation-tool-button,
+.animation-verse-row-reset-input > .animation-secondary-action,
+.animation-verse-row-reset-input > p > .animation-tool-button,
+.animation-verse-row-reset-input > p > .animation-secondary-action {
+    width: 100%;
 }
 
 .animation-color-square {
@@ -855,6 +906,8 @@ body.animation-background-picker-overlay-open {
 .animation-verse-row-reset-input {
     grid-column: 2;
     grid-row: 6;
+    display: grid;
+    gap: 0.4rem;
 }
 
 .animation-verse-tablelike-preview {
@@ -866,17 +919,23 @@ body.animation-background-picker-overlay-open {
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 0.45rem;
     padding: 0.55rem;
-    min-height: 10.5rem;
+    width: 100%;
+    aspect-ratio: 4 / 3;
     overflow-wrap: anywhere;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .animation-verse-style-preview-content {
     margin: 0;
     line-height: 1.2;
+    width: 100%;
 }
 
 .animation-verse-style-preview-hidden {
-    margin: 0 0 0.35rem;
+    margin: 0;
     font-size: 0.85rem;
     font-weight: 700;
     display: none;
@@ -1024,10 +1083,6 @@ body.animation-background-picker-overlay-open {
         grid-row: auto;
     }
 
-    .animation-song-style-preview {
-        min-height: 7rem;
-    }
-
     .animation-verse-tablelike {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
@@ -1042,9 +1097,6 @@ body.animation-background-picker-overlay-open {
         grid-row: auto;
     }
 
-    .animation-verse-style-preview {
-        min-height: 7rem;
-    }
 }
 
 @media (min-width: 981px) {

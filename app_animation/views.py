@@ -46,6 +46,7 @@ from .services.background_images import (
     count_background_image_references,
     delete_image_file,
     ensure_background_image_dirs,
+    fetch_active_background_genre_options,
     fetch_genre_options,
     fetch_target_options,
     generate_asset_code,
@@ -253,6 +254,17 @@ def _build_background_picker_url(
         + "?"
         + urlencode(query_parts, doseq=True)
     )
+
+
+def _build_modify_animation_return_url(
+    animation: Animation,
+    *,
+    animation_song_id: int | None = None,
+) -> str:
+    url = reverse("modify_animation", args=[animation.animation_id])
+    if not animation_song_id:
+        return url
+    return f"{url}#animation-song-{int(animation_song_id)}"
 
 
 def _resolve_background_picker_target(
@@ -1142,7 +1154,16 @@ def animation_background_picker(
                     ]
                 )
             messages.success(request, _("L'image de fond a été enregistrée."))
-            return redirect("modify_animation", animation_id=animation.animation_id)
+            return redirect(
+                _build_modify_animation_return_url(
+                    animation,
+                    animation_song_id=(
+                        int(animation_song.animation_song_id)
+                        if animation_song is not None
+                        else None
+                    ),
+                )
+            )
 
     return render(
         request,
@@ -1167,10 +1188,15 @@ def animation_background_picker(
             ),
             "picker_verse_id": (int(verse.verse_id) if verse else None),
             "background_images": background_images_list,
-            "genre_options": fetch_genre_options(),
+            "genre_options": fetch_active_background_genre_options(),
             "selected_genre_ids": set(selected_genre_ids),
-            "picker_back_url": reverse(
-                "modify_animation", args=[animation.animation_id]
+            "picker_back_url": _build_modify_animation_return_url(
+                animation,
+                animation_song_id=(
+                    int(animation_song.animation_song_id)
+                    if animation_song is not None
+                    else None
+                ),
             ),
             "picker_filter_action": _build_background_picker_url(
                 animation,

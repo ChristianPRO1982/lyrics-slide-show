@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 15:46+0200\n"
+"POT-Creation-Date: 2026-07-01 17:57+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -31,7 +31,7 @@ msgstr ""
 #: app_animation/forms.py:48 app_animation/forms.py:104
 #: app_animation/forms.py:182
 #: app_animation/templates/animation/modify_animation_page_i18n.html:6
-#: app_animation/views.py:709 app_song/templates/song/modify_song.html:149
+#: app_animation/views.py:723 app_song/templates/song/modify_song.html:149
 #: docs/app_animation/maquette.html:56
 msgid "Description"
 msgstr ""
@@ -73,7 +73,7 @@ msgid "Code d'image de fond"
 msgstr ""
 
 #: app_animation/forms.py:74 app_animation/forms.py:216
-#: app_animation/views.py:722 app_song/views.py:823
+#: app_animation/views.py:734 app_song/views.py:823
 msgid "Le titre est obligatoire."
 msgstr ""
 
@@ -87,14 +87,14 @@ msgstr ""
 
 #: app_animation/forms.py:100 app_animation/forms.py:178
 #: app_animation/templates/animation/modify_animation_page_i18n.html:5
-#: app_animation/views.py:708 app_song/templates/song/modify_song.html:116
+#: app_animation/views.py:722 app_song/templates/song/modify_song.html:116
 #: app_song/templates/song/songs.html:198
 msgid "Titre"
 msgstr ""
 
 #: app_animation/forms.py:101 app_animation/forms.py:179
 #: app_animation/templates/animation/background_images.html:130
-#: app_animation/views.py:710
+#: app_animation/views.py:724
 msgid "Cible"
 msgstr ""
 
@@ -105,14 +105,14 @@ msgstr ""
 #: app_animation/forms.py:110 app_animation/forms.py:187
 #: app_animation/templates/animation/background_images.html:80
 #: app_animation/templates/animation/background_images.html:132
-#: app_animation/views.py:711 app_song/templates/song/metadata.html:126
+#: app_animation/views.py:725 app_song/templates/song/metadata.html:126
 #: app_song/templates/song/modify_genres.html:23
 #: app_song/templates/song/songs.html:260
 msgid "Genres"
 msgstr ""
 
-#: app_animation/forms.py:176 app_animation/views.py:714
-#: app_animation/views.py:720
+#: app_animation/forms.py:176 app_animation/views.py:728
+#: app_animation/views.py:732
 msgid "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
 msgstr ""
 
@@ -165,18 +165,18 @@ msgstr ""
 #: app_animation/services/song_edits.py:53
 #: app_animation/templates/animation/lyrics_slide_show.html:253
 #: app_animation/templates/animation/lyrics_slide_show.html:262
-#: app_animation/views.py:395 app_animation/views.py:1336
-#: app_animation/views.py:1348 app_song/rendering.py:38
+#: app_animation/views.py:413 app_animation/views.py:1367
+#: app_animation/views.py:1379 app_song/rendering.py:38
 #: app_song/rendering.py:41 app_song/templates/song/modify_song.html:259
 #: app_song/templates/song/modify_song_page_i18n.html:14
 msgid "Refrain"
 msgstr ""
 
-#: app_animation/services/song_edits.py:55 app_animation/views.py:397
+#: app_animation/services/song_edits.py:55 app_animation/views.py:415
 msgid "Section spéciale"
 msgstr ""
 
-#: app_animation/services/song_edits.py:58 app_animation/views.py:393
+#: app_animation/services/song_edits.py:58 app_animation/views.py:411
 #, python-format
 msgid "Couplet %(number)s"
 msgstr ""
@@ -257,7 +257,6 @@ msgid "Fond"
 msgstr ""
 
 #: app_animation/templates/animation/add_animation.html:93
-#: app_animation/templates/animation/modify_animation.html:84
 #: app_animation/templates/animation/modify_animation.html:201
 #: app_animation/templates/animation/modify_animation.html:293
 msgid "Couleurs"
@@ -286,7 +285,7 @@ msgstr ""
 #: app_animation/templates/animation/add_animation.html:147
 #: app_animation/templates/animation/lyrics_slide_show.html:99
 #: app_animation/templates/animation/modify_animation_page_i18n.html:18
-#: app_animation/views.py:1331 app_song/templates/song/modify_song.html:287
+#: app_animation/views.py:1362 app_song/templates/song/modify_song.html:287
 #: app_song/templates/song/modify_song_page_i18n.html:20 templates/base.html:99
 msgid "OK"
 msgstr ""
@@ -360,10 +359,12 @@ msgid "Recherche"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:64
+#: app_animation/templates/animation/background_picker.html:86
 msgid "Nom"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:65
+#: app_animation/templates/animation/background_picker.html:92
 msgid "Titre de l’image"
 msgstr ""
 
@@ -372,7 +373,7 @@ msgid "Filtrer"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:68
-#: app_animation/templates/animation/background_picker.html:98
+#: app_animation/templates/animation/background_picker.html:112
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
 #: app_song/templates/song/songs.html:113
 msgid "Réinitialiser"
@@ -387,7 +388,7 @@ msgid "Images inactives"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:87
-#: app_animation/views.py:712
+#: app_animation/views.py:726
 msgid "Trouver un genre"
 msgstr ""
 
@@ -431,7 +432,7 @@ msgid "Supprimer définitivement"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:188
-#: app_animation/templates/animation/background_picker.html:158
+#: app_animation/templates/animation/background_picker.html:172
 msgid "Aucune image ne correspond à ce filtre."
 msgstr ""
 
@@ -453,7 +454,7 @@ msgstr ""
 
 #: app_animation/templates/animation/background_images.html:202
 #: app_animation/templates/animation/lyrics_slide_show.html:102
-#: app_animation/views.py:707 app_animation/views.py:1366
+#: app_animation/views.py:721 app_animation/views.py:1397
 #: app_song/templates/song/modify_song_page_i18n.html:9
 #: app_song/templates/song/song_page_i18n.html:31 templates/base.html:102
 msgid "Annuler"
@@ -494,29 +495,28 @@ msgstr ""
 msgid "Filtres"
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:85
-#: app_animation/templates/animation/background_picker.html:150
+#: app_animation/templates/animation/background_picker.html:99
+#: app_animation/templates/animation/background_picker.html:164
 msgid "Tags"
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:93
+#: app_animation/templates/animation/background_picker.html:107
 msgid "Aucun tag disponible."
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:113
+#: app_animation/templates/animation/background_picker.html:127
 msgid "Sélectionner cette image"
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:114
+#: app_animation/templates/animation/background_picker.html:128
 msgid "Fermer l’aperçu"
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:118
-#: app_animation/templates/animation/modify_animation.html:182
+#: app_animation/templates/animation/background_picker.html:132
 msgid "Exemple"
 msgstr ""
 
-#: app_animation/templates/animation/background_picker.html:152
+#: app_animation/templates/animation/background_picker.html:166
 msgid "Aucun tag"
 msgstr ""
 
@@ -535,7 +535,7 @@ msgstr ""
 #: app_animation/templates/animation/includes/_animation_context_actions.html:12
 #: app_animation/templates/animation/modify_background_targets.html:40
 #: app_animation/templates/animation/modify_background_targets.html:80
-#: app_animation/views.py:706 app_animation/views.py:1365
+#: app_animation/views.py:720 app_animation/views.py:1396
 #: app_song/templates/song/metadata.html:50
 #: app_song/templates/song/modify_artists.html:35
 #: app_song/templates/song/modify_artists.html:73
@@ -686,7 +686,7 @@ msgid "Chant"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:241
-#: app_animation/views.py:1332
+#: app_animation/views.py:1363
 msgid "Aucun"
 msgstr ""
 
@@ -699,7 +699,7 @@ msgid "Aucune"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:251
-#: app_animation/views.py:106 app_animation/views.py:1335
+#: app_animation/views.py:108 app_animation/views.py:1366
 msgid "BLACK MODE"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:254
 #: app_animation/templates/animation/lyrics_slide_show.html:274
-#: app_animation/views.py:1338
+#: app_animation/views.py:1369
 msgid "Diapo suivante"
 msgstr ""
 
@@ -722,7 +722,7 @@ msgid "Raccourcis clavier (personnalisable)"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:261
-#: app_animation/views.py:1346
+#: app_animation/views.py:1377
 msgid "Stop scroll"
 msgstr ""
 
@@ -731,7 +731,7 @@ msgid "QR-code"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:269
-#: app_animation/views.py:1337
+#: app_animation/views.py:1368
 msgid "Diapo en cours"
 msgstr ""
 
@@ -786,6 +786,10 @@ msgstr ""
 msgid "Données générales"
 msgstr ""
 
+#: app_animation/templates/animation/modify_animation.html:84
+msgid "Police et couleurs"
+msgstr ""
+
 #: app_animation/templates/animation/modify_animation.html:86
 #: app_animation/templates/animation/modify_animation_page_i18n.html:4
 msgid "Liste des polices"
@@ -795,29 +799,29 @@ msgstr ""
 msgid "Des erreurs empêchent l'enregistrement"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:131
-#: app_animation/templates/animation/modify_animation.html:135
+#: app_animation/templates/animation/modify_animation.html:132
+#: app_animation/templates/animation/modify_animation.html:136
 msgid "Afficher les options"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:132
+#: app_animation/templates/animation/modify_animation.html:133
 msgid "Masquer les options"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:157
+#: app_animation/templates/animation/modify_animation.html:158
 #: app_animation/templates/animation/modify_animation_page_i18n.html:54
 msgid "Voir le texte du chant"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:162
+#: app_animation/templates/animation/modify_animation.html:163
 msgid "Aller vers le chant"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:170
+#: app_animation/templates/animation/modify_animation.html:171
 msgid "Police du chant"
 msgstr ""
 
-#: app_animation/templates/animation/modify_animation.html:174
+#: app_animation/templates/animation/modify_animation.html:175
 msgid "Même police que l'animation"
 msgstr ""
 
@@ -1140,286 +1144,286 @@ msgstr ""
 msgid "Envoyer pour modération"
 msgstr ""
 
-#: app_animation/views.py:107
+#: app_animation/views.py:109
 msgid "Previous slide"
 msgstr ""
 
-#: app_animation/views.py:108
+#: app_animation/views.py:110
 msgid "Next slide"
 msgstr ""
 
-#: app_animation/views.py:109
+#: app_animation/views.py:111
 msgid "Chorus"
 msgstr ""
 
-#: app_animation/views.py:110
+#: app_animation/views.py:112
 msgid "Display current slide window"
 msgstr ""
 
-#: app_animation/views.py:111
+#: app_animation/views.py:113
 msgid "Previous song"
 msgstr ""
 
-#: app_animation/views.py:112
+#: app_animation/views.py:114
 msgid "Next song"
 msgstr ""
 
-#: app_animation/views.py:113
+#: app_animation/views.py:115
 msgid "Display/hide choruses"
 msgstr ""
 
-#: app_animation/views.py:114
+#: app_animation/views.py:116
 msgid "Scroll on ↕️ or not 🧱"
 msgstr ""
 
-#: app_animation/views.py:115
+#: app_animation/views.py:117
 msgid "📱 QR code for lyrics"
 msgstr ""
 
-#: app_animation/views.py:179
+#: app_animation/views.py:181
 #, python-format
 msgid "L'image dépasse la taille autorisée (%(size).1f Mo maximum)."
 msgstr ""
 
-#: app_animation/views.py:183
+#: app_animation/views.py:185
 msgid "L'extension de cette image n'est pas autorisée."
 msgstr ""
 
-#: app_animation/views.py:185
+#: app_animation/views.py:187
 msgid "Le type MIME de cette image n'est pas autorisé."
 msgstr ""
 
-#: app_animation/views.py:187
+#: app_animation/views.py:189
 msgid "Le fichier envoyé n'est pas une image valide."
 msgstr ""
 
-#: app_animation/views.py:189
+#: app_animation/views.py:191
 msgid "L'image est trop petite pour être utilisée en fond."
 msgstr ""
 
-#: app_animation/views.py:191
+#: app_animation/views.py:193
 msgid "L'image dépasse les dimensions autorisées."
 msgstr ""
 
-#: app_animation/views.py:193
+#: app_animation/views.py:195
 msgid "Le ratio de l'image n'est pas autorisé."
 msgstr ""
 
-#: app_animation/views.py:194
+#: app_animation/views.py:196
 msgid "Cette image n'est pas conforme."
 msgstr ""
 
-#: app_animation/views.py:311
+#: app_animation/views.py:329
 msgid "Image de fond de l'animation"
 msgstr ""
 
-#: app_animation/views.py:350
+#: app_animation/views.py:368
 msgid "Image de fond du chant"
 msgstr ""
 
-#: app_animation/views.py:406
+#: app_animation/views.py:424
 msgid "Image de fond du couplet"
 msgstr ""
 
-#: app_animation/views.py:455
+#: app_animation/views.py:473
 msgid "Pour créer une cible, l'ordre doit être un entier valide."
 msgstr ""
 
-#: app_animation/views.py:468
+#: app_animation/views.py:486
 #, python-format
 msgid "Création impossible pour la cible \"%(name)s\"."
 msgstr ""
 
-#: app_animation/views.py:473
+#: app_animation/views.py:491
 msgid "Pour créer une cible, renseignez à la fois le nom et l'ordre."
 msgstr ""
 
-#: app_animation/views.py:492
+#: app_animation/views.py:510
 #, python-format
 msgid "Suppression impossible pour la cible #%(target_id)s."
 msgstr ""
 
-#: app_animation/views.py:502
+#: app_animation/views.py:520
 #, python-format
 msgid ""
 "Mise à jour ignorée pour la cible #%(target_id)s (nom et ordre obligatoires)."
 msgstr ""
 
-#: app_animation/views.py:511
+#: app_animation/views.py:529
 #, python-format
 msgid "Mise à jour ignorée pour la cible #%(target_id)s (ordre invalide)."
 msgstr ""
 
-#: app_animation/views.py:531
+#: app_animation/views.py:549
 #, python-format
 msgid "Mise à jour impossible pour la cible #%(target_id)s."
 msgstr ""
 
-#: app_animation/views.py:536 app_song/views.py:1155 app_song/views.py:1315
+#: app_animation/views.py:554 app_song/views.py:1155 app_song/views.py:1315
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_animation/views.py:538 app_song/views.py:1157 app_song/views.py:1317
+#: app_animation/views.py:556 app_song/views.py:1157 app_song/views.py:1317
 #, python-format
 msgid "%(count)s mise(s) à jour"
 msgstr ""
 
-#: app_animation/views.py:540 app_song/views.py:1159 app_song/views.py:1319
+#: app_animation/views.py:558 app_song/views.py:1159 app_song/views.py:1319
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
 
-#: app_animation/views.py:545
+#: app_animation/views.py:563
 #, python-format
 msgid "Cibles enregistrées : %(summary)s."
 msgstr ""
 
-#: app_animation/views.py:574
+#: app_animation/views.py:592
 msgid "Seules les images inactives peuvent être modifiées."
 msgstr ""
 
-#: app_animation/views.py:594 app_animation/views.py:717
+#: app_animation/views.py:610 app_animation/views.py:730
 msgid "Impossible d'enregistrer les modifications."
 msgstr ""
 
-#: app_animation/views.py:612
+#: app_animation/views.py:627
 msgid "L'image inactive a été mise à jour."
 msgstr ""
 
-#: app_animation/views.py:631
+#: app_animation/views.py:645
 msgid "L'image a été validée puis placée en inactif."
 msgstr ""
 
-#: app_animation/views.py:638
+#: app_animation/views.py:652
 msgid "L'image en attente a été supprimée."
 msgstr ""
 
-#: app_animation/views.py:643
+#: app_animation/views.py:657
 msgid "L'image a été activée."
 msgstr ""
 
-#: app_animation/views.py:652
+#: app_animation/views.py:666
 #, python-format
 msgid ""
 "L'image était utilisée dans %(animations)s animation(s), %(songs)s chant(s) "
 "d'animation et %(verses)s couplet(s). Les références ont été supprimées."
 msgstr ""
 
-#: app_animation/views.py:658
+#: app_animation/views.py:672
 msgid "L'image a été désactivée."
 msgstr ""
 
-#: app_animation/views.py:663
+#: app_animation/views.py:677
 msgid "L'image inactive a été supprimée définitivement."
 msgstr ""
 
-#: app_animation/views.py:667
+#: app_animation/views.py:681
 msgid "Action impossible pour l'état courant de l'image."
 msgstr ""
 
-#: app_animation/views.py:705
+#: app_animation/views.py:719
 msgid "Modifier l'image inactive"
 msgstr ""
 
-#: app_animation/views.py:736 app_song/views.py:934 app_song/views.py:957
+#: app_animation/views.py:748 app_song/views.py:934 app_song/views.py:957
 #: app_song/views.py:992
 msgid "Action inconnue."
 msgstr ""
 
-#: app_animation/views.py:813
+#: app_animation/views.py:825
 msgid "Impossible d'enregistrer l'image pour le moment."
 msgstr ""
 
-#: app_animation/views.py:830
+#: app_animation/views.py:842
 msgid "L'image a été envoyée pour modération."
 msgstr ""
 
-#: app_animation/views.py:880
+#: app_animation/views.py:892
 msgid "L'animation a été créée."
 msgstr ""
 
-#: app_animation/views.py:988
+#: app_animation/views.py:1000
 msgid "L'animation a été enregistrée."
 msgstr ""
 
-#: app_animation/views.py:1104
+#: app_animation/views.py:1118
 msgid "Choisissez une image de fond."
 msgstr ""
 
-#: app_animation/views.py:1142
+#: app_animation/views.py:1156
 msgid "L'image de fond a été enregistrée."
 msgstr ""
 
-#: app_animation/views.py:1321
+#: app_animation/views.py:1352
 msgid "Ouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:1322
+#: app_animation/views.py:1353
 msgid "Rouvrir le second écran"
 msgstr ""
 
-#: app_animation/views.py:1323
+#: app_animation/views.py:1354
 msgid "Fenêtre bloquée"
 msgstr ""
 
-#: app_animation/views.py:1325
+#: app_animation/views.py:1356
 msgid "Le navigateur a bloqué l'ouverture du second écran."
 msgstr ""
 
-#: app_animation/views.py:1327
+#: app_animation/views.py:1358
 msgid "Préchargement incomplet"
 msgstr ""
 
-#: app_animation/views.py:1329
+#: app_animation/views.py:1360
 msgid "Certaines images de fond n'ont pas pu être préchargées."
 msgstr ""
 
-#: app_animation/views.py:1333
+#: app_animation/views.py:1364
 msgid "Aucune diapo projetée."
 msgstr ""
 
-#: app_animation/views.py:1334
+#: app_animation/views.py:1365
 msgid "Aucune diapo suivante."
 msgstr ""
 
-#: app_animation/views.py:1339
+#: app_animation/views.py:1370
 msgid "QR code pour les paroles"
 msgstr ""
 
-#: app_animation/views.py:1340
+#: app_animation/views.py:1371
 msgid "Refrains masqués dans la grille."
 msgstr ""
 
-#: app_animation/views.py:1341
+#: app_animation/views.py:1372
 msgid "Scroll bloqué"
 msgstr ""
 
-#: app_animation/views.py:1342
+#: app_animation/views.py:1373
 msgid "Scroll autorisé"
 msgstr ""
 
-#: app_animation/views.py:1344
+#: app_animation/views.py:1375
 msgid "Scroll"
 msgstr ""
 
-#: app_animation/views.py:1350
+#: app_animation/views.py:1381
 msgid "Pas de refrain"
 msgstr ""
 
-#: app_animation/views.py:1351
+#: app_animation/views.py:1382
 msgid "Raccourcis clavier"
 msgstr ""
 
-#: app_animation/views.py:1352 app_animation/views.py:1354
+#: app_animation/views.py:1383 app_animation/views.py:1385
 msgid "Personnaliser les raccourcis"
 msgstr ""
 
-#: app_animation/views.py:1353
+#: app_animation/views.py:1384
 msgid "⌨️👈 in upper or lower case"
 msgstr ""
 
-#: app_animation/views.py:1356
+#: app_animation/views.py:1387
 msgid ""
 "Clique sur un slot puis appuie sur une touche simple.\n"
 "Jusqu'à 3 touches par action.\n"
@@ -1429,51 +1433,51 @@ msgid ""
 "Laisser vide désactive l'action personnalisable."
 msgstr ""
 
-#: app_animation/views.py:1363
+#: app_animation/views.py:1394
 msgid "Appuyer sur une touche"
 msgstr ""
 
-#: app_animation/views.py:1364
+#: app_animation/views.py:1395
 msgid "Effacer ce raccourci"
 msgstr ""
 
-#: app_animation/views.py:1367
+#: app_animation/views.py:1398
 msgid "Revenir aux raccourcis du site"
 msgstr ""
 
-#: app_animation/views.py:1369
+#: app_animation/views.py:1400
 msgid "La personnalisation des raccourcis nécessite une connexion."
 msgstr ""
 
-#: app_animation/views.py:1371
+#: app_animation/views.py:1402
 msgid "Connexion requise"
 msgstr ""
 
-#: app_animation/views.py:1372
+#: app_animation/views.py:1403
 msgid "Enregistrement impossible"
 msgstr ""
 
-#: app_animation/views.py:1374
+#: app_animation/views.py:1405
 msgid "Les raccourcis n'ont pas pu être enregistrés."
 msgstr ""
 
-#: app_animation/views.py:1390
+#: app_animation/views.py:1421
 msgid "Aucun groupe sélectionné."
 msgstr ""
 
-#: app_animation/views.py:1399
+#: app_animation/views.py:1430
 msgid "La personnalisation nécessite une connexion."
 msgstr ""
 
-#: app_animation/views.py:1490
+#: app_animation/views.py:1521
 msgid "En attente du maître"
 msgstr ""
 
-#: app_animation/views.py:1491
+#: app_animation/views.py:1522
 msgid "APPUYEZ SUR F11 SUR CETTE ÉCRAN"
 msgstr ""
 
-#: app_animation/views.py:1549
+#: app_animation/views.py:1580
 msgid "L'animation a été supprimée."
 msgstr ""
 
