@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.3...v2.12.0) (2026-07-01)
+
+
+### Features
+
+* implement background genre options fetching and enhance animation song card interactions ([8de3498](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8de3498a2f980906a1545b68d684e17f81885313))
+
 ## [2.11.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.2...v2.11.3) (2026-06-30)
 
 
