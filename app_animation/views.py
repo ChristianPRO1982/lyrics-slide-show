@@ -256,6 +256,30 @@ def _build_background_picker_url(
     )
 
 
+def _build_style_picker_url(
+    animation: Animation,
+    *,
+    level: str,
+    animation_song_id: int | None = None,
+    verse_id: int | None = None,
+    selected_occurrence_token: str | None = None,
+) -> str:
+    query_parts: list[tuple[str, str | int]] = [
+        ("level", _normalize_background_picker_level(level))
+    ]
+    if animation_song_id:
+        query_parts.append(("animation_song_id", int(animation_song_id)))
+    if verse_id:
+        query_parts.append(("verse_id", int(verse_id)))
+    if selected_occurrence_token:
+        query_parts.append(("selected_occurrence_token", selected_occurrence_token))
+    return (
+        reverse("animation_style_picker", args=[animation.animation_id])
+        + "?"
+        + urlencode(query_parts, doseq=True)
+    )
+
+
 def _build_modify_animation_return_url(
     animation: Animation,
     *,
@@ -424,6 +448,262 @@ def _resolve_picker_scope_style(
         "scope_title": _("Image de fond du couplet"),
         "scope_label": f"{animation_song.song.display_title} - {verse_label}",
     }
+
+
+def _build_picker_scope_heading(level: str, *, picker_kind: str) -> str:
+    normalized_level = _normalize_background_picker_level(level)
+    if picker_kind == "style":
+        if normalized_level == "animation":
+            return _("Style de l'animation")
+        if normalized_level == "song":
+            return _("Style du chant")
+        return _("Style du couplet")
+    if normalized_level == "animation":
+        return _("Image de fond de l'animation")
+    if normalized_level == "song":
+        return _("Image de fond du chant")
+    return _("Image de fond du couplet")
+
+
+def _resolve_style_source_scope(
+    animation: Animation,
+    animation_song: AnimationSong,
+    verse_override: AnimationVerseOverride | None,
+) -> str:
+    if verse_override and verse_override.font_size_override is not None:
+        return "verse"
+    if animation_song.font_size_override is not None:
+        return "song"
+    return "animation"
+
+
+def _build_style_occurrence_label(
+    slide,
+    *,
+    source_scope: str,
+) -> str:
+    if source_scope == "song":
+        return _("Chant : %(title)s") % {"title": slide.song_title}
+    if source_scope == "verse":
+        return _("%(title)s - %(label)s") % {
+            "title": slide.song_title,
+            "label": slide.label,
+        }
+    return _("Animation - %(title)s - %(label)s") % {
+        "title": slide.song_title,
+        "label": slide.label,
+    }
+
+
+def _build_style_picker_options(animation: Animation) -> list[dict[str, object]]:
+    animation_songs = list(
+        animation.animation_songs.select_related("song")
+        .prefetch_related("song__verses", "verse_overrides")
+        .order_by("position", "animation_song_id")
+    )
+    animation_songs_by_id = {
+        int(item.animation_song_id): item for item in animation_songs
+    }
+    verse_overrides_by_key = {
+        (int(item.animation_song_id), int(override.source_verse_id)): override
+        for item in animation_songs
+        for override in item.verse_overrides.all()
+    }
+
+    options_by_key: dict[
+        tuple[str, int, str, str, str],
+        dict[str, object],
+    ] = {}
+    for slide in build_animation_render_bundle(animation):
+        background_asset_code = str(slide.style.background_asset_code or "").strip()
+        style_key = (
+            str(slide.style.font_family),
+            int(slide.style.font_size),
+            str(slide.style.text_color),
+            str(slide.style.bg_color),
+            background_asset_code,
+        )
+        animation_song = animation_songs_by_id.get(int(slide.animation_song_id))
+        if animation_song is None:
+            continue
+        verse_override = None
+        if slide.source_verse_id is not None:
+            verse_override = verse_overrides_by_key.get(
+                (int(slide.animation_song_id), int(slide.source_verse_id))
+            )
+        source_scope = _resolve_style_source_scope(
+            animation,
+            animation_song,
+            verse_override,
+        )
+        occurrence_token = (
+            f"{source_scope}:{int(slide.animation_song_id)}:"
+            f"{int(slide.source_verse_id or 0)}"
+        )
+        option = options_by_key.setdefault(
+            style_key,
+            {
+                "style_key": "|".join(
+                    [
+                        str(slide.style.font_family),
+                        str(int(slide.style.font_size)),
+                        str(slide.style.text_color),
+                        str(slide.style.bg_color),
+                        background_asset_code,
+                    ]
+                ),
+                "font_family": str(slide.style.font_family),
+                "font_size": int(slide.style.font_size),
+                "text_color": str(slide.style.text_color),
+                "bg_color": str(slide.style.bg_color),
+                "background_asset_code": background_asset_code,
+                "background_url": resolve_background_asset_url(background_asset_code),
+                "occurrences": [],
+                "preview_occurrences": [],
+                "occurrence_tokens": set(),
+            },
+        )
+        if occurrence_token in option["occurrence_tokens"]:
+            continue
+        occurrence = {
+            "token": occurrence_token,
+            "source_scope": source_scope,
+            "label": _build_style_occurrence_label(slide, source_scope=source_scope),
+        }
+        option["occurrences"].append(occurrence)
+        option["occurrence_tokens"].add(occurrence_token)
+        if len(option["preview_occurrences"]) < 3:
+            option["preview_occurrences"].append(occurrence)
+
+    options = []
+    for option in options_by_key.values():
+        option["preview_has_more"] = len(option["occurrences"]) > len(
+            option["preview_occurrences"]
+        )
+        option.pop("occurrence_tokens", None)
+        options.append(option)
+    options.sort(
+        key=lambda item: (
+            str(item["font_family"]).casefold(),
+            int(item["font_size"]),
+            str(item["text_color"]).casefold(),
+            str(item["bg_color"]).casefold(),
+            str(item["background_asset_code"]).casefold(),
+        )
+    )
+    return options
+
+
+def _find_style_picker_default_token(
+    picker_scope_style: dict[str, object],
+    style_options: list[dict[str, object]],
+) -> str:
+    target_font_family = str(picker_scope_style.get("font_family") or "").strip()
+    target_font_size = int(picker_scope_style.get("font_size") or 0)
+    target_text_color = str(picker_scope_style.get("text_color") or "").strip()
+    target_bg_color = str(picker_scope_style.get("bg_color") or "").strip()
+    target_bg_asset = str(
+        picker_scope_style.get("effective_background_asset_code") or ""
+    ).strip()
+    for option in style_options:
+        if (
+            str(option.get("font_family") or "").strip() == target_font_family
+            and int(option.get("font_size") or 0) == target_font_size
+            and str(option.get("text_color") or "").strip() == target_text_color
+            and str(option.get("bg_color") or "").strip() == target_bg_color
+            and str(option.get("background_asset_code") or "").strip() == target_bg_asset
+        ):
+            occurrences = option.get("occurrences") or []
+            if occurrences:
+                return str(occurrences[0].get("token") or "").strip()
+    return ""
+
+
+def _apply_copied_style_to_target(
+    *,
+    animation: Animation,
+    level: str,
+    source_scope: str,
+    copied_style: dict[str, object],
+    animation_song: AnimationSong | None = None,
+    verse: Verse | None = None,
+) -> None:
+    font_family = str(copied_style.get("font_family") or "").strip() or animation.font_family
+    text_color = str(copied_style.get("text_color") or "").strip() or animation.text_color
+    bg_color = str(copied_style.get("bg_color") or "").strip() or "#000000"
+    background_asset_code = str(
+        copied_style.get("background_asset_code") or ""
+    ).strip()
+    font_size = int(copied_style.get("font_size") or animation.font_size)
+
+    if level == "animation":
+        animation.font_family = font_family
+        animation.text_color = text_color
+        if background_asset_code:
+            animation.background_asset_code = background_asset_code
+            animation.bg_color = None
+        else:
+            animation.background_asset_code = None
+            animation.bg_color = bg_color
+        animation.save(
+            update_fields=[
+                "font_family",
+                "text_color",
+                "background_asset_code",
+                "bg_color",
+            ]
+        )
+        return
+
+    if animation_song is None:
+        raise Http404
+
+    if level == "song":
+        animation_song.font_family_override = font_family
+        animation_song.text_color_override = text_color
+        if background_asset_code:
+            animation_song.background_asset_code_override = background_asset_code
+            animation_song.bg_color_override = None
+        else:
+            animation_song.background_asset_code_override = None
+            animation_song.bg_color_override = bg_color
+        update_fields = [
+            "font_family_override",
+            "text_color_override",
+            "background_asset_code_override",
+            "bg_color_override",
+        ]
+        if source_scope == "song":
+            animation_song.font_size_override = font_size
+            update_fields.append("font_size_override")
+        animation_song.save(update_fields=update_fields)
+        return
+
+    if verse is None:
+        raise Http404
+    verse_override, _created = AnimationVerseOverride.objects.get_or_create(
+        animation_song=animation_song,
+        source_verse_id=verse.verse_id,
+        defaults={"is_visible": True},
+    )
+    verse_override.font_family_override = font_family
+    verse_override.text_color_override = text_color
+    if background_asset_code:
+        verse_override.background_asset_code_override = background_asset_code
+        verse_override.bg_color_override = None
+    else:
+        verse_override.background_asset_code_override = None
+        verse_override.bg_color_override = bg_color
+    update_fields = [
+        "font_family_override",
+        "text_color_override",
+        "background_asset_code_override",
+        "bg_color_override",
+    ]
+    if source_scope == "verse":
+        verse_override.font_size_override = font_size
+        update_fields.append("font_size_override")
+    verse_override.save(update_fields=update_fields)
 
 
 def _fetch_target_rows() -> list[dict[str, object]]:
@@ -981,20 +1261,37 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                 str(request.POST.get("background_picker_after_save") or "").strip()
                 == "1"
             ):
+                picker_kind = str(request.POST.get("picker_kind") or "").strip()
+                picker_level = request.POST.get("background_picker_level")
+                picker_animation_song_id = (
+                    _safe_int(
+                        request.POST.get("background_picker_animation_song_id"),
+                        fallback=0,
+                    )
+                    or None
+                )
+                picker_verse_id = (
+                    _safe_int(
+                        request.POST.get("background_picker_source_verse_id"),
+                        fallback=0,
+                    )
+                    or None
+                )
+                if picker_kind == "style":
+                    return redirect(
+                        _build_style_picker_url(
+                            animation,
+                            level=picker_level,
+                            animation_song_id=picker_animation_song_id,
+                            verse_id=picker_verse_id,
+                        )
+                    )
                 return redirect(
                     _build_background_picker_url(
                         animation,
-                        level=request.POST.get("background_picker_level"),
-                        animation_song_id=_safe_int(
-                            request.POST.get("background_picker_animation_song_id"),
-                            fallback=0,
-                        )
-                        or None,
-                        verse_id=_safe_int(
-                            request.POST.get("background_picker_source_verse_id"),
-                            fallback=0,
-                        )
-                        or None,
+                        level=picker_level,
+                        animation_song_id=picker_animation_song_id,
+                        verse_id=picker_verse_id,
                     )
                 )
             messages.success(request, _("L'animation a été enregistrée."))
@@ -1040,6 +1337,9 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "backgroundImageOptions": _background_image_popup_options(),
                 "backgroundPickerUrl": reverse(
                     "animation_background_picker", args=[animation.animation_id]
+                ),
+                "stylePickerUrl": reverse(
+                    "animation_style_picker", args=[animation.animation_id]
                 ),
                 "backgroundImageGenres": fetch_genre_options(),
                 # Backward compatibility key kept while consumers migrate.
@@ -1205,6 +1505,122 @@ def animation_background_picker(
                     int(animation_song.animation_song_id) if animation_song else None
                 ),
                 verse_id=(int(verse.verse_id) if verse else None),
+            ),
+        },
+    )
+
+
+def animation_style_picker(request: HttpRequest, animation_id: int) -> HttpResponse:
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return redirect_to_groups_when_no_selection(request)
+
+    animation = get_object_or_404(Animation, animation_id=animation_id)
+    if animation.group_id != selected_group.group_id:
+        raise Http404
+
+    raw_level = request.GET.get("level") or request.POST.get("level")
+    raw_animation_song_id = request.GET.get("animation_song_id") or request.POST.get(
+        "animation_song_id"
+    )
+    raw_verse_id = request.GET.get("verse_id") or request.POST.get("verse_id")
+    level, animation_song, verse = _resolve_background_picker_target(
+        animation,
+        level=raw_level,
+        animation_song_id=_safe_int(raw_animation_song_id, fallback=0) or None,
+        verse_id=_safe_int(raw_verse_id, fallback=0) or None,
+    )
+    scope_style = _resolve_picker_scope_style(
+        animation,
+        level=level,
+        animation_song=animation_song,
+        verse=verse,
+    )
+    style_options = _build_style_picker_options(animation)
+    valid_occurrence_tokens = {
+        str(occurrence["token"]).strip()
+        for option in style_options
+        for occurrence in option["occurrences"]
+    }
+    selected_occurrence_token = str(
+        request.GET.get("selected_occurrence_token") or ""
+    ).strip()
+    if not selected_occurrence_token:
+        selected_occurrence_token = _find_style_picker_default_token(
+            scope_style,
+            style_options,
+        )
+    if selected_occurrence_token not in valid_occurrence_tokens:
+        selected_occurrence_token = ""
+
+    picker_error = ""
+    if request.method == "POST":
+        selected_occurrence_token = str(
+            request.POST.get("selected_occurrence_token") or ""
+        ).strip()
+        selected_option = next(
+            (
+                (option, occurrence)
+                for option in style_options
+                for occurrence in option["occurrences"]
+                if str(occurrence["token"]).strip() == selected_occurrence_token
+            ),
+            None,
+        )
+        if selected_option is None:
+            picker_error = _("Choisissez un style.")
+        else:
+            option, occurrence = selected_option
+            _apply_copied_style_to_target(
+                animation=animation,
+                level=level,
+                source_scope=str(occurrence["source_scope"]),
+                copied_style=option,
+                animation_song=animation_song,
+                verse=verse,
+            )
+            messages.success(request, _("Le style a été copié."))
+            return redirect(
+                _build_modify_animation_return_url(
+                    animation,
+                    animation_song_id=(
+                        int(animation_song.animation_song_id)
+                        if animation_song is not None
+                        else None
+                    ),
+                )
+            )
+
+    return render(
+        request,
+        "animation/style_picker.html",
+        {
+            "selected_group": selected_group,
+            "animation": animation,
+            "picker_level": level,
+            "picker_scope_style": scope_style,
+            "picker_scope_label": str(scope_style["scope_label"]),
+            "picker_scope_title": _build_picker_scope_heading(
+                level, picker_kind="style"
+            ),
+            "picker_selected_occurrence_token": selected_occurrence_token,
+            "picker_error": picker_error,
+            "picker_base_url": reverse(
+                "animation_style_picker", args=[animation.animation_id]
+            ),
+            "picker_animation_song_id": (
+                int(animation_song.animation_song_id) if animation_song else None
+            ),
+            "picker_verse_id": (int(verse.verse_id) if verse else None),
+            "style_options": style_options,
+            "picker_back_url": _build_modify_animation_return_url(
+                animation,
+                animation_song_id=(
+                    int(animation_song.animation_song_id)
+                    if animation_song is not None
+                    else None
+                ),
             ),
         },
     )

@@ -55,6 +55,7 @@
         {{ form.font_size.as_hidden }}
         {{ form.horizontal_padding.as_hidden }}
         {{ form.background_asset_code.as_hidden }}
+        <input type="hidden" name="picker_kind" value="" data-picker-kind>
         <input type="hidden" name="background_picker_level" value="" data-background-picker-level>
         <input type="hidden" name="background_picker_animation_song_id" value="" data-background-picker-animation-song-id>
         <input type="hidden" name="background_picker_source_verse_id" value="" data-background-picker-source-verse-id>
@@ -82,7 +83,10 @@
     <div class="animation-summary-actions">
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-general">{% trans "Données générales" %}</button>
         <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-visual">{% trans "Police et couleurs" %}</button>
-        <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-background-picker" data-background-target-level="animation">{% trans "Image de fond" %}</button>
+        <div class="animation-dual-action-row">
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-background-picker" data-background-target-level="animation">{% trans "Image" %}</button>
+            <button type="button" class="animation-tool-button site-action site-action--primary" data-animation-action="open-style-picker" data-style-target-level="animation">{% trans "Style" %}</button>
+        </div>
         <button type="button" class="animation-secondary-action site-action site-action--secondary" data-animation-action="open-font-list">{% trans "Liste des polices" %}</button>
     </div>
 {% endblock %}
@@ -185,7 +189,7 @@
                             </div>
 
                             <div class="animation-song-style-grid-cell">
-                                <label for="song-font-size-delta-{{ card.animation_song_id }}">{% trans "Taille du chant" %}</label>
+                                <label for="song-font-size-delta-{{ card.animation_song_id }}">{% trans "Taille de la police" %}</label>
                             </div>
                             <div class="animation-song-style-grid-cell">
                                 <select id="song-font-size-delta-{{ card.animation_song_id }}" data-song-font-size-delta>
@@ -227,11 +231,14 @@
                                 {% trans "Réinitialisation" %}
                             </div>
                             <div class="animation-song-style-grid-cell animation-song-reset-actions">
-                                <p>
+                                <div class="animation-dual-action-row">
                                     <button type="button" class="animation-tool-button site-action site-action--primary" data-song-background-picker-trigger data-background-target-level="song">
-                                        {% trans "Image du chant" %}
+                                        {% trans "Image" %}
                                     </button>
-                                </p>
+                                    <button type="button" class="animation-tool-button site-action site-action--primary" data-song-style-picker-trigger data-style-target-level="song">
+                                        {% trans "Style" %}
+                                    </button>
+                                </div>
                                 <button type="button" class="animation-secondary-action site-action site-action--secondary" data-song-style-parent-reset-trigger data-style-target-level="song">
                                     {% trans "Réinitialiser le chant" %}
                                 </button>
@@ -276,7 +283,7 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div class="animation-verse-row-control-label animation-verse-row-size-label">{% trans "Taille" %}</div>
+                                        <div class="animation-verse-row-control-label animation-verse-row-size-label">{% trans "Taille de la police" %}</div>
                                         <div class="animation-verse-row-control-input animation-verse-row-size-input">
                                             <select
                                                 id="verse-font-size-delta-{{ card.animation_song_id }}-{{ verse.verse_id }}"
@@ -327,7 +334,7 @@
                                         </div>
                                         <div class="animation-verse-row-control-label animation-verse-row-reset-label">{% trans "Réinitialisation" %}</div>
                                         <div class="animation-verse-row-control-input animation-verse-row-reset-input">
-                                            <p>
+                                            <div class="animation-dual-action-row">
                                                 <button
                                                     type="button"
                                                     class="animation-tool-button site-action site-action--primary"
@@ -335,9 +342,18 @@
                                                     data-background-target-level="verse"
                                                     data-verse-id="{{ verse.verse_id }}"
                                                 >
-                                                    {% trans "Image du couplet" %}
+                                                    {% trans "Image" %}
                                                 </button>
-                                            </p>
+                                                <button
+                                                    type="button"
+                                                    class="animation-tool-button site-action site-action--primary"
+                                                    data-song-style-picker-trigger
+                                                    data-style-target-level="verse"
+                                                    data-verse-id="{{ verse.verse_id }}"
+                                                >
+                                                    {% trans "Style" %}
+                                                </button>
+                                            </div>
                                             <button
                                                 type="button"
                                                 class="animation-secondary-action site-action site-action--secondary"
