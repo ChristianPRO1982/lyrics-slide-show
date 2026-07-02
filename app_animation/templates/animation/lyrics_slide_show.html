@@ -235,7 +235,10 @@
                                                         {% trans "Sans description." %}
                                                     {% endif %}
                                                 </p>
-                                                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                                                <p>
+                                                    <a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a>
+                                                    <a class="animation-tool-link site-action site-action--primary" href="{% url 'lyrics_slide_show_public' animation.animation_id %}" aria-label="{% trans 'Vue smartphone de l animation' %}">📱</a>
+                                                </p>
                                             </div>
                                             <p><strong>{% trans "Session écran" %}</strong>: <code data-lyrics-display-session>{{ display_session_id }}</code></p>
                                             <p><strong>{% trans "Chant" %}</strong>: <span data-lyrics-current-song-title>{% trans "Aucun" %}</span></p>

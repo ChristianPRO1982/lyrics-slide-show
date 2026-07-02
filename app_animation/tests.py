@@ -360,6 +360,11 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         template = Path("app_animation/templates/animation/animations.html").read_text()
         self.assertIn('<section class="site-theme-selection">', template)
         self.assertNotIn('<section class="animation-list-section">', template)
+        self.assertIn(
+            "{% url 'lyrics_slide_show_public' animation.animation_id %}",
+            template,
+        )
+        self.assertIn("📱", template)
 
     def test_animation_actions_partial_uses_flat_song_like_panel_structure(self):
         template = Path(
@@ -438,10 +443,20 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("show_save_action=True", template)
         self.assertIn("show_lyrics_slide_show_action=True", template)
         self.assertIn('id="animation-song-{{ card.animation_song_id }}"', template)
-        self.assertIn('{% trans "Taille de la police" %}', template)
-        self.assertIn('data-animation-action="open-style-picker"', template)
-        self.assertIn('data-song-style-picker-trigger', template)
-        self.assertIn('data-picker-kind', template)
+
+    def test_lyrics_slide_show_template_links_to_public_smartphone_view(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_slide_show.html"
+        ).read_text()
+        self.assertIn('{% trans "Modifier cette animation" %}', template)
+        self.assertIn(
+            "{% url 'lyrics_slide_show_public' animation.animation_id %}",
+            template,
+        )
+        self.assertIn("📱", template)
+        self.assertIn('data-lyrics-action="open-display"', template)
+        self.assertIn('data-lyrics-action="toggle-qr"', template)
+        self.assertIn("data-lyrics-current-song-title", template)
 
     def test_modify_animation_script_restores_targeted_song_from_hash(self):
         script = Path("static/js/app_animation.js").read_text()
@@ -458,7 +473,10 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("const shouldOpen = !isExpanded;", script)
         self.assertIn("if (shouldOpen) {", script)
         self.assertIn('card.scrollIntoView({ block: "start" });', script)
-        self.assertIn('const stylePickerBaseUrl = String(popupData.stylePickerUrl || "").trim();', script)
+        self.assertIn(
+            'const stylePickerBaseUrl = String(popupData.stylePickerUrl || "").trim();',
+            script,
+        )
         self.assertIn('if (action === "open-style-picker") {', script)
         self.assertIn('kind === "style"', script)
 
@@ -2173,7 +2191,9 @@ class AnimationViewsTests(TestCase):
             font_family="Ubuntu",
             font_size=72,
         )
-        for index, title in enumerate(["Song A", "Song B", "Song C", "Song D"], start=1):
+        for index, title in enumerate(
+            ["Song A", "Song B", "Song C", "Song D"], start=1
+        ):
             song = Song.objects.create(
                 title=title,
                 subtitle="",
@@ -2196,7 +2216,9 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
-        self.assertEqual(content.count('data-style-key="Ubuntu|72|#123456|#654321|"'), 1)
+        self.assertEqual(
+            content.count('data-style-key="Ubuntu|72|#123456|#654321|"'), 1
+        )
         self.assertContains(response, "Song A - Couplet 1")
         self.assertContains(response, "Song B - Couplet 1")
         self.assertContains(response, "Song C - Couplet 1")
@@ -2264,8 +2286,12 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         source_item.refresh_from_db()
         target_item.refresh_from_db()
-        self.assertEqual(target_item.font_family_override, source_item.font_family_override)
-        self.assertEqual(target_item.text_color_override, source_item.text_color_override)
+        self.assertEqual(
+            target_item.font_family_override, source_item.font_family_override
+        )
+        self.assertEqual(
+            target_item.text_color_override, source_item.text_color_override
+        )
         self.assertEqual(target_item.bg_color_override, source_item.bg_color_override)
         self.assertEqual(target_item.font_size_override, source_item.font_size_override)
 
@@ -2344,7 +2370,9 @@ class AnimationViewsTests(TestCase):
         source_verse = Verse.objects.create(
             song=source_song, num=2, num_verse=1, chorus=False, text="Source verse"
         )
-        source_item = AnimationSong.objects.create(animation=animation, song=source_song, position=2)
+        source_item = AnimationSong.objects.create(
+            animation=animation, song=source_song, position=2
+        )
         AnimationVerseOverride.objects.create(
             animation_song=source_item,
             source_verse_id=source_verse.verse_id,
@@ -2374,7 +2402,9 @@ class AnimationViewsTests(TestCase):
         target_verse = Verse.objects.create(
             song=target_song, num=2, num_verse=1, chorus=False, text="Target verse"
         )
-        target_item = AnimationSong.objects.create(animation=animation, song=target_song, position=4)
+        target_item = AnimationSong.objects.create(
+            animation=animation, song=target_song, position=4
+        )
         AnimationVerseOverride.objects.create(
             animation_song=target_item,
             source_verse_id=target_verse.verse_id,
@@ -2516,7 +2546,54 @@ class AnimationViewsTests(TestCase):
             reverse("lyrics_slide_show_public", args=[animation.animation_id])
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "data-lyrics-public-root")
+        self.assertContains(response, 'class="lyrics-rail"', html=False)
+        self.assertContains(response, "<title>Session | Paroles</title>", html=True)
+
+    def test_lyrics_slide_show_public_uses_shared_template_and_keeps_playlist_order(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Premier couplet",
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+        AnimationSong.objects.create(animation=animation, song=song, position=4)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_public", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_title"], "Session")
+        self.assertEqual(
+            [item["song_id"] for item in response.context["songs"]],
+            [song.song_id, song.song_id],
+        )
+        self.assertEqual(
+            [item["anchor_id"] for item in response.context["songs"]],
+            ["lyrics-song-1", "lyrics-song-2"],
+        )
+        if animation_views.qrcode is None:
+            self.assertEqual(response.context["qr_code_png_base64"], "")
+        else:
+            self.assertTrue(response.context["qr_code_png_base64"])
+        self.assertContains(response, 'value="lyrics-song-1"', html=False)
+        self.assertContains(response, 'value="lyrics-song-2"', html=False)
+        self.assertContains(
+            response,
+            f'<a href="/songs/{song.song_id}/" class="lyrics-drawer-song-link" data-lyrics-current-song-link>Song A</a>',
+            html=False,
+        )
 
     def test_lyrics_slide_show_master_context_contains_runtime_payload_and_qr(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

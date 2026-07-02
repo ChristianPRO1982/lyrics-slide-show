@@ -11,6 +11,11 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
+from app_main.lyrics import (
+    build_lyrics_page_context,
+    build_lyrics_song_entry,
+    build_request_share_url,
+)
 from app_member.services import get_site_params_for_language
 
 from .genre_labels import normalize_genre_group_display_name
@@ -29,6 +34,7 @@ from .models import (
 from .rendering import (
     ChorusRenderMode,
     SongRenderSettings,
+    build_song_full_title,
     build_song_full_title_with_tags,
     build_song_text_artifacts,
     render_song_blocks,
@@ -1800,17 +1806,23 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
 
     return render(
         request,
-        "song/song_text.html",
+        "lyrics/lyrics.html",
         {
+            **build_lyrics_page_context(
+                page_title=build_song_full_title(song),
+                share_url=build_request_share_url(request),
+                songs=[
+                    build_lyrics_song_entry(
+                        song,
+                        anchor_id=f"lyrics-song-{song.song_id}",
+                        mode=render_mode,
+                        settings=render_settings,
+                    )
+                ],
+            ),
             "song": song,
             "mode": mode,
             "title_complete": text_artifacts.full_title,
-            "text_body": render_song_text(
-                song,
-                render_mode,
-                settings=render_settings,
-                include_title=False,
-            ).strip(),
         },
     )
 

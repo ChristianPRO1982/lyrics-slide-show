@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import base64
-import io
 import random
 import re
 import uuid
@@ -16,9 +14,16 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
+from app_main.lyrics import (
+    build_lyrics_page_context,
+    build_lyrics_song_entry,
+    build_qr_png_base64,
+    build_request_share_url,
+    qrcode,
+)
 from app_member.services import can_manage_moderator_popup
 from app_song.models import Verse
-from app_song.rendering import SongRenderSettings, render_song_blocks
+from app_song.rendering import ChorusRenderMode, SongRenderSettings
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
 from .font_catalog import (
@@ -84,12 +89,6 @@ from .services.shortcuts import (
     save_member_shortcut_bindings,
     validate_shortcut_submission,
 )
-
-try:
-    import qrcode
-except Exception:  # pragma: no cover - optional dependency in dev envs
-    qrcode = None
-
 
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
@@ -611,7 +610,8 @@ def _find_style_picker_default_token(
             and int(option.get("font_size") or 0) == target_font_size
             and str(option.get("text_color") or "").strip() == target_text_color
             and str(option.get("bg_color") or "").strip() == target_bg_color
-            and str(option.get("background_asset_code") or "").strip() == target_bg_asset
+            and str(option.get("background_asset_code") or "").strip()
+            == target_bg_asset
         ):
             occurrences = option.get("occurrences") or []
             if occurrences:
@@ -628,12 +628,14 @@ def _apply_copied_style_to_target(
     animation_song: AnimationSong | None = None,
     verse: Verse | None = None,
 ) -> None:
-    font_family = str(copied_style.get("font_family") or "").strip() or animation.font_family
-    text_color = str(copied_style.get("text_color") or "").strip() or animation.text_color
+    font_family = (
+        str(copied_style.get("font_family") or "").strip() or animation.font_family
+    )
+    text_color = (
+        str(copied_style.get("text_color") or "").strip() or animation.text_color
+    )
     bg_color = str(copied_style.get("bg_color") or "").strip() or "#000000"
-    background_asset_code = str(
-        copied_style.get("background_asset_code") or ""
-    ).strip()
+    background_asset_code = str(copied_style.get("background_asset_code") or "").strip()
     font_size = int(copied_style.get("font_size") or animation.font_size)
 
     if level == "animation":
@@ -1636,18 +1638,6 @@ def _truncate_excerpt(text: str, max_chars: int = 50) -> str:
     return f"{flat[:max_chars].rstrip()}[...]"
 
 
-def _build_qr_png_base64(value: str) -> str:
-    if not value or qrcode is None:
-        return ""
-    qr = qrcode.QRCode(box_size=10, border=4)
-    qr.add_data(value)
-    qr.make(fit=True)
-    image = qr.make_image(fill_color="black", back_color="white")
-    buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
-    return base64.b64encode(buffer.getvalue()).decode("ascii")
-
-
 def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, object]:
     rendered_slides = build_animation_render_bundle(animation)
     slides_payload: list[dict[str, object]] = []
@@ -1730,7 +1720,7 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
         "songs": songs_payload,
         "backgroundUrls": sorted(background_urls),
         "publicUrl": public_url,
-        "qrCodePngBase64": _build_qr_png_base64(public_url),
+        "qrCodePngBase64": build_qr_png_base64(public_url),
         "cardGroups": card_groups,
     }
 
@@ -1951,36 +1941,28 @@ def lyrics_slide_show_public(request: HttpRequest, animation_id: int) -> HttpRes
         .prefetch_related("song__verses")
         .order_by("position", "animation_song_id")
     )
-    songs_payload: list[dict[str, object]] = []
-    for index, animation_song in enumerate(animation_songs):
-        blocks = render_song_blocks(
+    songs_payload = [
+        build_lyrics_song_entry(
             animation_song.song,
-            mode="full-chorus",
+            anchor_id=f"lyrics-song-{index + 1}",
+            mode=ChorusRenderMode.FULL,
             settings=render_settings,
             verses=animation_song.song.verses.all(),
         )
-        songs_payload.append(
-            {
-                "songIndex": index,
-                "songTitle": animation_song.song.display_title,
-                "blocks": [
-                    {
-                        "label": str(block.label or ""),
-                        "text": str(block.text or ""),
-                        "kind": str(block.kind),
-                    }
-                    for block in blocks
-                ],
-            }
-        )
+        for index, animation_song in enumerate(animation_songs)
+    ]
+
+    context = build_lyrics_page_context(
+        page_title=str(animation.title or ""),
+        share_url=build_request_share_url(request),
+        songs=songs_payload,
+    )
+    context["animation"] = animation
 
     return render(
         request,
-        "animation/lyrics_slide_show_public.html",
-        {
-            "animation": animation,
-            "public_songs": songs_payload,
-        },
+        "lyrics/lyrics.html",
+        context,
     )
 
 

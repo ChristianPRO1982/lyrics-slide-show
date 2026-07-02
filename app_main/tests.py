@@ -36,12 +36,21 @@ from app_main.auth import (
     validate_keycloak_callback,
     validate_callback_payload,
 )
+from app_main.lyrics import (
+    LYRICS_BLOCK_STYLE_CHORUS,
+    LYRICS_BLOCK_STYLE_CHORUS_LIKE,
+    LYRICS_BLOCK_STYLE_VERSE,
+    build_lyrics_page_context,
+    build_lyrics_song_entry,
+    build_qr_png_base64,
+)
 from app_main.mock_accounts import DEV_MOCK_ACCOUNTS, dev_mock_accounts_json
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
 from app_member.forms import SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
-from app_song.models import Song, SongMessage, SongStatus
+from app_song.models import Song, SongMessage, SongStatus, Verse
+from app_song.rendering import ChorusRenderMode, SongRenderSettings
 from app_main.views import (
     _collect_heavy_images,
     _keycloak_diagnostic_causes,
@@ -1776,6 +1785,110 @@ class MainViewHelperCoverageTests(SimpleTestCase):
             file_path.write_bytes(b"jpg")
             self.assertEqual(_collect_heavy_images(file_path, source="lss"), [])
             self.assertEqual(_collect_heavy_images(root / "missing", source="lss"), [])
+
+
+class SharedLyricsHelperTests(TestCase):
+    def test_build_lyrics_song_entry_maps_rendered_blocks_to_expected_styles(self):
+        song = Song.objects.create(
+            title="Espoir", subtitle="Veillee", status=SongStatus.NOT_VALIDATED
+        )
+        Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=True,
+            text="Refrain commun",
+        )
+        Verse.objects.create(
+            song=song,
+            num=4,
+            num_verse=1,
+            chorus=False,
+            text="Couplet simple",
+        )
+        Verse.objects.create(
+            song=song,
+            num=6,
+            num_verse=2,
+            chorus=False,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+
+        entry = build_lyrics_song_entry(
+            song,
+            anchor_id="lyrics-song-1",
+            mode=ChorusRenderMode.FULL,
+            settings=SongRenderSettings.defaults(),
+        )
+
+        self.assertEqual(entry["song_id"], song.song_id)
+        self.assertEqual(entry["song_title"], "Espoir - Veillee")
+        self.assertEqual(entry["anchor_id"], "lyrics-song-1")
+        self.assertEqual(
+            entry["blocks"],
+            [
+                {
+                    "prefix": "Refrain",
+                    "style": LYRICS_BLOCK_STYLE_CHORUS,
+                    "text": "Refrain commun",
+                },
+                {
+                    "prefix": "Couplet 1",
+                    "style": LYRICS_BLOCK_STYLE_VERSE,
+                    "text": "Couplet simple",
+                },
+                {
+                    "prefix": "Refrain",
+                    "style": LYRICS_BLOCK_STYLE_CHORUS,
+                    "text": "Refrain commun",
+                },
+                {
+                    "prefix": "Pont",
+                    "style": LYRICS_BLOCK_STYLE_CHORUS_LIKE,
+                    "text": "Pont final",
+                },
+                {
+                    "prefix": "Refrain",
+                    "style": LYRICS_BLOCK_STYLE_CHORUS,
+                    "text": "Refrain commun",
+                },
+            ],
+        )
+
+    def test_build_lyrics_page_context_keeps_order_and_duplicate_entries(self):
+        songs = [
+            {
+                "song_id": 4,
+                "song_title": "Alpha",
+                "song_url": "/songs/4/",
+                "anchor_id": "lyrics-song-1",
+                "blocks": [],
+            },
+            {
+                "song_id": 4,
+                "song_title": "Alpha",
+                "song_url": "/songs/4/",
+                "anchor_id": "lyrics-song-2",
+                "blocks": [],
+            },
+        ]
+
+        context = build_lyrics_page_context(
+            page_title="Session",
+            share_url="https://example.test/public",
+            songs=songs,
+        )
+
+        self.assertEqual(context["page_title"], "Session")
+        self.assertEqual(context["share_url"], "https://example.test/public")
+        self.assertEqual(context["songs"], songs)
+        self.assertTrue(context["has_multiple_songs"])
+
+    def test_build_qr_png_base64_returns_empty_string_when_qrcode_missing(self):
+        with patch("app_main.lyrics.qrcode", None):
+            self.assertEqual(build_qr_png_base64("https://example.test"), "")
 
 
 class HeavyAssetCoverageTests(SimpleTestCase):
