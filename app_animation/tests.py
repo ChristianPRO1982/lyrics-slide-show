@@ -360,6 +360,11 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         template = Path("app_animation/templates/animation/animations.html").read_text()
         self.assertIn('<section class="site-theme-selection">', template)
         self.assertNotIn('<section class="animation-list-section">', template)
+        self.assertIn(
+            "{% url 'lyrics_slide_show_public' animation.animation_id %}",
+            template,
+        )
+        self.assertIn("📱", template)
 
     def test_animation_actions_partial_uses_flat_song_like_panel_structure(self):
         template = Path(
@@ -389,6 +394,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         background_picker_template = Path(
             "app_animation/templates/animation/background_picker.html"
         ).read_text()
+        style_picker_template = Path(
+            "app_animation/templates/animation/style_picker.html"
+        ).read_text()
         upload_background_image_template = Path(
             "app_animation/templates/animation/upload_background_image.html"
         ).read_text()
@@ -399,6 +407,7 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         for template in (
             background_images_template,
             background_picker_template,
+            style_picker_template,
             upload_background_image_template,
             animation_history_template,
         ):
@@ -415,6 +424,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("data-picker-overlay", background_picker_template)
         self.assertIn('name="q"', background_picker_template)
         self.assertIn("data-picker-query-input", background_picker_template)
+        self.assertIn("data-style-picker-grid", style_picker_template)
+        self.assertIn("data-style-picker-overlay", style_picker_template)
+        self.assertNotIn('name="q"', style_picker_template)
 
     def test_animations_page_adds_history_as_contextual_action(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
@@ -432,6 +444,20 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("show_lyrics_slide_show_action=True", template)
         self.assertIn('id="animation-song-{{ card.animation_song_id }}"', template)
 
+    def test_lyrics_slide_show_template_links_to_public_smartphone_view(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_slide_show.html"
+        ).read_text()
+        self.assertIn('{% trans "Modifier cette animation" %}', template)
+        self.assertIn(
+            "{% url 'lyrics_slide_show_public' animation.animation_id %}",
+            template,
+        )
+        self.assertIn("📱", template)
+        self.assertIn('data-lyrics-action="open-display"', template)
+        self.assertIn('data-lyrics-action="toggle-qr"', template)
+        self.assertIn("data-lyrics-current-song-title", template)
+
     def test_modify_animation_script_restores_targeted_song_from_hash(self):
         script = Path("static/js/app_animation.js").read_text()
         self.assertIn("const restoreSongCardFromHash = () => {", script)
@@ -447,6 +473,12 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("const shouldOpen = !isExpanded;", script)
         self.assertIn("if (shouldOpen) {", script)
         self.assertIn('card.scrollIntoView({ block: "start" });', script)
+        self.assertIn(
+            'const stylePickerBaseUrl = String(popupData.stylePickerUrl || "").trim();',
+            script,
+        )
+        self.assertIn('if (action === "open-style-picker") {', script)
+        self.assertIn('kind === "style"', script)
 
     def test_remote_template_contains_blackout_frame(self):
         template = Path(
@@ -463,6 +495,8 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn(".animation-background-picker-grid", stylesheet)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", stylesheet)
         self.assertIn(".animation-background-picker-overlay", stylesheet)
+        self.assertIn(".animation-dual-action-row", stylesheet)
+        self.assertIn(".animation-style-picker-grid", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
         self.assertIn(
@@ -1380,6 +1414,49 @@ class AnimationViewsTests(TestCase):
             f"{reverse('animation_background_picker', args=[animation.animation_id])}?level=verse&animation_song_id={item.animation_song_id}&verse_id={verse.verse_id}",
         )
 
+    def test_modify_animation_post_redirects_to_style_picker_after_save(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Verse"
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps({"items": []}),
+                "picker_kind": "style",
+                "background_picker_level": "verse",
+                "background_picker_animation_song_id": str(item.animation_song_id),
+                "background_picker_source_verse_id": str(verse.verse_id),
+                "background_picker_after_save": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            f"{reverse('animation_style_picker', args=[animation.animation_id])}?level=verse&animation_song_id={item.animation_song_id}&verse_id={verse.verse_id}",
+        )
+
     def test_modify_animation_post_invalid_does_not_redirect_to_background_picker(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -2092,6 +2169,283 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(override.background_asset_code_override, image.asset_code)
         self.assertIsNone(override.bg_color_override)
 
+    def test_style_picker_requires_selected_group(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        response = self.client.get(
+            reverse("animation_style_picker", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    def test_style_picker_deduplicates_styles_and_renders_preview_occurrences(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#123456",
+            bg_color="#654321",
+            font_family="Ubuntu",
+            font_size=72,
+        )
+        for index, title in enumerate(
+            ["Song A", "Song B", "Song C", "Song D"], start=1
+        ):
+            song = Song.objects.create(
+                title=title,
+                subtitle="",
+                status=SongStatus.NOT_VALIDATED,
+                licensed=False,
+            )
+            Verse.objects.create(
+                song=song, num=2, num_verse=1, chorus=False, text=f"Verse {title}"
+            )
+            AnimationSong.objects.create(
+                animation=animation,
+                song=song,
+                position=index * 2,
+            )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("animation_style_picker", args=[animation.animation_id]),
+            {"level": "animation"},
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertEqual(
+            content.count('data-style-key="Ubuntu|72|#123456|#654321|"'), 1
+        )
+        self.assertContains(response, "Song A - Couplet 1")
+        self.assertContains(response, "Song B - Couplet 1")
+        self.assertContains(response, "Song C - Couplet 1")
+        self.assertContains(response, "...")
+        self.assertNotContains(response, 'name="q"')
+
+    def test_style_picker_post_song_to_song_copies_font_size(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=72,
+        )
+        source_song = Song.objects.create(
+            title="Source", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=source_song, num=2, num_verse=1, chorus=False, text="Source verse"
+        )
+        source_item = AnimationSong.objects.create(
+            animation=animation,
+            song=source_song,
+            position=2,
+            font_family_override="Anton",
+            font_size_override=88,
+            text_color_override="#AABBCC",
+            bg_color_override="#112233",
+        )
+        target_song = Song.objects.create(
+            title="Target", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=target_song, num=2, num_verse=1, chorus=False, text="Target verse"
+        )
+        target_item = AnimationSong.objects.create(
+            animation=animation,
+            song=target_song,
+            position=4,
+            font_size_override=66,
+        )
+        self._select_group(group)
+
+        get_response = self.client.get(
+            reverse("animation_style_picker", args=[animation.animation_id]),
+            {"level": "song", "animation_song_id": target_item.animation_song_id},
+        )
+        option = next(
+            item
+            for item in get_response.context["style_options"]
+            if item["font_family"] == "Anton"
+        )
+        token = next(
+            occurrence["token"]
+            for occurrence in option["occurrences"]
+            if occurrence["source_scope"] == "song"
+        )
+        response = self.client.post(
+            f"{reverse('animation_style_picker', args=[animation.animation_id])}?level=song&animation_song_id={target_item.animation_song_id}",
+            data={"selected_occurrence_token": token},
+        )
+        self.assertEqual(response.status_code, 302)
+        source_item.refresh_from_db()
+        target_item.refresh_from_db()
+        self.assertEqual(
+            target_item.font_family_override, source_item.font_family_override
+        )
+        self.assertEqual(
+            target_item.text_color_override, source_item.text_color_override
+        )
+        self.assertEqual(target_item.bg_color_override, source_item.bg_color_override)
+        self.assertEqual(target_item.font_size_override, source_item.font_size_override)
+
+    def test_style_picker_post_animation_to_song_keeps_target_font_size(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#ABCDEF",
+            bg_color="#102030",
+            font_family="Montserrat",
+            font_size=72,
+        )
+        source_song = Song.objects.create(
+            title="Source", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=source_song, num=2, num_verse=1, chorus=False, text="Source verse"
+        )
+        AnimationSong.objects.create(animation=animation, song=source_song, position=2)
+        target_song = Song.objects.create(
+            title="Target", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=target_song, num=2, num_verse=1, chorus=False, text="Target verse"
+        )
+        target_item = AnimationSong.objects.create(
+            animation=animation,
+            song=target_song,
+            position=4,
+            font_size_override=61,
+            font_family_override="Ubuntu",
+        )
+        self._select_group(group)
+
+        get_response = self.client.get(
+            reverse("animation_style_picker", args=[animation.animation_id]),
+            {"level": "song", "animation_song_id": target_item.animation_song_id},
+        )
+        option = next(
+            item
+            for item in get_response.context["style_options"]
+            if item["font_family"] == "Montserrat"
+        )
+        token = next(
+            occurrence["token"]
+            for occurrence in option["occurrences"]
+            if occurrence["source_scope"] == "animation"
+        )
+        response = self.client.post(
+            f"{reverse('animation_style_picker', args=[animation.animation_id])}?level=song&animation_song_id={target_item.animation_song_id}",
+            data={"selected_occurrence_token": token},
+        )
+        self.assertEqual(response.status_code, 302)
+        target_item.refresh_from_db()
+        self.assertEqual(target_item.font_family_override, "Montserrat")
+        self.assertEqual(target_item.text_color_override, "#ABCDEF")
+        self.assertEqual(target_item.bg_color_override, "#102030")
+        self.assertEqual(target_item.font_size_override, 61)
+
+    def test_style_picker_post_verse_to_verse_copies_font_size(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=72,
+        )
+        source_song = Song.objects.create(
+            title="Source", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        source_verse = Verse.objects.create(
+            song=source_song, num=2, num_verse=1, chorus=False, text="Source verse"
+        )
+        source_item = AnimationSong.objects.create(
+            animation=animation, song=source_song, position=2
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=source_item,
+            source_verse_id=source_verse.verse_id,
+            is_visible=True,
+            font_family_override="Anton",
+            font_size_override=64,
+            text_color_override="#F1E2D3",
+            background_asset_code_override="bg-source",
+        )
+        BackgroundImage.objects.create(
+            asset_code="bg-source",
+            storage_filename="bg-source.png",
+            title="Source image",
+            target="Scout",
+            status=BackgroundImageStatus.ACTIVE,
+            stored_path="background-images/active/bg-source.png",
+            original_name="bg-source.png",
+            extension=".png",
+            mime="image/png",
+            size_bytes=100,
+            width=1600,
+            height=900,
+        )
+        target_song = Song.objects.create(
+            title="Target", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        target_verse = Verse.objects.create(
+            song=target_song, num=2, num_verse=1, chorus=False, text="Target verse"
+        )
+        target_item = AnimationSong.objects.create(
+            animation=animation, song=target_song, position=4
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=target_item,
+            source_verse_id=target_verse.verse_id,
+            is_visible=True,
+            font_size_override=58,
+        )
+        self._select_group(group)
+
+        get_response = self.client.get(
+            reverse("animation_style_picker", args=[animation.animation_id]),
+            {
+                "level": "verse",
+                "animation_song_id": target_item.animation_song_id,
+                "verse_id": target_verse.verse_id,
+            },
+        )
+        option = next(
+            item
+            for item in get_response.context["style_options"]
+            if item["font_family"] == "Anton"
+        )
+        token = next(
+            occurrence["token"]
+            for occurrence in option["occurrences"]
+            if occurrence["source_scope"] == "verse"
+        )
+        response = self.client.post(
+            f"{reverse('animation_style_picker', args=[animation.animation_id])}?level=verse&animation_song_id={target_item.animation_song_id}&verse_id={target_verse.verse_id}",
+            data={"selected_occurrence_token": token},
+        )
+        self.assertEqual(response.status_code, 302)
+        target_override = AnimationVerseOverride.objects.get(
+            animation_song=target_item,
+            source_verse_id=target_verse.verse_id,
+        )
+        self.assertEqual(target_override.font_family_override, "Anton")
+        self.assertEqual(target_override.text_color_override, "#F1E2D3")
+        self.assertEqual(target_override.background_asset_code_override, "bg-source")
+        self.assertIsNone(target_override.bg_color_override)
+        self.assertEqual(target_override.font_size_override, 64)
+
     def test_lyrics_slide_show_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -2192,7 +2546,54 @@ class AnimationViewsTests(TestCase):
             reverse("lyrics_slide_show_public", args=[animation.animation_id])
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "data-lyrics-public-root")
+        self.assertContains(response, 'class="lyrics-rail"', html=False)
+        self.assertContains(response, "<title>Session | Paroles</title>", html=True)
+
+    def test_lyrics_slide_show_public_uses_shared_template_and_keeps_playlist_order(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Premier couplet",
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+        AnimationSong.objects.create(animation=animation, song=song, position=4)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_public", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_title"], "Session")
+        self.assertEqual(
+            [item["song_id"] for item in response.context["songs"]],
+            [song.song_id, song.song_id],
+        )
+        self.assertEqual(
+            [item["anchor_id"] for item in response.context["songs"]],
+            ["lyrics-song-1", "lyrics-song-2"],
+        )
+        if animation_views.qrcode is None:
+            self.assertEqual(response.context["qr_code_png_base64"], "")
+        else:
+            self.assertTrue(response.context["qr_code_png_base64"])
+        self.assertContains(response, 'value="lyrics-song-1"', html=False)
+        self.assertContains(response, 'value="lyrics-song-2"', html=False)
+        self.assertContains(
+            response,
+            f'<a href="/songs/{song.song_id}/" class="lyrics-drawer-song-link" data-lyrics-current-song-link>Song A</a>',
+            html=False,
+        )
 
     def test_lyrics_slide_show_master_context_contains_runtime_payload_and_qr(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

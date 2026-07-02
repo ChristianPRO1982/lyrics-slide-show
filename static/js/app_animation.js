@@ -26,6 +26,7 @@
     const fontPreviews = Array.isArray(popupData.fontPreviews) ? popupData.fontPreviews : [];
     const backgroundImageOptions = Array.isArray(popupData.backgroundImageOptions) ? popupData.backgroundImageOptions : [];
     const backgroundPickerBaseUrl = String(popupData.backgroundPickerUrl || "").trim();
+    const stylePickerBaseUrl = String(popupData.stylePickerUrl || "").trim();
     const legacySongCatalog = Array.isArray(popupData.songCatalog) ? popupData.songCatalog : [];
     const advancedSongCatalog = Array.isArray(popupData.advancedSongCatalog) ? popupData.advancedSongCatalog : [];
     const favoriteSongCatalog = Array.isArray(popupData.favoriteSongCatalog) ? popupData.favoriteSongCatalog : [];
@@ -50,6 +51,7 @@
             .filter((item) => item[1] instanceof HTMLInputElement)
     );
     const backgroundPickerFields = {
+        kind: document.querySelector("[data-picker-kind]"),
         level: document.querySelector("[data-background-picker-level]"),
         animationSongId: document.querySelector("[data-background-picker-animation-song-id]"),
         sourceVerseId: document.querySelector("[data-background-picker-source-verse-id]"),
@@ -133,6 +135,9 @@
     };
 
     const clearBackgroundPickerIntent = () => {
+        if (backgroundPickerFields.kind instanceof HTMLInputElement) {
+            backgroundPickerFields.kind.value = "";
+        }
         if (backgroundPickerFields.level instanceof HTMLInputElement) {
             backgroundPickerFields.level.value = "";
         }
@@ -147,7 +152,10 @@
         }
     };
 
-    const setBackgroundPickerIntent = ({ level, animationSongId = "", verseId = "", afterSave = false }) => {
+    const setBackgroundPickerIntent = ({ kind = "background", level, animationSongId = "", verseId = "", afterSave = false }) => {
+        if (backgroundPickerFields.kind instanceof HTMLInputElement) {
+            backgroundPickerFields.kind.value = String(kind || "background");
+        }
         if (backgroundPickerFields.level instanceof HTMLInputElement) {
             backgroundPickerFields.level.value = String(level || "");
         }
@@ -176,6 +184,22 @@
         }
         const serialized = query.toString();
         return serialized ? `${backgroundPickerBaseUrl}?${serialized}` : backgroundPickerBaseUrl;
+    };
+
+    const buildStylePickerUrl = ({ level, animationSongId = "", verseId = "" }) => {
+        if (!stylePickerBaseUrl) {
+            return "";
+        }
+        const query = new URLSearchParams();
+        query.set("level", String(level || "animation"));
+        if (String(animationSongId || "").trim()) {
+            query.set("animation_song_id", String(animationSongId).trim());
+        }
+        if (String(verseId || "").trim()) {
+            query.set("verse_id", String(verseId).trim());
+        }
+        const serialized = query.toString();
+        return serialized ? `${stylePickerBaseUrl}?${serialized}` : stylePickerBaseUrl;
     };
 
     const formatDateTime = (rawValue) => {
@@ -275,7 +299,7 @@
         return {
             id: "reset",
             label: label("resetLabel"),
-            tone: "warning",
+            tone: "neutral",
             validate: false,
             onClick: ({ setFieldValue, keepOpen }) => {
                 fieldsToReset.forEach((fieldId) => {
@@ -442,7 +466,7 @@
         const result = await messageBox.show({
             title: label("unsavedChangesTitle"),
             messageMarkdown: label("unsavedChangesMessage"),
-            showCloseButton: true,
+            showCloseButton: false,
             buttons: [
                 { id: "yes", label: label("yesLabel"), tone: "danger" },
                 { id: "no", label: label("noLabel"), tone: "neutral" },
@@ -453,8 +477,10 @@
         return result.buttonId === "yes";
     };
 
-    const openBackgroundPicker = async ({ level, animationSongId = "", verseId = "" }) => {
-        const targetUrl = buildBackgroundPickerUrl({ level, animationSongId, verseId });
+    const openPicker = async ({ kind, level, animationSongId = "", verseId = "" }) => {
+        const targetUrl = kind === "style"
+            ? buildStylePickerUrl({ level, animationSongId, verseId })
+            : buildBackgroundPickerUrl({ level, animationSongId, verseId });
         if (!targetUrl) {
             return;
         }
@@ -465,11 +491,11 @@
         }
 
         const result = await messageBox.show({
-            title: label("backgroundPickerConfirmTitle"),
-            messageMarkdown: label("backgroundPickerConfirmMessage"),
+            title: label(kind === "style" ? "stylePickerConfirmTitle" : "backgroundPickerConfirmTitle"),
+            messageMarkdown: label(kind === "style" ? "stylePickerConfirmMessage" : "backgroundPickerConfirmMessage"),
             showCloseButton: true,
             buttons: [
-                { id: "save", label: label("backgroundPickerConfirmSaveLabel"), tone: "success" },
+                { id: "save", label: label(kind === "style" ? "stylePickerConfirmSaveLabel" : "backgroundPickerConfirmSaveLabel"), tone: "success" },
                 { id: "cancel", label: label("cancelLabel"), tone: "neutral" },
             ],
             enterButtonId: "save",
@@ -479,6 +505,7 @@
             return;
         }
         setBackgroundPickerIntent({
+            kind,
             level,
             animationSongId,
             verseId,
@@ -511,7 +538,11 @@
                 return;
             }
             if (action === "open-background-picker") {
-                await openBackgroundPicker({ level: "animation" });
+                await openPicker({ kind: "background", level: "animation" });
+                return;
+            }
+            if (action === "open-style-picker") {
+                await openPicker({ kind: "style", level: "animation" });
                 return;
             }
             if (action === "open-font-list") {
@@ -1021,7 +1052,7 @@
         const result = await messageBox.show({
             title: label("parentResetTitle"),
             messageMarkdown: label("parentResetMessage"),
-            showCloseButton: true,
+            showCloseButton: false,
             buttons: [
                 { id: "yes", label: label("yesLabel"), tone: "danger" },
                 { id: "no", label: label("noLabel"), tone: "neutral" },
@@ -1399,14 +1430,37 @@
                     const level = String(button.getAttribute("data-background-target-level") || "song");
                     if (level === "verse") {
                         const verseId = String(button.getAttribute("data-verse-id") || "");
-                        await openBackgroundPicker({
+                        await openPicker({
+                            kind: "background",
                             level: "verse",
                             animationSongId: String(card.getAttribute("data-animation-song-id") || "").trim(),
                             verseId,
                         });
                         return;
                     }
-                    await openBackgroundPicker({
+                    await openPicker({
+                        kind: "background",
+                        level: "song",
+                        animationSongId: String(card.getAttribute("data-animation-song-id") || "").trim(),
+                    });
+                });
+            });
+
+            card.querySelectorAll("[data-song-style-picker-trigger]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const level = String(button.getAttribute("data-style-target-level") || "song");
+                    if (level === "verse") {
+                        const verseId = String(button.getAttribute("data-verse-id") || "");
+                        await openPicker({
+                            kind: "style",
+                            level: "verse",
+                            animationSongId: String(card.getAttribute("data-animation-song-id") || "").trim(),
+                            verseId,
+                        });
+                        return;
+                    }
+                    await openPicker({
+                        kind: "style",
                         level: "song",
                         animationSongId: String(card.getAttribute("data-animation-song-id") || "").trim(),
                     });

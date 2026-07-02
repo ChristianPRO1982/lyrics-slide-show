@@ -63,6 +63,9 @@
 {% trans "Sauvegarder avant le choix d'image" as lss_anim_bg_picker_confirm_title %}
 {% trans "Cette navigation nécessite d'enregistrer l'animation avant d'ouvrir la page de choix d'image." as lss_anim_bg_picker_confirm_message %}
 {% trans "Enregistrer puis choisir l'image" as lss_anim_bg_picker_confirm_save %}
+{% trans "Sauvegarder avant le choix du style" as lss_anim_style_picker_confirm_title %}
+{% trans "Cette navigation nécessite d'enregistrer l'animation avant d'ouvrir la page de choix du style." as lss_anim_style_picker_confirm_message %}
+{% trans "Enregistrer puis choisir le style" as lss_anim_style_picker_confirm_save %}
 <script>
     window.LSS_MODIFY_ANIMATION_I18N = {
         generalPopupTitle: "{{ lss_anim_general_title|escapejs }}",
@@ -128,6 +131,9 @@
         unsavedChangesMessage: "{{ lss_anim_unsaved_changes_message|escapejs }}",
         backgroundPickerConfirmTitle: "{{ lss_anim_bg_picker_confirm_title|escapejs }}",
         backgroundPickerConfirmMessage: "{{ lss_anim_bg_picker_confirm_message|escapejs }}",
-        backgroundPickerConfirmSaveLabel: "{{ lss_anim_bg_picker_confirm_save|escapejs }}"
+        backgroundPickerConfirmSaveLabel: "{{ lss_anim_bg_picker_confirm_save|escapejs }}",
+        stylePickerConfirmTitle: "{{ lss_anim_style_picker_confirm_title|escapejs }}",
+        stylePickerConfirmMessage: "{{ lss_anim_style_picker_confirm_message|escapejs }}",
+        stylePickerConfirmSaveLabel: "{{ lss_anim_style_picker_confirm_save|escapejs }}"
     };
 </script>

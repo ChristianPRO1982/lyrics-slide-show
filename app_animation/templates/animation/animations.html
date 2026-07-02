@@ -41,7 +41,10 @@
                 {% if animation.description %}
                     <p>{{ animation.description|linebreaksbr }}</p>
                 {% endif %}
-                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                <p>
+                    <a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a>
+                    <a class="animation-tool-link site-action site-action--primary" href="{% url 'lyrics_slide_show_public' animation.animation_id %}" aria-label="{% trans 'Vue smartphone de l animation' %}">📱</a>
+                </p>
                 <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'lyrics_slide_show' animation.animation_id %}">🖥️ LYRICS SLIDE SHOW 📽️</a></p>
             </article>
         {% empty %}

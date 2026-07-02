@@ -1072,22 +1072,27 @@ class SongTextArtifactsTests(SimpleTestCase):
 class SongViewsRenderingTests(TestCase):
     def setUp(self):
         self.user_id = "99999999-9999-9999-9999-999999999999"
-        DirectoryUserRecord.objects.create(
+        DirectoryUserRecord.objects.update_or_create(
             id=self.user_id,
-            username="lyrics.reader",
-            first_name="Lyrics",
-            last_name="Reader",
-            email="lyrics.reader@example.test",
-            enabled=True,
-            email_verified=False,
+            defaults={
+                "username": "lyrics.reader",
+                "first_name": "Lyrics",
+                "last_name": "Reader",
+                "email": "lyrics.reader@example.test",
+                "enabled": True,
+                "email_verified": False,
+            },
         )
-        self.song = Song.objects.create(
+        self.song, _created = Song.objects.update_or_create(
             title="Le Sud",
             subtitle="Nino Ferrer",
-            description="Description",
-            status=1,
-            licensed=True,
+            defaults={
+                "description": "Description",
+                "status": 1,
+                "licensed": True,
+            },
         )
+        Verse.objects.filter(song=self.song).delete()
         Verse.objects.create(
             song=self.song,
             num=2,
@@ -1202,26 +1207,75 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(response, "<h2># Tags</h2>", html=False)
         self.assertNotContains(response, "<h2># tags</h2>", html=False)
 
+    def test_song_view_summary_contains_link_to_smartphone_lyrics_page(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'href="{}"'.format(
+                reverse("song_text", args=[self.song.song_id, "full-chorus"])
+            ),
+            html=False,
+        )
+        self.assertContains(response, "ouvrir la vue smartphone")
+
     def test_song_text_print_page_uses_full_title_without_tags(self):
+        self.song.licensed = False
+        self.song.save(update_fields=["licensed"])
         self._login()
         response = self.client.get(
             reverse("song_text", args=[self.song.song_id, "full-chorus"])
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
-        self.assertContains(response, "<title>Le Sud - Nino Ferrer</title>", html=True)
-        self.assertContains(response, "<h1>Le Sud - Nino Ferrer</h1>", html=False)
+        self.assertEqual(
+            [template.name for template in response.templates if template.name],
+            ["lyrics/lyrics.html"],
+        )
+        self.assertContains(
+            response, "<title>Le Sud - Nino Ferrer | Paroles</title>", html=True
+        )
         self.assertContains(
             response,
-            "<div>Refrain On dirait le Sud<br><br>Couplet 1 C&#x27;est un endroit<br><br>Refrain On dirait le Sud</div>",
+            '<main class="lyrics-layout is-single" data-lyrics-root>',
             html=False,
         )
-        self.assertNotContains(response, "<table", html=False)
-        self.assertNotContains(response, "<th", html=False)
-        self.assertNotContains(response, "<td", html=False)
-        self.assertNotContains(response, "<strong", html=False)
-        self.assertNotContains(response, "<b>", html=False)
-        self.assertNotContains(response, "<i>", html=False)
+        self.assertContains(
+            response,
+            '<div class="lyrics-topbar" hidden>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            '<p class="lyrics-song-title">Le Sud - Nino Ferrer</p>',
+            html=False,
+        )
+        first_block = response.context["songs"][0]["blocks"][0]
+        second_block = response.context["songs"][0]["blocks"][1]
+        self.assertContains(
+            response,
+            f'<p class="lyrics-block lyrics-block--chorus"><em>{first_block["prefix"]}</em> {first_block["text"]}</p>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<p class="lyrics-block"><em>{second_block["prefix"]}</em> C&#x27;est un endroit</p>',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "/static/images/lyrics/all_lyrics-hamburger_menu.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'href="/songs/{self.song.song_id}/" class="lyrics-drawer-song-link"',
+            html=False,
+        )
+        self.assertNotContains(response, 'data-lyrics-nav="prev"')
+        self.assertNotContains(response, 'data-lyrics-nav="next"')
 
     def test_song_text_plain_endpoint_returns_plain_text_blocks(self):
         self._login()
@@ -2915,6 +2969,21 @@ class SongModifyActionOnSongsPageTests(TestCase):
             response,
             'href="{}"'.format(
                 reverse("modify_song", args=[self.validated_song.song_id])
+            ),
+            html=False,
+        )
+
+    def test_smartphone_icon_points_to_shared_lyrics_template_route(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertContains(
+            response,
+            'href="{}"'.format(
+                reverse(
+                    "song_text", args=[self.non_validated_song.song_id, "full-chorus"]
+                )
             ),
             html=False,
         )

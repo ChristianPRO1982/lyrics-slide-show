@@ -46,7 +46,8 @@ Le résumé affiche :
 Actions disponibles :
 - `Données générales`,
 - `Couleurs`,
-- `Image de fond`,
+- `Image`,
+- `Style`,
 - `Liste des polices`.
 
 ## Formulaire Et Données Persistées
@@ -127,9 +128,10 @@ Note : `background_asset_code` existe dans le modèle/formulaire mais n'est pas 
 
 ### Navigation vers le choix d'image
 
-- le résumé animation expose un bouton `Image de fond` ;
-- les blocs chant et couplet exposent `Image du chant` / `Image du couplet` ;
+- le résumé animation expose deux boutons `Image` et `Style` ;
+- les blocs chant et couplet exposent aussi `Image` / `Style` ;
 - ces actions ouvrent une page dédiée de sélection d'image, pas une popup ;
+- le bouton `Style` ouvre une page dédiée sœur de `background_picker` pour recopier un style déjà présent dans l'animation ;
 - si la page contient des modifications non enregistrées, une popup `LSSMessageBox` propose de sauvegarder avant la navigation.
 
 ### Popup `Liste des polices`

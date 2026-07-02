@@ -23,6 +23,11 @@ urlpatterns = [
         name="animation_background_picker",
     ),
     path(
+        "<int:animation_id>/style-picker/",
+        views.animation_style_picker,
+        name="animation_style_picker",
+    ),
+    path(
         "<int:animation_id>/lyrics-slide-show/",
         views.lyrics_slide_show,
         name="lyrics_slide_show",
