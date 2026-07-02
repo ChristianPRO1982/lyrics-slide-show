@@ -1,3 +1,16 @@
+# [2.13.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.12.0...v2.13.0) (2026-07-02)
+
+
+### Bug Fixes
+
+* enhance song search functionality with focus behavior on search input ([e5b59d9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e5b59d95c25eecd2041b844d4aab1d204154df57))
+
+
+### Features
+
+* add style picker functionality for animations ([68fc0cf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/68fc0cfc6ac01103020da1f3d64e2ca76d253b07))
+* smartphone_view. Refactor code structure for improved readability and maintainability ([8f18545](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8f18545883f651b25a34b9913ceebcee4ec20364))
+
 # [2.12.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.11.3...v2.12.0) (2026-07-01)
 
 
