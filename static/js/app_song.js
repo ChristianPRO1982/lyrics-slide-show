@@ -44,6 +44,22 @@
     };
 
     const searchInput = document.querySelector("[data-song-local-search]");
+    const floatingSearchAnchor = document.querySelector(".song-search-anchor");
+    if (floatingSearchAnchor && searchInput instanceof HTMLElement) {
+        const focusSearchInput = () => {
+            searchInput.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            window.requestAnimationFrame(() => {
+                searchInput.focus();
+                if (
+                    searchInput instanceof HTMLInputElement
+                    || searchInput instanceof HTMLTextAreaElement
+                ) {
+                    searchInput.select();
+                }
+            });
+        };
+        floatingSearchAnchor.addEventListener("click", focusSearchInput);
+    }
     const songCards = Array.from(document.querySelectorAll("[data-song-card]"));
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
     const localEmptyState = document.querySelector("[data-song-local-empty]");
