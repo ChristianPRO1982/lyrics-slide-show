@@ -1,4 +1,4 @@
-# Lyrics Slide Show
+# Lyrics  Slide Show
 
 [![Latest Release](https://img.shields.io/github/release/ChristianPRO1982/lyrics-slide-show.svg?style=for-the-badge)](https://github.com/ChristianPRO1982/lyrics-slide-show/releases/latest)
 ![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json&style=for-the-badge)
