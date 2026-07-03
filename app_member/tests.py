@@ -266,10 +266,13 @@ class MemberValidationCoverageTests(SimpleTestCase):
 
     def test_site_params_admin_form_parses_cards_and_builds_clean_payload(self):
         parsed = SiteParamsAdminForm._parse_home_cards(
-            '{"cards": [null, {"title": " T ", "text": " X "}]}'
+            '{"cards": [null, {"title": " T ", "text": " X ", "image": "animations"}]}'
         )
-        self.assertEqual(parsed, [{"title": "T", "text": "X"}])
-        self.assertEqual(SiteParamsAdminForm._parse_home_cards("bad-json"), [])
+        self.assertEqual(parsed, [{"title": "T", "text": "X", "image": "animations"}])
+        self.assertEqual(
+            SiteParamsAdminForm._parse_home_cards("bad-json"),
+            [{"title": "", "text": "bad-json", "image": ""}],
+        )
         self.assertEqual(SiteParamsAdminForm._parse_home_cards('{"cards": "bad"}'), [])
 
         form = SiteParamsAdminForm(
@@ -296,10 +299,73 @@ class MemberValidationCoverageTests(SimpleTestCase):
                 "bg_img_allowed_mime": "image/jpeg,image/png",
                 "home_card_1_title": " Carte ",
                 "home_card_1_text": " Texte ",
+                "home_card_1_image": "animations",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
         self.assertIn('"title": "Carte"', form.cleaned_data["home_text"])
+        self.assertIn('"image": "animations"', form.cleaned_data["home_text"])
+
+    def test_site_params_admin_form_rejects_invalid_home_card_image(self):
+        form = SiteParamsAdminForm(
+            data={
+                "title": "Site",
+                "title_h1": "Titre",
+                "bloc1_text": "Bloc 1",
+                "bloc2_text": "Bloc 2",
+                "verse_max_lines": "4",
+                "verse_max_characters_for_a_line": "42",
+                "chorus_prefix": "R.",
+                "verse_prefix1": "C",
+                "verse_prefix2": ".",
+                "admin_message_cooldown_minutes": "5",
+                "moderator_message_cooldown_minutes": "60",
+                "bg_img_max_bytes": "2097152",
+                "bg_img_min_w": "800",
+                "bg_img_min_h": "600",
+                "bg_img_max_w": "4096",
+                "bg_img_max_h": "3072",
+                "bg_img_ratio_min": "1.3",
+                "bg_img_ratio_max": "2.0",
+                "bg_img_allowed_ext": ".jpg,.png",
+                "bg_img_allowed_mime": "image/jpeg,image/png",
+                "home_card_1_image": "invalid",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("home_card_1_image", form.errors)
+
+    def test_site_params_admin_form_preserves_prefix_spaces(self):
+        form = SiteParamsAdminForm(
+            data={
+                "title": "Site",
+                "title_h1": "Titre",
+                "bloc1_text": "Bloc 1",
+                "bloc2_text": "Bloc 2",
+                "verse_max_lines": "4",
+                "verse_max_characters_for_a_line": "42",
+                "chorus_prefix": "  R.  ",
+                "verse_prefix1": "  C",
+                "verse_prefix2": ".  ",
+                "admin_message_cooldown_minutes": "5",
+                "moderator_message_cooldown_minutes": "60",
+                "bg_img_max_bytes": "2097152",
+                "bg_img_min_w": "800",
+                "bg_img_min_h": "600",
+                "bg_img_max_w": "4096",
+                "bg_img_max_h": "3072",
+                "bg_img_ratio_min": "1.3",
+                "bg_img_ratio_max": "2.0",
+                "bg_img_allowed_ext": ".jpg,.png",
+                "bg_img_allowed_mime": "image/jpeg,image/png",
+            }
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["chorus_prefix"], "  R.  ")
+        self.assertEqual(form.cleaned_data["verse_prefix1"], "  C")
+        self.assertEqual(form.cleaned_data["verse_prefix2"], ".  ")
 
 
 class MemberServiceCompatibilityCoverageTests(TestCase):

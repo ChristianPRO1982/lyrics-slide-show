@@ -47,6 +47,8 @@ from .search import (
     TEXT_MODE_SINGLE_CHORUS,
     SongSearchParams,
     SongReferenceOptions,
+    build_active_song_search_reference_tags,
+    build_song_search_reference_add_url,
     get_active_song_search,
     get_reference_options,
     load_member_song_search,
@@ -378,6 +380,10 @@ def _build_page_summary(value: str | None) -> tuple[str, bool]:
 
 def _build_song_cards(search_results, user) -> list[dict[str, object]]:
     cards = []
+    saved_search_params = None
+    if _is_authenticated(user):
+        member_id = get_member_id_from_user(user)
+        saved_search_params = load_member_song_search(member_id)
     for result in search_results:
         song = result.song
         description_summary, description_rest = _split_description_for_display(
@@ -392,9 +398,57 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
                 "description_rest": description_rest,
                 "can_edit": _can_edit_song(user, song),
                 "title_complete_with_tags": build_song_full_title_with_tags(song),
-                "genres": result.genres,
-                "bands": result.bands,
-                "artists": result.artists,
+                "genres": [
+                    {
+                        "kind": tag.kind,
+                        "id": tag.id,
+                        "label": tag.label,
+                        "add_url": (
+                            build_song_search_reference_add_url(
+                                saved_search_params,
+                                kind=tag.kind,
+                                reference_id=tag.id,
+                            )
+                            if saved_search_params
+                            else None
+                        ),
+                    }
+                    for tag in result.genre_tags
+                ],
+                "bands": [
+                    {
+                        "kind": tag.kind,
+                        "id": tag.id,
+                        "label": tag.label,
+                        "add_url": (
+                            build_song_search_reference_add_url(
+                                saved_search_params,
+                                kind=tag.kind,
+                                reference_id=tag.id,
+                            )
+                            if saved_search_params
+                            else None
+                        ),
+                    }
+                    for tag in result.band_tags
+                ],
+                "artists": [
+                    {
+                        "kind": tag.kind,
+                        "id": tag.id,
+                        "label": tag.label,
+                        "add_url": (
+                            build_song_search_reference_add_url(
+                                saved_search_params,
+                                kind=tag.kind,
+                                reference_id=tag.id,
+                            )
+                            if saved_search_params
+                            else None
+                        ),
+                    }
+                    for tag in result.artist_tags
+                ],
                 "display_url": result.display_url,
                 "modify_url": reverse("modify_song", args=[song.song_id]),
                 "print_single_url": result.print_single_url,
@@ -444,7 +498,13 @@ def _fetch_name_labels(table: str, id_column: str, ids: set[int]) -> dict[int, s
 
 def _get_song_metadata_labels(
     song: Song,
-) -> tuple[tuple[str, ...], tuple[str, ...], tuple[tuple[str, tuple[str, ...]], ...]]:
+    *,
+    search_params: SongSearchParams | None = None,
+) -> tuple[
+    tuple[dict[str, object], ...],
+    tuple[dict[str, object], ...],
+    tuple[tuple[str, tuple[dict[str, object], ...]], ...],
+]:
     genre_ids = tuple(
         SongGenre.objects.filter(song_id=song.song_id).values_list(
             "genre_id", flat=True
@@ -464,24 +524,77 @@ def _get_song_metadata_labels(
     artist_labels = _fetch_name_labels("artists", "artist_id", set(artist_ids))
 
     grouped_genres: dict[str, list[str]] = {}
-    for group_name, genre_name in genre_labels.values():
-        grouped_genres.setdefault(
-            normalize_genre_group_display_name(group_name), []
-        ).append(genre_name)
+    grouped_genre_ids: dict[str, list[int]] = {}
+    for genre_id, label_data in genre_labels.items():
+        group_name, genre_name = label_data
+        normalized_group_name = normalize_genre_group_display_name(group_name)
+        grouped_genres.setdefault(normalized_group_name, []).append(genre_name)
+        grouped_genre_ids.setdefault(normalized_group_name, []).append(genre_id)
 
     return (
         tuple(
-            with_band_emoji(label)
-            for label in (band_labels.get(item) for item in band_ids)
+            {
+                "kind": "band",
+                "id": item,
+                "label": with_band_emoji(label),
+                "add_url": (
+                    build_song_search_reference_add_url(
+                        search_params,
+                        kind="band",
+                        reference_id=item,
+                    )
+                    if search_params
+                    else None
+                ),
+            }
+            for item in band_ids
+            for label in [band_labels.get(item)]
             if label
         ),
         tuple(
-            with_artist_emoji(label)
-            for label in (artist_labels.get(item) for item in artist_ids)
+            {
+                "kind": "artist",
+                "id": item,
+                "label": with_artist_emoji(label),
+                "add_url": (
+                    build_song_search_reference_add_url(
+                        search_params,
+                        kind="artist",
+                        reference_id=item,
+                    )
+                    if search_params
+                    else None
+                ),
+            }
+            for item in artist_ids
+            for label in [artist_labels.get(item)]
             if label
         ),
         tuple(
-            (group_name, tuple(with_music_emoji(name) for name in names))
+            (
+                group_name,
+                tuple(
+                    {
+                        "kind": "genre",
+                        "id": genre_id,
+                        "label": with_music_emoji(name),
+                        "add_url": (
+                            build_song_search_reference_add_url(
+                                search_params,
+                                kind="genre",
+                                reference_id=genre_id,
+                            )
+                            if search_params
+                            else None
+                        ),
+                    }
+                    for genre_id, name in zip(
+                        grouped_genre_ids[group_name],
+                        names,
+                        strict=False,
+                    )
+                ),
+            )
             for group_name, names in grouped_genres.items()
         ),
     )
@@ -891,6 +1004,11 @@ def songs(request: HttpRequest) -> HttpResponse:
         display_search_params = applied_search_params
         search_results = search_songs(applied_search_params, request.user, member_id)
     song_cards = _build_song_cards(search_results.results, request.user)
+    active_search_tags = (
+        build_active_song_search_reference_tags(display_search_params)
+        if member_id
+        else ()
+    )
     reference_options = (
         get_reference_options()
         if _is_authenticated(request.user)
@@ -905,6 +1023,7 @@ def songs(request: HttpRequest) -> HttpResponse:
             "search_params": display_search_params,
             "reference_options": reference_options,
             "song_cards": song_cards,
+            "active_search_tags": active_search_tags,
             "displayed_count": search_results.displayed_count,
             "search_count": search_results.search_count,
             "catalog_count": search_results.catalog_count,
@@ -1383,8 +1502,12 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         validation_label = _("Chant non validé")
 
     member_id = get_member_id_from_user(request.user)
-    bands, artists, genre_groups = _get_song_metadata_labels(song_object)
     is_favorite = _is_song_favorite(song_object.song_id, member_id)
+    saved_search_params = load_member_song_search(member_id) if member_id else None
+    bands, artists, genre_groups = _get_song_metadata_labels(
+        song_object,
+        search_params=saved_search_params,
+    )
     can_report = _can_report_message(request.user, song_object)
     render_settings = SongRenderSettings.from_language(
         getattr(request, "LANGUAGE_CODE", None)
@@ -1427,6 +1550,11 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "bands": bands,
             "artists": artists,
             "genre_groups": genre_groups,
+            "active_search_tags": (
+                build_active_song_search_reference_tags(saved_search_params)
+                if saved_search_params
+                else ()
+            ),
             "title_complete": text_artifacts.full_title,
             "title_complete_with_tags": text_artifacts.full_title_with_tags,
             "text_short_html": text_artifacts.short_text_html,

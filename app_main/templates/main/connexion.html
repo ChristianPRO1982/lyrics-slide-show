@@ -237,6 +237,37 @@
                     {% endif %}
                 </article>
 
+                {% if is_admin %}
+                    <article class="site-theme-card">
+                        <header class="site-theme-card-header">
+                            <div>
+                                <h2>{% trans "Message global administrateur" %}</h2>
+                                <p>{% trans "Ce message est public sur toutes les pages du site." %}</p>
+                            </div>
+                        </header>
+                        {% if site_params_missing %}
+                            <p>{% trans "Les paramètres du site ne sont pas encore disponibles pour cette langue. L'édition du message administrateur est temporairement indisponible." %}</p>
+                        {% elif admin_message_form %}
+                            <form method="post" data-account-admin-form data-unsaved-guard>
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="save_admin_message_settings">
+                                <input type="hidden" name="member_search" value="{{ member_search }}">
+                                {% for hidden in admin_message_form.hidden_fields %}{{ hidden }}{% endfor %}
+                                {% for field in admin_message_form.visible_fields %}
+                                    <div>
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
+                                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                                    </div>
+                                {% endfor %}
+                                {% for error in admin_message_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                                <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer l'administration" %}</button>
+                            </form>
+                        {% endif %}
+                    </article>
+                {% endif %}
+
                 <article class="site-theme-card">
                     <header class="site-theme-card-header">
                         <div>
@@ -251,33 +282,6 @@
 
         {% if is_admin %}
             <section class="site-theme-selection" aria-label="{% trans 'Administration du site' %}">
-                <article class="site-theme-card">
-                    <header class="site-theme-card-header">
-                        <div>
-                            <h2>{% trans "Paramètres administrateur" %}</h2>
-                            <p>{% trans "Ces réglages pilotent le contenu et les contraintes globales du site pour la langue courante." %}</p>
-                        </div>
-                    </header>
-                    {% if admin_form %}
-                        <form method="post" data-account-admin-form data-unsaved-guard>
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="save_site_settings">
-                            <input type="hidden" name="member_search" value="{{ member_search }}">
-                            {% for hidden in admin_form.hidden_fields %}{{ hidden }}{% endfor %}
-                            {% for field in admin_form.visible_fields %}
-                                <div>
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                    {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
-                                    {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
-                                </div>
-                            {% endfor %}
-                            {% for error in admin_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
-                            <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer l'administration" %}</button>
-                        </form>
-                    {% endif %}
-                </article>
-
                 <article class="site-theme-card">
                     <header class="site-theme-card-header">
                         <div>

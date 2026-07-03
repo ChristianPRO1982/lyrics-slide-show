@@ -45,9 +45,11 @@ from app_main.lyrics import (
     build_qr_png_base64,
 )
 from app_main.mock_accounts import DEV_MOCK_ACCOUNTS, dev_mock_accounts_json
+from app_main.home_cards import filter_display_home_cards
+from app_main.homepage_markdown import render_homepage_markdown
 from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberRole
-from app_member.forms import SiteParamsAdminForm
+from app_member.forms import AdminMessageForm, SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
 from app_song.models import Song, SongMessage, SongStatus, Verse
 from app_song.rendering import ChorusRenderMode, SongRenderSettings
@@ -753,23 +755,57 @@ class AuthFlowTests(TestCase):
 
         self.assertContains(response, 'href="https://signup.example.test/register"')
 
-    def test_homepage_shows_expected_marketing_content(self):
+    def test_homepage_does_not_show_legacy_marketing_cards_by_default(self):
         response = self.client.get(reverse("homepage"))
 
         self.assertContains(response, "Lyrics Slide Show")
         self.assertContains(response, "Politique de confidentialité")
-        self.assertContains(
-            response,
-            "Parfait pour une soirée louange, une animation musicale ou un concert improvisé.",
+        self.assertNotContains(response, "Projetez. Chantez. Kiffez.")
+        self.assertNotContains(response, "Pourquoi c’est cool ?")
+        self.assertNotContains(response, "Comment ça marche ?")
+        self.assertNotContains(response, "Ce que tu y gagnes")
+
+    def test_homepage_renders_configured_card_with_themed_image(self):
+        create_site_params(
+            home_text='{"cards":[{"title":"Carte test","text":"**Contenu**","image":"animations"}]}'
         )
-        self.assertContains(response, "Projetez. Chantez. Kiffez.")
-        self.assertContains(response, "Pourquoi c’est cool ?")
-        self.assertContains(response, "Comment ça marche ?")
-        self.assertContains(response, "Ce que tu y gagnes")
-        self.assertContains(
-            response,
-            "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la vibe.",
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, "Carte test")
+        self.assertContains(response, "<strong>Contenu</strong>", html=False)
+        self.assertContains(response, 'data-theme-icon="animations"')
+        self.assertContains(response, "site-home-dropcap-copy")
+
+    def test_homepage_renders_light_markdown_for_blocks_and_quotes(self):
+        create_site_params(
+            bloc1_text="**Bloc**\n*italique*",
+            bloc2_text="> Citation homepage",
         )
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(
+            response, "<strong>Bloc</strong><br><em>italique</em>", html=False
+        )
+        self.assertContains(response, 'class="site-home-markdown-quote"', html=False)
+        self.assertContains(response, "Citation homepage")
+
+    def test_homepage_hides_cards_missing_title_or_text(self):
+        create_site_params(
+            home_text='{"cards":['
+            '{"title":"Carte visible","text":"Texte visible","image":""},'
+            '{"title":"Sans texte","text":"","image":"animations"},'
+            '{"title":"","text":"Sans titre","image":"animations"}'
+            "]}"
+        )
+
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, "Carte visible")
+        self.assertContains(response, "Texte visible")
+        self.assertNotContains(response, "Sans texte")
+        self.assertNotContains(response, "Sans titre")
 
     @override_settings(AUTH_MOCK_BASE_URL="http://localhost:8001")
     def test_login_redirects_to_auth_mock(self):
@@ -1412,6 +1448,7 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertNotContains(response, "Paramètres administrateur")
+        self.assertNotContains(response, "Message global administrateur")
         self.assertRegex(
             response.content.decode(),
             r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
@@ -1443,12 +1480,13 @@ class AccountRoleTests(TestCase):
         response = account(request)
 
         self.assertContains(response, "Message de modération")
-        self.assertContains(response, "Paramètres administrateur")
+        self.assertContains(response, "Message global administrateur")
         self.assertContains(response, "data-account-moderation-form")
         self.assertContains(response, "data-account-admin-form")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Membres du site")
+        self.assertNotContains(response, "Titre du site")
         self.assertRegex(
             response.content.decode(),
             r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
@@ -1748,17 +1786,40 @@ class MainViewHelperCoverageTests(SimpleTestCase):
         self.assertEqual(_parse_home_cards(None), [])
         self.assertEqual(
             _parse_home_cards("Texte historique"),
-            [{"title": "", "text": "Texte historique"}],
+            [{"title": "", "text": "Texte historique", "image": ""}],
         )
         self.assertEqual(_parse_home_cards("[]"), [])
         self.assertEqual(_parse_home_cards('{"cards": "bad"}'), [])
         self.assertEqual(
             _parse_home_cards(
-                '{"cards": [null, {}, {"title": " T ", "text": " X "}, '
-                '{"title": "", "text": ""}]}'
+                '{"cards": [null, {}, {"title": " T ", "text": " X ", "image": "animations"}, '
+                '{"title": "", "text": "", "image": "invalid"}]}'
             ),
-            [{"title": "T", "text": "X"}],
+            [{"title": "T", "text": "X", "image": "animations"}],
         )
+
+    def test_filter_display_home_cards_keeps_only_complete_cards(self):
+        cards = [
+            {"title": "Visible", "text": "Texte", "image": ""},
+            {"title": "Sans texte", "text": "", "image": "animations"},
+            {"title": "", "text": "Sans titre", "image": ""},
+        ]
+
+        self.assertEqual(
+            filter_display_home_cards(cards),
+            [{"title": "Visible", "text": "Texte", "image": ""}],
+        )
+
+    def test_render_homepage_markdown_supports_inline_and_quotes(self):
+        rendered = render_homepage_markdown(
+            "Avant **gras**\n*italique*\n> Citation\n> Ligne 2\n<script>alert(1)</script>"
+        )
+
+        self.assertIn("<strong>gras</strong>", rendered)
+        self.assertIn("<em>italique</em>", rendered)
+        self.assertIn('class="site-home-markdown-quote"', rendered)
+        self.assertIn("Citation<br>Ligne 2", rendered)
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", rendered)
 
     def test_collect_heavy_images_filters_sorts_and_builds_both_url_types(self):
         with TemporaryDirectory() as temp_dir:
@@ -1976,21 +2037,21 @@ class AccountActionCoverageTests(TestCase):
         }
         session.save()
 
-    def _admin_form_payload(self, instance, *, language="fr"):
-        form = SiteParamsAdminForm(instance=instance, prefix="admin-settings")
-        payload = {"action": "save_site_settings", "language": language}
+    def _admin_message_form_payload(self, instance):
+        form = AdminMessageForm(instance=instance, prefix="admin-popup")
+        payload = {"action": "save_admin_message_settings"}
         for name in form.fields:
             value = form.initial.get(name, "")
             if value is None:
                 value = ""
-            payload[f"admin-settings-{name}"] = str(value)
+            payload[f"admin-popup-{name}"] = str(value)
         return payload
 
     def test_account_rejects_privileged_actions_for_plain_member(self):
         self._login()
         for action in (
             "save_moderation_settings",
-            "save_site_settings",
+            "save_admin_message_settings",
             "update_member_role",
         ):
             with self.subTest(action=action):
@@ -2040,27 +2101,30 @@ class AccountActionCoverageTests(TestCase):
         self.assertEqual(invalid_moderation.status_code, 200)
         self.assertEqual(len(invalid_moderation.context["member_results"]), 1)
 
-        invalid_admin = self._admin_form_payload(params)
+        invalid_admin = self._admin_message_form_payload(params)
         invalid_admin["member_search"] = "target"
-        invalid_admin["admin-settings-title"] = ""
+        invalid_admin["admin-popup-admin_message_cooldown_minutes"] = "bad"
         response = self.client.post(reverse("account"), invalid_admin)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["member_results"]), 1)
-        self.assertIn("title", response.context["admin_form"].errors)
+        self.assertIn(
+            "admin_message_cooldown_minutes",
+            response.context["admin_message_form"].errors,
+        )
 
-    def test_admin_saves_site_settings_and_searches_members(self):
+    def test_admin_saves_admin_message_and_searches_members(self):
         params = create_site_params()
         self._login(admin=True)
-        payload = self._admin_form_payload(params)
+        payload = self._admin_message_form_payload(params)
         payload["member_search"] = "target"
-        payload["admin-settings-title"] = "Nouveau titre"
-        payload["admin-settings-signup_url"] = "https://signup.example.test/register"
+        payload["admin-popup-admin_message"] = "Message admin"
+        payload["admin-popup-admin_message_cooldown_minutes"] = "12"
 
         response = self.client.post(reverse("account"), payload)
         self.assertRedirects(response, reverse("account") + "?member_search=target")
         params.refresh_from_db()
-        self.assertEqual(params.title, "Nouveau titre")
-        self.assertEqual(params.signup_url, "https://signup.example.test/register")
+        self.assertEqual(params.admin_message, "Message admin")
+        self.assertEqual(params.admin_message_cooldown_minutes, 12)
 
         search = self.client.get(reverse("account"), {"member_search": "target"})
         self.assertEqual(search.status_code, 200)
@@ -2153,6 +2217,8 @@ class SiteParamsViewCoverageTests(TestCase):
         self.assertContains(response, "data-site-params-form")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
+        self.assertContains(response, "Carte accueil 1 - Image")
+        self.assertNotContains(response, "Message global administrateur")
         self.assertEqual(response.context["selected_language"], "fr")
 
     def test_site_params_valid_post_creates_language_record(self):
@@ -2161,6 +2227,9 @@ class SiteParamsViewCoverageTests(TestCase):
         payload = self._payload(source, language="en")
         payload["admin-settings-title"] = "English title"
         payload["admin-settings-signup_url"] = "https://signup.example.test/enroll"
+        payload["admin-settings-home_card_1_title"] = "Card one"
+        payload["admin-settings-home_card_1_text"] = "<p>Hello</p>"
+        payload["admin-settings-home_card_1_image"] = "animations"
 
         response = self.client.post(reverse("site_params"), payload)
         self.assertRedirects(
@@ -2172,6 +2241,10 @@ class SiteParamsViewCoverageTests(TestCase):
         self.assertEqual(
             SiteParams.objects.get(language="EN").signup_url,
             "https://signup.example.test/enroll",
+        )
+        self.assertEqual(
+            SiteParams.objects.get(language="EN").home_text,
+            '{"cards": [{"title": "Card one", "text": "<p>Hello</p>", "image": "animations"}]}',
         )
 
     def test_site_params_invalid_post_reports_named_fields(self):
@@ -2185,3 +2258,14 @@ class SiteParamsViewCoverageTests(TestCase):
         self.assertEqual(response.context["selected_language"], "fr")
         self.assertContains(response, "informations manquantes ou invalides")
         self.assertContains(response, "Titre du site")
+
+    def test_site_params_rejects_invalid_home_card_image_choice(self):
+        params = create_site_params(language="FR")
+        self._login(admin=True)
+        payload = self._payload(params, language="fr")
+        payload["admin-settings-home_card_1_image"] = "not-allowed"
+
+        response = self.client.post(reverse("site_params"), payload)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("home_card_1_image", response.context["admin_form"].errors)

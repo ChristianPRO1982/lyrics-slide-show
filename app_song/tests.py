@@ -41,6 +41,7 @@ from .rendering import (
 )
 from .search import (
     SongSearchParams,
+    add_song_search_reference,
     _apply_filters,
     _apply_reference_filter,
     _fetch_name_labels,
@@ -51,6 +52,7 @@ from .search import (
     build_song_search_query,
     get_active_song_search,
     load_member_song_search,
+    remove_song_search_reference,
     save_song_search,
     search_songs,
 )
@@ -167,7 +169,7 @@ class SongMetadataLabelAssemblyTests(SimpleTestCase):
         self.assertEqual(artists, ())
         self.assertEqual(genre_groups[0][0], "Scoutisme")
         self.assertEqual(len(genre_groups[0][1]), 1)
-        self.assertTrue(genre_groups[0][1][0].endswith("Louange"))
+        self.assertTrue(genre_groups[0][1][0]["label"].endswith("Louange"))
 
     @patch("app_song.views._fetch_name_labels", return_value={})
     @patch(
@@ -204,15 +206,19 @@ class SongMetadataLabelAssemblyTests(SimpleTestCase):
             ("Scoutisme", "Chrétien - KTO", "#"),
         )
         self.assertEqual(
-            tuple(name.endswith("SGDF") for name in genre_groups[0][1]), (True, False)
-        )
-        self.assertTrue(genre_groups[0][1][1].endswith("SGDF - Compagnons"))
-        self.assertTrue(genre_groups[1][1][0].endswith("prière"))
-        self.assertEqual(
-            tuple(name.endswith("en langue étrangère") for name in genre_groups[2][1]),
+            tuple(tag["label"].endswith("SGDF") for tag in genre_groups[0][1]),
             (True, False),
         )
-        self.assertTrue(genre_groups[2][1][1].endswith("variété française"))
+        self.assertTrue(genre_groups[0][1][1]["label"].endswith("SGDF - Compagnons"))
+        self.assertTrue(genre_groups[1][1][0]["label"].endswith("prière"))
+        self.assertEqual(
+            tuple(
+                tag["label"].endswith("en langue étrangère")
+                for tag in genre_groups[2][1]
+            ),
+            (True, False),
+        )
+        self.assertTrue(genre_groups[2][1][1]["label"].endswith("variété française"))
 
 
 class SongRenderingMarkupTests(SimpleTestCase):
@@ -598,6 +604,54 @@ class SongSearchParamsTests(SimpleTestCase):
         query = build_song_search_query(SongSearchParams(favorites_only=True))
 
         self.assertEqual(query, "favorites_only=1")
+
+    def test_add_song_search_reference_preserves_other_filters_without_duplicates(self):
+        params = SongSearchParams(
+            text="louange",
+            everywhere=True,
+            match_all_selected_refs=True,
+            genre_ids=(3,),
+            validation="validated_only",
+            favorites_only=True,
+        )
+
+        next_params = add_song_search_reference(
+            params,
+            kind="genre",
+            reference_id=5,
+        )
+        duplicate_params = add_song_search_reference(
+            next_params,
+            kind="genre",
+            reference_id=5,
+        )
+
+        self.assertEqual(next_params.text, "louange")
+        self.assertTrue(next_params.everywhere)
+        self.assertTrue(next_params.match_all_selected_refs)
+        self.assertEqual(next_params.validation, "validated_only")
+        self.assertTrue(next_params.favorites_only)
+        self.assertEqual(next_params.genre_ids, (3, 5))
+        self.assertEqual(duplicate_params.genre_ids, (3, 5))
+
+    def test_remove_song_search_reference_removes_only_target_id(self):
+        params = SongSearchParams(
+            genre_ids=(3, 5),
+            band_ids=(7,),
+            artist_ids=(11,),
+            match_all_selected_refs=True,
+        )
+
+        next_params = remove_song_search_reference(
+            params,
+            kind="genre",
+            reference_id=5,
+        )
+
+        self.assertEqual(next_params.genre_ids, (3,))
+        self.assertEqual(next_params.band_ids, (7,))
+        self.assertEqual(next_params.artist_ids, (11,))
+        self.assertTrue(next_params.match_all_selected_refs)
 
 
 class SongSearchPersistenceTests(TestCase):
@@ -1197,7 +1251,9 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(response, "1 - Scoutisme")
         self.assertEqual(response.context["genre_groups"][0][0], "Scoutisme")
         self.assertEqual(len(response.context["genre_groups"][0][1]), 1)
-        self.assertTrue(response.context["genre_groups"][0][1][0].endswith("Louange"))
+        self.assertTrue(
+            response.context["genre_groups"][0][1][0]["label"].endswith("Louange")
+        )
 
     def test_song_view_uses_translated_tags_heading(self):
         self._login()
@@ -2873,7 +2929,7 @@ class SongGenresDisplayViewTests(TestCase):
         )
         self.assertEqual(len(response.context["song_cards"][0]["genres"]), 1)
         self.assertTrue(
-            response.context["song_cards"][0]["genres"][0].endswith(
+            response.context["song_cards"][0]["genres"][0]["label"].endswith(
                 "Chretien / KTO / Louange"
             )
         )
@@ -2911,6 +2967,171 @@ class SongGenresDisplayViewTests(TestCase):
             response,
             "Nombre total de chants en base de données",
         )
+
+
+class SongClickableReferenceFiltersTests(TestCase):
+    user_id = "56565656-5656-5656-5656-565656565656"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="clickable.tags.user",
+            first_name="Clickable",
+            last_name="Tags",
+            email="clickable.tags@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        self.song = Song.objects.create(
+            title="Saved Search Hit",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        Song.objects.create(
+            title="Saved Search Other",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        SongFavorite.objects.create(song=self.song, member_id=self.user_id)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO "common"."genres" ("group", "name") VALUES (%s, %s) RETURNING genre_id',
+                ["1 - Scoutisme", "Louange"],
+            )
+            self.genre_id = cursor.fetchone()[0]
+            cursor.execute(
+                'INSERT INTO "common"."bands" ("name") VALUES (%s) RETURNING band_id',
+                ["Les Veilleurs"],
+            )
+            self.band_id = cursor.fetchone()[0]
+            cursor.execute(
+                'INSERT INTO "common"."artists" ("name") VALUES (%s) RETURNING artist_id',
+                ["Claire Lumiere"],
+            )
+            self.artist_id = cursor.fetchone()[0]
+
+        SongGenre.objects.create(song=self.song, genre_id=self.genre_id)
+        SongBand.objects.create(song=self.song, band_id=self.band_id)
+        SongArtist.objects.create(song=self.song, artist_id=self.artist_id)
+
+        self.saved_search = {
+            "text": "Saved Search",
+            "everywhere": False,
+            "match_all_selected_refs": True,
+            "genre_ids": [],
+            "band_ids": [],
+            "artist_ids": [],
+            "validation": "validated_only",
+            "favorites_only": True,
+        }
+        MemberPreferences.objects.create(
+            member_id=self.user_id,
+            song_search=self.saved_search.copy(),
+        )
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "clickable.tags.user",
+            "email": "clickable.tags@example.test",
+            "first_name": "Clickable",
+            "last_name": "Tags",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_songs_card_tag_click_adds_reference_to_saved_search(self):
+        self._login()
+
+        response = self.client.get(reverse("songs"))
+        add_url = response.context["song_cards"][0]["genres"][0]["add_url"]
+
+        follow_response = self.client.get(add_url)
+
+        self.assertEqual(follow_response.status_code, 200)
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        self.assertEqual(preferences.song_search["text"], "Saved Search")
+        self.assertTrue(preferences.song_search["match_all_selected_refs"])
+        self.assertEqual(preferences.song_search["validation"], "validated_only")
+        self.assertTrue(preferences.song_search["favorites_only"])
+        self.assertEqual(preferences.song_search["genre_ids"], [self.genre_id])
+
+    def test_songs_card_tag_click_does_not_duplicate_existing_reference(self):
+        self._login()
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        preferences.song_search = {
+            **self.saved_search,
+            "genre_ids": [self.genre_id],
+        }
+        preferences.save(update_fields=["song_search"])
+
+        response = self.client.get(reverse("songs"))
+        add_url = response.context["song_cards"][0]["genres"][0]["add_url"]
+        self.client.get(add_url)
+
+        preferences.refresh_from_db()
+        self.assertEqual(preferences.song_search["genre_ids"], [self.genre_id])
+
+    def test_active_tag_removal_keeps_other_filters_and_match_logic(self):
+        self._login()
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        preferences.song_search = {
+            **self.saved_search,
+            "genre_ids": [self.genre_id],
+            "band_ids": [self.band_id],
+            "artist_ids": [self.artist_id],
+        }
+        preferences.save(update_fields=["song_search"])
+
+        response = self.client.get(reverse("songs"))
+        self.assertContains(response, "song-tag-badge-link--removable")
+        remove_url = next(
+            tag["remove_url"]
+            for tag in response.context["active_search_tags"]
+            if tag["kind"] == "band"
+        )
+        follow_response = self.client.get(remove_url)
+
+        self.assertEqual(follow_response.status_code, 200)
+        preferences.refresh_from_db()
+        self.assertTrue(preferences.song_search["match_all_selected_refs"])
+        self.assertEqual(preferences.song_search["genre_ids"], [self.genre_id])
+        self.assertEqual(preferences.song_search["band_ids"], [])
+        self.assertEqual(preferences.song_search["artist_ids"], [self.artist_id])
+
+    def test_song_view_tag_click_routes_to_songs_and_updates_saved_search(self):
+        self._login()
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+        add_url = response.context["genre_groups"][0][1][0]["add_url"]
+        follow_response = self.client.get(add_url)
+
+        self.assertEqual(follow_response.status_code, 200)
+        self.assertContains(follow_response, "Liste des chants")
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        self.assertEqual(preferences.song_search["genre_ids"], [self.genre_id])
+
+    def test_guests_do_not_get_clickable_reference_tags_or_active_filters(self):
+        songs_response = self.client.get(reverse("songs"))
+
+        self.assertEqual(songs_response.context["active_search_tags"], ())
+        self.assertIsNone(
+            songs_response.context["song_cards"][0]["genres"][0]["add_url"]
+        )
+        self.assertNotContains(songs_response, "song-tag-badge-link--removable")
+
+        song_response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(song_response.context["active_search_tags"], ())
+        self.assertIsNone(song_response.context["genre_groups"][0][1][0]["add_url"])
+        self.assertNotContains(song_response, "song-tag-badge-link--removable")
 
 
 class SongModifyActionOnSongsPageTests(TestCase):

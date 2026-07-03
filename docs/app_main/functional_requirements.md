@@ -262,9 +262,9 @@ Language lookup must:
 - then fall back to the first available `SiteParams` row,
 - return `None` if the lookup fails completely.
 
-`app_main` currently edits these site parameters from the `account` page. In its own UI, it directly uses the popup-related fields and the language-based row selection. Other stored fields are administered here and are available for the rest of the project.
+`app_main` edits popup message content and cooldowns from the `account` page only.
 
-Administrators can also edit the same `SiteParams` content from the dedicated `/site-params/` page with explicit language selection (`fr` or `en`), including row creation when the selected language row does not exist yet.
+The dedicated `/site-params/` page is the only shared UI used for full `SiteParams` editing, with explicit language selection (`fr` or `en`) and row creation when the selected language row does not exist yet.
 
 ## Public Pages
 
@@ -281,7 +281,13 @@ It renders shared navigation and language-scoped marketing content from `SitePar
 - load the shared popup root and popup client-side configuration,
 - load the shared theme configuration used by the whole site shell,
 - use `title` and `title_h1` from `SiteParams` when available (fallback to `Lyrics Slide Show`),
-- parse `home_text` as either plain text or JSON cards payload (`{"cards":[...]}`) and expose up to six cards.
+- parse `home_text` as either plain text or JSON cards payload (`{"cards":[...]}`) and expose up to six cards,
+- support cards with `title`, `text`, and optional themed `image` slug,
+- render `bloc1_text`, `bloc2_text`, and homepage card text through the same mini-markdown layer,
+- support `**gras**`, `*italique*`, blockquote lines starting with `> `, and ordinary line breaks rendered as `<br>`,
+- escape raw HTML from administrator input before applying that mini-markdown,
+- hide any homepage card missing either `title` or `text`,
+- render no default marketing cards when no homepage cards are configured.
 
 ### Login Page
 
@@ -395,15 +401,11 @@ When `request.user.is_admin` is true, the account page must expose an administra
 
 This section currently includes:
 
-- editing the shared site parameters for the active language,
 - editing the administrator popup message and its cooldown,
-- editing text, formatting, and background-image constraints stored in `lss.site_params`,
 - searching directory members by username, first name, last name, or email,
 - viewing whether a matched directory member is enabled in `users.users`,
 - granting or revoking the local `moderator` role,
 - granting or revoking the local `admin` role.
-
-When an administrator edits site settings for a language that does not yet have a `SiteParams` row, saving the form creates that row.
 
 ## Shared Navigation Role Marker
 
@@ -429,7 +431,10 @@ Rules:
 - language context is selected by query string (`?language=fr|en`), defaults to current language then `fr`,
 - invalid language values are normalized to `fr`,
 - POST saves the selected language row and redirects back to the same page/language,
-- validation failures show a flash error with invalid field labels when available.
+- validation failures show a flash error with invalid field labels when available,
+- the page edits shared site identity fields, song rendering constraints, background-image constraints, popup cooldowns, and six configurable homepage cards,
+- the page does not edit `admin_message` or `moderator_message`,
+- each homepage card supports `title`, `text (markdown léger)`, and optional themed `image`.
 
 ## Account POST Actions
 
@@ -438,7 +443,7 @@ The `account` page currently processes distinct POST actions server-side.
 Supported actions are:
 
 - `save_moderation_settings`,
-- `save_site_settings`,
+- `save_admin_message_settings`,
 - `update_member_role`.
 
 The server-side processing must:

@@ -109,6 +109,13 @@ class SongReferenceOption:
 
 
 @dataclass(frozen=True)
+class SongReferenceTag:
+    kind: str
+    id: int
+    label: str
+
+
+@dataclass(frozen=True)
 class SongSearchResult:
     song: Song
     is_favorite: bool
@@ -116,6 +123,9 @@ class SongSearchResult:
     genres: tuple[str, ...]
     bands: tuple[str, ...]
     artists: tuple[str, ...]
+    genre_tags: tuple[SongReferenceTag, ...]
+    band_tags: tuple[SongReferenceTag, ...]
+    artist_tags: tuple[SongReferenceTag, ...]
     display_url: str
     print_single_url: str
     print_full_url: str
@@ -137,6 +147,13 @@ class SongReferenceOptions:
     genres: tuple[SongReferenceOption, ...]
     bands: tuple[SongReferenceOption, ...]
     artists: tuple[SongReferenceOption, ...]
+
+
+REFERENCE_KIND_TO_FIELD = {
+    "genre": "genre_ids",
+    "band": "band_ids",
+    "artist": "artist_ids",
+}
 
 
 def _normalize_ids(value: object) -> tuple[int, ...]:
@@ -299,6 +316,157 @@ def build_song_search_query(params: SongSearchParams, **overrides: object) -> st
     elif explicit_favorites_override:
         query["favorites_only"] = "0"
     return urlencode(query, doseq=True)
+
+
+def _get_reference_field_name(kind: str) -> str:
+    try:
+        return REFERENCE_KIND_TO_FIELD[kind]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported song search reference kind: {kind}") from exc
+
+
+def _replace_reference_ids(
+    params: SongSearchParams,
+    *,
+    kind: str,
+    ids: tuple[int, ...],
+) -> SongSearchParams:
+    field_name = _get_reference_field_name(kind)
+    return replace(params, **{field_name: ids})
+
+
+def add_song_search_reference(
+    params: SongSearchParams,
+    *,
+    kind: str,
+    reference_id: int,
+) -> SongSearchParams:
+    if reference_id <= 0:
+        return params
+    field_name = _get_reference_field_name(kind)
+    existing_ids = list(getattr(params, field_name))
+    if reference_id not in existing_ids:
+        existing_ids.append(reference_id)
+    return _replace_reference_ids(
+        params,
+        kind=kind,
+        ids=tuple(existing_ids),
+    )
+
+
+def remove_song_search_reference(
+    params: SongSearchParams,
+    *,
+    kind: str,
+    reference_id: int,
+) -> SongSearchParams:
+    field_name = _get_reference_field_name(kind)
+    next_ids = tuple(
+        current_id
+        for current_id in getattr(params, field_name)
+        if current_id != reference_id
+    )
+    return _replace_reference_ids(
+        params,
+        kind=kind,
+        ids=next_ids,
+    )
+
+
+def build_song_search_url(params: SongSearchParams, **overrides: object) -> str:
+    query = build_song_search_query(params, **overrides)
+    base_url = reverse("songs")
+    if not query:
+        return base_url
+    return f"{base_url}?{query}"
+
+
+def build_song_search_reference_add_url(
+    params: SongSearchParams,
+    *,
+    kind: str,
+    reference_id: int,
+) -> str:
+    next_params = add_song_search_reference(
+        params,
+        kind=kind,
+        reference_id=reference_id,
+    )
+    return build_song_search_url(next_params)
+
+
+def build_song_search_reference_remove_url(
+    params: SongSearchParams,
+    *,
+    kind: str,
+    reference_id: int,
+) -> str:
+    next_params = remove_song_search_reference(
+        params,
+        kind=kind,
+        reference_id=reference_id,
+    )
+    return build_song_search_url(next_params)
+
+
+def build_active_song_search_reference_tags(
+    params: SongSearchParams,
+) -> tuple[dict[str, object], ...]:
+    genre_labels = _fetch_genre_labels(set(params.genre_ids))
+    band_labels = _fetch_name_labels("bands", "band_id", set(params.band_ids))
+    artist_labels = _fetch_name_labels("artists", "artist_id", set(params.artist_ids))
+    active_tags: list[dict[str, object]] = []
+
+    for genre_id in params.genre_ids:
+        label = genre_labels.get(genre_id)
+        if not label:
+            continue
+        active_tags.append(
+            {
+                "kind": "genre",
+                "id": genre_id,
+                "label": with_music_emoji(label),
+                "remove_url": build_song_search_reference_remove_url(
+                    params,
+                    kind="genre",
+                    reference_id=genre_id,
+                ),
+            }
+        )
+    for band_id in params.band_ids:
+        label = band_labels.get(band_id)
+        if not label:
+            continue
+        active_tags.append(
+            {
+                "kind": "band",
+                "id": band_id,
+                "label": with_band_emoji(label),
+                "remove_url": build_song_search_reference_remove_url(
+                    params,
+                    kind="band",
+                    reference_id=band_id,
+                ),
+            }
+        )
+    for artist_id in params.artist_ids:
+        label = artist_labels.get(artist_id)
+        if not label:
+            continue
+        active_tags.append(
+            {
+                "kind": "artist",
+                "id": artist_id,
+                "label": with_artist_emoji(label),
+                "remove_url": build_song_search_reference_remove_url(
+                    params,
+                    kind="artist",
+                    reference_id=artist_id,
+                ),
+            }
+        )
+
+    return tuple(active_tags)
 
 
 def _base_accessible_songs(user) -> QuerySet[Song]:
@@ -499,6 +667,16 @@ def _build_result(song: Song, relation_maps) -> SongSearchResult:
             )
             if label
         ),
+        genre_tags=tuple(
+            SongReferenceTag(
+                kind="genre",
+                id=item,
+                label=with_music_emoji(label),
+            )
+            for item in genre_map.get(song.song_id, [])
+            for label in [genre_labels.get(item)]
+            if label
+        ),
         bands=tuple(
             with_band_emoji(label)
             for label in (
@@ -506,11 +684,31 @@ def _build_result(song: Song, relation_maps) -> SongSearchResult:
             )
             if label
         ),
+        band_tags=tuple(
+            SongReferenceTag(
+                kind="band",
+                id=item,
+                label=with_band_emoji(label),
+            )
+            for item in band_map.get(song.song_id, [])
+            for label in [band_labels.get(item)]
+            if label
+        ),
         artists=tuple(
             with_artist_emoji(label)
             for label in (
                 artist_labels.get(item) for item in artist_map.get(song.song_id, [])
             )
+            if label
+        ),
+        artist_tags=tuple(
+            SongReferenceTag(
+                kind="artist",
+                id=item,
+                label=with_artist_emoji(label),
+            )
+            for item in artist_map.get(song.song_id, [])
+            for label in [artist_labels.get(item)]
             if label
         ),
         display_url=reverse("song", args=[song.song_id]),
