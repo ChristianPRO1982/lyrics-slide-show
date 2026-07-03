@@ -1819,6 +1819,11 @@ def song_text(request: HttpRequest, song_id: int, mode: str) -> HttpResponse:
                         settings=render_settings,
                     )
                 ],
+                animation_title="",
+                drawer_title=build_song_full_title(song),
+                drawer_link_url=reverse("song", args=[song.song_id]),
+                drawer_link_label=build_song_full_title(song),
+                is_animation_view=False,
             ),
             "song": song,
             "mode": mode,

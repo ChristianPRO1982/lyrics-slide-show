@@ -466,6 +466,34 @@ body.animation-background-picker-overlay-open {
     margin: 0.35rem 0;
 }
 
+.animation-list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.animation-list-card-actions {
+    margin-top: auto;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.animation-list-card-actions-top {
+    display: grid;
+    grid-template-columns: minmax(0, 17fr) minmax(0, 3fr);
+    gap: 0.55rem;
+    width: 100%;
+}
+
+.animation-list-card-actions-top > *,
+.animation-list-card-lyrics-link {
+    width: 100%;
+}
+
+.animation-list-card-lyrics-link {
+    min-height: 5.5rem;
+}
+
 .song-detail-card {
     display: grid;
     gap: 1rem;

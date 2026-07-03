@@ -2575,6 +2575,11 @@ class AnimationViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["page_title"], "Session")
+        self.assertEqual(response.context["animation_title"], "Session")
+        self.assertEqual(response.context["drawer_title"], "Session")
+        self.assertEqual(response.context["drawer_link_url"], reverse("songs"))
+        self.assertEqual(response.context["drawer_link_label"], "Liste des chants")
+        self.assertTrue(response.context["is_animation_view"])
         self.assertEqual(
             [item["song_id"] for item in response.context["songs"]],
             [song.song_id, song.song_id],
@@ -2591,9 +2596,17 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'value="lyrics-song-2"', html=False)
         self.assertContains(
             response,
-            f'<a href="/songs/{song.song_id}/" class="lyrics-drawer-song-link" data-lyrics-current-song-link>Song A</a>',
+            '<p class="lyrics-animation-title">Session</p>',
             html=False,
         )
+        self.assertContains(
+            response,
+            '<a href="/songs/" class="lyrics-drawer-song-link">Liste des chants</a>',
+            html=False,
+        )
+        self.assertContains(response, '<hr class="lyrics-separator">', html=False)
+        self.assertNotContains(response, "Chant courant", html=False)
+        self.assertNotContains(response, "data-lyrics-current-song-link", html=False)
 
     def test_lyrics_slide_show_master_context_contains_runtime_payload_and_qr(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

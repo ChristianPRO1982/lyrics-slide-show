@@ -14,12 +14,12 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
+from app_main import lyrics as lyrics_helpers
 from app_main.lyrics import (
     build_lyrics_page_context,
     build_lyrics_song_entry,
     build_qr_png_base64,
     build_request_share_url,
-    qrcode,
 )
 from app_member.services import can_manage_moderator_popup
 from app_song.models import Verse
@@ -89,6 +89,8 @@ from .services.shortcuts import (
     save_member_shortcut_bindings,
     validate_shortcut_submission,
 )
+
+qrcode = lyrics_helpers.qrcode
 
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
@@ -1956,6 +1958,11 @@ def lyrics_slide_show_public(request: HttpRequest, animation_id: int) -> HttpRes
         page_title=str(animation.title or ""),
         share_url=build_request_share_url(request),
         songs=songs_payload,
+        animation_title=str(animation.title or ""),
+        drawer_title=str(animation.title or ""),
+        drawer_link_url=reverse("songs"),
+        drawer_link_label=_("Liste des chants"),
+        is_animation_view=True,
     )
     context["animation"] = animation
 
