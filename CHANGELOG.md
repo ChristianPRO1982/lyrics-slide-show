@@ -1,3 +1,21 @@
+# [3.0.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.13.1...v3.0.0) (2026-07-03)
+
+
+* feat!: site refresh and cARThographie Keycloak compatibility ([811a70f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/811a70f05c0fd07df47dab95e2f396074e69bed4))
+* feat!: site refresh and cARThographie Keycloak compatibility ([5f4353e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/5f4353ecb58b5d91d2316dd7551e31797f76a378))
+
+
+### Features
+
+* add home card functionality and markdown rendering ([94c52d7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/94c52d76d62730944ef0f1faf5b7a43b34837f1c))
+* implement active search tags with clickable filters and update song metadata display ([abcd0da](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/abcd0da4c87cf769af50a7a4def590b5990baa2a))
+
+
+### BREAKING CHANGES
+
+* Lyrics Slide Show adopts the refreshed site experience and is now aligned with cARThographie Keycloak compatibility.
+* Lyrics Slide Show adopts the refreshed site experience and is now aligned with cARThographie Keycloak compatibility.
+
 ## [2.13.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.13.0...v2.13.1) (2026-07-03)
 
 
