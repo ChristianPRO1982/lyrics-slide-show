@@ -65,6 +65,9 @@
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{% trans "Liste des chants" %}{% endblock %}
+{% block page_intro %}
+    {% include "song/includes/_active_search_tags.html" %}
+{% endblock %}
 {% block page_summary %}
     <div class="song-legend">
         <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
@@ -257,9 +260,42 @@
 
                     {% if item.genres or item.bands or item.artists %}
                         <div class="song-card-metadata">
-                            {% if item.genres %}<p>{% trans "Genres" %} : {{ item.genres|join:", " }}</p>{% endif %}
-                            {% if item.bands %}<p>{% trans "Groupes" %} : {{ item.bands|join:", " }}</p>{% endif %}
-                            {% if item.artists %}<p>{% trans "Artistes" %} : {{ item.artists|join:", " }}</p>{% endif %}
+                            {% if item.genres %}
+                                <p>{% trans "Genres" %} :
+                                    {% for genre in item.genres %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if genre.add_url %}
+                                            <a class="song-card-meta-link" href="{{ genre.add_url }}">{{ genre.label }}</a>
+                                        {% else %}
+                                            <span>{{ genre.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if item.bands %}
+                                <p>{% trans "Groupes" %} :
+                                    {% for band in item.bands %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if band.add_url %}
+                                            <a class="song-card-meta-link" href="{{ band.add_url }}">{{ band.label }}</a>
+                                        {% else %}
+                                            <span>{{ band.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if item.artists %}
+                                <p>{% trans "Artistes" %} :
+                                    {% for artist in item.artists %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if artist.add_url %}
+                                            <a class="song-card-meta-link" href="{{ artist.add_url }}">{{ artist.label }}</a>
+                                        {% else %}
+                                            <span>{{ artist.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
                         </div>
                     {% endif %}
 

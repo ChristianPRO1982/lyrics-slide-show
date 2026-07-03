@@ -362,6 +362,36 @@
     padding: 0.35rem 0.55rem;
 }
 
+.song-tag-badge-link,
+.song-tag-badge-link:visited,
+.song-card-meta-link,
+.song-card-meta-link:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+.song-tag-badge-link {
+    cursor: pointer;
+}
+
+.song-tag-badge-link:focus-visible,
+.song-card-meta-link:focus-visible {
+    outline: 2px solid var(--site-line);
+    outline-offset: 2px;
+}
+
+.song-tag-badge-link--removable:hover,
+.song-tag-badge-link--removable:focus-visible {
+    text-decoration: line-through;
+}
+
+.song-active-search-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
 .song-link-list ul {
     display: grid;
     gap: 0.4rem;

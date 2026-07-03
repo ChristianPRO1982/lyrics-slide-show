@@ -1,17 +1,29 @@
 {% load i18n %}
 <div class="song-tag-badges">
     {% for artist in artists %}
-        <span class="song-tag-badge">{{ artist }}</span>
+        {% if artist.add_url %}
+            <a class="song-tag-badge song-tag-badge-link" href="{{ artist.add_url }}">{{ artist.label }}</a>
+        {% else %}
+            <span class="song-tag-badge">{{ artist.label }}</span>
+        {% endif %}
     {% endfor %}
     {% for band in bands %}
-        <span class="song-tag-badge">{{ band }}</span>
+        {% if band.add_url %}
+            <a class="song-tag-badge song-tag-badge-link" href="{{ band.add_url }}">{{ band.label }}</a>
+        {% else %}
+            <span class="song-tag-badge">{{ band.label }}</span>
+        {% endif %}
     {% endfor %}
 </div>
 {% for group_name, genres in genre_groups %}
     <h4 class="song-tag-group">{{ group_name }}</h4>
     <div class="song-tag-badges">
         {% for genre in genres %}
-            <span class="song-tag-badge">{{ genre }}</span>
+            {% if genre.add_url %}
+                <a class="song-tag-badge song-tag-badge-link" href="{{ genre.add_url }}">{{ genre.label }}</a>
+            {% else %}
+                <span class="song-tag-badge">{{ genre.label }}</span>
+            {% endif %}
         {% endfor %}
     </div>
 {% empty %}
