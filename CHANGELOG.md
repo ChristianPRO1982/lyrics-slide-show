@@ -1,3 +1,11 @@
+## [2.13.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.13.0...v2.13.1) (2026-07-03)
+
+
+### Bug Fixes
+
+* enhance animation card layout with improved action buttons ([6490daa](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6490daa1956f3f9c1889d4b33d651d0e87f34dc6))
+* Refactor code structure for improved readability and maintainability ([bcba9d1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bcba9d192b7166f6800b0013055894cec271b950))
+
 # [2.13.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.12.0...v2.13.0) (2026-07-02)
 
 
