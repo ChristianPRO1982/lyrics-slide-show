@@ -1252,6 +1252,16 @@ class SongViewsRenderingTests(TestCase):
             '<p class="lyrics-song-title">Le Sud - Nino Ferrer</p>',
             html=False,
         )
+        self.assertContains(
+            response,
+            ".lyrics-song-title {\n      margin: 0 0 1rem;\n      font-weight: 700;\n      font-size: 1.5em;",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            'class="lyrics-animation-title"',
+            html=False,
+        )
         first_block = response.context["songs"][0]["blocks"][0]
         second_block = response.context["songs"][0]["blocks"][1]
         self.assertContains(
@@ -1274,6 +1284,14 @@ class SongViewsRenderingTests(TestCase):
             f'href="/songs/{self.song.song_id}/" class="lyrics-drawer-song-link"',
             html=False,
         )
+        self.assertContains(
+            response,
+            'data-copy-success-label="👍"',
+            html=False,
+        )
+        self.assertNotContains(response, "Lecture smartphone", html=False)
+        self.assertNotContains(response, "Adresse de partage</p>", html=False)
+        self.assertNotContains(response, "Chant courant", html=False)
         self.assertNotContains(response, 'data-lyrics-nav="prev"')
         self.assertNotContains(response, 'data-lyrics-nav="next"')
 

@@ -9,15 +9,14 @@
   <link rel="icon" sizes="192x192" href="{% static 'images/lyrics/Lyrics.png' %}" type="image/png">
   <style>
     :root {
-      --lyrics-bg-light: #f6eddc;
+      --lyrics-bg-light: #fdb;
       --lyrics-fg-light: #17120c;
-      --lyrics-panel-light: rgba(255, 248, 235, 0.94);
+      --lyrics-panel-light: rgba(255, 255, 255, 0.97);
       --lyrics-border-light: rgba(53, 36, 16, 0.16);
       --lyrics-bg-dark: #050505;
       --lyrics-fg-dark: #d4d4d4;
       --lyrics-panel-dark: rgba(18, 18, 18, 0.94);
       --lyrics-border-dark: rgba(255, 255, 255, 0.16);
-      --lyrics-font-size: 1.48rem;
       --lyrics-rail-width: 4.15rem;
       --lyrics-topbar-height: 3.55rem;
       --lyrics-drawer-width: min(88vw, 26rem);
@@ -39,7 +38,6 @@
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, sans-serif;
-      font-size: var(--lyrics-font-size);
       line-height: 1.45;
       overflow-wrap: anywhere;
       background: inherit;
@@ -65,7 +63,7 @@
       gap: 0.55rem;
       padding: max(0.55rem, env(safe-area-inset-top)) 0.28rem max(0.75rem, env(safe-area-inset-bottom));
       border-right: 1px solid var(--lyrics-border-light);
-      background: rgba(255, 250, 241, 0.82);
+      background: rgb(255, 255, 255);
       box-sizing: border-box;
       backdrop-filter: blur(10px);
     }
@@ -129,7 +127,7 @@
       min-height: var(--lyrics-topbar-height);
       padding: max(0.45rem, env(safe-area-inset-top)) 0.9rem 0.45rem;
       border-bottom: 1px solid var(--lyrics-border-light);
-      background: rgba(246, 237, 220, 0.92);
+      background: rgba(255, 221, 187, 0.94);
       box-sizing: border-box;
       backdrop-filter: blur(10px);
     }
@@ -202,7 +200,8 @@
     }
 
     .lyrics-drawer-close {
-      justify-self: start;
+      justify-self: center;
+      width: 95%;
       min-width: 2.75rem;
       min-height: 2.75rem;
       border: 1px solid currentColor;
@@ -212,33 +211,33 @@
       cursor: pointer;
     }
 
-    .lyrics-drawer-meta,
     .lyrics-drawer-copy,
     .lyrics-drawer-song {
       display: grid;
       gap: 0.55rem;
+      justify-items: center;
     }
 
-    .lyrics-drawer-meta p,
     .lyrics-drawer-copy p,
     .lyrics-drawer-song p {
       margin: 0;
     }
 
-    .lyrics-drawer-title {
-      font-size: 0.95rem;
-      opacity: 0.78;
-    }
-
     .lyrics-drawer-page-title {
       font-size: 1.05rem;
       font-weight: 700;
+      text-align: center;
+    }
+
+    .lyrics-drawer-qr {
+      display: grid;
+      justify-items: center;
     }
 
     .lyrics-drawer-qr img {
       display: block;
-      width: 100%;
-      max-width: 17rem;
+      width: 95%;
+      max-width: none;
       height: auto;
       margin: 0 auto;
       background: #fff;
@@ -251,6 +250,7 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 0.45rem;
       align-items: start;
+      width: 100%;
     }
 
     .lyrics-copy-row input {
@@ -286,13 +286,15 @@
 
     .lyrics-drawer-song-card {
       display: grid;
-      grid-template-columns: auto 1fr;
       gap: 0.8rem;
       align-items: center;
+      justify-items: center;
+      width: 100%;
     }
 
     .lyrics-drawer-song-card img {
-      width: 3.2rem;
+      width: 50%;
+      max-width: 10rem;
       height: auto;
       display: block;
     }
@@ -301,10 +303,21 @@
       margin-left: var(--lyrics-rail-width);
       padding: calc(var(--lyrics-topbar-height) + 0.85rem) 1rem 2rem 1rem;
       box-sizing: border-box;
+      --lyrics-content-font-size: 1.48rem;
     }
 
     .lyrics-layout.is-single {
       padding-top: 1rem;
+    }
+
+    .lyrics-content {
+      font-size: var(--lyrics-content-font-size);
+    }
+
+    .lyrics-animation-title {
+      margin: 0 0 1.25rem;
+      font-size: 2em;
+      font-weight: 700;
     }
 
     .lyrics-song {
@@ -315,7 +328,7 @@
     .lyrics-song-title {
       margin: 0 0 1rem;
       font-weight: 700;
-      font-size: 1.2em;
+      font-size: 1.5em;
     }
 
     .lyrics-block {
@@ -332,6 +345,28 @@
       font-weight: 700;
     }
 
+    .lyrics-separator {
+      width: 80%;
+      height: 1px;
+      margin: 0 auto 2.1rem;
+      border: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.92),
+        rgba(0, 0, 0, 0)
+      );
+    }
+
+    html[data-lyrics-theme="dark"] .lyrics-separator {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.92),
+        rgba(255, 255, 255, 0)
+      );
+    }
+
     .lyrics-layout::after {
       content: "";
       display: block;
@@ -340,13 +375,13 @@
 
     @media (max-width: 640px) {
       :root {
-        --lyrics-font-size: 1.34rem;
         --lyrics-rail-width: 3.85rem;
       }
 
       .lyrics-layout {
         padding-right: 0.8rem;
         padding-left: 0.8rem;
+        --lyrics-content-font-size: 1.34rem;
       }
 
       .lyrics-copy-row {
@@ -397,59 +432,62 @@
   <aside class="lyrics-drawer" data-lyrics-drawer aria-label="{% trans 'Menu des paroles' %}">
     <button type="button" class="lyrics-drawer-close" data-lyrics-drawer-close aria-label="{% trans 'Fermer le menu' %}">✕</button>
 
-    <section class="lyrics-drawer-meta">
-      <p class="lyrics-drawer-title">{% trans 'Lecture smartphone' %}</p>
-      <p class="lyrics-drawer-page-title">{{ page_title }}</p>
-    </section>
-
     {% if qr_code_png_base64 %}
       <section class="lyrics-drawer-qr">
         <img src="data:image/png;base64,{{ qr_code_png_base64 }}" alt="{% trans 'QR code de partage' %}">
       </section>
     {% endif %}
 
+    <p class="lyrics-drawer-page-title">{{ drawer_title }}</p>
+
     <section class="lyrics-drawer-copy">
-      <p>{% trans 'Adresse de partage' %}</p>
       <div class="lyrics-copy-row">
         <input type="text" value="{{ share_url }}" readonly data-lyrics-share-url aria-label="{% trans 'Adresse de partage' %}">
-        <button type="button" class="lyrics-copy-button" data-copy-default-label="{% trans 'Copier' %}" data-copy-success-label="{% trans 'Copié' %}" data-lyrics-copy-button>{% trans "Copier" %}</button>
+        <button type="button" class="lyrics-copy-button" data-copy-default-label="{% trans 'Copier' %}" data-copy-success-label="👍" data-lyrics-copy-button>{% trans "Copier" %}</button>
       </div>
     </section>
 
     <section class="lyrics-drawer-song">
-      <p>{% trans 'Chant courant' %}</p>
       <div class="lyrics-drawer-song-card">
         <img src="{% static 'images/lyrics/Lyrics.png' %}" alt="{% trans 'Lyrics Slide Show' %}">
-        {% if songs %}
-          <a href="{{ songs.0.song_url }}" class="lyrics-drawer-song-link" data-lyrics-current-song-link>{{ songs.0.song_title }}</a>
+        {% if drawer_link_url %}
+          <a href="{{ drawer_link_url }}" class="lyrics-drawer-song-link">{{ drawer_link_label }}</a>
         {% else %}
-          <span class="lyrics-drawer-song-link" data-lyrics-current-song-link>{% trans "Aucun chant" %}</span>
+          <span class="lyrics-drawer-song-link">{% trans "Aucun chant" %}</span>
         {% endif %}
       </div>
     </section>
   </aside>
 
   <main class="lyrics-layout{% if not has_multiple_songs %} is-single{% endif %}" data-lyrics-root>
-    {% for song in songs %}
-      <section
-        class="lyrics-song"
-        id="{{ song.anchor_id }}"
-        data-lyrics-song
-        data-song-title="{{ song.song_title }}"
-        data-song-url="{{ song.song_url }}"
-      >
-        <p class="lyrics-song-title">{{ song.song_title }}</p>
-        {% for block in song.blocks %}
-          {% if block.style == 1 %}
-            <p class="lyrics-block lyrics-block--chorus"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
-          {% elif block.style == 3 %}
-            <p class="lyrics-block lyrics-block--chorus-like"><em>{{ block.prefix }}</em>{% if block.prefix %}<br>{% endif %}{{ block.text }}</p>
-          {% else %}
-            <p class="lyrics-block"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
-          {% endif %}
-        {% endfor %}
-      </section>
-    {% endfor %}
+    <div class="lyrics-content">
+      {% if animation_title %}
+        <p class="lyrics-animation-title">{{ animation_title }}</p>
+      {% endif %}
+      {% for song in songs %}
+        <section
+          class="lyrics-song"
+          id="{{ song.anchor_id }}"
+          data-lyrics-song
+          data-song-title="{{ song.song_title }}"
+          data-song-url="{{ song.song_url }}"
+        >
+          <p class="lyrics-song-title">{{ song.song_title }}</p>
+          {% for block in song.blocks %}
+            {% if block.style == 1 %}
+              <p class="lyrics-block lyrics-block--chorus"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
+            {% elif block.style == 3 %}
+              <p class="lyrics-block lyrics-block--chorus-like"><em>{{ block.prefix }}</em>{% if block.prefix %}<br>{% endif %}{{ block.text }}</p>
+            {% else %}
+              <p class="lyrics-block"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
+            {% endif %}
+          {% endfor %}
+        </section>
+        {% if not forloop.last %}
+          <hr class="lyrics-separator">
+        {% endif %}
+      {% endfor %}
+    </div>
   </main>
 
   <script>
@@ -464,7 +502,6 @@
       const songs = Array.from(document.querySelectorAll("[data-lyrics-song]"));
       const drawer = document.querySelector("[data-lyrics-drawer]");
       const drawerBackdrop = document.querySelector("[data-lyrics-drawer-backdrop]");
-      const currentSongLink = document.querySelector("[data-lyrics-current-song-link]");
       const shareInput = document.querySelector("[data-lyrics-share-url]");
       const copyButton = document.querySelector("[data-lyrics-copy-button]");
       const stateKey = `lss-smartphone-lyrics:${window.location.pathname}`;
@@ -517,15 +554,7 @@
       };
 
       const applyFontSize = () => {
-        document.documentElement.style.setProperty("--lyrics-font-size", `${state.fontSize}rem`);
-      };
-
-      const setCurrentSongLink = (songNode) => {
-        if (!(currentSongLink instanceof HTMLAnchorElement) || !(songNode instanceof HTMLElement)) {
-          return;
-        }
-        currentSongLink.href = songNode.dataset.songUrl || "#";
-        currentSongLink.textContent = songNode.dataset.songTitle || "";
+        root.style.setProperty("--lyrics-content-font-size", `${state.fontSize}rem`);
       };
 
       const setActiveIndex = (nextIndex) => {
@@ -535,7 +564,6 @@
         if (songSelect instanceof HTMLSelectElement && songNode instanceof HTMLElement) {
           songSelect.value = songNode.id;
         }
-        setCurrentSongLink(songNode);
       };
 
       const topOffset = () => {

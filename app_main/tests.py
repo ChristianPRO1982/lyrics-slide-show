@@ -1879,12 +1879,22 @@ class SharedLyricsHelperTests(TestCase):
             page_title="Session",
             share_url="https://example.test/public",
             songs=songs,
+            animation_title="Session",
+            drawer_title="Session",
+            drawer_link_url="/songs/",
+            drawer_link_label="Liste des chants",
+            is_animation_view=True,
         )
 
         self.assertEqual(context["page_title"], "Session")
         self.assertEqual(context["share_url"], "https://example.test/public")
         self.assertEqual(context["songs"], songs)
         self.assertTrue(context["has_multiple_songs"])
+        self.assertEqual(context["animation_title"], "Session")
+        self.assertEqual(context["drawer_title"], "Session")
+        self.assertEqual(context["drawer_link_url"], "/songs/")
+        self.assertEqual(context["drawer_link_label"], "Liste des chants")
+        self.assertTrue(context["is_animation_view"])
 
     def test_build_qr_png_base64_returns_empty_string_when_qrcode_missing(self):
         with patch("app_main.lyrics.qrcode", None):

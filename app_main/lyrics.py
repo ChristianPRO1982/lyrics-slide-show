@@ -76,6 +76,11 @@ def build_lyrics_page_context(
     page_title: str,
     share_url: str,
     songs: list[dict[str, object]],
+    animation_title: str | None = None,
+    drawer_title: str = "",
+    drawer_link_url: str = "",
+    drawer_link_label: str = "",
+    is_animation_view: bool = False,
 ) -> dict[str, object]:
     return {
         "page_title": page_title,
@@ -83,6 +88,11 @@ def build_lyrics_page_context(
         "qr_code_png_base64": build_qr_png_base64(share_url),
         "songs": songs,
         "has_multiple_songs": len(songs) > 1,
+        "animation_title": animation_title or "",
+        "drawer_title": drawer_title,
+        "drawer_link_url": drawer_link_url,
+        "drawer_link_label": drawer_link_label,
+        "is_animation_view": is_animation_view,
     }
 
 
