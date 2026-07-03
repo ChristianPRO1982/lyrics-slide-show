@@ -49,65 +49,18 @@
         <input type="hidden" name="language" value="{{ selected_language }}">
         {% for hidden in admin_form.hidden_fields %}{{ hidden }}{% endfor %}
         <article class="site-theme-card">
-            <header class="site-theme-card-header">
-                <div>
-                    <h2>{% trans "Édition des paramètres" %}</h2>
-                </div>
-            </header>
+            <header class="site-theme-card-header"><div><h2>{% trans "Accueil" %}</h2></div></header>
+            {% for error in admin_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            <div>{{ admin_form.title.label_tag }} {{ admin_form.title }}{% for error in admin_form.title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.title_h1.label_tag }} {{ admin_form.title_h1 }}{% for error in admin_form.title_h1.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.signup_url.label_tag }} {{ admin_form.signup_url }}{% for error in admin_form.signup_url.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.bloc1_text.label_tag }} {{ admin_form.bloc1_text }}{% for error in admin_form.bloc1_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.bloc2_text.label_tag }} {{ admin_form.bloc2_text }}{% for error in admin_form.bloc2_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer les paramètres" %}</button>
         </article>
 
         <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Identité du site" %}</h3></div></header>
-            <div>{{ admin_form.title.label_tag }} {{ admin_form.title }}{% for error in admin_form.title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.title_h1.label_tag }} {{ admin_form.title_h1 }}{% for error in admin_form.title_h1.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.signup_url.label_tag }} {{ admin_form.signup_url }}{% for error in admin_form.signup_url.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Homepage" %}</h3></div></header>
-            <div>{{ admin_form.bloc1_text.label_tag }} {{ admin_form.bloc1_text }}{% for error in admin_form.bloc1_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.bloc2_text.label_tag }} {{ admin_form.bloc2_text }}{% for error in admin_form.bloc2_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 1 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_1_title.label_tag }} {{ admin_form.home_card_1_title }}{% for error in admin_form.home_card_1_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_1_text.label_tag }} {{ admin_form.home_card_1_text }}{% for error in admin_form.home_card_1_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 2 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_2_title.label_tag }} {{ admin_form.home_card_2_title }}{% for error in admin_form.home_card_2_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_2_text.label_tag }} {{ admin_form.home_card_2_text }}{% for error in admin_form.home_card_2_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 3 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_3_title.label_tag }} {{ admin_form.home_card_3_title }}{% for error in admin_form.home_card_3_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_3_text.label_tag }} {{ admin_form.home_card_3_text }}{% for error in admin_form.home_card_3_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 4 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_4_title.label_tag }} {{ admin_form.home_card_4_title }}{% for error in admin_form.home_card_4_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_4_text.label_tag }} {{ admin_form.home_card_4_text }}{% for error in admin_form.home_card_4_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 5 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_5_title.label_tag }} {{ admin_form.home_card_5_title }}{% for error in admin_form.home_card_5_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_5_text.label_tag }} {{ admin_form.home_card_5_text }}{% for error in admin_form.home_card_5_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 6 (HTML)" %}</h3></div></header>
-            <div>{{ admin_form.home_card_6_title.label_tag }} {{ admin_form.home_card_6_title }}{% for error in admin_form.home_card_6_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.home_card_6_text.label_tag }} {{ admin_form.home_card_6_text }}{% for error in admin_form.home_card_6_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Projection" %}</h3></div></header>
+            <header class="site-theme-card-header"><div><h3>{% trans "Chant" %}</h3></div></header>
             <div>{{ admin_form.verse_max_lines.label_tag }} {{ admin_form.verse_max_lines }}{% for error in admin_form.verse_max_lines.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.verse_max_characters_for_a_line.label_tag }} {{ admin_form.verse_max_characters_for_a_line }}{% for error in admin_form.verse_max_characters_for_a_line.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.chorus_prefix.label_tag }} {{ admin_form.chorus_prefix }}{% for error in admin_form.chorus_prefix.errors %}<p>{{ error }}</p>{% endfor %}</div>
@@ -116,30 +69,64 @@
         </article>
 
         <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Messages popup" %}</h3></div></header>
-            <div>{{ admin_form.admin_message_cooldown_minutes.label_tag }} {{ admin_form.admin_message_cooldown_minutes }}{% for error in admin_form.admin_message_cooldown_minutes.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.moderator_message_cooldown_minutes.label_tag }} {{ admin_form.moderator_message_cooldown_minutes }}{% for error in admin_form.moderator_message_cooldown_minutes.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Contraintes images de fond" %}</h3></div></header>
+            <header class="site-theme-card-header"><div><h3>{% trans "Images de fond" %}</h3></div></header>
             <div>{{ admin_form.bg_img_max_bytes.label_tag }} {{ admin_form.bg_img_max_bytes }}{% for error in admin_form.bg_img_max_bytes.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.bg_img_allowed_ext.label_tag }} {{ admin_form.bg_img_allowed_ext }}{% for error in admin_form.bg_img_allowed_ext.errors %}<p>{{ error }}</p>{% endfor %}</div>
-            <div>{{ admin_form.bg_img_allowed_mime.label_tag }} {{ admin_form.bg_img_allowed_mime }}{% for error in admin_form.bg_img_allowed_mime.errors %}<p>{{ error }}</p>{% endfor %}</div>
-        </article>
-
-        <article class="site-theme-card">
-            <header class="site-theme-card-header"><div><h3>{% trans "Dimensions et ratios images de fond" %}</h3></div></header>
             <div>{{ admin_form.bg_img_min_w.label_tag }} {{ admin_form.bg_img_min_w }}{% for error in admin_form.bg_img_min_w.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.bg_img_min_h.label_tag }} {{ admin_form.bg_img_min_h }}{% for error in admin_form.bg_img_min_h.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.bg_img_max_w.label_tag }} {{ admin_form.bg_img_max_w }}{% for error in admin_form.bg_img_max_w.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.bg_img_max_h.label_tag }} {{ admin_form.bg_img_max_h }}{% for error in admin_form.bg_img_max_h.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.bg_img_ratio_min.label_tag }} {{ admin_form.bg_img_ratio_min }}{% for error in admin_form.bg_img_ratio_min.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <div>{{ admin_form.bg_img_ratio_max.label_tag }} {{ admin_form.bg_img_ratio_max }}{% for error in admin_form.bg_img_ratio_max.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.bg_img_allowed_ext.label_tag }} {{ admin_form.bg_img_allowed_ext }}{% for error in admin_form.bg_img_allowed_ext.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.bg_img_allowed_mime.label_tag }} {{ admin_form.bg_img_allowed_mime }}{% for error in admin_form.bg_img_allowed_mime.errors %}<p>{{ error }}</p>{% endfor %}</div>
         </article>
 
-        {% for error in admin_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
         <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Délais des messages popup" %}</h3></div></header>
+            <div>{{ admin_form.admin_message_cooldown_minutes.label_tag }} {{ admin_form.admin_message_cooldown_minutes }}{% for error in admin_form.admin_message_cooldown_minutes.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.moderator_message_cooldown_minutes.label_tag }} {{ admin_form.moderator_message_cooldown_minutes }}{% for error in admin_form.moderator_message_cooldown_minutes.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 1" %}</h3></div></header>
+            <div>{{ admin_form.home_card_1_title.label_tag }} {{ admin_form.home_card_1_title }}{% for error in admin_form.home_card_1_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_1_text.label_tag }} {{ admin_form.home_card_1_text }}{% for error in admin_form.home_card_1_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_1_image.label_tag }} {{ admin_form.home_card_1_image }}{% for error in admin_form.home_card_1_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 2" %}</h3></div></header>
+            <div>{{ admin_form.home_card_2_title.label_tag }} {{ admin_form.home_card_2_title }}{% for error in admin_form.home_card_2_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_2_text.label_tag }} {{ admin_form.home_card_2_text }}{% for error in admin_form.home_card_2_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_2_image.label_tag }} {{ admin_form.home_card_2_image }}{% for error in admin_form.home_card_2_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 3" %}</h3></div></header>
+            <div>{{ admin_form.home_card_3_title.label_tag }} {{ admin_form.home_card_3_title }}{% for error in admin_form.home_card_3_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_3_text.label_tag }} {{ admin_form.home_card_3_text }}{% for error in admin_form.home_card_3_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_3_image.label_tag }} {{ admin_form.home_card_3_image }}{% for error in admin_form.home_card_3_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 4" %}</h3></div></header>
+            <div>{{ admin_form.home_card_4_title.label_tag }} {{ admin_form.home_card_4_title }}{% for error in admin_form.home_card_4_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_4_text.label_tag }} {{ admin_form.home_card_4_text }}{% for error in admin_form.home_card_4_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_4_image.label_tag }} {{ admin_form.home_card_4_image }}{% for error in admin_form.home_card_4_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 5" %}</h3></div></header>
+            <div>{{ admin_form.home_card_5_title.label_tag }} {{ admin_form.home_card_5_title }}{% for error in admin_form.home_card_5_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_5_text.label_tag }} {{ admin_form.home_card_5_text }}{% for error in admin_form.home_card_5_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_5_image.label_tag }} {{ admin_form.home_card_5_image }}{% for error in admin_form.home_card_5_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
+        </article>
+
+        <article class="site-theme-card">
+            <header class="site-theme-card-header"><div><h3>{% trans "Carte accueil 6" %}</h3></div></header>
+            <div>{{ admin_form.home_card_6_title.label_tag }} {{ admin_form.home_card_6_title }}{% for error in admin_form.home_card_6_title.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_6_text.label_tag }} {{ admin_form.home_card_6_text }}{% for error in admin_form.home_card_6_text.errors %}<p>{{ error }}</p>{% endfor %}</div>
+            <div>{{ admin_form.home_card_6_image.label_tag }} {{ admin_form.home_card_6_image }}{% for error in admin_form.home_card_6_image.errors %}<p>{{ error }}</p>{% endfor %}</div>
             <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer les paramètres" %}</button>
         </article>
     </form>

@@ -1189,6 +1189,26 @@ body.lss-messagebox-open {
     clear: both;
 }
 
+.site-home-markdown p,
+.site-home-markdown blockquote {
+    margin: 0;
+}
+
+.site-home-markdown p + p,
+.site-home-markdown blockquote + p,
+.site-home-markdown p + blockquote,
+.site-home-markdown blockquote + blockquote {
+    margin-top: 0.85rem;
+}
+
+.site-home-markdown-quote {
+    text-align: center;
+    font-size: 1.05rem;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--site-ink);
+}
+
 .site-home-dropcap-lead {
     min-height: 64px;
     display: flex;

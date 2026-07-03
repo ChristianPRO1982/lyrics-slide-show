@@ -21,8 +21,8 @@ Le template rend:
 
 - un bloc de sélection de langue (GET),
 - un formulaire principal d’édition (POST),
-- des sections thématiques (`Identité du site`, `Homepage`, `Projection`, `Messages popup`, contraintes images),
-- un bouton d’enregistrement en haut et en bas du formulaire.
+- des cartes métier dans cet ordre : `Accueil`, `Chant`, `Images de fond`, `Délais des messages popup`, puis `Carte accueil 1` à `Carte accueil 6`,
+- un bouton d’enregistrement dans la première carte et dans la dernière carte.
 
 ## Paramètres Édités
 
@@ -40,8 +40,6 @@ Le formulaire admin expose les champs `SiteParams` utilisés par le projet:
 - `chorus_prefix`,
 - `verse_prefix1`,
 - `verse_prefix2` (varchar(3) côté modèle),
-- `admin_message`,
-- `moderator_message`,
 - `admin_message_cooldown_minutes`,
 - `moderator_message_cooldown_minutes`,
 - `bg_img_max_bytes`,
@@ -55,6 +53,21 @@ Le formulaire admin expose les champs `SiteParams` utilisés par le projet:
 - `bg_img_allowed_mime`.
 
 Le formulaire inclut aussi des champs de cartes d’accueil (`home_card_1_*` à `home_card_6_*`) pour piloter le contenu homepage.
+
+Chaque carte d’accueil expose :
+
+- `Carte accueil n - Titre`,
+- `Carte accueil n - Texte (markdown léger)`,
+- `Carte accueil n - Image`.
+
+`Carte accueil n - Image` est une sélection contrôlée de slugs d’icônes thémées. La valeur stockée est le nom logique sans extension (`animations`, `songs`, `theme`, etc.) et le rendu final suit ensuite le thème et le mode actifs.
+
+Le contenu texte des cartes d’accueil est interprété avec un mini-markdown contrôlé :
+
+- `**gras**`,
+- `*italique*`,
+- ligne commençant par `> ` pour une citation mise en valeur et centrée,
+- retours à la ligne ordinaires rendus en `<br>`.
 
 ## Validation Et Erreurs
 

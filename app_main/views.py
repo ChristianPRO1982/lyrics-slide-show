@@ -1,6 +1,5 @@
 import logging
 import mimetypes
-import json
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -37,9 +36,13 @@ from app_main.auth import (
     validate_callback_payload,
     validate_keycloak_callback,
 )
+from app_main.home_cards import parse_home_cards
+from app_main.home_cards import filter_display_home_cards
+from app_main.homepage_markdown import render_homepage_markdown
 from app_song.search import search_songs_to_moderate
 from app_main.models import SiteParams
 from app_member.forms import (
+    AdminMessageForm,
     MemberRoleActionForm,
     MemberSearchForm,
     ModeratorMessageForm,
@@ -106,7 +109,20 @@ def _build_moderation_song_popup_markdown(results) -> str:
 def homepage(request: HttpRequest) -> HttpResponse:
     current_language = _current_language_code(request)
     site_params = get_site_params_for_language(current_language)
-    home_cards = _parse_home_cards(site_params.home_text if site_params else "")
+    raw_home_cards = _parse_home_cards(site_params.home_text if site_params else "")
+    home_cards = [
+        {
+            **card,
+            "rendered_text": render_homepage_markdown(card.get("text")),
+        }
+        for card in filter_display_home_cards(raw_home_cards)
+    ]
+    home_bloc1_text = (
+        site_params.bloc1_text if site_params and site_params.bloc1_text else ""
+    )
+    home_bloc2_text = (
+        site_params.bloc2_text if site_params and site_params.bloc2_text else ""
+    )
     moderation_results = (
         search_songs_to_moderate(
             request.user,
@@ -136,12 +152,10 @@ def homepage(request: HttpRequest) -> HttpResponse:
                 site_params.home_text if site_params and site_params.home_text else ""
             ),
             "home_cards": home_cards,
-            "home_bloc1_text": (
-                site_params.bloc1_text if site_params and site_params.bloc1_text else ""
-            ),
-            "home_bloc2_text": (
-                site_params.bloc2_text if site_params and site_params.bloc2_text else ""
-            ),
+            "home_bloc1_text": home_bloc1_text,
+            "home_bloc1_rendered": render_homepage_markdown(home_bloc1_text),
+            "home_bloc2_text": home_bloc2_text,
+            "home_bloc2_rendered": render_homepage_markdown(home_bloc2_text),
             "moderation_song_results": moderation_results.results
             if moderation_results
             else (),
@@ -153,29 +167,7 @@ def homepage(request: HttpRequest) -> HttpResponse:
 
 
 def _parse_home_cards(raw_value: str | None) -> list[dict[str, str]]:
-    raw = str(raw_value or "").strip()
-    if not raw:
-        return []
-
-    try:
-        payload = json.loads(raw)
-    except (TypeError, ValueError, json.JSONDecodeError):
-        return [{"title": "", "text": raw}]
-
-    cards = payload.get("cards") if isinstance(payload, dict) else None
-    if not isinstance(cards, list):
-        return []
-
-    output: list[dict[str, str]] = []
-    for item in cards[:6]:
-        if not isinstance(item, dict):
-            continue
-        title = str(item.get("title") or "").strip()
-        text = str(item.get("text") or "").strip()
-        if not title and not text:
-            continue
-        output.append({"title": title, "text": text})
-    return output
+    return parse_home_cards(raw_value)
 
 
 def _collect_heavy_images(root: Path, *, source: str) -> list[dict[str, str]]:
@@ -285,7 +277,7 @@ def _build_account_context(
     current_language: str,
     site_params: SiteParams | None,
     moderator_form: ModeratorMessageForm | None = None,
-    admin_form: SiteParamsAdminForm | None = None,
+    admin_message_form: AdminMessageForm | None = None,
     member_search_form: MemberSearchForm | None = None,
     member_results=None,
     member_search: str = "",
@@ -302,14 +294,9 @@ def _build_account_context(
     if moderator_form is None and is_moderator and site_params is not None:
         moderator_form = ModeratorMessageForm(instance=site_params, prefix="moderation")
 
-    if admin_form is None and is_admin:
-        admin_instance = (
-            site_params
-            if site_params is not None
-            else SiteParams(language=current_language)
-        )
-        admin_form = SiteParamsAdminForm(
-            instance=admin_instance, prefix="admin-settings"
+    if admin_message_form is None and is_admin and site_params is not None:
+        admin_message_form = AdminMessageForm(
+            instance=site_params, prefix="admin-popup"
         )
 
     return {
@@ -323,7 +310,7 @@ def _build_account_context(
         "is_moderator": is_moderator,
         "is_admin": is_admin,
         "moderator_form": moderator_form,
-        "admin_form": admin_form,
+        "admin_message_form": admin_message_form,
         "member_search_form": member_search_form,
         "member_results": member_results,
         "member_search": member_search,
@@ -679,24 +666,24 @@ def account(request: HttpRequest) -> HttpResponse:
             )
             return render(request, "main/connexion.html", context)
 
-        if action == "save_site_settings":
+        if action == "save_admin_message_settings":
             if not can_manage_site_settings(request.user):
                 return HttpResponseForbidden(_("Accès refusé."))
 
-            admin_instance = (
-                site_params
-                if site_params is not None
-                else SiteParams(language=current_language)
+            if site_params is None:
+                messages.error(
+                    request,
+                    _("Les paramètres du site sont introuvables pour cette langue."),
+                )
+                return _account_redirect(request, posted_member_search)
+
+            admin_message_form = AdminMessageForm(
+                request.POST, instance=site_params, prefix="admin-popup"
             )
-            admin_form = SiteParamsAdminForm(
-                request.POST, instance=admin_instance, prefix="admin-settings"
-            )
-            if admin_form.is_valid():
-                saved_params = admin_form.save(commit=False)
-                saved_params.language = admin_instance.language
-                saved_params.save()
+            if admin_message_form.is_valid():
+                admin_message_form.save()
                 messages.success(
-                    request, _("Les paramètres administrateur ont été enregistrés.")
+                    request, _("Les réglages administrateur ont été enregistrés.")
                 )
                 return _account_redirect(request, posted_member_search)
 
@@ -706,7 +693,7 @@ def account(request: HttpRequest) -> HttpResponse:
                 request,
                 current_language=current_language,
                 site_params=site_params,
-                admin_form=admin_form,
+                admin_message_form=admin_message_form,
                 member_search_form=MemberSearchForm(
                     initial={"member_search": posted_member_search}
                 ),
