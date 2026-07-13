@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.0...v3.0.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* **app_song:** Add search_song_catalog function and update song retrieval logic ([f1b865c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f1b865c27d9dc67f2121066b4a477b6fdc6941fa))
+
 # [3.0.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v2.13.1...v3.0.0) (2026-07-03)
 
 
