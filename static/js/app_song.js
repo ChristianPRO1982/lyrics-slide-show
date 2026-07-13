@@ -12,7 +12,27 @@
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase()
+            .replace(/\s+/g, " ")
             .trim();
+    };
+
+    const matchesSearchQuery = (haystack, query) => {
+        if (!query) {
+            return true;
+        }
+        const segments = query.split(" ").filter(Boolean);
+        if (!segments.length) {
+            return true;
+        }
+        let position = 0;
+        for (const segment of segments) {
+            const foundAt = haystack.indexOf(segment, position);
+            if (foundAt === -1) {
+                return false;
+            }
+            position = foundAt + segment.length;
+        }
+        return true;
     };
 
     const readJsonScriptString = (id) => {
@@ -64,6 +84,10 @@
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
     const localEmptyState = document.querySelector("[data-song-local-empty]");
     if (searchInput && songCards.length) {
+        const savedSearchText = normalizeSearch(
+            searchInput.getAttribute("data-song-saved-search-text"),
+        );
+
         const updateVisibleCount = (count) => {
             visibleCountTargets.forEach((target) => {
                 target.textContent = String(count);
@@ -72,12 +96,13 @@
 
         const applyLocalSearch = () => {
             const query = normalizeSearch(searchInput.value);
-            const shouldFilter = query.length >= 3;
+            const sameAsSavedSearchText = query === savedSearchText;
+            const shouldFilter = query.length >= 3 && !sameAsSavedSearchText;
             let visibleCount = 0;
 
             songCards.forEach((card) => {
                 const haystack = normalizeSearch(card.getAttribute("data-song-search-text"));
-                const isVisible = !shouldFilter || haystack.includes(query);
+                const isVisible = !shouldFilter || matchesSearchQuery(haystack, query);
                 card.style.display = isVisible ? "" : "none";
                 if (isVisible) {
                     visibleCount += 1;

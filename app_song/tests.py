@@ -1,8 +1,9 @@
 import uuid
 from types import SimpleNamespace
 
-from django.http import QueryDict
+from django.http import HttpResponse, QueryDict
 from django.contrib.messages import get_messages
+from django.template.loader import get_template
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
@@ -741,6 +742,7 @@ class SongSearchFilteringCoverageTests(TestCase):
         self.member_id = str(uuid.uuid4())
         self.scope_token = f"scope-{uuid.uuid4().hex[:8]}"
         self.everywhere_token = f"everywhere-{uuid.uuid4().hex[:8]}"
+        self.wildcard_token = f"wild-{uuid.uuid4().hex[:8]}"
         DirectoryUserRecord.objects.create(
             id=self.member_id,
             username="search.filter.user",
@@ -756,6 +758,12 @@ class SongSearchFilteringCoverageTests(TestCase):
         self.both_refs_song_title = f"Double liens {self.scope_token}"
         self.one_ref_song_title = f"Reference unique {self.scope_token}"
         self.licensed_song_title = f"Alpha licence {self.scope_token}"
+        self.punctuation_title_song_title = (
+            f"Esprit de Dieu, souffle de vie {self.wildcard_token}"
+        )
+        self.punctuation_title_song_subtitle = f"Variante {uuid.uuid4().hex[:8]}"
+        self.punctuation_description_song_title = f"Description ponctuation {self.scope_token}"
+        self.punctuation_verse_song_title = f"Couplet ponctuation {self.scope_token}"
         self.song_title = Song.objects.create(
             title=self.title_song_title,
             subtitle="",
@@ -798,6 +806,27 @@ class SongSearchFilteringCoverageTests(TestCase):
             status=SongStatus.VALIDATED,
             licensed=True,
         )
+        self.song_punctuation_title = Song.objects.create(
+            title=self.punctuation_title_song_title,
+            subtitle=self.punctuation_title_song_subtitle,
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        self.song_punctuation_description = Song.objects.create(
+            title=self.punctuation_description_song_title,
+            subtitle="",
+            description=f"Esprit de Dieu, souffle de vie dans nos coeurs {self.wildcard_token}",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        self.song_punctuation_verse = Song.objects.create(
+            title=self.punctuation_verse_song_title,
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
         Verse.objects.create(
             song=self.song_verse,
             num=2,
@@ -811,6 +840,13 @@ class SongSearchFilteringCoverageTests(TestCase):
             num_verse=2,
             chorus=False,
             text=f"{self.everywhere_token} La lumiere revient encore",
+        )
+        Verse.objects.create(
+            song=self.song_punctuation_verse,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text=f"Esprit de Dieu, souffle de vie pour nos jours {self.wildcard_token}",
         )
 
         SongFavorite.objects.create(
@@ -864,6 +900,39 @@ class SongSearchFilteringCoverageTests(TestCase):
         self.assertEqual(results.search_count, 2)
         self.assertEqual(results.displayed_count, 2)
 
+    def test_search_songs_title_matches_with_spaces_as_ordered_wildcards(self):
+        results = search_songs(
+            SongSearchParams(text=f"esprit de dieu souffle {self.wildcard_token}"),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+
+        self.assertEqual(
+            [item.song.title for item in results.results],
+            [self.punctuation_title_song_title],
+        )
+        self.assertEqual(results.search_count, 1)
+
+    def test_search_songs_everywhere_matches_punctuation_between_query_words(self):
+        results = search_songs(
+            SongSearchParams(
+                text=f"esprit de dieu souffle {self.wildcard_token}",
+                everywhere=True,
+            ),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+
+        self.assertEqual(
+            [item.song.title for item in results.results],
+            [
+                self.punctuation_verse_song_title,
+                self.punctuation_description_song_title,
+                self.punctuation_title_song_title,
+            ],
+        )
+        self.assertEqual(results.search_count, 3)
+
     def test_search_songs_reference_filters_support_any_and_all_without_duplicates(self):
         any_results = search_songs(
             SongSearchParams(
@@ -906,7 +975,9 @@ class SongSearchFilteringCoverageTests(TestCase):
             [item.song.title for item in validated_results.results],
             [
                 self.licensed_song_title,
+                self.punctuation_verse_song_title,
                 self.verse_song_title,
+                self.punctuation_description_song_title,
                 self.description_song_title,
             ],
         )
@@ -972,18 +1043,34 @@ class SongSearchFilteringCoverageTests(TestCase):
         )
 
         self.assertFalse(results.params.favorites_only)
-        self.assertEqual(results.search_count, 6)
+        self.assertEqual(results.search_count, 8)
         self.assertEqual(results.catalog_count, self.member_catalog_count)
         self.assertEqual(
             [item.song.title for item in results.results],
             [
                 self.licensed_song_title,
+                self.punctuation_verse_song_title,
                 self.verse_song_title,
+                self.punctuation_description_song_title,
                 self.description_song_title,
                 self.both_refs_song_title,
                 self.one_ref_song_title,
                 self.title_song_title,
             ],
+        )
+
+    def test_search_songs_text_normalization_compacts_internal_spaces(self):
+        results = search_songs(
+            SongSearchParams(
+                text=f"  esprit   de   dieu   souffle   {self.wildcard_token}  "
+            ),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+
+        self.assertEqual(
+            [item.song.title for item in results.results],
+            [self.punctuation_title_song_title],
         )
 
     def test_search_songs_guest_counts_and_order_exclude_licensed_song(self):
@@ -999,12 +1086,14 @@ class SongSearchFilteringCoverageTests(TestCase):
         )
 
         self.assertEqual(member_results.catalog_count, self.member_catalog_count)
-        self.assertEqual(member_results.search_count, 6)
+        self.assertEqual(member_results.search_count, 8)
         self.assertEqual(
             [item.song.title for item in member_results.results],
             [
                 self.licensed_song_title,
+                self.punctuation_verse_song_title,
                 self.verse_song_title,
+                self.punctuation_description_song_title,
                 self.description_song_title,
                 self.both_refs_song_title,
                 self.one_ref_song_title,
@@ -1012,11 +1101,13 @@ class SongSearchFilteringCoverageTests(TestCase):
             ],
         )
         self.assertEqual(guest_results.catalog_count, self.guest_catalog_count)
-        self.assertEqual(guest_results.search_count, 5)
+        self.assertEqual(guest_results.search_count, 7)
         self.assertEqual(
             [item.song.title for item in guest_results.results],
             [
+                self.punctuation_verse_song_title,
                 self.verse_song_title,
+                self.punctuation_description_song_title,
                 self.description_song_title,
                 self.both_refs_song_title,
                 self.one_ref_song_title,
@@ -2971,42 +3062,52 @@ class SongGenresDisplayViewTests(TestCase):
             genre_id = cursor.fetchone()[0]
         SongGenre.objects.create(song=self.song, genre_id=genre_id)
 
-    def _login(self):
-        session = self.client.session
-        session["lss_user"] = {
-            "external_id": self.user_id,
-            "username": "genre.display.user",
-            "email": "genre.display@example.test",
-            "first_name": "Genre",
-            "last_name": "Display",
-            "is_moderator": False,
-            "is_admin": False,
-        }
-        session.save()
+    def _render_songs_response(self):
+        request = RequestFactory().get(reverse("songs"))
+        request.user = SimpleNamespace(
+            is_authenticated=True,
+            external_id=self.user_id,
+            is_moderator=False,
+            is_admin=False,
+        )
+        request.session = {}
+        request.LANGUAGE_CODE = "fr"
+
+        def fake_render(_request, template_name, context):
+            response = HttpResponse(
+                get_template(template_name).render(context, request=_request)
+            )
+            response.context_data = context
+            return response
+
+        with patch("app_song.views.render", side_effect=fake_render):
+            return song_views.songs(request)
 
     def test_songs_page_displays_clean_genre_labels_in_filters_and_cards(self):
-        self._login()
-
-        response = self.client.get(reverse("songs"))
+        response = self._render_songs_response()
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Chretien / KTO / Louange")
         self.assertNotContains(response, "2 - Chretien / KTO / Louange")
-        self.assertEqual(
-            response.context["reference_options"].genres[0].label,
+        self.assertIn(
             "Chretien / KTO / Louange",
+            [item.label for item in response.context_data["reference_options"].genres],
         )
-        self.assertEqual(len(response.context["song_cards"][0]["genres"]), 1)
+        matching_cards = [
+            card
+            for card in response.context_data["song_cards"]
+            if card["song"].song_id == self.song.song_id
+        ]
+        self.assertEqual(len(matching_cards), 1)
+        self.assertEqual(len(matching_cards[0]["genres"]), 1)
         self.assertTrue(
-            response.context["song_cards"][0]["genres"][0]["label"].endswith(
+            matching_cards[0]["genres"][0]["label"].endswith(
                 "Chretien / KTO / Louange"
             )
         )
 
     def test_songs_page_exposes_info_popups_for_search_and_total_counts(self):
-        self._login()
-
-        response = self.client.get(reverse("songs"))
+        response = self._render_songs_response()
 
         self.assertContains(response, "data-song-inline-popup", count=2)
         self.assertContains(response, 'class="song-tools-stats"', html=False)
@@ -3035,6 +3136,91 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(
             response,
             "Nombre total de chants en base de données",
+        )
+        self.assertContains(
+            response,
+            'data-song-saved-search-text=""',
+            html=False,
+        )
+
+
+class SongLocalSearchSavedTextRenderingTests(TestCase):
+    user_id = "54545454-5454-5454-5454-545454545454"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="local.search.render.user",
+            first_name="Local",
+            last_name="Search",
+            email="local.search.render.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        Song.objects.create(
+            title="Saved Search Hit",
+            subtitle="",
+            description="Contient une description utile",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        MemberPreferences.objects.create(
+            member_id=self.user_id,
+            song_search={
+                "text": "Été Glory",
+                "everywhere": True,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+
+    def _render_songs_response(self, *, authenticated: bool):
+        request = RequestFactory().get(reverse("songs"))
+        if authenticated:
+            request.user = SimpleNamespace(
+                is_authenticated=True,
+                external_id=self.user_id,
+                is_moderator=False,
+                is_admin=False,
+            )
+        else:
+            request.user = AnonymousUser()
+        request.session = {}
+        request.LANGUAGE_CODE = "fr"
+
+        def fake_render(_request, template_name, context):
+            response = HttpResponse(
+                get_template(template_name).render(context, request=_request)
+            )
+            response.context_data = context
+            return response
+
+        with patch("app_song.views.render", side_effect=fake_render):
+            return song_views.songs(request)
+
+    def test_songs_page_exposes_saved_text_for_local_search_guard(self):
+        response = self._render_songs_response(authenticated=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'data-song-saved-search-text="Été Glory"',
+            html=False,
+        )
+        self.assertEqual(response.context_data["search_params"].text, "Été Glory")
+
+    def test_guest_songs_page_exposes_empty_saved_text_for_local_search_guard(self):
+        response = self._render_songs_response(authenticated=False)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'data-song-saved-search-text=""',
+            html=False,
         )
 
 

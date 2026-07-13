@@ -104,6 +104,7 @@
                     type="search"
                     value="{{ search_params.text }}"
                     placeholder="{% trans 'Titre ou sous-titre' %}"
+                    data-song-saved-search-text="{{ search_params.text|escape }}"
                     data-song-local-search
                 >
                 {% if can_use_advanced_search %}
