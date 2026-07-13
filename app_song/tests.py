@@ -1,3 +1,4 @@
+import uuid
 from types import SimpleNamespace
 
 from django.http import QueryDict
@@ -42,8 +43,6 @@ from .rendering import (
 from .search import (
     SongSearchParams,
     add_song_search_reference,
-    _apply_filters,
-    _apply_reference_filter,
     _fetch_name_labels,
     _get_relation_maps,
     _normalize_ids,
@@ -655,9 +654,8 @@ class SongSearchParamsTests(SimpleTestCase):
 
 
 class SongSearchPersistenceTests(TestCase):
-    member_id = "88888888-8888-8888-8888-888888888888"
-
     def setUp(self):
+        self.member_id = str(uuid.uuid4())
         DirectoryUserRecord.objects.create(
             id=self.member_id,
             username="search.persistence.user",
@@ -687,7 +685,7 @@ class SongSearchPersistenceTests(TestCase):
         save_song_search(None, params)
         save_song_search("not-a-uuid", params)
 
-        self.assertEqual(MemberPreferences.objects.count(), 0)
+        self.assertFalse(MemberPreferences.objects.filter(member_id=self.member_id).exists())
 
     def test_get_active_song_search_reset_saves_empty_preferences_for_member(self):
         MemberPreferences.objects.create(
@@ -739,9 +737,10 @@ class SongSearchPersistenceTests(TestCase):
 
 
 class SongSearchFilteringCoverageTests(TestCase):
-    member_id = "99999999-9999-9999-9999-999999999999"
-
     def setUp(self):
+        self.member_id = str(uuid.uuid4())
+        self.scope_token = f"scope-{uuid.uuid4().hex[:8]}"
+        self.everywhere_token = f"everywhere-{uuid.uuid4().hex[:8]}"
         DirectoryUserRecord.objects.create(
             id=self.member_id,
             username="search.filter.user",
@@ -751,47 +750,67 @@ class SongSearchFilteringCoverageTests(TestCase):
             enabled=True,
             email_verified=False,
         )
+        self.title_song_title = f"Titre simple {self.scope_token}"
+        self.description_song_title = f"Description {self.scope_token}"
+        self.verse_song_title = f"Couplet {self.scope_token}"
+        self.both_refs_song_title = f"Double liens {self.scope_token}"
+        self.one_ref_song_title = f"Reference unique {self.scope_token}"
+        self.licensed_song_title = f"Alpha licence {self.scope_token}"
         self.song_title = Song.objects.create(
-            title="Titre simple",
+            title=self.title_song_title,
             subtitle="",
             description="",
             status=SongStatus.NOT_VALIDATED,
             licensed=False,
         )
         self.song_description = Song.objects.create(
-            title="Description",
+            title=self.description_song_title,
             subtitle="",
-            description="Un été de lumière",
+            description=f"{self.everywhere_token} Un été de lumière",
             status=SongStatus.VALIDATED,
             licensed=False,
         )
         self.song_verse = Song.objects.create(
-            title="Couplet",
+            title=self.verse_song_title,
             subtitle="",
             description="",
             status=SongStatus.VALIDATED_WITH_CONCERN,
             licensed=False,
         )
         self.song_both_refs = Song.objects.create(
-            title="Double liens",
+            title=self.both_refs_song_title,
             subtitle="",
             description="",
             status=SongStatus.NOT_VALIDATED,
             licensed=False,
         )
         self.song_one_ref = Song.objects.create(
-            title="Référence unique",
+            title=self.one_ref_song_title,
             subtitle="",
             description="",
             status=SongStatus.NOT_VALIDATED,
             licensed=False,
+        )
+        self.song_licensed = Song.objects.create(
+            title=self.licensed_song_title,
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=True,
         )
         Verse.objects.create(
             song=self.song_verse,
             num=2,
             num_verse=1,
             chorus=False,
-            text="Encore la lumière revient",
+            text=f"{self.everywhere_token} Encore la lumière revient",
+        )
+        Verse.objects.create(
+            song=self.song_verse,
+            num=4,
+            num_verse=2,
+            chorus=False,
+            text=f"{self.everywhere_token} La lumiere revient encore",
         )
 
         SongFavorite.objects.create(
@@ -814,117 +833,106 @@ class SongSearchFilteringCoverageTests(TestCase):
         SongGenre.objects.create(song=self.song_both_refs, genre_id=self.genre_b_id)
         SongGenre.objects.create(song=self.song_one_ref, genre_id=self.genre_a_id)
 
+        self.band_id = 100000 + uuid.uuid4().int % 1000000
+        self.artist_id = 200000 + uuid.uuid4().int % 1000000
         with connection.cursor() as cursor:
             cursor.execute(
-                'INSERT INTO "common"."bands" ("name") VALUES (%s) RETURNING band_id',
-                ["Les Testeurs"],
+                'INSERT INTO "common"."bands" ("band_id", "name") VALUES (%s, %s)',
+                [self.band_id, "Les Testeurs"],
             )
-            self.band_id = cursor.fetchone()[0]
             cursor.execute(
-                'INSERT INTO "common"."artists" ("name") VALUES (%s) RETURNING artist_id',
-                ["Artiste Test"],
+                'INSERT INTO "common"."artists" ("artist_id", "name") VALUES (%s, %s)',
+                [self.artist_id, "Artiste Test"],
             )
-            self.artist_id = cursor.fetchone()[0]
 
         SongBand.objects.create(song=self.song_both_refs, band_id=self.band_id)
         SongArtist.objects.create(song=self.song_both_refs, artist_id=self.artist_id)
+        self.member_catalog_count = Song.objects.count()
+        self.guest_catalog_count = Song.objects.filter(licensed=False).count()
 
     def test_search_songs_everywhere_matches_description_and_verse_text(self):
         results = search_songs(
-            SongSearchParams(text="lumiere", everywhere=True),
+            SongSearchParams(text=self.everywhere_token, everywhere=True),
             user=SimpleNamespace(is_authenticated=True),
             member_id=self.member_id,
         )
 
         self.assertEqual(
             [item.song.title for item in results.results],
-            ["Couplet", "Description"],
+            [self.verse_song_title, self.description_song_title],
         )
+        self.assertEqual(results.search_count, 2)
+        self.assertEqual(results.displayed_count, 2)
 
-    def test_apply_reference_filter_supports_passthrough_any_and_all(self):
-        queryset = Song.objects.filter(
-            song_id__in=[self.song_both_refs.song_id, self.song_one_ref.song_id]
+    def test_search_songs_reference_filters_support_any_and_all_without_duplicates(self):
+        any_results = search_songs(
+            SongSearchParams(
+                text=self.scope_token,
+                genre_ids=(self.genre_a_id, self.genre_b_id),
+            ),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
         )
+        self.assertEqual(
+            [item.song.title for item in any_results.results],
+            [self.both_refs_song_title, self.one_ref_song_title],
+        )
+        self.assertEqual(any_results.search_count, 2)
 
-        self.assertCountEqual(
-            list(
-                _apply_reference_filter(
-                    queryset,
-                    "genre_relations",
-                    "genre_id",
-                    (),
-                    match_all=False,
-                ).values_list("song_id", flat=True)
+        all_results = search_songs(
+            SongSearchParams(
+                text=self.scope_token,
+                genre_ids=(self.genre_a_id, self.genre_b_id),
+                band_ids=(self.band_id,),
+                artist_ids=(self.artist_id,),
+                match_all_selected_refs=True,
             ),
-            [self.song_both_refs.song_id, self.song_one_ref.song_id],
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
         )
-        self.assertCountEqual(
-            list(
-                _apply_reference_filter(
-                    queryset,
-                    "genre_relations",
-                    "genre_id",
-                    (self.genre_a_id, self.genre_b_id),
-                    match_all=False,
-                ).values_list("song_id", flat=True)
-            ),
+        self.assertEqual(
+            [item.song.title for item in all_results.results],
+            [self.both_refs_song_title],
+        )
+        self.assertEqual(all_results.search_count, 1)
+
+    def test_search_songs_handles_validation_and_favorites(self):
+        validated_results = search_songs(
+            SongSearchParams(text=self.scope_token, validation="validated_only"),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+        self.assertEqual(
+            [item.song.title for item in validated_results.results],
             [
-                self.song_both_refs.song_id,
-                self.song_both_refs.song_id,
-                self.song_one_ref.song_id,
+                self.licensed_song_title,
+                self.verse_song_title,
+                self.description_song_title,
             ],
         )
+
+        non_validated_results = search_songs(
+            SongSearchParams(text=self.scope_token, validation="non_validated_only"),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
         self.assertEqual(
-            list(
-                _apply_reference_filter(
-                    queryset,
-                    "genre_relations",
-                    "genre_id",
-                    (self.genre_a_id, self.genre_b_id),
-                    match_all=True,
-                ).values_list("song_id", flat=True)
-            ),
-            [self.song_both_refs.song_id],
+            [item.song.title for item in non_validated_results.results],
+            [
+                self.both_refs_song_title,
+                self.one_ref_song_title,
+                self.title_song_title,
+            ],
         )
 
-    def test_apply_filters_handles_validation_and_favorites(self):
-        queryset = Song.objects.filter(
-            song_id__in=[
-                self.song_title.song_id,
-                self.song_description.song_id,
-                self.song_verse.song_id,
-            ]
-        )
-
-        self.assertCountEqual(
-            list(
-                _apply_filters(
-                    queryset,
-                    SongSearchParams(validation="validated_only"),
-                    member_id=self.member_id,
-                ).values_list("song_id", flat=True)
-            ),
-            [self.song_description.song_id, self.song_verse.song_id],
+        favorite_results = search_songs(
+            SongSearchParams(text=self.scope_token, favorites_only=True),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
         )
         self.assertEqual(
-            list(
-                _apply_filters(
-                    queryset,
-                    SongSearchParams(validation="non_validated_only"),
-                    member_id=self.member_id,
-                ).values_list("song_id", flat=True)
-            ),
-            [self.song_title.song_id],
-        )
-        self.assertEqual(
-            list(
-                _apply_filters(
-                    queryset,
-                    SongSearchParams(favorites_only=True),
-                    member_id=self.member_id,
-                ).values_list("song_id", flat=True)
-            ),
-            [self.song_description.song_id],
+            [item.song.title for item in favorite_results.results],
+            [self.description_song_title],
         )
 
     def test_fetch_name_labels_and_relation_maps_cover_band_and_artist_paths(self):
@@ -947,13 +955,74 @@ class SongSearchFilteringCoverageTests(TestCase):
 
     def test_search_songs_without_matches_uses_empty_relation_maps_path(self):
         results = search_songs(
-            SongSearchParams(text="introuvable"),
+            SongSearchParams(text=f"{self.scope_token}-introuvable"),
             user=SimpleNamespace(is_authenticated=True),
             member_id=self.member_id,
         )
 
         self.assertEqual(results.displayed_count, 0)
         self.assertEqual(results.search_count, 0)
+        self.assertEqual(results.catalog_count, self.member_catalog_count)
+
+    def test_search_songs_favorites_only_without_member_id_does_not_filter_results(self):
+        results = search_songs(
+            SongSearchParams(text=self.scope_token, favorites_only=True),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=None,
+        )
+
+        self.assertFalse(results.params.favorites_only)
+        self.assertEqual(results.search_count, 6)
+        self.assertEqual(results.catalog_count, self.member_catalog_count)
+        self.assertEqual(
+            [item.song.title for item in results.results],
+            [
+                self.licensed_song_title,
+                self.verse_song_title,
+                self.description_song_title,
+                self.both_refs_song_title,
+                self.one_ref_song_title,
+                self.title_song_title,
+            ],
+        )
+
+    def test_search_songs_guest_counts_and_order_exclude_licensed_song(self):
+        member_results = search_songs(
+            SongSearchParams(text=self.scope_token),
+            user=SimpleNamespace(is_authenticated=True),
+            member_id=self.member_id,
+        )
+        guest_results = search_songs(
+            SongSearchParams(text=self.scope_token),
+            user=SimpleNamespace(is_authenticated=False),
+            member_id=None,
+        )
+
+        self.assertEqual(member_results.catalog_count, self.member_catalog_count)
+        self.assertEqual(member_results.search_count, 6)
+        self.assertEqual(
+            [item.song.title for item in member_results.results],
+            [
+                self.licensed_song_title,
+                self.verse_song_title,
+                self.description_song_title,
+                self.both_refs_song_title,
+                self.one_ref_song_title,
+                self.title_song_title,
+            ],
+        )
+        self.assertEqual(guest_results.catalog_count, self.guest_catalog_count)
+        self.assertEqual(guest_results.search_count, 5)
+        self.assertEqual(
+            [item.song.title for item in guest_results.results],
+            [
+                self.verse_song_title,
+                self.description_song_title,
+                self.both_refs_song_title,
+                self.one_ref_song_title,
+                self.title_song_title,
+            ],
+        )
 
 
 class SongTextArtifactsTests(SimpleTestCase):

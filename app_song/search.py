@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import unicodedata
 import uuid
 from collections import defaultdict
 from collections.abc import Iterable
@@ -9,17 +8,12 @@ from urllib.parse import urlencode
 
 from django.db import connection
 from django.db.models import (
-    Count,
     Exists,
-    Func,
     Max,
     OuterRef,
     Q,
     QuerySet,
-    TextField,
-    Value,
 )
-from django.db.models.functions import Coalesce, Lower
 from django.http import HttpRequest, QueryDict
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -28,7 +22,6 @@ from app_member.models import MemberPreferences, default_song_search
 
 from .genre_labels import build_genre_display_label
 from .models import (
-    SONG_STATUS_VALIDATED,
     SONG_STATUS_VALIDATED_WITH_CONCERN,
     Song,
     SongArtist,
@@ -47,11 +40,19 @@ SONG_SEARCH_VALIDATION_VALUES = {
 }
 TEXT_MODE_SINGLE_CHORUS = "single-chorus"
 TEXT_MODE_FULL_CHORUS = "full-chorus"
-
-
-class Unaccent(Func):
-    function = "unaccent"
-    output_field = TextField()
+SEARCH_SONG_CATALOG_SQL = """
+SELECT
+    song_id,
+    title,
+    subtitle,
+    description,
+    status,
+    licensed,
+    is_favorite,
+    search_count,
+    catalog_count
+FROM lss.search_song_catalog(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
 
 
 @dataclass(frozen=True)
@@ -143,6 +144,14 @@ class SongSearchResults:
 
 
 @dataclass(frozen=True)
+class SongCatalogSearchRow:
+    song: Song | None
+    is_favorite: bool
+    search_count: int
+    catalog_count: int
+
+
+@dataclass(frozen=True)
 class SongReferenceOptions:
     genres: tuple[SongReferenceOption, ...]
     bands: tuple[SongReferenceOption, ...]
@@ -204,27 +213,6 @@ def _params_from_query(query: QueryDict) -> SongSearchParams:
         artist_ids=_ids_from_query(query, "artist_ids"),
         validation=validation,
         favorites_only=_bool_from_query(query.get("favorites_only")),
-    )
-
-
-def _normalize_search_text(value: str) -> str:
-    without_accents = unicodedata.normalize("NFKD", value)
-    return "".join(
-        character
-        for character in without_accents
-        if not unicodedata.combining(character)
-    ).lower()
-
-
-def _unaccented_lower(field_name: str):
-    return Lower(
-        Unaccent(
-            Coalesce(
-                field_name,
-                Value("", output_field=TextField()),
-                output_field=TextField(),
-            )
-        )
     )
 
 
@@ -476,96 +464,6 @@ def _base_accessible_songs(user) -> QuerySet[Song]:
     return queryset
 
 
-def _apply_text_filter(
-    queryset: QuerySet[Song], params: SongSearchParams
-) -> QuerySet[Song]:
-    search_text = _normalize_search_text(params.text).strip()
-    if not search_text:
-        return queryset
-
-    annotations = {
-        "_search_title": _unaccented_lower("title"),
-        "_search_subtitle": _unaccented_lower("subtitle"),
-    }
-    text_filter = Q(_search_title__contains=search_text) | Q(
-        _search_subtitle__contains=search_text
-    )
-
-    if params.everywhere:
-        annotations["_search_description"] = _unaccented_lower("description")
-        annotations["_search_verse"] = _unaccented_lower("verses__text")
-        text_filter |= Q(_search_description__contains=search_text) | Q(
-            _search_verse__contains=search_text
-        )
-
-    return queryset.annotate(**annotations).filter(text_filter)
-
-
-def _apply_reference_filter(
-    queryset: QuerySet[Song],
-    relation_name: str,
-    id_field: str,
-    ids: tuple[int, ...],
-    match_all: bool,
-) -> QuerySet[Song]:
-    if not ids:
-        return queryset
-    lookup = f"{relation_name}__{id_field}"
-    if not match_all:
-        return queryset.filter(**{f"{lookup}__in": ids})
-
-    annotation_name = f"_matched_{relation_name}"
-    return queryset.annotate(
-        **{
-            annotation_name: Count(
-                lookup,
-                filter=Q(**{f"{lookup}__in": ids}),
-                distinct=True,
-            )
-        }
-    ).filter(**{annotation_name: len(ids)})
-
-
-def _apply_filters(
-    queryset: QuerySet[Song], params: SongSearchParams, member_id: str | None
-) -> QuerySet[Song]:
-    queryset = _apply_text_filter(queryset, params)
-
-    if params.validation == "validated_only":
-        queryset = queryset.filter(
-            status__in=[SONG_STATUS_VALIDATED, SONG_STATUS_VALIDATED_WITH_CONCERN]
-        )
-    elif params.validation == "non_validated_only":
-        queryset = queryset.filter(status=SongStatus.NOT_VALIDATED)
-
-    queryset = _apply_reference_filter(
-        queryset,
-        "genre_relations",
-        "genre_id",
-        params.genre_ids,
-        params.match_all_selected_refs,
-    )
-    queryset = _apply_reference_filter(
-        queryset,
-        "band_relations",
-        "band_id",
-        params.band_ids,
-        params.match_all_selected_refs,
-    )
-    queryset = _apply_reference_filter(
-        queryset,
-        "artist_relations",
-        "artist_id",
-        params.artist_ids,
-        params.match_all_selected_refs,
-    )
-
-    if params.favorites_only and member_id:
-        queryset = queryset.filter(favorites__member_id=member_id)
-
-    return queryset.distinct()
-
-
 def _with_favorite_state(
     queryset: QuerySet[Song], member_id: str | None
 ) -> QuerySet[Song]:
@@ -729,6 +627,70 @@ def _build_results_from_songs(
     return tuple(_build_result(song, relation_maps) for song in songs)
 
 
+def _build_song_catalog_search_row(row) -> SongCatalogSearchRow:
+    search_count = int(row[7] or 0)
+    catalog_count = int(row[8] or 0)
+    is_favorite = bool(row[6])
+
+    if row[0] is None:
+        return SongCatalogSearchRow(
+            song=None,
+            is_favorite=is_favorite,
+            search_count=search_count,
+            catalog_count=catalog_count,
+        )
+
+    song = Song(
+        song_id=int(row[0]),
+        title=str(row[1] or ""),
+        subtitle=str(row[2] or ""),
+        description=row[3],
+        status=int(row[4]),
+        licensed=bool(row[5]),
+    )
+    song.is_favorite = is_favorite
+    return SongCatalogSearchRow(
+        song=song,
+        is_favorite=is_favorite,
+        search_count=search_count,
+        catalog_count=catalog_count,
+    )
+
+
+def search_song_catalog_rows(
+    params: SongSearchParams,
+    *,
+    is_authenticated: bool,
+    member_id: str | None,
+) -> tuple[SongCatalogSearchRow, ...]:
+    normalized_member_id = None
+    if member_id:
+        try:
+            normalized_member_id = uuid.UUID(str(member_id))
+        except (TypeError, ValueError):
+            normalized_member_id = None
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            SEARCH_SONG_CATALOG_SQL,
+            [
+                bool(is_authenticated),
+                normalized_member_id,
+                params.text,
+                params.everywhere,
+                params.match_all_selected_refs,
+                list(params.genre_ids),
+                list(params.band_ids),
+                list(params.artist_ids),
+                params.validation,
+                params.favorites_only,
+            ],
+        )
+        return tuple(
+            _build_song_catalog_search_row(row) for row in cursor.fetchall()
+        )
+
+
 def search_songs(
     params: SongSearchParams,
     user,
@@ -737,21 +699,22 @@ def search_songs(
     active_params = params if _is_authenticated(user) else params.for_guest()
     if not member_id:
         active_params = replace(active_params, favorites_only=False)
-    accessible_songs = _base_accessible_songs(user)
-    catalog_count = accessible_songs.count()
-    filtered_songs = _apply_filters(accessible_songs, active_params, member_id)
-    search_count = filtered_songs.count()
-    songs = list(
-        _with_favorite_state(filtered_songs, member_id).order_by("title", "subtitle")
+
+    sql_rows = search_song_catalog_rows(
+        active_params,
+        is_authenticated=_is_authenticated(user),
+        member_id=member_id,
     )
+    songs = [row.song for row in sql_rows if row.song is not None]
     results = _build_results_from_songs(songs)
+    counts_row = sql_rows[0] if sql_rows else SongCatalogSearchRow(None, False, 0, 0)
 
     return SongSearchResults(
         params=active_params,
         results=results,
         displayed_count=len(results),
-        search_count=search_count,
-        catalog_count=catalog_count,
+        search_count=counts_row.search_count,
+        catalog_count=counts_row.catalog_count,
     )
 
 
