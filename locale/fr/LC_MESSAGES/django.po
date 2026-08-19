@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 15:54+0200\n"
+"POT-Creation-Date: 2026-08-19 17:53+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -111,7 +111,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:80
 #: app_animation/templates/animation/background_images.html:132
 #: app_animation/views.py:1009 app_main/templates/main/connexion.html:198
-#: app_song/templates/song/metadata.html:128
+#: app_song/templates/song/metadata.html:115
 #: app_song/templates/song/modify_genres.html:23
 #: app_song/templates/song/songs.html:276
 msgid "Genres"
@@ -379,7 +379,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:60
 #: app_song/templates/song/songs.html:96 app_song/templates/song/songs.html:112
 msgid "Recherche"
-msgstr ""
+msgstr "Recherche"
 
 #: app_animation/templates/animation/background_images.html:64
 #: app_animation/templates/animation/background_picker.html:86
@@ -400,7 +400,7 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
 #: app_song/templates/song/songs.html:153
 msgid "Réinitialiser"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: app_animation/templates/animation/background_images.html:71
 msgid "Images à modérer"
@@ -443,7 +443,7 @@ msgstr ""
 #: app_song/templates/song/includes/_song_actions.html:21
 #: app_song/templates/song/songs.html:318
 msgid "Modifier"
-msgstr ""
+msgstr "Modifier"
 
 #: app_animation/templates/animation/background_images.html:173
 msgid "Réactiver"
@@ -468,12 +468,11 @@ msgstr ""
 #: app_animation/templates/animation/modify_background_targets.html:96
 #: app_group/templates/group/groups.html:213
 #: app_group/templates/group/modify_group.html:251
-#: app_song/templates/song/metadata.html:242
 #: app_song/templates/song/modify_artists.html:89
 #: app_song/templates/song/modify_bands.html:89
 #: app_song/templates/song/modify_genres.html:92 templates/base.html:110
 msgid "Confirmation"
-msgstr ""
+msgstr "Confirmation"
 
 #: app_animation/templates/animation/background_images.html:200
 #: app_animation/templates/animation/lyrics_slide_show.html:102
@@ -602,26 +601,24 @@ msgstr ""
 #: app_animation/templates/animation/lyrics_slide_show.html:100
 #: app_animation/templates/animation/modify_animation_page_i18n.html:28
 #: app_animation/templates/animation/modify_background_targets.html:97
-#: app_song/templates/song/metadata.html:243
 #: app_song/templates/song/modify_artists.html:90
 #: app_song/templates/song/modify_bands.html:90
 #: app_song/templates/song/modify_genres.html:93
 #: app_song/templates/song/modify_song_page_i18n.html:35
 #: app_song/templates/song/song_page_i18n.html:4 templates/base.html:100
 msgid "Oui"
-msgstr ""
+msgstr "Oui"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:101
 #: app_animation/templates/animation/modify_animation_page_i18n.html:29
 #: app_animation/templates/animation/modify_background_targets.html:98
-#: app_song/templates/song/metadata.html:244
 #: app_song/templates/song/modify_artists.html:91
 #: app_song/templates/song/modify_bands.html:91
 #: app_song/templates/song/modify_genres.html:94
 #: app_song/templates/song/modify_song_page_i18n.html:36
 #: app_song/templates/song/song_page_i18n.html:5 templates/base.html:101
 msgid "Non"
-msgstr ""
+msgstr "Non"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:103
 #: templates/base.html:103
@@ -935,7 +932,6 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:31
 #: app_animation/templates/animation/modify_background_targets.html:70
 #: app_song/templates/song/includes/_song_actions.html:30
-#: app_song/templates/song/metadata.html:95
 #: app_song/templates/song/modify_artists.html:64
 #: app_song/templates/song/modify_bands.html:64
 #: app_song/templates/song/modify_genres.html:67
@@ -943,7 +939,7 @@ msgstr ""
 #: app_song/templates/song/modify_song_page_i18n.html:27
 #: app_song/templates/song/songs.html:323
 msgid "Supprimer"
-msgstr ""
+msgstr "Supprimer"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:3
 msgid "Couleurs et style"
@@ -1008,7 +1004,7 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:39
 #: app_song/templates/song/songs.html:158
 msgid "Recherche avancée"
-msgstr ""
+msgstr "Recherche avancée"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:40
 msgid "Favoris"
@@ -1017,7 +1013,7 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:41
 #: app_song/templates/song/songs.html:176
 msgid "Tous les chants"
-msgstr ""
+msgstr "Tous les chants"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:42
 msgid "Aucun chant dans cette source."
@@ -1143,12 +1139,11 @@ msgid "Aucune cible disponible."
 msgstr ""
 
 #: app_animation/templates/animation/modify_background_targets.html:99
-#: app_song/templates/song/metadata.html:245
 #: app_song/templates/song/modify_artists.html:92
 #: app_song/templates/song/modify_bands.html:92
 #: app_song/templates/song/modify_genres.html:95
 msgid "Confirmer la suppression de cet élément ?"
-msgstr ""
+msgstr "Confirmer la suppression de cet élément ?"
 
 #: app_animation/templates/animation/style_picker.html:56
 msgid "Style actuel"
@@ -1193,16 +1188,16 @@ msgid "Cliquez sur un genre pour le déplacer d'une colonne à l'autre."
 msgstr ""
 
 #: app_animation/templates/animation/upload_background_image.html:89
-#: app_song/templates/song/metadata.html:134
-#: app_song/templates/song/metadata.html:169
-#: app_song/templates/song/metadata.html:204
+#: app_song/templates/song/metadata.html:121
+#: app_song/templates/song/metadata.html:156
+#: app_song/templates/song/metadata.html:191
 msgid "Sélectionnés"
 msgstr ""
 
 #: app_animation/templates/animation/upload_background_image.html:102
-#: app_song/templates/song/metadata.html:147
-#: app_song/templates/song/metadata.html:182
-#: app_song/templates/song/metadata.html:217
+#: app_song/templates/song/metadata.html:134
+#: app_song/templates/song/metadata.html:169
+#: app_song/templates/song/metadata.html:204
 msgid "Disponibles"
 msgstr ""
 
@@ -2545,14 +2540,14 @@ msgid "Gestion des métadonnées"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:199
-#: app_song/templates/song/metadata.html:163
+#: app_song/templates/song/metadata.html:150
 #: app_song/templates/song/modify_artists.html:23
 #: app_song/templates/song/songs.html:300 app_song/views.py:1088
 msgid "Artistes"
 msgstr ""
 
 #: app_main/templates/main/connexion.html:200
-#: app_song/templates/song/metadata.html:198
+#: app_song/templates/song/metadata.html:185
 msgid "Groupes de musique"
 msgstr ""
 
@@ -4028,7 +4023,7 @@ msgid "Signaler une correction"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_links.html:13
-#: app_song/templates/song/metadata.html:101
+#: app_song/templates/song/metadata.html:88
 msgid "Aucun lien associé."
 msgstr ""
 
@@ -4071,11 +4066,7 @@ msgstr ""
 msgid "Liens associés"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:91
-msgid "lien"
-msgstr ""
-
-#: app_song/templates/song/metadata.html:110
+#: app_song/templates/song/metadata.html:97
 msgid "Nouveau lien"
 msgstr ""
 
@@ -4714,7 +4705,8 @@ msgstr "Modifier les couleurs de l'animation"
 
 #: docs/app_animation/maquette.html:137
 msgid "Delete all colors and background images for song and verses"
-msgstr "Supprimer toutes les couleurs et images de fond du chant et des couplets"
+msgstr ""
+"Supprimer toutes les couleurs et images de fond du chant et des couplets"
 
 #: docs/app_animation/maquette.html:139 docs/app_animation/maquette.html:435
 msgid "save"
@@ -4818,7 +4810,8 @@ msgstr "Voir le chant"
 
 #: docs/app_animation/maquette.html:378
 msgid "Changes will be lost, do you really want to leave this page?"
-msgstr "Les modifications seront perdues, voulez-vous vraiment quitter cette page ?"
+msgstr ""
+"Les modifications seront perdues, voulez-vous vraiment quitter cette page ?"
 
 #: docs/app_animation/maquette.html:379
 msgid "Go to the song"
@@ -4904,3 +4897,6 @@ msgstr ""
 #: templates/includes/nav.html:26
 msgid "Anglais"
 msgstr ""
+
+#~ msgid "lien"
+#~ msgstr "lien"

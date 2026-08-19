@@ -2233,7 +2233,7 @@ class ModifySongViewTests(TestCase):
             str(message) for message in get_messages(response.wsgi_request)
         ]
         self.assertIn(
-            "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues.",
+            "Impossible de dévalider ce chant tant qu'il reste des demandes de modification non lues.",
             flash_messages,
         )
 

@@ -81,19 +81,6 @@
                                 {% endfor %}
                             </select>
                             <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
-                            <label class="song-meta-link-delete" for="existing-{{ forloop.counter0 }}-delete">
-                                <input
-                                    id="existing-{{ forloop.counter0 }}-delete"
-                                    type="checkbox"
-                                    name="existing_{{ forloop.counter0 }}_delete"
-                                    value="1"
-                                    data-meta-delete-checkbox
-                                    data-meta-kind="{% trans 'lien' %}"
-                                    data-meta-label="{{ link.link|escape }}"
-                                    {% if not can_edit %}disabled{% endif %}
-                                >
-                                <span>{% trans "Supprimer" %}</span>
-                            </label>
                         </div>
                     </div>
                 {% endfor %}
@@ -226,60 +213,12 @@
             </div>
         </div>
     </article>
+
 {% endblock %}
 {% block page_scripts %}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
-        (() => {
-            const messageBox = window.LSSMessageBox;
-            const refreshUnsaved = () => {
-                if (window.LSSSongMetadataUnsaved) {
-                    window.LSSSongMetadataUnsaved.refresh();
-                }
-            };
-            const labels = {
-                title: "{% trans 'Confirmation' %}",
-                yes: "{% trans 'Oui' %}",
-                no: "{% trans 'Non' %}",
-                confirmMessage: "{% trans 'Confirmer la suppression de cet élément ?' %}",
-            };
-
-            document.querySelectorAll("[data-meta-delete-checkbox]").forEach((checkbox) => {
-                checkbox.addEventListener("change", async () => {
-                    if (!(checkbox instanceof HTMLInputElement) || !checkbox.checked) {
-                        return;
-                    }
-                    if (!messageBox || typeof messageBox.show !== "function") {
-                        return;
-                    }
-
-                    checkbox.checked = false;
-                    const itemKind = checkbox.getAttribute("data-meta-kind") || "";
-                    const label = checkbox.getAttribute("data-meta-label") || "";
-                    const lines = [labels.confirmMessage];
-                    if (itemKind || label) {
-                        lines.push(`**${[itemKind, label].filter(Boolean).join(" : ")}**`);
-                    }
-
-                    const result = await messageBox.show({
-                        title: labels.title,
-                        messageMarkdown: lines.join("\n\n"),
-                        showCloseButton: false,
-                        buttons: [
-                            { id: "yes", label: labels.yes, tone: "warning" },
-                            { id: "no", label: labels.no, tone: "neutral" },
-                        ],
-                    });
-
-                    if (result.buttonId === "yes") {
-                        checkbox.checked = true;
-                    }
-                    refreshUnsaved();
-                });
-            });
-        })();
-
         (() => {
             const canEdit = {{ can_edit|yesno:"true,false" }};
 

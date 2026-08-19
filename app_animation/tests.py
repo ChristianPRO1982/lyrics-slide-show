@@ -3102,7 +3102,7 @@ class AnimationViewsTests(TestCase):
 
         self.assertEqual(
             response.context["lyrics_i18n"]["shortcutsPopupFooter"],
-            "⌨️👈 in upper or lower case",
+            "⌨️👈 en majuscules ou en minuscules",
         )
         self.assertEqual(
             response.context["lyrics_i18n"]["shortcutsCaptureLabel"],
@@ -3114,7 +3114,7 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(
             response.context["shortcuts_config"]["actionLabels"]["open_display"],
-            "Display current slide window",
+            "Afficher la fenêtre de la diapo en cours",
         )
 
     def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):
@@ -3157,7 +3157,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.json()
         self.assertIn("Escape", payload["fieldErrors"]["black"])
-        self.assertIn("Previous slide", payload["globalMessage"])
+        self.assertIn("Diapo précédente", payload["globalMessage"])
         self.assertEqual(payload["savedBindings"]["black"], ["x"])
         self.assertEqual(payload["savedBindings"]["prev_slide"], ["b"])
         self.assertEqual(payload["effectiveBindings"]["black"], ["escape", "x"])

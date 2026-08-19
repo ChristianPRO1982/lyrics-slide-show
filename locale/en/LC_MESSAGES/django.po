@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 15:54+0200\n"
+"POT-Creation-Date: 2026-08-19 17:57+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -106,7 +106,7 @@ msgstr "Image"
 #: app_animation/templates/animation/background_images.html:80
 #: app_animation/templates/animation/background_images.html:132
 #: app_animation/views.py:1009 app_main/templates/main/connexion.html:198
-#: app_song/templates/song/metadata.html:128
+#: app_song/templates/song/metadata.html:115
 #: app_song/templates/song/modify_genres.html:23
 #: app_song/templates/song/songs.html:276
 msgid "Genres"
@@ -245,10 +245,8 @@ msgstr "Animations"
 #: app_animation/templates/animation/style_picker.html:34
 #: app_animation/templates/animation/upload_background_image.html:12
 #: app_animation/templates/animation/upload_background_image.html:15
-#, fuzzy
-#| msgid "Animations"
 msgid "Animation"
-msgstr "Animations"
+msgstr "Animation"
 
 #: app_animation/templates/animation/add_animation.html:33
 #: app_animation/templates/animation/background_picker.html:132
@@ -282,10 +280,8 @@ msgstr ""
 #: app_animation/templates/animation/add_animation.html:96
 #: app_animation/templates/animation/add_animation.html:144
 #: app_animation/templates/animation/modify_animation.html:222
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Couleurs du chant"
-msgstr "Songs"
+msgstr "Song colours"
 
 #: app_animation/templates/animation/add_animation.html:126
 msgid "Choisir une image de fond"
@@ -298,10 +294,8 @@ msgid "Aucune image"
 msgstr ""
 
 #: app_animation/templates/animation/add_animation.html:138
-#, fuzzy
-#| msgid "Ouvrir la simulation"
 msgid "Créer l'animation"
-msgstr "Open the demo"
+msgstr "Create animation"
 
 #: app_animation/templates/animation/add_animation.html:147
 #: app_animation/templates/animation/lyrics_slide_show.html:99
@@ -326,19 +320,15 @@ msgstr ""
 
 #: app_animation/templates/animation/animation_history.html:5
 #: app_animation/templates/animation/animation_history.html:30
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Historique des animations"
-msgstr "Animations"
+msgstr "Animation history"
 
 #: app_animation/templates/animation/animation_history.html:44
 #: app_animation/templates/animation/animations.html:46
 #: app_animation/templates/animation/includes/_animation_context_actions.html:15
 #: app_animation/templates/animation/lyrics_slide_show.html:239
-#, fuzzy
-#| msgid "Confirmer cette action ?"
 msgid "Modifier cette animation"
-msgstr "Confirm this action?"
+msgstr "Edit this animation"
 
 #: app_animation/templates/animation/animation_history.html:48
 msgid "Aucune animation passée pour ce groupe."
@@ -354,10 +344,8 @@ msgstr "Animations"
 
 #: app_animation/templates/animation/animations.html:47
 #: app_animation/templates/animation/lyrics_slide_show.html:240
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Vue smartphone de l animation"
-msgstr "Animations"
+msgstr "Smartphone view of the animation"
 
 #: app_animation/templates/animation/animations.html:54
 msgid "Aucune animation à venir pour ce groupe."
@@ -375,10 +363,9 @@ msgstr ""
 
 #: app_animation/templates/animation/background_images.html:45
 #: app_animation/templates/animation/background_images.html:115
-#, fuzzy, python-format
-#| msgid "Afficher le lien vers le wiki"
+#, python-format
 msgid "Afficher l'image %(title)s"
-msgstr "Show the wiki link"
+msgstr "Show image %(title)s"
 
 #: app_animation/templates/animation/background_images.html:52
 msgid "Aucune image active à mettre en avant."
@@ -386,24 +373,18 @@ msgstr ""
 
 #: app_animation/templates/animation/background_images.html:60
 #: app_song/templates/song/songs.html:96 app_song/templates/song/songs.html:112
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Recherche"
-msgstr "Groups"
+msgstr "Search"
 
 #: app_animation/templates/animation/background_images.html:64
 #: app_animation/templates/animation/background_picker.html:86
-#, fuzzy
-#| msgid "Non"
 msgid "Nom"
-msgstr "No"
+msgstr "Name"
 
 #: app_animation/templates/animation/background_images.html:65
 #: app_animation/templates/animation/background_picker.html:92
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Titre de l’image"
-msgstr "Animations"
+msgstr "Image title"
 
 #: app_animation/templates/animation/background_images.html:67
 msgid "Filtrer"
@@ -414,26 +395,20 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
 #: app_song/templates/song/songs.html:153
 msgid "Réinitialiser"
-msgstr ""
+msgstr "Reset"
 
 #: app_animation/templates/animation/background_images.html:71
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Images à modérer"
-msgstr "Songs"
+msgstr "Images awaiting moderation"
 
 #: app_animation/templates/animation/background_images.html:72
-#, fuzzy
-#| msgid "Langue active"
 msgid "Images inactives"
-msgstr "Active language"
+msgstr "Inactive images"
 
 #: app_animation/templates/animation/background_images.html:87
 #: app_animation/views.py:1010
-#, fuzzy
-#| msgid "Créer un compte"
 msgid "Trouver un genre"
-msgstr "Create an account"
+msgstr "Find a genre"
 
 #: app_animation/templates/animation/background_images.html:97
 #: app_song/templates/song/modify_genres.html:72
@@ -462,10 +437,8 @@ msgstr ""
 #: app_group/templates/group/groups.html:25
 #: app_song/templates/song/includes/_song_actions.html:21
 #: app_song/templates/song/songs.html:318
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Modifier"
-msgstr "Groups"
+msgstr "Edit"
 
 #: app_animation/templates/animation/background_images.html:173
 msgid "Réactiver"
@@ -482,17 +455,14 @@ msgid "Aucune image ne correspond à ce filtre."
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:197
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Aperçu de l’image"
-msgstr "Animations"
+msgstr "Image preview"
 
 #: app_animation/templates/animation/background_images.html:199
 #: app_animation/templates/animation/lyrics_slide_show.html:110
 #: app_animation/templates/animation/modify_background_targets.html:96
 #: app_group/templates/group/groups.html:213
 #: app_group/templates/group/modify_group.html:251
-#: app_song/templates/song/metadata.html:242
 #: app_song/templates/song/modify_artists.html:89
 #: app_song/templates/song/modify_bands.html:89
 #: app_song/templates/song/modify_genres.html:92 templates/base.html:110
@@ -516,10 +486,8 @@ msgid "Confirmer la désactivation de cette image ?"
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:206
-#, fuzzy
-#| msgid "Confirmation"
 msgid "Confirmer la suppression définitive de cette image ?"
-msgstr "Confirmation"
+msgstr "Confirm permanent deletion of this image?"
 
 #: app_animation/templates/animation/background_picker.html:29
 #: app_animation/templates/animation/background_picker.html:44
@@ -532,10 +500,8 @@ msgstr ""
 #: app_animation/templates/animation/background_picker.html:47
 #: app_animation/templates/animation/style_picker.html:32
 #: app_animation/templates/animation/style_picker.html:47
-#, fuzzy
-#| msgid "Revenir en haut de la page"
 msgid "Revenir sans sauvegarder"
-msgstr "Back to top"
+msgstr "Go back without saving"
 
 #: app_animation/templates/animation/background_picker.html:58
 #: app_animation/templates/animation/style_picker.html:58
@@ -562,27 +528,21 @@ msgid "Aucun tag disponible."
 msgstr ""
 
 #: app_animation/templates/animation/background_picker.html:127
-#, fuzzy
-#| msgid "Section"
 msgid "Sélectionner cette image"
-msgstr "Section"
+msgstr "Select this image"
 
 #: app_animation/templates/animation/background_picker.html:128
 #: app_animation/templates/animation/style_picker.html:93
-#, fuzzy
-#| msgid "Fermer la fenêtre"
 msgid "Fermer l’aperçu"
-msgstr "Close window"
+msgstr "Close preview"
 
 #: app_animation/templates/animation/background_picker.html:166
 msgid "Aucun tag"
 msgstr ""
 
 #: app_animation/templates/animation/includes/_animation_actions.html:7
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Ajouter une image"
-msgstr "Animations"
+msgstr "Add an image"
 
 #: app_animation/templates/animation/includes/_animation_context_actions.html:6
 msgid "Voir l'historique"
@@ -606,7 +566,7 @@ msgstr ""
 #: app_song/templates/song/modify_song.html:26
 #: app_song/templates/song/modify_song.html:77
 msgid "Enregistrer"
-msgstr ""
+msgstr "Save"
 
 #: app_animation/templates/animation/includes/_animation_context_actions.html:18
 #: app_animation/templates/animation/lyrics_slide_show.html:11
@@ -636,7 +596,6 @@ msgstr "Close window"
 #: app_animation/templates/animation/lyrics_slide_show.html:100
 #: app_animation/templates/animation/modify_animation_page_i18n.html:28
 #: app_animation/templates/animation/modify_background_targets.html:97
-#: app_song/templates/song/metadata.html:243
 #: app_song/templates/song/modify_artists.html:90
 #: app_song/templates/song/modify_bands.html:90
 #: app_song/templates/song/modify_genres.html:93
@@ -648,7 +607,6 @@ msgstr "Yes"
 #: app_animation/templates/animation/lyrics_slide_show.html:101
 #: app_animation/templates/animation/modify_animation_page_i18n.html:29
 #: app_animation/templates/animation/modify_background_targets.html:98
-#: app_song/templates/song/metadata.html:244
 #: app_song/templates/song/modify_artists.html:91
 #: app_song/templates/song/modify_bands.html:91
 #: app_song/templates/song/modify_genres.html:94
@@ -879,20 +837,16 @@ msgstr "Hide options"
 
 #: app_animation/templates/animation/modify_animation.html:162
 #: app_animation/templates/animation/modify_animation_page_i18n.html:54
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Voir le texte du chant"
-msgstr "Songs"
+msgstr "View song text"
 
 #: app_animation/templates/animation/modify_animation.html:167
 msgid "Aller vers le chant"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation.html:175
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Police du chant"
-msgstr "Songs"
+msgstr "Song font"
 
 #: app_animation/templates/animation/modify_animation.html:179
 msgid "Même police que l'animation"
@@ -900,10 +854,8 @@ msgstr ""
 
 #: app_animation/templates/animation/modify_animation.html:192
 #: app_animation/templates/animation/modify_animation.html:286
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Taille de la police"
-msgstr "Groups"
+msgstr "Font size"
 
 #: app_animation/templates/animation/modify_animation.html:212
 #: app_animation/templates/animation/modify_animation.html:213
@@ -946,10 +898,8 @@ msgid "Même police que le chant"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation.html:322
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Couleurs du couplet"
-msgstr "Groups"
+msgstr "Verse colours"
 
 #: app_animation/templates/animation/modify_animation.html:364
 #: app_animation/templates/animation/modify_animation_page_i18n.html:50
@@ -977,27 +927,22 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:31
 #: app_animation/templates/animation/modify_background_targets.html:70
 #: app_song/templates/song/includes/_song_actions.html:30
-#: app_song/templates/song/metadata.html:95
 #: app_song/templates/song/modify_artists.html:64
 #: app_song/templates/song/modify_bands.html:64
 #: app_song/templates/song/modify_genres.html:67
 #: app_song/templates/song/modify_song.html:348
 #: app_song/templates/song/modify_song_page_i18n.html:27
 #: app_song/templates/song/songs.html:323
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Supprimer"
-msgstr "Groups"
+msgstr "Delete"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:3
 msgid "Couleurs et style"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:15
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Même image que l'animation"
-msgstr "Animations"
+msgstr "Same image as the animation"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:16
 msgid "Même image que le chant"
@@ -1020,22 +965,16 @@ msgid "Background color"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:26
-#, fuzzy
-#| msgid "Confirmation"
 msgid "Confirmer la suppression"
-msgstr "Confirmation"
+msgstr "Confirm deletion"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:27
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Supprimer cette chanson de l'animation ?"
-msgstr "Groups"
+msgstr "Remove this song from the animation?"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:32
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Ajouter un chant"
-msgstr "Songs"
+msgstr "Add a song"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:33
 msgid "Choisir un chant à insérer dans la playlist."
@@ -1050,10 +989,8 @@ msgid "Ajouter"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:37
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Insérer un chant"
-msgstr "Groups"
+msgstr "Insert a song"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:38
 msgid "déjà dans la playlist"
@@ -1061,10 +998,8 @@ msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:39
 #: app_song/templates/song/songs.html:158
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Recherche avancée"
-msgstr "Groups"
+msgstr "Advanced search"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:40
 msgid "Favoris"
@@ -1072,20 +1007,16 @@ msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:41
 #: app_song/templates/song/songs.html:176
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Tous les chants"
-msgstr "Songs"
+msgstr "All songs"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:42
 msgid "Aucun chant dans cette source."
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:43
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Options du chant"
-msgstr "Groups"
+msgstr "Song options"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:47
 msgid "Confirmer le retour aux paramètres parents"
@@ -1104,10 +1035,8 @@ msgid "Impossible de charger le texte du chant."
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:56
-#, fuzzy
-#| msgid "Navigation principale"
 msgid "Navigation vers le chant"
-msgstr "Main navigation"
+msgstr "Go to song"
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:57
 msgid "Des modifications non enregistrées seront perdues."
@@ -1162,10 +1091,8 @@ msgstr ""
 #: app_animation/templates/animation/modify_background_targets.html:12
 #: app_animation/templates/animation/modify_background_targets.html:15
 #: app_animation/templates/animation/modify_background_targets.html:30
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Gestion des cibles"
-msgstr "Groups"
+msgstr "Manage targets"
 
 #: app_animation/templates/animation/modify_background_targets.html:32
 msgid ""
@@ -1188,10 +1115,8 @@ msgstr ""
 #: app_song/templates/song/modify_artists.html:40
 #: app_song/templates/song/modify_bands.html:40
 #: app_song/templates/song/modify_genres.html:41
-#, fuzzy
-#| msgid "Actions"
 msgid "actions"
-msgstr "Actions"
+msgstr "actions"
 
 #: app_animation/templates/animation/modify_background_targets.html:52
 #: app_song/templates/song/modify_artists.html:46
@@ -1209,32 +1134,27 @@ msgid "Aucune cible disponible."
 msgstr ""
 
 #: app_animation/templates/animation/modify_background_targets.html:99
-#: app_song/templates/song/metadata.html:245
 #: app_song/templates/song/modify_artists.html:92
 #: app_song/templates/song/modify_bands.html:92
 #: app_song/templates/song/modify_genres.html:95
 msgid "Confirmer la suppression de cet élément ?"
-msgstr ""
+msgstr "Confirm deletion of this item?"
 
 #: app_animation/templates/animation/style_picker.html:56
 msgid "Style actuel"
 msgstr ""
 
 #: app_animation/templates/animation/style_picker.html:76
-#, fuzzy
-#| msgid "Dernière version publiée"
 msgid "Styles disponibles"
-msgstr "Latest release"
+msgstr "Available styles"
 
 #: app_animation/templates/animation/style_picker.html:77
 msgid "Choisissez un style déjà utilisé dans les slides de cette animation."
 msgstr ""
 
 #: app_animation/templates/animation/style_picker.html:92
-#, fuzzy
-#| msgid "Section"
 msgid "Sélectionner ce style"
-msgstr "Section"
+msgstr "Select this style"
 
 #: app_animation/templates/animation/style_picker.html:101
 msgid "Occurrences source"
@@ -1246,10 +1166,8 @@ msgstr ""
 
 #: app_animation/templates/animation/upload_background_image.html:5
 #: app_animation/templates/animation/upload_background_image.html:30
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Ajouter une image de fond"
-msgstr "Animations"
+msgstr "Add a background image"
 
 #: app_animation/templates/animation/upload_background_image.html:39
 msgid "Préparer l'envoi"
@@ -1265,22 +1183,18 @@ msgid "Cliquez sur un genre pour le déplacer d'une colonne à l'autre."
 msgstr ""
 
 #: app_animation/templates/animation/upload_background_image.html:89
+#: app_song/templates/song/metadata.html:121
+#: app_song/templates/song/metadata.html:156
+#: app_song/templates/song/metadata.html:191
+msgid "Sélectionnés"
+msgstr "Selected"
+
+#: app_animation/templates/animation/upload_background_image.html:102
 #: app_song/templates/song/metadata.html:134
 #: app_song/templates/song/metadata.html:169
 #: app_song/templates/song/metadata.html:204
-#, fuzzy
-#| msgid "Section"
-msgid "Sélectionnés"
-msgstr "Section"
-
-#: app_animation/templates/animation/upload_background_image.html:102
-#: app_song/templates/song/metadata.html:147
-#: app_song/templates/song/metadata.html:182
-#: app_song/templates/song/metadata.html:217
-#, fuzzy
-#| msgid "Dernière version publiée"
 msgid "Disponibles"
-msgstr "Latest release"
+msgstr "Available"
 
 #: app_animation/templates/animation/upload_background_image.html:115
 msgid "Envoyer pour modération"
@@ -1356,40 +1270,28 @@ msgid "Cette image n'est pas conforme."
 msgstr ""
 
 #: app_animation/views.py:354 app_animation/views.py:463
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Image de fond de l'animation"
-msgstr "Animations"
+msgstr "Animation background image"
 
 #: app_animation/views.py:393 app_animation/views.py:465
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Image de fond du chant"
-msgstr "Songs"
+msgstr "Song background image"
 
 #: app_animation/views.py:449 app_animation/views.py:466
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Image de fond du couplet"
-msgstr "Groups"
+msgstr "Verse background image"
 
 #: app_animation/views.py:458
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Style de l'animation"
-msgstr "Animations"
+msgstr "Animation style"
 
 #: app_animation/views.py:460
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Style du chant"
-msgstr "Songs"
+msgstr "Song style"
 
 #: app_animation/views.py:461
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Style du couplet"
-msgstr "Groups"
+msgstr "Verse style"
 
 #: app_animation/views.py:487
 #, python-format
@@ -1446,10 +1348,9 @@ msgid "%(count)s création(s)"
 msgstr ""
 
 #: app_animation/views.py:840 app_song/views.py:1284 app_song/views.py:1444
-#, fuzzy, python-format
-#| msgid "%(count)s images depuis %(source)s."
+#, python-format
 msgid "%(count)s mise(s) à jour"
-msgstr "%(count)s images from %(source)s."
+msgstr "%(count)s update(s)"
 
 #: app_animation/views.py:842 app_song/views.py:1286 app_song/views.py:1446
 #, python-format
@@ -1470,26 +1371,20 @@ msgid "Impossible d'enregistrer les modifications."
 msgstr ""
 
 #: app_animation/views.py:911
-#, fuzzy
-#| msgid "Le lien a été copié."
 msgid "L'image inactive a été mise à jour."
-msgstr "The link has been copied."
+msgstr "The inactive image has been updated."
 
 #: app_animation/views.py:929
 msgid "L'image a été validée puis placée en inactif."
 msgstr ""
 
 #: app_animation/views.py:936
-#, fuzzy
-#| msgid "Le lien a été copié."
 msgid "L'image en attente a été supprimée."
-msgstr "The link has been copied."
+msgstr "The pending image has been deleted."
 
 #: app_animation/views.py:941
-#, fuzzy
-#| msgid "Le lien a été copié."
 msgid "L'image a été activée."
-msgstr "The link has been copied."
+msgstr "The image has been activated."
 
 #: app_animation/views.py:950
 #, python-format
@@ -1499,10 +1394,8 @@ msgid ""
 msgstr ""
 
 #: app_animation/views.py:956
-#, fuzzy
-#| msgid "Le lien a été copié."
 msgid "L'image a été désactivée."
-msgstr "The link has been copied."
+msgstr "The image has been deactivated."
 
 #: app_animation/views.py:961
 msgid "L'image inactive a été supprimée définitivement."
@@ -2287,10 +2180,8 @@ msgid "Le groupe a été supprimé."
 msgstr "The group has been deleted."
 
 #: app_main/auth.py:44
-#, fuzzy
-#| msgid "Cet utilisateur est désactivé dans users.users."
 msgid "Cet utilisateur est désactivé dans Lyrics Slide Show."
-msgstr "This user is disabled in users.users."
+msgstr "This user is disabled in Lyrics Slide Show."
 
 #: app_main/auth.py:46
 msgid ""
@@ -2316,10 +2207,8 @@ msgid ""
 msgstr ""
 
 #: app_main/auth.py:214
-#, fuzzy
-#| msgid "La configuration du client Keycloak est incomplète."
 msgid "La configuration du provisioning Home est incomplète."
-msgstr "Keycloak client configuration is incomplete."
+msgstr "Home provisioning configuration is incomplete."
 
 #: app_main/auth.py:250
 #, python-format
@@ -2364,10 +2253,8 @@ msgid "l'échange du code"
 msgstr ""
 
 #: app_main/auth.py:415
-#, fuzzy
-#| msgid "Ce n’est pas un réglage du profil utilisateur."
 msgid "la lecture du profil utilisateur"
-msgstr "This is not a user profile setting."
+msgstr "reading the user profile"
 
 #: app_main/auth.py:416
 msgid "la requête"
@@ -2380,17 +2267,14 @@ msgid ""
 msgstr ""
 
 #: app_main/auth.py:426
-#, fuzzy
-#| msgid "La connexion Keycloak a échoué : %(error)s."
 msgid ""
 "La connexion Keycloak a échoué pendant la lecture du profil utilisateur."
-msgstr "Keycloak login failed: %(error)s."
+msgstr "Keycloak login failed while reading the user profile."
 
 #: app_main/auth.py:428
-#, fuzzy, python-format
-#| msgid "La requête Keycloak a échoué avec HTTP %(code)s."
+#, python-format
 msgid "La requête Keycloak a échoué pendant %(stage)s avec HTTP %(code)s."
-msgstr "Keycloak request failed with HTTP %(code)s."
+msgstr "The Keycloak request failed during %(stage)s with HTTP %(code)s."
 
 #: app_main/auth.py:469 app_main/auth.py:494
 msgid "La requête Keycloak a échoué."
@@ -2430,10 +2314,8 @@ msgid "Fonctions de lecture"
 msgstr ""
 
 #: app_main/templates/lyrics/lyrics.html:400
-#, fuzzy
-#| msgid "Ouvrir la simulation"
 msgid "Ouvrir le menu"
-msgstr "Open the demo"
+msgstr "Open menu"
 
 #: app_main/templates/lyrics/lyrics.html:400
 #: app_main/templates/lyrics/lyrics.html:401
@@ -2457,49 +2339,35 @@ msgid "Texte plus petit"
 msgstr ""
 
 #: app_main/templates/lyrics/lyrics.html:409
-#, fuzzy
-#| msgid "Activer ce thème"
 msgid "Basculer le thème"
-msgstr "Activate this theme"
+msgstr "Toggle theme"
 
 #: app_main/templates/lyrics/lyrics.html:410
-#, fuzzy
-#| msgid "Thèmes"
 msgid "Thème clair ou sombre"
-msgstr "Themes"
+msgstr "Light or dark theme"
 
 #: app_main/templates/lyrics/lyrics.html:413
 #: app_main/templates/lyrics/lyrics.html:414
-#, fuzzy
-#| msgid "Afficher le lien vers le wiki"
 msgid "Chant précédent"
-msgstr "Show the wiki link"
+msgstr "Previous song"
 
 #: app_main/templates/lyrics/lyrics.html:416
 #: app_main/templates/lyrics/lyrics.html:417
-#, fuzzy
-#| msgid "Chants"
 msgid "Chant suivant"
-msgstr "Songs"
+msgstr "Next song"
 
 #: app_main/templates/lyrics/lyrics.html:423
 #: app_main/templates/lyrics/lyrics.html:424
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Choisir un chant"
-msgstr "Songs"
+msgstr "Choose a song"
 
 #: app_main/templates/lyrics/lyrics.html:432
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Menu des paroles"
-msgstr "Groups"
+msgstr "Lyrics menu"
 
 #: app_main/templates/lyrics/lyrics.html:433
-#, fuzzy
-#| msgid "Fermer la fenêtre"
 msgid "Fermer le menu"
-msgstr "Close window"
+msgstr "Close menu"
 
 #: app_main/templates/lyrics/lyrics.html:437
 msgid "QR code de partage"
@@ -2512,16 +2380,12 @@ msgstr ""
 #: app_main/templates/lyrics/lyrics.html:446
 #: app_song/templates/song/modify_song_page_i18n.html:12
 #: app_song/templates/song/song_page_i18n.html:21
-#, fuzzy
-#| msgid "Copie"
 msgid "Copier"
 msgstr "Copy"
 
 #: app_main/templates/lyrics/lyrics.html:456
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Aucun chant"
-msgstr "Songs"
+msgstr "No song"
 
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:81
@@ -2591,10 +2455,8 @@ msgid "Continuer avec Keycloak"
 msgstr "Continue with Keycloak"
 
 #: app_main/templates/main/connexion.html:102
-#, fuzzy
-#| msgid "Continuer avec la simulation SSO"
 msgid "Continuer avec le mock SSO"
-msgstr "Continue with the SSO demo"
+msgstr "Continue with mock SSO"
 
 #: app_main/templates/main/connexion.html:112
 msgid "Paramétrage"
@@ -2658,10 +2520,8 @@ msgid "Confidentialité"
 msgstr "Privacy"
 
 #: app_main/templates/main/connexion.html:178
-#, fuzzy
-#| msgid "Icône du thème"
 msgid "Rôles du site"
-msgstr "Theme icon"
+msgstr "Site roles"
 
 #: app_main/templates/main/connexion.html:183
 msgid ""
@@ -2682,14 +2542,14 @@ msgid "Gestion des métadonnées"
 msgstr "Manage metadata"
 
 #: app_main/templates/main/connexion.html:199
-#: app_song/templates/song/metadata.html:163
+#: app_song/templates/song/metadata.html:150
 #: app_song/templates/song/modify_artists.html:23
 #: app_song/templates/song/songs.html:300 app_song/views.py:1088
 msgid "Artistes"
 msgstr "Artists"
 
 #: app_main/templates/main/connexion.html:200
-#: app_song/templates/song/metadata.html:198
+#: app_song/templates/song/metadata.html:185
 msgid "Groupes de musique"
 msgstr "Bands"
 
@@ -2770,8 +2630,7 @@ msgstr ""
 msgid ""
 "Cette zone reste disponible pour de futurs outils de modération "
 "complémentaires."
-msgstr ""
-"This area remains available for future moderation tools."
+msgstr "This area remains available for future moderation tools."
 
 #: app_main/templates/main/connexion.html:284
 msgid "Administration du site"
@@ -2950,22 +2809,16 @@ msgid "Chants à modérer"
 msgstr ""
 
 #: app_main/templates/main/homepage.html:122
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Tous les chants à modérer"
-msgstr "Songs"
+msgstr "All songs awaiting moderation"
 
 #: app_main/templates/main/keycloak_diagnostic.html:4
-#, fuzzy
-#| msgid "Simulation Keycloak"
 msgid "Diagnostic Keycloak"
-msgstr "Keycloak demo"
+msgstr "Keycloak diagnostics"
 
 #: app_main/templates/main/keycloak_diagnostic.html:9
-#, fuzzy
-#| msgid "Mode dev"
 msgid "Mode expert"
-msgstr "Dev mode"
+msgstr "Expert mode"
 
 #: app_main/templates/main/keycloak_diagnostic.html:16
 #: app_main/templates/main/keycloak_diagnostic.html:27
@@ -2976,10 +2829,8 @@ msgid "Relancer la connexion Keycloak"
 msgstr ""
 
 #: app_main/templates/main/keycloak_diagnostic.html:19
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Retour à la connexion"
-msgstr "Groups"
+msgstr "Back to sign-in"
 
 #: app_main/templates/main/keycloak_diagnostic.html:33 templates/base.html:178
 msgid "Diagnostic expert Keycloak"
@@ -3008,16 +2859,12 @@ msgid "Diagnostic Keycloak détaillé"
 msgstr ""
 
 #: app_main/templates/main/keycloak_diagnostic.html:54
-#, fuzzy
-#| msgid "Dernière version publiée"
 msgid "Dernière erreur"
-msgstr "Latest release"
+msgstr "Latest error"
 
 #: app_main/templates/main/keycloak_diagnostic.html:57
-#, fuzzy
-#| msgid "Messages"
 msgid "Message :"
-msgstr "Messages"
+msgstr "Message:"
 
 #: app_main/templates/main/keycloak_diagnostic.html:58
 msgid "URL appelée :"
@@ -3028,10 +2875,8 @@ msgid "Erreur Keycloak :"
 msgstr ""
 
 #: app_main/templates/main/keycloak_diagnostic.html:60
-#, fuzzy
-#| msgid "Simulation Keycloak"
 msgid "Description Keycloak :"
-msgstr "Keycloak demo"
+msgstr "Keycloak description:"
 
 #: app_main/templates/main/keycloak_diagnostic.html:61
 msgid "Date :"
@@ -3042,10 +2887,8 @@ msgid "Configuration publique LSS"
 msgstr ""
 
 #: app_main/templates/main/keycloak_diagnostic.html:70
-#, fuzzy
-#| msgid "Continuer avec Keycloak"
 msgid "Serveur Keycloak :"
-msgstr "Continue with Keycloak"
+msgstr "Keycloak server:"
 
 #: app_main/templates/main/keycloak_diagnostic.html:71
 msgid "Realm :"
@@ -3092,10 +2935,8 @@ msgid "Relancez une connexion Keycloak pour générer un diagnostic expert."
 msgstr ""
 
 #: app_main/templates/main/keycloak_diagnostic.html:110
-#, fuzzy
-#| msgid "Animations"
 msgid "Vérifications VPS"
-msgstr "Animations"
+msgstr "VPS checks"
 
 #: app_main/templates/main/language.html:5
 #: app_main/templates/main/language.html:7
@@ -3553,10 +3394,8 @@ msgstr ""
 #: app_main/templates/main/provision_complete.html:30
 #: app_main/templates/main/provision_complete.html:62
 #: app_main/templates/main/provision_complete.html:73
-#, fuzzy
-#| msgid "9. Modification de la politique de confidentialité"
 msgid "Finalisation de la synchronisation"
-msgstr "9. Changes to the privacy policy"
+msgstr "Finalising synchronisation"
 
 #: app_main/templates/main/provision_complete.html:10
 msgid "Synchronisation en attente"
@@ -3619,18 +3458,14 @@ msgstr ""
 
 #: app_main/templates/main/provision_redirect.html:38
 #: app_main/templates/main/provision_redirect.html:46
-#, fuzzy
-#| msgid "Actions"
 msgid "Action"
-msgstr "Actions"
+msgstr "Action"
 
 #: app_main/templates/main/provision_redirect.html:42
 #: app_main/templates/main/provision_redirect.html:50
 #: app_main/templates/main/provision_redirect.html:78
-#, fuzzy
-#| msgid "propulsé par cARThographie !"
 msgid "Continuer vers cARThographie"
-msgstr "powered by cARThographie!"
+msgstr "Continue to cARThographie"
 
 #: app_main/templates/main/provision_redirect.html:59
 msgid ""
@@ -3643,10 +3478,8 @@ msgid "Vous allez être redirigé automatiquement vers cARThographie."
 msgstr ""
 
 #: app_main/templates/main/provision_redirect.html:71
-#, fuzzy
-#| msgid "Lors de la création de votre compte."
 msgid "Finaliser la création du compte"
-msgstr "When your account is created."
+msgstr "Complete account creation"
 
 #: app_main/templates/main/provision_redirect.html:72
 msgid "cARThographie va mettre à jour la fiche nécessaire à Lyrics Slide Show."
@@ -3659,16 +3492,12 @@ msgstr ""
 
 #: app_main/templates/main/site_params.html:6
 #: app_main/templates/main/site_params.html:17
-#, fuzzy
-#| msgid "Animations"
 msgid "Administration"
-msgstr "Animations"
+msgstr "Administration"
 
 #: app_main/templates/main/site_params.html:19
-#, fuzzy
-#| msgid "Voir mon profil"
 msgid "Retour au profil"
-msgstr "View my profile"
+msgstr "Back to profile"
 
 #: app_main/templates/main/site_params.html:21
 msgid "Site params"
@@ -3679,14 +3508,10 @@ msgid "Les paramètres sont enregistrés par langue."
 msgstr ""
 
 #: app_main/templates/main/site_params.html:37
-#, fuzzy
-#| msgid "Choix de la langue"
 msgid "Choisir la langue"
-msgstr "Language selection"
+msgstr "Choose language"
 
 #: app_main/templates/main/site_params.html:42
-#, fuzzy
-#| msgid "Charge"
 msgid "Charger"
 msgstr "Load"
 
@@ -3699,16 +3524,12 @@ msgid "Accueil"
 msgstr "Home"
 
 #: app_main/templates/main/site_params.html:72
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Images de fond"
-msgstr "Songs"
+msgstr "Background images"
 
 #: app_main/templates/main/site_params.html:85
-#, fuzzy
-#| msgid "Messages"
 msgid "Délais des messages popup"
-msgstr "Messages"
+msgstr "Popup message delays"
 
 #: app_main/templates/main/site_params.html:91
 msgid "Carte accueil 1"
@@ -3850,10 +3671,8 @@ msgid "Client ID différent entre LSS et Keycloak."
 msgstr ""
 
 #: app_main/views.py:484
-#, fuzzy
-#| msgid "Keycloak n'est pas configuré pour cet environnement."
 msgid "Client Keycloak non configuré comme client confidentiel."
-msgstr "Keycloak is not configured for this environment."
+msgstr "Keycloak client is not configured as a confidential client."
 
 #: app_main/views.py:488
 msgid "URL de retour Keycloak différente de celle déclarée dans le client."
@@ -3911,10 +3730,9 @@ msgid "Aucune finalisation de synchronisation n'est en attente."
 msgstr ""
 
 #: app_main/views.py:593
-#, fuzzy, python-format
-#| msgid "Connecté en tant que %(username)s."
+#, python-format
 msgid "Connecté en tant que %(username)s après synchronisation du compte."
-msgstr "Connected as %(username)s."
+msgstr "Connected as %(username)s after account synchronisation."
 
 #: app_main/views.py:611
 msgid "Vous êtes déconnecté."
@@ -3933,10 +3751,8 @@ msgid "Les réglages de modération ont été enregistrés."
 msgstr ""
 
 #: app_main/views.py:686
-#, fuzzy
-#| msgid "Le lien a été copié."
 msgid "Les réglages administrateur ont été enregistrés."
-msgstr "The link has been copied."
+msgstr "Administrator settings have been saved."
 
 #: app_main/views.py:718
 msgid "administrateur"
@@ -3979,10 +3795,8 @@ msgid "Message des administrateurs"
 msgstr ""
 
 #: app_member/context_processors.py:59
-#, fuzzy
-#| msgid "Informations du profil"
 msgid "Informations du site"
-msgstr "Profile information"
+msgstr "Site information"
 
 #: app_member/forms.py:14
 msgid "Recherche membre"
@@ -4077,16 +3891,12 @@ msgid "Titre du site"
 msgstr ""
 
 #: app_member/forms.py:182
-#, fuzzy
-#| msgid "Navigation principale"
 msgid "Titre principal"
-msgstr "Main navigation"
+msgstr "Main title"
 
 #: app_member/forms.py:183
-#, fuzzy
-#| msgid "Section"
 msgid "URL d'inscription"
-msgstr "Section"
+msgstr "Sign-up URL"
 
 #: app_member/forms.py:184
 msgid "Texte d'accueil"
@@ -4213,10 +4023,8 @@ msgid "Validated with concern"
 msgstr ""
 
 #: app_song/models.py:26
-#, fuzzy
-#| msgid "Navigation principale"
 msgid "partition"
-msgstr "Main navigation"
+msgstr "Sheet music"
 
 #: app_song/models.py:27
 msgid "audio"
@@ -4231,10 +4039,8 @@ msgid "page Web"
 msgstr ""
 
 #: app_song/models.py:30
-#, fuzzy
-#| msgid "Présentation de Lyrics Slide Show"
 msgid "lien interne - Lyrics Slide Show"
-msgstr "About Lyrics Slide Show"
+msgstr "internal link - Lyrics Slide Show"
 
 #: app_song/rendering.py:39
 msgid "Couplet "
@@ -4285,7 +4091,7 @@ msgstr "☆ Not yet a favourite"
 #: app_song/templates/song/modify_bands.html:19
 #: app_song/templates/song/modify_genres.html:19
 msgid "Métadonnées"
-msgstr ""
+msgstr "Metadata"
 
 #: app_song/templates/song/includes/_song_actions.html:37
 #: app_song/templates/song/song_page_i18n.html:26
@@ -4293,7 +4099,7 @@ msgid "Signaler une correction"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_links.html:13
-#: app_song/templates/song/metadata.html:101
+#: app_song/templates/song/metadata.html:88
 msgid "Aucun lien associé."
 msgstr ""
 
@@ -4321,30 +4127,22 @@ msgstr "Songs"
 #: app_song/templates/song/modify_song.html:65
 #: app_song/templates/song/modify_song.html:68
 #: app_song/templates/song/song.html:59 app_song/templates/song/song.html:62
-#, fuzzy
-#| msgid "Afficher le lien vers le wiki"
 msgid "Afficher les actions"
-msgstr "Show the wiki link"
+msgstr "Show actions"
 
 #: app_song/templates/song/metadata.html:36
 #: app_song/templates/song/modify_song.html:66
 #: app_song/templates/song/song.html:60
-#, fuzzy
-#| msgid "Liste des animations"
 msgid "Masquer les actions"
-msgstr "Animations"
+msgstr "Hide actions"
 
 #: app_song/templates/song/metadata.html:60
 #: app_song/templates/song/modify_song.html:153
 #: app_song/templates/song/song.html:149
 msgid "Liens associés"
-msgstr ""
+msgstr "Related links"
 
-#: app_song/templates/song/metadata.html:91
-msgid "lien"
-msgstr ""
-
-#: app_song/templates/song/metadata.html:110
+#: app_song/templates/song/metadata.html:97
 msgid "Nouveau lien"
 msgstr ""
 
@@ -4358,10 +4156,8 @@ msgstr ""
 #: app_song/templates/song/modify_artists.html:21
 #: app_song/templates/song/modify_bands.html:21
 #: app_song/templates/song/modify_genres.html:21
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Retour aux chants"
-msgstr "Songs"
+msgstr "Back to songs"
 
 #: app_song/templates/song/modify_artists.html:27
 msgid "⚡ signifie que l’artiste est utilisé au moins une fois."
@@ -4414,30 +4210,24 @@ msgstr ""
 #: app_song/templates/song/modify_genres.html:12
 #: app_song/templates/song/modify_genres.html:15
 #: app_song/templates/song/modify_genres.html:25
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Gestion des genres"
-msgstr "Groups"
+msgstr "Manage genres"
 
 #: app_song/templates/song/modify_genres.html:27
 msgid "⚡ signifie que le genre est utilisé au moins une fois."
 msgstr ""
 
 #: app_song/templates/song/modify_genres.html:38
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "groupe"
-msgstr "Groups"
+msgstr "group"
 
 #: app_song/templates/song/modify_genres.html:63
 msgid "genre"
 msgstr ""
 
 #: app_song/templates/song/modify_song.html:5
-#, fuzzy
-#| msgid "Liste des groupes"
 msgid "Modifier le chant"
-msgstr "Groups"
+msgstr "Edit song"
 
 #: app_song/templates/song/modify_song.html:24
 #: app_song/templates/song/modify_song.html:75
@@ -4447,7 +4237,7 @@ msgstr ""
 #: app_song/templates/song/modify_song.html:27
 #: app_song/templates/song/modify_song.html:78
 msgid "Enregistrer et quitter"
-msgstr ""
+msgstr "Save and exit"
 
 #: app_song/templates/song/modify_song.html:29
 #: app_song/templates/song/modify_song.html:80
@@ -4455,7 +4245,7 @@ msgstr ""
 #: app_song/templates/song/song.html:23 app_song/templates/song/song.html:68
 #: app_song/templates/song/song_page_i18n.html:17
 msgid "copier le texte sans mise en forme"
-msgstr ""
+msgstr "copy plain text"
 
 #: app_song/templates/song/modify_song.html:36
 #: app_song/templates/song/modify_song.html:38
@@ -4466,7 +4256,7 @@ msgstr ""
 #: app_song/templates/song/song.html:75 app_song/templates/song/song.html:77
 #: app_song/templates/song/song_page_i18n.html:18
 msgid "un seul refrain"
-msgstr ""
+msgstr "single chorus"
 
 #: app_song/templates/song/modify_song.html:47
 #: app_song/templates/song/modify_song.html:49
@@ -4477,16 +4267,14 @@ msgstr ""
 #: app_song/templates/song/song.html:86 app_song/templates/song/song.html:88
 #: app_song/templates/song/song_page_i18n.html:19
 msgid "toutes les répétitions de refrain"
-msgstr ""
+msgstr "all chorus repetitions"
 
 #: app_song/templates/song/modify_song.html:114
 #: app_song/templates/song/modify_song_page_i18n.html:37
 #: app_song/templates/song/song.html:102
 #: app_song/templates/song/song_page_i18n.html:24
-#, fuzzy
-#| msgid "Animations"
 msgid "Demandes de modification"
-msgstr "Animations"
+msgstr "Change requests"
 
 #: app_song/templates/song/modify_song.html:117
 msgid "Voir toutes les demandes de modification"
@@ -4494,7 +4282,7 @@ msgstr ""
 
 #: app_song/templates/song/modify_song.html:124
 msgid "Modifier le titre, sous-titre, la description et la validation"
-msgstr ""
+msgstr "Edit title, subtitle, description, and validation"
 
 #: app_song/templates/song/modify_song.html:134
 #: app_song/templates/song/song.html:116
@@ -4508,38 +4296,36 @@ msgstr ""
 
 #: app_song/templates/song/modify_song.html:162
 msgid "Modification du titre et sous-titre"
-msgstr ""
+msgstr "Edit title and subtitle"
 
 #: app_song/templates/song/modify_song.html:170
 #: app_song/templates/song/songs.html:372
 msgid "Sous-titre"
-msgstr ""
+msgstr "Subtitle"
 
 #: app_song/templates/song/modify_song.html:187
 msgid "Chant validé. Ce chant ne pourra être modifié que par les modérateurs"
-msgstr ""
+msgstr "Validated song. This song can now be edited only by moderators"
 
 #: app_song/templates/song/modify_song.html:195
-#, fuzzy
-#| msgid "9. Modification de la politique de confidentialité"
 msgid "Modification de la description"
-msgstr "9. Changes to the privacy policy"
+msgstr "Edit description"
 
 #: app_song/templates/song/modify_song.html:204
 msgid "Masquer les cartes d'édition"
-msgstr ""
+msgstr "Hide editing cards"
 
 #: app_song/templates/song/modify_song.html:220
 msgid "Couplets et refrains"
-msgstr ""
+msgstr "Verses and choruses"
 
 #: app_song/templates/song/modify_song.html:224
 msgid "Réorganiser les blocs"
-msgstr ""
+msgstr "Reorder blocks"
 
 #: app_song/templates/song/modify_song.html:227
 msgid "Annuler la réorganisation"
-msgstr ""
+msgstr "Cancel reordering"
 
 #: app_song/templates/song/modify_song.html:278
 #: app_song/templates/song/modify_song.html:285
@@ -4556,27 +4342,25 @@ msgstr ""
 #: app_song/templates/song/modify_song.html:315
 #: app_song/templates/song/modify_song_page_i18n.html:29
 msgid "Suivi"
-msgstr ""
+msgstr "Followed by"
 
 #: app_song/templates/song/modify_song.html:326
 #: app_song/templates/song/modify_song_page_i18n.html:30
 msgid "Not C. num"
-msgstr ""
+msgstr "Do not continue verse numbering"
 
 #: app_song/templates/song/modify_song.html:332
 #: app_song/templates/song/modify_song_page_i18n.html:31
 msgid "Comme un refrain"
-msgstr ""
+msgstr "Like a chorus"
 
 #: app_song/templates/song/modify_song.html:368
 msgid "Aucun bloc de paroles."
 msgstr ""
 
 #: app_song/templates/song/modify_song.html:379
-#, fuzzy
-#| msgid "Liste des chants"
 msgid "Ajouter un couplet/refrain"
-msgstr "Songs"
+msgstr "Add a verse/chorus"
 
 #: app_song/templates/song/modify_song_page_i18n.html:2
 #: app_song/templates/song/song_page_i18n.html:2
@@ -5185,156 +4969,3 @@ msgstr "View my profile"
 #: templates/includes/nav.html:26
 msgid "Anglais"
 msgstr "English"
-
-#, fuzzy
-#~| msgid "Ouvrir la simulation"
-#~ msgid "ouvrir la vue smartphone"
-#~ msgstr "Open the demo"
-
-#, fuzzy
-#~| msgid "Animations"
-#~ msgid "Syndication"
-#~ msgstr "Animations"
-
-#, fuzzy
-#~| msgid "Simulation"
-#~ msgid "Duration"
-#~ msgstr "Demo"
-
-#, fuzzy
-#~| msgid "Chants"
-#~ msgid "Change"
-#~ msgstr "Songs"
-
-#, fuzzy
-#~| msgid "Non"
-#~ msgid "No"
-#~ msgstr "No"
-
-#, fuzzy
-#~| msgid "Non"
-#~ msgid "Mon"
-#~ msgstr "No"
-
-#, fuzzy
-#~| msgid "Paramètres du profil"
-#~ msgid "Paramètres administrateur"
-#~ msgstr "Profile settings"
-
-#~ msgid "Projetez. Chantez. Kiffez."
-#~ msgstr "Project. Sing. Enjoy."
-
-#~ msgid "Pourquoi c’est cool ?"
-#~ msgstr "Why you'll love it"
-
-#~ msgid "Ce que tu y gagnes"
-#~ msgstr "What you get"
-
-#~ msgid "Comment ça marche ?"
-#~ msgstr "How it works"
-
-#~ msgid ""
-#~ "« On a lancé la session en 2 minutes. Tout le monde a chanté, et on n’a "
-#~ "jamais perdu le fil. »"
-#~ msgstr ""
-#~ "“We had the session up and running in 2 minutes. Everyone joined in, and "
-#~ "we never lost momentum.”"
-
-#~ msgid ""
-#~ "<strong>Lyrics Slide Show</strong> transforme tes paroles en slides "
-#~ "claires et prêtes à projeter… en quelques secondes."
-#~ msgstr ""
-#~ "<strong>Lyrics Slide Show</strong> turns your lyrics into clean, "
-#~ "projection-ready slides in seconds."
-
-#~ msgid ""
-#~ "Parfait pour une soirée louange, une animation musicale ou un concert "
-#~ "improvisé."
-#~ msgstr "Perfect for worship nights, music sessions, or impromptu concerts."
-
-#~ msgid ""
-#~ "Tu te concentres sur la musique, pas sur la mise en page. Le texte est "
-#~ "net, lisible de loin, et tes enchaînements restent fluides."
-#~ msgstr ""
-#~ "You stay focused on the music, not the layout. The lyrics are crisp, easy "
-#~ "to read from a distance, and your flow stays smooth."
-
-#~ msgid ""
-#~ "Fini les bricolages sur PowerPoint, Google Slides ou Canva : ici tout est "
-#~ "pensé pour chanter, pas pour faire des diapos."
-#~ msgstr ""
-#~ "No more patching things together in PowerPoint, Google Slides, or Canva. "
-#~ "Everything here is built for singing, not slide design."
-
-#~ msgid "🎤 Des slides propres, sans distractions."
-#~ msgstr "🎤 Clean slides with no distractions."
-
-#~ msgid "⚡ Une prise en main immédiate."
-#~ msgstr "⚡ Instant setup."
-
-#~ msgid "🎶 Des transitions sans coupure dans l’ambiance."
-#~ msgstr "🎶 Seamless transitions that keep the atmosphere going."
-
-#~ msgid "👥 Une salle qui suit et chante avec toi."
-#~ msgstr "👥 A room that can follow along and sing with you."
-
-#~ msgid ""
-#~ "🎛️ Pilotage au clavier ou pédalier, comme un \"tourne-page\" pour "
-#~ "musiciens 👢"
-#~ msgstr ""
-#~ "🎛️ Control it from a keyboard or foot pedal, like a page-turner for "
-#~ "musicians 👢"
-
-#~ msgid "A vous !"
-#~ msgstr "Your turn"
-
-#~ msgid ""
-#~ "Prêt·e ? Ouvre une nouvelle session, colle tes paroles et fais monter la "
-#~ "vibe."
-#~ msgstr ""
-#~ "Ready? Start a new session, paste in your lyrics, and lift the room."
-
-#, fuzzy
-#~| msgid "Informations du profil"
-#~ msgid "Identité du site"
-#~ msgstr "Profile information"
-
-#, fuzzy
-#~| msgid "Copie"
-#~ msgid "Copié"
-#~ msgstr "Copy"
-
-#, fuzzy
-#~| msgid "Liste des chants"
-#~ msgid "Image du chant"
-#~ msgstr "Songs"
-
-#~ msgid "Aucun utilisateur correspondant n'a été trouvé dans users.users."
-#~ msgstr "No matching user found in users.users."
-
-#, fuzzy
-#~| msgid "Actions"
-#~ msgid "Options"
-#~ msgstr "Actions"
-
-#~ msgid ""
-#~ "Si vous avez des suggestions d'amélioration du site ou des bugs à "
-#~ "remonter, merci de le faire ici : déposer un message"
-#~ msgstr ""
-#~ "If you have ideas to improve the site or bugs to report, please send them "
-#~ "here: leave a message"
-
-#~ msgid "Connection"
-#~ msgstr "Connection"
-
-#~ msgid "Apparence"
-#~ msgstr "Appearance"
-
-#~ msgid "1. Colle tes paroles ou écris-les directement."
-#~ msgstr "1. Paste in your lyrics or type them directly."
-
-#~ msgid "2. Structure en couplets, refrains et ponts en un clin d’œil."
-#~ msgstr "2. Organize verses, choruses, and bridges in seconds."
-
-#~ msgid "3. Projette tout de suite, ajuste en live si besoin."
-#~ msgstr "3. Start projecting right away and tweak things live if needed."
