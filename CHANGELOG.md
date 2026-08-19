@@ -1,3 +1,12 @@
+## [3.0.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.1...v3.0.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* adjust song search card layout for improved grid alignment ([3a4b457](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3a4b4573ee5b782fd3c52401be2e75c899a4233d))
+* enhance search functionality with normalized text handling and wildcard support ([afa2a62](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/afa2a62c2fc5cc353d28114938ca7ca97d81d411))
+* enhance song creation and display features with new UI elements and improved accessibility ([1843584](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1843584f2bc6c4a228316a081c279ca796525bab))
+
 ## [3.0.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.0...v3.0.1) (2026-07-13)
 
 
