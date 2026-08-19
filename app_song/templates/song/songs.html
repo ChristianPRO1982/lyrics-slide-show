@@ -40,8 +40,13 @@
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
     {% endif %}
-    <hr>
-    <div class="song-tools-stats">
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
+{% block mobile_side_content %}{% endblock %}
+{% block page_kicker %}{% trans "Chants" %}{% endblock %}
+{% block page_title %}{% trans "Liste des chants" %}{% endblock %}
+{% block page_intro %}
+    <div class="song-page-stats">
         <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
         <p>
             <a class="song-inline-info-link" href="#" data-song-inline-popup data-popup-title="{% trans 'Recherche ⓘ' %}" data-popup-message="{{ song_search_count_help|escape }}">
@@ -54,18 +59,6 @@
             </a> : <strong>{{ catalog_count }}</strong>
         </p>
     </div>
-{% endblock %}
-{% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
-{% block mobile_side_content %}
-    <div class="song-mobile-summary">
-        <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
-        <p>{% trans "Recherche" %} : <strong>{{ search_count }}</strong></p>
-        <p>{% trans "Total" %} : <strong>{{ catalog_count }}</strong></p>
-    </div>
-{% endblock %}
-{% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{% trans "Liste des chants" %}{% endblock %}
-{% block page_intro %}
     {% include "song/includes/_active_search_tags.html" %}
 {% endblock %}
 {% block page_summary %}
@@ -87,6 +80,14 @@
         >
             🔎
         </button>
+        <button
+            type="button"
+            class="site-floating-action song-create-anchor"
+            title="{% trans 'Aller au nouveau chant' %}"
+            aria-label="{% trans 'Aller au nouveau chant' %}"
+        >
+            ➕
+        </button>
     </nav>
 
     <article class="site-theme-card song-search-card">
@@ -97,13 +98,25 @@
         </header>
         <form method="get" class="song-search-form" id="song-search">
             <div class="song-search-main">
-                <label for="song-q">{% trans "Recherche" %}</label>
+                <div class="song-search-card-stats" aria-label="{% trans 'Compteurs de chants' %}">
+                    <strong data-song-visible-count>{{ displayed_count }}</strong>
+                    <span>/</span>
+                    <a class="song-inline-info-link" href="#" data-song-inline-popup data-popup-title="{% trans 'Recherche ⓘ' %}" data-popup-message="{{ song_search_count_help|escape }}">
+                        <strong>{{ search_count }}</strong>
+                    </a>
+                    <span>/</span>
+                    <a class="song-inline-info-link" href="#" data-song-inline-popup data-popup-title="{% trans 'Total ⓘ' %}" data-popup-message="{{ song_catalog_count_help|escape }}">
+                        <strong>{{ catalog_count }}</strong>
+                    </a>
+                </div>
+                <label for="song-q" class="song-visually-hidden">{% trans "Recherche" %}</label>
                 <input
                     id="song-q"
                     name="text"
                     type="search"
                     value="{{ search_params.text }}"
                     placeholder="{% trans 'Titre ou sous-titre' %}"
+                    data-song-saved-search-text="{{ search_params.text|escape }}"
                     data-song-local-search
                 >
                 {% if can_use_advanced_search %}
@@ -111,6 +124,30 @@
                         <input type="checkbox" name="everywhere" value="1" {% if search_params.everywhere %}checked{% endif %}>
                         <span>{% trans "Inclure description et paroles" %}</span>
                     </label>
+                {% endif %}
+                {% if can_use_favorites %}
+                    <div class="song-mobile-quick-links">
+                        <p>
+                            <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}{% if favorites_toggle_query %}?{{ favorites_toggle_query }}{% endif %}">
+                                {% trans "💫 Afficher mes favoris" %}
+                            </a>
+                        </p>
+                        {% if can_use_moderation_quick %}
+                            <p>
+                                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ moderation_toggle_query }}">
+                                    {% trans "⚖️ Afficher les chants à modérer" %}
+                                </a>
+                            </p>
+                        {% endif %}
+                        {% if favorites_quick_active %}
+                            <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
+                            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+                        {% endif %}
+                        {% if moderation_quick_active %}
+                            <p><em>{% trans "Mode modération temporaire actif." %}</em></p>
+                            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+                        {% endif %}
+                    </div>
                 {% endif %}
                 <button type="submit" class="site-action site-action--primary">{% trans "Rechercher" %}</button>
                 <a class="song-secondary-action site-action site-action--secondary" href="{% url 'songs' %}?reset_search=1">{% trans "Réinitialiser" %}</a>
@@ -186,31 +223,6 @@
         </form>
     </article>
 
-    <article class="site-theme-card song-create-card">
-        <header class="site-theme-card-header">
-            <div>
-                <h2>{% trans "Nouveau chant" %}</h2>
-            </div>
-        </header>
-        {% if can_create_song %}
-            {{ song_identity_pairs|json_script:"song-existing-identities" }}
-            <form method="post" class="song-search-form" data-song-create-form>
-                {% csrf_token %}
-                <input type="hidden" name="action" value="create_song">
-                <div class="song-search-main">
-                    <label for="song-create-title">{% trans "Titre" %}</label>
-                    <input id="song-create-title" name="title" type="text" data-song-create-title>
-
-                    <label for="song-create-subtitle">{% trans "Sous-titre" %}</label>
-                    <input id="song-create-subtitle" name="subtitle" type="text" data-song-create-subtitle>
-
-                    <button type="submit" class="site-action site-action--primary" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
-                </div>
-            </form>
-        {% else %}
-            <p>{% trans "La création de chant est réservée aux membres authentifiés." %}</p>
-        {% endif %}
-    </article>
 {% endblock %}
 {% block content_footer %}
     <section class="song-list-section">
@@ -341,6 +353,32 @@
             {% endif %}
         </div>
     </section>
+
+    <article class="site-theme-card song-create-card" data-song-create-card>
+        <header class="site-theme-card-header">
+            <div>
+                <h2>{% trans "Nouveau chant" %}</h2>
+            </div>
+        </header>
+        {% if can_create_song %}
+            {{ song_identity_pairs|json_script:"song-existing-identities" }}
+            <form method="post" class="song-search-form" data-song-create-form>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_song">
+                <div class="song-search-main">
+                    <label for="song-create-title">{% trans "Titre" %}</label>
+                    <input id="song-create-title" name="title" type="text" data-song-create-title>
+
+                    <label for="song-create-subtitle">{% trans "Sous-titre" %}</label>
+                    <input id="song-create-subtitle" name="subtitle" type="text" data-song-create-subtitle>
+
+                    <button type="submit" class="site-action site-action--primary" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
+                </div>
+            </form>
+        {% else %}
+            <p>{% trans "La création de chant est réservée aux membres authentifiés." %}</p>
+        {% endif %}
+    </article>
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}

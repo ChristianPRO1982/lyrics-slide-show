@@ -686,9 +686,7 @@ def search_song_catalog_rows(
                 params.favorites_only,
             ],
         )
-        return tuple(
-            _build_song_catalog_search_row(row) for row in cursor.fetchall()
-        )
+        return tuple(_build_song_catalog_search_row(row) for row in cursor.fetchall())
 
 
 def search_songs(

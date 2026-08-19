@@ -171,8 +171,10 @@ Critères supportés :
 Règles supplémentaires :
 
 - tri final : `title`, `subtitle`
-- suppression des doublons : `.distinct()`
-- recherche texte accent-insensible (`unaccent + lower`)
+- recherche texte accent-insensible et insensible à la casse (`unaccent + lower`)
+- la requête texte est `trim`, compacte les espaces internes et traite les espaces saisis comme des jokers ordonnés
+- exemple : `esprit de dieu souffle` doit retrouver `Esprit de Dieu, souffle de vie`
+- le filtre local JS du champ `titre / sous-titre` suit la même normalisation et la même logique de jokers ordonnés, mais reste limité à `title + subtitle`
 
 ### Persistance de recherche membre
 

@@ -12,7 +12,27 @@
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase()
+            .replace(/\s+/g, " ")
             .trim();
+    };
+
+    const matchesSearchQuery = (haystack, query) => {
+        if (!query) {
+            return true;
+        }
+        const segments = query.split(" ").filter(Boolean);
+        if (!segments.length) {
+            return true;
+        }
+        let position = 0;
+        for (const segment of segments) {
+            const foundAt = haystack.indexOf(segment, position);
+            if (foundAt === -1) {
+                return false;
+            }
+            position = foundAt + segment.length;
+        }
+        return true;
     };
 
     const readJsonScriptString = (id) => {
@@ -43,13 +63,18 @@
         return template.replace(/0\/read-state\/?$/, `${messageId}/read-state/`);
     };
 
+    const searchCard = document.querySelector(".song-search-card");
     const searchInput = document.querySelector("[data-song-local-search]");
     const floatingSearchAnchor = document.querySelector(".song-search-anchor");
-    if (floatingSearchAnchor && searchInput instanceof HTMLElement) {
+    if (
+        floatingSearchAnchor
+        && searchCard instanceof HTMLElement
+        && searchInput instanceof HTMLElement
+    ) {
         const focusSearchInput = () => {
-            searchInput.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            searchCard.scrollIntoView({ block: "start", behavior: "smooth" });
             window.requestAnimationFrame(() => {
-                searchInput.focus();
+                searchInput.focus({ preventScroll: true });
                 if (
                     searchInput instanceof HTMLInputElement
                     || searchInput instanceof HTMLTextAreaElement
@@ -60,10 +85,50 @@
         };
         floatingSearchAnchor.addEventListener("click", focusSearchInput);
     }
+    const createSongCard = document.querySelector("[data-song-create-card]");
+    const floatingCreateAnchor = document.querySelector(".song-create-anchor");
+    if (floatingCreateAnchor && createSongCard instanceof HTMLElement) {
+        // Keep the floating button from taking focus back after its click.
+        floatingCreateAnchor.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+        });
+        floatingCreateAnchor.addEventListener("click", (event) => {
+            event.preventDefault();
+            const firstInput = document.getElementById("song-create-title");
+            if (
+                !(
+                    firstInput instanceof HTMLInputElement
+                    || firstInput instanceof HTMLTextAreaElement
+                    || firstInput instanceof HTMLSelectElement
+                )
+            ) {
+                createSongCard.scrollIntoView({ block: "start", behavior: "smooth" });
+                return;
+            }
+
+            const focusCreateTitle = () => {
+                firstInput.focus({ preventScroll: true });
+            };
+
+            // Run within the user click so browsers retain the field focus.
+            focusCreateTitle();
+            createSongCard.scrollIntoView({ block: "start", behavior: "smooth" });
+            window.requestAnimationFrame(() => {
+                // Some browsers drop focus while completing smooth scrolling.
+                if (document.activeElement !== firstInput) {
+                    focusCreateTitle();
+                }
+            });
+        });
+    }
     const songCards = Array.from(document.querySelectorAll("[data-song-card]"));
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
     const localEmptyState = document.querySelector("[data-song-local-empty]");
     if (searchInput && songCards.length) {
+        const savedSearchText = normalizeSearch(
+            searchInput.getAttribute("data-song-saved-search-text"),
+        );
+
         const updateVisibleCount = (count) => {
             visibleCountTargets.forEach((target) => {
                 target.textContent = String(count);
@@ -72,12 +137,13 @@
 
         const applyLocalSearch = () => {
             const query = normalizeSearch(searchInput.value);
-            const shouldFilter = query.length >= 3;
+            const sameAsSavedSearchText = query === savedSearchText;
+            const shouldFilter = query.length >= 3 && !sameAsSavedSearchText;
             let visibleCount = 0;
 
             songCards.forEach((card) => {
                 const haystack = normalizeSearch(card.getAttribute("data-song-search-text"));
-                const isVisible = !shouldFilter || haystack.includes(query);
+                const isVisible = !shouldFilter || matchesSearchQuery(haystack, query);
                 card.style.display = isVisible ? "" : "none";
                 if (isVisible) {
                     visibleCount += 1;
