@@ -1,3 +1,11 @@
+## [3.0.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.2...v3.0.3) (2026-08-19)
+
+
+### Bug Fixes
+
+* add floating link for smartphone view and update related styles and tests ([bfedcd4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bfedcd4f9c967682fcdc0acc0209964065c43407))
+* update lyrics handling for smartphone view with persistent font size and theme adjustments ([b4ecaaa](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b4ecaaa6461871d09e7193375744e135192f7c4a))
+
 ## [3.0.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.1...v3.0.2) (2026-08-19)
 
 
