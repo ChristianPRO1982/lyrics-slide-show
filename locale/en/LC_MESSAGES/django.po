@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-13 11:58+0200\n"
+"POT-Creation-Date: 2026-08-19 14:34+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -30,7 +30,7 @@ msgstr "Animations"
 #: app_animation/forms.py:48 app_animation/forms.py:104
 #: app_animation/forms.py:182
 #: app_animation/templates/animation/modify_animation_page_i18n.html:6
-#: app_animation/views.py:1007 app_song/templates/song/modify_song.html:149
+#: app_animation/views.py:1007 app_song/templates/song/modify_song.html:199
 #: docs/app_animation/maquette.html:56
 #, fuzzy
 #| msgid "Section"
@@ -74,7 +74,7 @@ msgid "Code d'image de fond"
 msgstr ""
 
 #: app_animation/forms.py:74 app_animation/forms.py:216
-#: app_animation/views.py:1018 app_song/views.py:942
+#: app_animation/views.py:1018 app_song/views.py:944
 #, fuzzy
 #| msgid "Ce champ est obligatoire."
 msgid "Le titre est obligatoire."
@@ -90,8 +90,8 @@ msgstr ""
 
 #: app_animation/forms.py:100 app_animation/forms.py:178
 #: app_animation/templates/animation/modify_animation_page_i18n.html:5
-#: app_animation/views.py:1006 app_song/templates/song/modify_song.html:116
-#: app_song/templates/song/songs.html:201
+#: app_animation/views.py:1006 app_song/templates/song/modify_song.html:166
+#: app_song/templates/song/songs.html:369
 msgid "Titre"
 msgstr ""
 
@@ -105,7 +105,6 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation.html:87
 #: app_animation/templates/animation/modify_animation.html:236
 #: app_animation/templates/animation/modify_animation.html:345
-#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:420
 #, fuzzy
 #| msgid "Images"
 msgid "Image"
@@ -114,9 +113,9 @@ msgstr "Images"
 #: app_animation/forms.py:110 app_animation/forms.py:187
 #: app_animation/templates/animation/background_images.html:80
 #: app_animation/templates/animation/background_images.html:132
-#: app_animation/views.py:1009 app_song/templates/song/metadata.html:126
+#: app_animation/views.py:1009 app_song/templates/song/metadata.html:128
 #: app_song/templates/song/modify_genres.html:23
-#: app_song/templates/song/songs.html:264
+#: app_song/templates/song/songs.html:276
 msgid "Genres"
 msgstr ""
 
@@ -180,8 +179,8 @@ msgstr ""
 #: app_animation/templates/animation/lyrics_slide_show.html:265
 #: app_animation/views.py:438 app_animation/views.py:1775
 #: app_animation/views.py:1787 app_song/rendering.py:38
-#: app_song/rendering.py:41 app_song/templates/song/modify_song.html:259
-#: app_song/templates/song/modify_song_page_i18n.html:14
+#: app_song/rendering.py:41 app_song/templates/song/modify_song.html:309
+#: app_song/templates/song/modify_song_page_i18n.html:24
 msgid "Refrain"
 msgstr ""
 
@@ -195,7 +194,7 @@ msgid "Couplet %(number)s"
 msgstr ""
 
 #: app_animation/services/song_edits.py:59
-#: app_song/templates/song/modify_song_page_i18n.html:13
+#: app_song/templates/song/modify_song_page_i18n.html:23
 msgid "Couplet"
 msgstr ""
 
@@ -268,8 +267,9 @@ msgstr "Animations"
 #: app_animation/templates/animation/add_animation.html:37
 #: app_animation/templates/animation/background_picker.html:56
 #: app_animation/templates/animation/modify_animation.html:73
-#: app_song/templates/song/modify_song.html:248
+#: app_song/templates/song/modify_song.html:298
 #: app_song/templates/song/modify_song_page_i18n.html:12
+#: app_song/templates/song/modify_song_page_i18n.html:22
 #: app_song/templates/song/song_page_i18n.html:23
 msgid "Texte"
 msgstr ""
@@ -312,8 +312,8 @@ msgstr "Open the demo"
 #: app_animation/templates/animation/add_animation.html:147
 #: app_animation/templates/animation/lyrics_slide_show.html:99
 #: app_animation/templates/animation/modify_animation_page_i18n.html:18
-#: app_animation/views.py:1770 app_song/templates/song/modify_song.html:287
-#: app_song/templates/song/modify_song_page_i18n.html:20 templates/base.html:99
+#: app_animation/views.py:1770 app_song/templates/song/modify_song.html:337
+#: app_song/templates/song/modify_song_page_i18n.html:30 templates/base.html:99
 msgid "OK"
 msgstr "OK"
 
@@ -391,8 +391,7 @@ msgid "Aucune image active à mettre en avant."
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:60
-#: app_song/templates/song/songs.html:62 app_song/templates/song/songs.html:95
-#: app_song/templates/song/songs.html:100
+#: app_song/templates/song/songs.html:96 app_song/templates/song/songs.html:112
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Recherche"
@@ -419,7 +418,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:68
 #: app_animation/templates/animation/background_picker.html:112
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
-#: app_song/templates/song/songs.html:116
+#: app_song/templates/song/songs.html:153
 msgid "Réinitialiser"
 msgstr ""
 
@@ -468,7 +467,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:171
 #: app_group/templates/group/groups.html:25
 #: app_song/templates/song/includes/_song_actions.html:21
-#: app_song/templates/song/songs.html:306
+#: app_song/templates/song/songs.html:318
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Modifier"
@@ -499,7 +498,7 @@ msgstr "Animations"
 #: app_animation/templates/animation/modify_background_targets.html:96
 #: app_group/templates/group/groups.html:213
 #: app_group/templates/group/modify_group.html:251
-#: app_song/templates/song/metadata.html:240
+#: app_song/templates/song/metadata.html:242
 #: app_song/templates/song/modify_artists.html:89
 #: app_song/templates/song/modify_bands.html:89
 #: app_song/templates/song/modify_genres.html:92 templates/base.html:110
@@ -509,7 +508,7 @@ msgstr "Confirmation"
 #: app_animation/templates/animation/background_images.html:200
 #: app_animation/templates/animation/lyrics_slide_show.html:102
 #: app_animation/views.py:1005 app_animation/views.py:1805
-#: app_song/templates/song/modify_song_page_i18n.html:9
+#: app_song/templates/song/modify_song_page_i18n.html:19
 #: app_song/templates/song/song_page_i18n.html:31 templates/base.html:102
 msgid "Annuler"
 msgstr "Cancel"
@@ -609,7 +608,7 @@ msgstr ""
 #: app_animation/templates/animation/modify_background_targets.html:40
 #: app_animation/templates/animation/modify_background_targets.html:80
 #: app_animation/views.py:1004 app_animation/views.py:1804
-#: app_song/templates/song/metadata.html:50
+#: app_song/templates/song/metadata.html:52
 #: app_song/templates/song/modify_artists.html:35
 #: app_song/templates/song/modify_artists.html:73
 #: app_song/templates/song/modify_bands.html:35
@@ -617,7 +616,7 @@ msgstr ""
 #: app_song/templates/song/modify_genres.html:35
 #: app_song/templates/song/modify_genres.html:76
 #: app_song/templates/song/modify_song.html:26
-#: app_song/templates/song/modify_song.html:52
+#: app_song/templates/song/modify_song.html:77
 msgid "Enregistrer"
 msgstr ""
 
@@ -649,11 +648,11 @@ msgstr "Close window"
 #: app_animation/templates/animation/lyrics_slide_show.html:100
 #: app_animation/templates/animation/modify_animation_page_i18n.html:28
 #: app_animation/templates/animation/modify_background_targets.html:97
-#: app_song/templates/song/metadata.html:241
+#: app_song/templates/song/metadata.html:243
 #: app_song/templates/song/modify_artists.html:90
 #: app_song/templates/song/modify_bands.html:90
 #: app_song/templates/song/modify_genres.html:93
-#: app_song/templates/song/modify_song_page_i18n.html:23
+#: app_song/templates/song/modify_song_page_i18n.html:33
 #: app_song/templates/song/song_page_i18n.html:4 templates/base.html:100
 msgid "Oui"
 msgstr "Yes"
@@ -661,11 +660,11 @@ msgstr "Yes"
 #: app_animation/templates/animation/lyrics_slide_show.html:101
 #: app_animation/templates/animation/modify_animation_page_i18n.html:29
 #: app_animation/templates/animation/modify_background_targets.html:98
-#: app_song/templates/song/metadata.html:242
+#: app_song/templates/song/metadata.html:244
 #: app_song/templates/song/modify_artists.html:91
 #: app_song/templates/song/modify_bands.html:91
 #: app_song/templates/song/modify_genres.html:94
-#: app_song/templates/song/modify_song_page_i18n.html:24
+#: app_song/templates/song/modify_song_page_i18n.html:34
 #: app_song/templates/song/song_page_i18n.html:5 templates/base.html:101
 msgid "Non"
 msgstr "No"
@@ -705,13 +704,13 @@ msgstr "Dialog window"
 #: app_animation/templates/animation/lyrics_slide_show.html:109
 #: app_group/templates/group/groups.html:212
 #: app_group/templates/group/modify_group.html:250
+#: app_song/templates/song/modify_song_page_i18n.html:3
 #: app_song/templates/song/song_page_i18n.html:13 templates/base.html:109
 msgid "Copie"
 msgstr "Copy"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:172
 #: templates/base.html:169
-#: venv/lib/python3.12/site-packages/django/contrib/messages/apps.py:16
 msgid "Messages"
 msgstr "Messages"
 
@@ -763,7 +762,7 @@ msgstr "Groups"
 #: app_song/templates/song/modify_song.html:12
 #: app_song/templates/song/modify_song.html:15
 #: app_song/templates/song/modify_song.html:19
-#: app_song/templates/song/modify_song.html:29
+#: app_song/templates/song/modify_song.html:53
 #: app_song/templates/song/song.html:12 app_song/templates/song/song.html:15
 #: app_song/templates/song/song.html:19 app_song/templates/song/song.html:47
 #, fuzzy
@@ -1008,8 +1007,8 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation.html:402
 #: app_animation/templates/animation/modify_animation.html:409
 #: app_animation/templates/animation/modify_animation_page_i18n.html:30
-#: app_song/templates/song/modify_song.html:192
-#: app_song/templates/song/modify_song_page_i18n.html:3
+#: app_song/templates/song/modify_song.html:242
+#: app_song/templates/song/modify_song_page_i18n.html:13
 msgid "Déplacer"
 msgstr ""
 
@@ -1018,13 +1017,13 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation_page_i18n.html:31
 #: app_animation/templates/animation/modify_background_targets.html:70
 #: app_song/templates/song/includes/_song_actions.html:30
-#: app_song/templates/song/metadata.html:93
+#: app_song/templates/song/metadata.html:95
 #: app_song/templates/song/modify_artists.html:64
 #: app_song/templates/song/modify_bands.html:64
 #: app_song/templates/song/modify_genres.html:67
-#: app_song/templates/song/modify_song.html:298
-#: app_song/templates/song/modify_song_page_i18n.html:15
-#: app_song/templates/song/songs.html:311
+#: app_song/templates/song/modify_song.html:348
+#: app_song/templates/song/modify_song_page_i18n.html:25
+#: app_song/templates/song/songs.html:323
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Supprimer"
@@ -1101,7 +1100,7 @@ msgid "déjà dans la playlist"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:39
-#: app_song/templates/song/songs.html:121
+#: app_song/templates/song/songs.html:158
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Recherche avancée"
@@ -1112,7 +1111,7 @@ msgid "Favoris"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:41
-#: app_song/templates/song/songs.html:139
+#: app_song/templates/song/songs.html:176
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Tous les chants"
@@ -1250,7 +1249,7 @@ msgid "Aucune cible disponible."
 msgstr ""
 
 #: app_animation/templates/animation/modify_background_targets.html:99
-#: app_song/templates/song/metadata.html:243
+#: app_song/templates/song/metadata.html:245
 #: app_song/templates/song/modify_artists.html:92
 #: app_song/templates/song/modify_bands.html:92
 #: app_song/templates/song/modify_genres.html:95
@@ -1306,18 +1305,18 @@ msgid "Cliquez sur un genre pour le déplacer d'une colonne à l'autre."
 msgstr ""
 
 #: app_animation/templates/animation/upload_background_image.html:89
-#: app_song/templates/song/metadata.html:132
-#: app_song/templates/song/metadata.html:167
-#: app_song/templates/song/metadata.html:202
+#: app_song/templates/song/metadata.html:134
+#: app_song/templates/song/metadata.html:169
+#: app_song/templates/song/metadata.html:204
 #, fuzzy
 #| msgid "Section"
 msgid "Sélectionnés"
 msgstr "Section"
 
 #: app_animation/templates/animation/upload_background_image.html:102
-#: app_song/templates/song/metadata.html:145
-#: app_song/templates/song/metadata.html:180
-#: app_song/templates/song/metadata.html:215
+#: app_song/templates/song/metadata.html:147
+#: app_song/templates/song/metadata.html:182
+#: app_song/templates/song/metadata.html:217
 #, fuzzy
 #| msgid "Dernière version publiée"
 msgid "Disponibles"
@@ -1481,18 +1480,18 @@ msgstr ""
 msgid "Mise à jour impossible pour la cible #%(target_id)s."
 msgstr ""
 
-#: app_animation/views.py:838 app_song/views.py:1280 app_song/views.py:1440
+#: app_animation/views.py:838 app_song/views.py:1282 app_song/views.py:1442
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_animation/views.py:840 app_song/views.py:1282 app_song/views.py:1442
+#: app_animation/views.py:840 app_song/views.py:1284 app_song/views.py:1444
 #, fuzzy, python-format
 #| msgid "%(count)s images depuis %(source)s."
 msgid "%(count)s mise(s) à jour"
 msgstr "%(count)s images from %(source)s."
 
-#: app_animation/views.py:842 app_song/views.py:1284 app_song/views.py:1444
+#: app_animation/views.py:842 app_song/views.py:1286 app_song/views.py:1446
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
@@ -1561,8 +1560,8 @@ msgstr ""
 msgid "Modifier l'image inactive"
 msgstr "Confirmation word"
 
-#: app_animation/views.py:1032 app_song/views.py:1059 app_song/views.py:1082
-#: app_song/views.py:1117
+#: app_animation/views.py:1032 app_song/views.py:1061 app_song/views.py:1084
+#: app_song/views.py:1119
 msgid "Action inconnue."
 msgstr ""
 
@@ -1736,7 +1735,7 @@ msgstr ""
 
 #: app_animation/views.py:1964 app_song/templates/song/songs.html:5
 #: app_song/templates/song/songs.html:12 app_song/templates/song/songs.html:15
-#: app_song/templates/song/songs.html:67 app_song/templates/song/songs.html:218
+#: app_song/templates/song/songs.html:47 app_song/templates/song/songs.html:230
 #: templates/includes/nav.html:9
 msgid "Liste des chants"
 msgstr "Songs"
@@ -1829,7 +1828,7 @@ msgstr ""
 #: app_group/templates/group/groups.html:31
 #: app_group/templates/group/groups.html:45
 #: app_group/templates/group/modify_group.html:55
-#: app_song/templates/song/songs.html:276
+#: app_song/templates/song/songs.html:288
 msgid "Groupes"
 msgstr ""
 
@@ -1854,7 +1853,7 @@ msgid "groupe fermé avec secret"
 msgstr ""
 
 #: app_group/templates/group/groups.html:53
-#: app_song/templates/song/songs.html:81
+#: app_song/templates/song/songs.html:74
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Recherche rapide"
@@ -1862,7 +1861,7 @@ msgstr "Groups"
 
 #: app_group/templates/group/groups.html:57
 #: app_group/templates/group/groups.html:58
-#: app_song/templates/song/songs.html:85 app_song/templates/song/songs.html:86
+#: app_song/templates/song/songs.html:78 app_song/templates/song/songs.html:79
 msgid "Aller à la recherche"
 msgstr ""
 
@@ -1923,8 +1922,8 @@ msgid "Voir la suite"
 msgstr ""
 
 #: app_group/templates/group/groups.html:143
-#: app_song/templates/song/songs.html:243
-#: app_song/templates/song/songs.html:254
+#: app_song/templates/song/songs.html:255
+#: app_song/templates/song/songs.html:266
 msgid "Réduire"
 msgstr ""
 
@@ -1987,6 +1986,7 @@ msgstr "The link has been copied."
 
 #: app_group/templates/group/groups.html:215
 #: app_group/templates/group/modify_group.html:253
+#: app_song/templates/song/modify_song_page_i18n.html:5
 #: app_song/templates/song/song_page_i18n.html:15
 msgid "La copie automatique a échoué."
 msgstr "Automatic copy failed."
@@ -2605,6 +2605,7 @@ msgid "Adresse de partage"
 msgstr ""
 
 #: app_main/templates/lyrics/lyrics.html:446
+#: app_song/templates/song/modify_song_page_i18n.html:10
 #: app_song/templates/song/song_page_i18n.html:21
 #, fuzzy
 #| msgid "Copie"
@@ -2845,7 +2846,7 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/connexion.html:301
-#: app_song/templates/song/songs.html:115
+#: app_song/templates/song/songs.html:152
 msgid "Rechercher"
 msgstr ""
 
@@ -4299,17 +4300,17 @@ msgstr "About Lyrics Slide Show"
 msgid "Couplet "
 msgstr ""
 
-#: app_song/search.py:225 app_song/templates/song/songs.html:73
-#: app_song/views.py:605 app_song/views.py:1498
+#: app_song/search.py:225 app_song/templates/song/songs.html:66
+#: app_song/views.py:605 app_song/views.py:1500
 msgid "Chant validé"
 msgstr ""
 
-#: app_song/search.py:227 app_song/templates/song/songs.html:74
-#: app_song/views.py:607 app_song/views.py:1500
+#: app_song/search.py:227 app_song/templates/song/songs.html:67
+#: app_song/views.py:607 app_song/views.py:1502
 msgid "Chant validé avec des messages"
 msgstr ""
 
-#: app_song/search.py:228 app_song/views.py:608 app_song/views.py:1502
+#: app_song/search.py:228 app_song/views.py:608 app_song/views.py:1504
 msgid "Chant non validé"
 msgstr ""
 
@@ -4330,7 +4331,7 @@ msgid "← Retour à la liste"
 msgstr "Groups"
 
 #: app_song/templates/song/includes/_song_actions.html:5
-#: app_song/templates/song/songs.html:304
+#: app_song/templates/song/songs.html:316
 msgid "Afficher"
 msgstr ""
 
@@ -4343,7 +4344,7 @@ msgid "☆ Pas encore favori"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_actions.html:24
-#: app_song/templates/song/metadata.html:47
+#: app_song/templates/song/metadata.html:49
 #: app_song/templates/song/modify_artists.html:19
 #: app_song/templates/song/modify_bands.html:19
 #: app_song/templates/song/modify_genres.html:19
@@ -4356,13 +4357,13 @@ msgid "Signaler une correction"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_links.html:13
-#: app_song/templates/song/metadata.html:99
+#: app_song/templates/song/metadata.html:101
 msgid "Aucun lien associé."
 msgstr ""
 
 #: app_song/templates/song/metadata.html:6
-#: app_song/templates/song/metadata.html:26
-#: app_song/templates/song/metadata.html:44
+#: app_song/templates/song/metadata.html:27
+#: app_song/templates/song/metadata.html:46
 #: app_song/templates/song/modify_artists.html:6
 #: app_song/templates/song/modify_artists.html:24
 #: app_song/templates/song/modify_bands.html:6
@@ -4370,55 +4371,54 @@ msgstr ""
 #: app_song/templates/song/modify_genres.html:6
 #: app_song/templates/song/modify_genres.html:24
 #: app_song/templates/song/modify_song.html:6
-#: app_song/templates/song/modify_song.html:32
-#: app_song/templates/song/modify_song.html:56
-#: app_song/templates/song/song.html:6 app_song/templates/song/song.html:50
-#: app_song/templates/song/song.html:92 app_song/templates/song/songs.html:6
-#: app_song/templates/song/songs.html:19 app_song/templates/song/songs.html:45
-#: app_song/templates/song/songs.html:58 app_song/templates/song/songs.html:61
-#: app_song/templates/song/songs.html:66
+#: app_song/templates/song/modify_song.html:57
+#: app_song/templates/song/modify_song.html:106
+#: app_song/templates/song/song.html:6 app_song/templates/song/song.html:51
+#: app_song/templates/song/song.html:94 app_song/templates/song/songs.html:6
+#: app_song/templates/song/songs.html:19 app_song/templates/song/songs.html:44
+#: app_song/templates/song/songs.html:46 app_song/templates/song/songs.html:50
 msgid "Chants"
 msgstr "Songs"
 
-#: app_song/templates/song/metadata.html:34
-#: app_song/templates/song/metadata.html:37
-#: app_song/templates/song/modify_song.html:40
-#: app_song/templates/song/modify_song.html:43
-#: app_song/templates/song/song.html:58 app_song/templates/song/song.html:61
+#: app_song/templates/song/metadata.html:35
+#: app_song/templates/song/metadata.html:38
+#: app_song/templates/song/modify_song.html:65
+#: app_song/templates/song/modify_song.html:68
+#: app_song/templates/song/song.html:59 app_song/templates/song/song.html:62
 #, fuzzy
 #| msgid "Afficher le lien vers le wiki"
 msgid "Afficher les actions"
 msgstr "Show the wiki link"
 
-#: app_song/templates/song/metadata.html:35
-#: app_song/templates/song/modify_song.html:41
-#: app_song/templates/song/song.html:59
+#: app_song/templates/song/metadata.html:36
+#: app_song/templates/song/modify_song.html:66
+#: app_song/templates/song/song.html:60
 #, fuzzy
 #| msgid "Liste des animations"
 msgid "Masquer les actions"
 msgstr "Animations"
 
-#: app_song/templates/song/metadata.html:58
-#: app_song/templates/song/modify_song.html:103
-#: app_song/templates/song/song.html:135
+#: app_song/templates/song/metadata.html:60
+#: app_song/templates/song/modify_song.html:153
+#: app_song/templates/song/song.html:149
 msgid "Liens associés"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:89
+#: app_song/templates/song/metadata.html:91
 msgid "lien"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:108
+#: app_song/templates/song/metadata.html:110
 msgid "Nouveau lien"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:161
+#: app_song/templates/song/metadata.html:163
 #: app_song/templates/song/modify_artists.html:23
-#: app_song/templates/song/songs.html:288 app_song/views.py:1086
+#: app_song/templates/song/songs.html:300 app_song/views.py:1088
 msgid "Artistes"
 msgstr ""
 
-#: app_song/templates/song/metadata.html:196
+#: app_song/templates/song/metadata.html:198
 msgid "Groupes de musique"
 msgstr ""
 
@@ -4468,7 +4468,7 @@ msgstr ""
 msgid "Gestion des groupes de musiques"
 msgstr ""
 
-#: app_song/templates/song/modify_bands.html:23 app_song/views.py:1121
+#: app_song/templates/song/modify_bands.html:23 app_song/views.py:1123
 msgid "Groupes de musiques"
 msgstr ""
 
@@ -4514,109 +4514,139 @@ msgid "Modifier le chant"
 msgstr "Groups"
 
 #: app_song/templates/song/modify_song.html:24
-#: app_song/templates/song/modify_song.html:50
+#: app_song/templates/song/modify_song.html:75
 msgid "Dévalider"
 msgstr ""
 
 #: app_song/templates/song/modify_song.html:27
-#: app_song/templates/song/modify_song.html:53
+#: app_song/templates/song/modify_song.html:78
 msgid "Enregistrer et quitter"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:64
-#: app_song/templates/song/modify_song_page_i18n.html:25
-#: app_song/templates/song/song.html:100
+#: app_song/templates/song/modify_song.html:29
+#: app_song/templates/song/modify_song.html:80
+#: app_song/templates/song/modify_song_page_i18n.html:6
+#: app_song/templates/song/song.html:23 app_song/templates/song/song.html:68
+#: app_song/templates/song/song_page_i18n.html:17
+msgid "copier le texte sans mise en forme"
+msgstr ""
+
+#: app_song/templates/song/modify_song.html:36
+#: app_song/templates/song/modify_song.html:38
+#: app_song/templates/song/modify_song.html:87
+#: app_song/templates/song/modify_song.html:89
+#: app_song/templates/song/modify_song_page_i18n.html:7
+#: app_song/templates/song/song.html:30 app_song/templates/song/song.html:32
+#: app_song/templates/song/song.html:75 app_song/templates/song/song.html:77
+#: app_song/templates/song/song_page_i18n.html:18
+msgid "un seul refrain"
+msgstr ""
+
+#: app_song/templates/song/modify_song.html:47
+#: app_song/templates/song/modify_song.html:49
+#: app_song/templates/song/modify_song.html:98
+#: app_song/templates/song/modify_song.html:100
+#: app_song/templates/song/modify_song_page_i18n.html:8
+#: app_song/templates/song/song.html:41 app_song/templates/song/song.html:43
+#: app_song/templates/song/song.html:86 app_song/templates/song/song.html:88
+#: app_song/templates/song/song_page_i18n.html:19
+msgid "toutes les répétitions de refrain"
+msgstr ""
+
+#: app_song/templates/song/modify_song.html:114
+#: app_song/templates/song/modify_song_page_i18n.html:35
+#: app_song/templates/song/song.html:102
 #: app_song/templates/song/song_page_i18n.html:24
 #, fuzzy
 #| msgid "Animations"
 msgid "Demandes de modification"
 msgstr "Animations"
 
-#: app_song/templates/song/modify_song.html:67
+#: app_song/templates/song/modify_song.html:117
 msgid "Voir toutes les demandes de modification"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:74
+#: app_song/templates/song/modify_song.html:124
 msgid "Modifier le titre, sous-titre, la description et la validation"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:84
-#: app_song/templates/song/song.html:114
+#: app_song/templates/song/modify_song.html:134
+#: app_song/templates/song/song.html:116
 msgid "Afficher la description complète"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:94
-#: app_song/templates/song/song.html:126
+#: app_song/templates/song/modify_song.html:144
+#: app_song/templates/song/song.html:140
 msgid "# Tags"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:112
+#: app_song/templates/song/modify_song.html:162
 msgid "Modification du titre et sous-titre"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:120
-#: app_song/templates/song/songs.html:204
+#: app_song/templates/song/modify_song.html:170
+#: app_song/templates/song/songs.html:372
 msgid "Sous-titre"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:137
+#: app_song/templates/song/modify_song.html:187
 msgid "Chant validé. Ce chant ne pourra être modifié que par les modérateurs"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:145
+#: app_song/templates/song/modify_song.html:195
 #, fuzzy
 #| msgid "9. Modification de la politique de confidentialité"
 msgid "Modification de la description"
 msgstr "9. Changes to the privacy policy"
 
-#: app_song/templates/song/modify_song.html:154
+#: app_song/templates/song/modify_song.html:204
 msgid "Masquer les cartes d'édition"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:170
+#: app_song/templates/song/modify_song.html:220
 msgid "Couplets et refrains"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:174
+#: app_song/templates/song/modify_song.html:224
 msgid "Réorganiser les blocs"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:177
+#: app_song/templates/song/modify_song.html:227
 msgid "Annuler la réorganisation"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:228
-#: app_song/templates/song/modify_song.html:235
-#: app_song/templates/song/modify_song_page_i18n.html:4 app_song/views.py:776
+#: app_song/templates/song/modify_song.html:278
+#: app_song/templates/song/modify_song.html:285
+#: app_song/templates/song/modify_song_page_i18n.html:14 app_song/views.py:776
 #: app_song/views.py:782
 msgid "Bloc vide"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:253
-#: app_song/templates/song/modify_song_page_i18n.html:16
+#: app_song/templates/song/modify_song.html:303
+#: app_song/templates/song/modify_song_page_i18n.html:26
 msgid "Préfixe"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:265
-#: app_song/templates/song/modify_song_page_i18n.html:17
+#: app_song/templates/song/modify_song.html:315
+#: app_song/templates/song/modify_song_page_i18n.html:27
 msgid "Suivi"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:276
-#: app_song/templates/song/modify_song_page_i18n.html:18
+#: app_song/templates/song/modify_song.html:326
+#: app_song/templates/song/modify_song_page_i18n.html:28
 msgid "Not C. num"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:282
-#: app_song/templates/song/modify_song_page_i18n.html:19
+#: app_song/templates/song/modify_song.html:332
+#: app_song/templates/song/modify_song_page_i18n.html:29
 msgid "Comme un refrain"
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:318
+#: app_song/templates/song/modify_song.html:368
 msgid "Aucun bloc de paroles."
 msgstr ""
 
-#: app_song/templates/song/modify_song.html:329
+#: app_song/templates/song/modify_song.html:379
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Ajouter un couplet/refrain"
@@ -4627,83 +4657,77 @@ msgstr "Songs"
 msgid "Description du chant"
 msgstr ""
 
-#: app_song/templates/song/modify_song_page_i18n.html:5
+#: app_song/templates/song/modify_song_page_i18n.html:4
+#: app_song/templates/song/song_page_i18n.html:14
+#, fuzzy
+#| msgid "Le lien a été copié."
+msgid "Le texte a été copié."
+msgstr "The link has been copied."
+
+#: app_song/templates/song/modify_song_page_i18n.html:9
+#: app_song/templates/song/song_page_i18n.html:20
+msgid "Texte sans mise en forme"
+msgstr ""
+
+#: app_song/templates/song/modify_song_page_i18n.html:11
+#: app_song/templates/song/song_page_i18n.html:22 templates/includes/nav.html:6
+msgid "Fermer"
+msgstr "Close"
+
+#: app_song/templates/song/modify_song_page_i18n.html:15
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Ajouter un bloc"
 msgstr "Songs"
 
-#: app_song/templates/song/modify_song_page_i18n.html:6
+#: app_song/templates/song/modify_song_page_i18n.html:16
 #, fuzzy
 #| msgid "Choisissez la langue de l’interface."
 msgid "Choisissez le type de bloc à ajouter."
 msgstr "Choose the interface language."
 
-#: app_song/templates/song/modify_song_page_i18n.html:7
+#: app_song/templates/song/modify_song_page_i18n.html:17
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Ajouter un couplet"
 msgstr "Songs"
 
-#: app_song/templates/song/modify_song_page_i18n.html:8
+#: app_song/templates/song/modify_song_page_i18n.html:18
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Ajouter un refrain"
 msgstr "Songs"
 
-#: app_song/templates/song/modify_song_page_i18n.html:10
+#: app_song/templates/song/modify_song_page_i18n.html:20
 msgid "Contenu du nouveau bloc"
 msgstr ""
 
-#: app_song/templates/song/modify_song_page_i18n.html:11
+#: app_song/templates/song/modify_song_page_i18n.html:21
 #, fuzzy
 #| msgid "Liste des chants"
 msgid "Saisissez le texte du bloc."
 msgstr "Songs"
 
-#: app_song/templates/song/modify_song_page_i18n.html:21
+#: app_song/templates/song/modify_song_page_i18n.html:31
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Supprimer le bloc"
 msgstr "Groups"
 
-#: app_song/templates/song/modify_song_page_i18n.html:22
+#: app_song/templates/song/modify_song_page_i18n.html:32
 msgid ""
 "Êtes-vous sûr de vouloir supprimer ce couplet/refrain ? Cette suppression "
 "sera enregistrée uniquement après clic sur Enregistrer."
 msgstr ""
 
-#: app_song/templates/song/modify_song_page_i18n.html:26
+#: app_song/templates/song/modify_song_page_i18n.html:36
 #: app_song/templates/song/song_page_i18n.html:25
 msgid "Impossible de mettre à jour l'état de lecture du message."
 msgstr ""
 
-#: app_song/templates/song/song.html:23 app_song/templates/song/song.html:67
-#: app_song/templates/song/song_page_i18n.html:17
-msgid "copier le texte sans mise en forme"
-msgstr ""
-
-#: app_song/templates/song/song.html:30 app_song/templates/song/song.html:32
-#: app_song/templates/song/song.html:74 app_song/templates/song/song.html:76
-#: app_song/templates/song/song_page_i18n.html:18
-msgid "un seul refrain"
-msgstr ""
-
-#: app_song/templates/song/song.html:41 app_song/templates/song/song.html:43
-#: app_song/templates/song/song.html:85 app_song/templates/song/song.html:87
-#: app_song/templates/song/song_page_i18n.html:19
-msgid "toutes les répétitions de refrain"
-msgstr ""
-
-#: app_song/templates/song/song.html:103
+#: app_song/templates/song/song.html:105
 msgid "Il y a des modifications demandées pour ce chant, voir les demandes ici"
 msgstr ""
-
-#: app_song/templates/song/song.html:119
-#, fuzzy
-#| msgid "Ouvrir la simulation"
-msgid "ouvrir la vue smartphone"
-msgstr "Open the demo"
 
 #: app_song/templates/song/song_page_i18n.html:2
 #, fuzzy
@@ -4718,8 +4742,8 @@ msgid "Supprimer ce chant ?"
 msgstr "Groups"
 
 #: app_song/templates/song/song_page_i18n.html:6
-#: app_song/templates/song/songs.html:320
-#: app_song/templates/song/songs.html:321
+#: app_song/templates/song/songs.html:332
+#: app_song/templates/song/songs.html:333
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Impression du chant"
@@ -4748,20 +4772,6 @@ msgstr ""
 #: app_song/templates/song/song_page_i18n.html:12
 msgid "🖨️💯 afficher le texte"
 msgstr ""
-
-#: app_song/templates/song/song_page_i18n.html:14
-#, fuzzy
-#| msgid "Le lien a été copié."
-msgid "Le texte a été copié."
-msgstr "The link has been copied."
-
-#: app_song/templates/song/song_page_i18n.html:20
-msgid "Texte sans mise en forme"
-msgstr ""
-
-#: app_song/templates/song/song_page_i18n.html:22 templates/includes/nav.html:6
-msgid "Fermer"
-msgstr "Close"
 
 #: app_song/templates/song/song_page_i18n.html:27
 msgid ""
@@ -4793,138 +4803,150 @@ msgstr ""
 msgid "Information"
 msgstr "Profile information"
 
-#: app_song/templates/song/songs.html:24
+#: app_song/templates/song/songs.html:24 app_song/templates/song/songs.html:132
 msgid "💫 Afficher mes favoris"
 msgstr ""
 
-#: app_song/templates/song/songs.html:30
+#: app_song/templates/song/songs.html:30 app_song/templates/song/songs.html:138
 msgid "⚖️ Afficher les chants à modérer"
 msgstr ""
 
-#: app_song/templates/song/songs.html:35
+#: app_song/templates/song/songs.html:35 app_song/templates/song/songs.html:143
 msgid "Mode favoris temporaire actif."
 msgstr ""
 
 #: app_song/templates/song/songs.html:36 app_song/templates/song/songs.html:40
+#: app_song/templates/song/songs.html:144
+#: app_song/templates/song/songs.html:148
 msgid "Revenir à ma recherche enregistrée"
 msgstr ""
 
-#: app_song/templates/song/songs.html:39
+#: app_song/templates/song/songs.html:39 app_song/templates/song/songs.html:147
 msgid "Mode modération temporaire actif."
 msgstr ""
 
-#: app_song/templates/song/songs.html:47 app_song/templates/song/songs.html:48
+#: app_song/templates/song/songs.html:52 app_song/templates/song/songs.html:53
+#: app_song/templates/song/songs.html:104
 #, fuzzy
 #| msgid "Liste des groupes"
 msgid "Recherche ⓘ"
 msgstr "Groups"
 
-#: app_song/templates/song/songs.html:52 app_song/templates/song/songs.html:53
+#: app_song/templates/song/songs.html:57 app_song/templates/song/songs.html:58
+#: app_song/templates/song/songs.html:108
 msgid "Total ⓘ"
 msgstr ""
 
-#: app_song/templates/song/songs.html:63
-msgid "Total"
-msgstr ""
-
-#: app_song/templates/song/songs.html:75 app_song/views.py:851
-#: app_song/views.py:1536
+#: app_song/templates/song/songs.html:68 app_song/views.py:851
+#: app_song/views.py:1538
 msgid "Chant sous licence"
 msgstr ""
 
-#: app_song/templates/song/songs.html:76 app_song/templates/song/songs.html:316
+#: app_song/templates/song/songs.html:69 app_song/templates/song/songs.html:328
 msgid "Smartphone view"
 msgstr ""
 
-#: app_song/templates/song/songs.html:77
+#: app_song/templates/song/songs.html:70
 msgid "Impression du chant - avec un seul refrain ou tous les refrains"
 msgstr ""
 
-#: app_song/templates/song/songs.html:106
+#: app_song/templates/song/songs.html:86 app_song/templates/song/songs.html:87
+#, fuzzy
+#| msgid "Créer un compte"
+msgid "Aller au nouveau chant"
+msgstr "Create an account"
+
+#: app_song/templates/song/songs.html:101
+#, fuzzy
+#| msgid "Liste des chants"
+msgid "Compteurs de chants"
+msgstr "Songs"
+
+#: app_song/templates/song/songs.html:118
 msgid "Titre ou sous-titre"
 msgstr ""
 
-#: app_song/templates/song/songs.html:112
+#: app_song/templates/song/songs.html:125
 msgid "Inclure description et paroles"
 msgstr ""
 
-#: app_song/templates/song/songs.html:125
-#: app_song/templates/song/songs.html:153
+#: app_song/templates/song/songs.html:162
+#: app_song/templates/song/songs.html:190
 #, fuzzy
 #| msgid "Profil et préférences"
 msgid "Références"
 msgstr "Profile and preferences"
 
-#: app_song/templates/song/songs.html:128
+#: app_song/templates/song/songs.html:165
 msgid "OU"
 msgstr ""
 
-#: app_song/templates/song/songs.html:132
+#: app_song/templates/song/songs.html:169
 msgid "ET"
 msgstr ""
 
-#: app_song/templates/song/songs.html:137
+#: app_song/templates/song/songs.html:174
 #, fuzzy
 #| msgid "Navigation principale"
 msgid "Validation"
 msgstr "Main navigation"
 
-#: app_song/templates/song/songs.html:140
+#: app_song/templates/song/songs.html:177
 msgid "Chants validés"
 msgstr ""
 
-#: app_song/templates/song/songs.html:141
+#: app_song/templates/song/songs.html:178
 msgid "Chants non validés"
 msgstr ""
 
-#: app_song/templates/song/songs.html:147
+#: app_song/templates/song/songs.html:184
 #, fuzzy
 #| msgid "debug uniquement"
 msgid "Favoris uniquement"
 msgstr "debug only"
 
-#: app_song/templates/song/songs.html:157
+#: app_song/templates/song/songs.html:194
 msgid "Trouver le genre ou le groupe ou l’artiste"
 msgstr ""
 
-#: app_song/templates/song/songs.html:180
+#: app_song/templates/song/songs.html:217
 msgid "Genre"
 msgstr ""
 
-#: app_song/templates/song/songs.html:180
+#: app_song/templates/song/songs.html:217
 msgid "Groupe"
 msgstr ""
 
-#: app_song/templates/song/songs.html:180
+#: app_song/templates/song/songs.html:217
 msgid "Artiste"
 msgstr ""
 
-#: app_song/templates/song/songs.html:192
+#: app_song/templates/song/songs.html:241
+msgid "Favori"
+msgstr ""
+
+#: app_song/templates/song/songs.html:254
+#: app_song/templates/song/songs.html:258
+msgid "[...]"
+msgstr ""
+
+#: app_song/templates/song/songs.html:345
+#: app_song/templates/song/songs.html:351
+msgid "Aucun chant ne correspond à la recherche."
+msgstr ""
+
+#: app_song/templates/song/songs.html:360
 msgid "Nouveau chant"
 msgstr ""
 
-#: app_song/templates/song/songs.html:207
+#: app_song/templates/song/songs.html:375
 #, fuzzy
 #| msgid "Créer un compte"
 msgid "Créer le nouveau chant"
 msgstr "Create an account"
 
-#: app_song/templates/song/songs.html:211
+#: app_song/templates/song/songs.html:379
 msgid "La création de chant est réservée aux membres authentifiés."
-msgstr ""
-
-#: app_song/templates/song/songs.html:229
-msgid "Favori"
-msgstr ""
-
-#: app_song/templates/song/songs.html:242
-#: app_song/templates/song/songs.html:246
-msgid "[...]"
-msgstr ""
-
-#: app_song/templates/song/songs.html:333
-#: app_song/templates/song/songs.html:339
-msgid "Aucun chant ne correspond à la recherche."
 msgstr ""
 
 #: app_song/views.py:649
@@ -4941,84 +4963,84 @@ msgstr ""
 msgid "Marquer lu"
 msgstr ""
 
-#: app_song/views.py:853 app_song/views.py:1538
+#: app_song/views.py:853 app_song/views.py:1540
 msgid "Chant hors licence"
 msgstr ""
 
-#: app_song/views.py:966
+#: app_song/views.py:968
 msgid "Impossible de créer le chant pour le moment."
 msgstr ""
 
-#: app_song/views.py:1044
+#: app_song/views.py:1046
 msgid "Nombre de chants retournés par la recherche sauvegardée"
 msgstr ""
 
-#: app_song/views.py:1046
+#: app_song/views.py:1048
 msgid "Nombre total de chants en base de données"
 msgstr ""
 
-#: app_song/views.py:1215
+#: app_song/views.py:1217
 #, python-format
 msgid "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
 msgstr ""
 
-#: app_song/views.py:1224
+#: app_song/views.py:1226
 msgid "Pour créer un genre, renseignez à la fois le groupe et le nom."
 msgstr ""
 
-#: app_song/views.py:1243
+#: app_song/views.py:1245
 #, python-format
 msgid "Suppression impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1253
+#: app_song/views.py:1255
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
 msgstr ""
 
-#: app_song/views.py:1275
+#: app_song/views.py:1277
 #, python-format
 msgid "Mise à jour impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1289
+#: app_song/views.py:1291
 #, python-format
 msgid "Genres enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1380
+#: app_song/views.py:1382
 #, python-format
 msgid "Création impossible pour %(item)s \"%(name)s\"."
 msgstr ""
 
-#: app_song/views.py:1400
+#: app_song/views.py:1402
 #, python-format
 msgid "Suppression impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1411
+#: app_song/views.py:1413
 #, python-format
 msgid "Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1432
+#: app_song/views.py:1434
 #, python-format
 msgid "Mise à jour impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1449
+#: app_song/views.py:1451
 #, python-format
 msgid "%(item)s enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1601
+#: app_song/views.py:1603
 msgid ""
 "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre "
 "devalide."
 msgstr ""
 
-#: app_song/views.py:1611
+#: app_song/views.py:1613
 msgid ""
 "Impossible de devalider ce chant tant qu'il reste des demandes de "
 "modification non lues."
@@ -5176,7 +5198,6 @@ msgid "Are you sure you want to delete this song?"
 msgstr ""
 
 #: docs/app_animation/maquette.html:369
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:499
 msgid "Delete"
 msgstr ""
 
@@ -5277,1232 +5298,35 @@ msgstr "View my profile"
 msgid "Anglais"
 msgstr "English"
 
-#: venv/lib/python3.12/site-packages/_pytest/config/argparsing.py:474
-#, python-format
-msgid "ambiguous option: %(option)s could match %(matches)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/contrib/sitemaps/apps.py:8
-msgid "Site Maps"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/contrib/staticfiles/apps.py:9
-msgid "Static Files"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/contrib/syndication/apps.py:7
 #, fuzzy
-#| msgid "Animations"
-msgid "Syndication"
-msgstr "Animations"
+#~| msgid "Ouvrir la simulation"
+#~ msgid "ouvrir la vue smartphone"
+#~ msgstr "Open the demo"
 
-#. Translators: String used to replace omitted page numbers in elided page
-#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
-#: venv/lib/python3.12/site-packages/django/core/paginator.py:30
-msgid "…"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/paginator.py:32
-msgid "That page number is not an integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/paginator.py:33
-msgid "That page number is less than 1"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/paginator.py:34
-msgid "That page contains no results"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:22
-msgid "Enter a valid value."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:70
-msgid "Enter a valid domain name."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:153
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:775
-msgid "Enter a valid URL."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:200
-msgid "Enter a valid integer."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:211
-msgid "Enter a valid email address."
-msgstr ""
-
-#. Translators: "letters" means latin letters: a-z and A-Z.
-#: venv/lib/python3.12/site-packages/django/core/validators.py:289
-msgid ""
-"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:297
-msgid ""
-"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
-"hyphens."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:309
-#: venv/lib/python3.12/site-packages/django/core/validators.py:318
-#: venv/lib/python3.12/site-packages/django/core/validators.py:332
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2220
-#, python-format
-msgid "Enter a valid %(protocol)s address."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:311
-msgid "IPv4"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:320
-#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:43
-msgid "IPv6"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:334
-msgid "IPv4 or IPv6"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:375
-msgid "Enter only digits separated by commas."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:381
-#, python-format
-msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:416
-#, python-format
-msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:425
-#, python-format
-msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:434
-#, python-format
-msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:441
-#, python-format
-msgid ""
-"Ensure this value is a multiple of step size %(limit_value)s, starting from "
-"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:473
-#, python-format
-msgid ""
-"Ensure this value has at least %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at least %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:491
-#, python-format
-msgid ""
-"Ensure this value has at most %(limit_value)d character (it has "
-"%(show_value)d)."
-msgid_plural ""
-"Ensure this value has at most %(limit_value)d characters (it has "
-"%(show_value)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:514
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:366
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:405
-msgid "Enter a number."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:516
-#, python-format
-msgid "Ensure that there are no more than %(max)s digit in total."
-msgid_plural "Ensure that there are no more than %(max)s digits in total."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:521
-#, python-format
-msgid "Ensure that there are no more than %(max)s decimal place."
-msgid_plural "Ensure that there are no more than %(max)s decimal places."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:526
-#, python-format
-msgid ""
-"Ensure that there are no more than %(max)s digit before the decimal point."
-msgid_plural ""
-"Ensure that there are no more than %(max)s digits before the decimal point."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:597
-#, python-format
-msgid ""
-"File extension “%(extension)s” is not allowed. Allowed extensions are: "
-"%(allowed_extensions)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/core/validators.py:659
-msgid "Null characters are not allowed."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/base.py:1600
-#: venv/lib/python3.12/site-packages/django/forms/models.py:908
-msgid "and"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/base.py:1602
-#, python-format
-msgid "%(model_name)s with this %(field_labels)s already exists."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/constraints.py:22
-#, python-format
-msgid "Constraint “%(name)s” is violated."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:134
-#, python-format
-msgid "Value %(value)r is not a valid choice."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:135
-msgid "This field cannot be null."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:136
-msgid "This field cannot be blank."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:137
-#, python-format
-msgid "%(model_name)s with this %(field_label)s already exists."
-msgstr ""
-
-#. Translators: The 'lookup_type' is one of 'date', 'year' or
-#. 'month'. Eg: "Title must be unique for pub_date year"
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:141
-#, python-format
-msgid ""
-"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:180
-#, python-format
-msgid "Field of type: %(field_type)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1162
-#, python-format
-msgid "“%(value)s” value must be either True or False."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1163
-#, python-format
-msgid "“%(value)s” value must be either True, False, or None."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1165
-msgid "Boolean (Either True or False)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1215
-#, python-format
-msgid "String (up to %(max_length)s)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1217
-msgid "String (unlimited)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1326
-msgid "Comma-separated integers"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1427
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
-"format."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1431
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1566
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
-"date."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1435
-msgid "Date (without time)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1562
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
-"uuuuuu]][TZ] format."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1570
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
-"[TZ]) but it is an invalid date/time."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1575
-msgid "Date (with time)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1702
-#, python-format
-msgid "“%(value)s” value must be a decimal number."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1704
-msgid "Decimal number"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1864
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in [DD] [[HH:]MM:]ss[."
-"uuuuuu] format."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1868
 #, fuzzy
-#| msgid "Simulation"
-msgid "Duration"
-msgstr "Demo"
+#~| msgid "Animations"
+#~ msgid "Syndication"
+#~ msgstr "Animations"
 
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1920
-msgid "Email address"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:1945
-msgid "File path"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2023
-#, python-format
-msgid "“%(value)s” value must be a float."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2025
-msgid "Floating point number"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2065
-#, python-format
-msgid "“%(value)s” value must be an integer."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2067
-msgid "Integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2163
-msgid "Big (8 byte) integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2180
-msgid "Small integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2188
-msgid "IPv4 address"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2219
-msgid "IP address"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2310
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2311
-#, python-format
-msgid "“%(value)s” value must be either None, True or False."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2313
-msgid "Boolean (Either True, False or None)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2364
-msgid "Positive big integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2379
-msgid "Positive integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2394
-msgid "Positive small integer"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2410
-#, python-format
-msgid "Slug (up to %(max_length)s)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2446
-msgid "Text"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2526
-#, python-format
-msgid ""
-"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
-"format."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2530
-#, python-format
-msgid ""
-"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
-"invalid time."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2534
-msgid "Time"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2642
-msgid "URL"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2666
-msgid "Raw binary data"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2731
-#, python-format
-msgid "“%(value)s” is not a valid UUID."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/__init__.py:2733
-msgid "Universally unique identifier"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/files.py:244
-msgid "File"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:24
-msgid "A JSON object"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/json.py:26
-msgid "Value must be valid JSON."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:978
-#, python-format
-msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:981
-msgid "Foreign Key (type determined by related field)"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1275
-msgid "One-to-one relationship"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1332
-#, python-format
-msgid "%(from)s-%(to)s relationship"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1334
-#, python-format
-msgid "%(from)s-%(to)s relationships"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/db/models/fields/related.py:1382
-msgid "Many-to-many relationship"
-msgstr ""
-
-#. Translators: If found as last label character, these punctuation
-#. characters will prevent the default label_suffix to be appended to the label
-#: venv/lib/python3.12/site-packages/django/forms/boundfield.py:185
-msgid ":?.!"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:95
-msgid "This field is required."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:315
-msgid "Enter a whole number."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:486
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1267
-msgid "Enter a valid date."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:509
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1268
-msgid "Enter a valid time."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:536
-msgid "Enter a valid date/time."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:570
-msgid "Enter a valid duration."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:571
-#, python-brace-format
-msgid "The number of days must be between {min_days} and {max_days}."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:640
-msgid "No file was submitted. Check the encoding type on the form."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:641
-msgid "No file was submitted."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:642
-msgid "The submitted file is empty."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:644
-#, python-format
-msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
-msgid_plural ""
-"Ensure this filename has at most %(max)d characters (it has %(length)d)."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:649
-msgid "Please either submit a file or check the clear checkbox, not both."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:717
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:889
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:975
-#: venv/lib/python3.12/site-packages/django/forms/models.py:1592
-#, python-format
-msgid "Select a valid choice. %(value)s is not one of the available choices."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:977
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1096
-#: venv/lib/python3.12/site-packages/django/forms/models.py:1590
-msgid "Enter a list of values."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1097
-msgid "Enter a complete value."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1339
-msgid "Enter a valid UUID."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/fields.py:1369
-msgid "Enter a valid JSON."
-msgstr ""
-
-#. Translators: This is the default suffix added to form field labels
-#: venv/lib/python3.12/site-packages/django/forms/forms.py:97
-msgid ":"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/forms.py:239
-#, python-format
-msgid "(Hidden field %(name)s) %(error)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:61
-#, python-format
-msgid ""
-"ManagementForm data is missing or has been tampered with. Missing fields: "
-"%(field_names)s. You may need to file a bug report if the issue persists."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:65
-#, python-format
-msgid "Please submit at most %(num)d form."
-msgid_plural "Please submit at most %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:70
-#, python-format
-msgid "Please submit at least %(num)d form."
-msgid_plural "Please submit at least %(num)d forms."
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:484
-#: venv/lib/python3.12/site-packages/django/forms/formsets.py:491
-msgid "Order"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:901
-#, python-format
-msgid "Please correct the duplicate data for %(field)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:906
-#, python-format
-msgid "Please correct the duplicate data for %(field)s, which must be unique."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:913
-#, python-format
-msgid ""
-"Please correct the duplicate data for %(field_name)s which must be unique "
-"for the %(lookup)s in %(date_field)s."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:922
-msgid "Please correct the duplicate values below."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:1359
-msgid "The inline value did not match the parent instance."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:1450
-msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/models.py:1594
-#, python-format
-msgid "“%(pk)s” is not a valid value."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/utils.py:229
-#, python-format
-msgid ""
-"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
-"may be ambiguous or it may not exist."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:527
-msgid "Clear"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:528
-msgid "Currently"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:529
 #, fuzzy
-#| msgid "Chants"
-msgid "Change"
-msgstr "Songs"
+#~| msgid "Simulation"
+#~ msgid "Duration"
+#~ msgstr "Demo"
 
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:866
-msgid "Unknown"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:867
-msgid "Yes"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/forms/widgets.py:868
 #, fuzzy
-#| msgid "Non"
-msgid "No"
-msgstr "No"
+#~| msgid "Chants"
+#~ msgid "Change"
+#~ msgstr "Songs"
 
-#. Translators: Please do not add spaces around commas.
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:873
-msgid "yes,no,maybe"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:903
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:920
-#, python-format
-msgid "%(size)d byte"
-msgid_plural "%(size)d bytes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:922
-#, python-format
-msgid "%s KB"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:924
-#, python-format
-msgid "%s MB"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:926
-#, python-format
-msgid "%s GB"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:928
-#, python-format
-msgid "%s TB"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/template/defaultfilters.py:930
-#, python-format
-msgid "%s PB"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:74
-msgid "p.m."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:75
-msgid "a.m."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:80
-msgid "PM"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:81
-msgid "AM"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:153
-msgid "midnight"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dateformat.py:155
-msgid "noon"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:7
-msgid "Monday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:8
-msgid "Tuesday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:9
-msgid "Wednesday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:10
-msgid "Thursday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:11
-msgid "Friday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:12
-msgid "Saturday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:13
-msgid "Sunday"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:16
 #, fuzzy
-#| msgid "Non"
-msgid "Mon"
-msgstr "No"
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:17
-msgid "Tue"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:18
-msgid "Wed"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:19
-msgid "Thu"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:20
-msgid "Fri"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:21
-msgid "Sat"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:22
-msgid "Sun"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:25
-msgid "January"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:26
-msgid "February"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:27
-msgid "March"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:28
-msgid "April"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:29
-msgid "May"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:30
-msgid "June"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:31
-msgid "July"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:32
-msgid "August"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:33
-msgid "September"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:34
-msgid "October"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:35
-msgid "November"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:36
-msgid "December"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:39
-msgid "jan"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:40
-msgid "feb"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:41
-msgid "mar"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:42
-msgid "apr"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:43
-msgid "may"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:44
-msgid "jun"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:45
-msgid "jul"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:46
-msgid "aug"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:47
-msgid "sep"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:48
-msgid "oct"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:49
-msgid "nov"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:50
-msgid "dec"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:53
-msgctxt "abbrev. month"
-msgid "Jan."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:54
-msgctxt "abbrev. month"
-msgid "Feb."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:55
-msgctxt "abbrev. month"
-msgid "March"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:56
-msgctxt "abbrev. month"
-msgid "April"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:57
-msgctxt "abbrev. month"
-msgid "May"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:58
-msgctxt "abbrev. month"
-msgid "June"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:59
-msgctxt "abbrev. month"
-msgid "July"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:60
-msgctxt "abbrev. month"
-msgid "Aug."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:61
-msgctxt "abbrev. month"
-msgid "Sept."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:62
-msgctxt "abbrev. month"
-msgid "Oct."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:63
-msgctxt "abbrev. month"
-msgid "Nov."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:64
-msgctxt "abbrev. month"
-msgid "Dec."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:67
-msgctxt "alt. month"
-msgid "January"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:68
-msgctxt "alt. month"
-msgid "February"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:69
-msgctxt "alt. month"
-msgid "March"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:70
-msgctxt "alt. month"
-msgid "April"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:71
-msgctxt "alt. month"
-msgid "May"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:72
-msgctxt "alt. month"
-msgid "June"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:73
-msgctxt "alt. month"
-msgid "July"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:74
-msgctxt "alt. month"
-msgid "August"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:75
-msgctxt "alt. month"
-msgid "September"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:76
-msgctxt "alt. month"
-msgid "October"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:77
-msgctxt "alt. month"
-msgid "November"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/dates.py:78
-msgctxt "alt. month"
-msgid "December"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/ipv6.py:20
-msgid "This is not a valid IPv6 address."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/text.py:67
-#, python-format
-msgctxt "String to return when truncating text"
-msgid "%(truncated_text)s…"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/text.py:278
-msgid "or"
-msgstr ""
-
-#. Translators: This string is used as a separator between list elements
-#: venv/lib/python3.12/site-packages/django/utils/text.py:297
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:135
-msgid ", "
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:8
-#, python-format
-msgid "%(num)d year"
-msgid_plural "%(num)d years"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:9
-#, python-format
-msgid "%(num)d month"
-msgid_plural "%(num)d months"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:10
-#, python-format
-msgid "%(num)d week"
-msgid_plural "%(num)d weeks"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:11
-#, python-format
-msgid "%(num)d day"
-msgid_plural "%(num)d days"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:12
-#, python-format
-msgid "%(num)d hour"
-msgid_plural "%(num)d hours"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/utils/timesince.py:13
-#, python-format
-msgid "%(num)d minute"
-msgid_plural "%(num)d minutes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:29
-msgid "Forbidden"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:30
-msgid "CSRF verification failed. Request aborted."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:34
-msgid ""
-"You are seeing this message because this HTTPS site requires a “Referer "
-"header” to be sent by your web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:40
-msgid ""
-"If you have configured your browser to disable “Referer” headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for “same-"
-"origin” requests."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:45
-msgid ""
-"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
-"including the “Referrer-Policy: no-referrer” header, please remove them. The "
-"CSRF protection requires the “Referer” header to do strict referer checking. "
-"If you’re concerned about privacy, use alternatives like <a "
-"rel=\"noreferrer\" …> for links to third-party sites."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:54
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:60
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for “same-origin” requests."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/csrf.py:66
-msgid "More information is available with DEBUG=True."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:44
-msgid "No year specified"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:64
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:115
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:214
-msgid "Date out of range"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:94
-msgid "No month specified"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:147
-msgid "No day specified"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:194
-msgid "No week specified"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:353
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:384
-#, python-format
-msgid "No %(verbose_name_plural)s available"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:680
-#, python-format
-msgid ""
-"Future %(verbose_name_plural)s not available because %(class_name)s."
-"allow_future is False."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/dates.py:720
-#, python-format
-msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/detail.py:56
-#, python-format
-msgid "No %(verbose_name)s found matching the query"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/list.py:70
-msgid "Page is not “last”, nor can it be converted to an int."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/list.py:77
-#, python-format
-msgid "Invalid page (%(page_number)s): %(message)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/generic/list.py:173
-#, python-format
-msgid "Empty list and “%(class_name)s.allow_empty” is False."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/static.py:49
-msgid "Directory indexes are not allowed here."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/static.py:51
-#, python-format
-msgid "“%(path)s” does not exist"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/static.py:68
-#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:8
-#: venv/lib/python3.12/site-packages/django/views/templates/directory_index.html:11
-#, python-format
-msgid "Index of %(directory)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:7
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:204
-msgid "The install worked successfully! Congratulations!"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:206
-#, python-format
-msgid ""
-"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
-"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:208
-#, python-format
-msgid ""
-"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
-"%(version)s/ref/settings/#debug\" target=\"_blank\" "
-"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
-"configured any URLs."
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:217
-msgid "Django Documentation"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:218
-msgid "Topics, references, &amp; how-to’s"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:226
-msgid "Tutorial: A Polling App"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:227
-msgid "Get started with Django"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:235
-msgid "Django Community"
-msgstr ""
-
-#: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
-msgid "Connect, get help, or contribute"
-msgstr ""
+#~| msgid "Non"
+#~ msgid "No"
+#~ msgstr "No"
+
+#, fuzzy
+#~| msgid "Non"
+#~ msgid "Mon"
+#~ msgstr "No"
 
 #, fuzzy
 #~| msgid "Paramètres du profil"

@@ -1414,6 +1414,37 @@ class SongViewsRenderingTests(TestCase):
             html=False,
         )
 
+    def test_modify_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
+        self._login()
+        self.song.status = SongStatus.NOT_VALIDATED
+        self.song.save(update_fields=["status"])
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "<p>copier le texte sans mise en forme</p>",
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-plain-copy-trigger",
+            count=4,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "single-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "full-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+
     def test_song_view_hides_numeric_prefix_from_genre_group_heading(self):
         genre_id = self._insert_genre("1 - Scoutisme", "Louange")
         SongGenre.objects.create(song=self.song, genre_id=genre_id)

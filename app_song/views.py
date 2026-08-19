@@ -867,6 +867,8 @@ def _build_modify_song_context(
             include_actions=True,
         ),
         "display_url": reverse("song", args=[song.song_id]),
+        "popup_single_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain&layout=popup-copy",
+        "popup_full_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain&layout=popup-copy",
         "verse_max_lines": verse_max_lines,
         "verse_max_characters_for_line": verse_max_characters_for_line,
         "song_blocks": [
