@@ -1530,6 +1530,34 @@ class SongViewsRenderingTests(TestCase):
             'data-copy-success-label="👍"',
             html=False,
         )
+        self.assertContains(response, "data-lyrics-theme-toggle", html=False)
+        self.assertContains(
+            response,
+            'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
+            html=False,
+        )
+        self.assertContains(response, 'theme: "auto"', html=False)
+        self.assertContains(
+            response,
+            "window.localStorage.getItem(fontSizeStorageKey)",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "window.localStorage.setItem(",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(response, "parsed.theme ===", html=False)
+        self.assertNotContains(
+            response,
+            "state.theme = parsed.theme",
+            html=False,
+        )
         self.assertNotContains(response, "Lecture smartphone", html=False)
         self.assertNotContains(response, "Adresse de partage</p>", html=False)
         self.assertNotContains(response, "Chant courant", html=False)
