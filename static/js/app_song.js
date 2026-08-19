@@ -6,6 +6,14 @@
     if (floatingSearch && document.body && floatingSearch.parentElement !== document.body) {
         document.body.appendChild(floatingSearch);
     }
+    const floatingSmartphone = document.querySelector("[data-song-smartphone-floating]");
+    if (
+        floatingSmartphone
+        && document.body
+        && floatingSmartphone.parentElement !== document.body
+    ) {
+        document.body.appendChild(floatingSmartphone);
+    }
 
     const normalizeSearch = (value) => {
         return String(value || "")

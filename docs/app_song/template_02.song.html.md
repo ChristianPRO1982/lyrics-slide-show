@@ -10,6 +10,7 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
   - `✔️` pour `status=1`
   - `✔️⁉️` pour `status=2`
 - Affiche le résumé de description.
+- Ajoute un accès flottant en haut à droite vers la vue smartphone du chant.
 - Affiche les cartes de métadonnées (`_song_metadata.html`) et liens (`_song_links.html`).
 - Le bloc métadonnées visible porte le libellé `# Tags`.
 - Affiche chaque lien avec son type visible en clair, à côté de l’URL.
@@ -30,6 +31,7 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
 - Ce lien ouvre une popup affichant uniquement les messages non lus, du plus récent au plus ancien.
 - Si le chant est en `status=0`, les messages non lus éventuels sont considérés comme invisibles et ce lien n’apparaît pas.
 - Ajoute deux actions dédiées de copie texte brut (`un seul refrain`, `toutes les répétitions de refrain`) dans le panneau d’actions et le panneau mobile.
+- L’accès flottant smartphone utilise l’emoji `📱` et le libellé invariant `Smartphone view` dans toutes les langues.
 - Ouvre une popup avec `textarea` readonly, croix de fermeture, et boutons `Copier` / `Fermer` pour le texte brut récupéré depuis les URLs plain text.
 - Gère les interactions UI associées (toggle description, actions mobile, etc.).
 
