@@ -1012,9 +1012,7 @@ def background_images(request: HttpRequest) -> HttpResponse:
                     "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
                 ),
                 "saveFailedMessage": _("Impossible d'enregistrer les modifications."),
-                "targetRequiredMessage": _(
-                    "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
-                ),
+                "targetRequiredMessage": _("Sélectionnez une cible."),
                 "titleRequiredMessage": _("Le titre est obligatoire."),
             },
         },

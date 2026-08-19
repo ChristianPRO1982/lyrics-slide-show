@@ -375,13 +375,13 @@
                 };
 
                 window.LSSMessageBox.show({
-                    title: String(i18n.editTitle || "Modifier l'image inactive"),
+                    title: String(i18n.editTitle || ""),
                     size: "wide",
                     showCloseButton: false,
                     buttons: [
                         {
                             id: "save",
-                            label: String(i18n.saveLabel || "Enregistrer"),
+                            label: String(i18n.saveLabel || ""),
                             tone: "success",
                             async onClick(context) {
                                 const titleValue = String(state.titleInput?.value || "").trim();
@@ -400,14 +400,14 @@
                                 if (!titleValue) {
                                     renderFieldError(
                                         state.titleError,
-                                        String(i18n.titleRequiredMessage || "Le titre est obligatoire.")
+                                        String(i18n.titleRequiredMessage || "")
                                     );
                                     hasErrors = true;
                                 }
                                 if (!targetValue) {
                                     renderFieldError(
                                         state.targetError,
-                                        String(i18n.targetRequiredMessage || "Sélectionnez une cible.")
+                                        String(i18n.targetRequiredMessage || "")
                                     );
                                     hasErrors = true;
                                 }
@@ -447,7 +447,7 @@
                                     renderFieldError(state.genresError, Array.isArray(fieldErrors.genre_ids) ? fieldErrors.genre_ids[0] : "");
                                     renderFieldError(
                                         state.generalError,
-                                        String(payload.message || i18n.saveFailedMessage || "Impossible d'enregistrer les modifications.")
+                                        String(payload.message || i18n.saveFailedMessage || "")
                                     );
                                     context.keepOpen();
                                     return false;
@@ -460,7 +460,7 @@
                         },
                         {
                             id: "cancel",
-                            label: String(i18n.cancelLabel || "Annuler"),
+                            label: String(i18n.cancelLabel || ""),
                             tone: "neutral",
                         },
                     ],
@@ -504,20 +504,20 @@
                     titleInput.maxLength = 255;
                     titleInput.className = "animation-background-edit-input";
                     state.titleInput = titleInput;
-                    state.titleError = createField(String(i18n.titleLabel || "Titre"), titleInput);
+                    state.titleError = createField(String(i18n.titleLabel || ""), titleInput);
 
                     const descriptionInput = document.createElement("textarea");
                     descriptionInput.rows = 4;
                     descriptionInput.value = currentDescription;
                     descriptionInput.className = "animation-background-edit-textarea";
                     state.descriptionInput = descriptionInput;
-                    createField(String(i18n.descriptionLabel || "Description"), descriptionInput);
+                    createField(String(i18n.descriptionLabel || ""), descriptionInput);
 
                     const targetWrapper = document.createElement("label");
                     targetWrapper.className = "animation-background-edit-field";
                     const targetLabel = document.createElement("span");
                     targetLabel.className = "animation-background-edit-label";
-                    targetLabel.textContent = String(i18n.targetLabel || "Cible");
+                    targetLabel.textContent = String(i18n.targetLabel || "");
                     const targetSelect = document.createElement("select");
                     targetSelect.className = "animation-background-edit-select";
                     const blankOption = document.createElement("option");
@@ -538,9 +538,7 @@
                     const targetHelp = document.createElement("p");
                     targetHelp.className = "animation-background-edit-help";
                     targetHelp.hidden = targetExists || !currentTarget;
-                    targetHelp.textContent = String(
-                        i18n.currentTargetMissing || "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
-                    );
+                    targetHelp.textContent = String(i18n.currentTargetMissing || "");
                     const targetError = document.createElement("p");
                     targetError.className = "animation-background-edit-error";
                     targetError.hidden = true;
@@ -555,13 +553,11 @@
                     genresWrapper.className = "animation-background-edit-field";
                     const genresLabel = document.createElement("span");
                     genresLabel.className = "animation-background-edit-label";
-                    genresLabel.textContent = String(i18n.genresLabel || "Genres");
+                    genresLabel.textContent = String(i18n.genresLabel || "");
                     const genresFilterInput = document.createElement("input");
                     genresFilterInput.type = "search";
                     genresFilterInput.className = "animation-background-edit-input";
-                    genresFilterInput.placeholder = String(
-                        i18n.genresFilterPlaceholder || "Trouver un genre"
-                    );
+                    genresFilterInput.placeholder = String(i18n.genresFilterPlaceholder || "");
                     const genresList = document.createElement("div");
                     genresList.className = "animation-background-edit-genres";
                     state.genreRows = genreOptions.map((option) => {

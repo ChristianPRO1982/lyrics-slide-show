@@ -390,7 +390,7 @@ def auth_callback(request: HttpRequest) -> HttpResponse:
         elif settings.AUTH_MODE == "keycloak":
             payload = validate_keycloak_callback(request.GET, request.session)
         else:
-            raise KeycloakAuthError("Unsupported authentication mode.")
+            raise KeycloakAuthError(_("Unsupported authentication mode."))
         user = get_directory_user(payload["external_id"])
     except InvalidCallbackError as exc:
         logger.warning("login_refused reason=invalid_callback detail=%s", exc)

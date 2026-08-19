@@ -192,15 +192,15 @@
                 <article class="site-theme-card">
                     <header class="site-theme-card-header">
                         <div>
-                            <h2>Gestiond es métadonnées</h2>
+                            <h2>{% trans "Gestion des métadonnées" %}</h2>
                         </div>
                     </header>
-                    <p><a href="{% url 'modify_genres' %}">Genres</a></p>
-                    <p><a href="{% url 'modify_artists' %}">Artistes</a></p>
-                    <p><a href="{% url 'modify_bands' %}">Groupes de musiques</a></p>
-                    <p><a href="{% url 'modify_background_targets' %}">Cibles</a></p>
+                    <p><a href="{% url 'modify_genres' %}">{% trans "Genres" %}</a></p>
+                    <p><a href="{% url 'modify_artists' %}">{% trans "Artistes" %}</a></p>
+                    <p><a href="{% url 'modify_bands' %}">{% trans "Groupes de musique" %}</a></p>
+                    <p><a href="{% url 'modify_background_targets' %}">{% trans "Cibles" %}</a></p>
                     {% if is_admin %}
-                        <p><a href="{% url 'site_params' %}">Paramètres du site</a></p>
+                        <p><a href="{% url 'site_params' %}">{% trans "Paramètres du site" %}</a></p>
                     {% endif %}
                 </article>
             {% endif %}
