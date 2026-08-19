@@ -1365,6 +1365,15 @@ class SongViewsRenderingTests(TestCase):
         )
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
+    def test_song_view_renders_single_chorus_mode(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["text_long_html"], response.context["text_short_html"]
+        )
+
     def test_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
         self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
