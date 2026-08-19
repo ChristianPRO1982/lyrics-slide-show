@@ -46,47 +46,49 @@
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
 {% block mobile_side_content %}
-    <div class="song-mobile-summary">
-        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
-    </div>
-    <p>
-        <button
-            type="button"
-            class="song-tool-button site-action site-action--primary"
-            data-song-mobile-actions-toggle
-            aria-expanded="false"
-            data-open-label="{% trans 'Afficher les actions' %}"
-            data-close-label="{% trans 'Masquer les actions' %}"
-        >
-            {% trans "Afficher les actions" %}
-        </button>
-    </p>
-    <div data-song-mobile-actions hidden>
-        {% include "song/includes/_song_actions.html" %}
-        <hr>
-        <p>{% trans "copier le texte sans mise en forme" %}</p>
+    <div class="song-mobile-actions-panel">
+        <div class="song-mobile-summary">
+            <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
+        </div>
         <p>
             <button
                 type="button"
                 class="song-tool-button site-action site-action--primary"
-                data-song-plain-copy-trigger
-                data-plain-url="{{ popup_single_plain_url }}"
-                data-popup-label="{% trans 'un seul refrain' %}"
+                data-song-mobile-actions-toggle
+                aria-expanded="false"
+                data-open-label="{% trans 'Afficher les actions' %}"
+                data-close-label="{% trans 'Masquer les actions' %}"
             >
-                {% trans "un seul refrain" %}
+                {% trans "Afficher les actions" %}
             </button>
         </p>
-        <p>
-            <button
-                type="button"
-                class="song-tool-button site-action site-action--primary"
-                data-song-plain-copy-trigger
-                data-plain-url="{{ popup_full_plain_url }}"
-                data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
-            >
-                {% trans "toutes les répétitions de refrain" %}
-            </button>
-        </p>
+        <div data-song-mobile-actions hidden>
+            {% include "song/includes/_song_actions.html" %}
+            <hr>
+            <p>{% trans "copier le texte sans mise en forme" %}</p>
+            <p>
+                <button
+                    type="button"
+                    class="song-tool-button site-action site-action--primary"
+                    data-song-plain-copy-trigger
+                    data-plain-url="{{ popup_single_plain_url }}"
+                    data-popup-label="{% trans 'un seul refrain' %}"
+                >
+                    {% trans "un seul refrain" %}
+                </button>
+            </p>
+            <p>
+                <button
+                    type="button"
+                    class="song-tool-button site-action site-action--primary"
+                    data-song-plain-copy-trigger
+                    data-plain-url="{{ popup_full_plain_url }}"
+                    data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
+                >
+                    {% trans "toutes les répétitions de refrain" %}
+                </button>
+            </p>
+        </div>
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
