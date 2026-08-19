@@ -686,7 +686,9 @@ class SongSearchPersistenceTests(TestCase):
         save_song_search(None, params)
         save_song_search("not-a-uuid", params)
 
-        self.assertFalse(MemberPreferences.objects.filter(member_id=self.member_id).exists())
+        self.assertFalse(
+            MemberPreferences.objects.filter(member_id=self.member_id).exists()
+        )
 
     def test_get_active_song_search_reset_saves_empty_preferences_for_member(self):
         MemberPreferences.objects.create(
@@ -762,7 +764,9 @@ class SongSearchFilteringCoverageTests(TestCase):
             f"Esprit de Dieu, souffle de vie {self.wildcard_token}"
         )
         self.punctuation_title_song_subtitle = f"Variante {uuid.uuid4().hex[:8]}"
-        self.punctuation_description_song_title = f"Description ponctuation {self.scope_token}"
+        self.punctuation_description_song_title = (
+            f"Description ponctuation {self.scope_token}"
+        )
         self.punctuation_verse_song_title = f"Couplet ponctuation {self.scope_token}"
         self.song_title = Song.objects.create(
             title=self.title_song_title,
@@ -933,7 +937,9 @@ class SongSearchFilteringCoverageTests(TestCase):
         )
         self.assertEqual(results.search_count, 3)
 
-    def test_search_songs_reference_filters_support_any_and_all_without_duplicates(self):
+    def test_search_songs_reference_filters_support_any_and_all_without_duplicates(
+        self,
+    ):
         any_results = search_songs(
             SongSearchParams(
                 text=self.scope_token,
@@ -1035,7 +1041,9 @@ class SongSearchFilteringCoverageTests(TestCase):
         self.assertEqual(results.search_count, 0)
         self.assertEqual(results.catalog_count, self.member_catalog_count)
 
-    def test_search_songs_favorites_only_without_member_id_does_not_filter_results(self):
+    def test_search_songs_favorites_only_without_member_id_does_not_filter_results(
+        self,
+    ):
         results = search_songs(
             SongSearchParams(text=self.scope_token, favorites_only=True),
             user=SimpleNamespace(is_authenticated=True),
@@ -3101,18 +3109,18 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertEqual(len(matching_cards), 1)
         self.assertEqual(len(matching_cards[0]["genres"]), 1)
         self.assertTrue(
-            matching_cards[0]["genres"][0]["label"].endswith(
-                "Chretien / KTO / Louange"
-            )
+            matching_cards[0]["genres"][0]["label"].endswith("Chretien / KTO / Louange")
         )
 
     def test_songs_page_exposes_info_popups_for_search_and_total_counts(self):
         response = self._render_songs_response()
+        rendered = response.content.decode()
 
-        self.assertContains(response, "data-song-inline-popup", count=2)
-        self.assertContains(response, 'class="song-tools-stats"', html=False)
+        self.assertContains(response, "data-song-inline-popup", count=4)
+        self.assertContains(response, 'class="song-page-stats"', html=False)
+        self.assertNotContains(response, 'class="song-tools-stats"', html=False)
         self.assertContains(
-            response, 'class="song-inline-info-link"', count=2, html=False
+            response, 'class="song-inline-info-link"', count=4, html=False
         )
         self.assertNotContains(
             response,
@@ -3122,11 +3130,13 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(
             response,
             'data-popup-title="Recherche ⓘ"',
+            count=2,
             html=False,
         )
         self.assertContains(
             response,
             'data-popup-title="Total ⓘ"',
+            count=2,
             html=False,
         )
         self.assertContains(
@@ -3142,6 +3152,33 @@ class SongGenresDisplayViewTests(TestCase):
             'data-song-saved-search-text=""',
             html=False,
         )
+        self.assertLess(
+            rendered.index("<h1>Liste des chants</h1>"),
+            rendered.index('class="song-page-stats"'),
+        )
+
+    def test_songs_page_moves_new_song_card_after_song_list_in_footer(self):
+        response = self._render_songs_response()
+        rendered = response.content.decode()
+
+        self.assertLess(
+            rendered.index('<section class="song-list-section">'),
+            rendered.index('class="site-theme-card song-create-card"'),
+        )
+        self.assertLess(
+            rendered.index('<section class="site-main-content">'),
+            rendered.index('class="site-theme-card song-search-card"'),
+        )
+        self.assertNotIn(
+            '<section class="site-main-content">\n    <article class="site-theme-card song-create-card"',
+            rendered,
+        )
+
+    def test_songs_page_duplicates_quick_links_inside_search_card_for_mobile(self):
+        response = self._render_songs_response()
+
+        self.assertContains(response, 'class="song-mobile-quick-links"', html=False)
+        self.assertContains(response, "💫 Afficher mes favoris", count=2)
 
 
 class SongLocalSearchSavedTextRenderingTests(TestCase):

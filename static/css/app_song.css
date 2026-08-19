@@ -38,25 +38,29 @@
     background: var(--site-line);
 }
 
-.site-tools-panel .song-tools-stats {
+.song-page-stats {
     display: block;
     padding: 0;
     border: 0;
     background: transparent;
     box-shadow: none;
-    text-align: center;
+    text-align: left;
 }
 
-.site-tools-panel .song-tools-stats p {
+.song-page-stats p {
     margin: 0;
     padding: 0;
 }
 
-.site-tools-panel .song-tools-stats p + p {
+.song-page-stats p + p {
     margin-top: 0.45rem;
 }
 
-.site-tools-panel .song-inline-info-link {
+.song-page-stats + .song-active-search-tags {
+    margin-top: 0.85rem;
+}
+
+.song-inline-info-link {
     display: inline;
     width: auto;
     padding: 0;
@@ -83,6 +87,8 @@
     right: 16px;
     bottom: auto;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
 }
 
 .song-search-anchor {
@@ -117,6 +123,32 @@
     font-weight: 800;
 }
 
+.song-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.song-search-card-stats {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 800;
+    color: var(--site-ink-soft);
+}
+
+.song-search-card-stats strong {
+    color: var(--site-ink);
+}
+
 .song-search-main input[type="search"],
 .song-advanced-grid select {
     min-height: 2.75rem;
@@ -129,6 +161,24 @@
     gap: 0.5rem;
     grid-column: 1 / -1;
     font-weight: 700;
+}
+
+.song-mobile-quick-links {
+    display: none;
+    grid-column: 1 / -1;
+    gap: 0.75rem;
+}
+
+.song-mobile-quick-links p {
+    margin: 0;
+}
+
+.song-mobile-quick-links .song-tool-link {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
 }
 
 .song-search-main button,
@@ -678,6 +728,10 @@
     line-height: 1.2;
 }
 
+.site-main-footer .song-list-section + .song-create-card {
+    margin-top: 1rem;
+}
+
 .song-card-actions {
     display: flex;
     justify-content: space-between;
@@ -716,7 +770,14 @@
     margin: 0;
 }
 
+@media (max-width: 980px) {
+    .song-mobile-quick-links {
+        display: grid;
+    }
+}
+
 @media (max-width: 760px) {
+
     .song-search-floating-actions {
         right: 12px;
     }
