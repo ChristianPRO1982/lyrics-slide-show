@@ -118,6 +118,10 @@
     align-items: end;
 }
 
+.site-main-content > .song-search-card {
+    grid-column: 1 / -1;
+}
+
 .song-search-main label {
     grid-column: 1 / -1;
     font-weight: 800;
