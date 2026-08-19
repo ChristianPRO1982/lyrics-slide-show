@@ -91,9 +91,20 @@
     flex-direction: column;
 }
 
+.song-smartphone-floating-actions {
+    top: 100px;
+    right: 16px;
+    bottom: auto;
+    z-index: 1000;
+}
+
 .song-search-anchor {
     text-decoration: none;
     text-decoration: none !important;
+}
+
+.song-smartphone-floating-link {
+    text-decoration: none;
 }
 
 .song-legend {
@@ -782,7 +793,8 @@
 
 @media (max-width: 760px) {
 
-    .song-search-floating-actions {
+    .song-search-floating-actions,
+    .song-smartphone-floating-actions {
         right: 12px;
     }
 

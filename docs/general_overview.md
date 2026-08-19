@@ -359,12 +359,15 @@ Spectators can access:
 Available controls are:
 
 - shareable QR code,
-- dark or light mode, defaulting to the smartphone preference,
+- dark or light mode, defaulting to the smartphone/browser preference at each page load,
 - larger text,
 - smaller text,
 - previous song,
 - next song,
 - song dropdown list.
+
+The spectator smartphone lyrics view keeps one shared text-size preference across lyrics pages.
+Its light/dark override is never persisted across reloads: each reload starts from the current browser preference.
 
 This spectator view is not synchronized with the live projected animation.
 

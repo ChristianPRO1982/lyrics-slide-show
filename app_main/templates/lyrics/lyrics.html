@@ -504,7 +504,7 @@
       const drawerBackdrop = document.querySelector("[data-lyrics-drawer-backdrop]");
       const shareInput = document.querySelector("[data-lyrics-share-url]");
       const copyButton = document.querySelector("[data-lyrics-copy-button]");
-      const stateKey = `lss-smartphone-lyrics:${window.location.pathname}`;
+      const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";
       const maxSongIndex = songs.length > 0 ? songs.length - 1 : 0;
 
       let currentIndex = 0;
@@ -518,17 +518,20 @@
 
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-      const saveState = () => {
+      const saveFontSize = () => {
         try {
-          window.localStorage.setItem(stateKey, JSON.stringify(state));
+          window.localStorage.setItem(
+            fontSizeStorageKey,
+            JSON.stringify({ fontSize: state.fontSize }),
+          );
         } catch (_error) {
           // Ignore storage failures.
         }
       };
 
-      const restoreState = () => {
+      const restoreFontSize = () => {
         try {
-          const raw = window.localStorage.getItem(stateKey);
+          const raw = window.localStorage.getItem(fontSizeStorageKey);
           if (!raw) {
             return;
           }
@@ -536,9 +539,6 @@
           if (parsed && typeof parsed === "object") {
             if (typeof parsed.fontSize === "number") {
               state.fontSize = parsed.fontSize;
-            }
-            if (parsed.theme === "light" || parsed.theme === "dark" || parsed.theme === "auto") {
-              state.theme = parsed.theme;
             }
           }
         } catch (_error) {
@@ -624,14 +624,13 @@
         const nextFontSize = Math.max(0.9, Math.min(2.8, state.fontSize + delta));
         state.fontSize = Math.round(nextFontSize * 100) / 100;
         applyFontSize();
-        saveState();
+        saveFontSize();
       };
 
       const toggleTheme = () => {
         const effectiveTheme = document.documentElement.getAttribute("data-lyrics-theme") === "dark" ? "dark" : "light";
         state.theme = effectiveTheme === "dark" ? "light" : "dark";
         applyTheme();
-        saveState();
       };
 
       const copyShareUrl = async () => {
@@ -737,7 +736,7 @@
         }
       });
 
-      restoreState();
+      restoreFontSize();
       applyTheme();
       applyFontSize();
       setActiveIndex(0);

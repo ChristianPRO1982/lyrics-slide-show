@@ -124,7 +124,13 @@ Elle possède les fonctions suivantes :
     - bouton chant suivant
     - bouton chant précédent
 
-> note : par défaut le code HTML prend le mode du navigateur (clair/sombre)
+Règles de persistance :
+
+- le thème suit toujours le mode du navigateur au chargement de page ;
+- le bouton clair/sombre reste disponible mais son override est temporaire pour la page ouverte uniquement ;
+- au reload, cet override est oublié et la page reprend le mode du navigateur ;
+- si le navigateur change de thème pendant que la page est ouverte, la page suit ce changement tant qu'aucun override manuel n'a été fait ;
+- la taille du texte est mémorisée globalement pour toutes les pages smartphone `lyrics.html`, quel que soit le chant ou l'animation.
 
 ## bouton hamburger
 

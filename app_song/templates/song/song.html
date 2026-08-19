@@ -115,11 +115,23 @@
             {% endif %}
         </p>
     {% endif %}
-    <p>
-        <a href="{{ print_full_url }}">{% trans "ouvrir la vue smartphone" %}</a>
-    </p>
 {% endblock %}
 {% block content %}
+    <nav
+        class="site-floating-actions song-smartphone-floating-actions"
+        aria-label="Smartphone view"
+        data-song-smartphone-floating
+    >
+        <a
+            class="site-floating-action song-smartphone-floating-link"
+            href="{{ print_full_url }}"
+            title="Smartphone view"
+            aria-label="Smartphone view"
+        >
+            📱
+        </a>
+    </nav>
+
     <article class="site-theme-card song-detail-card">
         <header class="site-theme-card-header">
             <div>

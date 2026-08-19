@@ -2605,6 +2605,18 @@ class AnimationViewsTests(TestCase):
             html=False,
         )
         self.assertContains(response, '<hr class="lyrics-separator">', html=False)
+        self.assertContains(
+            response,
+            'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
+            html=False,
+        )
+        self.assertContains(response, 'theme: "auto"', html=False)
+        self.assertNotContains(
+            response,
+            "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(response, "parsed.theme ===", html=False)
         self.assertNotContains(response, "Chant courant", html=False)
         self.assertNotContains(response, "data-lyrics-current-song-link", html=False)
 

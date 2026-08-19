@@ -1431,7 +1431,7 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(response, "<h2># Tags</h2>", html=False)
         self.assertNotContains(response, "<h2># tags</h2>", html=False)
 
-    def test_song_view_summary_contains_link_to_smartphone_lyrics_page(self):
+    def test_song_view_has_floating_link_to_smartphone_lyrics_page(self):
         self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
 
@@ -1443,7 +1443,24 @@ class SongViewsRenderingTests(TestCase):
             ),
             html=False,
         )
-        self.assertContains(response, "ouvrir la vue smartphone")
+        self.assertContains(response, 'aria-label="Smartphone view"', html=False)
+        self.assertContains(
+            response,
+            'class="site-floating-actions song-smartphone-floating-actions"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-smartphone-floating",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="site-floating-action song-smartphone-floating-link"',
+            html=False,
+        )
+        self.assertContains(response, "📱")
+        self.assertNotContains(response, "ouvrir la vue smartphone")
 
     def test_song_text_print_page_uses_full_title_without_tags(self):
         self.song.licensed = False
@@ -1511,6 +1528,34 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(
             response,
             'data-copy-success-label="👍"',
+            html=False,
+        )
+        self.assertContains(response, "data-lyrics-theme-toggle", html=False)
+        self.assertContains(
+            response,
+            'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
+            html=False,
+        )
+        self.assertContains(response, 'theme: "auto"', html=False)
+        self.assertContains(
+            response,
+            "window.localStorage.getItem(fontSizeStorageKey)",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "window.localStorage.setItem(",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(response, "parsed.theme ===", html=False)
+        self.assertNotContains(
+            response,
+            "state.theme = parsed.theme",
             html=False,
         )
         self.assertNotContains(response, "Lecture smartphone", html=False)
