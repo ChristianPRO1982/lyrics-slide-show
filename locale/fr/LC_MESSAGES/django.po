@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 12:12+0200\n"
+"POT-Creation-Date: 2026-08-20 12:28+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -90,7 +90,7 @@ msgstr ""
 #: app_animation/forms.py:100 app_animation/forms.py:178
 #: app_animation/templates/animation/modify_animation_page_i18n.html:5
 #: app_animation/views.py:1006 app_song/templates/song/modify_song.html:166
-#: app_song/templates/song/songs.html:369
+#: app_song/templates/song/songs.html:382
 msgid "Titre"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgstr ""
 #: app_animation/views.py:1009 app_main/templates/main/connexion.html:198
 #: app_song/templates/song/metadata.html:115
 #: app_song/templates/song/modify_genres.html:23
-#: app_song/templates/song/songs.html:276
+#: app_song/templates/song/songs.html:289
 msgid "Genres"
 msgstr ""
 
@@ -378,7 +378,8 @@ msgid "Aucune image active à mettre en avant."
 msgstr ""
 
 #: app_animation/templates/animation/background_images.html:60
-#: app_song/templates/song/songs.html:96 app_song/templates/song/songs.html:112
+#: app_song/templates/song/songs.html:109
+#: app_song/templates/song/songs.html:125
 msgid "Recherche"
 msgstr "Recherche"
 
@@ -399,7 +400,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:68
 #: app_animation/templates/animation/background_picker.html:112
 #: app_animation/templates/animation/modify_animation_page_i18n.html:20
-#: app_song/templates/song/songs.html:153
+#: app_song/templates/song/songs.html:166
 msgid "Réinitialiser"
 msgstr "Réinitialiser"
 
@@ -442,7 +443,7 @@ msgstr ""
 #: app_animation/templates/animation/background_images.html:171
 #: app_group/templates/group/groups.html:25
 #: app_song/templates/song/includes/_song_actions.html:21
-#: app_song/templates/song/songs.html:318
+#: app_song/templates/song/songs.html:331
 msgid "Modifier"
 msgstr "Modifier"
 
@@ -933,13 +934,13 @@ msgstr ""
 #: app_animation/templates/animation/modify_animation.html:413
 #: app_animation/templates/animation/modify_animation_page_i18n.html:31
 #: app_animation/templates/animation/modify_background_targets.html:70
-#: app_song/templates/song/includes/_song_actions.html:31
+#: app_song/templates/song/includes/_song_actions.html:30
 #: app_song/templates/song/modify_artists.html:64
 #: app_song/templates/song/modify_bands.html:64
 #: app_song/templates/song/modify_genres.html:67
 #: app_song/templates/song/modify_song.html:348
 #: app_song/templates/song/modify_song_page_i18n.html:27
-#: app_song/templates/song/songs.html:323
+#: app_song/templates/song/songs.html:336
 msgid "Supprimer"
 msgstr "Supprimer"
 
@@ -1004,7 +1005,7 @@ msgid "déjà dans la playlist"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:39
-#: app_song/templates/song/songs.html:158
+#: app_song/templates/song/songs.html:171
 msgid "Recherche avancée"
 msgstr "Recherche avancée"
 
@@ -1013,7 +1014,7 @@ msgid "Favoris"
 msgstr ""
 
 #: app_animation/templates/animation/modify_animation_page_i18n.html:41
-#: app_song/templates/song/songs.html:176
+#: app_song/templates/song/songs.html:189
 msgid "Tous les chants"
 msgstr "Tous les chants"
 
@@ -1581,7 +1582,7 @@ msgstr "APPUYEZ SUR F11 SUR CET ÉCRAN"
 
 #: app_animation/views.py:1962 app_song/templates/song/songs.html:5
 #: app_song/templates/song/songs.html:12 app_song/templates/song/songs.html:15
-#: app_song/templates/song/songs.html:47 app_song/templates/song/songs.html:230
+#: app_song/templates/song/songs.html:47 app_song/templates/song/songs.html:243
 #: templates/includes/nav.html:9
 msgid "Liste des chants"
 msgstr ""
@@ -1662,7 +1663,7 @@ msgstr "Pas de groupe sélectionné."
 #: app_group/templates/group/groups.html:31
 #: app_group/templates/group/groups.html:45
 #: app_group/templates/group/modify_group.html:55
-#: app_song/templates/song/songs.html:288
+#: app_song/templates/song/songs.html:301
 msgid "Groupes"
 msgstr "Groupes"
 
@@ -1687,13 +1688,13 @@ msgid "groupe fermé avec secret"
 msgstr "groupe fermé avec secret"
 
 #: app_group/templates/group/groups.html:53
-#: app_song/templates/song/songs.html:74
+#: app_song/templates/song/songs.html:87
 msgid "Recherche rapide"
 msgstr "Recherche rapide"
 
 #: app_group/templates/group/groups.html:57
 #: app_group/templates/group/groups.html:58
-#: app_song/templates/song/songs.html:78 app_song/templates/song/songs.html:79
+#: app_song/templates/song/songs.html:91 app_song/templates/song/songs.html:92
 msgid "Aller à la recherche"
 msgstr "Aller à la recherche"
 
@@ -1753,8 +1754,8 @@ msgid "Voir la suite"
 msgstr "Voir la suite"
 
 #: app_group/templates/group/groups.html:143
-#: app_song/templates/song/songs.html:255
-#: app_song/templates/song/songs.html:266
+#: app_song/templates/song/songs.html:268
+#: app_song/templates/song/songs.html:279
 msgid "Réduire"
 msgstr "Réduire"
 
@@ -2544,7 +2545,7 @@ msgstr ""
 #: app_main/templates/main/connexion.html:199
 #: app_song/templates/song/metadata.html:150
 #: app_song/templates/song/modify_artists.html:23
-#: app_song/templates/song/songs.html:300 app_song/views.py:1088
+#: app_song/templates/song/songs.html:313 app_song/views.py:1088
 msgid "Artistes"
 msgstr ""
 
@@ -2640,7 +2641,7 @@ msgid ""
 msgstr ""
 
 #: app_main/templates/main/connexion.html:301
-#: app_song/templates/song/songs.html:152
+#: app_song/templates/song/songs.html:165
 msgid "Rechercher"
 msgstr ""
 
@@ -3972,12 +3973,12 @@ msgstr ""
 msgid "Couplet "
 msgstr ""
 
-#: app_song/search.py:225 app_song/templates/song/songs.html:66
+#: app_song/search.py:225 app_song/templates/song/songs.html:78
 #: app_song/views.py:605 app_song/views.py:1500
 msgid "Chant validé"
 msgstr ""
 
-#: app_song/search.py:227 app_song/templates/song/songs.html:67
+#: app_song/search.py:227 app_song/templates/song/songs.html:79
 #: app_song/views.py:607 app_song/views.py:1502
 msgid "Chant validé avec des messages"
 msgstr ""
@@ -3999,7 +4000,7 @@ msgid "← Retour à la liste"
 msgstr ""
 
 #: app_song/templates/song/includes/_song_actions.html:5
-#: app_song/templates/song/songs.html:316
+#: app_song/templates/song/songs.html:329
 msgid "Afficher"
 msgstr ""
 
@@ -4019,7 +4020,7 @@ msgstr ""
 msgid "Métadonnées"
 msgstr ""
 
-#: app_song/templates/song/includes/_song_actions.html:39
+#: app_song/templates/song/includes/_song_actions.html:37
 #: app_song/templates/song/song_page_i18n.html:26
 msgid "Signaler une correction"
 msgstr ""
@@ -4225,7 +4226,7 @@ msgid "Modification du titre et sous-titre"
 msgstr ""
 
 #: app_song/templates/song/modify_song.html:170
-#: app_song/templates/song/songs.html:372
+#: app_song/templates/song/songs.html:385
 msgid "Sous-titre"
 msgstr ""
 
@@ -4364,14 +4365,14 @@ msgid "Il y a des modifications demandées pour ce chant, voir les demandes ici"
 msgstr ""
 
 #: app_song/templates/song/song.html:124 app_song/templates/song/song.html:130
-#: app_song/templates/song/song.html:131 app_song/templates/song/songs.html:69
-#: app_song/templates/song/songs.html:328
+#: app_song/templates/song/song.html:131 app_song/templates/song/songs.html:81
+#: app_song/templates/song/songs.html:341
 msgid "Smartphone view"
 msgstr "Smartphone view"
 
 #: app_song/templates/song/song_page_i18n.html:6
-#: app_song/templates/song/songs.html:332
-#: app_song/templates/song/songs.html:333
+#: app_song/templates/song/songs.html:345
+#: app_song/templates/song/songs.html:346
 msgid "Impression du chant"
 msgstr ""
 
@@ -4431,131 +4432,140 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: app_song/templates/song/songs.html:24 app_song/templates/song/songs.html:132
+#: app_song/templates/song/songs.html:24 app_song/templates/song/songs.html:145
 msgid "💫 Afficher mes favoris"
 msgstr ""
 
-#: app_song/templates/song/songs.html:30 app_song/templates/song/songs.html:138
+#: app_song/templates/song/songs.html:30 app_song/templates/song/songs.html:151
 msgid "⚖️ Afficher les chants à modérer"
 msgstr ""
 
-#: app_song/templates/song/songs.html:35 app_song/templates/song/songs.html:143
+#: app_song/templates/song/songs.html:35 app_song/templates/song/songs.html:156
 msgid "Mode favoris temporaire actif."
 msgstr ""
 
 #: app_song/templates/song/songs.html:36 app_song/templates/song/songs.html:40
-#: app_song/templates/song/songs.html:144
-#: app_song/templates/song/songs.html:148
+#: app_song/templates/song/songs.html:157
+#: app_song/templates/song/songs.html:161
 msgid "Revenir à ma recherche enregistrée"
 msgstr ""
 
-#: app_song/templates/song/songs.html:39 app_song/templates/song/songs.html:147
+#: app_song/templates/song/songs.html:39 app_song/templates/song/songs.html:160
 msgid "Mode modération temporaire actif."
 msgstr ""
 
 #: app_song/templates/song/songs.html:52 app_song/templates/song/songs.html:53
-#: app_song/templates/song/songs.html:104
+#: app_song/templates/song/songs.html:117
 msgid "Recherche ⓘ"
 msgstr ""
 
 #: app_song/templates/song/songs.html:57 app_song/templates/song/songs.html:58
-#: app_song/templates/song/songs.html:108
+#: app_song/templates/song/songs.html:121
 msgid "Total ⓘ"
 msgstr ""
 
-#: app_song/templates/song/songs.html:68 app_song/views.py:851
+#: app_song/templates/song/songs.html:70 app_song/templates/song/songs.html:398
+msgid "Aide ▶"
+msgstr ""
+
+#: app_song/templates/song/songs.html:71 app_song/templates/song/songs.html:75
+#: app_song/templates/song/songs.html:399
+msgid "Aide ▼"
+msgstr ""
+
+#: app_song/templates/song/songs.html:80 app_song/views.py:851
 #: app_song/views.py:1538
 msgid "Chant sous licence"
 msgstr ""
 
-#: app_song/templates/song/songs.html:70
+#: app_song/templates/song/songs.html:82
 msgid "Impression du chant - avec un seul refrain ou tous les refrains"
 msgstr ""
 
-#: app_song/templates/song/songs.html:86 app_song/templates/song/songs.html:87
+#: app_song/templates/song/songs.html:99 app_song/templates/song/songs.html:100
 msgid "Aller au nouveau chant"
 msgstr ""
 
-#: app_song/templates/song/songs.html:101
+#: app_song/templates/song/songs.html:114
 msgid "Compteurs de chants"
 msgstr ""
 
-#: app_song/templates/song/songs.html:118
+#: app_song/templates/song/songs.html:131
 msgid "Titre ou sous-titre"
 msgstr ""
 
-#: app_song/templates/song/songs.html:125
+#: app_song/templates/song/songs.html:138
 msgid "Inclure description et paroles"
 msgstr ""
 
-#: app_song/templates/song/songs.html:162
-#: app_song/templates/song/songs.html:190
+#: app_song/templates/song/songs.html:175
+#: app_song/templates/song/songs.html:203
 msgid "Références"
 msgstr ""
 
-#: app_song/templates/song/songs.html:165
+#: app_song/templates/song/songs.html:178
 msgid "OU"
 msgstr ""
 
-#: app_song/templates/song/songs.html:169
+#: app_song/templates/song/songs.html:182
 msgid "ET"
 msgstr ""
 
-#: app_song/templates/song/songs.html:174
+#: app_song/templates/song/songs.html:187
 msgid "Validation"
 msgstr ""
 
-#: app_song/templates/song/songs.html:177
+#: app_song/templates/song/songs.html:190
 msgid "Chants validés"
 msgstr ""
 
-#: app_song/templates/song/songs.html:178
+#: app_song/templates/song/songs.html:191
 msgid "Chants non validés"
 msgstr ""
 
-#: app_song/templates/song/songs.html:184
+#: app_song/templates/song/songs.html:197
 msgid "Favoris uniquement"
 msgstr ""
 
-#: app_song/templates/song/songs.html:194
+#: app_song/templates/song/songs.html:207
 msgid "Trouver le genre ou le groupe ou l’artiste"
 msgstr ""
 
-#: app_song/templates/song/songs.html:217
+#: app_song/templates/song/songs.html:230
 msgid "Genre"
 msgstr ""
 
-#: app_song/templates/song/songs.html:217
+#: app_song/templates/song/songs.html:230
 msgid "Groupe"
 msgstr ""
 
-#: app_song/templates/song/songs.html:217
+#: app_song/templates/song/songs.html:230
 msgid "Artiste"
 msgstr ""
 
-#: app_song/templates/song/songs.html:241
+#: app_song/templates/song/songs.html:254
 msgid "Favori"
 msgstr ""
 
-#: app_song/templates/song/songs.html:254
-#: app_song/templates/song/songs.html:258
+#: app_song/templates/song/songs.html:267
+#: app_song/templates/song/songs.html:271
 msgid "[...]"
 msgstr ""
 
-#: app_song/templates/song/songs.html:345
-#: app_song/templates/song/songs.html:351
+#: app_song/templates/song/songs.html:358
+#: app_song/templates/song/songs.html:364
 msgid "Aucun chant ne correspond à la recherche."
 msgstr ""
 
-#: app_song/templates/song/songs.html:360
+#: app_song/templates/song/songs.html:373
 msgid "Nouveau chant"
 msgstr ""
 
-#: app_song/templates/song/songs.html:375
+#: app_song/templates/song/songs.html:388
 msgid "Créer le nouveau chant"
 msgstr ""
 
-#: app_song/templates/song/songs.html:379
+#: app_song/templates/song/songs.html:392
 msgid "La création de chant est réservée aux membres authentifiés."
 msgstr ""
 

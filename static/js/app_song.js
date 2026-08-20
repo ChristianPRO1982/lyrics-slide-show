@@ -288,6 +288,49 @@
         });
     }
 
+    const summaryHelpToggle = document.querySelector("[data-song-summary-toggle]");
+    const summaryHelpContent = document.querySelector("[data-song-summary-content]");
+    if (summaryHelpToggle && summaryHelpContent) {
+        const summaryHelpMobileQuery = window.matchMedia("(max-width: 760px)");
+
+        const setSummaryHelpState = (expanded) => {
+            summaryHelpContent.hidden = !expanded;
+            summaryHelpToggle.setAttribute("aria-expanded", String(expanded));
+            summaryHelpToggle.textContent = expanded
+                ? String(
+                    summaryHelpToggle.getAttribute("data-close-label")
+                    || label("summaryHelpCloseLabel"),
+                )
+                : String(
+                    summaryHelpToggle.getAttribute("data-open-label")
+                    || label("summaryHelpOpenLabel"),
+                );
+        };
+
+        const applySummaryHelpMode = () => {
+            if (summaryHelpMobileQuery.matches) {
+                setSummaryHelpState(false);
+                return;
+            }
+            setSummaryHelpState(true);
+        };
+
+        summaryHelpToggle.addEventListener("click", () => {
+            if (!summaryHelpMobileQuery.matches) {
+                setSummaryHelpState(true);
+                return;
+            }
+            setSummaryHelpState(summaryHelpContent.hidden);
+        });
+
+        if (typeof summaryHelpMobileQuery.addEventListener === "function") {
+            summaryHelpMobileQuery.addEventListener("change", applySummaryHelpMode);
+        } else if (typeof summaryHelpMobileQuery.addListener === "function") {
+            summaryHelpMobileQuery.addListener(applySummaryHelpMode);
+        }
+        applySummaryHelpMode();
+    }
+
     document.querySelectorAll("[data-song-delete-form]").forEach((form) => {
         form.addEventListener("submit", async (event) => {
             if (!messageBox) {

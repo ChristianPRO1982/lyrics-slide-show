@@ -3263,6 +3263,27 @@ class SongGenresDisplayViewTests(TestCase):
         response = self._render_songs_response()
 
         self.assertContains(response, 'class="song-mobile-quick-links"', html=False)
+
+    def test_songs_page_summary_help_exposes_mobile_toggle_markup_and_labels(self):
+        response = self._render_songs_response()
+
+        self.assertContains(response, 'data-song-summary-help', html=False)
+        self.assertContains(response, 'data-song-summary-toggle', html=False)
+        self.assertContains(response, 'data-song-summary-content', html=False)
+        self.assertContains(
+            response,
+            'data-open-label="Aide ▶"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-close-label="Aide ▼"',
+            html=False,
+        )
+        self.assertContains(response, "Aide ▶")
+        self.assertContains(response, "Aide ▼")
+        self.assertContains(response, 'aria-controls="song-summary-help-content"', html=False)
+        self.assertContains(response, 'aria-expanded="true"', html=False)
         self.assertContains(response, "💫 Afficher mes favoris", count=2)
 
 
