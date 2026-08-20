@@ -1,3 +1,15 @@
+## [3.0.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.3...v3.0.4) (2026-08-20)
+
+
+### Bug Fixes
+
+* add collapsible help section for song summary with toggle functionality ([f9df988](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f9df988b9c7d9b4f55dfc42a51497b9804ad6358))
+* refactor mobile actions panel for improved layout and accessibility ([be01f77](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/be01f7758bbdf84707ad57e91aee41b8a54b8a04))
+* remove unused delete link functionality and clean up metadata handling ([1117816](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1117816d8462e60cfdae6c581bdc2ec56fd1d499))
+* update French translations for song-related messages and UI elements ([91c4952](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/91c4952e3b4e725ffcd6144ab58c4752ae7c4298))
+* update n8n webhook step to use secrets for authentication and improve payload handling ([0eb950a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0eb950a00fc91d6bded6de6fab2a42c43bb84c8b))
+* update song view to render long text as short text in single chorus mode ([d7e1a31](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d7e1a31189c48c2dc371ae1b2856de1da7323ffa))
+
 ## [3.0.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.2...v3.0.3) (2026-08-19)
 
 
