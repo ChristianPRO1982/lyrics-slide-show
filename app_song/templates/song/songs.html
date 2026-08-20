@@ -69,12 +69,12 @@
             data-song-summary-toggle
             data-open-label="{% trans 'Aide ▶' %}"
             data-close-label="{% trans 'Aide ▼' %}"
-            aria-expanded="true"
+            aria-expanded="false"
             aria-controls="song-summary-help-content"
         >
-            {% trans "Aide ▼" %}
+            {% trans "Aide ▶" %}
         </button>
-        <div id="song-summary-help-content" class="song-legend" data-song-summary-content>
+        <div id="song-summary-help-content" class="song-legend" data-song-summary-content hidden>
             <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
             <p><strong>✔️⁉️</strong> {% trans "Chant validé avec des messages" %}</p>
             <p><strong>📄</strong> {% trans "Chant sous licence" %}</p>

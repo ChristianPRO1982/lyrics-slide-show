@@ -112,6 +112,11 @@
     gap: 0.45rem;
 }
 
+.song-legend[hidden],
+[data-song-summary-content][hidden] {
+    display: none !important;
+}
+
 .song-summary-help {
     display: grid;
     gap: 0.6rem;
@@ -821,6 +826,12 @@
 }
 
 @media (max-width: 760px) {
+
+    .site-main-aside {
+        min-height: 0;
+        height: auto;
+        align-self: start;
+    }
 
     .song-summary-help-toggle {
         display: inline-flex;
