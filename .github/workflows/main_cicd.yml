@@ -162,26 +162,41 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     timeout-minutes: 30
+
     steps:
       - name: Call n8n webhook and wait for completion
         env:
           N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
           N8N_USER: ${{ secrets.N8N_USER }}
-          N8N_PASS: ""
+          N8N_PASS: ${{ secrets.N8N_PASS }}
+
         run: |
           set -euo pipefail
-          payload=$(jq -n --arg repo "$GITHUB_REPOSITORY" --arg sha "$GITHUB_SHA" --arg ref "$GITHUB_REF_NAME" \
-            '{repo:$repo, sha:$sha, ref:$ref, action:"pre-deploy-backup"}')
 
-          code=$(curl -sS -m 1800 -w "%{http_code}" -o response.json \
+          payload=$(jq -n \
+            --arg repo "$GITHUB_REPOSITORY" \
+            --arg sha "$GITHUB_SHA" \
+            --arg ref "$GITHUB_REF_NAME" \
+            '{
+              repo: $repo,
+              sha: $sha,
+              ref: $ref,
+              action: "pre-deploy-backup"
+            }')
+
+          code=$(curl -sS \
+            -m 1800 \
+            -w "%{http_code}" \
+            -o response.json \
             -u "${N8N_USER}:${N8N_PASS}" \
-            -H "content-type: application/json" \
-            -X POST "$N8N_WEBHOOK_URL" \
-            -d "$payload")
+            -H "Content-Type: application/json" \
+            -X POST "${N8N_WEBHOOK_URL}" \
+            -d "${payload}")
 
-          echo "HTTP_STATUS=$code"
+          echo "HTTP_STATUS=${code}"
           echo "RESPONSE_BODY=$(tr -d '\n' < response.json | head -c 500)"
-          test "$code" -ge 200 -a "$code" -lt 300
+
+          test "${code}" -ge 200 -a "${code}" -lt 300
           jq -e 'type == "object" and .status == "OK"' response.json >/dev/null
 
   deploy:
