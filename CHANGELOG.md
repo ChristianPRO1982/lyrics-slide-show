@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.4...v3.0.5) (2026-08-20)
+
+
+### Bug Fixes
+
+* update song summary help toggle functionality and improve CSS for hidden elements ([1e6909f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1e6909ff2fe8151205a7bb156a08f8adeb6e22fb))
+
 ## [3.0.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.3...v3.0.4) (2026-08-20)
 
 
