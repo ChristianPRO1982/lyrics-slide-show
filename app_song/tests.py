@@ -2263,7 +2263,7 @@ class ModifySongViewTests(TestCase):
             str(message) for message in get_messages(response.wsgi_request)
         ]
         self.assertIn(
-            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide.",
+            "Le chant doit d'abord repasser explicitement par l'état validé avant d'être dévalidé.",
             flash_messages,
         )
 

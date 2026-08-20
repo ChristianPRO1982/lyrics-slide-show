@@ -1600,7 +1600,7 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
                     messages.info(
                         request,
                         _(
-                            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide."
+                            "Le chant doit d'abord repasser explicitement par l'état validé avant d'être dévalidé."
                         ),
                     )
                     return redirect("modify_song", song_id=song_object.song_id)
@@ -1610,7 +1610,7 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
             messages.info(
                 request,
                 _(
-                    "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues."
+                    "Impossible de dévalider ce chant tant qu'il reste des demandes de modification non lues."
                 ),
             )
             return redirect("modify_song", song_id=song_object.song_id)

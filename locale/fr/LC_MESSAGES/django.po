@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-20 12:28+0200\n"
+"POT-Creation-Date: 2026-08-20 13:58+0200\n"
 "PO-Revision-Date: 2026-04-16 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: French\n"
@@ -171,9 +171,10 @@ msgstr ""
 #: app_animation/services/song_edits.py:53
 #: app_animation/templates/animation/lyrics_slide_show.html:256
 #: app_animation/templates/animation/lyrics_slide_show.html:265
-#: app_animation/views.py:438 app_animation/views.py:1773
-#: app_animation/views.py:1785 app_song/rendering.py:38
-#: app_song/rendering.py:41 app_song/templates/song/modify_song.html:309
+#: app_animation/views.py:112 app_animation/views.py:438
+#: app_animation/views.py:1773 app_animation/views.py:1785
+#: app_song/rendering.py:38 app_song/rendering.py:41
+#: app_song/templates/song/modify_song.html:309
 #: app_song/templates/song/modify_song_page_i18n.html:26
 msgid "Refrain"
 msgstr ""
@@ -733,12 +734,13 @@ msgid "BLACK MODE"
 msgstr "Black mode"
 
 #: app_animation/templates/animation/lyrics_slide_show.html:255
+#: app_animation/views.py:110
 msgid "Diapo précédente"
 msgstr ""
 
 #: app_animation/templates/animation/lyrics_slide_show.html:257
 #: app_animation/templates/animation/lyrics_slide_show.html:277
-#: app_animation/views.py:1775
+#: app_animation/views.py:111 app_animation/views.py:1775
 msgid "Diapo suivante"
 msgstr ""
 
@@ -1208,40 +1210,32 @@ msgstr ""
 msgid "Envoyer pour modération"
 msgstr ""
 
-#: app_animation/views.py:110
-msgid "Previous slide"
-msgstr "Diapo précédente"
-
-#: app_animation/views.py:111
-msgid "Next slide"
-msgstr "Diapo suivante"
-
-#: app_animation/views.py:112
-msgid "Chorus"
-msgstr "Refrain"
-
 #: app_animation/views.py:113
-msgid "Display current slide window"
-msgstr "Afficher la fenêtre de la diapo en cours"
+msgid "Afficher la fenêtre de la diapo en cours"
+msgstr ""
 
-#: app_animation/views.py:114
-msgid "Previous song"
-msgstr "Chant précédent"
+#: app_animation/views.py:114 app_main/templates/lyrics/lyrics.html:413
+#: app_main/templates/lyrics/lyrics.html:414
+msgid "Chant précédent"
+msgstr ""
 
-#: app_animation/views.py:115
-msgid "Next song"
-msgstr "Chant suivant"
+#: app_animation/views.py:115 app_main/templates/lyrics/lyrics.html:416
+#: app_main/templates/lyrics/lyrics.html:417
+msgid "Chant suivant"
+msgstr ""
 
 #: app_animation/views.py:116
-msgid "Display/hide choruses"
-msgstr "Afficher/masquer les refrains"
+msgid "Afficher / masquer les refrains"
+msgstr ""
 
 #: app_animation/views.py:117
 msgid "Scroll on ↕️ or not 🧱"
 msgstr "Autoriser le défilement ↕️ ou le bloquer 🧱"
 
 #: app_animation/views.py:118
-msgid "📱 QR code for lyrics"
+#, fuzzy
+#| msgid "📱 QR code for lyrics"
+msgid "📱 QR code pour les paroles"
 msgstr "📱 QR code pour les paroles"
 
 #: app_animation/views.py:182
@@ -1523,8 +1517,8 @@ msgid "Personnaliser les raccourcis"
 msgstr ""
 
 #: app_animation/views.py:1790
-msgid "⌨️👈 in upper or lower case"
-msgstr "⌨️👈 en majuscules ou en minuscules"
+msgid "⌨️👈 en majuscules ou en minuscules"
+msgstr ""
 
 #: app_animation/views.py:1793
 msgid ""
@@ -2350,16 +2344,6 @@ msgstr ""
 
 #: app_main/templates/lyrics/lyrics.html:410
 msgid "Thème clair ou sombre"
-msgstr ""
-
-#: app_main/templates/lyrics/lyrics.html:413
-#: app_main/templates/lyrics/lyrics.html:414
-msgid "Chant précédent"
-msgstr ""
-
-#: app_main/templates/lyrics/lyrics.html:416
-#: app_main/templates/lyrics/lyrics.html:417
-msgid "Chant suivant"
 msgstr ""
 
 #: app_main/templates/lyrics/lyrics.html:423
@@ -4656,13 +4640,17 @@ msgstr ""
 
 #: app_song/views.py:1603
 msgid ""
-"Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre "
-"devalide."
+"Le chant doit d'abord repasser explicitement par l'état validé avant d'être "
+"dévalidé."
 msgstr ""
 
 #: app_song/views.py:1613
+#, fuzzy
+#| msgid ""
+#| "Impossible de devalider ce chant tant qu'il reste des demandes de "
+#| "modification non lues."
 msgid ""
-"Impossible de devalider ce chant tant qu'il reste des demandes de "
+"Impossible de dévalider ce chant tant qu'il reste des demandes de "
 "modification non lues."
 msgstr ""
 "Impossible de dévalider ce chant tant qu'il reste des demandes de "
@@ -6141,6 +6129,30 @@ msgstr ""
 #: venv/lib/python3.12/site-packages/django/views/templates/default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Previous slide"
+#~ msgstr "Diapo précédente"
+
+#~ msgid "Next slide"
+#~ msgstr "Diapo suivante"
+
+#~ msgid "Chorus"
+#~ msgstr "Refrain"
+
+#~ msgid "Display current slide window"
+#~ msgstr "Afficher la fenêtre de la diapo en cours"
+
+#~ msgid "Previous song"
+#~ msgstr "Chant précédent"
+
+#~ msgid "Next song"
+#~ msgstr "Chant suivant"
+
+#~ msgid "Display/hide choruses"
+#~ msgstr "Afficher/masquer les refrains"
+
+#~ msgid "⌨️👈 in upper or lower case"
+#~ msgstr "⌨️👈 en majuscules ou en minuscules"
 
 #~ msgid "lien"
 #~ msgstr "lien"
