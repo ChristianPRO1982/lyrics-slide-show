@@ -3281,11 +3281,15 @@ class SongGenresDisplayViewTests(TestCase):
             html=False,
         )
         self.assertContains(response, "Aide ▶")
-        self.assertContains(response, "Aide ▼")
         self.assertContains(
             response, 'aria-controls="song-summary-help-content"', html=False
         )
-        self.assertContains(response, 'aria-expanded="true"', html=False)
+        self.assertContains(response, 'aria-expanded="false"', html=False)
+        self.assertContains(
+            response,
+            'id="song-summary-help-content" class="song-legend" data-song-summary-content hidden',
+            html=False,
+        )
         self.assertContains(response, "💫 Afficher mes favoris", count=2)
 
 
