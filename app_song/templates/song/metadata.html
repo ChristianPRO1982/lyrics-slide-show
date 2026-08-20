@@ -216,6 +216,7 @@
 
 {% endblock %}
 {% block page_scripts %}
+    {% include "song/song_page_i18n.html" %}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
