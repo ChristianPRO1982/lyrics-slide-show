@@ -62,12 +62,25 @@
     {% include "song/includes/_active_search_tags.html" %}
 {% endblock %}
 {% block page_summary %}
-    <div class="song-legend">
-        <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
-        <p><strong>✔️⁉️</strong> {% trans "Chant validé avec des messages" %}</p>
-        <p><strong>📄</strong> {% trans "Chant sous licence" %}</p>
-        <p><strong>📱</strong> {% trans "Smartphone view" %}</p>
-        <p><strong>🖨️</strong> {% trans "Impression du chant - avec un seul refrain ou tous les refrains" %}</p>
+    <div class="song-summary-help" data-song-summary-help>
+        <button
+            type="button"
+            class="song-summary-help-toggle"
+            data-song-summary-toggle
+            data-open-label="{% trans 'Aide ▶' %}"
+            data-close-label="{% trans 'Aide ▼' %}"
+            aria-expanded="true"
+            aria-controls="song-summary-help-content"
+        >
+            {% trans "Aide ▼" %}
+        </button>
+        <div id="song-summary-help-content" class="song-legend" data-song-summary-content>
+            <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
+            <p><strong>✔️⁉️</strong> {% trans "Chant validé avec des messages" %}</p>
+            <p><strong>📄</strong> {% trans "Chant sous licence" %}</p>
+            <p><strong>📱</strong> {% trans "Smartphone view" %}</p>
+            <p><strong>🖨️</strong> {% trans "Impression du chant - avec un seul refrain ou tous les refrains" %}</p>
+        </div>
     </div>
 {% endblock %}
 {% block content %}
@@ -382,5 +395,14 @@
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}
+    {% trans "Aide ▶" as song_summary_help_open_label %}
+    {% trans "Aide ▼" as song_summary_help_close_label %}
+    <script>
+        window.LSS_SONG_I18N = {
+            ...(window.LSS_SONG_I18N || {}),
+            summaryHelpOpenLabel: "{{ song_summary_help_open_label|escapejs }}",
+            summaryHelpCloseLabel: "{{ song_summary_help_close_label|escapejs }}"
+        };
+    </script>
     <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}

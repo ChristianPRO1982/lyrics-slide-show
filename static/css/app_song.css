@@ -112,9 +112,38 @@
     gap: 0.45rem;
 }
 
+.song-summary-help {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.song-summary-help-toggle {
+    display: none;
+    align-items: center;
+    justify-content: start;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--site-link);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+    box-shadow: none;
+}
+
 .song-legend p,
 .song-mobile-summary p {
     margin: 0;
+}
+
+.song-mobile-actions-panel,
+[data-song-mobile-actions] {
+    display: grid;
+    gap: 0.75rem;
 }
 
 .song-search-form {
@@ -792,6 +821,10 @@
 }
 
 @media (max-width: 760px) {
+
+    .song-summary-help-toggle {
+        display: inline-flex;
+    }
 
     .song-search-floating-actions,
     .song-smartphone-floating-actions {

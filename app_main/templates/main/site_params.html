@@ -36,8 +36,8 @@
             <form method="get">
                 <label for="site-params-language">{% trans "Choisir la langue" %}</label>
                 <select id="site-params-language" name="language">
-                    <option value="fr"{% if selected_language == "fr" %} selected{% endif %}>Français</option>
-                    <option value="en"{% if selected_language == "en" %} selected{% endif %}>English</option>
+                    <option value="fr"{% if selected_language == "fr" %} selected{% endif %}>{% trans "Français" %}</option>
+                    <option value="en"{% if selected_language == "en" %} selected{% endif %}>{% trans "English" %}</option>
                 </select>
                 <button type="submit" class="site-action site-action--primary">{% trans "Charger" %}</button>
             </form>

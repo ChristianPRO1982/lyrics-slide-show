@@ -867,6 +867,8 @@ def _build_modify_song_context(
             include_actions=True,
         ),
         "display_url": reverse("song", args=[song.song_id]),
+        "popup_single_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain&layout=popup-copy",
+        "popup_full_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain&layout=popup-copy",
         "verse_max_lines": verse_max_lines,
         "verse_max_characters_for_line": verse_max_characters_for_line,
         "song_blocks": [
@@ -1558,7 +1560,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "title_complete": text_artifacts.full_title,
             "title_complete_with_tags": text_artifacts.full_title_with_tags,
             "text_short_html": text_artifacts.short_text_html,
-            "text_long_html": text_artifacts.long_text_html,
+            "text_long_html": text_artifacts.short_text_html,
             "display_url": reverse("song", args=[song_object.song_id]),
             "print_single_url": reverse(
                 "song_text", args=[song_object.song_id, TEXT_MODE_SINGLE_CHORUS]
@@ -1598,7 +1600,7 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
                     messages.info(
                         request,
                         _(
-                            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide."
+                            "Le chant doit d'abord repasser explicitement par l'état validé avant d'être dévalidé."
                         ),
                     )
                     return redirect("modify_song", song_id=song_object.song_id)
@@ -1608,7 +1610,7 @@ def modify_song(request: HttpRequest, song_id: int) -> HttpResponse:
             messages.info(
                 request,
                 _(
-                    "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues."
+                    "Impossible de dévalider ce chant tant qu'il reste des demandes de modification non lues."
                 ),
             )
             return redirect("modify_song", song_id=song_object.song_id)

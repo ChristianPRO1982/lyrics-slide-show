@@ -25,32 +25,82 @@
     {% endif %}
     <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
     <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
-{% endblock %}
-{% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
-{% block mobile_side_content %}
-    <div class="song-mobile-summary">
-        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
-    </div>
+    <hr>
+    <p>{% trans "copier le texte sans mise en forme" %}</p>
     <p>
         <button
             type="button"
             class="song-tool-button site-action site-action--primary"
-            data-song-mobile-actions-toggle
-            aria-expanded="false"
-            data-open-label="{% trans 'Afficher les actions' %}"
-            data-close-label="{% trans 'Masquer les actions' %}"
+            data-song-plain-copy-trigger
+            data-plain-url="{{ popup_single_plain_url }}"
+            data-popup-label="{% trans 'un seul refrain' %}"
         >
-            {% trans "Afficher les actions" %}
+            {% trans "un seul refrain" %}
         </button>
     </p>
-    <div data-song-mobile-actions hidden>
-        {% include "song/includes/_song_actions.html" %}
-        <hr>
-        {% if can_devalidate %}
-            <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
-        {% endif %}
-        <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
-        <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+    <p>
+        <button
+            type="button"
+            class="song-tool-button site-action site-action--primary"
+            data-song-plain-copy-trigger
+            data-plain-url="{{ popup_full_plain_url }}"
+            data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
+        >
+            {% trans "toutes les répétitions de refrain" %}
+        </button>
+    </p>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="song-mobile-actions-panel">
+        <div class="song-mobile-summary">
+            <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
+        </div>
+        <p>
+            <button
+                type="button"
+                class="song-tool-button site-action site-action--primary"
+                data-song-mobile-actions-toggle
+                aria-expanded="false"
+                data-open-label="{% trans 'Afficher les actions' %}"
+                data-close-label="{% trans 'Masquer les actions' %}"
+            >
+                {% trans "Afficher les actions" %}
+            </button>
+        </p>
+        <div data-song-mobile-actions hidden>
+            {% include "song/includes/_song_actions.html" %}
+            <hr>
+            {% if can_devalidate %}
+                <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="action" value="devalidate_song">{% trans "Dévalider" %}</button></p>
+            {% endif %}
+            <p><button type="submit" form="modify-song-form" class="song-tool-button site-action site-action--primary" name="submit_intent" value="save">{% trans "Enregistrer" %}</button></p>
+            <p><button type="submit" form="modify-song-form" class="song-secondary-action site-action site-action--secondary" name="submit_intent" value="save_and_exit">{% trans "Enregistrer et quitter" %}</button></p>
+            <hr>
+            <p>{% trans "copier le texte sans mise en forme" %}</p>
+            <p>
+                <button
+                    type="button"
+                    class="song-tool-button site-action site-action--primary"
+                    data-song-plain-copy-trigger
+                    data-plain-url="{{ popup_single_plain_url }}"
+                    data-popup-label="{% trans 'un seul refrain' %}"
+                >
+                    {% trans "un seul refrain" %}
+                </button>
+            </p>
+            <p>
+                <button
+                    type="button"
+                    class="song-tool-button site-action site-action--primary"
+                    data-song-plain-copy-trigger
+                    data-plain-url="{{ popup_full_plain_url }}"
+                    data-popup-label="{% trans 'toutes les répétitions de refrain' %}"
+                >
+                    {% trans "toutes les répétitions de refrain" %}
+                </button>
+            </p>
+        </div>
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}

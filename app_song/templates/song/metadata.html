@@ -22,23 +22,25 @@
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
 {% block mobile_side_content %}
-    <div class="song-mobile-summary">
-        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
-    </div>
-    <p>
-        <button
-            type="button"
-            class="song-tool-button site-action site-action--primary"
-            data-song-mobile-actions-toggle
-            aria-expanded="false"
-            data-open-label="{% trans 'Afficher les actions' %}"
-            data-close-label="{% trans 'Masquer les actions' %}"
-        >
-            {% trans "Afficher les actions" %}
-        </button>
-    </p>
-    <div data-song-mobile-actions hidden>
-        {% include "song/includes/_song_actions.html" %}
+    <div class="song-mobile-actions-panel">
+        <div class="song-mobile-summary">
+            <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}</strong></p>
+        </div>
+        <p>
+            <button
+                type="button"
+                class="song-tool-button site-action site-action--primary"
+                data-song-mobile-actions-toggle
+                aria-expanded="false"
+                data-open-label="{% trans 'Afficher les actions' %}"
+                data-close-label="{% trans 'Masquer les actions' %}"
+            >
+                {% trans "Afficher les actions" %}
+            </button>
+        </p>
+        <div data-song-mobile-actions hidden>
+            {% include "song/includes/_song_actions.html" %}
+        </div>
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
@@ -79,19 +81,6 @@
                                 {% endfor %}
                             </select>
                             <input type="hidden" name="existing_{{ forloop.counter0 }}_original" value="{{ link.link }}">
-                            <label class="song-meta-link-delete" for="existing-{{ forloop.counter0 }}-delete">
-                                <input
-                                    id="existing-{{ forloop.counter0 }}-delete"
-                                    type="checkbox"
-                                    name="existing_{{ forloop.counter0 }}_delete"
-                                    value="1"
-                                    data-meta-delete-checkbox
-                                    data-meta-kind="{% trans 'lien' %}"
-                                    data-meta-label="{{ link.link|escape }}"
-                                    {% if not can_edit %}disabled{% endif %}
-                                >
-                                <span>{% trans "Supprimer" %}</span>
-                            </label>
                         </div>
                     </div>
                 {% endfor %}
@@ -224,60 +213,13 @@
             </div>
         </div>
     </article>
+
 {% endblock %}
 {% block page_scripts %}
+    {% include "song/song_page_i18n.html" %}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>
-        (() => {
-            const messageBox = window.LSSMessageBox;
-            const refreshUnsaved = () => {
-                if (window.LSSSongMetadataUnsaved) {
-                    window.LSSSongMetadataUnsaved.refresh();
-                }
-            };
-            const labels = {
-                title: "{% trans 'Confirmation' %}",
-                yes: "{% trans 'Oui' %}",
-                no: "{% trans 'Non' %}",
-                confirmMessage: "{% trans 'Confirmer la suppression de cet élément ?' %}",
-            };
-
-            document.querySelectorAll("[data-meta-delete-checkbox]").forEach((checkbox) => {
-                checkbox.addEventListener("change", async () => {
-                    if (!(checkbox instanceof HTMLInputElement) || !checkbox.checked) {
-                        return;
-                    }
-                    if (!messageBox || typeof messageBox.show !== "function") {
-                        return;
-                    }
-
-                    checkbox.checked = false;
-                    const itemKind = checkbox.getAttribute("data-meta-kind") || "";
-                    const label = checkbox.getAttribute("data-meta-label") || "";
-                    const lines = [labels.confirmMessage];
-                    if (itemKind || label) {
-                        lines.push(`**${[itemKind, label].filter(Boolean).join(" : ")}**`);
-                    }
-
-                    const result = await messageBox.show({
-                        title: labels.title,
-                        messageMarkdown: lines.join("\n\n"),
-                        showCloseButton: false,
-                        buttons: [
-                            { id: "yes", label: labels.yes, tone: "warning" },
-                            { id: "no", label: labels.no, tone: "neutral" },
-                        ],
-                    });
-
-                    if (result.buttonId === "yes") {
-                        checkbox.checked = true;
-                    }
-                    refreshUnsaved();
-                });
-            });
-        })();
-
         (() => {
             const canEdit = {{ can_edit|yesno:"true,false" }};
 

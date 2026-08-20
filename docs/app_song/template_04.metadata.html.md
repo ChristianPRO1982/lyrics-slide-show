@@ -32,6 +32,7 @@ Cette page n’est pas une page de lecture.
   - `internal`
 - Le formulaire ne doit plus exposer de type canonique `audio-video`.
 - Monte le panneau d’actions partagé et l’état favori.
+- Le panneau d’actions partagé y propose aussi l’action de suppression du chant, avec le même bouton et la même popup de confirmation traduite que sur `song.html`.
 - L’édition des métadonnées suit exactement les mêmes droits que l’édition directe du chant.
 
 ## Contrat d’interface (variables attendues)

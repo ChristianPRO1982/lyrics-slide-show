@@ -107,15 +107,15 @@ def _safe_int(value: str | None, fallback: int) -> int:
 def _shortcut_action_labels() -> dict[str, str]:
     return {
         "black": _("BLACK MODE"),
-        "prev_slide": _("Previous slide"),
-        "next_slide": _("Next slide"),
-        "chorus": _("Chorus"),
-        "open_display": _("Display current slide window"),
-        "prev_song": _("Previous song"),
-        "next_song": _("Next song"),
-        "toggle_chorus": _("Display/hide choruses"),
+        "prev_slide": _("Diapo précédente"),
+        "next_slide": _("Diapo suivante"),
+        "chorus": _("Refrain"),
+        "open_display": _("Afficher la fenêtre de la diapo en cours"),
+        "prev_song": _("Chant précédent"),
+        "next_song": _("Chant suivant"),
+        "toggle_chorus": _("Afficher / masquer les refrains"),
         "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
-        "toggle_qr": _("📱 QR code for lyrics"),
+        "toggle_qr": _("📱 QR code pour les paroles"),
     }
 
 
@@ -1012,9 +1012,7 @@ def background_images(request: HttpRequest) -> HttpResponse:
                     "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
                 ),
                 "saveFailedMessage": _("Impossible d'enregistrer les modifications."),
-                "targetRequiredMessage": _(
-                    "Cette image utilise une ancienne cible. Choisissez une cible actuelle."
-                ),
+                "targetRequiredMessage": _("Sélectionnez une cible."),
                 "titleRequiredMessage": _("Le titre est obligatoire."),
             },
         },
@@ -1789,7 +1787,7 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "chorusHideText": _("Pas de refrain"),
                 "shortcutsPopupTitle": _("Raccourcis clavier"),
                 "shortcutsCustomizeButtonLabel": _("Personnaliser les raccourcis"),
-                "shortcutsPopupFooter": _("⌨️👈 in upper or lower case"),
+                "shortcutsPopupFooter": _("⌨️👈 en majuscules ou en minuscules"),
                 "shortcutsCustomizeTitle": _("Personnaliser les raccourcis"),
                 "shortcutsCustomizeHelp": _(
                     "Clique sur un slot puis appuie sur une touche simple.\n"

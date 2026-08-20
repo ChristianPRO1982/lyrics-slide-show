@@ -1365,6 +1365,15 @@ class SongViewsRenderingTests(TestCase):
         )
         self.assertNotIn("Le Sud - Nino Ferrer", response.context["text_long_html"])
 
+    def test_song_view_renders_single_chorus_mode(self):
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["text_long_html"], response.context["text_short_html"]
+        )
+
     def test_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
         self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
@@ -1401,6 +1410,37 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(
             response,
             'data-popup-label="toutes les répétitions de refrain"',
+            count=2,
+            html=False,
+        )
+
+    def test_modify_song_view_exposes_plain_copy_buttons_in_tools_and_mobile(self):
+        self._login()
+        self.song.status = SongStatus.NOT_VALIDATED
+        self.song.save(update_fields=["status"])
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "<p>copier le texte sans mise en forme</p>",
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "data-song-plain-copy-trigger",
+            count=4,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "single-chorus"])}?format=plain&amp;layout=popup-copy"',
+            count=2,
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'data-plain-url="{reverse("song_text", args=[self.song.song_id, "full-chorus"])}?format=plain&amp;layout=popup-copy"',
             count=2,
             html=False,
         )
@@ -2193,7 +2233,7 @@ class ModifySongViewTests(TestCase):
             str(message) for message in get_messages(response.wsgi_request)
         ]
         self.assertIn(
-            "Impossible de devalider ce chant tant qu'il reste des demandes de modification non lues.",
+            "Impossible de dévalider ce chant tant qu'il reste des demandes de modification non lues.",
             flash_messages,
         )
 
@@ -2223,7 +2263,7 @@ class ModifySongViewTests(TestCase):
             str(message) for message in get_messages(response.wsgi_request)
         ]
         self.assertIn(
-            "Le chant doit d'abord repasser explicitement par l'etat valide avant d'etre devalide.",
+            "Le chant doit d'abord repasser explicitement par l'état validé avant d'être dévalidé.",
             flash_messages,
         )
 
@@ -3223,6 +3263,29 @@ class SongGenresDisplayViewTests(TestCase):
         response = self._render_songs_response()
 
         self.assertContains(response, 'class="song-mobile-quick-links"', html=False)
+
+    def test_songs_page_summary_help_exposes_mobile_toggle_markup_and_labels(self):
+        response = self._render_songs_response()
+
+        self.assertContains(response, "data-song-summary-help", html=False)
+        self.assertContains(response, "data-song-summary-toggle", html=False)
+        self.assertContains(response, "data-song-summary-content", html=False)
+        self.assertContains(
+            response,
+            'data-open-label="Aide ▶"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'data-close-label="Aide ▼"',
+            html=False,
+        )
+        self.assertContains(response, "Aide ▶")
+        self.assertContains(response, "Aide ▼")
+        self.assertContains(
+            response, 'aria-controls="song-summary-help-content"', html=False
+        )
+        self.assertContains(response, 'aria-expanded="true"', html=False)
         self.assertContains(response, "💫 Afficher mes favoris", count=2)
 
 
