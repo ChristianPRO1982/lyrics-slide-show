@@ -132,4 +132,4 @@ LEFT JOIN l_song_favorite lsf ON lsf.song_id = ls1.song_id
                  'artists': row[9],
                  'favorite': row[10]
                  } for row in rows]
-    
+
