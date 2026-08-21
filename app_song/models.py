@@ -30,6 +30,19 @@ class SongLinkType(models.TextChoices):
     INTERNAL = LINK_TYPE_INTERNAL, _("lien interne - Lyrics Slide Show")
 
 
+class SongSlideDisplayMode(models.TextChoices):
+    SINGLE = "single", _("Single slide")
+    CHORUS_THEN_PARALLEL = (
+        "chorus_then_parallel",
+        _("Chorus alone, then chorus with verse"),
+    )
+    CHORUS_ALWAYS_PARALLEL = (
+        "chorus_always_parallel",
+        _("Chorus and verse always in parallel"),
+    )
+    VERSES_BY_PAIRS = "verses_by_pairs", _("Verses by pairs")
+
+
 class Song(models.Model):
     song_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
@@ -40,6 +53,11 @@ class Song(models.Model):
         default=SongStatus.NOT_VALIDATED,
     )
     licensed = models.BooleanField(default=False)
+    slide_display_mode = models.CharField(
+        max_length=32,
+        choices=SongSlideDisplayMode.choices,
+        default=SongSlideDisplayMode.SINGLE,
+    )
 
     class Meta:
         db_table = 'lss"."s_songs'
