@@ -28,6 +28,7 @@ from .models import (
     SongLink,
     SongLinkType,
     SongMessage,
+    SongSlideDisplayMode,
     SongStatus,
     Verse,
 )
@@ -608,6 +609,70 @@ def _get_song_validation_label(song: Song) -> str:
     return _("Chant non validé")
 
 
+def _has_active_chorus_block(blocks: list[ParsedSongBlock]) -> bool:
+    return any(block.chorus and not block.delete for block in blocks)
+
+
+def _normalize_song_slide_display_mode(
+    raw_value: str | SongSlideDisplayMode | None,
+    *,
+    has_chorus: bool,
+) -> SongSlideDisplayMode:
+    try:
+        mode = SongSlideDisplayMode(str(raw_value or SongSlideDisplayMode.SINGLE))
+    except ValueError:
+        mode = SongSlideDisplayMode.SINGLE
+
+    if mode == SongSlideDisplayMode.SINGLE:
+        return mode
+
+    if has_chorus:
+        if mode == SongSlideDisplayMode.VERSES_BY_PAIRS:
+            return SongSlideDisplayMode.CHORUS_THEN_PARALLEL
+        return mode
+
+    if mode in {
+        SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+    }:
+        return SongSlideDisplayMode.VERSES_BY_PAIRS
+
+    return mode
+
+
+def _build_song_slide_display_mode_options(
+    *,
+    has_chorus: bool,
+) -> tuple[dict[str, str], ...]:
+    options = [
+        {
+            "value": SongSlideDisplayMode.SINGLE,
+            "label": _("Simple"),
+        }
+    ]
+    if has_chorus:
+        options.extend(
+            [
+                {
+                    "value": SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+                    "label": _("Refrain seul puis refrain + couplet"),
+                },
+                {
+                    "value": SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+                    "label": _("Refrain et couplet toujours en parallèle"),
+                },
+            ]
+        )
+    else:
+        options.append(
+            {
+                "value": SongSlideDisplayMode.VERSES_BY_PAIRS,
+                "label": _("Couplets deux par deux"),
+            }
+        )
+    return tuple(options)
+
+
 def _recalculate_song_status_from_messages(song: Song) -> None:
     if song.status == SongStatus.NOT_VALIDATED:
         next_status = SongStatus.NOT_VALIDATED
@@ -835,6 +900,12 @@ def _build_modify_song_context(
     )
 
     blocks = _recalculate_song_blocks(parsed_blocks or _build_blocks_from_song(song))
+    has_chorus = _has_active_chorus_block(blocks)
+    normalized_slide_display_mode = _normalize_song_slide_display_mode(
+        song.slide_display_mode,
+        has_chorus=has_chorus,
+    )
+    song.slide_display_mode = normalized_slide_display_mode
     bands, artists, genre_groups = _get_song_metadata_labels(song)
     page_summary_text, page_summary_truncated = _build_page_summary(song.description)
     member_id = get_member_id_from_user(request.user)
@@ -869,6 +940,10 @@ def _build_modify_song_context(
         "display_url": reverse("song", args=[song.song_id]),
         "popup_single_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_SINGLE_CHORUS])}?format=plain&layout=popup-copy",
         "popup_full_plain_url": f"{reverse('song_text', args=[song.song_id, TEXT_MODE_FULL_CHORUS])}?format=plain&layout=popup-copy",
+        "slide_display_mode_options": _build_song_slide_display_mode_options(
+            has_chorus=has_chorus
+        ),
+        "slide_display_mode_value": normalized_slide_display_mode,
         "verse_max_lines": verse_max_lines,
         "verse_max_characters_for_line": verse_max_characters_for_line,
         "song_blocks": [
@@ -894,8 +969,12 @@ def _update_song_from_form(song: Song, request: HttpRequest) -> None:
     active_blocks = _recalculate_song_blocks(
         [block for block in parsed_blocks if not block.delete]
     )
+    song.slide_display_mode = _normalize_song_slide_display_mode(
+        request.POST.get("slide_display_mode"),
+        has_chorus=_has_active_chorus_block(active_blocks),
+    )
     existing_by_id = {verse.verse_id: verse for verse in song.verses.all()}
-    song_update_fields = ["title", "subtitle", "description"]
+    song_update_fields = ["title", "subtitle", "description", "slide_display_mode"]
     next_status, should_recalculate_status, status_message = (
         _resolve_song_status_from_form(
             song,

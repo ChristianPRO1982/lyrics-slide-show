@@ -36,6 +36,10 @@
 {% trans "Non" as no_label %}
 {% trans "Demandes de modification" as song_message_popup_title %}
 {% trans "Impossible de mettre à jour l'état de lecture du message." as song_message_toggle_failed %}
+{% trans "Simple" as slide_mode_single_label %}
+{% trans "Refrain seul puis refrain + couplet" as slide_mode_chorus_then_parallel_label %}
+{% trans "Refrain et couplet toujours en parallèle" as slide_mode_chorus_always_parallel_label %}
+{% trans "Couplets deux par deux" as slide_mode_verses_by_pairs_label %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -77,6 +81,10 @@
         noLabel: "{{ no_label|escapejs }}",
         messagePopupTitle: "{{ song_message_popup_title|escapejs }}",
         messageToggleFailed: "{{ song_message_toggle_failed|escapejs }}",
+        slideModeSingleLabel: "{{ slide_mode_single_label|escapejs }}",
+        slideModeChorusThenParallelLabel: "{{ slide_mode_chorus_then_parallel_label|escapejs }}",
+        slideModeChorusAlwaysParallelLabel: "{{ slide_mode_chorus_always_parallel_label|escapejs }}",
+        slideModeVersesByPairsLabel: "{{ slide_mode_verses_by_pairs_label|escapejs }}",
         messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
     };
 </script>

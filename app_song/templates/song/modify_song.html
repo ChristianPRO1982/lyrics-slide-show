@@ -200,6 +200,14 @@
                 <textarea id="song-description-edit" name="description" form="modify-song-form" rows="5" data-song-description-edit>{{ song.description|default:'' }}</textarea>
             </p>
             <p>
+                <label for="song-slide-display-mode-edit">{% trans "Affichage des slides" %}</label>
+                <select id="song-slide-display-mode-edit" data-song-slide-display-mode-edit>
+                    {% for option in slide_display_mode_options %}
+                        <option value="{{ option.value }}"{% if option.value == slide_display_mode_value %} selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
                 <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-edit-meta-close>
                     {% trans "Masquer les cartes d'édition" %}
                 </button>
@@ -214,6 +222,7 @@
         <input type="hidden" name="title" value="{{ song.title }}" data-song-title-hidden>
         <input type="hidden" name="subtitle" value="{{ song.subtitle }}" data-song-subtitle-hidden>
         <input type="hidden" name="description" value="{{ song.description|default:'' }}" data-song-description-hidden>
+        <input type="hidden" name="slide_display_mode" value="{{ slide_display_mode_value }}" data-song-slide-display-mode-hidden>
 
         <section class="song-list-section" data-song-blocks-panel>
             <header class="song-list-header">
@@ -398,9 +407,11 @@
             const titleInput = document.querySelector("[data-song-title-edit]");
             const subtitleInput = document.querySelector("[data-song-subtitle-edit]");
             const descriptionInput = document.querySelector("[data-song-description-edit]");
+            const slideDisplayModeInput = document.querySelector("[data-song-slide-display-mode-edit]");
             const hiddenTitle = document.querySelector("[data-song-title-hidden]");
             const hiddenSubtitle = document.querySelector("[data-song-subtitle-hidden]");
             const hiddenDescription = document.querySelector("[data-song-description-hidden]");
+            const hiddenSlideDisplayMode = document.querySelector("[data-song-slide-display-mode-hidden]");
 
             if (!openButton || !closeButton || cards.length === 0) {
                 return;
@@ -424,6 +435,9 @@
                 if (hiddenTitle && titleInput) hiddenTitle.value = titleInput.value;
                 if (hiddenSubtitle && subtitleInput) hiddenSubtitle.value = subtitleInput.value;
                 if (hiddenDescription && descriptionInput) hiddenDescription.value = descriptionInput.value;
+                if (hiddenSlideDisplayMode && slideDisplayModeInput) {
+                    hiddenSlideDisplayMode.value = slideDisplayModeInput.value;
+                }
                 if (window.LSSModifySong?.refreshUnsavedChanges) {
                     window.LSSModifySong.refreshUnsavedChanges();
                 }
@@ -433,7 +447,7 @@
             closeButton.addEventListener("click", hideCards);
             hideCards();
 
-            [titleInput, subtitleInput, descriptionInput].forEach((field) => {
+            [titleInput, subtitleInput, descriptionInput, slideDisplayModeInput].forEach((field) => {
                 if (!field) return;
                 field.addEventListener("input", syncHiddenFields);
                 field.addEventListener("change", syncHiddenFields);

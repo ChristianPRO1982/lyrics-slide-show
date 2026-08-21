@@ -689,6 +689,7 @@
     const reorderList = document.querySelector("[data-reorder-list]");
     if (addBlockButton && reorderList) {
         let newBlockCounter = 0;
+        const slideDisplayModeSelect = document.querySelector("[data-song-slide-display-mode-edit]");
         const refreshUnsavedChanges = () => {
             if (modifySongUnsavedController) {
                 modifySongUnsavedController.refresh();
@@ -720,6 +721,85 @@
         };
 
         const getCards = () => Array.from(reorderList.querySelectorAll("[data-song-block-card]"));
+        const hasActiveChorusBlocks = () => {
+            return getCards().some((card) => {
+                if (card.hidden) {
+                    return false;
+                }
+                const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+                const hiddenType = getHidden(card, "[data-song-hidden-type]");
+                return (
+                    (!hiddenDelete || hiddenDelete.value !== "1")
+                    && hiddenType
+                    && hiddenType.value === "chorus"
+                );
+            });
+        };
+
+        const normalizeSlideDisplayMode = (value, hasChorus) => {
+            const raw = String(value || "single");
+            if (raw === "single") {
+                return "single";
+            }
+            if (hasChorus) {
+                if (raw === "verses_by_pairs") {
+                    return "chorus_then_parallel";
+                }
+                if (
+                    raw === "chorus_then_parallel"
+                    || raw === "chorus_always_parallel"
+                ) {
+                    return raw;
+                }
+                return "single";
+            }
+            if (
+                raw === "chorus_then_parallel"
+                || raw === "chorus_always_parallel"
+            ) {
+                return "verses_by_pairs";
+            }
+            if (raw === "verses_by_pairs") {
+                return raw;
+            }
+            return "single";
+        };
+
+        const rebuildSlideDisplayModeOptions = () => {
+            if (!(slideDisplayModeSelect instanceof HTMLSelectElement)) {
+                return;
+            }
+            const hasChorus = hasActiveChorusBlocks();
+            const previousValue = slideDisplayModeSelect.value;
+            const normalizedValue = normalizeSlideDisplayMode(previousValue, hasChorus);
+            const nextOptions = hasChorus
+                ? [
+                    ["single", label("slideModeSingleLabel")],
+                    [
+                        "chorus_then_parallel",
+                        label("slideModeChorusThenParallelLabel"),
+                    ],
+                    [
+                        "chorus_always_parallel",
+                        label("slideModeChorusAlwaysParallelLabel"),
+                    ],
+                ]
+                : [
+                    ["single", label("slideModeSingleLabel")],
+                    ["verses_by_pairs", label("slideModeVersesByPairsLabel")],
+                ];
+
+            slideDisplayModeSelect.innerHTML = "";
+            nextOptions.forEach(([value, text]) => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = text;
+                option.selected = value === normalizedValue;
+                slideDisplayModeSelect.appendChild(option);
+            });
+            slideDisplayModeSelect.value = normalizedValue;
+            slideDisplayModeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        };
 
         const getCardByRowKey = (rowKey) => {
             const needle = String(rowKey || "");
@@ -813,6 +893,7 @@
             if (hiddenFollowed) hiddenFollowed.value = normalized.followed ? "1" : "0";
             if (hiddenNotCNum) hiddenNotCNum.value = normalized.notCNum ? "1" : "0";
             renderCardFromState(card, normalized);
+            rebuildSlideDisplayModeOptions();
             refreshUnsavedChanges();
             return normalized;
         };
@@ -1109,6 +1190,7 @@
                     const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
                     if (hiddenDelete) hiddenDelete.value = "1";
                     card.hidden = true;
+                    rebuildSlideDisplayModeOptions();
                     closeAllEditors();
                     refreshUnsavedChanges();
                 }
@@ -1213,5 +1295,6 @@
         window.LSSModifySong.unsavedController = modifySongUnsavedController;
         window.LSSModifySong.refreshUnsavedChanges = refreshUnsavedChanges;
         initializeCardDefaults();
+        rebuildSlideDisplayModeOptions();
     }
 })();
