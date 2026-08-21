@@ -24,8 +24,14 @@ Un chant est défini par :
 - `description`
 - `status`
 - `licensed`
+- une option métier d'`affichage double` stockée au niveau de la table des chants pour les cas particuliers
 
 Contrainte d’unicité : `title + subtitle`.
+
+Cette option d'`affichage double` n'est pas le comportement normal d'un chant.
+Elle sert à marquer certains chants particuliers dont la projection peut nécessiter une composition à deux zones de texte sur une même slide.
+
+Cette information portée par le chant peut ensuite être utilisée par `app_animation` pour préconfigurer automatiquement le mode de rendu d'une animation contenant ce chant.
 
 ## Statut de validation
 
