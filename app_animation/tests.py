@@ -19,7 +19,7 @@ from app_group.services import (
     SELECTED_GROUP_ID_SESSION_KEY,
     SELECTED_GROUP_SECRET_SESSION_KEY,
 )
-from app_song.models import Song, SongFavorite, SongStatus, Verse
+from app_song.models import Song, SongFavorite, SongSlideDisplayMode, SongStatus, Verse
 
 from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
@@ -73,6 +73,39 @@ class AnimationFormFontValidationTests(SimpleTestCase):
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
+
+
+class AnimationSongSlideDisplayModeModelTests(TestCase):
+    def test_animation_song_defaults_to_single_slide_display_mode(self):
+        group = Group.objects.create(name="Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Animation",
+            description="",
+            scheduled_at=timezone.now(),
+        )
+
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        self.assertEqual(item.slide_display_mode, SongSlideDisplayMode.SINGLE)
+
+    def test_animation_song_exposes_same_slide_display_mode_choices_as_song(self):
+        self.assertEqual(
+            tuple(value for value, _label in AnimationSong._meta.get_field("slide_display_mode").choices),
+            (
+                SongSlideDisplayMode.SINGLE,
+                SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+                SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+                SongSlideDisplayMode.VERSES_BY_PAIRS,
+            ),
+        )
 
     def test_animation_form_rejects_font_outside_catalog(self):
         form = AnimationForm(
@@ -930,6 +963,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
         self.assertContains(response, '"songCatalog"')
+        self.assertContains(response, "data-song-slide-display-mode")
         self.assertContains(response, f'data-verse-id="{verse.verse_id}"')
         self.assertContains(response, "data-song-text-swatch")
         self.assertContains(response, "data-song-bg-swatch")
@@ -937,6 +971,187 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-song-style-parent-reset-trigger")
         self.assertContains(response, "unsavedChangesTitle")
         self.assertContains(response, "unsavedChangesMessage")
+        payload = json.loads(response.context["songs_payload_initial_json"])
+        self.assertEqual(
+            payload["items"][0]["song_style"]["slide_display_mode"],
+            SongSlideDisplayMode.SINGLE,
+        )
+
+    def test_modify_animation_get_with_chorus_shows_only_single_and_chorus_modes(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="R")
+        Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="C1")
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'id="song-slide-display-mode-{item.animation_song_id}"',
+            html=False,
+        )
+        self.assertContains(response, 'option value="single"', html=False)
+        self.assertContains(
+            response, 'option value="chorus_then_parallel"', html=False
+        )
+        self.assertContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+        self.assertNotContains(response, 'option value="verses_by_pairs"', html=False)
+
+    def test_modify_animation_get_without_chorus_shows_single_and_verses_by_pairs_only(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Verses",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        verse = Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="C1",
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'option value="single"', html=False)
+        self.assertContains(response, 'option value="verses_by_pairs"', html=False)
+        self.assertNotContains(
+            response, 'option value="chorus_then_parallel"', html=False
+        )
+        self.assertNotContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+
+    def test_modify_animation_get_with_only_chorus_like_does_not_expose_chorus_modes(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Special",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont",
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        AnimationSong.objects.create(animation=animation, song=song, position=2)
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'option value="verses_by_pairs"', html=False)
+        self.assertNotContains(
+            response, 'option value="chorus_then_parallel"', html=False
+        )
+        self.assertNotContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+
+    def test_modify_animation_get_normalizes_incompatible_saved_mode(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song No Chorus",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        verse = Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="C1",
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("modify_animation", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<option value="verses_by_pairs" selected>',
+            html=False,
+        )
+        payload = json.loads(response.context["songs_payload_initial_json"])
+        self.assertEqual(
+            payload["items"],
+            [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "verses_by_pairs",
+                        "font_family_override": "",
+                        "font_size_delta": 0,
+                        "text_color_override": "",
+                        "bg_color_override": "",
+                        "background_asset_code_override": "",
+                    },
+                    "verse_styles": {},
+                }
+            ],
+        )
 
     def test_modify_animation_get_hides_chorus_rows_and_keeps_verse_rows(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -1098,6 +1313,7 @@ class AnimationViewsTests(TestCase):
                     "song_id": song.song_id,
                     "visible_verse_ids": [verse_one.verse_id],
                     "song_style": {
+                        "slide_display_mode": "verses_by_pairs",
                         "font_family_override": "Source Sans Pro",
                         "font_size_delta": 10,
                         "text_color_override": "#123456",
@@ -1139,6 +1355,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(item.font_size_override, 70)
         self.assertEqual(item.text_color_override, "#123456")
         self.assertEqual(item.bg_color_override, "#654321")
+        self.assertEqual(item.slide_display_mode, SongSlideDisplayMode.VERSES_BY_PAIRS)
 
         verse_one_override = AnimationVerseOverride.objects.get(
             animation_song=item,
@@ -1159,6 +1376,269 @@ class AnimationViewsTests(TestCase):
         self.assertIsNone(verse_two_override.font_size_override)
         self.assertIsNone(verse_two_override.text_color_override)
         self.assertIsNone(verse_two_override.bg_color_override)
+
+    def test_modify_animation_post_persists_chorus_mode_when_song_has_chorus(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id, chorus.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "chorus_always_parallel",
+                    },
+                    "verse_styles": {},
+                }
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        item.refresh_from_db()
+        self.assertEqual(
+            item.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+    def test_modify_animation_post_remaps_chorus_mode_to_verses_by_pairs_without_chorus(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Verses", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        verse = Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, text="Couplet"
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "chorus_then_parallel",
+                    },
+                    "verse_styles": {},
+                }
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        item.refresh_from_db()
+        self.assertEqual(
+            item.slide_display_mode,
+            SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+    def test_modify_animation_post_remaps_verses_by_pairs_to_chorus_then_parallel_with_chorus(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item = AnimationSong.objects.create(animation=animation, song=song, position=2)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id, chorus.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "verses_by_pairs",
+                    },
+                    "verse_styles": {},
+                }
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        item.refresh_from_db()
+        self.assertEqual(
+            item.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+    def test_modify_animation_post_can_persist_different_modes_for_two_occurrences_of_same_song(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Shared", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet"
+        )
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Ubuntu",
+            font_size=60,
+            horizontal_padding=80,
+        )
+        item_one = AnimationSong.objects.create(animation=animation, song=song, position=2)
+        item_two = AnimationSong.objects.create(animation=animation, song=song, position=4)
+
+        payload = {
+            "items": [
+                {
+                    "animation_song_id": item_one.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id, chorus.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "single",
+                    },
+                    "verse_styles": {},
+                },
+                {
+                    "animation_song_id": item_two.animation_song_id,
+                    "song_id": song.song_id,
+                    "visible_verse_ids": [verse.verse_id, chorus.verse_id],
+                    "song_style": {
+                        "slide_display_mode": "chorus_then_parallel",
+                    },
+                    "verse_styles": {},
+                },
+            ]
+        }
+
+        self._select_group(group)
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "60",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "ordered_mix": f"asid:{item_one.animation_song_id}|asid:{item_two.animation_song_id}",
+                "songs_payload": json.dumps(payload),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        item_one.refresh_from_db()
+        item_two.refresh_from_db()
+        self.assertEqual(item_one.slide_display_mode, SongSlideDisplayMode.SINGLE)
+        self.assertEqual(
+            item_two.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
 
     def test_modify_animation_post_forces_chorus_visibility_even_if_payload_hides_it(
         self,

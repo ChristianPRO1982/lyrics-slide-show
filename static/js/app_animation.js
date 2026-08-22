@@ -884,6 +884,7 @@
 
             const songFontFamily = card.querySelector("[data-song-font-family]");
             const songFontSizeDelta = card.querySelector("[data-song-font-size-delta]");
+            const songSlideDisplayMode = card.querySelector("[data-song-slide-display-mode]");
 
             const verseStyles = {};
             card.querySelectorAll("[data-main-verse-row]").forEach((row) => {
@@ -910,6 +911,7 @@
                 song_id: Number.isNaN(songId) ? 0 : songId,
                 visible_verse_ids: Array.from(visibleSet).sort((a, b) => a - b),
                 song_style: {
+                    slide_display_mode: String(songSlideDisplayMode?.value || "").trim(),
                     font_family_override: String(songFontFamily?.value || "").trim(),
                     font_size_delta: Number.parseInt(String(songFontSizeDelta?.value || "0"), 10) || 0,
                     text_color_override: String(card.getAttribute("data-song-text-color") || "").trim(),
@@ -1382,7 +1384,7 @@
                 });
             });
 
-            card.querySelectorAll("[data-song-font-family], [data-song-font-size-delta], [data-verse-font-family], [data-verse-font-size-delta]").forEach((field) => {
+            card.querySelectorAll("[data-song-slide-display-mode], [data-song-font-family], [data-song-font-size-delta], [data-verse-font-family], [data-verse-font-size-delta]").forEach((field) => {
                 field.addEventListener("change", () => {
                     applySongCardPreviewStyles(card);
                     updateSongsPayloadInput();

@@ -755,8 +755,31 @@ body.animation-background-picker-overlay-open {
     gap: 0.7rem;
 }
 
+.animation-song-main-head-actions {
+    margin-left: auto;
+    display: grid;
+    justify-items: end;
+    gap: 0.4rem;
+}
+
 .animation-song-main-head .animation-secondary-action {
     margin-left: auto;
+    white-space: nowrap;
+}
+
+.animation-song-slide-display-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.45rem;
+    text-align: right;
+}
+
+.animation-song-slide-display-field select {
+    max-width: min(100%, 21rem);
+}
+
+.animation-song-slide-display-label {
     white-space: nowrap;
 }
 

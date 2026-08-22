@@ -129,16 +129,32 @@
                     <div data-song-collapsed>
                         <div class="animation-song-main-head">
                             <p><strong>{{ card.song_title }}</strong></p>
-                            <button
-                                type="button"
-                                class="animation-secondary-action site-action site-action--secondary"
-                                data-song-options-toggle
-                                data-open-label="{% trans 'Afficher les options' %}"
-                                data-close-label="{% trans 'Masquer les options' %}"
-                                aria-expanded="false"
-                            >
-                                {% trans "Afficher les options" %}
-                            </button>
+                            <div class="animation-song-main-head-actions">
+                                <button
+                                    type="button"
+                                    class="animation-secondary-action site-action site-action--secondary"
+                                    data-song-options-toggle
+                                    data-open-label="{% trans 'Afficher les options' %}"
+                                    data-close-label="{% trans 'Masquer les options' %}"
+                                    aria-expanded="false"
+                                >
+                                    {% trans "Afficher les options" %}
+                                </button>
+                                <label
+                                    class="animation-song-slide-display-field"
+                                    for="song-slide-display-mode-{{ card.animation_song_id }}"
+                                >
+                                    <span class="animation-song-slide-display-label">{% trans "Affichage des slides" %}</span>
+                                    <select
+                                        id="song-slide-display-mode-{{ card.animation_song_id }}"
+                                        data-song-slide-display-mode
+                                    >
+                                        {% for option in card.slide_display_mode_options %}
+                                            <option value="{{ option.value }}"{% if option.value == card.song_style.slide_display_mode %} selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
                         </div>
                         <div class="animation-song-verse-list">
                             {% for verse in card.verses %}
