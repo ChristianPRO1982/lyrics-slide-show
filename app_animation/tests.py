@@ -373,6 +373,27 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
             'blackoutFrameNode.classList.toggle("is-visible", state.blackMode)', script
         )
 
+    def test_master_script_uses_projection_steps_and_projection_targets(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn("const projectionSteps =", script)
+        self.assertIn("projectionStepByIndex", script)
+        self.assertIn("dataset.targetProjectionIndex", script)
+        self.assertIn('card.getAttribute("data-projection-index")', script)
+
+
+class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
+    def test_display_script_supports_double_projection_steps(self):
+        script = Path("static/js/lyrics_slide_show_display.js").read_text()
+        self.assertIn("frame.projectionStep", script)
+        self.assertIn("renderDoubleProjectionStep", script)
+        self.assertIn('wrapper.className = "lyrics-display-double"', script)
+        self.assertIn("lyrics-display-column", script)
+
+    def test_display_stylesheet_declares_double_layout_classes(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".lyrics-display-double", stylesheet)
+        self.assertIn(".lyrics-display-column", stylesheet)
+
 
 class MessageBoxShortcutSlotTests(SimpleTestCase):
     def test_message_box_supports_shortcut_slot_field_type(self):
@@ -3147,6 +3168,7 @@ class AnimationViewsTests(TestCase):
         payload = response.context["runtime_payload"]
         self.assertEqual(payload["animationId"], animation.animation_id)
         self.assertIn("slides", payload)
+        self.assertIn("projectionSteps", payload)
         self.assertTrue(
             payload["publicUrl"].endswith(
                 reverse("lyrics_slide_show_public", args=[animation.animation_id])
@@ -3175,6 +3197,36 @@ class AnimationViewsTests(TestCase):
                 "backgroundAssetCode": "",
                 "backgroundUrl": "",
             },
+        )
+        self.assertEqual(
+            payload["projectionSteps"],
+            [
+                {
+                    "projectionIndex": 0,
+                    "animationSongId": animation_song.animation_song_id,
+                    "songId": song.song_id,
+                    "songTitle": song.display_title,
+                    "mode": "simple",
+                    "left": slides[0],
+                    "right": None,
+                    "primarySourceGlobalIndex": 0,
+                    "sourceGlobalIndexes": [0],
+                }
+            ],
+        )
+        self.assertEqual(
+            payload["songs"],
+            [
+                {
+                    "animationSongId": animation_song.animation_song_id,
+                    "songId": song.song_id,
+                    "songTitle": song.display_title,
+                    "slideIndexes": [0],
+                    "chorusIndexes": [],
+                    "projectionIndexes": [0],
+                    "chorusProjectionIndexes": [],
+                }
+            ],
         )
         self.assertFalse(response.context["shortcuts_config"]["canCustomizeShortcuts"])
         self.assertEqual(
@@ -3267,6 +3319,7 @@ class AnimationViewsTests(TestCase):
             if group_item["animationSongId"] == item.animation_song_id
         )
         self.assertEqual([card["kind"] for card in cards], ["chorus", "verse", "chorus"])
+        self.assertTrue(all("projectionIndex" in card for card in cards))
 
     def test_lyrics_slide_show_remote_grid_hides_chorus_cards_for_chorus_always_parallel(
         self,
@@ -3500,6 +3553,176 @@ class AnimationViewsTests(TestCase):
             [card["label"] for card in cards],
             ["Couplet 1", "Couplet 3"],
         )
+
+    def test_lyrics_slide_show_projection_steps_follow_chorus_then_parallel_sequence(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus Then Parallel Projection",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="R")
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="C1"
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        song_entry = next(
+            entry
+            for entry in payload["songs"]
+            if entry["animationSongId"] == item.animation_song_id
+        )
+        projection_steps = [
+            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+        ]
+        self.assertEqual(
+            [step["mode"] for step in projection_steps[:2]],
+            ["simple", "double"],
+        )
+        self.assertEqual(projection_steps[0]["left"]["kind"], "chorus")
+        self.assertEqual(projection_steps[1]["left"]["kind"], "chorus")
+        self.assertEqual(projection_steps[1]["right"]["sourceVerseId"], verse.verse_id)
+        self.assertEqual(song_entry["chorusProjectionIndexes"], [0, 2])
+
+    def test_lyrics_slide_show_projection_steps_keep_only_double_steps_in_chorus_always_parallel(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus Always Parallel Projection",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="R")
+        Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="C1")
+        Verse.objects.create(song=song, num=6, num_verse=2, chorus=False, text="C2")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        song_entry = next(
+            entry
+            for entry in payload["songs"]
+            if entry["animationSongId"] == item.animation_song_id
+        )
+        projection_steps = [
+            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+        ]
+        self.assertEqual([step["mode"] for step in projection_steps], ["double", "double"])
+        self.assertTrue(all(step["left"]["kind"] == "chorus" for step in projection_steps))
+        self.assertTrue(all(step["right"]["kind"] == "verse" for step in projection_steps))
+        self.assertTrue(song_entry["chorusProjectionIndexes"])
+
+    def test_lyrics_slide_show_projection_steps_pair_verses_by_pairs_and_repeat_last_shorter_block(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Verses Projection",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(
+            song=song, num=2, num_verse=1, chorus=False, followed=True, text="C1a"
+        )
+        Verse.objects.create(
+            song=song,
+            num=4,
+            num_verse=1,
+            chorus=False,
+            notcontinuenumbering=True,
+            text="C1b",
+        )
+        Verse.objects.create(
+            song=song, num=6, num_verse=2, chorus=False, followed=True, text="C2a"
+        )
+        Verse.objects.create(
+            song=song,
+            num=8,
+            num_verse=2,
+            chorus=False,
+            followed=True,
+            notcontinuenumbering=True,
+            text="C2b",
+        )
+        Verse.objects.create(
+            song=song,
+            num=10,
+            num_verse=2,
+            chorus=False,
+            notcontinuenumbering=True,
+            text="C2c",
+        )
+        Verse.objects.create(song=song, num=12, num_verse=3, chorus=False, text="C3")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        payload = response.context["runtime_payload"]
+        song_entry = next(
+            entry
+            for entry in payload["songs"]
+            if entry["animationSongId"] == item.animation_song_id
+        )
+        projection_steps = [
+            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+        ]
+        self.assertEqual(
+            [step["mode"] for step in projection_steps],
+            ["double", "double", "double", "simple"],
+        )
+        self.assertEqual(projection_steps[0]["left"]["text"], "C1a")
+        self.assertEqual(projection_steps[0]["right"]["text"], "C2a")
+        self.assertEqual(projection_steps[1]["left"]["text"], "C1b")
+        self.assertEqual(projection_steps[1]["right"]["text"], "C2b")
+        self.assertEqual(projection_steps[2]["left"]["text"], "C1b")
+        self.assertEqual(projection_steps[2]["right"]["text"], "C2c")
+        self.assertEqual(projection_steps[3]["left"]["text"], "C3")
 
     def test_lyrics_slide_show_toolbar_mentions_customizable_shortcuts(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

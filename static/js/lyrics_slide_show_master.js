@@ -105,6 +105,22 @@
 
     const slides = payload.slides;
     const songs = payload.songs;
+    const buildFallbackProjectionSteps = () => {
+        return slides.map((slide, index) => ({
+            projectionIndex: index,
+            animationSongId: slide.animationSongId,
+            songId: slide.songId,
+            songTitle: slide.songTitle,
+            mode: "simple",
+            left: slide,
+            right: null,
+            primarySourceGlobalIndex: slide.globalIndex,
+            sourceGlobalIndexes: [slide.globalIndex],
+        }));
+    };
+    const projectionSteps = Array.isArray(payload.projectionSteps) && payload.projectionSteps.length
+        ? payload.projectionSteps
+        : buildFallbackProjectionSteps();
     const publicUrl = String(payload.publicUrl || "");
     const qrCodePngBase64 = String(payload.qrCodePngBase64 || "");
     const backgroundUrls = Array.isArray(payload.backgroundUrls) ? payload.backgroundUrls.map((url) => String(url || "").trim()).filter(Boolean) : [];
@@ -154,7 +170,7 @@
     const state = {
         sessionId: defaultSessionId,
         selectedSongIndex: 0,
-        projectedSlideGlobalIndex: null,
+        projectedProjectionIndex: null,
         pendingSongRestartIndex: null,
         blackMode: false,
         qrMode: false,
@@ -429,16 +445,50 @@
         return slides[globalIndex] || null;
     };
 
+    const projectionStepByIndex = (projectionIndex) => {
+        if (!Number.isInteger(projectionIndex) || projectionIndex < 0 || projectionIndex >= projectionSteps.length) {
+            return null;
+        }
+        return projectionSteps[projectionIndex] || null;
+    };
+
+    const getPrimaryRenderable = (projectionStep) => {
+        if (!projectionStep || typeof projectionStep !== "object") {
+            return null;
+        }
+        const right = projectionStep.right;
+        if (projectionStep.mode === "double" && right && typeof right === "object") {
+            return right;
+        }
+        return projectionStep.left && typeof projectionStep.left === "object" ? projectionStep.left : null;
+    };
+
+    const findProjectionIndexBySourceGlobalIndex = (globalIndex) => {
+        if (!Number.isInteger(globalIndex)) {
+            return null;
+        }
+        for (let index = 0; index < projectionSteps.length; index += 1) {
+            const step = projectionSteps[index];
+            if (!step || !Array.isArray(step.sourceGlobalIndexes)) {
+                continue;
+            }
+            if (step.sourceGlobalIndexes.includes(globalIndex)) {
+                return index;
+            }
+        }
+        return null;
+    };
+
     const getCurrentSong = () => getSongByIndex(state.selectedSongIndex);
 
     const getProjectedSongIndex = () => {
-        const slide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
-        if (!slide) {
+        const projectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        if (!projectionStep) {
             return -1;
         }
-        const animationSongId = toIntegerOrNull(slide.animationSongId);
+        const animationSongId = toIntegerOrNull(projectionStep.animationSongId);
         if (!Number.isInteger(animationSongId)) {
-            warnDroppedIndex("slide.animationSongId", slide.animationSongId, "invalid-slide-animation-song-id");
+            warnDroppedIndex("projectionStep.animationSongId", projectionStep.animationSongId, "invalid-projection-animation-song-id");
             return -1;
         }
         const resolvedSongIndex = songIndexByAnimationSongId.get(animationSongId);
@@ -456,39 +506,50 @@
         });
     };
 
-    const getSongChorusIndexes = (songIndex) => {
+    const getSongProjectionIndexes = (songIndex) => {
         const song = getSongByIndex(songIndex);
-        if (!song || !Array.isArray(song.chorusIndexes)) {
+        if (!song) {
             return [];
         }
-        return sanitizeIndexList(song.chorusIndexes, {
-            context: `songs[${songIndex}].chorusIndexes`,
-            maxExclusive: slides.length,
+        const rawIndexes = Array.isArray(song.projectionIndexes) && song.projectionIndexes.length
+            ? song.projectionIndexes
+            : getSongSlideIndexes(songIndex);
+        return sanitizeIndexList(rawIndexes, {
+            context: `songs[${songIndex}].projectionIndexes`,
+            maxExclusive: projectionSteps.length,
         });
     };
 
-    const getPreparedSlidePosition = (songIndex) => {
-        const indexes = getSongSlideIndexes(songIndex);
+    const getSongChorusProjectionIndexes = (songIndex) => {
+        const song = getSongByIndex(songIndex);
+        if (!song || !Array.isArray(song.chorusProjectionIndexes)) {
+            return [];
+        }
+        return sanitizeIndexList(song.chorusProjectionIndexes, {
+            context: `songs[${songIndex}].chorusProjectionIndexes`,
+            maxExclusive: projectionSteps.length,
+        });
+    };
+
+    const getPreparedProjectionPosition = (songIndex) => {
+        const indexes = getSongProjectionIndexes(songIndex);
         if (!indexes.length) {
             return -1;
         }
 
-        if (!Number.isInteger(state.projectedSlideGlobalIndex)) {
-            // Sans diapo active, on repart toujours de la première diapo du chant sélectionné.
+        if (!Number.isInteger(state.projectedProjectionIndex)) {
             return -1;
         }
 
         if (Number.isInteger(state.pendingSongRestartIndex) && state.pendingSongRestartIndex === songIndex) {
-            // Après une sélection de chant, la prochaine navigation repart du début du chant.
             return -1;
         }
 
-        const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
+        const projectedPosition = indexes.indexOf(state.projectedProjectionIndex);
         if (projectedPosition >= 0) {
             return projectedPosition;
         }
 
-        // La diapo projetée appartient à un autre chant : prochaine navigation = première diapo.
         return -1;
     };
 
@@ -496,7 +557,12 @@
         const payloadToStore = {
             sessionId: state.sessionId,
             selectedSongIndex: state.selectedSongIndex,
-            projectedSlideGlobalIndex: state.projectedSlideGlobalIndex,
+            projectedProjectionIndex: state.projectedProjectionIndex,
+            projectedSlideGlobalIndex: (() => {
+                const currentStep = projectionStepByIndex(state.projectedProjectionIndex);
+                const primarySourceGlobalIndex = currentStep ? toNonNegativeIndexOrNull(currentStep.primarySourceGlobalIndex) : null;
+                return Number.isInteger(primarySourceGlobalIndex) ? primarySourceGlobalIndex : null;
+            })(),
             blackMode: state.blackMode,
             qrMode: state.qrMode,
             hideChorusesInGrid: state.hideChorusesInGrid,
@@ -531,12 +597,15 @@
             } else if (Number.isInteger(legacySelectedSongIndex)) {
                 state.selectedSongIndex = normalizeSongIndex(legacySelectedSongIndex);
             }
+            const restoredProjectedProjectionIndex = toNonNegativeIndexOrNull(parsed.projectedProjectionIndex);
             const restoredProjectedSlideIndex = toNonNegativeIndexOrNull(parsed.projectedSlideGlobalIndex);
             const legacyProjectedSlideIndex = toNonNegativeIndexOrNull(parsed.currentSlideGlobalIndex);
-            if (Number.isInteger(restoredProjectedSlideIndex)) {
-                state.projectedSlideGlobalIndex = restoredProjectedSlideIndex;
+            if (Number.isInteger(restoredProjectedProjectionIndex)) {
+                state.projectedProjectionIndex = restoredProjectedProjectionIndex;
+            } else if (Number.isInteger(restoredProjectedSlideIndex)) {
+                state.projectedProjectionIndex = findProjectionIndexBySourceGlobalIndex(restoredProjectedSlideIndex);
             } else if (Number.isInteger(legacyProjectedSlideIndex)) {
-                state.projectedSlideGlobalIndex = legacyProjectedSlideIndex;
+                state.projectedProjectionIndex = findProjectionIndexBySourceGlobalIndex(legacyProjectedSlideIndex);
             }
             state.blackMode = Boolean(parsed.blackMode);
             state.qrMode = Boolean(parsed.qrMode);
@@ -555,17 +624,17 @@
 
     const normalizeState = () => {
         state.selectedSongIndex = normalizeSongIndex(state.selectedSongIndex);
-        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
-        if (!currentSlide) {
-            state.projectedSlideGlobalIndex = null;
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        if (!currentProjectionStep) {
+            state.projectedProjectionIndex = null;
         }
         if (state.blackMode) {
             state.qrMode = false;
         }
         const projectedSongIndex = getProjectedSongIndex();
         if (projectedSongIndex >= 0) {
-            const indexes = getSongSlideIndexes(projectedSongIndex);
-            const projectedPosition = indexes.indexOf(state.projectedSlideGlobalIndex);
+            const indexes = getSongProjectionIndexes(projectedSongIndex);
+            const projectedPosition = indexes.indexOf(state.projectedProjectionIndex);
             if (projectedPosition >= 0) {
                 state.progressCursorBySong[String(projectedSongIndex)] = projectedPosition;
             }
@@ -629,15 +698,15 @@
             };
         }
 
-        const slide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
-        if (!slide) {
+        const projectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        if (!projectionStep) {
             return { mode: "idle" };
         }
 
         return {
             mode: "slide",
-            songTitle: slide.songTitle,
-            slide,
+            songTitle: String(projectionStep.songTitle || ""),
+            projectionStep,
         };
     };
 
@@ -689,22 +758,22 @@
         refreshUI();
     };
 
-    const projectSlide = (globalIndex, options = {}) => {
-        const slide = slideByGlobalIndex(globalIndex);
-        if (!slide) {
-            warnDroppedIndex("projectSlide", globalIndex, "unknown-slide");
+    const projectProjectionStep = (projectionIndex, options = {}) => {
+        const projectionStep = projectionStepByIndex(projectionIndex);
+        if (!projectionStep) {
+            warnDroppedIndex("projectProjectionStep", projectionIndex, "unknown-projection-step");
             return;
         }
         const preserveProgress = Boolean(options.preserveProgress);
         const updateSelected = options.updateSelected !== false;
-        const animationSongId = toIntegerOrNull(slide.animationSongId);
+        const animationSongId = toIntegerOrNull(projectionStep.animationSongId);
         const resolvedSongIndex = Number.isInteger(animationSongId)
             ? songIndexByAnimationSongId.get(animationSongId)
             : null;
         if (updateSelected && Number.isInteger(resolvedSongIndex)) {
             state.selectedSongIndex = resolvedSongIndex;
         }
-        state.projectedSlideGlobalIndex = globalIndex;
+        state.projectedProjectionIndex = projectionIndex;
         state.blackMode = false;
         state.qrMode = false;
         state.f11ReminderActive = false;
@@ -712,8 +781,8 @@
             state.pendingSongRestartIndex = null;
         }
         if (!preserveProgress && Number.isInteger(resolvedSongIndex)) {
-            const indexes = getSongSlideIndexes(resolvedSongIndex);
-            const projectedPosition = indexes.indexOf(globalIndex);
+            const indexes = getSongProjectionIndexes(resolvedSongIndex);
+            const projectedPosition = indexes.indexOf(projectionIndex);
             if (projectedPosition >= 0) {
                 state.progressCursorBySong[String(resolvedSongIndex)] = projectedPosition;
             }
@@ -724,12 +793,12 @@
     };
 
     const navigateSlide = (direction) => {
-        const indexes = getSongSlideIndexes(state.selectedSongIndex);
+        const indexes = getSongProjectionIndexes(state.selectedSongIndex);
         if (!indexes.length) {
             return;
         }
 
-        const currentPosition = getPreparedSlidePosition(state.selectedSongIndex);
+        const currentPosition = getPreparedProjectionPosition(state.selectedSongIndex);
         let nextPosition;
         if (currentPosition < 0) {
             nextPosition = direction > 0 ? 0 : indexes.length - 1;
@@ -744,27 +813,27 @@
             }
         }
         state.progressCursorBySong[String(state.selectedSongIndex)] = nextPosition;
-        const targetGlobalIndex = indexes[nextPosition];
-        if (!Number.isInteger(targetGlobalIndex)) {
-            warnDroppedIndex("navigateSlide.targetGlobalIndex", targetGlobalIndex, "invalid-target-index");
+        const targetProjectionIndex = indexes[nextPosition];
+        if (!Number.isInteger(targetProjectionIndex)) {
+            warnDroppedIndex("navigateSlide.targetProjectionIndex", targetProjectionIndex, "invalid-target-index");
             return;
         }
-        projectSlide(targetGlobalIndex, { preserveProgress: true, updateSelected: false });
+        projectProjectionStep(targetProjectionIndex, { preserveProgress: true, updateSelected: false });
     };
 
     const navigateChorus = () => {
-        const chorusIndexes = getSongChorusIndexes(state.selectedSongIndex);
+        const chorusIndexes = getSongChorusProjectionIndexes(state.selectedSongIndex);
         if (!chorusIndexes.length) {
             return;
         }
 
-        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
         const currentSong = getCurrentSong();
-        const currentSlideAnimationSongId = currentSlide ? toIntegerOrNull(currentSlide.animationSongId) : null;
+        const currentProjectionAnimationSongId = currentProjectionStep ? toIntegerOrNull(currentProjectionStep.animationSongId) : null;
         const selectedAnimationSongId = currentSong ? toIntegerOrNull(currentSong.animationSongId) : null;
-        const isProjectedFromSelectedSong = currentSlideAnimationSongId === selectedAnimationSongId;
+        const isProjectedFromSelectedSong = currentProjectionAnimationSongId === selectedAnimationSongId;
         const projectedChorusPosition = isProjectedFromSelectedSong
-            ? chorusIndexes.indexOf(state.projectedSlideGlobalIndex)
+            ? chorusIndexes.indexOf(state.projectedProjectionIndex)
             : -1;
 
         let targetPosition = 0;
@@ -778,7 +847,7 @@
             return;
         }
         state.chorusCursorBySong[String(state.selectedSongIndex)] = (targetPosition + 1) % chorusIndexes.length;
-        projectSlide(targetIndex, { preserveProgress: true, updateSelected: false });
+        projectProjectionStep(targetIndex, { preserveProgress: true, updateSelected: false });
     };
 
     const toggleBlackMode = () => {
@@ -830,6 +899,30 @@
             return rawLabel;
         }
         return label("noneLabel");
+    };
+
+    const formatProjectionStepLabel = (projectionStep) => {
+        if (!projectionStep) {
+            return label("noneLabel");
+        }
+        const leftLabel = formatSlideLabel(projectionStep.left);
+        if (projectionStep.mode !== "double" || !projectionStep.right) {
+            return leftLabel;
+        }
+        const rightLabel = formatSlideLabel(projectionStep.right);
+        return `${leftLabel} | ${rightLabel}`;
+    };
+
+    const formatProjectionStepPreviewText = (projectionStep) => {
+        if (!projectionStep) {
+            return label("nextSlidePlaceholder");
+        }
+        const leftText = String(projectionStep.left?.text || "");
+        if (projectionStep.mode !== "double" || !projectionStep.right) {
+            return leftText;
+        }
+        const rightText = String(projectionStep.right.text || "");
+        return [leftText, rightText].filter(Boolean).join("\n\n");
     };
 
     const setText = (node, text) => {
@@ -966,46 +1059,66 @@
     };
 
     const refreshPreview = () => {
-        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
-        const songIndexes = getSongSlideIndexes(state.selectedSongIndex);
-        let nextSlide = null;
-        let nextSlideGlobalIndex = null;
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        const songIndexes = getSongProjectionIndexes(state.selectedSongIndex);
+        let nextProjectionStep = null;
+        let nextProjectionIndex = null;
 
         if (songIndexes.length) {
-            const preparedPosition = getPreparedSlidePosition(state.selectedSongIndex);
+            const preparedPosition = getPreparedProjectionPosition(state.selectedSongIndex);
             if (preparedPosition < 0) {
-                nextSlideGlobalIndex = songIndexes[0];
-                nextSlide = slideByGlobalIndex(nextSlideGlobalIndex);
+                nextProjectionIndex = songIndexes[0];
+                nextProjectionStep = projectionStepByIndex(nextProjectionIndex);
             } else {
-                nextSlideGlobalIndex = songIndexes[(preparedPosition + 1) % songIndexes.length];
-                nextSlide = slideByGlobalIndex(nextSlideGlobalIndex);
+                nextProjectionIndex = songIndexes[(preparedPosition + 1) % songIndexes.length];
+                nextProjectionStep = projectionStepByIndex(nextProjectionIndex);
             }
         }
 
-        setText(previewCurrentLabelNode, currentSlide ? formatSlideLabel(currentSlide) : label("currentSlidePlaceholder"));
-        setText(previewCurrentTextNode, currentSlide ? String(currentSlide.text || "") : label("currentSlidePlaceholder"));
-        setText(previewNextLabelNode, nextSlide ? formatSlideLabel(nextSlide) : label("nextSlidePlaceholder"));
-        setText(previewNextTextNode, nextSlide ? String(nextSlide.text || "") : label("nextSlidePlaceholder"));
+        setText(
+            previewCurrentLabelNode,
+            currentProjectionStep
+                ? formatProjectionStepLabel(currentProjectionStep)
+                : label("currentSlidePlaceholder"),
+        );
+        setText(
+            previewCurrentTextNode,
+            currentProjectionStep
+                ? formatProjectionStepPreviewText(currentProjectionStep)
+                : label("currentSlidePlaceholder"),
+        );
+        setText(
+            previewNextLabelNode,
+            nextProjectionStep
+                ? formatProjectionStepLabel(nextProjectionStep)
+                : label("nextSlidePlaceholder"),
+        );
+        setText(
+            previewNextTextNode,
+            nextProjectionStep
+                ? formatProjectionStepPreviewText(nextProjectionStep)
+                : label("nextSlidePlaceholder"),
+        );
 
         if (previewCurrentPanelNode instanceof HTMLElement) {
-            if (Number.isInteger(state.projectedSlideGlobalIndex)) {
-                previewCurrentPanelNode.dataset.targetGlobalIndex = String(state.projectedSlideGlobalIndex);
+            if (Number.isInteger(state.projectedProjectionIndex)) {
+                previewCurrentPanelNode.dataset.targetProjectionIndex = String(state.projectedProjectionIndex);
                 previewCurrentPanelNode.classList.remove("is-disabled");
                 previewCurrentPanelNode.setAttribute("aria-disabled", "false");
             } else {
-                delete previewCurrentPanelNode.dataset.targetGlobalIndex;
+                delete previewCurrentPanelNode.dataset.targetProjectionIndex;
                 previewCurrentPanelNode.classList.add("is-disabled");
                 previewCurrentPanelNode.setAttribute("aria-disabled", "true");
             }
         }
 
         if (previewNextPanelNode instanceof HTMLElement) {
-            if (Number.isInteger(nextSlideGlobalIndex)) {
-                previewNextPanelNode.dataset.targetGlobalIndex = String(nextSlideGlobalIndex);
+            if (Number.isInteger(nextProjectionIndex)) {
+                previewNextPanelNode.dataset.targetProjectionIndex = String(nextProjectionIndex);
                 previewNextPanelNode.classList.remove("is-disabled");
                 previewNextPanelNode.setAttribute("aria-disabled", "false");
             } else {
-                delete previewNextPanelNode.dataset.targetGlobalIndex;
+                delete previewNextPanelNode.dataset.targetProjectionIndex;
                 previewNextPanelNode.classList.add("is-disabled");
                 previewNextPanelNode.setAttribute("aria-disabled", "true");
             }
@@ -1033,12 +1146,12 @@
             if (!(card instanceof HTMLElement)) {
                 return;
             }
-            const rawGlobalIndex = card.getAttribute("data-global-index");
-            const globalIndex = toNonNegativeIndexOrNull(rawGlobalIndex);
-            const isActive = Number.isInteger(state.projectedSlideGlobalIndex) && globalIndex === state.projectedSlideGlobalIndex;
+            const rawProjectionIndex = card.getAttribute("data-projection-index");
+            const projectionIndex = toNonNegativeIndexOrNull(rawProjectionIndex);
+            const isActive = Number.isInteger(state.projectedProjectionIndex) && projectionIndex === state.projectedProjectionIndex;
             card.classList.toggle("is-active", isActive);
-            if (rawGlobalIndex !== null && !Number.isInteger(globalIndex)) {
-                warnDroppedIndex("data-global-index", rawGlobalIndex, "invalid-slide-card-global-index");
+            if (rawProjectionIndex !== null && !Number.isInteger(projectionIndex)) {
+                warnDroppedIndex("data-projection-index", rawProjectionIndex, "invalid-slide-card-projection-index");
             }
 
             const kind = String(card.getAttribute("data-kind") || "");
@@ -1067,8 +1180,11 @@
         setText(songTitleNode, projectedSong ? String(projectedSong.songTitle || "") : selectedSong ? String(selectedSong.songTitle || "") : label("noneLabel"));
         setText(displaySessionNode, state.sessionId);
 
-        const currentSlide = slideByGlobalIndex(state.projectedSlideGlobalIndex);
-        setText(slideLabelNode, currentSlide ? formatSlideLabel(currentSlide) : label("noneLabel"));
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        setText(
+            slideLabelNode,
+            currentProjectionStep ? formatProjectionStepLabel(currentProjectionStep) : label("noneLabel"),
+        );
 
         setText(chorusVisibilityNode, state.hideChorusesInGrid ? label("hiddenChorusLabel") : "");
         setText(scrollModeNode, state.blockScrollKeys ? label("scrollLockedLabel") : label("scrollUnlockedLabel"));
@@ -1396,13 +1512,13 @@
 
     slideCards.forEach((card) => {
         card.addEventListener("click", () => {
-            const rawGlobalIndex = card.getAttribute("data-global-index");
-            const globalIndex = toNonNegativeIndexOrNull(rawGlobalIndex);
-            if (!Number.isInteger(globalIndex)) {
-                warnDroppedIndex("slide-card-click", rawGlobalIndex, "invalid-global-index");
+            const rawProjectionIndex = card.getAttribute("data-projection-index");
+            const projectionIndex = toNonNegativeIndexOrNull(rawProjectionIndex);
+            if (!Number.isInteger(projectionIndex)) {
+                warnDroppedIndex("slide-card-click", rawProjectionIndex, "invalid-projection-index");
                 return;
             }
-            projectSlide(globalIndex);
+            projectProjectionStep(projectionIndex);
         });
     });
 
@@ -1410,12 +1526,12 @@
         if (!(panelNode instanceof HTMLElement)) {
             return;
         }
-        const globalIndex = toNonNegativeIndexOrNull(panelNode.dataset.targetGlobalIndex);
-        if (!Number.isInteger(globalIndex)) {
-            warnDroppedIndex("preview-panel-target", panelNode.dataset.targetGlobalIndex, "invalid-global-index");
+        const projectionIndex = toNonNegativeIndexOrNull(panelNode.dataset.targetProjectionIndex);
+        if (!Number.isInteger(projectionIndex)) {
+            warnDroppedIndex("preview-panel-target", panelNode.dataset.targetProjectionIndex, "invalid-projection-index");
             return;
         }
-        projectSlide(globalIndex, { preserveProgress: true });
+        projectProjectionStep(projectionIndex, { preserveProgress: true });
     };
 
     [previewCurrentPanelNode, previewNextPanelNode].forEach((panelNode) => {
