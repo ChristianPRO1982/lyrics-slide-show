@@ -98,7 +98,12 @@ class AnimationSongSlideDisplayModeModelTests(TestCase):
 
     def test_animation_song_exposes_same_slide_display_mode_choices_as_song(self):
         self.assertEqual(
-            tuple(value for value, _label in AnimationSong._meta.get_field("slide_display_mode").choices),
+            tuple(
+                value
+                for value, _label in AnimationSong._meta.get_field(
+                    "slide_display_mode"
+                ).choices
+            ),
             (
                 SongSlideDisplayMode.SINGLE,
                 SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
@@ -1006,9 +1011,7 @@ class AnimationViewsTests(TestCase):
             html=False,
         )
         self.assertContains(response, 'option value="single"', html=False)
-        self.assertContains(
-            response, 'option value="chorus_then_parallel"', html=False
-        )
+        self.assertContains(response, 'option value="chorus_then_parallel"', html=False)
         self.assertContains(
             response, 'option value="chorus_always_parallel"', html=False
         )
@@ -1380,7 +1383,10 @@ class AnimationViewsTests(TestCase):
     def test_modify_animation_post_persists_chorus_mode_when_song_has_chorus(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song = Song.objects.create(
-            title="Song Chorus", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+            title="Song Chorus",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
         )
         chorus = Verse.objects.create(
             song=song, num=2, num_verse=0, chorus=True, text="Refrain"
@@ -1444,7 +1450,10 @@ class AnimationViewsTests(TestCase):
     ):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song = Song.objects.create(
-            title="Song Verses", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+            title="Song Verses",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
         )
         verse = Verse.objects.create(
             song=song, num=2, num_verse=1, chorus=False, text="Couplet"
@@ -1505,7 +1514,10 @@ class AnimationViewsTests(TestCase):
     ):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song = Song.objects.create(
-            title="Song Chorus", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+            title="Song Chorus",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
         )
         chorus = Verse.objects.create(
             song=song, num=2, num_verse=0, chorus=True, text="Refrain"
@@ -1569,7 +1581,10 @@ class AnimationViewsTests(TestCase):
     ):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         song = Song.objects.create(
-            title="Song Shared", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+            title="Song Shared",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
         )
         chorus = Verse.objects.create(
             song=song, num=2, num_verse=0, chorus=True, text="Refrain"
@@ -1587,8 +1602,12 @@ class AnimationViewsTests(TestCase):
             font_size=60,
             horizontal_padding=80,
         )
-        item_one = AnimationSong.objects.create(animation=animation, song=song, position=2)
-        item_two = AnimationSong.objects.create(animation=animation, song=song, position=4)
+        item_one = AnimationSong.objects.create(
+            animation=animation, song=song, position=2
+        )
+        item_two = AnimationSong.objects.create(
+            animation=animation, song=song, position=4
+        )
 
         payload = {
             "items": [
@@ -3161,6 +3180,325 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(
             response.context["shortcuts_config"]["effectiveBindings"]["black"],
             ["escape", "m"],
+        )
+
+    def test_lyrics_slide_show_remote_grid_keeps_current_behavior_for_single_mode(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Single",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain visible"
+        )
+        verse = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet visible"
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.SINGLE,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        card_groups = response.context["runtime_payload"]["cardGroups"]
+        cards = next(
+            group_item["cards"]
+            for group_item in card_groups
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual(
+            [card["kind"] for card in cards],
+            ["chorus", "verse", "chorus"],
+        )
+        self.assertEqual(
+            [card["label"] for card in cards],
+            ["Refrain", "Couplet 1", "Refrain"],
+        )
+        self.assertContains(response, "Refrain visible")
+        self.assertContains(response, "Couplet visible")
+        self.assertEqual(
+            [slide["sourceVerseId"] for slide in response.context["runtime_payload"]["slides"]],
+            [chorus.verse_id, verse.verse_id, chorus.verse_id],
+        )
+
+    def test_lyrics_slide_show_remote_grid_keeps_current_behavior_for_chorus_then_parallel(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus Then Parallel",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=0, chorus=True, text="R")
+        Verse.objects.create(song=song, num=4, num_verse=1, chorus=False, text="C1")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        cards = next(
+            group_item["cards"]
+            for group_item in response.context["runtime_payload"]["cardGroups"]
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual([card["kind"] for card in cards], ["chorus", "verse", "chorus"])
+
+    def test_lyrics_slide_show_remote_grid_hides_chorus_cards_for_chorus_always_parallel(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Chorus Always Parallel",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        chorus = Verse.objects.create(
+            song=song, num=2, num_verse=0, chorus=True, text="Refrain remote hidden"
+        )
+        verse_one = Verse.objects.create(
+            song=song, num=4, num_verse=1, chorus=False, text="Couplet 1 remote visible"
+        )
+        verse_two = Verse.objects.create(
+            song=song, num=6, num_verse=2, chorus=False, text="Couplet 2 remote visible"
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        cards = next(
+            group_item["cards"]
+            for group_item in response.context["runtime_payload"]["cardGroups"]
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual([card["kind"] for card in cards], ["verse", "verse"])
+        self.assertEqual(
+            [card["label"] for card in cards],
+            ["Couplet 1", "Couplet 2"],
+        )
+        page_html = response.content.decode("utf-8").split(
+            '<script id="lss-lyrics-runtime-payload"', 1
+        )[0]
+        self.assertNotIn("Refrain remote hidden", page_html)
+        self.assertIn("Couplet 1 remote visible", page_html)
+        self.assertIn("Couplet 2 remote visible", page_html)
+
+        slides = [
+            slide
+            for slide in response.context["runtime_payload"]["slides"]
+            if slide["animationSongId"] == item.animation_song_id
+        ]
+        self.assertEqual(
+            [slide["sourceVerseId"] for slide in slides],
+            [chorus.verse_id, verse_one.verse_id, chorus.verse_id, verse_two.verse_id, chorus.verse_id],
+        )
+        song_entry = next(
+            song_entry
+            for song_entry in response.context["runtime_payload"]["songs"]
+            if song_entry["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual(song_entry["chorusIndexes"], [0, 2, 4])
+
+    def test_lyrics_slide_show_remote_grid_shows_only_odd_logical_verses_for_verses_by_pairs(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Verses By Pairs",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="C1")
+        Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="C2")
+        Verse.objects.create(song=song, num=6, num_verse=3, chorus=False, text="C3")
+        Verse.objects.create(song=song, num=8, num_verse=4, chorus=False, text="C4")
+        Verse.objects.create(song=song, num=10, num_verse=5, chorus=False, text="C5")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        cards = next(
+            group_item["cards"]
+            for group_item in response.context["runtime_payload"]["cardGroups"]
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual(
+            [card["label"] for card in cards],
+            ["Couplet 1", "Couplet 3", "Couplet 5"],
+        )
+        page_html = response.content.decode("utf-8").split(
+            '<script id="lss-lyrics-runtime-payload"', 1
+        )[0]
+        self.assertIn("C1", page_html)
+        self.assertNotIn("C2", page_html)
+        self.assertIn("C3", page_html)
+        self.assertNotIn("C4", page_html)
+        self.assertIn("C5", page_html)
+
+    def test_lyrics_slide_show_remote_grid_keeps_odd_continuations_and_special_blocks_in_verses_by_pairs(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Split Verses",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="C1a")
+        Verse.objects.create(
+            song=song,
+            num=4,
+            num_verse=1,
+            chorus=False,
+            notcontinuenumbering=True,
+            text="C1b",
+        )
+        Verse.objects.create(song=song, num=6, num_verse=2, chorus=False, text="C2a")
+        Verse.objects.create(
+            song=song,
+            num=8,
+            num_verse=2,
+            chorus=False,
+            notcontinuenumbering=True,
+            text="C2b",
+        )
+        Verse.objects.create(
+            song=song,
+            num=10,
+            num_verse=2,
+            chorus=False,
+            chorus_like=True,
+            prefix="Pont",
+            text="Pont visible",
+        )
+        Verse.objects.create(song=song, num=12, num_verse=3, chorus=False, text="C3")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        cards = next(
+            group_item["cards"]
+            for group_item in response.context["runtime_payload"]["cardGroups"]
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual(
+            [card["kind"] for card in cards],
+            ["verse", "verse", "chorus_like", "verse"],
+        )
+        self.assertEqual(
+            [card["label"] for card in cards],
+            ["Couplet 1", "", "Pont", "Couplet 3"],
+        )
+        page_html = response.content.decode("utf-8").split(
+            '<script id="lss-lyrics-runtime-payload"', 1
+        )[0]
+        self.assertIn("C1a", page_html)
+        self.assertIn("C1b", page_html)
+        self.assertNotIn("C2a", page_html)
+        self.assertNotIn("C2b", page_html)
+        self.assertIn("Pont visible", page_html)
+        self.assertIn("C3", page_html)
+
+    def test_lyrics_slide_show_remote_grid_normalizes_incompatible_mode_before_filtering(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        song = Song.objects.create(
+            title="Song Normalize",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=song, num=2, num_verse=1, chorus=False, text="C1")
+        Verse.objects.create(song=song, num=4, num_verse=2, chorus=False, text="C2")
+        Verse.objects.create(song=song, num=6, num_verse=3, chorus=False, text="C3")
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        item = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+        self._select_group(group)
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        cards = next(
+            group_item["cards"]
+            for group_item in response.context["runtime_payload"]["cardGroups"]
+            if group_item["animationSongId"] == item.animation_song_id
+        )
+        self.assertEqual(
+            [card["label"] for card in cards],
+            ["Couplet 1", "Couplet 3"],
         )
 
     def test_lyrics_slide_show_toolbar_mentions_customizable_shortcuts(self):

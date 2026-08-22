@@ -22,7 +22,7 @@ from app_main.lyrics import (
     build_request_share_url,
 )
 from app_member.services import can_manage_moderator_popup
-from app_song.models import Verse
+from app_song.models import SongSlideDisplayMode, Verse
 from app_song.rendering import ChorusRenderMode, SongRenderSettings
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
@@ -70,6 +70,7 @@ from .services.song_edits import (
     apply_songs_payload,
     build_main_song_cards,
     build_songs_payload_initial,
+    normalize_animation_song_slide_display_mode,
     parse_songs_payload,
     serialize_songs_payload,
 )
@@ -1638,13 +1639,55 @@ def _truncate_excerpt(text: str, max_chars: int = 50) -> str:
     return f"{flat[:max_chars].rstrip()}[...]"
 
 
+def _should_include_remote_card(
+    *,
+    slide_kind: str,
+    source_verse: Verse | None,
+    slide_display_mode: SongSlideDisplayMode,
+) -> bool:
+    if slide_display_mode in {
+        SongSlideDisplayMode.SINGLE,
+        SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+    }:
+        return True
+
+    if slide_display_mode == SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL:
+        return slide_kind != "chorus"
+
+    if slide_display_mode == SongSlideDisplayMode.VERSES_BY_PAIRS:
+        if slide_kind != "verse" or source_verse is None:
+            return True
+        return int(source_verse.num_verse or 0) % 2 == 1
+
+    return True
+
+
 def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, object]:
     rendered_slides = build_animation_render_bundle(animation)
+    animation_songs = list(
+        animation.animation_songs.select_related("song")
+        .prefetch_related("song__verses")
+        .order_by("position", "animation_song_id")
+    )
+    animation_song_meta: dict[int, dict[str, object]] = {}
+    for animation_song in animation_songs:
+        verses = list(animation_song.song.verses.all())
+        verses_by_id = {int(verse.verse_id): verse for verse in verses}
+        has_chorus = any(bool(verse.chorus) for verse in verses)
+        animation_song_meta[int(animation_song.animation_song_id)] = {
+            "verses_by_id": verses_by_id,
+            "slide_display_mode": normalize_animation_song_slide_display_mode(
+                animation_song.slide_display_mode,
+                has_chorus=has_chorus,
+            ),
+        }
+
     slides_payload: list[dict[str, object]] = []
     songs_payload: list[dict[str, object]] = []
     songs_by_animation_song_id: dict[int, dict[str, object]] = {}
     background_urls: set[str] = set()
     card_groups: list[dict[str, object]] = []
+    card_groups_by_animation_song_id: dict[int, dict[str, object]] = {}
 
     for index, slide in enumerate(rendered_slides):
         background_url = resolve_background_asset_url(slide.style.background_asset_code)
@@ -1691,26 +1734,39 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
             }
             songs_by_animation_song_id[slide.animation_song_id] = song_entry
             songs_payload.append(song_entry)
-            card_groups.append(
-                {
-                    "animationSongId": int(slide.animation_song_id),
-                    "songTitle": slide.song_title,
-                    "cards": [],
-                }
-            )
+            card_group = {
+                "animationSongId": int(slide.animation_song_id),
+                "songTitle": slide.song_title,
+                "cards": [],
+            }
+            card_groups_by_animation_song_id[int(slide.animation_song_id)] = card_group
+            card_groups.append(card_group)
 
         song_entry["slideIndexes"].append(index)
         if str(slide.kind) == "chorus":
             song_entry["chorusIndexes"].append(index)
 
-        card_groups[-1]["cards"].append(
-            {
-                "globalIndex": index,
-                "excerpt": slide_payload["excerpt"],
-                "label": str(slide.label or ""),
-                "kind": str(slide.kind),
-            }
+        meta = animation_song_meta.get(int(slide.animation_song_id), {})
+        verses_by_id = meta.get("verses_by_id", {})
+        source_verse = None
+        if slide.source_verse_id is not None:
+            source_verse = verses_by_id.get(int(slide.source_verse_id))
+        slide_display_mode = meta.get(
+            "slide_display_mode", SongSlideDisplayMode.SINGLE
         )
+        if _should_include_remote_card(
+            slide_kind=str(slide.kind),
+            source_verse=source_verse,
+            slide_display_mode=slide_display_mode,
+        ):
+            card_groups_by_animation_song_id[int(slide.animation_song_id)]["cards"].append(
+                {
+                    "globalIndex": index,
+                    "excerpt": slide_payload["excerpt"],
+                    "label": str(slide.label or ""),
+                    "kind": str(slide.kind),
+                }
+            )
 
     return {
         "animationId": int(animation.animation_id),
