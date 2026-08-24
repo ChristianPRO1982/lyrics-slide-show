@@ -2106,7 +2106,9 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "data-reorder-list")
         self.assertContains(response, "data-reorder-cancel")
-        self.assertContains(response, "data-reorder-cancel\n                        hidden")
+        self.assertContains(
+            response, "data-reorder-cancel\n                        hidden"
+        )
         self.assertContains(response, "song-reorder-cancel-button")
         self.assertContains(response, "data-reorder-drag-view hidden")
         self.assertContains(response, "data-reorder-normal-view")

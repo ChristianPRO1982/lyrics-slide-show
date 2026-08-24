@@ -3291,7 +3291,10 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "Refrain visible")
         self.assertContains(response, "Couplet visible")
         self.assertEqual(
-            [slide["sourceVerseId"] for slide in response.context["runtime_payload"]["slides"]],
+            [
+                slide["sourceVerseId"]
+                for slide in response.context["runtime_payload"]["slides"]
+            ],
             [chorus.verse_id, verse.verse_id, chorus.verse_id],
         )
 
@@ -3328,7 +3331,9 @@ class AnimationViewsTests(TestCase):
             for group_item in response.context["runtime_payload"]["cardGroups"]
             if group_item["animationSongId"] == item.animation_song_id
         )
-        self.assertEqual([card["kind"] for card in cards], ["chorus", "verse", "chorus"])
+        self.assertEqual(
+            [card["kind"] for card in cards], ["chorus", "verse", "chorus"]
+        )
         self.assertTrue(all("projectionIndex" in card for card in cards))
 
     def test_lyrics_slide_show_remote_grid_hides_chorus_cards_for_chorus_always_parallel(
@@ -3390,7 +3395,13 @@ class AnimationViewsTests(TestCase):
         ]
         self.assertEqual(
             [slide["sourceVerseId"] for slide in slides],
-            [chorus.verse_id, verse_one.verse_id, chorus.verse_id, verse_two.verse_id, chorus.verse_id],
+            [
+                chorus.verse_id,
+                verse_one.verse_id,
+                chorus.verse_id,
+                verse_two.verse_id,
+                chorus.verse_id,
+            ],
         )
         song_entry = next(
             song_entry
@@ -3601,7 +3612,8 @@ class AnimationViewsTests(TestCase):
             if entry["animationSongId"] == item.animation_song_id
         )
         projection_steps = [
-            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+            payload["projectionSteps"][index]
+            for index in song_entry["projectionIndexes"]
         ]
         self.assertEqual(
             [step["mode"] for step in projection_steps[:2]],
@@ -3648,11 +3660,18 @@ class AnimationViewsTests(TestCase):
             if entry["animationSongId"] == item.animation_song_id
         )
         projection_steps = [
-            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+            payload["projectionSteps"][index]
+            for index in song_entry["projectionIndexes"]
         ]
-        self.assertEqual([step["mode"] for step in projection_steps], ["double", "double"])
-        self.assertTrue(all(step["left"]["kind"] == "chorus" for step in projection_steps))
-        self.assertTrue(all(step["right"]["kind"] == "verse" for step in projection_steps))
+        self.assertEqual(
+            [step["mode"] for step in projection_steps], ["double", "double"]
+        )
+        self.assertTrue(
+            all(step["left"]["kind"] == "chorus" for step in projection_steps)
+        )
+        self.assertTrue(
+            all(step["right"]["kind"] == "verse" for step in projection_steps)
+        )
         self.assertTrue(song_entry["chorusProjectionIndexes"])
 
     def test_lyrics_slide_show_projection_steps_pair_verses_by_pairs_and_repeat_last_shorter_block(
@@ -3720,7 +3739,8 @@ class AnimationViewsTests(TestCase):
             if entry["animationSongId"] == item.animation_song_id
         )
         projection_steps = [
-            payload["projectionSteps"][index] for index in song_entry["projectionIndexes"]
+            payload["projectionSteps"][index]
+            for index in song_entry["projectionIndexes"]
         ]
         self.assertEqual(
             [step["mode"] for step in projection_steps],
