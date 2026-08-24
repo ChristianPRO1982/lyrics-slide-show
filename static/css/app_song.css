@@ -381,10 +381,14 @@
 }
 
 .song-card-main {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
     align-items: start;
+}
+
+.song-card-main > :first-child {
+    min-width: 0;
 }
 
 .song-card h3,
@@ -849,7 +853,6 @@
     }
 
     .song-list-header,
-    .song-card-main,
     .song-metadata-list > div {
         display: grid;
         grid-template-columns: 1fr;
