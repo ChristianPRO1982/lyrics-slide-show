@@ -233,7 +233,14 @@
                     <button type="button" class="song-tool-button site-action site-action--primary" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
                 </p>
                 <p>
-                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
+                    <button
+                        type="button"
+                        class="song-secondary-action site-action site-action--secondary song-reorder-cancel-button"
+                        data-reorder-cancel
+                        hidden
+                    >
+                        {% trans "Annuler la réorganisation" %}
+                    </button>
                 </p>
             {% endif %}
 

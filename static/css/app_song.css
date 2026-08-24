@@ -241,6 +241,15 @@
     white-space: nowrap;
 }
 
+.song-reorder-cancel-button {
+    display: block;
+    width: 100%;
+}
+
+.song-reorder-cancel-button[hidden] {
+    display: none !important;
+}
+
 .song-advanced-search {
     border-top: 1px solid var(--site-line);
     padding-top: 1rem;
