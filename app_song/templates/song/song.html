@@ -92,7 +92,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% if is_favorite %} ⭐{% endif %}{% endblock %}
 {% block page_intro %}
     {% if show_unread_messages_link %}
         <p>
@@ -108,6 +108,7 @@
     {% endif %}
     {% include "song/includes/_active_search_tags.html" %}
 {% endblock %}
+{% block page_summary_panel_classes %}{% if not page_summary_text %} site-main-aside--compact-hidden{% endif %}{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>

@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{{ page_title }} | {% trans "Paroles" %}</title>
-  <link rel="icon" sizes="192x192" href="{% static 'images/lyrics/Lyrics.png' %}" type="image/png">
+  <link rel="icon" sizes="192x192" href="{% static 'images/lyrics/Lyrics.png' %}" type="image/png" data-lyrics-favicon>
   <style>
     :root {
       --lyrics-bg-light: #fdb;
@@ -63,14 +63,17 @@
       gap: 0.55rem;
       padding: max(0.55rem, env(safe-area-inset-top)) 0.28rem max(0.75rem, env(safe-area-inset-bottom));
       border-right: 1px solid var(--lyrics-border-light);
-      background: rgb(255, 255, 255);
+      background-color: rgba(255, 255, 255, 0.9);
+      background-image: var(--lyrics-menu-pattern-image);
+      background-repeat: repeat;
+      background-position: top left;
       box-sizing: border-box;
       backdrop-filter: blur(10px);
     }
 
     html[data-lyrics-theme="dark"] .lyrics-rail {
       border-right-color: var(--lyrics-border-dark);
-      background: rgba(7, 7, 7, 0.84);
+      background-color: rgba(7, 7, 7, 0.84);
     }
 
     .lyrics-icon-button {
@@ -179,7 +182,10 @@
       max-width: 100%;
       padding: max(0.85rem, env(safe-area-inset-top)) 0.9rem max(0.9rem, env(safe-area-inset-bottom));
       border-right: 1px solid var(--lyrics-border-light);
-      background: var(--lyrics-panel-light);
+      background-color: var(--lyrics-panel-light);
+      background-image: var(--lyrics-menu-pattern-image);
+      background-repeat: repeat;
+      background-position: top left;
       box-sizing: border-box;
       transform: translateX(-105%);
       transition: transform 0.24s ease;
@@ -192,7 +198,7 @@
 
     html[data-lyrics-theme="dark"] .lyrics-drawer {
       border-right-color: var(--lyrics-border-dark);
-      background: var(--lyrics-panel-dark);
+      background-color: var(--lyrics-panel-dark);
     }
 
     .lyrics-drawer.is-open {
@@ -398,23 +404,23 @@
 <body>
   <nav class="lyrics-rail" aria-label="{% trans 'Fonctions de lecture' %}">
     <button type="button" class="lyrics-icon-button" data-lyrics-drawer-open aria-label="{% trans 'Ouvrir le menu' %}" title="{% trans 'Menu' %}">
-      <img src="{% static 'images/lyrics/all_lyrics-hamburger_menu.webp' %}" alt="{% trans 'Menu' %}">
+      <img src="{% static 'images/lyrics/all_lyrics-hamburger_menu.webp' %}" alt="{% trans 'Menu' %}" data-lyrics-asset="hamburger">
     </button>
     <button type="button" class="lyrics-icon-button" data-lyrics-font-action="increase" aria-label="{% trans 'Agrandir le texte' %}" title="{% trans 'Agrandir le texte' %}">
-      <img src="{% static 'images/lyrics/all_lyrics-size_increase.webp' %}" alt="{% trans 'Texte plus grand' %}">
+      <img src="{% static 'images/lyrics/all_lyrics-size_increase.webp' %}" alt="{% trans 'Texte plus grand' %}" data-lyrics-asset="sizeIncrease">
     </button>
     <button type="button" class="lyrics-icon-button" data-lyrics-font-action="decrease" aria-label="{% trans 'Réduire le texte' %}" title="{% trans 'Réduire le texte' %}">
-      <img src="{% static 'images/lyrics/all_lyrics-size_decrease.webp' %}" alt="{% trans 'Texte plus petit' %}">
+      <img src="{% static 'images/lyrics/all_lyrics-size_decrease.webp' %}" alt="{% trans 'Texte plus petit' %}" data-lyrics-asset="sizeDecrease">
     </button>
     <button type="button" class="lyrics-icon-button" data-lyrics-theme-toggle aria-label="{% trans 'Basculer le thème' %}" title="{% trans 'Basculer le thème' %}">
-      <img src="{% static 'images/lyrics/all_lyrics-themes.webp' %}" alt="{% trans 'Thème clair ou sombre' %}">
+      <img src="{% static 'images/lyrics/all_lyrics-themes.webp' %}" alt="{% trans 'Thème clair ou sombre' %}" data-lyrics-asset="themes">
     </button>
     {% if has_multiple_songs %}
       <button type="button" class="lyrics-icon-button" data-lyrics-nav="prev" aria-label="{% trans 'Chant précédent' %}" title="{% trans 'Chant précédent' %}">
-        <img src="{% static 'images/lyrics/all_lyrics-previous_song.webp' %}" alt="{% trans 'Chant précédent' %}">
+        <img src="{% static 'images/lyrics/all_lyrics-previous_song.webp' %}" alt="{% trans 'Chant précédent' %}" data-lyrics-asset="previousSong">
       </button>
       <button type="button" class="lyrics-icon-button" data-lyrics-nav="next" aria-label="{% trans 'Chant suivant' %}" title="{% trans 'Chant suivant' %}">
-        <img src="{% static 'images/lyrics/all_lyrics-next_song.webp' %}" alt="{% trans 'Chant suivant' %}">
+        <img src="{% static 'images/lyrics/all_lyrics-next_song.webp' %}" alt="{% trans 'Chant suivant' %}" data-lyrics-asset="nextSong">
       </button>
     {% endif %}
   </nav>
@@ -449,7 +455,7 @@
 
     <section class="lyrics-drawer-song">
       <div class="lyrics-drawer-song-card">
-        <img src="{% static 'images/lyrics/Lyrics.png' %}" alt="{% trans 'Lyrics Slide Show' %}">
+        <img src="{% static 'images/lyrics/Lyrics.png' %}" alt="{% trans 'Lyrics Slide Show' %}" data-lyrics-asset="logo">
         {% if drawer_link_url %}
           <a href="{{ drawer_link_url }}" class="lyrics-drawer-song-link">{{ drawer_link_label }}</a>
         {% else %}
@@ -492,6 +498,46 @@
 
   <script>
     (() => {
+      const themeAssets = {
+        favicon: {
+          light: "{% static 'images/lyrics/Lyrics.png' %}",
+          dark: "{% static 'images/lyrics/Lyrics_dark.png' %}",
+        },
+        background: {
+          light: "{% static 'images/lyrics/all_lyrics-background.webp' %}",
+          dark: "{% static 'images/lyrics/all_lyrics-background_dark.webp' %}",
+        },
+        images: {
+          hamburger: {
+            light: "{% static 'images/lyrics/all_lyrics-hamburger_menu.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-hamburger_menu_dark.webp' %}",
+          },
+          sizeIncrease: {
+            light: "{% static 'images/lyrics/all_lyrics-size_increase.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-size_increase_dark.webp' %}",
+          },
+          sizeDecrease: {
+            light: "{% static 'images/lyrics/all_lyrics-size_decrease.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-size_decrease_dark.webp' %}",
+          },
+          themes: {
+            light: "{% static 'images/lyrics/all_lyrics-themes.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-themes_dark.webp' %}",
+          },
+          previousSong: {
+            light: "{% static 'images/lyrics/all_lyrics-previous_song.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-previous_song_dark.webp' %}",
+          },
+          nextSong: {
+            light: "{% static 'images/lyrics/all_lyrics-next_song.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-next_song_dark.webp' %}",
+          },
+          logo: {
+            light: "{% static 'images/lyrics/Lyrics.png' %}",
+            dark: "{% static 'images/lyrics/Lyrics_dark.png' %}",
+          },
+        },
+      };
       const root = document.querySelector("[data-lyrics-root]");
       if (!(root instanceof HTMLElement)) {
         return;
@@ -504,6 +550,7 @@
       const drawerBackdrop = document.querySelector("[data-lyrics-drawer-backdrop]");
       const shareInput = document.querySelector("[data-lyrics-share-url]");
       const copyButton = document.querySelector("[data-lyrics-copy-button]");
+      const faviconLink = document.querySelector("[data-lyrics-favicon]");
       const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";
       const maxSongIndex = songs.length > 0 ? songs.length - 1 : 0;
 
@@ -517,6 +564,31 @@
       };
 
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const escapeCssUrl = (value) => String(value || "").replace(/'/g, "\\'");
+
+      const applyThemeAssets = (effectiveTheme) => {
+        const theme = effectiveTheme === "dark" ? "dark" : "light";
+        const backgroundUrl = themeAssets.background[theme];
+        document.documentElement.style.setProperty(
+          "--lyrics-menu-pattern-image",
+          `url('${escapeCssUrl(backgroundUrl)}')`,
+        );
+        if (faviconLink instanceof HTMLLinkElement) {
+          faviconLink.href = themeAssets.favicon[theme];
+        }
+        document.querySelectorAll("[data-lyrics-asset]").forEach((node) => {
+          if (!(node instanceof HTMLImageElement)) {
+            return;
+          }
+          const assetKey = String(node.dataset.lyricsAsset || "");
+          const assetGroup = themeAssets.images[assetKey];
+          if (!assetGroup) {
+            return;
+          }
+          node.src = assetGroup[theme];
+        });
+      };
 
       const saveFontSize = () => {
         try {
@@ -551,6 +623,7 @@
           ? (prefersDark.matches ? "dark" : "light")
           : state.theme;
         document.documentElement.setAttribute("data-lyrics-theme", effectiveTheme);
+        applyThemeAssets(effectiveTheme);
       };
 
       const applyFontSize = () => {

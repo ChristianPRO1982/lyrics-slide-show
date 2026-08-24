@@ -755,8 +755,31 @@ body.animation-background-picker-overlay-open {
     gap: 0.7rem;
 }
 
+.animation-song-main-head-actions {
+    margin-left: auto;
+    display: grid;
+    justify-items: end;
+    gap: 0.4rem;
+}
+
 .animation-song-main-head .animation-secondary-action {
     margin-left: auto;
+    white-space: nowrap;
+}
+
+.animation-song-slide-display-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.45rem;
+    text-align: right;
+}
+
+.animation-song-slide-display-field select {
+    max-width: min(100%, 21rem);
+}
+
+.animation-song-slide-display-label {
     white-space: nowrap;
 }
 
@@ -1562,6 +1585,25 @@ body.animation-background-picker-overlay-open {
     height: auto;
     background: #fff;
     padding: 0.6rem;
+}
+
+.lyrics-display-double {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+}
+
+.lyrics-display-column {
+    flex: 1 1 50%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .lyrics-public-body {

@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 
 from app_animation.models import Animation, AnimationSong, AnimationVerseOverride
 from app_animation.services.playlist import POSITION_START, POSITION_STEP
-from app_song.models import Verse
+from app_song.models import SongSlideDisplayMode, Verse
 
 from ..font_catalog import is_allowed_font_family
 
@@ -86,6 +86,67 @@ def _compute_verse_font_delta(
     return int(override.font_size_override) - base_size
 
 
+def _song_has_chorus(verses: list[Verse]) -> bool:
+    return any(bool(verse.chorus) for verse in verses)
+
+
+def normalize_animation_song_slide_display_mode(
+    raw_value: Any,
+    *,
+    has_chorus: bool,
+) -> SongSlideDisplayMode:
+    try:
+        mode = SongSlideDisplayMode(str(raw_value or SongSlideDisplayMode.SINGLE))
+    except ValueError:
+        mode = SongSlideDisplayMode.SINGLE
+
+    if mode == SongSlideDisplayMode.SINGLE:
+        return mode
+
+    if has_chorus:
+        if mode == SongSlideDisplayMode.VERSES_BY_PAIRS:
+            return SongSlideDisplayMode.CHORUS_THEN_PARALLEL
+        return mode
+
+    if mode in {
+        SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+    }:
+        return SongSlideDisplayMode.VERSES_BY_PAIRS
+
+    return mode
+
+
+def build_animation_song_slide_display_mode_options(
+    *,
+    has_chorus: bool,
+) -> tuple[dict[str, str], ...]:
+    options = [
+        {"value": SongSlideDisplayMode.SINGLE, "label": _("Simple")},
+    ]
+    if has_chorus:
+        options.extend(
+            [
+                {
+                    "value": SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+                    "label": _("Refrain seul puis refrain + couplet"),
+                },
+                {
+                    "value": SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+                    "label": _("Refrain et couplet toujours en parallèle"),
+                },
+            ]
+        )
+    else:
+        options.append(
+            {
+                "value": SongSlideDisplayMode.VERSES_BY_PAIRS,
+                "label": _("Couplets deux par deux"),
+            }
+        )
+    return tuple(options)
+
+
 def build_main_song_cards(
     animation: Animation, animation_songs: list[AnimationSong]
 ) -> list[dict[str, Any]]:
@@ -99,7 +160,10 @@ def build_main_song_cards(
         visible_verse_ids: list[int] = []
         verse_styles: dict[str, dict[str, Any]] = {}
 
-        for verse in animation_song.song.verses.all():
+        all_song_verses = list(animation_song.song.verses.all())
+        has_chorus = _song_has_chorus(all_song_verses)
+
+        for verse in all_song_verses:
             override = overrides_by_verse_id.get(int(verse.verse_id))
             is_selectable = not bool(verse.chorus)
             is_visible = bool(override.is_visible) if override is not None else True
@@ -165,6 +229,12 @@ def build_main_song_cards(
                 )
 
         song_style = {
+            "slide_display_mode": str(
+                normalize_animation_song_slide_display_mode(
+                    animation_song.slide_display_mode,
+                    has_chorus=has_chorus,
+                )
+            ),
             "font_family_override": str(
                 animation_song.font_family_override or ""
             ).strip(),
@@ -184,6 +254,12 @@ def build_main_song_cards(
                 "animation_song_id": int(animation_song.animation_song_id),
                 "song_id": int(animation_song.song_id),
                 "song_title": animation_song.song.display_title,
+                "song_has_chorus": has_chorus,
+                "slide_display_mode_options": (
+                    build_animation_song_slide_display_mode_options(
+                        has_chorus=has_chorus
+                    )
+                ),
                 "song_style": song_style,
                 "visible_verse_ids": visible_verse_ids,
                 "verse_styles": verse_styles,
@@ -205,6 +281,9 @@ def build_songs_payload_initial(
                     int(verse_id) for verse_id in card["visible_verse_ids"]
                 ],
                 "song_style": {
+                    "slide_display_mode": str(
+                        card["song_style"]["slide_display_mode"] or ""
+                    ),
                     "font_family_override": str(
                         card["song_style"]["font_family_override"] or ""
                     ),
@@ -248,6 +327,11 @@ def parse_songs_payload(raw_value: str | None) -> dict[str, Any]:
 def _set_song_style_overrides(
     animation: Animation, animation_song: AnimationSong, song_style: dict[str, Any]
 ) -> None:
+    has_chorus = _song_has_chorus(list(animation_song.song.verses.all()))
+    slide_display_mode = normalize_animation_song_slide_display_mode(
+        song_style.get("slide_display_mode"),
+        has_chorus=has_chorus,
+    )
     font_family_override = _normalize_optional_text(
         song_style.get("font_family_override")
     )
@@ -270,6 +354,7 @@ def _set_song_style_overrides(
         song_style.get("background_asset_code_override")
     )
 
+    animation_song.slide_display_mode = slide_display_mode
     animation_song.font_family_override = font_family_override
     animation_song.font_size_override = font_size_override
     animation_song.text_color_override = text_color_override
@@ -277,6 +362,7 @@ def _set_song_style_overrides(
     animation_song.background_asset_code_override = background_asset_code_override
     animation_song.save(
         update_fields=[
+            "slide_display_mode",
             "font_family_override",
             "font_size_override",
             "text_color_override",

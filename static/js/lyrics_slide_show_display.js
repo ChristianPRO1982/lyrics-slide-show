@@ -64,6 +64,77 @@
         return Number.isNaN(parsed) ? fallback : parsed;
     };
 
+    const setBackgroundFromStyle = (style) => {
+        const bgUrl = String(style.backgroundUrl || "").trim();
+        slideNode.style.backgroundImage = bgUrl ? `url('${bgUrl.replace(/'/g, "\\'")}')` : "";
+        slideNode.style.backgroundColor = String(style.bgColor || "#000000");
+    };
+
+    const setBaseTextStyleFromStyle = (style) => {
+        slideNode.style.color = String(style.textColor || "#FFFFFF");
+        slideNode.style.fontFamily = `'${String(style.fontFamily || "Source Sans Pro")}', sans-serif`;
+        slideNode.style.fontWeight = String(style.fontWeight || "normal");
+        slideNode.style.fontSize = `${readIntegerWithFallback(style.fontSize, 72)}px`;
+    };
+
+    const renderSimpleSlide = (slide) => {
+        if (!slide || typeof slide !== "object") {
+            renderIdle();
+            return;
+        }
+
+        const style = slide.style && typeof slide.style === "object" ? slide.style : {};
+        const text = String(slide.text || "");
+
+        clearWaiting();
+        setDisplayBaseStyle();
+        setBaseTextStyleFromStyle(style);
+        slideNode.style.paddingLeft = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
+        slideNode.style.paddingRight = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
+        setBackgroundFromStyle(style);
+        slideNode.textContent = text;
+    };
+
+    const buildDoubleColumn = (slide, side, leftStyle) => {
+        const style = slide && typeof slide.style === "object" ? slide.style : {};
+        const basePadding = readIntegerWithFallback(leftStyle.horizontalPadding, 80);
+        const column = document.createElement("div");
+        column.className = `lyrics-display-column lyrics-display-column--${side}`;
+        column.style.color = String(leftStyle.textColor || "#FFFFFF");
+        column.style.fontFamily = `'${String(style.fontFamily || "Source Sans Pro")}', sans-serif`;
+        column.style.fontWeight = String(style.fontWeight || "normal");
+        column.style.fontSize = `${readIntegerWithFallback(style.fontSize, 72)}px`;
+        column.style.paddingLeft = `${side === "left" ? basePadding / 2 : basePadding / 4}px`;
+        column.style.paddingRight = `${side === "left" ? basePadding / 4 : basePadding / 2}px`;
+        column.textContent = String(slide?.text || "");
+        return column;
+    };
+
+    const renderDoubleProjectionStep = (projectionStep) => {
+        const leftSlide = projectionStep.left;
+        const rightSlide = projectionStep.right;
+        if (!leftSlide || typeof leftSlide !== "object" || !rightSlide || typeof rightSlide !== "object") {
+            renderIdle();
+            return;
+        }
+
+        const leftStyle = leftSlide.style && typeof leftSlide.style === "object" ? leftSlide.style : {};
+
+        clearWaiting();
+        setDisplayBaseStyle();
+        setBaseTextStyleFromStyle(leftStyle);
+        slideNode.style.paddingLeft = "0";
+        slideNode.style.paddingRight = "0";
+        setBackgroundFromStyle(leftStyle);
+        slideNode.replaceChildren();
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "lyrics-display-double";
+        wrapper.appendChild(buildDoubleColumn(leftSlide, "left", leftStyle));
+        wrapper.appendChild(buildDoubleColumn(rightSlide, "right", leftStyle));
+        slideNode.appendChild(wrapper);
+    };
+
     const persistFrame = (frame) => {
         try {
             window.localStorage.setItem(frameStorageKey, JSON.stringify(frame));
@@ -145,28 +216,17 @@
     };
 
     const renderSlide = (frame) => {
-        const slide = frame.slide;
-        if (!slide || typeof slide !== "object") {
-            renderIdle();
+        const projectionStep = frame.projectionStep;
+        if (projectionStep && typeof projectionStep === "object") {
+            if (String(projectionStep.mode || "simple") === "double") {
+                renderDoubleProjectionStep(projectionStep);
+                return;
+            }
+            renderSimpleSlide(projectionStep.left);
             return;
         }
 
-        const style = slide.style && typeof slide.style === "object" ? slide.style : {};
-        const text = String(slide.text || "");
-        const bgUrl = String(style.backgroundUrl || "").trim();
-
-        clearWaiting();
-        setDisplayBaseStyle();
-
-        slideNode.style.color = String(style.textColor || "#FFFFFF");
-        slideNode.style.backgroundColor = String(style.bgColor || "#000000");
-        slideNode.style.fontFamily = `'${String(style.fontFamily || "Source Sans Pro")}', sans-serif`;
-        slideNode.style.fontWeight = String(style.fontWeight || "normal");
-        slideNode.style.fontSize = `${readIntegerWithFallback(style.fontSize, 72)}px`;
-        slideNode.style.paddingLeft = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
-        slideNode.style.paddingRight = `${readIntegerWithFallback(style.horizontalPadding, 80)}px`;
-        slideNode.style.backgroundImage = bgUrl ? `url('${bgUrl.replace(/'/g, "\\'")}')` : "";
-        slideNode.textContent = text;
+        renderSimpleSlide(frame.slide);
     };
 
     const renderFrame = (frame) => {

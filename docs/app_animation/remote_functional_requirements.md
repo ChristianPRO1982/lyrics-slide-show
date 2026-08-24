@@ -37,6 +37,9 @@ La remote envoie des `frames` prêtes à afficher :
 
 Le payload ne transporte pas de HTML de paroles.
 Le texte projeté est du texte brut injecté côté display via `textContent`.
+Une frame `slide` peut porter :
+- soit un bloc unique en pleine largeur ;
+- soit deux blocs affichés en parallèle sur la même diapo pour les chants utilisant une composition double.
 
 Le style résolu envoyé à l'écran d'affichage inclut :
 - couleur de fond,
@@ -97,6 +100,24 @@ Un panneau affiche :
 La remote affiche un panneau par chant avec une grille responsive de cartes de diapos.
 
 Les refrains peuvent être masqués dans cette grille côté remote, sans impact sur l'écran projeté.
+Pour un chant en composition double, une carte représente une diapo logique déjà synchronisée entre ses deux côtés.
+
+### Navigation Des Slides Doubles
+
+Le fonctionnement normal reste la navigation sur des slides simples pleine largeur.
+
+Pour certains chants particuliers, la remote navigue cependant sur des slides doubles construites par association de deux séries de blocs.
+
+Règles communes :
+- les deux côtés avancent bloc par bloc en parallèle ;
+- si un côté se termine avant l'autre, son dernier bloc reste affiché jusqu'à la fin de l'autre côté ;
+- on ne passe à l'association suivante qu'une fois les deux côtés terminés ;
+- lorsqu'une nouvelle association commence, chaque côté repart depuis son premier bloc.
+
+Cas supportés :
+- `refrain seul puis refrain + couplet` : séquence `R`, puis `R | C1`, puis `R`, puis `R | C2`, etc. ;
+- `refrain + couplet toujours en parallèle` : séquence `R | C1`, puis `R | C2`, etc., sans passage automatique par `R` seul ;
+- `couplets deux par deux` : séquence `C1 | C2`, puis `C3 | C4`, etc., avec dernier couplet seul en pleine largeur si leur nombre est impair.
 
 ## Fonctionnalités
 
@@ -133,6 +154,11 @@ Action :
 - va vers le premier refrain du chant sélectionné,
 - si plusieurs refrains existent et qu'un refrain est déjà projeté, l'action cycle sur les refrains du chant,
 - ce curseur de refrain n'altère pas la logique générale de progression du chant.
+
+Comportement avec slides doubles :
+- dans les modes `refrain seul puis refrain + couplet` et `refrain + couplet toujours en parallèle`, le bouton permet à tout moment d'afficher le refrain seul ;
+- si le refrain contient plusieurs blocs, ils s'enchaînent alors comme un refrain normal ;
+- dans le mode `couplets deux par deux`, le bouton `Refrain` n'a pas de comportement particulier lié à la composition double.
 
 ### Diapo Suivante
 

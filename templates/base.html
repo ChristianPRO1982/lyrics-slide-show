@@ -214,7 +214,7 @@
                                 <h1>{% block page_title %}{% endblock %}</h1>
                                 {% block page_intro %}{% endblock %}
                             </div>
-                            <div class="site-main-aside">
+                            <div class="site-main-aside{% block page_summary_panel_classes %}{% endblock %}">
                                 {% block page_summary %}{% endblock %}
                             </div>
                         </section>

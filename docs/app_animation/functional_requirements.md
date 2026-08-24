@@ -40,6 +40,10 @@ Un même chant global peut apparaître plusieurs fois dans une même animation.
 
 L'ordre est explicite via `position`, puis déterministe via `animation_song_id`.
 
+Le chant source peut porter, dans la table des chants, une option métier d'`affichage double`.
+Cette information peut être utilisée par `app_animation` pour paramétrer automatiquement la composition de projection de l'occurrence dans l'animation.
+Elle sert de base de préconfiguration et ne supprime pas le fonctionnement standard des chants sans affichage double.
+
 ### Rendered Slide
 
 Une `Rendered Slide` est un artefact de projection généré au runtime.
@@ -49,6 +53,10 @@ Elle est dérivée de :
 - le rendu des blocs de chant par `app_song` (`render_song_blocks`),
 - l'héritage visuel résolu,
 - les drapeaux de visibilité des couplets.
+
+Une slide peut afficher :
+- soit un bloc unique en pleine largeur, ce qui reste le fonctionnement standard et majoritaire ;
+- soit deux blocs simultanés sur la même slide pour certains chants configurés avec une composition double.
 
 Les slides ne sont pas des entités éditables persistées.
 
@@ -174,10 +182,175 @@ La génération runtime (`build_animation_render_bundle`) est déterministe à e
 
 Règles :
 - les chants sont rendus selon l'ordre de l'animation,
-- chaque chant est rendu en mode refrain complet (`FULL` / `full-chorus`),
+- par défaut, chaque chant est rendu en mode classique pleine largeur avec refrain complet (`FULL` / `full-chorus`),
 - la visibilité peut masquer un couplet non-refrain,
 - les refrains restent visibles (neutralisation des anciens flags cachés),
 - le style est résolu bloc par bloc par héritage.
+
+### Composition Double Optionnelle
+
+Pour certains chants particuliers, `app_animation` peut générer des slides à deux zones de texte sur une même diapo.
+
+Cette possibilité :
+- est optionnelle ;
+- ne remplace pas le fonctionnement standard ;
+- ne modifie pas les chants ordinaires qui continuent à utiliser une slide simple pleine largeur.
+
+La présence de cette composition double peut provenir d'une information portée directement par le chant dans la table des chants, ce qui permet de préparamétrer automatiquement l'animation lors de l'ajout du chant à la playlist.
+
+Dans ce mode, la génération ne raisonne plus seulement bloc par bloc sur une seule colonne, mais par associations de deux séries de blocs affichées en parallèle sur une même slide.
+
+### Règles Communes Aux Affichages Doubles
+
+Lorsqu'un refrain ou un couplet contient plusieurs blocs, les deux côtés avancent bloc par bloc en parallèle.
+
+Exemple :
+
+```text
+R = Ra, Rb
+C1 = C1a, C1b
+
+Ra | C1a
+Rb | C1b
+```
+
+Si les deux côtés n'ont pas le même nombre de blocs, celui qui arrive à sa fin en premier reste affiché sur son dernier bloc jusqu'à ce que l'autre ait également atteint sa fin.
+
+```text
+R = Ra, Rb
+C1 = C1a, C1b, C1c
+
+Ra | C1a
+Rb | C1b
+Rb | C1c
+```
+
+Inversement :
+
+```text
+R = Ra, Rb, Rc
+C1 = C1a, C1b
+
+Ra | C1a
+Rb | C1b
+Rc | C1b
+```
+
+On ne commence la séquence suivante qu'une fois les deux séries arrivées à leur fin.
+Lorsqu'une nouvelle association commence, chaque série repart depuis son premier bloc.
+
+### Cas 1 - Refrain Seul Puis Refrain Plus Couplet
+
+Le refrain est d'abord affiché seul, puis il est repris en parallèle avec le couplet.
+
+```text
+R
+R | C1
+
+R
+R | C2
+
+R
+R | C3
+```
+
+Avec plusieurs blocs :
+
+```text
+Ra
+Rb
+
+Ra | C1a
+Rb | C1b
+
+Ra
+Rb
+
+Ra | C2a
+Rb | C2b
+```
+
+La règle d'attente des fins s'applique également à la partie `R | C`.
+
+Le bouton `Refrain` permet à tout moment d'afficher le refrain seul, indépendamment de la séquence `R | C` en cours.
+Si le refrain contient plusieurs blocs, ils sont affichés successivement comme un refrain normal.
+
+### Cas 2 - Refrain Et Couplet Toujours En Parallèle
+
+Il n'y a pas de passage automatique par le refrain seul.
+
+```text
+R | C1
+R | C2
+R | C3
+```
+
+Avec plusieurs blocs :
+
+```text
+Ra | C1a
+Rb | C1b
+
+Ra | C2a
+Rb | C2b
+```
+
+À chaque nouveau couplet, le refrain repart depuis son premier bloc.
+
+Là encore, si l'un des deux côtés est plus court, son dernier bloc reste affiché jusqu'à la fin de l'autre.
+
+Le bouton `Refrain` reste disponible et permet d'afficher exceptionnellement le refrain seul.
+Le déroulement automatique reste cependant `R | C`.
+
+### Cas 3 - Couplets Deux Par Deux
+
+Les couplets sont associés par paires :
+
+```text
+C1 | C2
+C3 | C4
+C5
+```
+
+Avec plusieurs blocs :
+
+```text
+C1a | C2a
+C1b | C2b
+
+C3a | C4a
+C3b | C4b
+```
+
+La même règle d'attente s'applique : si `C1` est terminé avant `C2`, le dernier bloc de `C1` reste affiché jusqu'à la fin de `C2`.
+
+S'il reste un nombre impair de couplets, le dernier est affiché seul en pleine largeur, selon le fonctionnement classique.
+
+Dans ce mode, le bouton `Refrain` n'a pas de comportement particulier, puisqu'il n'y a normalement pas de refrain impliqué dans cette composition.
+
+### Résumé Des Trois Cas
+
+```text
+CAS 1
+R
+R | C1
+R
+R | C2
+
+CAS 2
+R | C1
+R | C2
+
+CAS 3
+C1 | C2
+C3 | C4
+C5
+```
+
+La règle fondamentale reste la même dans les trois cas :
+- on synchronise les blocs par position ;
+- on maintient le dernier bloc du côté terminé ;
+- on ne passe au groupe suivant que lorsque les deux côtés ont été entièrement parcourus.
 
 ## Modèle D'héritage Visuel
 

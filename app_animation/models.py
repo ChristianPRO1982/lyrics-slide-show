@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from app_group.models import Group
-from app_song.models import Song
+from app_song.models import Song, SongSlideDisplayMode
 
 
 class Animation(models.Model):
@@ -54,6 +54,11 @@ class AnimationSong(models.Model):
         related_name="animation_usages",
     )
     position = models.IntegerField(default=1000)
+    slide_display_mode = models.CharField(
+        max_length=32,
+        choices=SongSlideDisplayMode.choices,
+        default=SongSlideDisplayMode.SINGLE,
+    )
 
     text_color_override = models.CharField(max_length=32, blank=True, null=True)
     bg_color_override = models.CharField(max_length=32, blank=True, null=True)

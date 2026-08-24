@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import re
 import uuid
+from typing import Any
 from urllib.parse import urlencode
 
 from django.contrib import messages
@@ -22,7 +23,7 @@ from app_main.lyrics import (
     build_request_share_url,
 )
 from app_member.services import can_manage_moderator_popup
-from app_song.models import Verse
+from app_song.models import SongSlideDisplayMode, Verse
 from app_song.rendering import ChorusRenderMode, SongRenderSettings
 from app_song.search import SongSearchParams, load_member_song_search, search_songs
 
@@ -70,6 +71,7 @@ from .services.song_edits import (
     apply_songs_payload,
     build_main_song_cards,
     build_songs_payload_initial,
+    normalize_animation_song_slide_display_mode,
     parse_songs_payload,
     serialize_songs_payload,
 )
@@ -1638,13 +1640,349 @@ def _truncate_excerpt(text: str, max_chars: int = 50) -> str:
     return f"{flat[:max_chars].rstrip()}[...]"
 
 
+def _should_include_remote_card(
+    *,
+    slide_kind: str,
+    source_verse: Verse | None,
+    slide_display_mode: SongSlideDisplayMode,
+) -> bool:
+    if slide_display_mode in {
+        SongSlideDisplayMode.SINGLE,
+        SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+    }:
+        return True
+
+    if slide_display_mode == SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL:
+        return slide_kind != "chorus"
+
+    if slide_display_mode == SongSlideDisplayMode.VERSES_BY_PAIRS:
+        if slide_kind != "verse" or source_verse is None:
+            return True
+        return int(source_verse.num_verse or 0) % 2 == 1
+
+    return True
+
+
+def _clone_slide_payload(slide_payload: dict[str, object]) -> dict[str, object]:
+    cloned = dict(slide_payload)
+    style = slide_payload.get("style")
+    cloned["style"] = dict(style) if isinstance(style, dict) else {}
+    return cloned
+
+
+def _build_projection_step(
+    *,
+    animation_song_id: int,
+    song_id: int,
+    song_title: str,
+    mode: str,
+    left_slide: dict[str, object],
+    right_slide: dict[str, object] | None = None,
+    primary_source_global_index: int,
+    source_global_indexes: list[int],
+    card_source_global_indexes: list[int],
+) -> dict[str, object]:
+    return {
+        "animationSongId": int(animation_song_id),
+        "songId": int(song_id),
+        "songTitle": str(song_title or ""),
+        "mode": str(mode),
+        "left": _clone_slide_payload(left_slide),
+        "right": _clone_slide_payload(right_slide) if right_slide is not None else None,
+        "primarySourceGlobalIndex": int(primary_source_global_index),
+        "sourceGlobalIndexes": [int(index) for index in source_global_indexes],
+        "_cardSourceGlobalIndexes": [
+            int(index) for index in card_source_global_indexes
+        ],
+    }
+
+
+def _append_simple_projection_steps(
+    *,
+    target: list[dict[str, object]],
+    slides: list[dict[str, object]],
+) -> None:
+    for slide in slides:
+        source_global_index = int(slide["globalIndex"])
+        target.append(
+            _build_projection_step(
+                animation_song_id=int(slide["animationSongId"]),
+                song_id=int(slide["songId"]),
+                song_title=str(slide["songTitle"] or ""),
+                mode="simple",
+                left_slide=slide,
+                primary_source_global_index=source_global_index,
+                source_global_indexes=[source_global_index],
+                card_source_global_indexes=[source_global_index],
+            )
+        )
+
+
+def _append_double_projection_steps(
+    *,
+    target: list[dict[str, object]],
+    left_slides: list[dict[str, object]],
+    right_slides: list[dict[str, object]],
+    primary_side: str,
+    card_side: str,
+) -> None:
+    if not left_slides or not right_slides:
+        return
+
+    steps_count = max(len(left_slides), len(right_slides))
+    for offset in range(steps_count):
+        left_slide = (
+            left_slides[offset] if offset < len(left_slides) else left_slides[-1]
+        )
+        right_slide = (
+            right_slides[offset] if offset < len(right_slides) else right_slides[-1]
+        )
+        primary_slide = left_slide if primary_side == "left" else right_slide
+        card_source_global_indexes = [
+            int((left_slide if card_side == "left" else right_slide)["globalIndex"])
+        ]
+        target.append(
+            _build_projection_step(
+                animation_song_id=int(primary_slide["animationSongId"]),
+                song_id=int(primary_slide["songId"]),
+                song_title=str(primary_slide["songTitle"] or ""),
+                mode="double",
+                left_slide=left_slide,
+                right_slide=right_slide,
+                primary_source_global_index=int(primary_slide["globalIndex"]),
+                source_global_indexes=[
+                    int(left_slide["globalIndex"]),
+                    int(right_slide["globalIndex"]),
+                ],
+                card_source_global_indexes=card_source_global_indexes,
+            )
+        )
+
+
+def _source_verse_for_slide(
+    slide_payload: dict[str, object],
+    *,
+    verses_by_id: dict[int, Verse],
+) -> Verse | None:
+    source_verse_id = slide_payload.get("sourceVerseId")
+    if source_verse_id is None:
+        return None
+    try:
+        return verses_by_id.get(int(source_verse_id))
+    except (TypeError, ValueError):
+        return None
+
+
+def _consume_chorus_group(
+    slides: list[dict[str, object]], start_index: int
+) -> tuple[list[dict[str, object]], int]:
+    group: list[dict[str, object]] = []
+    index = start_index
+    while index < len(slides) and str(slides[index].get("kind") or "") == "chorus":
+        group.append(slides[index])
+        index += 1
+    return group, index
+
+
+def _consume_verse_group(
+    slides: list[dict[str, object]],
+    start_index: int,
+    *,
+    verses_by_id: dict[int, Verse],
+) -> tuple[list[dict[str, object]], int]:
+    if start_index >= len(slides):
+        return [], start_index
+
+    first_slide = slides[start_index]
+    first_verse = _source_verse_for_slide(first_slide, verses_by_id=verses_by_id)
+    if first_verse is None or str(first_slide.get("kind") or "") != "verse":
+        return [], start_index
+
+    target_num_verse = int(first_verse.num_verse or 0)
+    group = [first_slide]
+    index = start_index + 1
+    while index < len(slides):
+        slide = slides[index]
+        if str(slide.get("kind") or "") != "verse":
+            break
+        verse = _source_verse_for_slide(slide, verses_by_id=verses_by_id)
+        if verse is None or int(verse.num_verse or 0) != target_num_verse:
+            break
+        group.append(slide)
+        index += 1
+    return group, index
+
+
+def _build_song_projection_groups(
+    *,
+    song_slides: list[dict[str, object]],
+    verses_by_id: dict[int, Verse],
+    slide_display_mode: SongSlideDisplayMode,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    normal_steps: list[dict[str, object]] = []
+    chorus_shortcut_steps: list[dict[str, object]] = []
+
+    index = 0
+    while index < len(song_slides):
+        slide = song_slides[index]
+        kind = str(slide.get("kind") or "")
+        if kind == "chorus":
+            chorus_group, next_index = _consume_chorus_group(song_slides, index)
+            _append_simple_projection_steps(
+                target=chorus_shortcut_steps, slides=chorus_group
+            )
+            if slide_display_mode == SongSlideDisplayMode.SINGLE:
+                _append_simple_projection_steps(
+                    target=normal_steps, slides=chorus_group
+                )
+                index = next_index
+                continue
+
+            if slide_display_mode == SongSlideDisplayMode.CHORUS_THEN_PARALLEL:
+                _append_simple_projection_steps(
+                    target=normal_steps, slides=chorus_group
+                )
+                if next_index < len(song_slides):
+                    next_slide = song_slides[next_index]
+                    if str(next_slide.get("kind") or "") == "verse":
+                        verse_group, verse_end_index = _consume_verse_group(
+                            song_slides,
+                            next_index,
+                            verses_by_id=verses_by_id,
+                        )
+                        if verse_group:
+                            _append_double_projection_steps(
+                                target=normal_steps,
+                                left_slides=chorus_group,
+                                right_slides=verse_group,
+                                primary_side="right",
+                                card_side="right",
+                            )
+                            index = verse_end_index
+                            continue
+                index = next_index
+                continue
+
+            if slide_display_mode == SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL:
+                if next_index < len(song_slides):
+                    next_slide = song_slides[next_index]
+                    if str(next_slide.get("kind") or "") == "verse":
+                        verse_group, verse_end_index = _consume_verse_group(
+                            song_slides,
+                            next_index,
+                            verses_by_id=verses_by_id,
+                        )
+                        if verse_group:
+                            _append_double_projection_steps(
+                                target=normal_steps,
+                                left_slides=chorus_group,
+                                right_slides=verse_group,
+                                primary_side="right",
+                                card_side="right",
+                            )
+                            index = verse_end_index
+                            continue
+
+                has_any_verse = any(
+                    str(item.get("kind") or "") == "verse" for item in song_slides
+                )
+                if not has_any_verse:
+                    _append_simple_projection_steps(
+                        target=normal_steps, slides=chorus_group
+                    )
+                index = next_index
+                continue
+
+            _append_simple_projection_steps(target=normal_steps, slides=chorus_group)
+            index = next_index
+            continue
+
+        if kind == "verse":
+            verse_group, next_index = _consume_verse_group(
+                song_slides,
+                index,
+                verses_by_id=verses_by_id,
+            )
+            if not verse_group:
+                _append_simple_projection_steps(target=normal_steps, slides=[slide])
+                index += 1
+                continue
+
+            if slide_display_mode == SongSlideDisplayMode.VERSES_BY_PAIRS:
+                left_verse = _source_verse_for_slide(
+                    verse_group[0], verses_by_id=verses_by_id
+                )
+                left_num_verse = int(left_verse.num_verse or 0) if left_verse else 0
+                if left_num_verse > 0 and left_num_verse % 2 == 1:
+                    right_group: list[dict[str, object]] = []
+                    after_right_index = next_index
+                    if next_index < len(song_slides):
+                        next_slide = song_slides[next_index]
+                        if str(next_slide.get("kind") or "") == "verse":
+                            candidate_group, candidate_end_index = _consume_verse_group(
+                                song_slides,
+                                next_index,
+                                verses_by_id=verses_by_id,
+                            )
+                            right_verse = (
+                                _source_verse_for_slide(
+                                    candidate_group[0], verses_by_id=verses_by_id
+                                )
+                                if candidate_group
+                                else None
+                            )
+                            right_num_verse = (
+                                int(right_verse.num_verse or 0) if right_verse else 0
+                            )
+                            if right_num_verse == left_num_verse + 1:
+                                right_group = candidate_group
+                                after_right_index = candidate_end_index
+                    if right_group:
+                        _append_double_projection_steps(
+                            target=normal_steps,
+                            left_slides=verse_group,
+                            right_slides=right_group,
+                            primary_side="left",
+                            card_side="left",
+                        )
+                        index = after_right_index
+                        continue
+
+            _append_simple_projection_steps(target=normal_steps, slides=verse_group)
+            index = next_index
+            continue
+
+        _append_simple_projection_steps(target=normal_steps, slides=[slide])
+        index += 1
+
+    return normal_steps, chorus_shortcut_steps
+
+
 def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, object]:
     rendered_slides = build_animation_render_bundle(animation)
+    animation_songs = list(
+        animation.animation_songs.select_related("song")
+        .prefetch_related("song__verses")
+        .order_by("position", "animation_song_id")
+    )
+    animation_song_meta: dict[int, dict[str, object]] = {}
+    for animation_song in animation_songs:
+        verses = list(animation_song.song.verses.all())
+        verses_by_id = {int(verse.verse_id): verse for verse in verses}
+        has_chorus = any(bool(verse.chorus) for verse in verses)
+        animation_song_meta[int(animation_song.animation_song_id)] = {
+            "verses_by_id": verses_by_id,
+            "slide_display_mode": normalize_animation_song_slide_display_mode(
+                animation_song.slide_display_mode,
+                has_chorus=has_chorus,
+            ),
+        }
+
     slides_payload: list[dict[str, object]] = []
     songs_payload: list[dict[str, object]] = []
     songs_by_animation_song_id: dict[int, dict[str, object]] = {}
+    raw_song_slides_by_animation_song_id: dict[int, list[dict[str, object]]] = {}
     background_urls: set[str] = set()
-    card_groups: list[dict[str, object]] = []
 
     for index, slide in enumerate(rendered_slides):
         background_url = resolve_background_asset_url(slide.style.background_asset_code)
@@ -1679,6 +2017,9 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
             },
         }
         slides_payload.append(slide_payload)
+        raw_song_slides_by_animation_song_id.setdefault(
+            int(slide.animation_song_id), []
+        ).append(slide_payload)
 
         song_entry = songs_by_animation_song_id.get(slide.animation_song_id)
         if song_entry is None:
@@ -1688,27 +2029,129 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
                 "songTitle": slide.song_title,
                 "slideIndexes": [],
                 "chorusIndexes": [],
+                "projectionIndexes": [],
+                "chorusProjectionIndexes": [],
             }
             songs_by_animation_song_id[slide.animation_song_id] = song_entry
             songs_payload.append(song_entry)
-            card_groups.append(
-                {
-                    "animationSongId": int(slide.animation_song_id),
-                    "songTitle": slide.song_title,
-                    "cards": [],
-                }
-            )
 
         song_entry["slideIndexes"].append(index)
         if str(slide.kind) == "chorus":
             song_entry["chorusIndexes"].append(index)
 
-        card_groups[-1]["cards"].append(
+    projection_steps: list[dict[str, object]] = []
+    card_projection_index_by_source_global_index: dict[int, int] = {}
+    chorus_shortcut_groups_by_animation_song_id: dict[int, list[dict[str, object]]] = {}
+
+    for song_entry in songs_payload:
+        animation_song_id = int(song_entry["animationSongId"])
+        meta = animation_song_meta.get(animation_song_id, {})
+        verses_by_id = meta.get("verses_by_id", {})
+        slide_display_mode = meta.get("slide_display_mode", SongSlideDisplayMode.SINGLE)
+        normal_steps, chorus_shortcut_steps = _build_song_projection_groups(
+            song_slides=raw_song_slides_by_animation_song_id.get(animation_song_id, []),
+            verses_by_id=verses_by_id if isinstance(verses_by_id, dict) else {},
+            slide_display_mode=slide_display_mode,
+        )
+        for step in normal_steps:
+            step["projectionIndex"] = len(projection_steps)
+            projection_steps.append(step)
+            song_entry["projectionIndexes"].append(int(step["projectionIndex"]))
+            for source_index in step.get("_cardSourceGlobalIndexes", []):
+                card_projection_index_by_source_global_index[int(source_index)] = int(
+                    step["projectionIndex"]
+                )
+        chorus_shortcut_groups_by_animation_song_id[animation_song_id] = (
+            chorus_shortcut_steps
+        )
+
+    for song_entry in songs_payload:
+        animation_song_id = int(song_entry["animationSongId"])
+        chorus_projection_indexes = [
+            int(step["projectionIndex"])
+            for step in projection_steps
+            if int(step["animationSongId"]) == animation_song_id
+            and str(step["mode"]) == "simple"
+            and str(step["left"].get("kind") or "") == "chorus"
+            and step.get("right") is None
+        ]
+        if not chorus_projection_indexes:
+            for step in chorus_shortcut_groups_by_animation_song_id.get(
+                animation_song_id, []
+            ):
+                step["projectionIndex"] = len(projection_steps)
+                projection_steps.append(step)
+                chorus_projection_indexes.append(int(step["projectionIndex"]))
+        song_entry["chorusProjectionIndexes"] = chorus_projection_indexes
+
+    serialized_projection_steps: list[dict[str, object]] = []
+    for step in projection_steps:
+        serialized_projection_steps.append(
             {
-                "globalIndex": index,
-                "excerpt": slide_payload["excerpt"],
-                "label": str(slide.label or ""),
-                "kind": str(slide.kind),
+                "projectionIndex": int(step["projectionIndex"]),
+                "animationSongId": int(step["animationSongId"]),
+                "songId": int(step["songId"]),
+                "songTitle": str(step["songTitle"] or ""),
+                "mode": str(step["mode"]),
+                "left": step["left"],
+                "right": step["right"],
+                "primarySourceGlobalIndex": int(step["primarySourceGlobalIndex"]),
+                "sourceGlobalIndexes": [
+                    int(index) for index in step["sourceGlobalIndexes"]
+                ],
+            }
+        )
+
+    card_groups: list[dict[str, object]] = []
+    for song_entry in songs_payload:
+        animation_song_id = int(song_entry["animationSongId"])
+        song_title = str(song_entry["songTitle"] or "")
+        meta = animation_song_meta.get(animation_song_id, {})
+        verses_by_id = meta.get("verses_by_id", {})
+        slide_display_mode = meta.get("slide_display_mode", SongSlideDisplayMode.SINGLE)
+        cards: list[dict[str, object]] = []
+        for slide_payload in raw_song_slides_by_animation_song_id.get(
+            animation_song_id, []
+        ):
+            source_verse = _source_verse_for_slide(
+                slide_payload,
+                verses_by_id=verses_by_id if isinstance(verses_by_id, dict) else {},
+            )
+            if not _should_include_remote_card(
+                slide_kind=str(slide_payload.get("kind") or ""),
+                source_verse=source_verse,
+                slide_display_mode=slide_display_mode,
+            ):
+                continue
+            global_index = int(slide_payload["globalIndex"])
+            projection_index = card_projection_index_by_source_global_index.get(
+                global_index
+            )
+            if projection_index is None:
+                projection_index = int(
+                    next(
+                        (
+                            step["projectionIndex"]
+                            for step in serialized_projection_steps
+                            if global_index in step["sourceGlobalIndexes"]
+                        ),
+                        -1,
+                    )
+                )
+            cards.append(
+                {
+                    "globalIndex": global_index,
+                    "projectionIndex": projection_index,
+                    "excerpt": slide_payload["excerpt"],
+                    "label": str(slide_payload.get("label") or ""),
+                    "kind": str(slide_payload.get("kind") or ""),
+                }
+            )
+        card_groups.append(
+            {
+                "animationSongId": animation_song_id,
+                "songTitle": song_title,
+                "cards": cards,
             }
         )
 
@@ -1717,6 +2160,7 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
         "animationTitle": animation.title,
         "scheduledAt": animation.scheduled_at.isoformat(),
         "slides": slides_payload,
+        "projectionSteps": serialized_projection_steps,
         "songs": songs_payload,
         "backgroundUrls": sorted(background_urls),
         "publicUrl": public_url,

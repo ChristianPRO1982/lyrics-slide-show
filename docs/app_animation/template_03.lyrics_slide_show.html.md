@@ -20,7 +20,7 @@ La page maître envoie des `frames` prêtes à afficher (slide, black, QR, idle)
 ## Payload Runtime
 
 La vue construit un bundle `runtime_payload` issu de `build_animation_render_bundle(animation)` avec :
-- `slides` (style résolu + texte + métadonnées),
+- `slides` (style résolu + texte ou paire de textes synchronisés + métadonnées),
 - `songs` (indexes de slides par chant, indexes de refrains),
 - `cardGroups` (grille des cartes de navigation),
 - `backgroundUrls` (préchargement),
@@ -77,6 +77,12 @@ Actions implémentées :
 - action `Refrain` sur curseur de refrains par chant,
 - clic direct possible sur chaque carte de slide.
 
+Pour certains chants particuliers, une slide peut représenter deux blocs affichés en parallèle sur la même diapo.
+Dans ce cas, la navigation manipule des slides logiques déjà synchronisées :
+- soit `R`, puis `R | C` selon le mode ;
+- soit `R | C` directement ;
+- soit `C | C` par paires de couplets.
+
 Les raccourcis clavier restent actifs même si le focus est sur un bouton de la remote.
 Ils sont suspendus quand une popup `LSSMessageBox` est ouverte et focusée.
 
@@ -92,6 +98,10 @@ La page display applique :
 - centrage horizontal/vertical,
 - `white-space: pre-wrap`,
 - couleurs/police/taille/padding/image de fond selon la slide.
+
+Une frame `slide` peut donc correspondre :
+- soit à un bloc unique pleine largeur ;
+- soit à une composition double avec deux zones de texte parallèles sur la même slide.
 
 ## Résilience
 

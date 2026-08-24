@@ -21,6 +21,7 @@ from .models import (
     SongLink,
     SongLinkType,
     SongMessage,
+    SongSlideDisplayMode,
     SongStatus,
     Verse,
 )
@@ -1523,6 +1524,13 @@ class SongViewsRenderingTests(TestCase):
             '<main class="lyrics-layout is-single" data-lyrics-root>',
             html=False,
         )
+        self.assertContains(response, "images/lyrics/Lyrics_dark.png", html=False)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-background_dark.webp",
+            html=False,
+        )
+        self.assertContains(response, 'data-lyrics-asset="logo"', html=False)
         self.assertContains(
             response,
             '<div class="lyrics-topbar" hidden>',
@@ -2056,6 +2064,7 @@ class ModifySongViewTests(TestCase):
             "title": " Nouveau : titre ? ",
             "subtitle": " Sous titre ",
             "description": " Ligne 1 ;\\n\\n Ligne 2 ! ",
+            "slide_display_mode": SongSlideDisplayMode.SINGLE,
             "blocks[a][id]": str(self.verse_1.verse_id),
             "blocks[a][position]": "4",
             "blocks[a][type]": "verse",
@@ -2091,9 +2100,16 @@ class ModifySongViewTests(TestCase):
         self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-song-slide-display-mode-edit")
+        self.assertContains(response, 'value="single" selected', html=False)
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "data-reorder-list")
+        self.assertContains(response, "data-reorder-cancel")
+        self.assertContains(
+            response, "data-reorder-cancel\n                        hidden"
+        )
+        self.assertContains(response, "song-reorder-cancel-button")
         self.assertContains(response, "data-reorder-drag-view hidden")
         self.assertContains(response, "data-reorder-normal-view")
         self.assertNotContains(response, "song-block-readonly-compact")
@@ -2130,6 +2146,67 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-open-prefix")
         self.assertNotContains(response, "Couplet (sans numérotation)")
         self.assertNotContains(response, "Section spéciale")
+
+    def test_modify_song_with_chorus_shows_only_single_and_chorus_modes(self):
+        self._login()
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, 'option value="single"', html=False)
+        self.assertContains(response, 'option value="chorus_then_parallel"', html=False)
+        self.assertContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+        self.assertNotContains(response, 'option value="verses_by_pairs"', html=False)
+
+    def test_modify_song_without_chorus_shows_only_single_and_verses_by_pairs(self):
+        self.verse_2.delete()
+        self._login()
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, 'option value="single"', html=False)
+        self.assertContains(response, 'option value="verses_by_pairs"', html=False)
+        self.assertNotContains(
+            response, 'option value="chorus_then_parallel"', html=False
+        )
+        self.assertNotContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+
+    def test_modify_song_with_only_chorus_like_does_not_unlock_chorus_modes(self):
+        self.verse_2.delete()
+        self.verse_1.chorus_like = True
+        self.verse_1.notcontinuenumbering = True
+        self.verse_1.prefix = "Pont"
+        self.verse_1.save(
+            update_fields=["chorus_like", "notcontinuenumbering", "prefix"]
+        )
+        self._login()
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, 'option value="verses_by_pairs"', html=False)
+        self.assertNotContains(
+            response, 'option value="chorus_then_parallel"', html=False
+        )
+        self.assertNotContains(
+            response, 'option value="chorus_always_parallel"', html=False
+        )
+
+    def test_modify_song_get_normalizes_incompatible_saved_mode_without_chorus(self):
+        self.verse_2.delete()
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+        self._login()
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(
+            response,
+            'option value="verses_by_pairs" selected',
+            html=False,
+        )
 
     def test_member_can_access_validated_song_read_only(self):
         self.song.status = 1
@@ -2309,6 +2386,7 @@ class ModifySongViewTests(TestCase):
         self.assertEqual(self.song.title, "Nouveau\u00a0: titre\u00a0?")
         self.assertEqual(self.song.subtitle, "Sous titre")
         self.assertEqual(self.song.description, "Ligne 1\u00a0;\n\nLigne 2\u00a0!")
+        self.assertEqual(self.song.slide_display_mode, SongSlideDisplayMode.SINGLE)
 
         verses = list(self.song.verses.all().order_by("num", "verse_id"))
         self.assertEqual(len(verses), 3)
@@ -2390,6 +2468,97 @@ class ModifySongViewTests(TestCase):
             song=self.song, chorus=False, chorus_like=False, num=4
         )
         self.assertIsNone(verse_block.prefix)
+
+    def test_post_save_persists_chorus_mode_when_chorus_exists(self):
+        self._login()
+        payload = self._base_payload()
+        payload["slide_display_mode"] = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(
+            self.song.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+    def test_post_save_persists_verses_by_pairs_without_chorus(self):
+        self._login()
+        payload = self._base_payload()
+        payload["slide_display_mode"] = SongSlideDisplayMode.VERSES_BY_PAIRS
+        payload["blocks[b][delete]"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(
+            self.song.slide_display_mode,
+            SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+    def test_post_save_remaps_chorus_mode_to_verses_by_pairs_when_last_chorus_is_removed(
+        self,
+    ):
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+        self._login()
+        payload = self._base_payload()
+        payload["slide_display_mode"] = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        payload["blocks[b][delete]"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(
+            self.song.slide_display_mode,
+            SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+    def test_post_save_remaps_verses_by_pairs_to_chorus_then_parallel_when_chorus_appears(
+        self,
+    ):
+        self.verse_2.delete()
+        self.song.slide_display_mode = SongSlideDisplayMode.VERSES_BY_PAIRS
+        self.song.save(update_fields=["slide_display_mode"])
+        self._login()
+        payload = self._base_payload()
+        payload["slide_display_mode"] = SongSlideDisplayMode.VERSES_BY_PAIRS
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(
+            self.song.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+    def test_post_save_keeps_single_mode_even_when_chorus_structure_changes(self):
+        self.song.slide_display_mode = SongSlideDisplayMode.SINGLE
+        self.song.save(update_fields=["slide_display_mode"])
+        self._login()
+        payload = self._base_payload()
+        payload["slide_display_mode"] = SongSlideDisplayMode.SINGLE
+        payload["blocks[b][delete]"] = "1"
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=payload
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.slide_display_mode, SongSlideDisplayMode.SINGLE)
 
     def test_member_cannot_change_status_via_checkbox(self):
         self._login()
@@ -3704,6 +3873,7 @@ class SongCreateFromSongsPageTests(TestCase):
         )
         self.assertEqual(created_song.description, "")
         self.assertEqual(created_song.status, SongStatus.NOT_VALIDATED)
+        self.assertEqual(created_song.slide_display_mode, SongSlideDisplayMode.SINGLE)
         self.assertFalse(created_song.licensed)
 
     def test_guest_cannot_create_song(self):

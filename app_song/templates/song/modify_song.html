@@ -104,7 +104,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% if is_favorite %} ⭐{% endif %}{% endblock %}
 {% block page_intro %}
     {% if show_all_messages_link %}
         <p>
@@ -126,6 +126,7 @@
         </p>
     {% endif %}
 {% endblock %}
+{% block page_summary_panel_classes %}{% if not page_summary_text %} site-main-aside--compact-hidden{% endif %}{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>
@@ -200,6 +201,14 @@
                 <textarea id="song-description-edit" name="description" form="modify-song-form" rows="5" data-song-description-edit>{{ song.description|default:'' }}</textarea>
             </p>
             <p>
+                <label for="song-slide-display-mode-edit">{% trans "Affichage des slides" %}</label>
+                <select id="song-slide-display-mode-edit" data-song-slide-display-mode-edit>
+                    {% for option in slide_display_mode_options %}
+                        <option value="{{ option.value }}"{% if option.value == slide_display_mode_value %} selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
                 <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-edit-meta-close>
                     {% trans "Masquer les cartes d'édition" %}
                 </button>
@@ -214,6 +223,7 @@
         <input type="hidden" name="title" value="{{ song.title }}" data-song-title-hidden>
         <input type="hidden" name="subtitle" value="{{ song.subtitle }}" data-song-subtitle-hidden>
         <input type="hidden" name="description" value="{{ song.description|default:'' }}" data-song-description-hidden>
+        <input type="hidden" name="slide_display_mode" value="{{ slide_display_mode_value }}" data-song-slide-display-mode-hidden>
 
         <section class="song-list-section" data-song-blocks-panel>
             <header class="song-list-header">
@@ -224,7 +234,14 @@
                     <button type="button" class="song-tool-button site-action site-action--primary" data-reorder-toggle>{% trans "Réorganiser les blocs" %}</button>
                 </p>
                 <p>
-                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-reorder-cancel hidden>{% trans "Annuler la réorganisation" %}</button>
+                    <button
+                        type="button"
+                        class="song-secondary-action site-action site-action--secondary song-reorder-cancel-button"
+                        data-reorder-cancel
+                        hidden
+                    >
+                        {% trans "Annuler la réorganisation" %}
+                    </button>
                 </p>
             {% endif %}
 
@@ -246,15 +263,15 @@
                         </div>
 
                         <div data-reorder-normal-view>
-                            <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
+                            <table class="song-edit-block-table" style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
                                 <tbody>
-                                    <tr>
-                                        <td style="vertical-align: top; width: 3em;">
+                                    <tr class="song-edit-block-table-row">
+                                        <td class="song-edit-block-handle-cell" style="vertical-align: top; width: 3em;">
                                             {% if can_edit %}
                                                 <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
                                             {% endif %}
                                         </td>
-                                            <td style="vertical-align: top;">
+                                            <td class="song-edit-block-content-cell" style="vertical-align: top;">
                                                 <div data-song-block-read-view>
                                                     <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
                                                         <tbody>
@@ -340,13 +357,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            {% endif %}
-                                        </td>
-                                        <td style="vertical-align: top; text-align: right; width: 8em;">
-                                            {% if can_edit %}
-                                                <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
-                                                    {% trans "Supprimer" %}
-                                                </button>
+                                                <div class="song-edit-block-delete-cell">
+                                                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
+                                                        {% trans "Supprimer" %}
+                                                    </button>
+                                                </div>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -398,9 +413,11 @@
             const titleInput = document.querySelector("[data-song-title-edit]");
             const subtitleInput = document.querySelector("[data-song-subtitle-edit]");
             const descriptionInput = document.querySelector("[data-song-description-edit]");
+            const slideDisplayModeInput = document.querySelector("[data-song-slide-display-mode-edit]");
             const hiddenTitle = document.querySelector("[data-song-title-hidden]");
             const hiddenSubtitle = document.querySelector("[data-song-subtitle-hidden]");
             const hiddenDescription = document.querySelector("[data-song-description-hidden]");
+            const hiddenSlideDisplayMode = document.querySelector("[data-song-slide-display-mode-hidden]");
 
             if (!openButton || !closeButton || cards.length === 0) {
                 return;
@@ -424,6 +441,9 @@
                 if (hiddenTitle && titleInput) hiddenTitle.value = titleInput.value;
                 if (hiddenSubtitle && subtitleInput) hiddenSubtitle.value = subtitleInput.value;
                 if (hiddenDescription && descriptionInput) hiddenDescription.value = descriptionInput.value;
+                if (hiddenSlideDisplayMode && slideDisplayModeInput) {
+                    hiddenSlideDisplayMode.value = slideDisplayModeInput.value;
+                }
                 if (window.LSSModifySong?.refreshUnsavedChanges) {
                     window.LSSModifySong.refreshUnsavedChanges();
                 }
@@ -433,7 +453,7 @@
             closeButton.addEventListener("click", hideCards);
             hideCards();
 
-            [titleInput, subtitleInput, descriptionInput].forEach((field) => {
+            [titleInput, subtitleInput, descriptionInput, slideDisplayModeInput].forEach((field) => {
                 if (!field) return;
                 field.addEventListener("input", syncHiddenFields);
                 field.addEventListener("change", syncHiddenFields);
