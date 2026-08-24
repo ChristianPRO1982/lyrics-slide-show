@@ -126,6 +126,7 @@
         </p>
     {% endif %}
 {% endblock %}
+{% block page_summary_panel_classes %}{% if not page_summary_text %} site-main-aside--compact-hidden{% endif %}{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>
