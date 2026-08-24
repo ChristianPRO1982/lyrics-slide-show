@@ -356,13 +356,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            {% endif %}
-                                        </td>
-                                        <td class="song-edit-block-delete-cell" style="vertical-align: top; text-align: right; width: 8em;">
-                                            {% if can_edit %}
-                                                <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
-                                                    {% trans "Supprimer" %}
-                                                </button>
+                                                <div class="song-edit-block-delete-cell">
+                                                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
+                                                        {% trans "Supprimer" %}
+                                                    </button>
+                                                </div>
                                             {% endif %}
                                         </td>
                                     </tr>

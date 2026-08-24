@@ -974,7 +974,7 @@
 
 .song-block-edit-layout {
     display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(12rem, 1fr);
+    grid-template-columns: 1fr;
     gap: 0.9rem;
     align-items: start;
 }
@@ -992,6 +992,18 @@
 
 .song-block-edit-options-col p {
     margin: 0;
+}
+
+.song-edit-block-delete-cell {
+    margin-top: 0.9rem;
+    text-align: center;
+    white-space: normal;
+}
+
+.song-edit-block-delete-cell .site-action {
+    width: auto;
+    min-width: min(100%, 12rem);
+    margin-inline: auto;
 }
 
 .song-block-prefix-col {
@@ -1116,22 +1128,6 @@
     .song-edit-block-content-cell {
         overflow: hidden;
     }
-
-    .song-edit-block-delete-cell {
-        padding-top: 0.9rem !important;
-        text-align: center !important;
-        white-space: normal;
-    }
-
-    .song-edit-block-delete-cell .site-action {
-        width: auto;
-        min-width: min(100%, 12rem);
-        margin-inline: auto;
-    }
-
-    .song-block-edit-layout {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 760px) {
@@ -1160,18 +1156,10 @@
         text-overflow: ellipsis;
     }
 
-    .song-edit-block-delete-cell {
-        white-space: normal;
-    }
-
     .song-edit-block-drag-view {
         display: flex;
         gap: 0.25rem;
         padding: 0.05rem 0.1rem;
-    }
-
-    .song-block-edit-layout {
-        grid-template-columns: 1fr;
     }
 
     .song-reorder-handle-inline {
