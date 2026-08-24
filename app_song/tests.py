@@ -1524,6 +1524,13 @@ class SongViewsRenderingTests(TestCase):
             '<main class="lyrics-layout is-single" data-lyrics-root>',
             html=False,
         )
+        self.assertContains(response, "images/lyrics/Lyrics_dark.png", html=False)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-background_dark.webp",
+            html=False,
+        )
+        self.assertContains(response, 'data-lyrics-asset="logo"', html=False)
         self.assertContains(
             response,
             '<div class="lyrics-topbar" hidden>',

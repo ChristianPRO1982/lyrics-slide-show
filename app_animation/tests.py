@@ -3068,6 +3068,16 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'class="lyrics-rail"', html=False)
         self.assertContains(response, "<title>Session | Paroles</title>", html=True)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-hamburger_menu_dark.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-background_dark.webp",
+            html=False,
+        )
 
     def test_lyrics_slide_show_public_uses_shared_template_and_keeps_playlist_order(
         self,
