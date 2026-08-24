@@ -44,7 +44,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% if is_favorite %} ⭐{% endif %}{% endblock %}
 {% block page_summary %}
     <p>{% trans "Métadonnées" %}</p>
     {% if can_edit %}
