@@ -262,15 +262,15 @@
                         </div>
 
                         <div data-reorder-normal-view>
-                            <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
+                            <table class="song-edit-block-table" style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
                                 <tbody>
-                                    <tr>
-                                        <td style="vertical-align: top; width: 3em;">
+                                    <tr class="song-edit-block-table-row">
+                                        <td class="song-edit-block-handle-cell" style="vertical-align: top; width: 3em;">
                                             {% if can_edit %}
                                                 <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
                                             {% endif %}
                                         </td>
-                                            <td style="vertical-align: top;">
+                                            <td class="song-edit-block-content-cell" style="vertical-align: top;">
                                                 <div data-song-block-read-view>
                                                     <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
                                                         <tbody>
@@ -358,7 +358,7 @@
                                                 </div>
                                             {% endif %}
                                         </td>
-                                        <td style="vertical-align: top; text-align: right; width: 8em;">
+                                        <td class="song-edit-block-delete-cell" style="vertical-align: top; text-align: right; width: 8em;">
                                             {% if can_edit %}
                                                 <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
                                                     {% trans "Supprimer" %}
