@@ -1,3 +1,25 @@
+# [3.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.5...v3.1.0) (2026-08-24)
+
+
+### Bug Fixes
+
+* Add favorite indicator to song titles in metadata and modify song templates ([64820bc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/64820bc5755faecc7c14cde7d73fd39656f39e28))
+* Add new dark-themed lyric images in WebP format ([57d4a19](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/57d4a19c08e986f27c35ac63a45afaa4a517da2c))
+* Add page summary panel to song templates for improved layout consistency ([d379f53](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d379f5396ea6e17db8f1184bcccc28488ac4efbb))
+* Enhance song editing layout for better mobile responsiveness and accessibility ([f542306](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f54230611a0fb96e5005ba01c579b4a1010213ba))
+* Refactor song edit layout for improved delete button styling and grid structure ([f4426c7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f4426c7dfdcfa2580fda68768f1537a1df1d43bc))
+* Refactor test assertions for improved readability and consistency ([c0dca2e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c0dca2eedecef894039923d34e13c14a419d5701))
+* Update cancel button for song reordering with new class and styles ([b55e147](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b55e14751af928a30727b4fee274bd1bd29caf8b))
+* Update song card layout to use grid for improved responsiveness ([082cfe5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/082cfe53fd45970f7544629b7f787b515d6a212b))
+
+
+### Features
+
+* add slide display mode to AnimationSong model and update related functionality ([2c562ee](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2c562ee2f8c5cead6aedacf1f425603925efd816))
+* **animation:** implement double display mode for song slides in Remote and projection ([86811e5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/86811e5e0882f8606a45c44f45b004f295115ff0))
+* Implement double projection step handling and enhance lyrics display ([9a8876d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9a8876d6bbfcf03914a42cb149ee717d7bdff1da))
+* implement slide display mode options for song modification ([0fa7177](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0fa7177efd19a88044a6401b6eeadd93dbe5dc6f))
+
 ## [3.0.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.4...v3.0.5) (2026-08-20)
 
 
