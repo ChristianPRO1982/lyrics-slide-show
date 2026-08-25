@@ -296,15 +296,6 @@
         const setSummaryHelpState = (expanded) => {
             summaryHelpContent.hidden = !expanded;
             summaryHelpToggle.setAttribute("aria-expanded", String(expanded));
-            summaryHelpToggle.textContent = expanded
-                ? String(
-                    summaryHelpToggle.getAttribute("data-close-label")
-                    || label("summaryHelpCloseLabel"),
-                )
-                : String(
-                    summaryHelpToggle.getAttribute("data-open-label")
-                    || label("summaryHelpOpenLabel"),
-                );
         };
 
         const applySummaryHelpMode = () => {

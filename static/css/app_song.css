@@ -126,6 +126,7 @@
     display: none;
     align-items: center;
     justify-content: start;
+    gap: 0.45rem;
     width: auto;
     padding: 0;
     border: 0;
@@ -138,6 +139,25 @@
     text-decoration: underline;
     text-underline-offset: 0.14em;
     box-shadow: none;
+}
+
+.song-summary-help-toggle-label {
+    display: inline-block;
+}
+
+.song-summary-help-toggle-arrow {
+    display: inline-block;
+    width: 0.78em;
+    height: 0.78em;
+    background: currentColor;
+    clip-path: polygon(24% 18%, 24% 82%, 78% 50%);
+    transform: rotate(0deg);
+    transform-origin: center;
+    transition: transform 120ms ease;
+}
+
+.song-summary-help-toggle[aria-expanded="true"] .song-summary-help-toggle-arrow {
+    transform: rotate(90deg);
 }
 
 .song-legend p,

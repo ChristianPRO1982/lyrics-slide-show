@@ -67,12 +67,11 @@
             type="button"
             class="song-summary-help-toggle"
             data-song-summary-toggle
-            data-open-label="{% trans 'Aide ▶' %}"
-            data-close-label="{% trans 'Aide ▼' %}"
             aria-expanded="false"
             aria-controls="song-summary-help-content"
         >
-            {% trans "Aide ▶" %}
+            <span class="song-summary-help-toggle-label">{% trans "Aide" %}</span>
+            <span class="song-summary-help-toggle-arrow" aria-hidden="true"></span>
         </button>
         <div id="song-summary-help-content" class="song-legend" data-song-summary-content hidden>
             <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
@@ -395,14 +394,5 @@
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}
-    {% trans "Aide ▶" as song_summary_help_open_label %}
-    {% trans "Aide ▼" as song_summary_help_close_label %}
-    <script>
-        window.LSS_SONG_I18N = {
-            ...(window.LSS_SONG_I18N || {}),
-            summaryHelpOpenLabel: "{{ song_summary_help_open_label|escapejs }}",
-            summaryHelpCloseLabel: "{{ song_summary_help_close_label|escapejs }}"
-        };
-    </script>
     <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}
