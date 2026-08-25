@@ -49,7 +49,17 @@ ALLOWED_FONT_FAMILIES = frozenset(FONT_FAMILIES)
 @dataclass(frozen=True)
 class FontPreview:
     family: str
+    label: str
     sample: str
+
+
+SGDF_FONT_FAMILIES = frozenset(
+    (
+        "Raleway",
+        "Caveat Brush",
+        "Sarabun",
+    )
+)
 
 
 def is_allowed_font_family(value: str | None) -> bool:
@@ -68,13 +78,25 @@ def normalize_override_font_family(value: str | None) -> str | None:
     return normalized if normalized in ALLOWED_FONT_FAMILIES else None
 
 
+def get_font_label(family: str) -> str:
+    normalized = str(family or "").strip()
+    if normalized in SGDF_FONT_FAMILIES:
+        return f"{normalized} - SGDF"
+    return normalized
+
+
 def list_font_choices() -> tuple[tuple[str, str], ...]:
-    return tuple((family, family) for family in FONT_FAMILIES)
+    return tuple((family, get_font_label(family)) for family in FONT_FAMILIES)
 
 
 def list_font_previews(
     sample_text: str = "TEXT text àéèêïùôÔç",
 ) -> tuple[FontPreview, ...]:
     return tuple(
-        FontPreview(family=family, sample=sample_text) for family in FONT_FAMILIES
+        FontPreview(
+            family=family,
+            label=get_font_label(family),
+            sample=sample_text,
+        )
+        for family in FONT_FAMILIES
     )

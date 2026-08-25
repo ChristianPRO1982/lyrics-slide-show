@@ -9,7 +9,7 @@ Elle pilote un second écran (`lyrics_slide_show_display.html`) via un pont navi
 - fallback `localStorage` events.
 
 Le contenu projeté n'est pas calculé dans la page display.
-La page maître envoie des `frames` prêtes à afficher (slide, black, QR, idle).
+La page maître envoie des `frames` prêtes à afficher (`slide`, `black`, `qr`, `idle`, `f11-reminder`).
 
 ## Accès Et Périmètre
 
@@ -20,12 +20,19 @@ La page maître envoie des `frames` prêtes à afficher (slide, black, QR, idle)
 ## Payload Runtime
 
 La vue construit un bundle `runtime_payload` issu de `build_animation_render_bundle(animation)` avec :
-- `slides` (style résolu + texte ou paire de textes synchronisés + métadonnées),
+- `slides` (inventaire plat des blocs rendus, chacun avec texte brut, style résolu propre et métadonnées),
+- `projectionSteps` (séquence réelle de projection, simple ou double),
 - `songs` (indexes de slides par chant, indexes de refrains),
 - `cardGroups` (grille des cartes de navigation),
 - `backgroundUrls` (préchargement),
 - `publicUrl` (page smartphone),
 - `qrCodePngBase64`.
+
+Rôles respectifs :
+- `slides` sert d'inventaire de rendu bloc par bloc ;
+- `projectionSteps` est le contrat effectivement consommé par la remote pour naviguer et par l'écran projeté pour afficher ;
+- en mode double, `projectionSteps` contient deux entrées distinctes `left` et `right`, chacune avec son propre `style` ;
+- `cardGroups` est une représentation de navigation dérivée, pas la source de vérité de la projection.
 
 Le payload est injecté via `json_script` (`lss-lyrics-runtime-payload`).
 
@@ -90,18 +97,22 @@ Ils sont suspendus quand une popup `LSSMessageBox` est ouverte et focusée.
 
 Frames possibles :
 - `idle` (attente),
-- `slide` (texte + style résolu),
+- `slide` (un `projectionStep` simple ou double),
 - `black`,
-- `qr` (URL publique + image QR encodée).
+- `qr` (URL publique + image QR encodée),
+- `f11-reminder` (rappel initial lors de l'ouverture d'un nouvel écran).
 
 La page display applique :
 - centrage horizontal/vertical,
 - `white-space: pre-wrap`,
 - couleurs/police/taille/padding/image de fond selon la slide.
 
-Une frame `slide` peut donc correspondre :
-- soit à un bloc unique pleine largeur ;
-- soit à une composition double avec deux zones de texte parallèles sur la même slide.
+Une frame `slide` consomme le `projectionStep` courant :
+- en mode `simple`, la projection utilise `left` seul ;
+- en mode `double`, la projection utilise `left` et `right` côte à côte.
+
+Le texte reste du texte brut.
+Le gras n'est pas encodé dans le contenu lui-même ; il provient du `fontWeight` déjà résolu dans le `style` de chaque bloc.
 
 ## Résilience
 

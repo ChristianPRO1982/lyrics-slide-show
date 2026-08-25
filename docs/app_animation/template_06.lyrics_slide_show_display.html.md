@@ -25,7 +25,7 @@ Afficher l'écran projeté piloté par la page maître `lyrics_slide_show.html`.
 - écoute les messages runtime via `BroadcastChannel` puis fallback `storage`,
 - restaure la dernière frame persistée par session.
 - injecte le texte projeté via `textContent` puis laisse CSS gérer les retours à la ligne (`white-space: pre-wrap`),
-- applique sur les frames `slide` le style résolu reçu: couleur texte, couleur fond, police, poids, taille, marge horizontale et image de fond.
+- applique sur les frames `slide` le ou les styles résolus reçus : couleur texte, couleur fond, police, poids, taille, marge horizontale et image de fond.
 
 En mode slide double :
 - les deux zones de texte restent du texte brut sans HTML de paroles ;
@@ -56,6 +56,9 @@ Une slide simple conserve le rendu historique :
 - texte, fond, image, police, taille, poids et padding issus du style résolu de cette slide ;
 - aucune régression visuelle par rapport au fonctionnement simple préexistant.
 
+La mise en forme textuelle reste limitée au style de bloc déjà résolu.
+Le renderer ne reconstruit pas de balisage inline ; il applique notamment `fontWeight` sur l'ensemble du bloc.
+
 ## Rendu Double
 
 Lorsqu'une frame `slide` transporte deux contenus associés :
@@ -85,9 +88,15 @@ En mode double :
 - la couleur du texte du bloc gauche est appliquée aux deux zones ;
 - la zone gauche conserve sa propre police et sa propre taille ;
 - la zone droite conserve sa propre police et sa propre taille ;
-- les mises en forme existantes de chaque côté restent conservées indépendamment.
+- la zone gauche conserve son propre `fontWeight` résolu ;
+- la zone droite conserve son propre `fontWeight` résolu.
 
 Le renderer ne doit donc ni écraser les données du bloc droit, ni homogénéiser artificiellement les deux contenus.
+
+Le contrat runtime réel de l'écran projeté est basé sur `projectionStep` :
+- `projectionStep.left` fournit toujours le contenu gauche ;
+- `projectionStep.right` n'est présent que pour un affichage double ;
+- chaque côté porte son propre objet `style`.
 
 ## Padding En Mode Double
 

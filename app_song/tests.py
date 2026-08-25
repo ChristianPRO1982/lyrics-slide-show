@@ -3437,7 +3437,7 @@ class SongGenresDisplayViewTests(TestCase):
         rendered = response.content.decode()
 
         self.assertLess(
-            rendered.index('<section class="song-list-section">'),
+            rendered.index('id="song-list-section" class="song-list-section"'),
             rendered.index('class="site-theme-card song-create-card"'),
         )
         self.assertLess(
@@ -3502,8 +3502,8 @@ class SongGenresDisplayViewTests(TestCase):
             f'href="/songs/?genre_ids=',
             compact_markup,
         )
-        self.assertNotIn('data-song-description', compact_markup)
-        self.assertNotIn('data-song-print-menu', compact_markup)
+        self.assertNotIn("data-song-description", compact_markup)
+        self.assertNotIn("data-song-print-menu", compact_markup)
         self.assertNotIn(">Afficher<", compact_markup)
         self.assertNotIn(">Modifier<", compact_markup)
         self.assertNotIn(">Supprimer<", compact_markup)

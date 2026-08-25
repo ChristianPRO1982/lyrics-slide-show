@@ -1317,7 +1317,7 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
         {
             "fontFamily": item.family,
             "sample": item.sample,
-            "label": item.family,
+            "label": item.label,
         }
         for item in list_font_previews()
     ]

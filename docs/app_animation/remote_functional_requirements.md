@@ -37,11 +37,18 @@ La remote envoie des `frames` prêtes à afficher :
 
 Le payload ne transporte pas de HTML de paroles.
 Le texte projeté est du texte brut injecté côté display via `textContent`.
-Une frame `slide` peut porter :
-- soit un bloc unique en pleine largeur ;
-- soit deux blocs affichés en parallèle sur la même diapo pour les chants utilisant une composition double.
 
-Le style résolu envoyé à l'écran d'affichage inclut :
+La frame `slide` transporte le contrat de projection effectif du runtime.
+Dans l'implémentation actuelle, elle contient un `projectionStep` :
+- de mode `simple` avec une entrée `left` seule ;
+- ou de mode `double` avec deux entrées distinctes `left` et `right`.
+
+Les deux entrées `left` et `right` restent chacune des blocs texte bruts avec style résolu propre.
+Le gras n'est pas porté par le texte lui-même mais par le style du bloc (`fontWeight`), calculé à partir des options métier comme `chorus` et `chorus_like`.
+
+Chaque bloc transporté dans une frame `slide` porte son propre style résolu.
+
+Ce style inclut :
 - couleur de fond,
 - couleur du texte,
 - police,
@@ -49,6 +56,11 @@ Le style résolu envoyé à l'écran d'affichage inclut :
 - taille de police,
 - padding horizontal,
 - image de fond.
+
+En mode double :
+- `left.style` et `right.style` coexistent ;
+- l'écran projeté applique les règles globales de fond et de couleur commune à partir du bloc gauche ;
+- chaque côté conserve cependant sa propre police, sa propre taille et son propre poids de police.
 
 ## Structure Générale De La Remote
 
@@ -137,6 +149,7 @@ Conséquences :
 - les blocs de refrain restent présents dans les données runtime ;
 - les blocs de refrain restent accessibles au bouton `Refrain` ;
 - les blocs de refrain n'apparaissent simplement plus comme cartes indépendantes dans la grille de navigation.
+- le toggle utilisateur `Refrain / Pas de refrain` ne peut pas réafficher ces cartes absentes, car le filtrage métier du mode double a déjà été appliqué au payload de grille.
 
 Exemple conceptuel :
 
@@ -182,6 +195,8 @@ C5
 
 Cette règle s'applique au niveau du couplet logique complet.
 Si un couplet est découpé en plusieurs blocs physiques, tous les blocs de ce couplet logique suivent la même décision de visibilité dans la grille Remote.
+
+Là encore, le toggle utilisateur `Refrain / Pas de refrain` ne recrée aucune carte retirée par ce filtrage métier.
 
 ### Navigation Des Slides Doubles
 
@@ -357,6 +372,11 @@ Position :
 Action :
 - affiche ou masque les cartes de refrains dans la grille de la remote,
 - n'a aucun effet sur le rendu projeté : les refrains restent toujours disponibles sur l'écran d'affichage.
+
+Portée exacte :
+- ce toggle agit uniquement sur les cartes `chorus` déjà présentes dans la grille rendue ;
+- il intervient après la construction de `cardGroups` ;
+- il ne contourne jamais le filtrage métier appliqué en amont pour les modes de composition double.
 
 ### QR-code
 

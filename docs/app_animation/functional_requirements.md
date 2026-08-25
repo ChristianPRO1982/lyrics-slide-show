@@ -60,6 +60,17 @@ Une slide peut afficher :
 
 Les slides ne sont pas des entités éditables persistées.
 
+Dans le contrat runtime actuel, `Rendered Slide` désigne d'abord une unité plate issue du rendu des blocs.
+Cette unité porte :
+- le texte brut du bloc ;
+- son style résolu propre ;
+- ses métadonnées de source.
+
+La projection effective ne consomme pas directement cette liste plate pour tous les cas.
+Le runtime construit ensuite une séquence de `projection steps` :
+- un `projection step simple` référence une slide à gauche uniquement ;
+- un `projection step double` associe deux slides plates, `left` et `right`, déjà synchronisées.
+
 ### Projection Runtime
 
 Le runtime de projection est local au navigateur et piloté par état.
@@ -358,6 +369,20 @@ Le rendu projeté conserve deux modes seulement :
 - `slide simple` : un seul contenu en pleine largeur ;
 - `slide double` : deux contenus affichés côte à côte sur une même diapo.
 
+Le texte projeté reste du texte brut.
+Il n'embarque ni HTML de paroles ni balisage inline de type `<b>`.
+
+La seule mise en forme textuelle résolue à ce niveau est portée par le style du bloc, notamment :
+- la police ;
+- la taille ;
+- le poids de police.
+
+Le gras est donc un style de bloc calculé à partir des options métier existantes.
+En pratique :
+- un bloc `chorus` est rendu avec `fontWeight = bold` ;
+- un bloc `chorus_like` est rendu avec `fontWeight = bold` ;
+- un bloc ordinaire est rendu avec `fontWeight = normal`.
+
 Une slide simple conserve strictement le comportement historique :
 - texte centré horizontalement et verticalement ;
 - aucun padding vertical spécifique ;
@@ -372,7 +397,7 @@ Une slide double suit les règles fonctionnelles suivantes :
 - la couleur du texte du bloc gauche est utilisée pour les deux zones ;
 - chaque zone conserve sa propre police ;
 - chaque zone conserve sa propre taille de police ;
-- chaque zone conserve sa propre mise en forme existante, notamment le gras ;
+- chaque zone conserve son propre poids de police déjà résolu au niveau bloc ;
 - le padding horizontal du mode simple est redistribué entre bords extérieurs et espace central au lieu d'être dupliqué tel quel.
 
 Dans les cas `R | C` :
@@ -444,10 +469,16 @@ Contrats d'entrée/sortie gérés côté back et consommés par le front :
 - synchronisation playlist via `ordered_mix` (`asid`/`sid`),
 - synchronisation des overrides via `songs_payload`,
 - route de choix d'image dédiée `animation_background_picker`,
-- bundle runtime `lyrics_slide_show` (slides, songs, cardGroups, backgroundUrls, publicUrl, qrCodePngBase64),
+- bundle runtime `lyrics_slide_show` (`slides`, `projectionSteps`, `songs`, `cardGroups`, `backgroundUrls`, `publicUrl`, `qrCodePngBase64`),
 - configuration structurée de raccourcis pour la remote (`siteBindings`, `effectiveBindings`, `formBindings`, `actionOrder`, `actionToRemoteAction`, `actionLabels`, `canCustomizeShortcuts`, `customizeUrl`),
 - endpoint JSON de personnalisation des raccourcis `lyrics_slide_show_shortcuts`,
 - vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet.
+
+Dans ce bundle :
+- `slides` est l'inventaire plat des blocs rendus avec leur style résolu individuel ;
+- `projectionSteps` est la séquence réelle de projection consommée par la remote et l'écran projeté ;
+- un `projection step` de mode `double` contient deux entrées distinctes `left` et `right`, chacune avec son propre `style` ;
+- `cardGroups` est une vue de navigation pour la grille Remote et non la source de vérité de la projection.
 
 Les comportements UI détaillés de ces contrats sont décrits dans les documents template dédiés.
 
