@@ -129,12 +129,30 @@
             });
         });
     }
-    const songCards = Array.from(document.querySelectorAll("[data-song-card]"));
+    const songCardNodes = Array.from(document.querySelectorAll("[data-song-card-id]"));
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
     const localEmptyState = document.querySelector("[data-song-local-empty]");
-    if (searchInput && songCards.length) {
+    const desktopSongList = document.querySelector("[data-song-list-desktop]");
+    const compactSongList = document.querySelector("[data-song-list-compact]");
+    if (searchInput && songCardNodes.length) {
         const savedSearchText = normalizeSearch(
             searchInput.getAttribute("data-song-saved-search-text"),
+        );
+        const songCardGroups = Array.from(
+            songCardNodes.reduce((groups, card) => {
+                const songId = String(card.getAttribute("data-song-card-id") || "").trim();
+                if (!songId) {
+                    return groups;
+                }
+
+                const existingGroup = groups.get(songId) || {
+                    haystack: normalizeSearch(card.getAttribute("data-song-search-text")),
+                    nodes: [],
+                };
+                existingGroup.nodes.push(card);
+                groups.set(songId, existingGroup);
+                return groups;
+            }, new Map()).values(),
         );
 
         const updateVisibleCount = (count) => {
@@ -149,16 +167,23 @@
             const shouldFilter = query.length >= 3 && !sameAsSavedSearchText;
             let visibleCount = 0;
 
-            songCards.forEach((card) => {
-                const haystack = normalizeSearch(card.getAttribute("data-song-search-text"));
-                const isVisible = !shouldFilter || matchesSearchQuery(haystack, query);
-                card.style.display = isVisible ? "" : "none";
+            songCardGroups.forEach((group) => {
+                const isVisible = !shouldFilter || matchesSearchQuery(group.haystack, query);
+                group.nodes.forEach((card) => {
+                    card.style.display = isVisible ? "" : "none";
+                });
                 if (isVisible) {
                     visibleCount += 1;
                 }
             });
 
             updateVisibleCount(visibleCount);
+            if (desktopSongList instanceof HTMLElement) {
+                desktopSongList.hidden = visibleCount === 0;
+            }
+            if (compactSongList instanceof HTMLElement) {
+                compactSongList.hidden = visibleCount === 0;
+            }
             if (localEmptyState) {
                 localEmptyState.hidden = visibleCount !== 0;
             }
@@ -296,15 +321,6 @@
         const setSummaryHelpState = (expanded) => {
             summaryHelpContent.hidden = !expanded;
             summaryHelpToggle.setAttribute("aria-expanded", String(expanded));
-            summaryHelpToggle.textContent = expanded
-                ? String(
-                    summaryHelpToggle.getAttribute("data-close-label")
-                    || label("summaryHelpCloseLabel"),
-                )
-                : String(
-                    summaryHelpToggle.getAttribute("data-open-label")
-                    || label("summaryHelpOpenLabel"),
-                );
         };
 
         const applySummaryHelpMode = () => {

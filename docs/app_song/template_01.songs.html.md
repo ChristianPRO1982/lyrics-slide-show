@@ -13,6 +13,16 @@ Page racine front de consultation et recherche des chants (`/songs/`).
 - Le mode `chants à modérer` est temporaire, n’écrase pas la recherche enregistrée, et affiche un état visuel analogue au mode favoris temporaire.
 - Affiche le formulaire de recherche simple et avancée.
 - Affiche la liste des cartes chant, leurs marqueurs et actions UI.
+- Conserve la liste actuelle en cartes séparées pour desktop au-dessus de `980px`.
+- Affiche à `980px` et moins une liste compacte alternative dans une seule carte conteneur :
+  - un item par chant ;
+  - titre cliquable ;
+  - indicateur favori éventuel ;
+  - bouton `smartphone view` ;
+  - tags `genres / groupes / artistes` avec les mêmes liens de recherche rapide ;
+  - sans description ;
+  - sans action impression ;
+  - sans boutons `Afficher`, `Modifier`, `Supprimer`.
 - Affiche sur chaque carte le titre du chant avec le marqueur de validation à la suite du titre :
   - `✔️` pour `status=1`
   - `✔️⁉️` pour `status=2`
@@ -55,3 +65,4 @@ Il faut certainement charger tous les chants en mémoire JS. Ne pas oublier de f
 ## Notes
 
 - Les règles métier de droits, de recherche et de persistance sont définies dans `functional_requirements.md`.
+- Le filtre local JS sur `title + subtitle` doit continuer à fonctionner sans doubler les résultats malgré la coexistence des rendus desktop et compact dans le DOM.

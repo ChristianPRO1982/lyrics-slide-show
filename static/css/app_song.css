@@ -126,6 +126,7 @@
     display: none;
     align-items: center;
     justify-content: start;
+    gap: 0.45rem;
     width: auto;
     padding: 0;
     border: 0;
@@ -138,6 +139,25 @@
     text-decoration: underline;
     text-underline-offset: 0.14em;
     box-shadow: none;
+}
+
+.song-summary-help-toggle-label {
+    display: inline-block;
+}
+
+.song-summary-help-toggle-arrow {
+    display: inline-block;
+    width: 0.78em;
+    height: 0.78em;
+    background: currentColor;
+    clip-path: polygon(24% 18%, 24% 82%, 78% 50%);
+    transform: rotate(0deg);
+    transform-origin: center;
+    transition: transform 120ms ease;
+}
+
+.song-summary-help-toggle[aria-expanded="true"] .song-summary-help-toggle-arrow {
+    transform: rotate(90deg);
 }
 
 .song-legend p,
@@ -377,6 +397,10 @@
     gap: 1rem;
 }
 
+.song-compact-list {
+    display: none;
+}
+
 .song-card {
     display: grid;
     gap: 0.9rem;
@@ -409,6 +433,11 @@
 
 .song-card h3 {
     font-size: 1.2rem;
+}
+
+.song-compact-item-title {
+    margin: 0;
+    font-size: 1.08rem;
 }
 
 .song-title-link {
@@ -744,6 +773,10 @@
     font-size: 0.92rem;
 }
 
+.song-card-metadata--compact {
+    gap: 0.35rem;
+}
+
 .song-card-metadata p {
     margin: 0;
 }
@@ -794,6 +827,45 @@
     margin-top: 1rem;
 }
 
+.song-compact-item {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.song-compact-item-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: start;
+}
+
+.song-compact-item-main {
+    min-width: 0;
+}
+
+.song-compact-item-tools {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+}
+
+.song-compact-favorite {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    min-height: 2.75rem;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.song-compact-smartphone-action {
+    min-width: 2.85rem;
+    min-height: 2.75rem;
+    padding-inline: 0.65rem;
+}
+
 .song-card-actions {
     display: flex;
     justify-content: space-between;
@@ -836,11 +908,18 @@
     .song-mobile-quick-links {
         display: grid;
     }
-}
 
-@media (max-width: 980px) {
     .site-main-aside.site-main-aside--compact-hidden {
         display: none;
+    }
+
+    .song-list--desktop {
+        display: none;
+    }
+
+    .song-compact-list {
+        display: grid;
+        gap: 1rem;
     }
 }
 
@@ -871,18 +950,6 @@
     .song-metadata-list > div {
         display: grid;
         grid-template-columns: 1fr;
-    }
-
-    .song-card-actions {
-        display: grid;
-    }
-
-    .song-card-actions-left,
-    .song-card-actions-right,
-    .song-card-actions-left > *,
-    .song-delete-form,
-    .song-delete-form button {
-        width: 100%;
     }
 
     .song-card-markers {

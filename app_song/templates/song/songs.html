@@ -67,12 +67,11 @@
             type="button"
             class="song-summary-help-toggle"
             data-song-summary-toggle
-            data-open-label="{% trans 'Aide ▶' %}"
-            data-close-label="{% trans 'Aide ▼' %}"
             aria-expanded="false"
             aria-controls="song-summary-help-content"
         >
-            {% trans "Aide ▶" %}
+            <span class="song-summary-help-toggle-label">{% trans "Aide" %}</span>
+            <span class="song-summary-help-toggle-arrow" aria-hidden="true"></span>
         </button>
         <div id="song-summary-help-content" class="song-legend" data-song-summary-content hidden>
             <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
@@ -109,7 +108,7 @@
                 <h2>{% trans "Recherche" %}</h2>
             </div>
         </header>
-        <form method="get" class="song-search-form" id="song-search">
+        <form method="get" action="{% url 'songs' %}#song-list-section" class="song-search-form" id="song-search">
             <div class="song-search-main">
                 <div class="song-search-card-stats" aria-label="{% trans 'Compteurs de chants' %}">
                     <strong data-song-visible-count>{{ displayed_count }}</strong>
@@ -238,14 +237,15 @@
 
 {% endblock %}
 {% block content_footer %}
-    <section class="song-list-section">
+    <section id="song-list-section" class="song-list-section">
         <header class="song-list-header">
             <h2>{% trans "Liste des chants" %}</h2>
         </header>
 
-        <div class="song-list" data-song-list>
+        {% if song_cards %}
+        <div class="song-list song-list--desktop" data-song-list data-song-list-desktop>
             {% for item in song_cards %}
-                <article class="site-theme-card song-card" data-song-card data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
+                <article class="site-theme-card song-card" data-song-card data-song-card-id="{{ item.song.song_id }}" data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
                     <div class="song-card-main">
                         <div>
                             <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a></h3>
@@ -353,18 +353,78 @@
                         </div>
                     </div>
                 </article>
-            {% empty %}
-                <article class="site-theme-card">
-                    <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
+            {% endfor %}
+        </div>
+
+        <div class="song-list song-compact-list" data-song-list-compact>
+            {% for item in song_cards %}
+                <article class="site-theme-card song-compact-item" data-song-card-compact data-song-card-id="{{ item.song.song_id }}" data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
+                    <div class="song-compact-item-head">
+                        <div class="song-compact-item-main">
+                            <h3 class="song-compact-item-title">
+                                <a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a>
+                            </h3>
+                        </div>
+                        <div class="song-compact-item-tools">
+                            {% if item.is_favorite %}
+                                <span class="song-compact-favorite" title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>
+                            {% endif %}
+                            <a class="song-icon-action site-action site-action--icon song-compact-smartphone-action" href="{{ item.print_full_url }}" title="{% trans 'Smartphone view' %}" aria-label="{% trans 'Smartphone view' %}">📱</a>
+                        </div>
+                    </div>
+
+                    {% if item.genres or item.bands or item.artists %}
+                        <div class="song-card-metadata song-card-metadata--compact">
+                            {% if item.genres %}
+                                <p>{% trans "Genres" %} :
+                                    {% for genre in item.genres %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if genre.add_url %}
+                                            <a class="song-card-meta-link" href="{{ genre.add_url }}">{{ genre.label }}</a>
+                                        {% else %}
+                                            <span>{{ genre.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if item.bands %}
+                                <p>{% trans "Groupes" %} :
+                                    {% for band in item.bands %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if band.add_url %}
+                                            <a class="song-card-meta-link" href="{{ band.add_url }}">{{ band.label }}</a>
+                                        {% else %}
+                                            <span>{{ band.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {% if item.artists %}
+                                <p>{% trans "Artistes" %} :
+                                    {% for artist in item.artists %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {% if artist.add_url %}
+                                            <a class="song-card-meta-link" href="{{ artist.add_url }}">{{ artist.label }}</a>
+                                        {% else %}
+                                            <span>{{ artist.label }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </article>
             {% endfor %}
-
-            {% if song_cards %}
-                <article class="site-theme-card" data-song-local-empty hidden>
-                    <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
-                </article>
-            {% endif %}
         </div>
+
+        <article class="site-theme-card" data-song-local-empty hidden>
+            <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
+        </article>
+        {% else %}
+        <article class="site-theme-card">
+            <p>{% trans "Aucun chant ne correspond à la recherche." %}</p>
+        </article>
+        {% endif %}
     </section>
 
     <article class="site-theme-card song-create-card" data-song-create-card>
@@ -395,14 +455,5 @@
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}
-    {% trans "Aide ▶" as song_summary_help_open_label %}
-    {% trans "Aide ▼" as song_summary_help_close_label %}
-    <script>
-        window.LSS_SONG_I18N = {
-            ...(window.LSS_SONG_I18N || {}),
-            summaryHelpOpenLabel: "{{ song_summary_help_open_label|escapejs }}",
-            summaryHelpCloseLabel: "{{ song_summary_help_close_label|escapejs }}"
-        };
-    </script>
     <script src="{% static 'js/app_song.js' %}"></script>
 {% endblock %}
