@@ -102,6 +102,87 @@ La remote affiche un panneau par chant avec une grille responsive de cartes de d
 Les refrains peuvent être masqués dans cette grille côté remote, sans impact sur l'écran projeté.
 Pour un chant en composition double, une carte représente une diapo logique déjà synchronisée entre ses deux côtés.
 
+### Pré-affichage Remote Et Composition Double
+
+Le pré-affichage Remote reste une représentation de navigation.
+Il ne doit pas réécrire la séquence musicale source du chant.
+
+Le filtrage éventuel du pré-affichage :
+- ne supprime jamais les refrains ni les couplets des données runtime ;
+- ne modifie pas la navigation générale ;
+- ne modifie pas le comportement du bouton `Refrain` ;
+- ne modifie pas la communication avec l'écran projeté ;
+- ne modifie pas la logique de création ou d'édition des chants et animations.
+
+La décision de masquer ou conserver un bloc dans la grille Remote doit respecter la logique musicale existante.
+En particulier :
+- un couplet logique peut s'étendre sur plusieurs blocs physiques ;
+- un couplet pair ou impair ne doit jamais être déduit de la simple position d'un bloc dans une liste ;
+- la décision doit réutiliser la logique existante de numérotation et de continuité des couplets.
+
+Les autres blocs déjà gérés par le moteur, comme un pont, un pré-refrain ou un refrain final, conservent leur comportement existant tant qu'ils ne sont pas explicitement impliqués dans une composition double.
+
+#### Cas 1 - Refrain Seul Puis Refrain Plus Couplet
+
+Le pré-affichage Remote reste inchangé.
+
+La grille continue à présenter les blocs comme avant l'introduction de la composition double.
+Il n'y a pas de tentative de représentation miniature en deux colonnes dans cette vue.
+
+#### Cas 2 - Refrain Et Couplet Toujours En Parallèle
+
+Le pré-affichage Remote affiche uniquement les blocs de couplets.
+
+Conséquences :
+- les blocs de refrain restent présents dans les données runtime ;
+- les blocs de refrain restent accessibles au bouton `Refrain` ;
+- les blocs de refrain n'apparaissent simplement plus comme cartes indépendantes dans la grille de navigation.
+
+Exemple conceptuel :
+
+```text
+séquence runtime
+R
+C1
+R
+C2
+R
+C3
+
+pré-affichage Remote
+C1
+C2
+C3
+```
+
+#### Cas 3 - Couplets Deux Par Deux
+
+Le pré-affichage Remote affiche uniquement les couplets logiques de colonne gauche.
+
+Conséquences :
+- `C1 | C2` est représenté par `C1` dans la grille ;
+- `C3 | C4` est représenté par `C3` dans la grille ;
+- si le nombre de couplets est impair, le dernier couplet sans partenaire reste visible comme carte indépendante.
+
+Exemple conceptuel :
+
+```text
+séquence runtime
+C1
+C2
+C3
+C4
+C5
+
+pré-affichage Remote
+C1
+C3
+C5
+```
+
+Cette règle s'applique au niveau du couplet logique complet.
+Si un couplet est découpé en plusieurs blocs physiques, tous les blocs de ce couplet logique suivent la même décision de visibilité dans la grille Remote.
+
 ### Navigation Des Slides Doubles
 
 Le fonctionnement normal reste la navigation sur des slides simples pleine largeur.

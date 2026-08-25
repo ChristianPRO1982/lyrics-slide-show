@@ -352,6 +352,41 @@ La règle fondamentale reste la même dans les trois cas :
 - on maintient le dernier bloc du côté terminé ;
 - on ne passe au groupe suivant que lorsque les deux côtés ont été entièrement parcourus.
 
+### Contrat De Rendu De L'écran Projeté
+
+Le rendu projeté conserve deux modes seulement :
+- `slide simple` : un seul contenu en pleine largeur ;
+- `slide double` : deux contenus affichés côte à côte sur une même diapo.
+
+Une slide simple conserve strictement le comportement historique :
+- texte centré horizontalement et verticalement ;
+- aucun padding vertical spécifique ;
+- pas de séparation graphique ;
+- fond, image, couleur, police, taille et padding issus du style résolu du bloc affiché.
+
+Une slide double suit les règles fonctionnelles suivantes :
+- les deux zones restent obligatoirement horizontales, jamais empilées ;
+- il n'existe aucun séparateur visuel entre les deux zones ;
+- le fond global de la diapo provient exclusivement du bloc gauche ;
+- l'image de fond éventuelle du bloc gauche couvre toute la slide ;
+- la couleur du texte du bloc gauche est utilisée pour les deux zones ;
+- chaque zone conserve sa propre police ;
+- chaque zone conserve sa propre taille de police ;
+- chaque zone conserve sa propre mise en forme existante, notamment le gras ;
+- le padding horizontal du mode simple est redistribué entre bords extérieurs et espace central au lieu d'être dupliqué tel quel.
+
+Dans les cas `R | C` :
+- le refrain occupe la zone gauche ;
+- le couplet occupe la zone droite ;
+- le bouton `Refrain` continue à produire une vraie slide simple de refrain seul.
+
+Dans le cas `C1 | C2`, `C3 | C4`, etc. :
+- le couplet impair de la paire occupe la zone gauche ;
+- le couplet pair de la paire occupe la zone droite ;
+- si le dernier couplet n'a pas de partenaire, il est rendu comme une vraie slide simple pleine largeur avec ses propres paramètres graphiques.
+
+Les blocs non explicitement engagés dans une paire double conservent leur rendu simple habituel.
+
 ## Modèle D'héritage Visuel
 
 Ordre de résolution :
