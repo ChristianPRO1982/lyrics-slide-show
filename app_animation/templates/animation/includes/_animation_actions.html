@@ -1,8 +1,0 @@
-{% load i18n %}
-<p><a class="animation-tool-link site-action site-action--primary" href="{% url 'add_animation' %}">{% trans "Ajouter une animation" %}</a></p>
-{% if request.user.is_moderator %}
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'background_images' %}">{% trans "Banque d'images" %}</a></p>
-{% endif %}
-{% if request.user.is_authenticated %}
-    <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'upload_background_image' %}">{% trans "Ajouter une image" %}</a></p>
-{% endif %}

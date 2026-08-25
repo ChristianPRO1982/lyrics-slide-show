@@ -1,5 +1,0 @@
-{% load i18n %}
-
-{% if request.resolver_match.url_name != "groups" %}
-    <p><a class="group-action-link site-action site-action--primary" href="{% url 'groups' %}">{% trans "Liste des groupes" %}</a></p>
-{% endif %}
