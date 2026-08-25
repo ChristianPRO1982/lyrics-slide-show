@@ -365,7 +365,7 @@ def build_song_search_url(params: SongSearchParams, **overrides: object) -> str:
     query = build_song_search_query(params, **overrides)
     base_url = reverse("songs")
     if not query:
-        return base_url
+        return f"{base_url}?reset_search=1"
     return f"{base_url}?{query}"
 
 

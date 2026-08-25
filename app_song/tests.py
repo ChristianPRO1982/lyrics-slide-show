@@ -51,6 +51,7 @@ from .search import (
     _params_from_query,
     _validation_label,
     build_song_search_query,
+    build_song_search_url,
     get_active_song_search,
     load_member_song_search,
     remove_song_search_reference,
@@ -605,6 +606,12 @@ class SongSearchParamsTests(SimpleTestCase):
         query = build_song_search_query(SongSearchParams(favorites_only=True))
 
         self.assertEqual(query, "favorites_only=1")
+
+    def test_build_song_search_url_uses_reset_marker_for_empty_search(self):
+        self.assertEqual(
+            build_song_search_url(SongSearchParams.empty()),
+            f"{reverse('songs')}?reset_search=1",
+        )
 
     def test_add_song_search_reference_preserves_other_filters_without_duplicates(self):
         params = SongSearchParams(
@@ -3678,6 +3685,36 @@ class SongClickableReferenceFiltersTests(TestCase):
         self.assertEqual(preferences.song_search["genre_ids"], [self.genre_id])
         self.assertEqual(preferences.song_search["band_ids"], [])
         self.assertEqual(preferences.song_search["artist_ids"], [self.artist_id])
+
+    def test_active_tag_removal_of_last_filter_resets_saved_search(self):
+        self._login()
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        preferences.song_search = {
+            **self.saved_search,
+            "text": "",
+            "match_all_selected_refs": False,
+            "validation": "all",
+            "favorites_only": False,
+            "genre_ids": [self.genre_id],
+            "band_ids": [],
+            "artist_ids": [],
+        }
+        preferences.save(update_fields=["song_search"])
+
+        response = self.client.get(reverse("songs"))
+        remove_url = response.context["active_search_tags"][0]["remove_url"]
+
+        self.assertEqual(remove_url, f"{reverse('songs')}?reset_search=1")
+
+        follow_response = self.client.get(remove_url)
+
+        self.assertEqual(follow_response.status_code, 200)
+        preferences.refresh_from_db()
+        self.assertEqual(
+            preferences.song_search,
+            SongSearchParams.empty().to_preferences(),
+        )
+        self.assertEqual(follow_response.context["active_search_tags"], ())
 
     def test_song_view_tag_click_routes_to_songs_and_updates_saved_search(self):
         self._login()
