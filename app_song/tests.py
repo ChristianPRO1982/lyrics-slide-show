@@ -3440,6 +3440,60 @@ class SongGenresDisplayViewTests(TestCase):
 
         self.assertContains(response, 'class="song-mobile-quick-links"', html=False)
 
+    def test_songs_page_exposes_compact_list_markup_for_tablet_and_mobile(self):
+        SongFavorite.objects.create(song=self.song, member_id=self.user_id)
+        response = self._render_songs_response()
+        rendered = response.content.decode()
+
+        self.assertContains(
+            response,
+            'class="song-list song-list--desktop"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="song-list song-compact-list"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="site-theme-card song-compact-item"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="song-compact-item-tools"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="song-compact-favorite"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'class="song-icon-action site-action site-action--icon song-compact-smartphone-action"',
+            html=False,
+        )
+
+        compact_start = rendered.index('class="song-list song-compact-list"')
+        compact_end = rendered.index('class="site-theme-card song-create-card"')
+        compact_markup = rendered[compact_start:compact_end]
+
+        self.assertIn(
+            f'href="/songs/{self.song.song_id}/text/full-chorus/"',
+            compact_markup,
+        )
+        self.assertIn(
+            f'href="/songs/?genre_ids=',
+            compact_markup,
+        )
+        self.assertNotIn('data-song-description', compact_markup)
+        self.assertNotIn('data-song-print-menu', compact_markup)
+        self.assertNotIn(">Afficher<", compact_markup)
+        self.assertNotIn(">Modifier<", compact_markup)
+        self.assertNotIn(">Supprimer<", compact_markup)
+
     def test_songs_page_summary_help_exposes_mobile_toggle_markup_and_labels(self):
         response = self._render_songs_response()
 
