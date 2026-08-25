@@ -3448,15 +3448,14 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(response, "data-song-summary-content", html=False)
         self.assertContains(
             response,
-            'data-open-label="Aide ▶"',
+            'class="song-summary-help-toggle-label">Aide</span>',
             html=False,
         )
         self.assertContains(
             response,
-            'data-close-label="Aide ▼"',
+            'class="song-summary-help-toggle-arrow" aria-hidden="true"></span>',
             html=False,
         )
-        self.assertContains(response, "Aide ▶")
         self.assertContains(
             response, 'aria-controls="song-summary-help-content"', html=False
         )
