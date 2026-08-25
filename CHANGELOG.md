@@ -1,3 +1,15 @@
+## [3.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.0...v3.1.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* Enhance font handling and update documentation for double slide projection ([f999f49](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f999f49965e8b9bba2b6d8084a18ffb2e5a6ea8d))
+* Enhance song display with compact list for mobile and tablet views ([9018b03](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9018b03f119fd75bbd1284a9c844b371251cd0ac))
+* Update song search form action to target song list section anchor ([7d0005a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7d0005ae3cdcac8beaba56dd47415a17bf994964))
+* Update song search URL to include reset marker for empty searches ([8fd550a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8fd550a53763e22733c169491da1b2288626cbcf))
+* Update song summary help toggle for improved accessibility and styling ([ebcae6c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ebcae6c16b2a90306afe63a6ca08cf0514329549))
+* Update song summary help toggle for improved accessibility and styling ([52fd1f2](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/52fd1f269f14b2355600a64fcc18a280a6bbaf97))
+
 # [3.1.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.0.5...v3.1.0) (2026-08-24)
 
 
