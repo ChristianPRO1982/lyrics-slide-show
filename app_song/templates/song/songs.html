@@ -108,7 +108,7 @@
                 <h2>{% trans "Recherche" %}</h2>
             </div>
         </header>
-        <form method="get" class="song-search-form" id="song-search">
+        <form method="get" action="{% url 'songs' %}#song-list-section" class="song-search-form" id="song-search">
             <div class="song-search-main">
                 <div class="song-search-card-stats" aria-label="{% trans 'Compteurs de chants' %}">
                     <strong data-song-visible-count>{{ displayed_count }}</strong>
@@ -237,7 +237,7 @@
 
 {% endblock %}
 {% block content_footer %}
-    <section class="song-list-section">
+    <section id="song-list-section" class="song-list-section">
         <header class="song-list-header">
             <h2>{% trans "Liste des chants" %}</h2>
         </header>

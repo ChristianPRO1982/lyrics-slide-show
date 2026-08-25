@@ -3418,6 +3418,20 @@ class SongGenresDisplayViewTests(TestCase):
             rendered.index('class="song-page-stats"'),
         )
 
+    def test_songs_search_form_targets_song_list_anchor(self):
+        response = self._render_songs_response()
+
+        self.assertContains(
+            response,
+            'form method="get" action="/songs/#song-list-section" class="song-search-form" id="song-search"',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'id="song-list-section" class="song-list-section"',
+            html=False,
+        )
+
     def test_songs_page_moves_new_song_card_after_song_list_in_footer(self):
         response = self._render_songs_response()
         rendered = response.content.decode()
