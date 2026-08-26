@@ -37,6 +37,10 @@ Périmètre de ce document :
 - Session locale avec deux clés :
 - `lss_user` pour l’utilisateur connecté.
 - `lss_keycloak_state` pour protéger le flux OIDC.
+- En mode `keycloak`, le flux réel de production ajoute aussi un état temporaire
+  de provisioning :
+- `lss_pending_provision` pour reprendre la connexion après provisioning Home.
+- `lss_home_provision_target` pour stocker l’URL signée de départ vers Home.
 - En cas d’échec callback :
 - suppression de `lss_user`,
 - retour anonyme,
@@ -58,6 +62,10 @@ Périmètre de ce document :
 - `KEYCLOAK_REDIRECT_URI`.
 - `KEYCLOAK_LOGOUT_REDIRECT_URI`.
 - `KEYCLOAK_SCOPES` (défaut `openid`).
+- `HOME_PROVISION_START_URL`.
+- `HOME_PROVISION_APP_ID`.
+- `HOME_PROVISION_SHARED_SECRET` ou `HOME_PROVISION_SHARED_SECRET_FILE`.
+- `HOME_PROVISION_RETURN_URL`.
 - `USER_SCHEMA` (défaut `users`).
 - `USER_TABLE` (défaut `users`).
 - `SESSION_SECRET_KEY` (cookie de session FastAPI).
@@ -210,6 +218,15 @@ Sur échec callback :
 - rester anonyme,
 - `302` vers homepage avec message d’erreur.
 
+Si callback Keycloak valide mais utilisateur absent de `users.users` :
+
+- construire une URL signée vers `HOME_PROVISION_START_URL`
+- stocker `lss_pending_provision`
+- stocker `lss_home_provision_target`
+- rediriger vers une page locale intermédiaire de provisioning
+- après retour navigateur sur `/provision/complete/`, relire `users.users`
+- si l’utilisateur existe désormais et est activé, ouvrir la session locale sans second aller-retour Keycloak
+
 Logout :
 
 - supprimer `lss_user`,
@@ -217,6 +234,11 @@ Logout :
 - si `AUTH_MODE=keycloak` et config logout complète :
 - redirection `${oidc_base}/logout?client_id=...&post_logout_redirect_uri=...`
 - sinon fallback homepage.
+
+Refresh utilisateur connecté :
+
+- si l’utilisateur local est supprimé ou désactivé après connexion, le middleware de refresh doit purger la session et repasser en anonyme
+- le snapshot `lss_user` peut être réécrit avec les rôles locaux recalculés (`is_moderator`, `is_admin`)
 
 ## Middleware utilisateur requête
 

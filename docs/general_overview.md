@@ -178,7 +178,8 @@ A song is defined by:
 - `subtitle`,
 - `description`,
 - `status` (`0` non validé, `1` validé, `2` validé avec attention/messages),
-- `licensed`.
+- `licensed`,
+- `slide_display_mode`.
 
 The pair `title + subtitle` must be unique.
 
@@ -212,7 +213,7 @@ If a verse is marked as `followed`, the chorus is skipped after that block and t
 
 If numbering continuity is disabled with `not_c_num`, the displayed verse number does not continue. This allows a single verse to be split into several slides without producing misleading numbering.
 
-For chorus-like sections such as pre-choruses or bridges, the user may either type a custom prefix manually or use prefixes managed by moderators. Those moderator-defined prefixes can populate or replace the prefix field in the editing workflow.
+For chorus-like sections such as pre-choruses or bridges, the user may type a custom prefix manually on the block itself. The current documented workflow does not rely on a dedicated moderator-managed prefix catalog.
 
 ### Song Metadata
 
@@ -221,9 +222,20 @@ Songs may also be linked to supporting reference data:
 - `genres` (`0-n`),
 - `artists` (`0-n`),
 - `bands` (`0-n`),
-- `web_links` (`0-n`, internal or external).
+- `links` (`0-n`, internal or external, typed as `score`, `audio`, `youtube`, `web`, `internal`).
 
 The service does not store sheet music files or other file-based attachments as part of its core scope, though external links are allowed.
+
+### Song-Level Slide Mode
+
+Each song also carries a preferred slide display mode used as a default by `app_animation`.
+
+Current values are:
+
+- `single`,
+- `chorus_then_parallel`,
+- `chorus_always_parallel`,
+- `verses_by_pairs`.
 
 ## Animations
 

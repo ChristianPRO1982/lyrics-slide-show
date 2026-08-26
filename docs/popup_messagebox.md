@@ -1,24 +1,22 @@
 # Popup Message Box Contract
 
-`Lyrics Slide Show` exposes a global popup API through `window.LSSMessageBox`.
+`Lyrics Slide Show` expose une API popup globale via `window.LSSMessageBox`.
 
-This document describes the current implementation exactly as it behaves in the codebase.
+Ce document décrit l’implémentation actuelle de `static/js/message_box.js`.
 
 ## Loading Contract
 
-- `templates/base.html` loads `static/js/message_box.js` globally.
-- `templates/base.html` exposes `{% block page_scripts %}` after the shared scripts.
-- The popup host is a global `<div id="lss-messagebox-root" hidden></div>`.
-- The popup uses the current site theme from `window.LSS_THEME_CONFIG`.
-- The popup close icon uses the active theme and the browser `prefers-color-scheme` mode.
+- `templates/base.html` charge globalement `static/js/message_box.js`
+- l’hôte popup global est `<div id="lss-messagebox-root" hidden></div>`
+- le popup utilise `window.LSS_THEME_CONFIG`
+- l’icône de fermeture dépend du thème actif et du `prefers-color-scheme`
+- `page_scripts` est injecté après `message_box.js`, ce qui permet aux pages d’utiliser immédiatement `window.LSSMessageBox`
 
 ## Public API
 
 ### `window.LSSMessageBox.show(config)`
 
-Returns a `Promise`.
-
-The promise resolves with:
+Retourne une `Promise` résolue avec :
 
 ```js
 {
@@ -29,27 +27,23 @@ The promise resolves with:
 }
 ```
 
-`payload` is present only when the popup is closed through `close(payload)` inside a button callback or through `window.LSSMessageBox.close(result)`.
-
 ### `window.LSSMessageBox.alert(config)`
 
-Convenience wrapper over `show(config)`.
+Wrapper de `show(config)`.
 
-Default behavior when `config.buttons` is not provided:
+Bouton par défaut :
 
 ```js
-buttons: [
-  { id: "ok", label: "OK", tone: "neutral" }
-]
+buttons: [{ id: "ok", label: "OK", tone: "neutral" }]
 ```
 
-If `showCloseButton` is not explicitly provided, the wrapper sets it to `false`.
+`showCloseButton` passe à `false` par défaut.
 
 ### `window.LSSMessageBox.confirm(config)`
 
-Convenience wrapper over `show(config)`.
+Wrapper de `show(config)`.
 
-Default behavior when `config.buttons` is not provided:
+Boutons par défaut :
 
 ```js
 buttons: [
@@ -58,13 +52,13 @@ buttons: [
 ]
 ```
 
-If `showCloseButton` is not explicitly provided, the wrapper sets it to `false`.
+`showCloseButton` passe à `false` par défaut.
 
 ### `window.LSSMessageBox.prompt(config)`
 
-Convenience wrapper over `show(config)`.
+Wrapper de `show(config)`.
 
-Default behavior when `config.buttons` is not provided:
+Boutons par défaut :
 
 ```js
 buttons: [
@@ -73,13 +67,13 @@ buttons: [
 ]
 ```
 
-If `showCloseButton` is not explicitly provided, the wrapper sets it to `false`.
+`showCloseButton` passe à `false` par défaut.
 
 ### `window.LSSMessageBox.close(result?)`
 
-Closes the active popup programmatically.
+Ferme programmatiquement le popup actif.
 
-If a popup is open, it resolves the active promise with:
+Résultat :
 
 ```js
 {
@@ -90,14 +84,11 @@ If a popup is open, it resolves the active promise with:
 }
 ```
 
-Returns:
-
-- `true` if a popup was open and has been closed
-- `false` if no popup was open
+Retourne `true` si un popup a été fermé, sinon `false`.
 
 ### `window.LSSMessageBox.isOpen()`
 
-Returns `true` when a popup is currently open, otherwise `false`.
+Retourne `true` si un popup est actif.
 
 ## `show(config)` shape
 
@@ -111,24 +102,36 @@ Returns `true` when a popup is currently open, otherwise `false`.
   enterButtonId: "confirm",
   escapeButtonId: "cancel",
   buttons: [],
-  fields: []
+  fields: [],
+  onFieldChange(context) {},
+  preview: { label: "", text: "", className: "" },
+  fontSamples: [{ fontFamily: "", sample: "", label: "" }],
+  tabbedSelect: {
+    fieldId: "target_field",
+    fieldLabel: "",
+    initialTabId: "main",
+    submitButtonId: "confirm",
+    size: 8,
+    tabs: []
+  }
 }
 ```
 
-Normalization rules:
+Règles de normalisation :
 
-- missing or invalid `config` is treated as an empty object
-- invalid `size` falls back to `"default"`
-- `title` and `messageMarkdown` are always normalized to strings
-- `buttons` defaults to `[]`
-- `fields` defaults to `[]`
-- if `fields` is present and `buttons` is empty, an error is thrown
-- if `buttons.length === 0`, `showCloseButton` is forced to `true`
-- otherwise `showCloseButton` is `true` unless explicitly set to `false`
+- `config` absent ou invalide devient un objet vide
+- `title` et `messageMarkdown` sont toujours normalisés en chaînes
+- `size` invalide retombe sur `"default"`
+- `buttons` et `fields` retombent sur `[]`
+- si `fields.length > 0` et `buttons.length === 0`, une erreur est levée
+- si `buttons.length === 0`, `showCloseButton` est forcé à `true`
+- sinon `showCloseButton` vaut `true` sauf si explicitement `false`
+- `onFieldChange` n’est conservé que si c’est une fonction
+- `preview`, `fontSamples` et `tabbedSelect` sont optionnels
 
 ## Buttons
 
-Each button supports:
+Chaque bouton supporte :
 
 ```js
 {
@@ -137,36 +140,42 @@ Each button supports:
   tone: "neutral" | "success" | "warning" | "danger",
   disabled: false,
   validate: true,
-  onClick(context) {
-    // optional
-  }
+  onClick(context) {}
 }
 ```
 
-Normalization rules:
+Règles :
 
-- `id` is required and must be a non-empty string, otherwise an error is thrown
-- `label` falls back to `id`
-- invalid `tone` falls back to `"neutral"`
-- `disabled` is coerced to boolean
-- `onClick` is kept only if it is a function, otherwise it becomes `null`
-- `validate` is kept only if it is explicitly boolean, otherwise it becomes `null`
-
-Behavior rules:
-
-- disabled buttons are rendered disabled
-- disabled buttons cannot be triggered by click or keyboard shortcuts
-- if a button callback throws, the error is logged with `console.error`, busy state is removed, and the popup stays open
+- `id` non vide obligatoire
+- `label` retombe sur `id`
+- `tone` invalide retombe sur `"neutral"`
+- `disabled` est coercé en booléen
+- `validate` n’est conservé que s’il est explicitement booléen
+- `onClick` n’est conservé que si c’est une fonction
 
 ## Fields
 
-Version 1 supports up to twelve fields:
+Le popup supporte au maximum `12` champs.
+
+Types supportés :
+
+- `text`
+- `email`
+- `password`
+- `textarea`
+- `color`
+- `number`
+- `select`
+- `datetime-local`
+- `shortcut-slots`
+
+Shape générale :
 
 ```js
 {
   id: "email",
   label: "Adresse e-mail",
-  type: "text" | "email" | "password" | "textarea" | "color" | "number" | "select" | "datetime-local" | "shortcut-slots",
+  type: "text",
   value: "",
   readonly: false,
   placeholder: "",
@@ -174,6 +183,11 @@ Version 1 supports up to twelve fields:
   autocomplete: "email",
   maxLength: 255,
   rows: 4,
+  min: 0,
+  max: 100,
+  step: 1,
+  size: 8,
+  options: [{ value: "a", label: "Option A" }],
   slotCount: 3,
   emptySlotLabel: "Aucun",
   captureSlotLabel: "Appuyer sur une touche",
@@ -181,33 +195,51 @@ Version 1 supports up to twelve fields:
 }
 ```
 
-Normalization rules:
+Règles de normalisation :
 
-- maximum supported field count is `12`, otherwise an error is thrown
-- `id` is required and must be a non-empty string, otherwise an error is thrown
-- invalid `type` falls back to `"text"`
-- `label` falls back to `id`
-- `value`, `placeholder`, and `autocomplete` are normalized to strings
-- `readonly` is coerced to boolean
-- `required` is coerced to boolean
-- `maxLength` is used only if it is a positive integer
-- `rows` is used only for `textarea` and only if it is a positive integer, otherwise it defaults to `4`
-- `slotCount` is used only for `shortcut-slots`; it defaults to `3` and is capped at `3`
-- `emptySlotLabel`, `captureSlotLabel`, and `clearSlotLabel` are used only for `shortcut-slots`
+- `id` non vide obligatoire
+- `type` invalide retombe sur `"text"`
+- `label` retombe sur `id`
+- `value`, `placeholder`, `autocomplete` sont normalisés en chaînes
+- `readonly` et `required` sont coercés en booléens
+- `maxLength` n’est utilisé que s’il est strictement positif
+- `rows` ne s’applique qu’à `textarea`, sinon `4`
+- `min`, `max`, `step` s’appliquent aux champs compatibles quand ce sont des nombres finis
+- `options` ne s’applique qu’à `select`
+- `size` ne s’applique qu’à `select` si > 1
+- `slotCount` ne s’applique qu’à `shortcut-slots`, défaut `3`, maximum `3`
 
-Rendered field behavior:
+Comportement rendu :
 
-- fields are rendered inside a `<form novalidate>`
-- textareas are vertically resizable
-- `readonly: true` makes `input` and `textarea` fields non-editable while keeping their value focusable and selectable
-- `shortcut-slots` renders three readonly clickable slots on one line, backed by one hidden string value serialized as CSV
-- when a `shortcut-slots` slot is armed, the next simple key press fills that slot, `Escape` cancels the capture, and the slot clear button removes only that slot
-- validation errors are rendered inline below the field
-- current field values are always returned as strings
+- les champs sont rendus dans un `<form novalidate>`
+- `readonly=true` rend `input` et `textarea` non éditables mais focusables
+- `select` choisit la première option si la valeur courante n’existe pas
+- `shortcut-slots` rend jusqu’à trois slots clickables, sérialisés en CSV dans un input caché
+- les erreurs de validation sont affichées inline
+- les valeurs retournées sont toujours des chaînes
+
+## `tabbedSelect`
+
+`tabbedSelect` permet de piloter un champ `select` existant à travers des onglets.
+
+Contraintes :
+
+- `fieldId` doit cibler un champ `select` existant
+- `tabs` doit contenir au moins un onglet
+- chaque onglet a un `id`, un `label`, une liste `options` et éventuellement `emptyMessage`
+- `initialTabId` retombe sur le premier onglet si invalide
+- `submitButtonId` peut désactiver dynamiquement un bouton si l’onglet actif n’a aucune option
+
+## `preview` et `fontSamples`
+
+- `preview` ajoute un aperçu visuel live dans le corps du popup
+- `fontSamples` ajoute une galerie d’aperçus de polices
+
+Ces deux mécanismes sont purement front et n’ajoutent aucune logique métier.
 
 ## Callback Context
 
-Button callbacks receive:
+Le callback d’un bouton reçoit :
 
 ```js
 {
@@ -220,228 +252,131 @@ Button callbacks receive:
 }
 ```
 
-Behavior rules:
+`onFieldChange(context)` reçoit :
 
-- `values` contains current field values at callback time
-- `close(payload)` closes immediately with the current `reason`, `buttonId`, current field values, and `payload`
-- `keepOpen()` marks the popup to stay open after the callback resolves
-- `setFieldError(fieldId, message)` marks the target field invalid if it exists
-- `setFieldValue(fieldId, value)` updates the target field value if it exists and keeps composite field UI in sync
-- if a callback returns `false`, the popup stays open
-- if a callback resolves to anything other than `false`, the popup closes unless `keepOpen()` was called
+```js
+{
+  fieldId,
+  value,
+  values,
+  previewElement,
+  setFieldValue(fieldId, value),
+  setFieldError(fieldId, message)
+}
+```
 
 ## Validation Rules
 
-Validation only exists when fields are present.
+- la validation n’existe que s’il y a des champs
+- si `button.validate` vaut explicitement `true` ou `false`, cette valeur prime
+- sinon seul le bouton par défaut déclenché par `Enter` valide
+- `required=true` vérifie une valeur trim non vide
+- `type="email"` vérifie la validité email native
 
-Validation target selection:
+Messages intégrés :
 
-- if `button.validate` is explicitly `true` or `false`, that value is used
-- otherwise only the default `Enter` action button validates
-
-Built-in validation rules:
-
-- `required: true` checks that the trimmed value is not empty
-- `type: "email"` checks validity via the native browser email validity
-
-Built-in validation error messages:
-
-- required: `Ce champ est obligatoire.`
-- invalid email: `Veuillez saisir une adresse e-mail valide.`
-
-If validation fails:
-
-- the popup stays open
-- the invalid field gets focus
-- errors are displayed inline
+- `Ce champ est obligatoire.`
+- `Veuillez saisir une adresse e-mail valide.`
 
 ## Markdown Support
 
-`messageMarkdown` is rendered client-side by the popup component itself.
+`messageMarkdown` est rendu côté client.
 
-Supported formatting:
+Syntaxe supportée :
 
-- paragraphs
-- headings `#` to `######`
-- horizontal rules using `---`, `***`, or `___`
-- unordered lists using `-` or `*`
-- ordered lists using `1.`
-- blockquotes using `>`
-- fenced code blocks using triple backticks
-- inline code using backticks
-- links `[label](url)`
-- bold with `**text**`
-- emphasis with `*text*` or `_text_`
+- paragraphes
+- titres `#` à `######`
+- règles horizontales `---`, `***`, `___`
+- listes `-`, `*`, `1.`
+- blockquotes `>`
+- blocs de code fence
+- code inline
+- liens Markdown
+- gras et emphase simple
 
-Security and sanitization rules:
+Sécurité :
 
-- all raw HTML is escaped
-- links are allowed only for:
+- le HTML brut est échappé
+- les liens autorisés sont :
   - `http:`
   - `https:`
   - `mailto:`
   - `tel:`
-  - local anchors starting with `#`
-  - local paths starting with `/`, `./`, or `../`
-  - relative URLs that resolve safely against the current page
-- invalid links are rendered as plain escaped text
-
-This is not a full Markdown engine. The supported syntax is only the subset implemented in `static/js/message_box.js`.
+  - ancres `#`
+  - chemins `/`, `./`, `../`
+  - URLs relatives résolues sûrement contre la page courante
 
 ## Interaction Rules
 
-- Only one popup is visible at a time.
-- Additional popups are queued in `FIFO` order.
-- Opening a popup adds `body.lss-messagebox-open`, which disables page scrolling.
-- Closing the popup removes that body class.
-- The popup promise resolves only when that popup actually closes.
-- Focus is restored to the element that had focus before the popup opened, if it is still focusable.
+- un seul popup visible à la fois
+- les popups supplémentaires sont mis en file `FIFO`
+- l’ouverture ajoute `body.lss-messagebox-open`
+- la fermeture retire cette classe
+- le focus précédent est restauré quand possible
 
 ## Focus Rules
 
-Explicit focus:
+Focus explicite :
 
-- `initialFocus: "close"` focuses the close button if it exists
-- `initialFocus: "first-field"` focuses the first field if fields exist
-- `initialFocus: "button:<id>"` focuses that button if it exists
-- `initialFocus: "field:<id>"` focuses that field if it exists
+- `initialFocus: "close"`
+- `initialFocus: "first-field"`
+- `initialFocus: "button:<id>"`
+- `initialFocus: "field:<id>"`
 
-Default focus fallback order when `initialFocus` is missing or invalid:
+Ordre de fallback :
 
-1. first field, if fields exist
-2. default `Enter` action button, if it exists
-3. close button, if it exists
-4. first remaining focusable element
-5. dialog panel itself
-
-Implications:
-
-- if the popup has action buttons, the close button does not receive initial focus by default
-- the close button remains reachable through `Tab`
-- if the popup has no buttons, the close button may receive initial focus
+1. premier champ
+2. bouton action par défaut `Enter`
+3. bouton fermer
+4. premier élément focusable restant
+5. panneau du dialogue
 
 ## Keyboard Rules
 
-Focus trap:
-
-- `Tab` and `Shift+Tab` are trapped inside the popup
-- if no focusable element exists, focus falls back to the dialog panel
-
-Busy state:
-
-- while a button callback is running, non-Tab keyboard handling is blocked
-- buttons and the close button are disabled during that busy state
-
-Escape behavior:
-
-- if the close button is present, `Escape` closes the popup with:
-
-```js
-{ reason: "escape", buttonId: null, values }
-```
-
-- when the close button is present, `escapeButtonId` is ignored
-- if there is no button, `Escape` closes the popup with:
-
-```js
-{ reason: "escape", buttonId: null, values }
-```
-
-- if the close button is not present and there is one button, `Escape` triggers that button
-- if the close button is not present and there are at least two buttons, `Escape` triggers button 2 by default
-- if the close button is not present and `escapeButtonId` is provided and matches an existing button, it overrides the default
-- if the close button is not present and `escapeButtonId` is provided but does not match an existing button, the normal default fallback is used
-
-Enter behavior:
-
-- `Enter` does nothing if there is no button
-- if there is one button, `Enter` triggers that button
-- if there are at least two buttons, `Enter` triggers button 1 by default
-- if `enterButtonId` is provided and matches an existing button, it overrides the default
-- if `enterButtonId` is provided but does not match an existing button, the normal default fallback is used
-- `Enter` inside a `textarea` keeps its normal editing behavior
-- `Enter` does not auto-trigger when focus is already on:
-  - a button
-  - a link
-  - an input of type `button`, `submit`, or `reset`
+- `Tab` et `Shift+Tab` sont piégés dans le popup
+- si un callback de bouton est en cours, les raccourcis clavier hors `Tab` sont bloqués
+- si le bouton fermer est présent, `Escape` ferme toujours le popup et ignore `escapeButtonId`
+- sinon `Escape` déclenche :
+  - l’unique bouton s’il n’y en a qu’un
+  - le deuxième bouton par défaut s’il y en a au moins deux
+  - ou `escapeButtonId` s’il correspond à un bouton existant
+- `Enter` :
+  - ne fait rien sans bouton
+  - déclenche l’unique bouton s’il n’y en a qu’un
+  - déclenche le premier bouton par défaut s’il y en a plusieurs
+  - ou `enterButtonId` s’il correspond à un bouton existant
+- dans `textarea`, `Enter` garde son comportement normal
 
 ## Mouse Rules
 
-- clicking the backdrop does not close the popup
-- clicking the backdrop moves focus back into the popup according to the normal initial-focus logic
-- clicking the close button closes the popup with:
-
-```js
-{ reason: "close", buttonId: null, values }
-```
-
-- clicking a button triggers that button normally
+- cliquer le backdrop ne ferme pas le popup
+- cliquer le bouton fermer ferme avec `reason: "close"`
+- cliquer un bouton exécute ce bouton normalement
 
 ## Layout and Size Rules
 
-The current CSS behavior is:
+- padding horizontal viewport : `16px`
+- marge verticale : `12.5vh`
+- hauteur max : `75vh`
+- hauteur min : `200px`
+- largeurs :
+  - `compact` : min `320px`, max `460px`
+  - `default` : min `320px`, max `680px`
+  - `wide` : min `360px`, max `920px`
 
-- popup horizontal padding inside the viewport: `16px`
-- popup vertical position: top-aligned with `12.5vh` margin above and below
-- popup maximum height: `75vh`
-- popup minimum height: `200px`
-- width depends on `size`:
-  - `compact`: min `320px`, max `460px`
-  - `default`: min `320px`, max `680px`
-  - `wide`: min `360px`, max `920px`
-
-Content growth behavior:
-
-- the popup panel itself grows naturally with content
-- it does not have a fixed height
-- once content would exceed `75vh`, only the body section scrolls
-- header and footer stay visible because the panel uses a vertical flex layout with:
-  - header fixed in flex
-  - body flexible and scrollable
-  - footer fixed in flex
+Le header et le footer restent visibles ; seul le body scrolle si nécessaire.
 
 ## Visual Rules
 
-- close control uses the themed `close.png` icon from the active theme and current light/dark mode
-- the close control has no visible framed button style by default
-- focus visible styling still applies to the close control
-- neutral, success, warning, and danger buttons use the semantic popup theme variables
-- `scout.css` overrides popup tokens from `normal.css` the same way as the rest of the site theme
+- l’icône close provient du thème actif
+- les tons `neutral`, `success`, `warning`, `danger` utilisent les variables popup du thème
+- les thèmes hérités (`scout`, etc.) surchargent ces tokens comme le reste du site
 
 ## Accessibility Rules
 
-- the popup panel uses `role="dialog"`
-- the popup panel uses `aria-modal="true"`
-- if a title is present, the dialog uses `aria-labelledby`
-- if no title is present, the dialog uses `aria-label` with the configured dialog label
-- the close icon image has empty `alt` and `aria-hidden="true"`
-- field error messages use `aria-live="polite"`
-- invalid fields get `aria-invalid="true"` and `aria-describedby`
-
-## Example
-
-```js
-window.LSSMessageBox.show({
-  title: "Supprimer l'animation",
-  messageMarkdown: "Cette action est **irreversible**.",
-  buttons: [
-    {
-      id: "delete",
-      label: "Supprimer",
-      tone: "danger",
-      onClick({ values }) {
-        console.log(values);
-      }
-    },
-    {
-      id: "cancel",
-      label: "Annuler",
-      tone: "neutral"
-    }
-  ],
-  enterButtonId: "delete",
-  escapeButtonId: "cancel"
-}).then((result) => {
-  console.log(result);
-});
-```
+- `role="dialog"`
+- `aria-modal="true"`
+- `aria-labelledby` si titre présent, sinon `aria-label`
+- image close avec `alt=""` et `aria-hidden="true"`
+- erreurs avec `aria-live="polite"`
+- champs invalides avec `aria-invalid="true"` et `aria-describedby`

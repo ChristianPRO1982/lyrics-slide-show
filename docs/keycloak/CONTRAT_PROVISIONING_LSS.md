@@ -54,18 +54,22 @@ automatiquement de lire ce chemin contractuel.
 
 ## URL de retour
 
-Pour `app_id=lss`, `home` accepte uniquement les URLs HTTPS dont l'hôte est :
+Dans l’implémentation actuelle côté `LSS`, `HOME_PROVISION_RETURN_URL` doit être :
 
-- `carthographie.fr`
-- `lss.carthographie.fr`
+- une URL HTTPS absolue
+- sans query string
+- sans fragment
+- avec le chemin exact `/provision/complete/`
 
-L'URL signée peut contenir un chemin et une query string. Les fragments `#...`
-sont refusés.
+Exemple production attendu :
 
-Pour `LSS`, cette URL ne doit pas pointer vers la racine du site (`/`).
-Elle doit pointer vers un endpoint applicatif dédié a la reprise
-post-provisioning, charge d'executer la derniere action locale attendue par
-`LSS`.
+```text
+https://lss.carthographie.fr/provision/complete/
+```
+
+Le code Django ne valide pas aujourd’hui une liste d’hôtes contractuelle plus
+fine ; il impose surtout ce format absolu HTTPS et ce chemin exact. En
+production, l’URL attendue reste celle de `LSS`.
 
 ## Exemple Python
 
@@ -109,8 +113,7 @@ url = "https://carthographie.fr/provision/start?" + urlencode({
 8. En cas de succès confirmé par le receiver, `home` redirige directement le
    navigateur vers l'URL exacte `return_url`.
 9. Le retour final doit viser cette URL exacte, qui pointe vers
-   `LSS /provision/complete/` ou tout autre endpoint LSS explicitement dédié
-   a la finalisation locale.
+   `LSS /provision/complete/`.
 10. Cet endpoint LSS exécute lui-même la dernière action applicative :
     relecture de `users.users`, ouverture de session locale, affichage d'une
     reprise, ou relance contrôlée d'un flux interne LSS si nécessaire.
@@ -131,9 +134,11 @@ Règles :
 
 - `home` ou `cARThographie` doit renvoyer le navigateur vers `return_url`
   exactement ;
-- `LSS` doit signer une `return_url` qui declenche une reprise applicative
+- `LSS` doit signer une `return_url` qui déclenche une reprise applicative
   réelle, et non une simple page d'accueil ;
 - il ne faut pas renvoyer vers `/`, `/auth/callback/` ou `/login/?start=1` ;
+- pour rester cohérent avec le code actuel, il ne faut pas non plus ajouter de
+  query string ni de fragment à `return_url` ;
 - le succès final ne passe pas par une page HTML intermédiaire ;
 - aucun identifiant utilisateur ou jeton spécifique à `LSS` n'est requis dans
   ce retour ;
