@@ -3505,6 +3505,8 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(response, 'class="song-mobile-quick-links"', html=False)
 
     def test_songs_page_exposes_compact_list_markup_for_tablet_and_mobile(self):
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
         SongFavorite.objects.create(song=self.song, member_id=self.user_id)
         response = self._render_songs_response()
         rendered = response.content.decode()
@@ -3532,6 +3534,7 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(
             response,
             'class="song-compact-favorite"',
+            count=2,
             html=False,
         )
         self.assertContains(
@@ -3560,6 +3563,23 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertIn(">Supprimer<", compact_markup)
         self.assertIn(">Impression<", compact_markup)
         self.assertIn(">Smartphone view<", compact_markup)
+        self.assertIn('aria-label="Double slide">2️⃣</span>', compact_markup)
+        self.assertIn('aria-label="Favori">⭐</span>', compact_markup)
+        self.assertLess(
+            compact_markup.index('aria-label="Double slide">2️⃣</span>'),
+            compact_markup.index('aria-label="Favori">⭐</span>'),
+        )
+        desktop_markup = rendered[
+            rendered.index('class="song-list song-list--desktop"') : rendered.index(
+                'class="song-list song-compact-list"'
+            )
+        ]
+        self.assertIn('aria-label="Double slide">2️⃣</span>', desktop_markup)
+        self.assertIn('aria-label="Favori">⭐</span>', desktop_markup)
+        self.assertLess(
+            desktop_markup.index('aria-label="Double slide">2️⃣</span>'),
+            desktop_markup.index('aria-label="Favori">⭐</span>'),
+        )
 
     def test_songs_page_hides_compact_edit_actions_for_non_editable_song(self):
         validated_song = Song.objects.create(
@@ -3583,12 +3603,35 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertNotIn(">Modifier<", validated_slice)
         self.assertNotIn(">Supprimer<", validated_slice)
 
+    def test_songs_page_shows_double_slide_marker_without_favorite(self):
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+
+        response = self._render_songs_response()
+        rendered = response.content.decode()
+        desktop_markup = rendered[
+            rendered.index('class="song-list song-list--desktop"') : rendered.index(
+                'class="song-list song-compact-list"'
+            )
+        ]
+        compact_markup = rendered[
+            rendered.index('class="song-list song-compact-list"') : rendered.index(
+                'class="site-theme-card song-create-card"'
+            )
+        ]
+
+        self.assertIn('aria-label="Double slide">2️⃣</span>', desktop_markup)
+        self.assertNotIn('aria-label="Favori">⭐</span>', desktop_markup)
+        self.assertIn('aria-label="Double slide">2️⃣</span>', compact_markup)
+        self.assertNotIn('aria-label="Favori">⭐</span>', compact_markup)
+
     def test_songs_page_summary_help_exposes_mobile_toggle_markup_and_labels(self):
         response = self._render_songs_response()
 
         self.assertContains(response, "data-song-summary-help", html=False)
         self.assertContains(response, "data-song-summary-toggle", html=False)
         self.assertContains(response, "data-song-summary-content", html=False)
+        self.assertContains(response, "Chant en affichage double slide")
         self.assertContains(
             response,
             'class="song-summary-help-toggle-label">Aide</span>',

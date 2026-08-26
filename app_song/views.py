@@ -393,6 +393,9 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
         cards.append(
             {
                 "song": song,
+                "show_double_slide_marker": (
+                    song.slide_display_mode != SongSlideDisplayMode.SINGLE
+                ),
                 "is_favorite": result.is_favorite,
                 "is_validated": song.is_validated,
                 "description_summary": description_summary,

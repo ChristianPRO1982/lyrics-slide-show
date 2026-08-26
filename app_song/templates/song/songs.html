@@ -86,6 +86,7 @@
             <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
             <p><strong>✔️⁉️</strong> {% trans "Chant validé avec des messages" %}</p>
             <p><strong>📄</strong> {% trans "Chant sous licence" %}</p>
+            <p><strong>2️⃣</strong> {% trans "Chant en affichage double slide" %}</p>
             <p><strong>📱</strong> {% trans "Smartphone view" %}</p>
             <p><strong>🖨️</strong> {% trans "Impression du chant - avec un seul refrain ou tous les refrains" %}</p>
         </div>
@@ -260,6 +261,7 @@
                             <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a></h3>
                         </div>
                         <div class="song-card-markers">
+                            {% if item.show_double_slide_marker %}<span title="{% trans 'Double slide' %}" aria-label="{% trans 'Double slide' %}">2️⃣</span>{% endif %}
                             {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>{% endif %}
                         </div>
                     </div>
@@ -375,6 +377,9 @@
                             </h3>
                         </div>
                         <div class="song-compact-item-tools">
+                            {% if item.show_double_slide_marker %}
+                                <span class="song-compact-favorite" title="{% trans 'Double slide' %}" aria-label="{% trans 'Double slide' %}">2️⃣</span>
+                            {% endif %}
                             {% if item.is_favorite %}
                                 <span class="song-compact-favorite" title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>
                             {% endif %}

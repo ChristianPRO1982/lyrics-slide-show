@@ -703,7 +703,20 @@ def search_songs(
         is_authenticated=_is_authenticated(user),
         member_id=member_id,
     )
-    songs = [row.song for row in sql_rows if row.song is not None]
+    ordered_song_ids = [row.song.song_id for row in sql_rows if row.song is not None]
+    songs_by_id = {
+        song.song_id: song for song in Song.objects.filter(song_id__in=ordered_song_ids)
+    }
+    favorite_by_id = {
+        row.song.song_id: row.is_favorite for row in sql_rows if row.song is not None
+    }
+    songs: list[Song] = []
+    for song_id in ordered_song_ids:
+        song = songs_by_id.get(song_id)
+        if song is None:
+            continue
+        song.is_favorite = favorite_by_id.get(song_id, False)
+        songs.append(song)
     results = _build_results_from_songs(songs)
     counts_row = sql_rows[0] if sql_rows else SongCatalogSearchRow(None, False, 0, 0)
 

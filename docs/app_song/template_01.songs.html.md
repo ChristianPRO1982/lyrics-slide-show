@@ -10,6 +10,7 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - affiche les compteurs `Chants`, `Recherche ⓘ`, `Total ⓘ`
 - affiche les tags de recherche active
 - affiche un panneau d’aide rappelant les marqueurs `✔️`, `✔️⁉️`, `📄`, `📱`, `🖨️`
+- le panneau d’aide explique aussi le marqueur `2️⃣` pour les chants en affichage double slide
 - expose des actions flottantes vers la recherche et le bloc `Nouveau chant`
 - affiche la recherche simple
 - pour utilisateur authentifié, affiche la recherche avancée :
@@ -25,7 +26,9 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - affiche à part une liste compacte mobile avec panneau `⚙️`
 - chaque carte peut afficher :
   - titre cliquable
+  - marqueur `2️⃣` à droite si `slide_display_mode != single`
   - étoile favori éventuelle
+  - ordre des marqueurs à droite : `2️⃣` puis `⭐` quand les deux sont présents
   - description résumée avec extension locale `[...]`
   - tags `genres / groupes / artistes` avec liens d’ajout rapide à la recherche sauvegardée
   - actions `Afficher`, `Modifier`, `Supprimer`, `📱`, `🖨️`
