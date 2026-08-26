@@ -1,3 +1,12 @@
+## [3.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.1...v3.1.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* Add compact options for song actions with toggle functionality ([045d0cf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/045d0cfa7ea1ce55531d7cc2c7586dab87daf50a))
+* Sync playlist to copy and maintain song slide display modes ([d1ffbb4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d1ffbb49a6b1e7161fa0bc36d0fbaf02926cbce8))
+* Update CSS to hide additional song summary content when empty ([9f9ee23](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9f9ee2376c4f5003c89db40131cc249cdc9ac040))
+
 ## [3.1.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.0...v3.1.1) (2026-08-25)
 
 
