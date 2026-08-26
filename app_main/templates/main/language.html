@@ -50,6 +50,35 @@
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Réglage LSS" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <span class="site-language-hero">
+            <picture data-theme-icon="button" data-theme-alt="{% trans 'Choix de la langue' %}">
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="dark"
+                    srcset="{% static 'icons/ui/normal/512/dark/button.png' %}"
+                    media="(prefers-color-scheme: dark)"
+                >
+                <source
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                    srcset="{% static 'icons/ui/normal/512/light/button.png' %}"
+                    media="(prefers-color-scheme: light)"
+                >
+                <img
+                    src="{% static 'icons/ui/normal/512/light/button.png' %}"
+                    alt="{% trans 'Choix de la langue' %}"
+                    data-theme-size="512"
+                    data-theme-mode="light"
+                >
+            </picture>
+            <span class="site-language-hero-flag" aria-hidden="true">
+                {% if current_language|default:"fr"|slice:":2"|lower == "en" %}🇬🇧{% else %}🇫🇷{% endif %}
+            </span>
+        </span>
+    </div>
+{% endblock %}
 
 {% block mobile_side_content %}
     <div>

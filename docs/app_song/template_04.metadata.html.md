@@ -10,6 +10,7 @@ Cette page n’est pas une page de lecture.
 
 - affiche le panneau d’actions partagé
 - affiche le résumé `Métadonnées` et le bouton `Enregistrer` si `can_edit`
+- affiche `2️⃣` à la suite du titre principal quand `slide_display_mode != single`
 - affiche un formulaire unique `#metadata-form`
 - édite les liens associés au chant
 - pour chaque lien existant :
@@ -44,6 +45,7 @@ Cette page n’est pas une page de lecture.
 - `song`
 - `can_edit`
 - `is_favorite`
+- `show_double_slide_marker`
 - `metadata_genres_selected`
 - `metadata_genres_available`
 - `metadata_bands_selected`

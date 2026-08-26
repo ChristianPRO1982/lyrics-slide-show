@@ -21,6 +21,15 @@
     {% include "song/includes/_song_actions.html" %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chant" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Chant' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Chant' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block mobile_side_content %}
     <div class="song-mobile-actions-panel">
         <div class="song-mobile-summary">
@@ -44,7 +53,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% if is_favorite %} ⭐{% endif %}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% if show_double_slide_marker %} 2️⃣{% endif %}{% if is_favorite %} ⭐{% endif %}{% endblock %}
 {% block page_summary %}
     <p>{% trans "Métadonnées" %}</p>
     {% if can_edit %}

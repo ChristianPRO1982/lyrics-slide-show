@@ -46,6 +46,15 @@
 {% block mobile_side_intro %}
     <p>{% trans "Résumé compact pour mobile." %}</p>
 {% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="groups" data-theme-alt="{% trans 'Modifier un groupe' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/groups.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/groups.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/groups.png' %}" alt="{% trans 'Modifier un groupe' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block mobile_side_content %}
     <div class="group-mobile-summary">
         <p><strong>{{ group.name }}</strong></p>

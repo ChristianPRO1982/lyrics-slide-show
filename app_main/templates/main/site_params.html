@@ -19,6 +19,15 @@
     <p><a class="site-action site-action--secondary" href="{% url 'account' %}">{% trans "Retour au profil" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Site params" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="lss" data-theme-alt="{% trans 'Paramètres du site' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/lss.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/lss.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/lss.png' %}" alt="{% trans 'Paramètres du site' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block page_kicker %}Lyrics Slide Show{% endblock %}
 {% block page_title %}{% trans "Paramètres du site" %}{% endblock %}
 {% block page_summary %}

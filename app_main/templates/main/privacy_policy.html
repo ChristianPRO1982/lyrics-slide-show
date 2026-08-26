@@ -42,6 +42,30 @@
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Politique de confidentialité" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="cookies" data-theme-alt="{% trans 'Politique de confidentialité' %}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/cookies.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/cookies.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/cookies.png' %}"
+                alt="{% trans 'Politique de confidentialité' %}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
 
 {% block content %}
     <section class="site-theme-selection" aria-label="{% trans 'Politique de confidentialité détaillée' %}">

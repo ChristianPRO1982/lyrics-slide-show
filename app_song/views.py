@@ -393,6 +393,9 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
         cards.append(
             {
                 "song": song,
+                "show_double_slide_marker": (
+                    song.slide_display_mode != SongSlideDisplayMode.SINGLE
+                ),
                 "is_favorite": result.is_favorite,
                 "is_validated": song.is_validated,
                 "description_summary": description_summary,
@@ -913,6 +916,9 @@ def _build_modify_song_context(
     return {
         "selected_group": selected_group,
         "song": song,
+        "show_double_slide_marker": (
+            song.slide_display_mode != SongSlideDisplayMode.SINGLE
+        ),
         "chorus_prefix": render_settings.chorus_prefix,
         "title_complete_with_tags": build_song_full_title_with_tags(song),
         "description_display": _normalize_display_linebreaks(song.description).strip(),
@@ -1606,6 +1612,9 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         {
             "selected_group": selected_group,
             "song": song_object,
+            "show_double_slide_marker": (
+                song_object.slide_display_mode != SongSlideDisplayMode.SINGLE
+            ),
             "description_display": _normalize_display_linebreaks(
                 song_object.description
             ).strip(),
@@ -1818,6 +1827,9 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         {
             "selected_group": selected_group,
             "song": song_object,
+            "show_double_slide_marker": (
+                song_object.slide_display_mode != SongSlideDisplayMode.SINGLE
+            ),
             "title_complete_with_tags": build_song_full_title_with_tags(song_object),
             "metadata_links": metadata_links,
             "link_type_options": link_type_options,

@@ -903,6 +903,30 @@ body.lss-messagebox-open {
     font-size: 0.96rem;
 }
 
+.site-section-panel .site-panel-header picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-panel-header picture img {
+    display: block;
+    border-radius: inherit;
+}
+
+.site-section-panel .site-home-media picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-home-media img {
+    display: block;
+    border-radius: inherit;
+}
+
 .site-section-panel,
 .site-tools-panel {
     padding: 22px;
@@ -959,6 +983,53 @@ body.lss-messagebox-open {
     margin-bottom: 16px;
     padding: 18px;
     background: var(--site-surface-alt);
+}
+
+.site-mobile-side-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 16px;
+}
+
+.site-mobile-side-heading {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+}
+
+.site-mobile-side-visual {
+    display: flex;
+    width: 63px;
+    justify-content: end;
+    align-items: start;
+}
+
+.site-mobile-side-visual:empty {
+    display: none;
+}
+
+.site-mobile-side-visual .site-home-media {
+    width: 100%;
+}
+
+.site-mobile-side-visual picture,
+.site-mobile-side-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.site-mobile-side-visual .site-home-mobile-logo {
+    max-width: none;
+    margin-inline: 0;
+}
+
+.site-mobile-side-visual .site-language-hero {
+    width: 100%;
+}
+
+.site-mobile-side-visual .site-language-hero-flag {
+    font-size: 1.1rem;
 }
 
 .site-mobile-side > :not(.site-panel-header):not(style) {
@@ -1807,6 +1878,14 @@ body.lss-messagebox-open {
 }
 
 @media (max-width: 1400px) {
+    .site-workspace {
+        padding: 24px 44px 32px 20px;
+    }
+
+    .site-layout {
+        grid-template-columns: 214px minmax(0, 1fr);
+    }
+
     .site-main-content {
         grid-template-columns: 1fr;
     }
@@ -1865,6 +1944,10 @@ body.lss-messagebox-open {
     .site-nav-button-icon {
         width: 40px;
         height: 40px;
+    }
+
+    .site-mobile-side-visual {
+        width: 60px;
     }
 
     .site-main-panel,

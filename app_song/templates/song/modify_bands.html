@@ -21,6 +21,15 @@
     <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Retour aux chants" %}</a></p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Groupes de musiques" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Gestion des groupes de musiques' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Gestion des groupes de musiques' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{% trans "Gestion des groupes de musiques" %}{% endblock %}
 {% block page_summary %}
