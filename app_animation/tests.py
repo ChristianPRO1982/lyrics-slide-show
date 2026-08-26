@@ -1048,7 +1048,7 @@ class AnimationViewsTests(TestCase):
             status=SongStatus.NOT_VALIDATED,
             licensed=False,
         )
-        verse = Verse.objects.create(
+        Verse.objects.create(
             song=song,
             num=2,
             num_verse=1,
@@ -1153,7 +1153,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            f'<option value="verses_by_pairs" selected>',
+            '<option value="verses_by_pairs" selected>',
             html=False,
         )
         payload = json.loads(response.context["songs_payload_initial_json"])
@@ -5274,3 +5274,127 @@ class PlaylistSyncTests(TestCase):
         self.assertEqual(len(persisted), 2)
         self.assertEqual([row.position for row in persisted], [2, 4])
         self.assertEqual(persisted[0].animation_song_id, item_two.animation_song_id)
+        self.assertEqual(persisted[1].slide_display_mode, SongSlideDisplayMode.SINGLE)
+
+    def test_sync_playlist_copies_song_slide_display_mode_for_new_item(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Parallel Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+        result = sync_animation_playlist(
+            animation,
+            parse_ordered_mix(f"sid:{song.song_id}"),
+            allowed_song_ids={song.song_id},
+        )
+
+        self.assertEqual(result.created_count, 1)
+        created = AnimationSong.objects.get(animation=animation, song=song)
+        self.assertEqual(
+            created.slide_display_mode,
+            SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+
+    def test_sync_playlist_new_duplicate_occurrence_uses_song_mode_not_existing_item(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song = Song.objects.create(
+            title="Song",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+        existing = AnimationSong.objects.create(
+            animation=animation,
+            song=song,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.SINGLE,
+        )
+
+        sync_animation_playlist(
+            animation,
+            parse_ordered_mix(f"asid:{existing.animation_song_id}|sid:{song.song_id}"),
+            allowed_song_ids={song.song_id},
+        )
+
+        persisted = list(
+            AnimationSong.objects.filter(animation=animation).order_by(
+                "position", "animation_song_id"
+            )
+        )
+        self.assertEqual(len(persisted), 2)
+        self.assertEqual(persisted[0].animation_song_id, existing.animation_song_id)
+        self.assertEqual(persisted[0].slide_display_mode, SongSlideDisplayMode.SINGLE)
+        self.assertEqual(
+            persisted[1].slide_display_mode,
+            SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+    def test_sync_playlist_reorder_existing_items_keeps_their_slide_display_modes(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        song_a = Song.objects.create(
+            title="A",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL,
+        )
+        song_b = Song.objects.create(
+            title="B",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+            slide_display_mode=SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+        item_a = AnimationSong.objects.create(
+            animation=animation,
+            song=song_a,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.SINGLE,
+        )
+        item_b = AnimationSong.objects.create(
+            animation=animation,
+            song=song_b,
+            position=4,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+
+        sync_animation_playlist(
+            animation,
+            parse_ordered_mix(
+                f"asid:{item_b.animation_song_id}|asid:{item_a.animation_song_id}"
+            ),
+            allowed_song_ids={song_a.song_id, song_b.song_id},
+        )
+
+        persisted = list(
+            AnimationSong.objects.filter(animation=animation).order_by(
+                "position", "animation_song_id"
+            )
+        )
+        self.assertEqual(
+            [row.animation_song_id for row in persisted],
+            [item_b.animation_song_id, item_a.animation_song_id],
+        )
+        self.assertEqual(
+            [row.slide_display_mode for row in persisted],
+            [
+                SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+                SongSlideDisplayMode.SINGLE,
+            ],
+        )
