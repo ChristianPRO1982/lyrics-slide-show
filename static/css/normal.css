@@ -1807,6 +1807,14 @@ body.lss-messagebox-open {
 }
 
 @media (max-width: 1400px) {
+    .site-workspace {
+        padding: 24px 44px 32px 20px;
+    }
+
+    .site-layout {
+        grid-template-columns: 214px minmax(0, 1fr);
+    }
+
     .site-main-content {
         grid-template-columns: 1fr;
     }
