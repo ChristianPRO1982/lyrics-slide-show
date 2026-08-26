@@ -42,6 +42,15 @@
     {% endif %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="songs" data-theme-alt="{% trans 'Liste des chants' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/songs.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/songs.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/songs.png' %}" alt="{% trans 'Liste des chants' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block mobile_side_content %}{% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{% trans "Liste des chants" %}{% endblock %}

@@ -22,6 +22,15 @@
     {% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}
 {% endblock %}
 {% block mobile_side_title %}{% trans "Animations" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="animations" data-theme-alt="{% trans 'Liste des animations' %}">
+            <source data-theme-size="512" data-theme-mode="dark" srcset="{% static 'icons/ui/normal/512/dark/animations.png' %}" media="(prefers-color-scheme: dark)">
+            <source data-theme-size="512" data-theme-mode="light" srcset="{% static 'icons/ui/normal/512/light/animations.png' %}" media="(prefers-color-scheme: light)">
+            <img src="{% static 'icons/ui/normal/512/light/animations.png' %}" alt="{% trans 'Liste des animations' %}" data-theme-size="512" data-theme-mode="light">
+        </picture>
+    </div>
+{% endblock %}
 {% block mobile_side_content %}
     {% include "animation/includes/_animation_actions.html" %}
     {% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}

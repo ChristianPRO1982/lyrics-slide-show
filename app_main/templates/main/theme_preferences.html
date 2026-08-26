@@ -70,6 +70,30 @@
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Aide" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="theme" data-theme-alt="{{ theme_section_icon_alt }}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/theme.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/theme.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/theme.png' %}"
+                alt="{{ theme_section_icon_alt }}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
 
 {% block mobile_side_content %}
     <div class="site-theme-help">

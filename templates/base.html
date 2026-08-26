@@ -201,9 +201,14 @@
 
                     <main class="site-panel site-main-panel">
                         <section class="site-panel site-mobile-side">
-                            <header class="site-panel-header">
-                                <h2>{% block mobile_side_title %}{% trans "Structure de la page" %}{% endblock %}</h2>
-                                {% block mobile_side_intro %}{% endblock %}
+                            <header class="site-panel-header site-mobile-side-header">
+                                <div class="site-mobile-side-heading">
+                                    <h2>{% block mobile_side_title %}{% trans "Structure de la page" %}{% endblock %}</h2>
+                                    {% block mobile_side_intro %}{% endblock %}
+                                </div>
+                                <div class="site-mobile-side-visual">
+                                    {% block mobile_side_visual %}{% endblock %}
+                                </div>
                             </header>
                             {% block mobile_side_content %}{% endblock %}
                         </section>

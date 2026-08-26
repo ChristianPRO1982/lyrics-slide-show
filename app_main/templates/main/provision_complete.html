@@ -47,6 +47,30 @@
 {% endblock %}
 
 {% block mobile_side_title %}{% trans "Actions" %}{% endblock %}
+{% block mobile_side_visual %}
+    <div class="site-home-media">
+        <picture data-theme-icon="account" data-theme-alt="{% trans 'Finalisation de la synchronisation' %}">
+            <source
+                data-theme-size="512"
+                data-theme-mode="dark"
+                srcset="{% static 'icons/ui/normal/512/dark/account.png' %}"
+                media="(prefers-color-scheme: dark)"
+            >
+            <source
+                data-theme-size="512"
+                data-theme-mode="light"
+                srcset="{% static 'icons/ui/normal/512/light/account.png' %}"
+                media="(prefers-color-scheme: light)"
+            >
+            <img
+                src="{% static 'icons/ui/normal/512/light/account.png' %}"
+                alt="{% trans 'Finalisation de la synchronisation' %}"
+                data-theme-size="512"
+                data-theme-mode="light"
+            >
+        </picture>
+    </div>
+{% endblock %}
 
 {% block mobile_side_content %}
     <div>
