@@ -1,55 +1,79 @@
-# Design of Template `connexion.html`
+# Design du template `connexion.html`
 
 ## Rôle
 
-Template partagé pour:
+Template partagé pour :
 
-- page de connexion (`/login/`),
-- page compte (`/account/`).
+- la page de connexion (`/login/`) ;
+- la page compte (`/account/`).
 
 ## Modes
 
-Le rendu dépend de `page_mode`:
+Le rendu dépend de `page_mode` :
 
-- `login`: afficher les entrées de connexion selon `auth_mode`,
-- `account`: afficher le profil et les blocs d’administration selon les droits.
-
-## Rendu compte
-
-En mode `account` :
-
-- le `titre principal` du `panneau principal` est `Mon profil` ;
-- si l’utilisateur est `moderator`, le `texte d’introduction` de l’`en-tête principal` affiche la mention `⚖️ Modérateur` juste sous ce titre ;
-- si l’utilisateur est `admin`, ce même bloc affiche les deux marqueurs `👑 Administrateur` puis `⚖️ Modérateur` ;
-- ces marqueurs reprennent le style visuel des tags `app_song` de type `song-tag-badge` ;
-- quand les deux marqueurs sont présents, ils sont affichés l’un à la suite de l’autre et non empilés verticalement ;
-- ces mentions ne sont pas affichées pour un simple `member`.
+- `login` : point d’entrée de l’authentification interactive ;
+- `account` : page profil et outils d’administration.
 
 ## Données Attendues
+
+Communes :
 
 - `auth_mode`,
 - `session_user`,
 - `selected_group`,
 - `page_mode`.
 
-En mode `account`, selon permissions:
+En mode `account` :
 
-- formulaires modération,
-- formulaires administration site,
-- recherche membres et gestion rôles.
+- `current_language`,
+- `is_moderator`,
+- `is_admin`,
+- `account_heading`,
+- `site_params_missing`,
+- `moderator_form`,
+- `admin_message_form`,
+- `member_search_form`,
+- `member_results`,
+- `member_search`,
+- `available_themes`,
+- `default_theme`.
 
-## Navigation liée au profil
+## Rendu Login
 
-Dans la navigation partagée :
+- titre principal `Connexion` ;
+- lien d’entrée interactive unique ;
+- libellé adapté à `auth_mode` :
+  - `Ouvrir la simulation` en mode mock ;
+  - `Continuer avec Keycloak` en mode keycloak ;
+- texte d’introduction de section rappelant le mode courant.
 
-- le lien/bouton `profil` continue de pointer vers `/account/` ;
-- si l’utilisateur est `moderator`, un badge `⚖️` est affiché sur ce bouton de la rail nav ;
-- ce badge modérateur est positionné sur le bord bas du bouton, à califourchon ;
-- si l’utilisateur est `admin`, le bouton affiche les deux badges : `👑` sur le bord haut et `⚖️` sur le bord bas ;
-- le cumul admin + modérateur est volontaire et reflète le fait qu’un administrateur reste aussi modérateur.
+## Rendu Compte
+
+- titre principal `Mon profil` ;
+- résumé affichant `account_heading`, `username`, puis `first_name` / `last_name` ;
+- bandeaux de rôle :
+  - `⚖️ Modérateur` si modérateur ;
+  - `👑 Administrateur` puis `⚖️ Modérateur` si administrateur ;
+- panneau outils avec au minimum `Déconnexion` et `Politique de confidentialité`.
+
+Le contenu compte est organisé en cartes :
+
+- données personnelles,
+- confidentialité,
+- rôles du site,
+- liens de gestion des métadonnées pour un modérateur,
+- formulaire du message de modération pour un modérateur,
+- formulaire du message global administrateur pour un admin,
+- recherche membres et actions de rôles pour un admin autorisé.
+
+## Comportements Compte
+
+- l’accès à `/account/` exige une session authentifiée ;
+- les formulaires modération / administration utilisent `unsaved_changes` ;
+- les actions de rôles redirigent ensuite vers `/account/`, en conservant `member_search` quand nécessaire.
 
 ## Contraintes Front
 
-- template aligné i18n Django (`{% trans %}`),
-- pas de texte métier critique codé en JS,
-- messages flash globaux affichés via le shell partagé.
+- i18n Django ;
+- pas de logique métier critique déportée en JS ;
+- messages flash globaux rendus par le shell partagé.
