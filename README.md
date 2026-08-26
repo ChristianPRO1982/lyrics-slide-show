@@ -12,7 +12,7 @@
 ![Docker Compose](https://img.shields.io/badge/docker--compose-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![WhiteNoise](https://img.shields.io/badge/WhiteNoise-static%20files-6B7280?style=for-the-badge)
 
-EN : Django-based web service for preparing and projecting song lyrics as live slides, with open guest access for public use cases and Keycloak-based authentication for member access.
+EN: Django-based web service for preparing and projecting song lyrics as live slides, with open guest access for public use cases and Keycloak-based authentication for member access.
 
 FR: Service web Django dédié a la preparation et a la projection en direct de paroles de chants, avec un acces invite ouvert pour les usages publics et une authentification membre basee sur Keycloak.
 
