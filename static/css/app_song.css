@@ -113,7 +113,8 @@
 }
 
 .song-legend[hidden],
-[data-song-summary-content][hidden] {
+[data-song-summary-content][hidden],
+[data-song-local-empty][hidden] {
     display: none !important;
 }
 
