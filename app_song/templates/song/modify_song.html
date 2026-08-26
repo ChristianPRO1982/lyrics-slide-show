@@ -113,7 +113,7 @@
     </div>
 {% endblock %}
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% if is_favorite %} ⭐{% endif %}{% endblock %}
+{% block page_title %}{{ title_complete_with_tags }}{% if show_double_slide_marker %} 2️⃣{% endif %}{% if is_favorite %} ⭐{% endif %}{% endblock %}
 {% block page_intro %}
     {% if show_all_messages_link %}
         <p>

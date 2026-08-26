@@ -1479,6 +1479,30 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(response, "<h2># Tags</h2>", html=False)
         self.assertNotContains(response, "<h2># tags</h2>", html=False)
 
+    def test_song_page_title_adds_double_slide_marker_before_favorite_star(self):
+        self._login()
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+        SongFavorite.objects.create(song=self.song, member_id=self.user_id)
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertContains(response, "Le Sud - Nino Ferrer ✔️ 📄 2️⃣ ⭐", html=False)
+        self.assertContains(
+            response,
+            "<title>Le Sud - Nino Ferrer ✔️ 📄 | Lyrics Slide Show</title>",
+            html=False,
+        )
+
+    def test_song_page_title_omits_double_slide_marker_for_single_mode(self):
+        self._login()
+        self.song.slide_display_mode = SongSlideDisplayMode.SINGLE
+        self.song.save(update_fields=["slide_display_mode"])
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertNotContains(response, "Le Sud - Nino Ferrer ✔️ 📄 2️⃣", html=False)
+
     def test_song_view_has_floating_link_to_smartphone_lyrics_page(self):
         self._login()
         response = self.client.get(reverse("song", args=[self.song.song_id]))
@@ -2714,6 +2738,32 @@ class ModifySongViewTests(TestCase):
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
 
         self.assertContains(response, "Voir toutes les demandes de modification")
+
+    def test_modify_song_page_title_adds_double_slide_marker_before_favorite_star(
+        self,
+    ):
+        self._login()
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+        SongFavorite.objects.create(song=self.song, member_id=self.user_id)
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, "Chant - Base 2️⃣ ⭐", html=False)
+        self.assertContains(
+            response,
+            "<title>Modifier le chant | Lyrics Slide Show</title>",
+            html=False,
+        )
+
+    def test_modify_song_page_title_omits_double_slide_marker_for_single_mode(self):
+        self._login()
+        self.song.slide_display_mode = SongSlideDisplayMode.SINGLE
+        self.song.save(update_fields=["slide_display_mode"])
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertNotContains(response, "Chant - Base 2️⃣", html=False)
 
     def test_modify_song_status_two_checkbox_is_checked_disabled_and_preserved(self):
         self.song.status = SongStatus.VALIDATED_WITH_CONCERN
@@ -4358,6 +4408,32 @@ class SongMetadataPersistenceTests(TestCase):
         self.assertIn('<option value="score" selected>partition</option>', html)
         self.assertNotIn(">lien</option>", html)
         self.assertNotIn(">lien interne</option>", html)
+
+    def test_song_metadata_page_title_adds_double_slide_marker_before_favorite_star(
+        self,
+    ):
+        self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
+        self.song.save(update_fields=["slide_display_mode"])
+        SongFavorite.objects.create(song=self.song, member_id=self.user_id)
+
+        response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+
+        self.assertContains(response, "Metadata song 2️⃣ ⭐", html=False)
+        self.assertContains(
+            response,
+            "<title>Metadata song | Lyrics Slide Show</title>",
+            html=False,
+        )
+
+    def test_song_metadata_page_title_omits_double_slide_marker_for_single_mode(
+        self,
+    ):
+        self.song.slide_display_mode = SongSlideDisplayMode.SINGLE
+        self.song.save(update_fields=["slide_display_mode"])
+
+        response = self.client.get(reverse("song_metadata", args=[self.song.song_id]))
+
+        self.assertNotContains(response, "Metadata song 2️⃣", html=False)
 
     def test_validated_metadata_page_keeps_toggle_without_edit_actions(self):
         self.song.status = SongStatus.VALIDATED

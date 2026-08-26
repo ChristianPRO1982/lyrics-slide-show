@@ -14,6 +14,7 @@ Cette page sert :
 - affiche le panneau d’actions partagé
 - ajoute les actions `Dévalider`, `Enregistrer`, `Enregistrer et quitter` selon les droits
 - ajoute les deux actions de copie texte brut
+- affiche `2️⃣` à la suite du titre principal quand `slide_display_mode != single`
 - pour modérateur/admin et s’il existe des messages visibles, affiche le lien `Voir toutes les demandes de modification`
 - ce lien ouvre une popup Markdown de tous les messages, avec non lus d’abord, séparateur avant les lus, et action `Marquer lu / Marquer non lu`
 - affiche le résumé de description avec popup de description complète
@@ -41,6 +42,7 @@ Cette page sert :
 - `can_edit`
 - `can_devalidate`
 - `is_favorite`
+- `show_double_slide_marker`
 - `chorus_prefix`
 - `slide_display_mode_options`
 - `slide_display_mode_value`
