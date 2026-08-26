@@ -1,3 +1,16 @@
+## [3.1.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.2...v3.1.3) (2026-08-26)
+
+
+### Bug Fixes
+
+* Add double slide marker to page titles based on slide display mode ([20de21e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/20de21ee7448a7d52e5267af244bff64f17ddc98))
+* Add mobile side visual elements and styles for improved UI in various templates ([e76357c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e76357c89da7285d6ad599cb731cf8292b5d1073))
+* Adjust padding and grid layout for responsive design in site workspace ([6ef8b5f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6ef8b5f420288e98d9c1b16d0b8be315759afa3a))
+* Implement double slide marker display and update related tests and documentation ([06e3d19](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/06e3d1934c0e27760b3b0ec035b8817a15e3c872))
+* Restore and reposition group navigation links in the sidebar for consistency ([9edc95a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9edc95a3a1131f9fb3339af755593b7b6d4bbd31))
+* Update action versions in CI/CD workflows for improved stability ([f9ea520](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f9ea52027f9708ffffb982ca96e8d40bfa9900c4))
+* Update picture styles for site panels and home media for improved layout consistency ([cca9d2c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cca9d2c9ef68c4b3f4a2b777a278c5bfadc182e7))
+
 ## [3.1.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.1...v3.1.2) (2026-08-26)
 
 
