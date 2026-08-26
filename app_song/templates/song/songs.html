@@ -369,7 +369,38 @@
                             {% if item.is_favorite %}
                                 <span class="song-compact-favorite" title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>
                             {% endif %}
-                            <a class="song-icon-action site-action site-action--icon song-compact-smartphone-action" href="{{ item.print_full_url }}" title="{% trans 'Smartphone view' %}" aria-label="{% trans 'Smartphone view' %}">📱</a>
+                            <div class="song-compact-options" data-song-compact-options>
+                                <button
+                                    type="button"
+                                    class="song-icon-action site-action site-action--icon song-compact-options-toggle"
+                                    data-song-compact-options-toggle
+                                    title="{% trans 'Options' %}"
+                                    aria-label="{% trans 'Options' %}"
+                                    aria-expanded="false"
+                                >⚙️</button>
+                                <div class="song-compact-options-panel" data-song-compact-options-panel hidden>
+                                    <a class="site-floating-action song-compact-options-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
+                                    {% if item.can_edit %}
+                                        <a class="site-floating-action song-compact-options-link" href="{{ item.modify_url }}">{% trans "Modifier" %}</a>
+                                        <form method="post" class="song-delete-form song-compact-options-form" data-song-delete-form data-song-title="{{ item.title_complete_with_tags }}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_song">
+                                            <input type="hidden" name="song_id" value="{{ item.song.song_id }}">
+                                            <button type="submit" class="site-floating-action song-compact-options-link song-compact-options-button">{% trans "Supprimer" %}</button>
+                                        </form>
+                                    {% endif %}
+                                    <a class="site-floating-action song-compact-options-link" href="{{ item.print_full_url }}">{% trans "Smartphone view" %}</a>
+                                    <button
+                                        type="button"
+                                        class="site-floating-action song-compact-options-link song-compact-options-button"
+                                        data-song-print-menu
+                                        data-single-url="{{ item.print_single_url }}"
+                                        data-full-url="{{ item.print_full_url }}"
+                                        data-single-plain-url="{{ item.print_single_plain_url }}"
+                                        data-full-plain-url="{{ item.print_full_plain_url }}"
+                                    >{% trans "Impression" %}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

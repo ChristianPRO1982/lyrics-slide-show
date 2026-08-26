@@ -2,38 +2,42 @@
 
 ## Rôle
 
-Page front d’édition des métadonnées d’un chant (`/songs/<song_id>/metadata/`).
+Page d’édition des métadonnées d’un chant (`/songs/<song_id>/metadata/`).
 
 Cette page n’est pas une page de lecture.
 
 ## Responsabilité front
 
-- Affiche les sélections courantes et options disponibles pour genres, artistes et groupes.
-- Affiche et édite les liens associés au chant.
-- Chaque lien existant est rendu comme une ligne logique sur 2 étages, avec un espacement plus marqué entre deux liens successifs :
-  - 1re ligne : le champ URL seul, sur toute la largeur disponible ;
-  - 2e ligne : le sélecteur de type puis la coche `Supprimer` avec son label, sur une ligne plus compacte ;
-  - si l’espace horizontal manque, la 2e ligne peut repasser en pile plutôt que d’écraser les contrôles.
-- Pour chaque lien existant, affiche un `<select>` de type avec exactement 5 options, dans cet ordre :
+- affiche le panneau d’actions partagé
+- affiche le résumé `Métadonnées` et le bouton `Enregistrer` si `can_edit`
+- affiche un formulaire unique `#metadata-form`
+- édite les liens associés au chant
+- pour chaque lien existant :
+  - champ URL
+  - sélecteur de type
+  - champ hidden `existing_<n>_original`
+- pour l’ajout d’un nouveau lien :
+  - champ `new_link`
+  - sélecteur `new_type`
+- le formulaire n’expose plus de case `Supprimer` par ligne ; la persistance repose sur la comparaison entre la liste existante et les valeurs postées
+- le sélecteur de type utilise exactement 5 options :
   1. `partition`
   2. `audio`
   3. `YouTube`
   4. `page Web`
   5. `lien interne - Lyrics Slide Show`
-- Pour l’ajout d’un nouveau lien, le champ URL suit le même principe visuel :
-  - 1re ligne : champ URL pleine largeur ;
-  - 2e ligne : `<select>` de type seul ;
-  - le `<select>` utilise le même ordre et sélectionne `partition` par défaut.
-- Les valeurs transportées par le formulaire pour les types sont les 5 valeurs canoniques :
+- les valeurs transportées sont :
   - `score`
   - `audio`
   - `youtube`
   - `web`
   - `internal`
-- Le formulaire ne doit plus exposer de type canonique `audio-video`.
-- Monte le panneau d’actions partagé et l’état favori.
-- Le panneau d’actions partagé y propose aussi l’action de suppression du chant, avec le même bouton et la même popup de confirmation traduite que sur `song.html`.
-- L’édition des métadonnées suit exactement les mêmes droits que l’édition directe du chant.
+- le nouveau lien sélectionne `score` par défaut
+- affiche trois zones de transfert `Sélectionnés / Disponibles` pour :
+  - genres
+  - artistes
+  - groupes de musique
+- quand `can_edit=false`, les champs sont readonly/disabled et le transfert est inactif
 
 ## Contrat d’interface (variables attendues)
 
@@ -47,9 +51,10 @@ Cette page n’est pas une page de lecture.
 - `metadata_artists_selected`
 - `metadata_artists_available`
 - `metadata_links`
+- `link_type_options`
+- `new_link_default_type`
 
 ## Notes
 
-- Les règles backend d’accès/édition et de synchronisation des tables de relation sont documentées dans `functional_requirements.md`.
-- Cette page suit les mêmes règles d’accès que `modify_song` : utilisateur connecté, chant non validé, sauf exception `Moderator`/`Admin` pour les chants validés.
-- Une autorisation visible côté front reste provisoire ; le back fait la dernière vérification et peut rediriger finalement vers `song` avec un message explicite si un modérateur a validé le chant pendant la session.
+- `_song_links.html` est utilisé pour la lecture sur `song.html` et `modify_song.html`, mais `metadata.html` porte son propre formulaire d’édition des liens
+- les règles backend d’accès, d’édition et de synchronisation des relations sont documentées dans `functional_requirements.md`

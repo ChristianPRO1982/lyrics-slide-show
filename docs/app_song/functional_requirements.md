@@ -24,18 +24,28 @@ Un chant est défini par :
 - `description`
 - `status`
 - `licensed`
-- une option métier d'`affichage double` stockée au niveau de la table des chants pour les cas particuliers
+- `slide_display_mode`
 
 Contrainte d’unicité : `title + subtitle`.
 
-Cette option d'`affichage double` n'est pas le comportement normal d'un chant.
-Elle sert à marquer certains chants particuliers dont la projection peut nécessiter une composition à deux zones de texte sur une même slide.
+### Modes d’affichage de slides
 
-Cette information portée par le chant peut ensuite être utilisée par `app_animation` pour préconfigurer automatiquement le mode de rendu d'une animation contenant ce chant.
+Le chant porte un mode d’affichage destiné à préconfigurer `app_animation`.
+
+Valeurs métier actuelles :
+
+- `single`
+- `chorus_then_parallel`
+- `chorus_always_parallel`
+- `verses_by_pairs`
+
+Normalisation actuelle :
+
+- sans refrain actif, les modes `chorus_*` sont rabattus vers `verses_by_pairs`
+- avec refrain actif, le mode `verses_by_pairs` est rabattu vers `chorus_then_parallel`
+- la valeur par défaut est `single`
 
 ## Statut de validation
-
-Cette section décrit la cible fonctionnelle attendue pour `app_song`.
 
 Le statut de validation est numérique :
 
@@ -48,6 +58,7 @@ Marqueurs :
 - `status=0` : aucun
 - `status=1` : `✔️`
 - `status=2` : `✔️⁉️`
+- `licensed=true` : `📄`
 
 Constantes Python exposées :
 
@@ -57,27 +68,26 @@ Constantes Python exposées :
 
 `status=1` et `status=2` sont traités comme états validés.
 
-### Règles métier cibles
+### Règles métier
 
-- un nouveau chant est créé en `status=0` (`libre`) ;
-- un chant `libre` est créable, modifiable et supprimable par un utilisateur authentifié ;
-- seul un `Moderator` peut passer un chant en `status=1` ; un `Admin` peut également le faire car un admin hérite des capacités modérateur ;
-- un chant `status=1` peut recevoir des demandes de correction ;
-- dès qu’un chant validé reçoit un message de correction, il passe en `status=2` ;
-- un chant `status=2` ne peut pas revenir directement en `status=0` ;
-- pour quitter `status=2`, tous les messages encore avec `vu = false` doivent d’abord être passés à `vu = true` ;
-- lorsqu’il n’existe plus de message avec `vu = false`, le chant revient en `status=1` ;
-- une fois revenu en `status=1`, le chant peut alors être repassé en `status=0`.
-- l’action de dévalidation depuis la page de modification n’autorise donc la transition que pour un chant actuellement en `status=1` ;
-- une tentative backend de dévalidation sur un chant encore en `status=2` est refusée ;
-- si un chant a été remis incohérent manuellement en `status=2` alors que tous ses messages sont lus, une tentative de dévalidation commence par le recalculer en `status=1`, sans enchaîner `2 -> 0` dans la même requête.
+- un nouveau chant est créé en `status=0`
+- un chant `status=0` est créable, modifiable et supprimable par un utilisateur authentifié
+- seul un modérateur peut valider un chant ; un admin le peut aussi car il hérite des capacités modérateur
+- un chant validé peut recevoir des demandes de correction
+- dès qu’un chant validé reçoit un message non lu, il passe en `status=2`
+- un chant `status=2` ne peut pas revenir directement en `status=0`
+- pour quitter `status=2`, tous les messages encore `vu = false` doivent d’abord passer à `vu = true`
+- lorsqu’il n’existe plus de message non lu, le chant revient en `status=1`
+- après retour en `status=1`, il peut repasser en `status=0`
+- la dévalidation depuis `modify_song` n’autorise donc la transition que pour un chant actuellement en `status=1`
+- une tentative backend de dévalidation d’un chant encore en `status=2` est ignorée avec message d’information
 
-### Transition cible résumée
+### Transition résumée
 
 - `0 -> 1` : validation par modérateur/admin
-- `1 -> 2` : arrivée d’un message de correction
-- `2 -> 1` : tous les messages sont passés à `vu = true`
-- `1 -> 0` : dévalidation possible après retour à `status=1`
+- `1 -> 2` : arrivée d’un message de correction non lu
+- `2 -> 1` : tous les messages sont lus
+- `1 -> 0` : dévalidation autorisée
 
 ## Modèle de texte
 
@@ -94,64 +104,58 @@ Le texte est structuré en blocs (`s_verses`) avec :
 
 ### Recalcul de numérotation
 
-Après modification, `app_song` recalcule tous les blocs, dans l’ordre courant :
+Après modification, `app_song` recalcule les blocs actifs dans l’ordre courant :
 
 - `num = (position + 1) * 2`
-- `num_verse` s’incrémente seulement pour un bloc qui n’est ni `chorus`, ni `chorus_like`, ni `not_c_num`.
+- `num_verse` s’incrémente seulement pour un bloc qui n’est ni `chorus`, ni `chorus_like`, ni `not_c_num`
 
 ### Logique de rendu
 
-Le rendu est centralisé dans `app_song/rendering.py` (`render_song_blocks`).
+Le rendu est centralisé dans `app_song/rendering.py`.
 
-- Les blocs chorus sont collectés en groupe.
-- Si le chant commence par un chorus, le groupe chorus est rendu au début.
-- Après chaque bloc verse/chorus_like non `followed`, le groupe chorus est réinséré selon le mode.
-- Deux modes : `full-chorus` (répétitions complètes) et `single-chorus` (un seul groupe chorus).
-- Les blocs `chorus_like` gardent la logique de verse, avec style/label de type refrain.
+- les blocs chorus sont collectés en groupe
+- si le chant commence par un chorus, le groupe chorus est rendu au début
+- après chaque bloc verse/chorus_like non `followed`, le groupe chorus est réinséré selon le mode
+- deux modes de rendu texte existent : `full-chorus` et `single-chorus`
+- les blocs `chorus_like` gardent la logique de verse, avec style/label de type refrain
 
 ### Préfixes de rendu
 
-Les préfixes affichés (`refrain`, `couplet`) proviennent des paramètres de site localisés (`site_params`) via `SongRenderSettings`.
+Les préfixes affichés proviennent des paramètres de site localisés (`site_params`) via `SongRenderSettings`.
 
-- `chorus_prefix` est utilisé pour le label de refrain (exemple FR courant : `R.` selon paramétrage).
-- les labels de couplet sont construits via `verse_prefix1 + numéro + verse_prefix2`.
+- `chorus_prefix` est utilisé pour le libellé de refrain
+- les labels de couplet sont construits via `verse_prefix1 + numéro + verse_prefix2`
 
 ## Workflow de modification de chant (`/songs/<id>/modify/`)
 
 Comportement fonctionnel actuel côté édition de blocs :
 
-- les changements de blocs sont locaux tant que l’utilisateur ne clique pas sur `Enregistrer` ;
-- le formulaire transporte l’état complet via `blocks[<row_key>][field]` ;
-- l’ajout de bloc se fait en front (choix couplet/refrain + texte), puis insertion d’une nouvelle carte dans la liste ;
-- la suppression d’un bloc demande confirmation, puis marque `delete=1` et masque la carte localement ; la suppression DB est effective uniquement après `Enregistrer` ;
-- l’édition d’un bloc est inline et exclusive : un seul bloc en mode édition à la fois ;
-- en mode édition inline, le rendu lecture est remplacé par le formulaire d’édition ; le bouton `OK` referme l’édition sans soumettre le formulaire ;
-- le déplacement est géré par poignées drag-and-drop (pas de `<select>` de déplacement) ;
-- l’activation du déplacement ferme les éditeurs ouverts ;
-- en affichage lecture, préfixe et texte sont rendus côte à côte ; la colonne préfixe est fixe et alignée à droite.
+- les changements de blocs sont locaux tant que l’utilisateur ne clique pas sur `Enregistrer` ou `Enregistrer et quitter`
+- le formulaire transporte l’état complet via `blocks[<row_key>][field]`
+- l’ajout de bloc se fait en front avec un choix initial `couplet` ou `refrain`
+- la suppression d’un bloc demande confirmation, puis marque `delete=1` et masque la carte localement
+- la suppression base est effective uniquement à l’enregistrement
+- l’édition d’un bloc est inline et exclusive : un seul éditeur de bloc ouvert à la fois
+- le bouton `OK` ferme l’éditeur inline sans soumettre le formulaire
+- le déplacement est géré par poignées drag-and-drop
+- l’activation du déplacement ferme les éditeurs ouverts
+- en affichage lecture, préfixe et texte sont rendus côte à côte
 
-### Fonctionnement des options d’un couplet/refrain
+### Fonctionnement des options d’un bloc
 
 Règles métier à appliquer sur un bloc (`s_verses`) :
 
-- un bloc ne peut être que `couplet` ou `refrain` selon le booléen `chorus` ;
+- un bloc est soit `couplet`, soit `refrain`, soit `comme un refrain`
 - si à la sauvegarde `chorus=true`, alors les autres options sont forcées à :
   - `chorus_like=false`
   - `followed=false`
   - `notcontinuenumbering=false`
   - `prefix=NULL`
-- `followed` signifie que ce couplet est suivi directement par le couplet suivant, sans réinsertion du groupe de refrains à cet endroit ;
-- `notcontinuenumbering` signifie que `num_verse` de ce couplet reprend la valeur du couplet précédent (la numérotation affichée ne s’incrémente pas) ;
-- si `notcontinuenumbering` est absent, sa valeur est `0` ;
-- `chorus_like` signifie que l’affichage du bloc reprend le style refrain (gras) tout en restant un couplet dans la logique ;
-- lorsque `chorus_like=true`, `notcontinuenumbering` devient obligatoire (coché et grisé côté UI) ;
-- lorsque `chorus_like=true`, le champ `prefix` est activé et utilisé (pont, coda, pré-refrain, refrain alternatif final, etc.) ;
-- `Refrain` (`chorus=true`) et `Comme un refrain` (`chorus_like=true`) sont mutuellement exclusifs.
-
-Notes importantes :
-
-- `num` représente uniquement la position technique du bloc dans la chanson, indépendamment des options ;
-- à l’affichage, les blocs `chorus` et `chorus_like` sont en gras ; les autres couplets sont en style normal.
+- `followed` signifie que ce couplet est suivi directement par le couplet suivant sans réinsertion du groupe de refrains à cet endroit
+- `notcontinuenumbering` signifie que `num_verse` reprend la valeur du couplet précédent
+- si `chorus_like=true`, alors `notcontinuenumbering` est forcé à `true`
+- si `chorus_like=true`, le champ `prefix` reste actif et porté par le bloc
+- `chorus=true` et `chorus_like=true` sont mutuellement exclusifs
 
 ## Recherche
 
@@ -159,18 +163,18 @@ La recherche est gérée par `app_song/search.py`.
 
 ### Comportement invité
 
-- Résultats limités aux chants `licensed = false`.
-- Les paramètres guest sont réduits à `text` uniquement (`SongSearchParams.for_guest`).
-- Pas d’utilisation des filtres avancés côté backend pour guests.
+- résultats limités aux chants `licensed = false`
+- paramètres invités réduits à `text` uniquement (`SongSearchParams.for_guest`)
+- pas de filtres avancés backend pour les guests
 
 ### Comportement authentifié
 
 Critères supportés :
 
 - texte (`text`)
-- texte étendu (`everywhere`: description + paroles)
+- texte étendu (`everywhere`) : description + paroles
 - filtres `genre_ids`, `band_ids`, `artist_ids`
-- logique de combinaison intra-famille `OR/AND` (`match_all_selected_refs`)
+- logique intra-références `OR/AND` (`match_all_selected_refs`)
 - filtre validation (`all`, `validated_only`, `non_validated_only`)
 - filtre favoris (`favorites_only`)
 
@@ -179,8 +183,7 @@ Règles supplémentaires :
 - tri final : `title`, `subtitle`
 - recherche texte accent-insensible et insensible à la casse (`unaccent + lower`)
 - la requête texte est `trim`, compacte les espaces internes et traite les espaces saisis comme des jokers ordonnés
-- exemple : `esprit de dieu souffle` doit retrouver `Esprit de Dieu, souffle de vie`
-- le filtre local JS du champ `titre / sous-titre` suit la même normalisation et la même logique de jokers ordonnés, mais reste limité à `title + subtitle`
+- le filtre local JS du champ `Titre ou sous-titre` suit la même normalisation mais reste limité à `title + subtitle`
 
 ### Persistance de recherche membre
 
@@ -198,11 +201,11 @@ Vue temporaire favoris (`favorites_quick=1`) :
 
 Vue temporaire modération (`moderation_quick=1`) :
 
-- disponible uniquement pour modérateur/admin et seulement s’il existe des chants à modérer ;
-- applique uniquement la liste des chants à modérer ;
-- un chant est à modérer s’il est en `status=2` et possède au moins un message avec `vu = false` ;
-- n’écrase pas la recherche persistée ;
-- le formulaire reste rempli avec la recherche persistée.
+- disponible uniquement pour modérateur/admin et seulement s’il existe des chants à modérer
+- applique uniquement la liste des chants à modérer
+- un chant est à modérer s’il est en `status=2` et possède au moins un message `vu = false`
+- n’écrase pas la recherche persistée
+- le formulaire reste rempli avec la recherche persistée
 
 ## Favoris
 
@@ -210,50 +213,39 @@ Favoris stockés dans `m_songs_users` (`SongFavorite`).
 
 - disponibles uniquement pour utilisateurs authentifiés
 - toggle idempotent côté backend
-- annotation `is_favorite` dans résultats de recherche
+- annotation `is_favorite` dans les résultats de recherche
 
 ## Permissions
 
 Rôles applicatifs utilisés : `Guest`, `Member`, `Moderator`, `Admin`.
 
-La cible fonctionnelle de `app_song` applique les règles suivantes :
+Règles actuelles :
 
 - lecture chant : authentifié OU chant non licencié
 - création chant : utilisateur authentifié
 - édition/suppression chant non validé : utilisateur authentifié
-- édition chant validé ou validé avec messages : modérateur/admin uniquement
-- les pages de modification d’un chant (`modify_song`, `song_metadata`) sont des pages de modification, pas des pages de lecture
-- `modify_song` et `song_metadata` sont accessibles seulement à un utilisateur connecté et seulement si le chant n’est pas validé, sauf exception `Moderator`/`Admin` qui conservent l’accès aux chants validés
-- l’accès au formulaire de demande de modification sur chant validé est autorisé aux utilisateurs sans droit d’édition directe, y compris aux non connectés lorsque le chant est lisible
-- édition métadonnées (`/metadata/`) : même droit que édition
+- édition/suppression chant validé ou validé avec messages : modérateur/admin uniquement
+- `modify_song` et `song_metadata` sont des pages de modification, pas des pages de lecture
+- `modify_song` et `song_metadata` sont accessibles seulement à un utilisateur connecté et seulement si le chant n’est pas validé, sauf exception `Moderator`/`Admin`
+- accès au formulaire de demande de correction sur chant validé : utilisateurs sans droit d’édition directe, y compris guests quand le chant est lisible
 - toggle favori : authentifié
-- modification du statut : modérateur ; les admins disposent du même pouvoir car ils héritent du rôle modérateur
+- modification du statut : modérateur ; l’admin hérite de ce droit
 - `Admin` hérite toujours des droits `Moderator`
-- en cas de concurrence entre front et back, le back fait toujours la dernière vérification du droit réel au moment du `GET` utile et surtout du `POST`
-- si un modérateur a validé le chant pendant la session d’un utilisateur non modérateur, l’état backend le plus récent prévaut et les modifications de cet utilisateur ne sont pas prises en compte
-- dans ce cas, l’utilisateur est redirigé vers la page `song` avec un message explicite indiquant qu’un modérateur a validé le chant pendant sa session et l’invitant à utiliser le formulaire de demande de modification du chant
+- en cas de concurrence, le backend refait toujours la vérification au `GET` utile et surtout au `POST`
 
 ## Demandes de correction
 
 Les messages de correction (`s_song_messages`) suivent le workflow métier suivant :
 
 - le formulaire est un simple `textarea`
-- le formulaire est affiché pour les chants validés (`status in {1,2}`)
-- il sert à déposer une demande de modification à faire sur le chant
+- il est affiché pour les chants validés (`status in {1,2}`) quand l’utilisateur n’a pas le droit d’édition directe
+- il sert à déposer une demande de modification
 - un message possède un état booléen `vu`
 - à la création d’un nouveau message, `vu = false`
-- un modérateur peut passer un message à `vu = true`
-- un modérateur peut aussi faire repasser un ancien message à `vu = false`
-- après chaque modification de `vu`, le statut final du chant est recalculé à partir de l’ensemble des messages du chant
+- un modérateur peut basculer `vu = true` puis `vu = false`
+- après chaque modification de `vu`, le statut final du chant est recalculé à partir de l’ensemble des messages
 - si un chant est en `status=0`, son statut ne change jamais à cause des messages
-- si un chant est en `status=0`, aucun indicateur visuel supplémentaire n’apparaît dans son titre à cause de messages non vus
-- si un chant est en `status=0`, ses messages non lus sont cachés dans les listes et popups de modération comme s’ils n’existaient pas
-- si un chant repasse depuis `status=0` vers un état validé alors qu’il existe encore des messages avec `vu = false`, il doit passer directement en `status=2`
-- la remise d’un chant à `status=0` est bloquée tant qu’au moins un message reste avec `vu = false`
-- dans `modify_song`, la checkbox `Chant validé` n’est donc pas un simple mapping brut `checked=1 / unchecked=0`
-- pour un chant en `status=2`, cette checkbox reste affichée comme cochée mais non modifiable
-- la soumission normale d’un chant en `status=2` doit continuer à poster `status_validated=1` via un champ caché ou équivalent
-- si un POST technique tente malgré tout de retirer `status_validated=1` alors que le chant est en `status=2`, la sauvegarde des autres champs reste autorisée mais la tentative `2 -> 0` est ignorée
+- si un chant est en `status=0`, ses messages sont cachés dans les popups de modération
 - message vide refusé
 - auteur du message non stocké
 
@@ -261,7 +253,7 @@ Les messages de correction (`s_song_messages`) suivent le workflow métier suiva
 
 ### Liens de chant (`s_song_links`)
 
-Les types canoniques stockés en backend et en base sont exactement :
+Les types canoniques stockés sont :
 
 - `score`
 - `audio`
@@ -269,36 +261,25 @@ Les types canoniques stockés en backend et en base sont exactement :
 - `web`
 - `internal`
 
-Ces 5 types sont distincts de bout en bout :
-
-- en front dans les formulaires ;
-- en front à l’affichage ;
-- en backend dans la validation ;
-- en base dans la valeur stockée.
+Ces 5 types sont distincts en front, backend et base.
 
 Le type canonique `audio-video` n’est plus utilisé.
 
 Règle de migration :
 
-- toute ancienne ligne `audio-video` doit être migrée vers `audio`.
+- toute ancienne ligne `audio-video` doit être migrée vers `audio`
 
 Valeur par défaut à la création d’un nouveau lien :
 
 - `score`
 
-Ordre obligatoire des options dans les formulaires de métadonnées :
+Ordre des options dans les formulaires :
 
 1. `partition` (`score`)
 2. `audio` (`audio`)
 3. `YouTube` (`youtube`)
 4. `page Web` (`web`)
 5. `lien interne - Lyrics Slide Show` (`internal`)
-
-Rendu front attendu :
-
-- le type d’un lien reste visible à l’affichage ;
-- les libellés utilisateur doivent être localisés et ne doivent pas retomber sur des libellés anglais ;
-- `audio` et `YouTube` ne sont jamais fusionnés dans un type unique.
 
 ### Tables de référence partagées
 
@@ -336,12 +317,12 @@ Tables principales `app_song` :
 - `s_song_bands`
 - `m_songs_users`
 
-Les modèles Django utilisent les noms de tables SQL existants (`db_table='lss"."...'`).
+Les modèles Django utilisent les noms de tables SQL existants (`db_table='lss\".\"...'`).
 
 ## Non-objectifs
 
 `app_song` ne doit pas devenir :
 
-- un stockage de fichiers de partitions/audio/vidéo/documents,
-- un éditeur de slides générique,
-- un catalogue de chants par groupe.
+- un stockage de fichiers de partitions/audio/vidéo/documents
+- un éditeur de slides générique
+- un catalogue de chants par groupe

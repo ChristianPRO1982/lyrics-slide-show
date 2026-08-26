@@ -15,7 +15,8 @@ Page de préférence visuelle navigateur (`/themes/`).
 
 - liste les thèmes disponibles,
 - décrit chaque thème,
-- permet activation immédiate côté client.
+- montre aussi un aperçu d’icône et de logo par thème,
+- permet activation immédiate côté client via `data-theme-select`.
 
 ## Contraintes Front
 

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from django.db import transaction
 
 from app_animation.models import Animation, AnimationSong
+from app_song.models import Song, SongSlideDisplayMode
 
 
 POSITION_START = 2
@@ -83,6 +84,16 @@ def sync_animation_playlist(
         if token.token_type == "sid" and token.token_id in allowed_song_ids:
             ordered_entries.append(("sid", token.token_id))
 
+    new_song_ids = {
+        payload for token_type, payload in ordered_entries if token_type == "sid"
+    }
+    slide_display_mode_by_song_id = {
+        int(song_id): slide_display_mode
+        for song_id, slide_display_mode in Song.objects.filter(
+            song_id__in=new_song_ids
+        ).values_list("song_id", "slide_display_mode")
+    }
+
     with transaction.atomic():
         deleted_count = 0
         for existing_item in existing_items:
@@ -117,6 +128,9 @@ def sync_animation_playlist(
                 animation_id=animation.animation_id,
                 song_id=song_id,
                 position=new_position,
+                slide_display_mode=slide_display_mode_by_song_id.get(
+                    song_id, SongSlideDisplayMode.SINGLE
+                ),
             )
             created_count += 1
 

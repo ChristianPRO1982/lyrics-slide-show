@@ -3,7 +3,6 @@ from __future__ import annotations
 import random
 import re
 import uuid
-from typing import Any
 from urllib.parse import urlencode
 
 from django.contrib import messages

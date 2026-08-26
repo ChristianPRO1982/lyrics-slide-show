@@ -2,67 +2,77 @@
 
 ## Rôle
 
-Page racine front de consultation et recherche des chants (`/songs/`).
+Page racine de consultation, recherche et création des chants (`/songs/`).
 
 ## Responsabilité front
 
-- Affiche le titre de section (groupe sélectionné sinon `Chants`) et l’icône songs.
-- Affiche les compteurs `Chants`, `Recherche ⓘ`, `Total ⓘ`.
-- Expose l’action `💫 Afficher mes favoris` et l’état visuel du mode favoris temporaire.
-- Expose, pour modérateur/admin et seulement s’il existe des chants à modérer, l’action `⚖️ Afficher les chants à modérer`.
-- Le mode `chants à modérer` est temporaire, n’écrase pas la recherche enregistrée, et affiche un état visuel analogue au mode favoris temporaire.
-- Affiche le formulaire de recherche simple et avancée.
-- Affiche la liste des cartes chant, leurs marqueurs et actions UI.
-- Conserve la liste actuelle en cartes séparées pour desktop au-dessus de `980px`.
-- Affiche à `980px` et moins une liste compacte alternative dans une seule carte conteneur :
-  - un item par chant ;
-  - titre cliquable ;
-  - indicateur favori éventuel ;
-  - bouton `smartphone view` ;
-  - tags `genres / groupes / artistes` avec les mêmes liens de recherche rapide ;
-  - sans description ;
-  - sans action impression ;
-  - sans boutons `Afficher`, `Modifier`, `Supprimer`.
-- Affiche sur chaque carte le titre du chant avec le marqueur de validation à la suite du titre :
-  - `✔️` pour `status=1`
-  - `✔️⁉️` pour `status=2`
-- Affiche sur chaque carte un lien `Modifier` uniquement quand l’utilisateur a un droit réel d’édition directe :
-  - chant non validé : tout utilisateur connecté ;
-  - chant validé : modérateur/admin uniquement ;
-  - sinon : le lien n’est pas affiché du tout.
-- Affiche les états vides (aucun résultat backend/local).
+- affiche le titre de section et l’icône songs
+- affiche les compteurs `Chants`, `Recherche ⓘ`, `Total ⓘ`
+- affiche les tags de recherche active
+- affiche un panneau d’aide rappelant les marqueurs `✔️`, `✔️⁉️`, `📄`, `📱`, `🖨️`
+- expose des actions flottantes vers la recherche et le bloc `Nouveau chant`
+- affiche la recherche simple
+- pour utilisateur authentifié, affiche la recherche avancée :
+  - `Inclure description et paroles`
+  - logique `OU/ET`
+  - filtre validation
+  - filtre `Favoris uniquement`
+  - sélections `genres / groupes / artistes`
+- pour utilisateur authentifié, expose `💫 Afficher mes favoris`
+- pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
+- les modes `favorites_quick` et `moderation_quick` sont temporaires et n’écrasent pas la recherche persistée
+- affiche une liste desktop en cartes
+- affiche à part une liste compacte mobile avec panneau `⚙️`
+- chaque carte peut afficher :
+  - titre cliquable
+  - étoile favori éventuelle
+  - description résumée avec extension locale `[...]`
+  - tags `genres / groupes / artistes` avec liens d’ajout rapide à la recherche sauvegardée
+  - actions `Afficher`, `Modifier`, `Supprimer`, `📱`, `🖨️`
+- le lien `Modifier` et l’action `Supprimer` ne sont visibles que si l’utilisateur peut réellement éditer le chant
+- `Supprimer` passe par la popup partagée `LSSMessageBox`
+- l’action `🖨️` ouvre le menu d’impression existant
+- affiche l’état vide backend et l’état vide du filtre local JS
+- affiche une carte `Nouveau chant`
 
 ## Contrat d’interface (variables attendues)
 
 - `search_params`
+- `reference_options`
 - `song_cards`
 - `displayed_count`
 - `search_count`
 - `catalog_count`
+- `song_search_count_help`
+- `song_catalog_count_help`
 - `can_use_favorites`
 - `can_use_moderation_quick`
 - `can_use_advanced_search`
 - `can_create_song`
 - `favorites_quick_active`
 - `moderation_quick_active`
+- `favorites_toggle_query`
+- `moderation_toggle_query`
+- `song_identity_pairs`
 
 ## Nouveau chant
 
-Un formulaire pour créer un nouveau chant se trouve dans la carte "Nouveau chant".
+Le formulaire `Nouveau chant` possède :
 
-Le formulaire possède 2 champs :
-- Titre
-- Sous-titre
-+ le bouton "Créer le nouveau chant"
+- `Titre`
+- `Sous-titre`
+- le bouton `Créer le nouveau chant`
 
-Le bouton est de base grisé.
-Il se dégrise si :
-- le champt "Titre" est remplis par autre chose que du vide
-- si le couple Titre/Sous-titre n'existe pas en BDD
+Le bouton est désactivé par défaut.
 
-Il faut certainement charger tous les chants en mémoire JS. Ne pas oublier de faire des trim pour vérifier l'existance du chant.
+Il est activé seulement si :
+
+- le titre n’est pas vide après normalisation
+- le couple `Titre / Sous-titre` n’existe pas déjà dans `song_identity_pairs`
+
+Si le couple existe déjà, le backend redirige vers `modify_song` du chant existant.
 
 ## Notes
 
-- Les règles métier de droits, de recherche et de persistance sont définies dans `functional_requirements.md`.
-- Le filtre local JS sur `title + subtitle` doit continuer à fonctionner sans doubler les résultats malgré la coexistence des rendus desktop et compact dans le DOM.
+- les règles métier de droits, recherche et persistance sont définies dans `functional_requirements.md`
+- le filtre local JS sur `title + subtitle` doit fonctionner sur les rendus desktop et compact sans doublonner les résultats

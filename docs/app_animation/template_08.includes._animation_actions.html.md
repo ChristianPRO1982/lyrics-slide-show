@@ -2,26 +2,27 @@
 
 ## Objectif
 
-Centraliser les liens d'actions transverses pour les pages `app_animation`.
+Centraliser les actions transverses globales de `app_animation`.
 
 ## Périmètre
 
 - fragment inclus dans `page_tools` et `mobile_side_content`,
-- rendu conditionnel selon la route courante et la présence de `animation`.
+- actions globales non contextuelles à une animation précise,
+- rendu conditionnel selon les droits de l'utilisateur.
 
 ## Contrat d'inclusion
 
 Contexte attendu :
-- `request.resolver_match.url_name`,
-- `animation` optionnelle.
+- `request.user`.
 
-Liens conditionnels :
-- retour vers `animations` si la page courante n'est pas `animations`,
-- lien `modify_animation` si `animation` existe et si page courante différente,
-- lien `lyrics_slide_show` si `animation` existe et si page courante différente.
+Actions possibles :
+- lien `add_animation` toujours affiché,
+- lien `background_images` affiché uniquement pour un modérateur,
+- lien `upload_background_image` affiché uniquement pour un utilisateur authentifié.
 
 ## Comportements UI
 
-- ne rend pas de bouton de soumission,
+- ne rend aucun bouton de soumission,
 - rend uniquement des liens de navigation,
+- ne dépend ni de la route courante ni de la présence de `animation`,
 - libellés traduits via Django i18n.

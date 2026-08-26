@@ -3486,9 +3486,10 @@ class SongGenresDisplayViewTests(TestCase):
         )
         self.assertContains(
             response,
-            'class="song-icon-action site-action site-action--icon song-compact-smartphone-action"',
+            "data-song-compact-options-toggle",
             html=False,
         )
+        self.assertContains(response, "data-song-compact-options-panel", html=False)
 
         compact_start = rendered.index('class="song-list song-compact-list"')
         compact_end = rendered.index('class="site-theme-card song-create-card"')
@@ -3499,14 +3500,38 @@ class SongGenresDisplayViewTests(TestCase):
             compact_markup,
         )
         self.assertIn(
-            f'href="/songs/?genre_ids=',
+            'href="/songs/?genre_ids=',
             compact_markup,
         )
         self.assertNotIn("data-song-description", compact_markup)
-        self.assertNotIn("data-song-print-menu", compact_markup)
-        self.assertNotIn(">Afficher<", compact_markup)
-        self.assertNotIn(">Modifier<", compact_markup)
-        self.assertNotIn(">Supprimer<", compact_markup)
+        self.assertIn("data-song-print-menu", compact_markup)
+        self.assertIn(">Afficher<", compact_markup)
+        self.assertIn(">Modifier<", compact_markup)
+        self.assertIn(">Supprimer<", compact_markup)
+        self.assertIn(">Impression<", compact_markup)
+        self.assertIn(">Smartphone view<", compact_markup)
+
+    def test_songs_page_hides_compact_edit_actions_for_non_editable_song(self):
+        validated_song = Song.objects.create(
+            title="Validated song",
+            subtitle="Locked",
+            status=SongStatus.VALIDATED,
+        )
+
+        response = self.client.get(reverse("songs"))
+        rendered = response.content.decode()
+        compact_start = rendered.index('class="song-list song-compact-list"')
+        compact_end = rendered.index('class="site-theme-card song-create-card"')
+        compact_markup = rendered[compact_start:compact_end]
+        validated_link = f'href="/songs/{validated_song.song_id}/"'
+        validated_index = compact_markup.index(validated_link)
+        validated_slice = compact_markup[validated_index : validated_index + 2200]
+
+        self.assertIn(">Afficher<", validated_slice)
+        self.assertIn(">Smartphone view<", validated_slice)
+        self.assertIn(">Impression<", validated_slice)
+        self.assertNotIn(">Modifier<", validated_slice)
+        self.assertNotIn(">Supprimer<", validated_slice)
 
     def test_songs_page_summary_help_exposes_mobile_toggle_markup_and_labels(self):
         response = self._render_songs_response()

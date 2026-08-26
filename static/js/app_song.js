@@ -3,6 +3,8 @@
     const i18n = window.LSS_SONG_I18N || {};
     const label = (key) => String(i18n[key] || "");
     const floatingSearch = document.querySelector("[data-song-search-floating]");
+    const floatingHelpConfig = window.LSS_FLOATING_HELP_CONFIG || {};
+    const compactOptionsCollapseDelayMs = Number(floatingHelpConfig.collapseDelayMs) || 3000;
     if (floatingSearch && document.body && floatingSearch.parentElement !== document.body) {
         document.body.appendChild(floatingSearch);
     }
@@ -346,6 +348,112 @@
         }
         applySummaryHelpMode();
     }
+
+    const compactOptionsGroups = Array.from(document.querySelectorAll("[data-song-compact-options]"));
+    let openCompactOptionsGroup = null;
+    let openCompactOptionsTimeoutId = null;
+
+    const clearCompactOptionsTimeout = () => {
+        if (openCompactOptionsTimeoutId) {
+            window.clearTimeout(openCompactOptionsTimeoutId);
+            openCompactOptionsTimeoutId = null;
+        }
+    };
+
+    const closeCompactOptionsGroup = (group) => {
+        if (!(group instanceof HTMLElement)) {
+            return;
+        }
+        const toggle = group.querySelector("[data-song-compact-options-toggle]");
+        const panel = group.querySelector("[data-song-compact-options-panel]");
+        if (!(toggle instanceof HTMLElement) || !(panel instanceof HTMLElement)) {
+            return;
+        }
+        clearCompactOptionsTimeout();
+        panel.hidden = true;
+        toggle.hidden = false;
+        toggle.setAttribute("aria-expanded", "false");
+        if (openCompactOptionsGroup === group) {
+            openCompactOptionsGroup = null;
+        }
+    };
+
+    const scheduleCompactOptionsClose = (group) => {
+        clearCompactOptionsTimeout();
+        openCompactOptionsTimeoutId = window.setTimeout(() => {
+            closeCompactOptionsGroup(group);
+        }, compactOptionsCollapseDelayMs);
+    };
+
+    const openCompactOptionsForGroup = (group) => {
+        if (!(group instanceof HTMLElement)) {
+            return;
+        }
+        if (openCompactOptionsGroup && openCompactOptionsGroup !== group) {
+            closeCompactOptionsGroup(openCompactOptionsGroup);
+        }
+        const toggle = group.querySelector("[data-song-compact-options-toggle]");
+        const panel = group.querySelector("[data-song-compact-options-panel]");
+        if (!(toggle instanceof HTMLElement) || !(panel instanceof HTMLElement)) {
+            return;
+        }
+        openCompactOptionsGroup = group;
+        panel.hidden = false;
+        toggle.hidden = true;
+        toggle.setAttribute("aria-expanded", "true");
+        scheduleCompactOptionsClose(group);
+    };
+
+    compactOptionsGroups.forEach((group) => {
+        const toggle = group.querySelector("[data-song-compact-options-toggle]");
+        const panel = group.querySelector("[data-song-compact-options-panel]");
+        if (!(toggle instanceof HTMLElement) || !(panel instanceof HTMLElement)) {
+            return;
+        }
+
+        toggle.addEventListener("click", () => {
+            if (!panel.hidden) {
+                closeCompactOptionsGroup(group);
+                return;
+            }
+            openCompactOptionsForGroup(group);
+        });
+
+        panel.addEventListener("mouseenter", () => {
+            clearCompactOptionsTimeout();
+        });
+        panel.addEventListener("mouseleave", () => {
+            scheduleCompactOptionsClose(group);
+        });
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!openCompactOptionsGroup) {
+            return;
+        }
+        if (!(event.target instanceof Node)) {
+            return;
+        }
+        if (openCompactOptionsGroup.contains(event.target)) {
+            return;
+        }
+        closeCompactOptionsGroup(openCompactOptionsGroup);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && openCompactOptionsGroup) {
+            closeCompactOptionsGroup(openCompactOptionsGroup);
+        }
+    });
+
+    document.querySelectorAll("[data-song-compact-options-panel] a, [data-song-compact-options-panel] button").forEach((action) => {
+        action.addEventListener("click", () => {
+            const group = action.closest("[data-song-compact-options]");
+            if (group instanceof HTMLElement) {
+                closeCompactOptionsGroup(group);
+            }
+        });
+    });
 
     document.querySelectorAll("[data-song-delete-form]").forEach((form) => {
         form.addEventListener("submit", async (event) => {

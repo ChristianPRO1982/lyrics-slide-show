@@ -2,38 +2,27 @@
 
 ## Rôle
 
-Page front de lecture d’un chant (`/songs/<song_id>/`).
+Page de lecture d’un chant (`/songs/<song_id>/`).
 
 ## Responsabilité front
 
-- Affiche le titre complet du chant avec le marqueur de validation à la suite du titre :
-  - `✔️` pour `status=1`
-  - `✔️⁉️` pour `status=2`
-- Affiche le résumé de description.
-- Ajoute un accès flottant en haut à droite vers la vue smartphone du chant.
-- Affiche les cartes de métadonnées (`_song_metadata.html`) et liens (`_song_links.html`).
-- Le bloc métadonnées visible porte le libellé `# Tags`.
-- Affiche chaque lien avec son type visible en clair, à côté de l’URL.
-- Utilise pour ce type les 5 libellés utilisateur localisés :
-  - `partition`
-  - `audio`
-  - `YouTube`
-  - `page Web`
-  - `lien interne - Lyrics Slide Show`
-- Affiche le rendu paroles principal (`text_long_html`).
-- Monte le panneau d’actions (`_song_actions.html`) selon le contexte de page.
-- Inclut, pour un chant validé (`status in {1,2}`), une action de demande de modification ouvrant une popup avec un `textarea`.
-- Dans le panneau d’actions et le panneau mobile, n’affiche qu’un bouton `Signaler une correction`.
-- Ce bouton ouvre une popup `window.LSSMessageBox` contenant le formulaire de message avec `textarea`.
-- La popup porte aussi une courte explication pédagogique indiquant qu’un chant validé est un chant que les modérateurs ont estimé de qualité, que les modifications communautaires sont alors bloquées, que seuls les modérateurs peuvent encore le modifier directement, et que le message envoyé est totalement anonyme.
-- Ce formulaire est destiné aux utilisateurs qui n’ont pas de droit d’édition directe sur le chant validé, notamment les guests et les membres non modérateurs.
-- Pour tout utilisateur connecté, affiche sous le titre principal, dans l’en-tête principal, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici` lorsqu’il existe au moins un message non lu visible pour le chant.
-- Ce lien ouvre une popup affichant uniquement les messages non lus, du plus récent au plus ancien.
-- Si le chant est en `status=0`, les messages non lus éventuels sont considérés comme invisibles et ce lien n’apparaît pas.
-- Ajoute deux actions dédiées de copie texte brut (`un seul refrain`, `toutes les répétitions de refrain`) dans le panneau d’actions et le panneau mobile.
-- L’accès flottant smartphone utilise l’emoji `📱` et le libellé invariant `Smartphone view` dans toutes les langues.
-- Ouvre une popup avec `textarea` readonly, croix de fermeture, et boutons `Copier` / `Fermer` pour le texte brut récupéré depuis les URLs plain text.
-- Gère les interactions UI associées (toggle description, actions mobile, etc.).
+- affiche le titre complet du chant avec ses marqueurs métier
+- affiche l’étoile favori éventuelle dans le titre de page
+- affiche, pour membre authentifié avec messages non lus visibles, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici`
+- ce lien ouvre une popup Markdown contenant uniquement les messages non lus du plus récent au plus ancien
+- affiche les tags actifs de recherche
+- affiche un résumé de description avec lien `[...]` vers popup de description complète
+- expose une action flottante `📱` vers la vue `print_full_url` libellée `Smartphone view`
+- affiche la carte `# Tags` via `_song_metadata.html`
+- affiche la carte `Liens associés` via `_song_links.html`
+- affiche le rendu principal des paroles via `text_long_html`
+- monte le panneau d’actions partagé `_song_actions.html`
+- ajoute deux actions de copie texte brut :
+  - `un seul refrain`
+  - `toutes les répétitions de refrain`
+- ces actions ouvrent une popup readonly avec boutons `Copier` et `Fermer`
+- pour un chant validé et un utilisateur sans droit d’édition directe, affiche uniquement l’action `Signaler une correction`
+- cette action ouvre une popup avec explication, `textarea`, `Envoyer` et `Annuler`
 
 ## Contrat d’interface (variables attendues)
 
@@ -43,10 +32,16 @@ Page front de lecture d’un chant (`/songs/<song_id>/`).
 - `page_summary_truncated`
 - `description_display`
 - `text_long_html`
+- `print_full_url`
+- `popup_single_plain_url`
+- `popup_full_plain_url`
 - `is_favorite`
 - `can_edit`
 - `can_report_message`
+- `show_unread_messages_link`
+- `unread_messages_popup_markdown`
 
 ## Notes
 
-- Les règles métier (accès, édition, messages de correction, favoris) sont centralisées dans `functional_requirements.md`.
+- le lien de messages non lus n’est pas réservé aux modérateurs : il dépend d’un membre authentifié et de la présence de messages visibles non lus
+- les règles métier d’accès, de favoris et de demandes de correction sont centralisées dans `functional_requirements.md`

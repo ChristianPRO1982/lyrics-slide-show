@@ -1,147 +1,114 @@
-# Design of Template `lyrics.html`
+# Design du template `lyrics.html`
 
 ## Rôle
 
-Page au style unique dans le site permettant d'afficher de façon utltra optimiser pour les smartphones les textes des chants.
-Le site a deux manières d'afficher les textes :
+Template autonome optimisé smartphone pour la lecture publique des paroles.
 
-1- via la génération des slides sur vidéoprojecteur
-2- via les smartphones des spectateurs présents
+Il est utilisé par les vues de lecture de paroles qui passent par `build_lyrics_page_context`, notamment la vue smartphone publique d’une animation.
 
-`lyrics.html` traite la deuxième manière.
+Il ne reprend pas le shell principal du site.
 
-## Thème
+## Données Attendues
 
-Cette page ne reprend pas les thèmes du site mais a son propre design, légé, simple et extrêmement efficace pour lire.
+- `page_title`,
+- `share_url`,
+- `qr_code_png_base64`,
+- `songs`,
+- `has_multiple_songs`,
+- `animation_title`,
+- `drawer_title`,
+- `drawer_link_url`,
+- `drawer_link_label`,
+- `is_animation_view`.
 
-## CSS et JS
+Chaque entrée de `songs` contient :
 
-Le CSS et le JS sont embarquer dans le HTML pour plus d'efficacité dans des lieux avec peu de débit web.
+- `song_id`,
+- `song_title`,
+- `song_url`,
+- `anchor_id`,
+- `blocks`.
 
-## Principe d'affichage
+Chaque bloc contient :
 
-Une simple barre de fonction sur la gauche.
+- `prefix`,
+- `style`,
+- `text`.
 
-Une barre indicateur en haut pour savoir dans quel chant on se trouve.
+Styles supportés :
 
-Tout le reste de l'écran est dédié à l'affichage du texte.
+- `1` = refrain,
+- `2` = couplet standard,
+- `3` = `chorus_like`.
 
-## Design
+## Structure Générale
 
-### Général
+- barre latérale fixe à gauche,
+- topbar fixe avec sélecteur de chant si plusieurs chants existent,
+- tiroir latéral masqué par défaut,
+- zone principale dédiée à la lecture.
 
-Objectif : être le plus légé et efficace sur tous les smartphones
+Le CSS et le JavaScript sont embarqués directement dans le HTML.
 
-### police
+## Rendu Des Paroles
 
-Prendre une police simple, voire par défaut. Il faut qu'elle soit très facile à lire.
+- le titre d’animation est affiché au-dessus des chants quand `animation_title` existe ;
+- chaque chant affiche son titre ;
+- les blocs utilisent `white-space: pre-wrap` ;
+- les blocs `chorus` et `chorus_like` sont en gras ;
+- les préfixes sont en italique ;
+- `chorus_like` insère un saut de ligne après le préfixe quand il existe ;
+- un séparateur horizontal apparaît entre deux chants.
 
-### Couleurs
+## Navigation Entre Chants
 
-En mode clair : Noir sur beige très clair façon parchemin.
+Si plusieurs chants sont présents :
 
-En mode sombre : Gris assez clair sur noir
+- un `<select>` fixe liste les chants dans l’ordre fourni ;
+- les boutons latéraux `chant précédent` / `chant suivant` sont affichés ;
+- le changement de sélection déclenche un scroll vers le chant ciblé ;
+- le scroll manuel met aussi à jour le chant courant du `<select>`.
 
-## données - texte
+Le template gère le décalage nécessaire pour garder le chant visible sous la topbar fixe.
 
-Django fourni un payload avec les textes des chants avec :
-- id du chant
-- titre - sous-titre
-- liste des blocs :
-    - préfixe
-    - style
-    - texte
+Si un seul chant est présent :
 
-### styles possibles
+- la topbar est masquée ;
+- les boutons précédent/suivant ne sont pas rendus.
 
-1 : refrain
+## Barre Latérale
 
-2 : couplet
+La barre latérale affiche des boutons images pour :
 
-3 : comme un refrain
+- ouvrir le menu,
+- agrandir le texte,
+- réduire le texte,
+- basculer clair/sombre,
+- aller au chant précédent / suivant si plusieurs chants existent.
 
-### affichage
+## Tiroir Latéral
 
-Il faut afficher le titre ainsi :
+Le tiroir contient :
 
-```html
-<p style="font-weight: bold; font-size: 1.2em;">
-{{ title }}
-<p>
-```
+- un bouton de fermeture,
+- le QR code de `share_url` quand disponible,
+- le titre `drawer_title`,
+- un champ readonly contenant `share_url`,
+- un bouton `Copier`,
+- le logo Lyrics Slide Show,
+- un lien `drawer_link_url` / `drawer_link_label` quand fourni.
 
-Il faut afficher ainsi les refrains :
+## Persistance Et Thème
 
-```html
-<p style="font-weight: bold;">
-<i>{{ prefix }}</i> {{ text }}
-<p>
-```
+- la page a son propre thème clair/sombre, indépendant des thèmes principaux du site ;
+- au chargement, elle suit `prefers-color-scheme` ;
+- l’override manuel clair/sombre n’est pas persisté entre rechargements ;
+- tant qu’aucun override manuel n’a eu lieu, un changement du thème système met la page à jour ;
+- la taille de police est persistée en `localStorage` pour toutes les pages `lyrics.html`.
 
-Il faut afficher ainsi les couplets :
+## Contraintes Visuelles
 
-```html
-<p>
-<i>{{ prefix }}</i> {{ text }}
-<p>
-```
-
-Il faut afficher ainsi les 'comme un refrain' :
-
-```html
-<p style="font-weight: bold;">
-<i>{{ prefix }}</i><br>
-{{ text }}
-<p>
-```
-
-Entre deux bloc <p> il faut un espacement
-
-## barre indicateur
-
-C'est un `<select>` HTML listant tous les chants.
-
-> Note : un chant peut revenir plusieurs fois
-
-Lorsque l'on modifie le select, la page va directement vers le chant désigné.
-
-> Attention : il ne faut pas que le chant soit caché par cette barre. Lors de l'auto-scroll, le scroll doit s'arrêter pour que le titre soit en dessous du `<select>`
-
-Il faut aussi que le scroll manuel de l'utilisateur mette à jour le `<select>`, à chaque nouveau chant suffisament présent sur l'écran alors le `<select>` est mis à jour avec ce chant
-
-> note : si un seul chant, ne pas afficher cette barre indicateur
-
-## barre latérale de fonction
-
-Les fonctions sont des images png.
-
-Elle possède les fonctions suivantes :
-- hamburger
-- agrandir le texte
-- rétrécir le texte
-- toggle pour passer de mode clair à mode sombre
-- Si plusieurs chants :
-    - bouton chant suivant
-    - bouton chant précédent
-
-Règles de persistance :
-
-- le thème suit toujours le mode du navigateur au chargement de page ;
-- le bouton clair/sombre reste disponible mais son override est temporaire pour la page ouverte uniquement ;
-- au reload, cet override est oublié et la page reprend le mode du navigateur ;
-- si le navigateur change de thème pendant que la page est ouverte, la page suit ce changement tant qu'aucun override manuel n'a été fait ;
-- la taille du texte est mémorisée globalement pour toutes les pages smartphone `lyrics.html`, quel que soit le chant ou l'animation.
-
-## bouton hamburger
-
-Le clic sur ce bouton fait apparaitre un tiroir venant de l'extérieur de l'écran depuis la gauche.
-
-Le tiroir affiche un bouton pour fermer le tiroir
-
-Puis en dessous en grand le QR-code qui est l'URL même de cette page afin de pouvoir la partager de proche en proche entre les spectateurs.
-
-En dessous du QR-code, un champ en lecture seul avec l'adresse et un bouton "copier" indiquant pendant 2s quand on clique dessous que l'action a été prise en compte.
-
-En dessous le favicon du site et un lien pour aller vers le chant adresse du style ./songs/15927/
-
-Il faut faire en sorte que le tiroir ne prenne pas plus d'un écran de smartphone en position portrait
+- police système simple et lisible ;
+- mode clair façon parchemin ;
+- mode sombre très contrasté ;
+- mise en page pensée pour un smartphone en portrait.

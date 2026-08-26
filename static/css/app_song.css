@@ -113,7 +113,8 @@
 }
 
 .song-legend[hidden],
-[data-song-summary-content][hidden] {
+[data-song-summary-content][hidden],
+[data-song-local-empty][hidden] {
     display: none !important;
 }
 
@@ -848,6 +849,7 @@
     align-items: flex-start;
     gap: 0.45rem;
     flex: 0 0 auto;
+    position: relative;
 }
 
 .song-compact-favorite {
@@ -860,10 +862,44 @@
     line-height: 1;
 }
 
-.song-compact-smartphone-action {
+.song-compact-options-toggle {
     min-width: 2.85rem;
     min-height: 2.75rem;
     padding-inline: 0.65rem;
+}
+
+.song-compact-options {
+    position: relative;
+}
+
+.song-compact-options-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 20;
+    display: grid;
+    gap: 0.4rem;
+    min-width: min(18rem, calc(100vw - 2rem));
+    padding: 0.6rem;
+    border: 1px solid var(--site-line);
+    border-radius: 1rem;
+    background: var(--site-panel);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.song-compact-options-panel[hidden] {
+    display: none;
+}
+
+.song-compact-options-link,
+.song-compact-options-button {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.song-compact-options-form {
+    margin: 0;
 }
 
 .song-card-actions {
