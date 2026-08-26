@@ -32,7 +32,7 @@ Le formulaire admin expose les champs `SiteParams` utilisés par le projet:
 - `title`,
 - `title_h1`,
 - `signup_url`,
-- `home_text` (alimenté via cartes homepage dans le formulaire admin),
+- `home_text` (persisté mais masqué dans le formulaire courant),
 - `bloc1_text`,
 - `bloc2_text`,
 - `verse_max_lines`,
@@ -54,6 +54,12 @@ Le formulaire admin expose les champs `SiteParams` utilisés par le projet:
 
 Le formulaire inclut aussi des champs de cartes d’accueil (`home_card_1_*` à `home_card_6_*`) pour piloter le contenu homepage.
 
+Dans l’UI actuelle :
+
+- `home_text` n’est pas édité directement ;
+- les champs `home_card_*` sont la source de vérité de l’édition homepage ;
+- la soumission reconstruit `home_text` côté serveur sous forme de payload JSON de cartes.
+
 Chaque carte d’accueil expose :
 
 - `Carte accueil n - Titre`,
@@ -74,6 +80,12 @@ Le contenu texte des cartes d’accueil est interprété avec un mini-markdown c
 - les erreurs champ par champ sont affichées sous chaque contrôle,
 - les erreurs globales (`non_field_errors`) sont affichées dans la page,
 - en cas d’échec de validation côté vue, un message flash explicite les champs invalides si disponibles.
+
+## Comportements De Page
+
+- l’accès est réservé à un administrateur authentifié ;
+- le panneau outils contient un lien `Retour au profil` ;
+- le formulaire d’édition complet est protégé par le guard `unsaved_changes`.
 
 ## Limites De Responsabilité
 

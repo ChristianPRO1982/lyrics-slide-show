@@ -18,11 +18,13 @@ Page racine front de consultation et recherche des chants (`/songs/`).
   - un item par chant ;
   - titre cliquable ;
   - indicateur favori éventuel ;
-  - bouton `smartphone view` ;
+  - bouton `⚙️` ouvrant un panneau d’options local ;
+  - panneau contenant les mêmes actions métier que le mode desktop, regroupées pour le format compact ;
+  - `Supprimer` reste confirmé via la popup partagée `LSSMessageBox` ;
+  - `Impression` réutilise le menu d’impression existant ;
   - tags `genres / groupes / artistes` avec les mêmes liens de recherche rapide ;
   - sans description ;
-  - sans action impression ;
-  - sans boutons `Afficher`, `Modifier`, `Supprimer`.
+  - sans réafficher les actions desktop inline hors du panneau `⚙️`.
 - Affiche sur chaque carte le titre du chant avec le marqueur de validation à la suite du titre :
   - `✔️` pour `status=1`
   - `✔️⁉️` pour `status=2`

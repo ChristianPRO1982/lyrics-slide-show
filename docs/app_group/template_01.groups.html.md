@@ -2,45 +2,68 @@
 
 ## Guiding Idea
 
-* simple list of the groups currently stored in the database
-* access the modification page of a group if the user is a group admin of that group or a moderator
-* select a group in order to work in the site's `animations` section
+- list the groups currently available in the database,
+- allow selecting a working group for the rest of the site,
+- expose the creation, join-request, leave, and management entry points that are allowed for the current user.
 
 ## Group List
 
-* sorted alphabetically
-* display an invisible grid with: `| group name + status [🌐/🔐/🔐📱] | info (first 50 characters then "..." with a link to show the rest) | <ACTIONS> |`
-* all groups are displayed on a single page
-* a group can be searched through a JavaScript search field: case-insensitive and accent-insensitive search, starting from the third character
+- sorted alphabetically,
+- all groups are displayed on a single page,
+- each card shows:
+  - group name,
+  - status marker `🌐` / `🔐` / `🔐📱`,
+  - optional info preview,
+  - optional visible usernames of group admins,
+  - membership marker when relevant,
+  - allowed actions.
 
-### `<ACTIONS>`
+Info behavior:
+- if `info` is longer than 50 characters, the card first shows a truncated preview,
+- a local toggle expands the full text inline,
+- line breaks are rendered visually.
 
-* select if allowed, otherwise nothing
-* request membership / or member / or group admin / or pending request with `👩🏾‍🔧/👥/📩`
-* modify the group if allowed, otherwise nothing
+Search behavior:
+- JavaScript local search only,
+- case-insensitive and accent-insensitive,
+- filtering starts from the third character,
+- a floating `🔎` anchor scrolls to the search field.
 
-## Design
+## Actions
 
-* section panel = `static/icons/ui/normal/512/light/groups.png` depending on theme and mode
-* tools panel = indicates the currently selected group, and if there is no selected group then show `"no group selected"`
-* mobile panel = tools panel
-* main header
-  * overtitle = `"Groups"`
-  * title = `"Group List"`
-* summary box = reminder of the meaning of `🌐/🔐/🔐📱`
-* main content = search bar then group list
-* content footer = explanation of how it works (see above)
+Possible actions per card:
+- `Sélectionner` when the group is directly accessible,
+- `Sélectionner avec secret` when the group is `private_with_secret` but not yet accessible in the current session,
+- `Demander à rejoindre` for an authenticated non-member on a closed group,
+- `Annuler la demande` when a join request is already pending,
+- `Quitter le groupe` for a current member,
+- `Modifier le groupe` for a group manager.
 
-## Search Reminder
+Membership markers:
+- `👩🏾‍🔧` = current user is group admin,
+- `👥` = current user is member,
+- `📩` = current user has a pending join request.
 
-A link to the search bar is available through the `"🔎"` link, always floating at the top right of the screen.
+## Layout
+
+- section panel uses the themed `groups` icon,
+- tools panel shows the currently selected group or `Pas de groupe sélectionné.`,
+- the tools panel also exposes `Modifier` when the selected group is manageable,
+- mobile side content shows a compact summary of the current selection,
+- page header:
+  - overtitle = `Groupes`,
+  - title = `Liste des groupes`,
+- summary box reminds the meaning of `🌐`, `🔐`, and `🔐📱`,
+- main content contains:
+  - floating search shortcut,
+  - create-group card,
+  - access-rules explanation card,
+- content footer contains the search field and the full list of group cards.
 
 ## Functional Explanations
 
-An “open 🌐” group can be joined by any logged-in person. There is no restriction other than being logged in.< hr >
-A “closed 🔐” group is accessible only to users who are logged into the site and whose affiliation with the group has been established.< hr >
-The token is permanent and allows the people who received it to connect to the group. They do not need to have an account on the site or be logged in.
-
-To create a token 📱 or generate a new one, click the checkbox “create a new token”. If a token already existed, it will be destroyed. A group with a token can be accessed only by group members and by those who know the token; if the group is private, the token still allows access to it.
-
-It is also possible to delete the token with the checkbox “delete the token”.
+- an open `🌐` group can be selected freely,
+- a closed `🔐` group is reserved to members unless a valid secret is provided,
+- a closed-with-secret `🔐📱` group keeps the same management rules as a closed group; the secret only opens temporary selection access for the current session,
+- requesting membership is only available for authenticated non-members on closed groups,
+- creating a group is reserved to authenticated users and the created group starts open.

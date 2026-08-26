@@ -45,6 +45,7 @@ Those concerns belong elsewhere, mainly in `app_member` or the other domain apps
 
 - `/` as the public homepage,
 - `/login/`,
+- `/login/diagnostic/`,
 - `/auth/callback/`,
 - `/provision/redirect/`,
 - `/provision/complete/`,
@@ -81,7 +82,8 @@ The login entry point must:
 - redirect to the mock authentication endpoint when `AUTH_MODE=mock` and `start=1`,
 - redirect to the Keycloak authorization URL when `AUTH_MODE=keycloak` and `start=1`,
 - redirect back to the homepage with an error message when the auth mode is unsupported,
-- redirect back to the homepage with an error message when Keycloak configuration is incomplete.
+- redirect back to the homepage with an error message when Keycloak configuration is incomplete,
+- reuse the shared `connexion.html` template in `page_mode=login`.
 
 ### Callback Flow
 
@@ -266,6 +268,8 @@ Language lookup must:
 
 The dedicated `/site-params/` page is the only shared UI used for full `SiteParams` editing, with explicit language selection (`fr` or `en`) and row creation when the selected language row does not exist yet.
 
+Although `home_text` remains a persisted `SiteParams` field, the dedicated admin page currently hides that raw field and edits the homepage cards through six explicit `home_card_*` groups. Saving the page rebuilds `home_text` as a JSON cards payload.
+
 ## Public Pages
 
 ### Homepage
@@ -287,7 +291,11 @@ It renders shared navigation and language-scoped marketing content from `SitePar
 - support `**gras**`, `*italique*`, blockquote lines starting with `> `, and ordinary line breaks rendered as `<br>`,
 - escape raw HTML from administrator input before applying that mini-markdown,
 - hide any homepage card missing either `title` or `text`,
-- render no default marketing cards when no homepage cards are configured.
+- render no default marketing cards when no homepage cards are configured,
+- render `bloc1_text` in the tools panel when present,
+- render `bloc2_text` in the page summary when present,
+- expose a GitHub latest-release badge linked to the project changelog,
+- optionally show a moderation card for the first songs still requiring moderation when the current user is moderator or admin.
 
 ### Login Page
 
