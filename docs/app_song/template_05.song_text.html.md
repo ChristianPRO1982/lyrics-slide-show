@@ -2,21 +2,23 @@
 
 ## Rôle
 
-Vue front minimaliste d’affichage texte d’un chant (`/songs/<song_id>/text/<mode>/`).
+Vue texte minimaliste d’un chant (`/songs/<song_id>/text/<mode>/`).
 
 ## Responsabilité front
 
-- Affiche un rendu texte selon le mode fourni (`single-chorus` ou `full-chorus`).
-- Sert d’écran d’affichage/copie depuis les actions d’impression.
+- affiche un document HTML très léger avec :
+  - le `<title>` du chant
+  - un `<h1>` avec `title_complete`
+  - le corps texte rendu via `text_body|linebreaksbr`
+- sert d’écran d’affichage simple pour les variantes `single-chorus` et `full-chorus`
 
 ## Contrat d’interface (variables attendues)
 
-- `song`
-- `mode`
+- `language_code`
 - `title_complete`
-- `text_html`
+- `text_body`
 
 ## Notes
 
-- En `?format=plain`, la route renvoie directement une réponse `text/plain` sans passer par ce template.
-- Les règles de rendu et d’accès sont définies dans `functional_requirements.md`.
+- la route `?format=plain` renvoie une réponse `text/plain` sans passer par ce template
+- la doc ne doit plus annoncer une variable `text_html` : le template utilise `text_body`

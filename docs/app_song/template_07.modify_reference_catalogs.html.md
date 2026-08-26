@@ -8,14 +8,18 @@
 
 ## Rôle
 
-Pages front de maintenance des référentiels partagés utilisés par `app_song`.
+Pages de maintenance des référentiels partagés utilisés par `app_song`.
 
 ## Responsabilité front
 
-- Affiche les lignes existantes, les champs d’ajout et les actions d’édition/suppression.
-- Affiche l’indicateur d’usage (`usage_count`) par entrée.
-- Expose les formulaires de sauvegarde.
+- affichent les lignes existantes
+- affichent les champs d’ajout
+- affichent `usage_count` par entrée
+- exposent les formulaires de sauvegarde
+- `modify_genres.html` porte les colonnes `group` et `name`
+- `modify_artists.html` et `modify_bands.html` portent uniquement `name`
 
 ## Notes
 
-- Les droits d’accès et la persistance SQL sont définis dans `functional_requirements.md`.
+- l’accès est réservé aux modérateurs/admins
+- les droits d’accès et la persistance SQL sont définis dans `functional_requirements.md`

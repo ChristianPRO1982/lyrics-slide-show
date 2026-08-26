@@ -7,13 +7,29 @@
 
 ## Rôle
 
-Snippets front d’injection de chaînes traduites pour JavaScript runtime.
+Snippets d’injection de chaînes traduites pour le JavaScript runtime de `app_song`.
 
 ## Responsabilité front
 
-- Fournit les textes UI traduits utilisés par les scripts de page.
-- Évite le hardcode de texte visible utilisateur dans le JavaScript statique.
+- `song_page_i18n.html` fournit les textes pour :
+  - suppression du chant
+  - menu d’impression
+  - copie texte brut
+  - popup de description
+  - popup de demandes de modification
+  - popup `Signaler une correction`
+  - libellé `Options` de la vue compacte
+  - template URL `song_message_read_state`
+- `modify_song_page_i18n.html` fournit les textes pour :
+  - suppression du chant
+  - copie texte brut
+  - réorganisation et ajout de blocs
+  - suppression d’un bloc
+  - popup de demandes de modification
+  - libellés des `slide_display_mode`
+  - template URL `song_message_read_state`
 
 ## Notes
 
-- Aucun comportement métier backend n’est défini ici.
+- ces snippets ne portent aucune logique métier backend
+- `modify_song_page_i18n.html` documente désormais aussi les libellés de `slide_display_mode`

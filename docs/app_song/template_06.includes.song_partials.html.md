@@ -5,18 +5,31 @@
 - `includes/_song_actions.html`
 - `includes/_song_metadata.html`
 - `includes/_song_links.html`
+- `includes/_active_search_tags.html`
 
 ## Rôle
 
-Partiels front partagés par plusieurs pages de `app_song`.
+Partiels partagés par plusieurs pages de `app_song`.
 
 ## Responsabilité front
 
-- `_song_actions.html` : structure visuelle plate du panneau d’actions, actions contextuelles, toggle favori, suppression partagée, et bouton `Signaler une correction` ouvrant une popup, avec disponibilité variable selon les droits réels de l’utilisateur et l’état de validation du chant.
-- `_song_metadata.html` : rendu des informations métadonnées chant.
-- `_song_links.html` : rendu des liens et, selon contexte de page, champs associés, avec type toujours visible et libellé utilisateur localisé (`partition`, `audio`, `YouTube`, `page Web`, `lien interne - Lyrics Slide Show`).
+- `_song_actions.html`
+  - affiche `← Retour à la liste`
+  - affiche `Afficher` si la page courante n’est pas déjà `song`
+  - pour utilisateur authentifié, affiche le toggle favori
+  - si l’utilisateur peut éditer le chant, affiche `Modifier`, `Métadonnées` et `Supprimer`
+  - pour chant validé sans droit d’édition directe, affiche `Signaler une correction`
+- `_song_metadata.html`
+  - affiche artistes et groupes sous forme de badges
+  - affiche les genres groupés par famille
+  - chaque badge peut devenir un lien de recherche rapide si `add_url` est fourni
+- `_song_links.html`
+  - affiche la liste des liens du chant
+  - chaque ligne montre l’URL et `link.get_type_display`
+- `_active_search_tags.html`
+  - affiche les filtres de recherche actifs et leurs actions de retrait
 
 ## Notes
 
-- `_song_actions.html` s’insère à plat dans le `panneau outils` et le `panneau mobile`, sans conteneur groupé supplémentaire.
-- Les autorisations et effets backend des actions sont décrits dans `functional_requirements.md`.
+- `_song_actions.html` s’insère à plat dans les panneaux outils et mobile
+- les autorisations et effets backend des actions sont décrits dans `functional_requirements.md`
