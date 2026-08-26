@@ -903,6 +903,30 @@ body.lss-messagebox-open {
     font-size: 0.96rem;
 }
 
+.site-section-panel .site-panel-header picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-panel-header picture img {
+    display: block;
+    border-radius: inherit;
+}
+
+.site-section-panel .site-home-media picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-home-media img {
+    display: block;
+    border-radius: inherit;
+}
+
 .site-section-panel,
 .site-tools-panel {
     padding: 22px;

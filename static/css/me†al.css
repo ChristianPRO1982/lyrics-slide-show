@@ -41,6 +41,30 @@
     --site-action-bg-hover: linear-gradient(180deg, rgba(248, 239, 240, 0.98), rgba(243, 231, 232, 0.92));
 }
 
+.site-section-panel .site-panel-header picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 0;
+    line-height: 0;
+}
+
+.site-section-panel .site-panel-header picture img {
+    display: block;
+    border-radius: inherit;
+}
+
+.site-section-panel .site-home-media picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 0;
+    line-height: 0;
+}
+
+.site-section-panel .site-home-media img {
+    display: block;
+    border-radius: inherit;
+}
+
 body {
     position: relative;
     background:

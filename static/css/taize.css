@@ -38,6 +38,30 @@
     --site-action-radius: 18px;
 }
 
+.site-section-panel .site-panel-header picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-panel-header picture img {
+    display: block;
+    border-radius: inherit;
+}
+
+.site-section-panel .site-home-media picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 24px;
+    line-height: 0;
+}
+
+.site-section-panel .site-home-media img {
+    display: block;
+    border-radius: inherit;
+}
+
 body {
     background:
         radial-gradient(circle at 16% 12%, rgba(255, 214, 120, 0.34), transparent 15%),

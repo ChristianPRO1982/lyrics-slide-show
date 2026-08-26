@@ -64,6 +64,30 @@
     border-radius: var(--site-leaf-radius-lg) var(--site-leaf-radius-sm) var(--site-leaf-radius-lg) var(--site-leaf-radius-sm) !important;
 }
 
+.site-section-panel .site-panel-header picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 28px 10px 26px 12px !important;
+    line-height: 0;
+}
+
+.site-section-panel .site-panel-header picture img {
+    display: block;
+    border-radius: inherit !important;
+}
+
+.site-section-panel .site-home-media picture {
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 28px 10px 26px 12px !important;
+    line-height: 0;
+}
+
+.site-section-panel .site-home-media img {
+    display: block;
+    border-radius: inherit !important;
+}
+
 body {
     background:
         radial-gradient(circle at top left, rgba(84, 231, 219, 0.22), transparent 24%),
