@@ -44,10 +44,6 @@
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
                         <span>{{ nav_home_label }}</span>
                     </a>
-                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
-                        <span>{{ nav_groups_label }}</span>
-                    </a>
                     <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
                         <span>{{ nav_songs_label }}</span>
@@ -55,6 +51,10 @@
                     <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
                         <span>{{ nav_animations_label }}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{{ nav_groups_label }}</span>
                     </a>
                 </section>
 
@@ -133,14 +133,14 @@
                     <a href="{% url 'homepage' %}" title="{{ nav_home_label }}" data-django-alias="homepage">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
                     </a>
-                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
-                    </a>
                     <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
                     </a>
                     <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
                     </a>
                 </section>
 
@@ -191,10 +191,6 @@
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="home" icon_alt=nav_home_label %}
                         <span>{{ nav_home_label }}</span>
                     </a>
-                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
-                        <span>{{ nav_groups_label }}</span>
-                    </a>
                     <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="songs" icon_alt=nav_songs_label %}
                         <span>{{ nav_songs_label }}</span>
@@ -202,6 +198,10 @@
                     <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="animations" icon_alt=nav_animations_label %}
                         <span>{{ nav_animations_label }}</span>
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-link-picture" img_class="site-nav-link-icon" icon_name="groups" icon_alt=nav_groups_label %}
+                        <span>{{ nav_groups_label }}</span>
                     </a>
                 </section>
 
@@ -280,14 +280,14 @@
                     <a href="{% url 'homepage' %}" title="{{ nav_home_label }}" data-django-alias="homepage">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="home" icon_alt=nav_home_label %}
                     </a>
-                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
-                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
-                    </a>
                     <a href="{% url 'songs' %}" title="{{ nav_songs_label }}" data-django-alias="songs">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="songs" icon_alt=nav_songs_label %}
                     </a>
                     <a href="{% url 'animations' %}" title="{{ nav_animations_label }}" data-django-alias="animations">
                         {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="animations" icon_alt=nav_animations_label %}
+                    </a>
+                    <a href="{% url 'groups' %}" title="{{ nav_groups_label }}" data-django-alias="groups">
+                        {% include "includes/themed_icon.html" with picture_class="site-nav-button-picture" img_class="site-nav-button-icon" icon_name="groups" icon_alt=nav_groups_label %}
                     </a>
                 </section>
 
