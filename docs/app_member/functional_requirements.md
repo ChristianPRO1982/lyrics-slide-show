@@ -18,7 +18,9 @@ At this stage, the app covers:
 
 - the persistent state of the central `songs` search form for authenticated members,
 - the privileged local roles `moderator` and `admin` for authenticated members,
-- the local services that expose those roles and permissions to the rest of the Django project.
+- the local services that expose those roles and permissions to the rest of the Django project,
+- the context processor that builds the shared site popup payload from `SiteParams`,
+- the forms reused by `app_main` for member search, role updates, popup settings, and full `SiteParams` administration.
 
 ## Scope Boundaries
 
@@ -42,6 +44,19 @@ At this stage, the app covers:
 - CRUD ownership helpers coming from schema `common`,
 - guest preference persistence on the server,
 - external role assignment in `Keycloak`.
+
+## URL And UI Boundary
+
+`app_member` currently exposes no standalone end-user page, no public route, and no dedicated template.
+
+Its Django `views.py` is currently empty.
+
+Its user-facing contribution is indirect:
+
+- reusable forms consumed by `app_main`,
+- reusable permission helpers consumed by other apps,
+- a shared context processor for site popups,
+- local persistence models used by `app_song` and by authentication/runtime services.
 
 ## Source Of Truth And Database Boundaries
 
@@ -147,6 +162,10 @@ This search:
 
 The search result is an application-level view model, not a duplicated local identity record.
 
+In the default configuration, this search uses the unmanaged `DirectoryUserRecord` ORM model on `users.users`.
+
+When `USER_SCHEMA` / `USER_TABLE` target another compatible external table, the implementation may fall back to validated SQL queries instead of the ORM model.
+
 ## Preference Persistence Model
 
 This section concerns member preferences only.
@@ -156,6 +175,10 @@ Privileged roles are part of `app_member` scope, but they must use their own loc
 They must not be folded into `m_preferences`.
 
 The active documented preference contract is currently centered on the persistent `songs` search state.
+
+`app_member` owns the persistence schema and validation contract for that search state.
+
+The current load/save helpers that apply this contract at runtime live in `app_song.search`, not in `app_member.views`.
 
 The presence of a `theme_slug` column in the schema does not by itself make `app_member` the runtime source of truth for theme selection. That behavior must stay aligned with `docs/app_main/functional_requirements.md`.
 
@@ -261,6 +284,21 @@ At minimum, the app must expose helpers for:
 - validating songs,
 - managing groups globally with moderator authority.
 
+The current concrete helpers are:
+
+- `can_manage_site_members`,
+- `can_manage_site_settings`,
+- `can_manage_global_popup`,
+- `can_manage_moderator_popup`,
+- `can_validate_songs`,
+- `can_manage_groups_globally`.
+
+Current effective rules:
+
+- site member management, site settings, and the global admin popup require `admin`,
+- the moderator popup, song validation, and cross-group moderation powers require `moderator`,
+- an `admin` satisfies all moderator-level checks automatically because runtime flags always expose `is_moderator = true` for admins.
+
 ## Theme Preference Boundary
 
 ### Current Runtime Rule
@@ -350,17 +388,21 @@ Its functional meaning is:
 
 This behavior must be preserved conceptually, even if the implementation is modernized.
 
-## Search Friendliness Rules
+## Search Execution Boundary
 
-The text search must be as user-friendly as possible.
+`app_member` does not implement the actual song-catalog matching algorithm.
 
-It must support normalization and escaping suitable for real user input, including at least:
+Concerns such as:
 
 - accent-insensitive matching,
-- safe handling of apostrophes,
-- safe handling of other special characters used in search input.
+- apostrophe handling,
+- special-character escaping,
+- exact SQL query construction,
+- guest-side query-string behavior,
 
-The goal is to help users find songs naturally, not to expose raw database matching behavior.
+belong to the search implementation layer currently carried by `app_song`.
+
+`app_member` is responsible only for the persisted structure and validation of the saved member search state.
 
 ## Guest Mode Versus Authenticated Mode
 
@@ -382,6 +424,8 @@ When the user is authenticated:
 - this restored state replaces any transient guest-side state,
 - there is no merge between guest state and member persistent state,
 - the full persisted form becomes the active search context.
+
+In the current implementation, that load/replace behavior is exercised by `app_song.search`.
 
 ## App Boundaries
 
@@ -406,11 +450,15 @@ An explicit manual reset may exist elsewhere in the product, but the reset user 
 
 The persisted member search state represents the last saved known state for that member.
 
-The exact save trigger may be decided during implementation, but the functional result must be:
+The exact save trigger is not implemented inside `app_member` itself.
+
+The functional result expected by the persistence contract remains:
 
 - a member returns later and gets the same saved state,
 - a member can rely on that state across connections,
 - the product does not reset the form automatically on ordinary navigation.
+
+The current save triggers are handled by the app that owns the central search workflow, currently `app_song`.
 
 ## Non-Goals
 
@@ -433,3 +481,20 @@ The following terms should be used consistently in implementation and documentat
 - `song_search`: persistent JSON search state for the central `songs` search,
 - `guest mode`: anonymous behavior without member persistence,
 - `authenticated member mode`: behavior with persistent member preferences loaded from `lss.m_preferences` when relevant.
+
+## Popup Integration Boundary
+
+`app_member` currently contributes the shared popup payload through its `site_popup` context processor.
+
+That payload:
+
+- reads the current language-scoped `SiteParams` row,
+- always exposes `signup_url` as shared shell context,
+- exposes the administrator popup on every page when `admin_message` is non-empty,
+- exposes the moderator popup only on the main pages whose Django route names are currently:
+  - `homepage`,
+  - `groups`,
+  - `songs`,
+  - `animations`.
+
+The popup rendering shell itself remains outside `app_member`.
