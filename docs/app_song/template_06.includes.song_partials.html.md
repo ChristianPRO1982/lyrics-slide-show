@@ -18,7 +18,7 @@ Partiels partagés par plusieurs pages de `app_song`.
   - affiche `Afficher` si la page courante n’est pas déjà `song`
   - pour utilisateur authentifié, affiche le toggle favori
   - si l’utilisateur peut éditer le chant, affiche `Modifier`, `Métadonnées` et `Supprimer`
-  - pour chant validé sans droit d’édition directe, affiche `Signaler une correction`
+  - pour chant validé et utilisateur authentifié sans droit d’édition directe, affiche `Signaler une correction`
 - `_song_metadata.html`
   - affiche artistes et groupes sous forme de badges
   - affiche les genres groupés par famille

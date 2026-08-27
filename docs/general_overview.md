@@ -108,12 +108,12 @@ The following rules describe the current functional intent.
 ### Songs
 
 - Songs are global resources, never scoped to a group.
-- Guests can view only the public part of the catalog.
+- Guests can view only the public, non-licensed part of the catalog.
 - Members and above can access the full song catalog.
 - Guests cannot create, edit, or delete songs.
 - Members and above can add songs.
 - Members can edit or delete a non-validated song.
-- Guests and non-moderator members without direct edit rights can submit a modification request on a validated song.
+- Non-moderator authenticated members without direct edit rights can submit a modification request on a validated song.
 - Only moderators and admins can validate a song.
 - Once validated, a song becomes a trusted source marked with `✔️` or `✔️⁉️` and can only be directly modified or deleted by moderators and admins.
 - Validated and non-validated songs are both usable in animations.

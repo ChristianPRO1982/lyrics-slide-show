@@ -22,7 +22,7 @@ Page de lecture d’un chant (`/songs/<song_id>/`).
   - `un seul refrain`
   - `toutes les répétitions de refrain`
 - ces actions ouvrent une popup readonly avec boutons `Copier` et `Fermer`
-- pour un chant validé et un utilisateur sans droit d’édition directe, affiche uniquement l’action `Signaler une correction`
+- pour un chant validé et un utilisateur authentifié sans droit d’édition directe, affiche uniquement l’action `Signaler une correction`
 - cette action ouvre une popup avec explication, `textarea`, `Envoyer` et `Annuler`
 
 ## Contrat d’interface (variables attendues)
