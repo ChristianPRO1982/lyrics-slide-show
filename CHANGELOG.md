@@ -1,3 +1,11 @@
+## [3.1.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.4...v3.1.5) (2026-08-27)
+
+
+### Bug Fixes
+
+* Restrict guest access to licensed songs and update related tests and documentation ([85d5e9c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/85d5e9cc78df194d7d27ae9c1f58b8cbbb5bff63))
+* Update dark theme icon assets for improved visual consistency ([1333b7d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1333b7daa012288d9879ee88a0e9723741a51f92))
+
 ## [3.1.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.3...v3.1.4) (2026-08-27)
 
 
