@@ -1,3 +1,10 @@
+## [3.1.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.3...v3.1.4) (2026-08-27)
+
+
+### Bug Fixes
+
+* Update mobile side visual styles for improved layout and responsiveness ([36b0905](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/36b0905d36e7115833fb7296a711df63ec1b57c8))
+
 ## [3.1.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.2...v3.1.3) (2026-08-26)
 
 
