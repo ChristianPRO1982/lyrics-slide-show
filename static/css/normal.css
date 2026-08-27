@@ -1157,6 +1157,18 @@ body.lss-messagebox-open {
     height: auto;
 }
 
+.site-home-mobile-hero {
+    display: grid;
+    justify-items: center;
+    padding: 0;
+}
+
+.site-home-mobile-hero picture {
+    display: block;
+    width: min(100%, 320px);
+    margin-inline: auto;
+}
+
 .site-home-mobile-logo {
     display: block;
     max-width: 220px;

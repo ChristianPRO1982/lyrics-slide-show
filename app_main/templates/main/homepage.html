@@ -60,8 +60,9 @@
 
 {% block mobile_side_title %}{% endblock %}
 {% block mobile_side_intro %}{% endblock %}
-{% block mobile_side_visual %}
-    <div class="site-home-media">
+{% block mobile_side_visual %}{% endblock %}
+{% block mobile_side_content %}
+    <div class="site-home-media site-home-mobile-hero">
         <picture data-theme-icon="lss" data-theme-alt="Lyrics Slide Show">
             <source
                 data-theme-size="512"
@@ -83,8 +84,6 @@
             >
         </picture>
     </div>
-{% endblock %}
-{% block mobile_side_content %}
     <div>
         <a href="{% url 'privacy_policy' %}" title="{% trans 'Politique de confidentialité' %}">
             {% trans "Politique de confidentialité" %}
