@@ -164,6 +164,7 @@ La recherche est gérée par `app_song/search.py`.
 ### Comportement invité
 
 - résultats limités aux chants `licensed = false`
+- un invité n’a jamais accès aux chants sous licence
 - paramètres invités réduits à `text` uniquement (`SongSearchParams.for_guest`)
 - pas de filtres avancés backend pour les guests
 
@@ -227,7 +228,8 @@ Règles actuelles :
 - édition/suppression chant validé ou validé avec messages : modérateur/admin uniquement
 - `modify_song` et `song_metadata` sont des pages de modification, pas des pages de lecture
 - `modify_song` et `song_metadata` sont accessibles seulement à un utilisateur connecté et seulement si le chant n’est pas validé, sauf exception `Moderator`/`Admin`
-- accès au formulaire de demande de correction sur chant validé : utilisateurs sans droit d’édition directe, y compris guests quand le chant est lisible
+- un invité ne peut effectuer aucune action sur un chant ; il reste strictement en lecture sur les chants publics hors licence
+- accès au formulaire de demande de correction sur chant validé : utilisateurs authentifiés sans droit d’édition directe
 - toggle favori : authentifié
 - modification du statut : modérateur ; l’admin hérite de ce droit
 - `Admin` hérite toujours des droits `Moderator`
@@ -238,7 +240,7 @@ Règles actuelles :
 Les messages de correction (`s_song_messages`) suivent le workflow métier suivant :
 
 - le formulaire est un simple `textarea`
-- il est affiché pour les chants validés (`status in {1,2}`) quand l’utilisateur n’a pas le droit d’édition directe
+- il est affiché pour les chants validés (`status in {1,2}`) quand l’utilisateur est authentifié et n’a pas le droit d’édition directe
 - il sert à déposer une demande de modification
 - un message possède un état booléen `vu`
 - à la création d’un nouveau message, `vu = false`

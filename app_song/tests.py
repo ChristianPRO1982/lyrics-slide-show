@@ -1771,6 +1771,30 @@ class SongViewsRenderingTests(TestCase):
             html=False,
         )
 
+    def test_guest_cannot_see_correction_report_action_on_public_validated_song(self):
+        self.song.licensed = False
+        self.song.save(update_fields=["licensed"])
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "data-song-report-trigger")
+        self.assertNotContains(response, 'id="song-correction-form"', html=False)
+
+    def test_guest_cannot_add_message_on_public_validated_song(self):
+        self.song.licensed = False
+        self.song.save(update_fields=["licensed"])
+
+        response = self.client.post(
+            reverse("song", args=[self.song.song_id]),
+            data={"action": "add_message", "message": "Corriger le refrain"},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.song.refresh_from_db()
+        self.assertEqual(self.song.status, SongStatus.VALIDATED)
+        self.assertFalse(SongMessage.objects.filter(song=self.song).exists())
+
     def test_add_message_moves_validated_song_to_validated_with_concern(self):
         self._login()
 
@@ -2029,11 +2053,41 @@ class SongFavoriteActionsTests(TestCase):
         self.assertFalse(Song.objects.filter(song_id=self.song.song_id).exists())
 
     def test_song_view_hides_toggle_for_guest(self):
+        self.song.licensed = False
+        self.song.save(update_fields=["licensed"])
+
         response = self.client.get(reverse("song", args=[self.song.song_id]))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "☆ Pas encore favori")
         self.assertNotContains(response, "⭐ Favori")
         self.assertNotContains(response, "data-song-delete-form")
+        self.assertNotContains(response, "data-song-report-trigger")
+
+    def test_guest_cannot_access_licensed_song_page(self):
+        self.song.licensed = True
+        self.song.save(update_fields=["licensed"])
+
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_guest_cannot_access_licensed_song_text_page(self):
+        self.song.licensed = True
+        self.song.save(update_fields=["licensed"])
+
+        response = self.client.get(
+            reverse("song_text", args=[self.song.song_id, "full-chorus"])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_guest_cannot_access_licensed_song_text_popup(self):
+        self.song.licensed = True
+        self.song.save(update_fields=["licensed"])
+
+        response = self.client.get(reverse("song_text_popup", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 404)
 
 
 class ModifySongViewTests(TestCase):

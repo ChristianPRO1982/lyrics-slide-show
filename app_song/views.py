@@ -111,7 +111,11 @@ def _can_read_song(user, song: Song) -> bool:
 
 
 def _can_report_message(user, song: Song) -> bool:
-    return _can_read_song(user, song) and not _can_edit_song(user, song)
+    return (
+        _is_authenticated(user)
+        and _can_read_song(user, song)
+        and not _can_edit_song(user, song)
+    )
 
 
 def _can_devalidate_song(user, song: Song) -> bool:
