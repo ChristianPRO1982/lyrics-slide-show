@@ -13,7 +13,7 @@ from django.core.management import call_command
 from django.contrib.messages import get_messages
 from django.template import engines
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
-from django.urls import reverse
+from django.urls import get_resolver, reverse
 from django.utils import timezone
 
 from auth_mock.server import load_mock_users
@@ -36,6 +36,7 @@ from app_main.auth import (
     validate_keycloak_callback,
     validate_callback_payload,
 )
+from app_main.context_processors import wiki_help
 from app_main.lyrics import (
     LYRICS_BLOCK_STYLE_CHORUS,
     LYRICS_BLOCK_STYLE_CHORUS_LIKE,
@@ -48,6 +49,12 @@ from app_main.mock_accounts import DEV_MOCK_ACCOUNTS, dev_mock_accounts_json
 from app_main.home_cards import filter_display_home_cards
 from app_main.homepage_markdown import render_homepage_markdown
 from app_main.models import DirectoryUserRecord, SiteParams
+from app_main.wiki_help import (
+    WIKI_DEFAULT_URL,
+    WIKI_MODERATION_URL,
+    WIKI_PAGE_BY_URL_NAME,
+    get_wiki_help_url,
+)
 from app_member.models import MemberRole
 from app_member.forms import AdminMessageForm, SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
@@ -1669,6 +1676,51 @@ class BaseTemplatePopupTests(SimpleTestCase):
         self.assertIn('href="https://signup.example.test/register"', rendered)
 
 
+class WikiHelpTests(SimpleTestCase):
+    def test_get_wiki_help_url_returns_mapped_url(self):
+        self.assertEqual(
+            get_wiki_help_url("song"),
+            "https://github.com/ChristianPRO1982/lyrics-slide-show/wiki/Affichage-d'un-chant",
+        )
+
+    def test_get_wiki_help_url_points_moderator_pages_to_moderation_wiki(self):
+        self.assertEqual(get_wiki_help_url("background_images"), WIKI_MODERATION_URL)
+        self.assertEqual(get_wiki_help_url("modify_genres"), WIKI_MODERATION_URL)
+        self.assertEqual(get_wiki_help_url("site_params"), WIKI_MODERATION_URL)
+
+    def test_get_wiki_help_url_returns_default_for_unknown_route(self):
+        self.assertEqual(get_wiki_help_url("unknown_route"), WIKI_DEFAULT_URL)
+
+    def test_get_wiki_help_url_returns_default_for_missing_route_name(self):
+        self.assertEqual(get_wiki_help_url(None), WIKI_DEFAULT_URL)
+        self.assertEqual(get_wiki_help_url(""), WIKI_DEFAULT_URL)
+
+    def test_wiki_mapping_only_references_declared_url_names(self):
+        resolver = get_resolver()
+        declared_url_names = {
+            name
+            for name in resolver.reverse_dict.keys()
+            if isinstance(name, str) and name
+        }
+
+        self.assertTrue(WIKI_PAGE_BY_URL_NAME)
+        self.assertTrue(set(WIKI_PAGE_BY_URL_NAME).issubset(declared_url_names))
+
+    def test_context_processor_exposes_mapped_url(self):
+        request = RequestFactory().get(reverse("songs"))
+        request.resolver_match = get_resolver().resolve(reverse("songs"))
+
+        self.assertEqual(
+            wiki_help(request),
+            {
+                "wiki_help_url": (
+                    "https://github.com/ChristianPRO1982/lyrics-slide-show/wiki/"
+                    "Rechercher-un-chant"
+                )
+            },
+        )
+
+
 class HeavyPageTests(SimpleTestCase):
     @override_settings(DEBUG=True)
     def test_heavy_page_is_available_in_debug_without_navigation_link(self):
@@ -1709,6 +1761,48 @@ class SitePopupContextTests(TestCase):
 
         self.assertContains(response, "Message admin")
         self.assertNotContains(response, "Message moderation")
+
+
+class WikiHelpTemplateTests(SimpleTestCase):
+    def test_homepage_footer_uses_dynamic_wiki_url_and_keeps_privacy_link(self):
+        response = self.client.get(reverse("homepage"))
+
+        self.assertContains(response, 'href="/privacy-policy/"')
+        self.assertContains(
+            response,
+            f'href="{WIKI_DEFAULT_URL}"',
+            html=False,
+        )
+
+    def test_shared_lyrics_template_footer_uses_contextual_wiki_url(self):
+        request = RequestFactory().get("/songs/42/text/full-chorus/")
+        request.resolver_match = type(
+            "ResolverMatchStub", (), {"url_name": "song_text"}
+        )()
+
+        template = engines["django"].get_template("lyrics/lyrics.html")
+        rendered = template.render(
+            {
+                "request": request,
+                "language_code": "fr",
+                "page_title": "Paroles test",
+                "share_url": "https://example.test/songs/42/text/full-chorus/",
+                "songs": [],
+                "has_multiple_songs": False,
+                "animation_title": "",
+                "drawer_title": "",
+                "drawer_link_url": "",
+                "drawer_link_label": "",
+                "is_animation_view": False,
+                **wiki_help(request),
+            }
+        )
+
+        self.assertIn('href="/privacy-policy/"', rendered)
+        self.assertIn(
+            'href="https://github.com/ChristianPRO1982/lyrics-slide-show/wiki/Smarthpone-view"',
+            rendered,
+        )
 
 
 class HomepageModerationCardTests(TestCase):
