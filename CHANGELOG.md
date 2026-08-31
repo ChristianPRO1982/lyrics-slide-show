@@ -1,3 +1,15 @@
+## [3.1.6](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.5...v3.1.6) (2026-08-31)
+
+
+### Bug Fixes
+
+* Add delete block confirmation and cancellation messages for improved user experience ([14e5cec](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/14e5cec1232e58d7bede486b314e99d9429d5719))
+* Enhance song summary help toggle and improve advanced search UI ([6ace5da](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6ace5dac4fb05d8fdef19aef650da2e30d02c5d9))
+* Implement dynamic song block editing with responsive template and JavaScript integration ([36cffb7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/36cffb7ad7a594ce6bd0efb967a5fc5d18b04096))
+* Refactor code structure for improved readability and maintainability ([f120835](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f120835555f10666725d02a62c22e8f70aa922c1))
+* Refactor code structure for improved readability and maintainability ([b603c94](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b603c94c784154fca12b0d5efd5dc45a5496e26c))
+* Refactor test cases for improved readability and consistency ([3aa0126](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3aa0126eff0f3aae8b7be40eadf53c297683e234))
+
 ## [3.1.5](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.4...v3.1.5) (2026-08-27)
 
 
