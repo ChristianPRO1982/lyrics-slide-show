@@ -416,6 +416,118 @@
                             </button>
                         </p>
                     </article>
+                    <template data-song-block-template>
+                        <article class="site-theme-card song-card song-edit-block" data-reorder-item data-song-block-card data-song-block-row="">
+                            <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
+                                <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
+                                <strong class="song-edit-block-drag-label" data-song-block-drag-label></strong>
+                                <span class="song-edit-block-drag-text" data-song-block-drag-text></span>
+                            </div>
+
+                            <div data-reorder-normal-view>
+                                <table class="song-edit-block-table" style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
+                                    <tbody>
+                                        <tr class="song-edit-block-table-row">
+                                            <td class="song-edit-block-handle-cell" style="vertical-align: top; width: 3em;">
+                                                <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
+                                            </td>
+                                            <td class="song-edit-block-content-cell" style="vertical-align: top;">
+                                                <div data-song-block-read-view>
+                                                    <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="song-block-prefix-col" style="vertical-align: top; white-space: nowrap;">
+                                                                    <button type="button" class="song-inline-trigger" data-song-block-open-prefix>
+                                                                        <strong data-song-block-display-label></strong>
+                                                                    </button>
+                                                                </td>
+                                                                <td style="vertical-align: top;">
+                                                                    <div class="song-block-readonly">
+                                                                        <button type="button" class="song-inline-trigger song-inline-trigger--text" data-song-block-open-text>
+                                                                            <span data-song-block-display-text></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div data-song-block-edit-view data-song-block-editor hidden>
+                                                    <div class="song-block-edit-layout" data-song-block-edit-layout>
+                                                        <div class="song-block-edit-text-col" data-song-block-edit-text-col>
+                                                            <label data-song-block-text-label>{% trans "Texte" %}</label>
+                                                            <textarea rows="5" data-song-block-lyrics-input></textarea>
+                                                        </div>
+                                                        <div class="song-block-edit-options-col" data-song-block-edit-options-col>
+                                                            <p class="song-block-prefix-row" data-song-block-prefix-field hidden>
+                                                                <label class="song-block-prefix-row-label" data-song-block-prefix-label>{% trans "Préfixe" %}</label>
+                                                                <input class="song-block-prefix-row-input" type="text" value="" data-song-block-prefix-input>
+                                                                <span class="song-block-prefix-actions" data-song-block-prefix-actions>
+                                                                    {% if official_prefixes %}
+                                                                        <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-prefix-picker>
+                                                                            {% trans "Choisir un préfixe officiel" %}
+                                                                        </button>
+                                                                    {% endif %}
+                                                                    {% if can_manage_prefix_catalog %}
+                                                                        <a class="song-tool-link" href="{{ modify_prefixes_url }}" data-song-block-prefix-manage-link>
+                                                                            {% trans "Modifier la liste des préfixes" %}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </span>
+                                                            </p>
+                                                            <p>
+                                                                <label>
+                                                                    <input type="checkbox" data-song-block-chorus-checkbox>
+                                                                    {% trans "Refrain" %}
+                                                                </label>
+                                                            </p>
+                                                            <p data-song-block-followed-option>
+                                                                <label>
+                                                                    <input type="checkbox" data-song-block-followed-checkbox>
+                                                                    {% trans "Suivi" %}
+                                                                </label>
+                                                            </p>
+                                                            <p data-song-block-no-continue-numbering-option>
+                                                                <label>
+                                                                    <input type="checkbox" data-song-block-no-continue-numbering-checkbox>
+                                                                    {% trans "Not C. num" %}
+                                                                </label>
+                                                            </p>
+                                                            <p data-song-block-chorus-like-option>
+                                                                <label>
+                                                                    <input type="checkbox" data-song-block-chorus-like-checkbox>
+                                                                    {% trans "Comme un refrain" %}
+                                                                </label>
+                                                            </p>
+                                                            <p>
+                                                                <button type="button" class="song-tool-button site-action site-action--primary" data-song-block-editor-ok>
+                                                                    {% trans "OK" %}
+                                                                </button>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="song-edit-block-delete-cell">
+                                                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
+                                                        {% trans "Supprimer" %}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <input type="hidden" data-reorder-position data-song-hidden-position value="">
+                            <input type="hidden" data-song-hidden-id value="">
+                            <input type="hidden" data-song-hidden-type value="">
+                            <input type="hidden" data-song-hidden-text value="">
+                            <input type="hidden" data-song-hidden-prefix value="">
+                            <input type="hidden" data-song-hidden-followed value="0">
+                            <input type="hidden" data-song-hidden-not-c-num value="0">
+                            <input type="hidden" data-song-hidden-delete value="0">
+                        </article>
+                    </template>
                 {% endif %}
             </div>
         </section>

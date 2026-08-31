@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 from types import SimpleNamespace
 
 from django.http import HttpResponse, QueryDict
@@ -413,6 +414,40 @@ class ModifySongBlockLabelTests(SimpleTestCase):
                 RenderedSongBlockKind.CHORUS,
             ],
         )
+
+
+class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_modify_song_template_exposes_client_block_template_with_responsive_hooks(self):
+        template = Path("app_song/templates/song/modify_song.html").read_text()
+        self.assertIn("<template data-song-block-template>", template)
+        self.assertIn('class="song-edit-block-table"', template)
+        self.assertIn('class="song-edit-block-table-row"', template)
+        self.assertIn('class="song-edit-block-handle-cell"', template)
+        self.assertIn('class="song-edit-block-content-cell"', template)
+        self.assertIn('class="song-edit-block-delete-cell"', template)
+        self.assertIn("data-song-block-text-label", template)
+        self.assertIn("data-song-block-prefix-label", template)
+
+    def test_modify_song_javascript_clones_shared_block_template(self):
+        script = Path("static/js/app_song.js").read_text()
+        self.assertIn('const blockTemplate = document.querySelector("[data-song-block-template]");', script)
+        self.assertIn("blockTemplate.content.firstElementChild.cloneNode(true)", script)
+        self.assertNotIn("buildPrefixActionMarkup", script)
+
+    def test_new_dynamic_block_labels_use_dedicated_short_names(self):
+        i18n_template = Path("app_song/templates/song/modify_song_page_i18n.html").read_text()
+        script = Path("static/js/app_song.js").read_text()
+        self.assertIn('{% trans "Nv. C." as new_verse_label %}', i18n_template)
+        self.assertIn('{% trans "Nv. R." as new_chorus_label %}', i18n_template)
+        self.assertIn('label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")', script)
+        self.assertIn('label("newVerseLabel") || label("verseLabel")', script)
 
     def test_song_with_only_choruses_still_renders_chorus_group(self):
         blocks = render_song_blocks(
