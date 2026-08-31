@@ -57,6 +57,18 @@
         }
     };
 
+    const readJsonScriptValue = (id, fallback = null) => {
+        const node = document.getElementById(String(id || ""));
+        if (!node) {
+            return fallback;
+        }
+        try {
+            return JSON.parse(node.textContent || "null");
+        } catch (_error) {
+            return fallback;
+        }
+    };
+
     const getCsrfToken = () => {
         const field = document.querySelector("input[name=csrfmiddlewaretoken]");
         if (field && typeof field.value === "string" && field.value) {
@@ -813,7 +825,16 @@
     const reorderList = document.querySelector("[data-reorder-list]");
     if (addBlockButton && reorderList) {
         let newBlockCounter = 0;
+        const blockTemplate = document.querySelector("[data-song-block-template]");
         const slideDisplayModeSelect = document.querySelector("[data-song-slide-display-mode-edit]");
+        const rawOfficialPrefixes = readJsonScriptValue("modify-song-official-prefixes", []);
+        const officialPrefixes = (Array.isArray(rawOfficialPrefixes) ? rawOfficialPrefixes : [])
+            .map((item) => ({
+                id: String(item?.id || ""),
+                prefix: String(item?.prefix || "").trim(),
+                comment: String(item?.comment || "").trim(),
+            }))
+            .filter((item) => item.id && item.prefix);
         const refreshUnsavedChanges = () => {
             if (modifySongUnsavedController) {
                 modifySongUnsavedController.refresh();
@@ -842,6 +863,56 @@
 
         const encodeForInputValue = (value) => {
             return escapeHtml(String(value || "")).replace(/\n/g, "&#10;");
+        };
+
+        const chooseOfficialPrefix = async (card) => {
+            if (!messageBox || !officialPrefixes.length || !card) {
+                return;
+            }
+            const result = await messageBox.show({
+                title: label("officialPrefixPopupTitle"),
+                size: "wide",
+                showCloseButton: true,
+                actionList: {
+                    items: officialPrefixes.map((item) => ({
+                        id: item.id,
+                        label: item.prefix,
+                        description: item.comment,
+                        payload: {
+                            prefixId: item.id,
+                        },
+                    })),
+                },
+                buttons: [
+                    {
+                        id: "close",
+                        label: label("officialPrefixPopupCloseLabel"),
+                        tone: "neutral",
+                    },
+                ],
+            });
+
+            const selectedPrefixId = String(result?.payload?.prefixId || "").trim();
+            if (!selectedPrefixId) {
+                return;
+            }
+
+            const selectedPrefix = officialPrefixes.find(
+                (item) => item.id === selectedPrefixId,
+            );
+            if (!selectedPrefix) {
+                return;
+            }
+
+            openEditor(card.getAttribute("data-song-block-row") || "", "prefix");
+            const prefixInput = card.querySelector("[data-song-block-prefix-input]");
+            if (!(prefixInput instanceof HTMLInputElement)) {
+                return;
+            }
+            prefixInput.value = selectedPrefix.prefix;
+            syncCardFromEditor(card);
+            prefixInput.focus();
+            prefixInput.select();
         };
 
         const getCards = () => Array.from(reorderList.querySelectorAll("[data-song-block-card]"));
@@ -989,6 +1060,33 @@
             card.classList.toggle("song-edit-block--emphasis", normalized.type === "chorus" || normalized.type === "special");
         };
 
+        const renderDeletePendingState = (card) => {
+            if (!card) return;
+
+            const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+            const readView = getReadView(card);
+            const editView = getEditView(card);
+            const deleteAction = card.querySelector("[data-song-block-delete-action]");
+            const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");
+            const isPendingDelete = hiddenDelete?.value === "1";
+
+            card.classList.toggle("is-pending-delete", isPendingDelete);
+            card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");
+
+            if (deleteAction instanceof HTMLElement) {
+                deleteAction.hidden = isPendingDelete;
+            }
+
+            if (pendingToggle instanceof HTMLElement) {
+                pendingToggle.hidden = !isPendingDelete;
+            }
+
+            if (isPendingDelete) {
+                if (readView) readView.hidden = false;
+                if (editView) editView.hidden = true;
+            }
+        };
+
         const readStateFromHidden = (card) => {
             const hiddenType = getHidden(card, "[data-song-hidden-type]");
             const hiddenText = getHidden(card, "[data-song-hidden-text]");
@@ -1017,6 +1115,7 @@
             if (hiddenFollowed) hiddenFollowed.value = normalized.followed ? "1" : "0";
             if (hiddenNotCNum) hiddenNotCNum.value = normalized.notCNum ? "1" : "0";
             renderCardFromState(card, normalized);
+            renderDeletePendingState(card);
             rebuildSlideDisplayModeOptions();
             refreshUnsavedChanges();
             return normalized;
@@ -1081,6 +1180,7 @@
                 const editView = getEditView(card);
                 if (readView) readView.hidden = false;
                 if (editView) editView.hidden = true;
+                renderDeletePendingState(card);
             });
         };
 
@@ -1137,7 +1237,11 @@
         };
 
         const createBlockCard = ({ rowKey, blockType, blockText }) => {
-            const article = document.createElement("article");
+            if (!(blockTemplate instanceof HTMLTemplateElement) || !blockTemplate.content.firstElementChild) {
+                return;
+            }
+
+            const article = blockTemplate.content.firstElementChild.cloneNode(true);
             const position = readNextPosition();
             const initialType = blockType === "chorus" ? "chorus" : "verse";
             const initialState = normalizeBlockState({
@@ -1148,99 +1252,48 @@
                 notCNum: false,
             });
             const initialLabel = initialType === "chorus"
-                ? (label("chorusPrefix") || label("chorusLabel"))
-                : label("verseLabel");
+                ? (label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel"))
+                : (label("newVerseLabel") || label("verseLabel"));
+            const rowSlug = rowKey.replace(/[^a-zA-Z0-9_-]+/g, "-");
 
-            article.className = `site-theme-card song-card song-edit-block${blockType === "chorus" ? " song-edit-block--emphasis" : ""}`;
-            article.setAttribute("data-reorder-item", "");
-            article.setAttribute("data-id", rowKey);
+            article.dataset.id = rowKey;
             article.setAttribute("data-song-block-card", "");
             article.setAttribute("data-song-block-row", rowKey);
             article.setAttribute("data-song-block-default-label", initialLabel);
-            article.innerHTML = `
-                <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
-                    <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="${escapeHtml(label("moveLabel"))}">⋮↕⋮</button>
-                    <strong class="song-edit-block-drag-label" data-song-block-drag-label>${escapeHtml(initialLabel)}</strong>
-                    <span class="song-edit-block-drag-text" data-song-block-drag-text>${escapeHtml(firstLine(initialState.text) || label("emptyBlockLabel"))}</span>
-                </div>
+            article.classList.toggle("song-edit-block--emphasis", initialType === "chorus");
 
-                <div data-reorder-normal-view>
-                    <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
-                        <tbody>
-                            <tr>
-                                <td style="vertical-align: top; width: 3em;">
-                                    <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
-                                </td>
-                                <td style="vertical-align: top;">
-                                    <div data-song-block-read-view>
-                                        <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
-                                            <tbody>
-                                                <tr>
-                                                    <td class="song-block-prefix-col" style="vertical-align: top; white-space: nowrap;">
-                                                        <button type="button" class="song-inline-trigger" data-song-block-open-prefix>
-                                                            <strong data-song-block-display-label>${escapeHtml(initialLabel)}</strong>
-                                                        </button>
-                                                    </td>
-                                                    <td style="vertical-align: top;">
-                                                        <div class="song-block-readonly">
-                                                            <button type="button" class="song-inline-trigger song-inline-trigger--text" data-song-block-open-text>
-                                                                <span data-song-block-display-text>${escapeHtml(initialState.text || label("emptyBlockLabel")).replace(/\n/g, "<br>")}</span>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                    <div data-song-block-edit-view data-song-block-editor hidden>
-                        <div class="song-block-edit-layout" data-song-block-edit-layout>
-                            <div class="song-block-edit-text-col" data-song-block-edit-text-col>
-                                <label>${escapeHtml(label("textFieldLabel"))}</label>
-                                <textarea rows="5" data-song-block-lyrics-input>${escapeHtml(initialState.text)}</textarea>
-                            </div>
-                            <div class="song-block-edit-options-col" data-song-block-edit-options-col>
-                                <p data-song-block-prefix-field hidden>
-                                    <label>${escapeHtml(label("prefixFieldLabel"))}</label>
-                                    <input type="text" value="" data-song-block-prefix-input>
-                                </p>
-                                <p>
-                                    <label><input type="checkbox" ${initialType === "chorus" ? "checked" : ""} data-song-block-chorus-checkbox> ${escapeHtml(label("chorusLabel"))}</label>
-                                </p>
-                                <p data-song-block-followed-option ${initialType === "chorus" ? "hidden" : ""}>
-                                    <label><input type="checkbox" data-song-block-followed-checkbox> ${escapeHtml(label("followedLabel"))}</label>
-                                </p>
-                                <p data-song-block-no-continue-numbering-option ${initialType === "chorus" ? "hidden" : ""}>
-                                    <label><input type="checkbox" data-song-block-no-continue-numbering-checkbox> ${escapeHtml(label("notCNumLabel"))}</label>
-                                </p>
-                                <p data-song-block-chorus-like-option ${initialType === "chorus" ? "hidden" : ""}>
-                                    <label><input type="checkbox" data-song-block-chorus-like-checkbox> ${escapeHtml(label("specialLikeChorusLabel"))}</label>
-                                </p>
-                                <p>
-                                    <button type="button" class="song-tool-button site-action site-action--primary" data-song-block-editor-ok>${escapeHtml(label("okLabel"))}</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                                </td>
-                                <td style="vertical-align: top; text-align: right; width: 8em;">
-                                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-delete-action>
-                                        ${escapeHtml(label("deleteBlockLabel"))}
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            const textLabel = article.querySelector("[data-song-block-text-label]");
+            const textInput = article.querySelector("[data-song-block-lyrics-input]");
+            const prefixLabel = article.querySelector("[data-song-block-prefix-label]");
+            const prefixInput = article.querySelector("[data-song-block-prefix-input]");
 
-                <input type="hidden" data-reorder-position data-song-hidden-position name="blocks[${escapeHtml(rowKey)}][position]" value="${position}">
-                <input type="hidden" data-song-hidden-id name="blocks[${escapeHtml(rowKey)}][id]" value="">
-                <input type="hidden" data-song-hidden-type name="blocks[${escapeHtml(rowKey)}][type]" value="${escapeHtml(initialState.type)}">
-                <input type="hidden" data-song-hidden-text name="blocks[${escapeHtml(rowKey)}][text]" value="${encodeForInputValue(initialState.text)}">
-                <input type="hidden" data-song-hidden-prefix name="blocks[${escapeHtml(rowKey)}][prefix]" value="">
-                <input type="hidden" data-song-hidden-followed name="blocks[${escapeHtml(rowKey)}][followed]" value="0">
-                <input type="hidden" data-song-hidden-not-c-num name="blocks[${escapeHtml(rowKey)}][not_c_num]" value="0">
-                <input type="hidden" data-song-hidden-delete name="blocks[${escapeHtml(rowKey)}][delete]" value="0">
-            `;
+            if (textLabel instanceof HTMLLabelElement && textInput instanceof HTMLTextAreaElement) {
+                textInput.id = `song-block-text-${rowSlug}`;
+                textLabel.htmlFor = textInput.id;
+            }
+
+            if (prefixLabel instanceof HTMLLabelElement && prefixInput instanceof HTMLInputElement) {
+                prefixInput.id = `song-block-prefix-${rowSlug}`;
+                prefixLabel.htmlFor = prefixInput.id;
+            }
+
+            const setHiddenFieldName = (selector, fieldName, value) => {
+                const input = article.querySelector(selector);
+                if (!(input instanceof HTMLInputElement)) {
+                    return;
+                }
+                input.name = `blocks[${rowKey}][${fieldName}]`;
+                input.value = value;
+            };
+
+            setHiddenFieldName("[data-song-hidden-position]", "position", String(position));
+            setHiddenFieldName("[data-song-hidden-id]", "id", "");
+            setHiddenFieldName("[data-song-hidden-type]", "type", initialState.type);
+            setHiddenFieldName("[data-song-hidden-text]", "text", initialState.text);
+            setHiddenFieldName("[data-song-hidden-prefix]", "prefix", "");
+            setHiddenFieldName("[data-song-hidden-followed]", "followed", "0");
+            setHiddenFieldName("[data-song-hidden-not-c-num]", "not_c_num", "0");
+            setHiddenFieldName("[data-song-hidden-delete]", "delete", "0");
 
             const addCardContainer = addBlockButton.closest(".song-card");
             if (addCardContainer && addCardContainer.parentElement === reorderList) {
@@ -1258,6 +1311,8 @@
             }
             article.classList.toggle("is-reorder-compact", reorderIsEnabled);
             writeStateToHidden(article, initialState);
+            renderCardFromState(article, initialState);
+            renderDeletePendingState(article);
             closeAllEditors();
             refreshUnsavedChanges();
 
@@ -1271,6 +1326,7 @@
                     card.setAttribute("data-song-block-default-label", labelNode.textContent || "");
                 }
                 renderCardFromState(card, readStateFromHidden(card));
+                renderDeletePendingState(card);
             });
         };
 
@@ -1298,6 +1354,20 @@
                 closeAllEditors();
                 return;
             }
+            if (target.closest("[data-song-block-prefix-picker]")) {
+                event.preventDefault();
+                await chooseOfficialPrefix(card);
+                return;
+            }
+            if (target.closest("[data-song-block-delete-pending-toggle]")) {
+                event.preventDefault();
+                const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+                if (hiddenDelete) hiddenDelete.value = "0";
+                renderDeletePendingState(card);
+                rebuildSlideDisplayModeOptions();
+                refreshUnsavedChanges();
+                return;
+            }
             if (target.closest("[data-song-block-delete-action]")) {
                 if (!messageBox) return;
                 event.preventDefault();
@@ -1313,7 +1383,7 @@
                 if (result.buttonId === "yes") {
                     const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
                     if (hiddenDelete) hiddenDelete.value = "1";
-                    card.hidden = true;
+                    renderDeletePendingState(card);
                     rebuildSlideDisplayModeOptions();
                     closeAllEditors();
                     refreshUnsavedChanges();

@@ -394,6 +394,7 @@ This section currently includes:
 
 - editing the public moderator popup message,
 - editing `moderator_message_cooldown_minutes`.
+- links to shared moderation catalogs used by `app_song`, including official verse prefixes.
 
 The public homepage may also expose moderation-specific song signals for moderators:
 

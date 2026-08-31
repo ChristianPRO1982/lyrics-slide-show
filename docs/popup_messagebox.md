@@ -98,10 +98,11 @@ Retourne `true` si un popup est actif.
   messageMarkdown: "Message with **Markdown**",
   size: "compact" | "default" | "wide",
   showCloseButton: true,
-  initialFocus: "close" | "first-field" | "button:<id>" | "field:<id>",
+  initialFocus: "close" | "first-field" | "button:<id>" | "action:<id>" | "field:<id>",
   enterButtonId: "confirm",
   escapeButtonId: "cancel",
   buttons: [],
+  actionList: { items: [] },
   fields: [],
   onFieldChange(context) {},
   preview: { label: "", text: "", className: "" },
@@ -123,11 +124,59 @@ Règles de normalisation :
 - `title` et `messageMarkdown` sont toujours normalisés en chaînes
 - `size` invalide retombe sur `"default"`
 - `buttons` et `fields` retombent sur `[]`
+- `actionList` est optionnel
 - si `fields.length > 0` et `buttons.length === 0`, une erreur est levée
 - si `buttons.length === 0`, `showCloseButton` est forcé à `true`
 - sinon `showCloseButton` vaut `true` sauf si explicitement `false`
 - `onFieldChange` n’est conservé que si c’est une fonction
 - `preview`, `fontSamples` et `tabbedSelect` sont optionnels
+
+## `actionList`
+
+`actionList` ajoute une liste d’actions cliquables dans `lss-messagebox-content`, avant le footer.
+
+Shape :
+
+```js
+{
+  ariaLabel: "Choix disponibles",
+  items: [
+    {
+      id: "prefix-1",
+      label: "Pont",
+      description: "Transition",
+      payload: { prefixId: "prefix-1" }
+    }
+  ]
+}
+```
+
+Règles :
+
+- `actionList.items` doit être un tableau non vide
+- chaque entrée doit définir un `id` non vide
+- `label` retombe sur `id`
+- `description` est optionnel
+- `payload` est optionnel et doit être un objet s’il est fourni
+- le rendu utilise de vrais `<button type="button">`, donc clavier et focus visible couvrent toute l’entrée
+- la liste est affichée verticalement dans le corps principal du popup
+- une entrée sans `description` n’affiche que son `label`
+
+Résultat au clic ou à l’activation clavier :
+
+```js
+{
+  reason: "button",
+  buttonId: null,
+  values: currentFieldValues,
+  payload: {
+    actionListItemId: "prefix-1",
+    prefixId: "prefix-1"
+  }
+}
+```
+
+`buttonId` reste réservé aux vrais boutons de footer.
 
 ## Buttons
 
@@ -137,6 +186,7 @@ Chaque bouton supporte :
 {
   id: "confirm",
   label: "Confirmer",
+  description: "Optional helper text",
   tone: "neutral" | "success" | "warning" | "danger",
   disabled: false,
   validate: true,
@@ -148,6 +198,7 @@ Règles :
 
 - `id` non vide obligatoire
 - `label` retombe sur `id`
+- `description` est optionnel et s’affiche sous le label si présent
 - `tone` invalide retombe sur `"neutral"`
 - `disabled` est coercé en booléen
 - `validate` n’est conservé que s’il est explicitement booléen

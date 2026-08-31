@@ -213,7 +213,13 @@ If a verse is marked as `followed`, the chorus is skipped after that block and t
 
 If numbering continuity is disabled with `not_c_num`, the displayed verse number does not continue. This allows a single verse to be split into several slides without producing misleading numbering.
 
-For chorus-like sections such as pre-choruses or bridges, the user may type a custom prefix manually on the block itself. The current documented workflow does not rely on a dedicated moderator-managed prefix catalog.
+For chorus-like sections such as pre-choruses or bridges, the user may type a custom prefix manually on the block itself.
+
+The product also supports an official prefix catalog managed by moderators and administrators.
+
+This official catalog is only a shared suggestion list for faster input in the editor.
+
+It never prevents free manual input on the block itself, and a custom prefix typed by a member does not automatically become part of the official catalog.
 
 ### Song Metadata
 

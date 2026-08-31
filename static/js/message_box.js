@@ -357,12 +357,49 @@
             return {
                 id: button.id,
                 label: String(button.label ?? button.id),
+                description: String(button.description ?? ""),
                 tone: allowedButtonTones.has(button.tone) ? button.tone : "neutral",
                 disabled: Boolean(button.disabled),
                 onClick: typeof button.onClick === "function" ? button.onClick : null,
                 validate: typeof button.validate === "boolean" ? button.validate : null,
             };
         });
+    };
+
+    const normalizeActionList = (actionList) => {
+        if (!actionList || typeof actionList !== "object") {
+            return null;
+        }
+
+        if (!Array.isArray(actionList.items)) {
+            throw new Error("Popup actionList.items must be an array.");
+        }
+
+        const items = actionList.items.map((item, index) => {
+            if (!item || typeof item.id !== "string" || !item.id.trim()) {
+                throw new Error(`Popup actionList item at index ${index} must define a non-empty id.`);
+            }
+
+            const payload = item.payload && typeof item.payload === "object"
+                ? { ...item.payload }
+                : null;
+
+            return {
+                id: item.id,
+                label: String(item.label ?? item.id),
+                description: String(item.description ?? ""),
+                payload,
+            };
+        });
+
+        if (!items.length) {
+            throw new Error("Popup actionList requires at least one item.");
+        }
+
+        return {
+            items,
+            ariaLabel: String(actionList.ariaLabel ?? ""),
+        };
     };
 
     const normalizeSelectOptions = (options) => {
@@ -477,6 +514,7 @@
     const normalizeConfig = (config) => {
         const normalized = config && typeof config === "object" ? config : {};
         const buttons = normalizeButtons(normalized.buttons);
+        const actionList = normalizeActionList(normalized.actionList);
         const fields = normalizeFields(normalized.fields);
         const tabbedSelect = normalizeTabbedSelect(normalized.tabbedSelect, fields, buttons);
 
@@ -493,6 +531,7 @@
             title: String(normalized.title ?? ""),
             messageMarkdown: String(normalized.messageMarkdown ?? ""),
             buttons,
+            actionList,
             fields,
             size,
             initialFocus: typeof normalized.initialFocus === "string" ? normalized.initialFocus : null,
@@ -866,6 +905,37 @@
             content.appendChild(markdown);
         }
 
+        if (normalizedConfig.actionList) {
+            const actionList = document.createElement("div");
+            actionList.className = "lss-messagebox-action-list";
+            if (normalizedConfig.actionList.ariaLabel) {
+                actionList.setAttribute("aria-label", normalizedConfig.actionList.ariaLabel);
+            }
+
+            normalizedConfig.actionList.items.forEach((item) => {
+                const element = document.createElement("button");
+                element.type = "button";
+                element.className = "lss-messagebox-action-list-item";
+                element.dataset.actionListId = item.id;
+
+                const labelNode = document.createElement("span");
+                labelNode.className = "lss-messagebox-action-list-label";
+                labelNode.textContent = item.label;
+                element.appendChild(labelNode);
+
+                if (item.description) {
+                    const descriptionNode = document.createElement("span");
+                    descriptionNode.className = "lss-messagebox-action-list-description";
+                    descriptionNode.textContent = item.description;
+                    element.appendChild(descriptionNode);
+                }
+
+                actionList.appendChild(element);
+            });
+
+            content.appendChild(actionList);
+        }
+
         if (normalizedConfig.fontSamples.length) {
             const sampleList = document.createElement("div");
             sampleList.className = "lss-messagebox-font-samples";
@@ -1037,14 +1107,30 @@
 
         const footer = document.createElement("footer");
         footer.className = "lss-messagebox-footer";
+        if (normalizedConfig.buttons.some((button) => button.description)) {
+            footer.classList.add("lss-messagebox-footer--stacked");
+        }
 
         normalizedConfig.buttons.forEach((button) => {
             const element = document.createElement("button");
             element.type = "button";
             element.className = "lss-messagebox-button";
+            if (button.description) {
+                element.classList.add("has-description");
+            }
             element.dataset.buttonId = button.id;
             element.dataset.tone = button.tone;
-            element.textContent = button.label;
+            if (button.description) {
+                const labelNode = document.createElement("span");
+                labelNode.className = "lss-messagebox-button-label";
+                labelNode.textContent = button.label;
+                const descriptionNode = document.createElement("span");
+                descriptionNode.className = "lss-messagebox-button-description";
+                descriptionNode.textContent = button.description;
+                element.append(labelNode, descriptionNode);
+            } else {
+                element.textContent = button.label;
+            }
             element.disabled = button.disabled;
             footer.appendChild(element);
         });
@@ -1336,6 +1422,29 @@
         }
     };
 
+    const triggerActionListItem = (state, actionItemId, reason = "button") => {
+        if (!activeState || activeState !== state || state.isBusy || !state.config.actionList) {
+            return;
+        }
+
+        const actionItem = state.config.actionList.items.find((candidate) => candidate.id === actionItemId);
+
+        if (!actionItem) {
+            return;
+        }
+
+        setBusyState(state, true);
+        resolveAndClose(state, {
+            reason,
+            buttonId: null,
+            values: getFieldValues(state),
+            payload: {
+                ...(actionItem.payload || {}),
+                actionListItemId: actionItem.id,
+            },
+        });
+    };
+
     const closeActivePopup = (result = {}) => {
         if (!activeState) {
             return false;
@@ -1363,6 +1472,8 @@
             );
         } else if (initialFocus && initialFocus.startsWith("button:")) {
             target = state.panel.querySelector(`[data-button-id="${escapeSelectorValue(initialFocus.slice(7))}"]`);
+        } else if (initialFocus && initialFocus.startsWith("action:")) {
+            target = state.panel.querySelector(`[data-action-list-id="${escapeSelectorValue(initialFocus.slice(7))}"]`);
         } else if (initialFocus && initialFocus.startsWith("field:")) {
             const fieldId = initialFocus.slice(6);
             const fieldController = state.fieldControllers instanceof Map ? state.fieldControllers.get(fieldId) : null;
@@ -1377,6 +1488,10 @@
                     "input[data-field-id]:not([type='hidden']), textarea[data-field-id], select[data-field-id], .lss-messagebox-shortcut-slot"
                 );
             }
+        }
+
+        if (!(target instanceof HTMLElement) && state.config.actionList) {
+            target = state.panel.querySelector("[data-action-list-id]");
         }
 
         if (!(target instanceof HTMLElement)) {
@@ -1567,6 +1682,12 @@
         state.panel.querySelectorAll("[data-button-id]").forEach((buttonElement) => {
             buttonElement.addEventListener("click", () => {
                 triggerButton(state, buttonElement.dataset.buttonId, "button");
+            });
+        });
+
+        state.panel.querySelectorAll("[data-action-list-id]").forEach((actionElement) => {
+            actionElement.addEventListener("click", () => {
+                triggerActionListItem(state, actionElement.dataset.actionListId, "button");
             });
         });
 

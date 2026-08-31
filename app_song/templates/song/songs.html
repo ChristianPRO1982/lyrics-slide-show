@@ -79,8 +79,8 @@
             aria-expanded="false"
             aria-controls="song-summary-help-content"
         >
-            <span class="song-summary-help-toggle-label">{% trans "Aide" %}</span>
             <span class="song-summary-help-toggle-arrow" aria-hidden="true"></span>
+            <span class="song-summary-help-toggle-label">{% trans "Aide" %}</span>
         </button>
         <div id="song-summary-help-content" class="song-legend" data-song-summary-content hidden>
             <p><strong>✔️</strong> {% trans "Chant validé" %}</p>
@@ -177,7 +177,10 @@
 
             {% if can_use_advanced_search %}
                 <details class="song-advanced-search">
-                    <summary>{% trans "Recherche avancée" %}</summary>
+                    <summary>
+                        <span class="song-summary-help-toggle-arrow song-advanced-search-arrow" aria-hidden="true"></span>
+                        <span>{% trans "Recherche avancée" %}</span>
+                    </summary>
                     <div class="song-advanced-grid">
                         <div class="song-advanced-top-row">
                             <fieldset class="song-reference-logic">

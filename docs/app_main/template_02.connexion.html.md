@@ -71,6 +71,7 @@ Le contenu compte est organisé en cartes :
 - l’accès à `/account/` exige une session authentifiée ;
 - les formulaires modération / administration utilisent `unsaved_changes` ;
 - les actions de rôles redirigent ensuite vers `/account/`, en conservant `member_search` quand nécessaire.
+- les liens de gestion des métadonnées du modérateur incluent `Genres`, `Artistes`, `Groupes de musique` et `Préfixes officiels`.
 
 ## Contraintes Front
 

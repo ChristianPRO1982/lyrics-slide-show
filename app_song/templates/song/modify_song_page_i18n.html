@@ -24,14 +24,22 @@
 {% trans "Texte" as add_block_text_field_label %}
 {% trans "Couplet" as verse_label %}
 {% trans "Refrain" as chorus_label_default %}
+{% trans "Nv. C." as new_verse_label %}
+{% trans "Nv. R." as new_chorus_label %}
 {% trans "Supprimer" as delete_block_label %}
 {% trans "Préfixe" as prefix_field_label %}
+{% trans "Choisir un préfixe officiel" as official_prefix_picker_label %}
+{% trans "Modifier la liste des préfixes" as manage_prefix_catalog_label %}
+{% trans "Préfixes" as official_prefix_popup_title %}
+{% trans "Fermer" as official_prefix_popup_close_label %}
 {% trans "Suivi" as followed_label %}
 {% trans "Not C. num" as not_c_num_label %}
 {% trans "Comme un refrain" as special_like_chorus_label %}
 {% trans "OK" as ok_label %}
 {% trans "Supprimer le bloc" as delete_block_title %}
 {% trans "Êtes-vous sûr de vouloir supprimer ce couplet/refrain ? Cette suppression sera enregistrée uniquement après clic sur Enregistrer." as delete_block_message %}
+{% trans "Suppression demandée. Cliquer pour annuler." as delete_pending_label %}
+{% trans "Annuler la suppression du bloc" as delete_pending_icon_alt %}
 {% trans "Oui" as yes_label %}
 {% trans "Non" as no_label %}
 {% trans "Demandes de modification" as song_message_popup_title %}
@@ -67,9 +75,15 @@
         addBlockTextFieldLabel: "{{ add_block_text_field_label|escapejs }}",
         verseLabel: "{{ verse_label|escapejs }}",
         chorusLabel: "{{ chorus_label_default|escapejs }}",
+        newVerseLabel: "{{ new_verse_label|escapejs }}",
+        newChorusLabel: "{{ new_chorus_label|escapejs }}",
         chorusPrefix: "{{ chorus_prefix|default:chorus_label_default|escapejs }}",
         deleteBlockLabel: "{{ delete_block_label|escapejs }}",
         prefixFieldLabel: "{{ prefix_field_label|escapejs }}",
+        officialPrefixPickerLabel: "{{ official_prefix_picker_label|escapejs }}",
+        managePrefixCatalogLabel: "{{ manage_prefix_catalog_label|escapejs }}",
+        officialPrefixPopupTitle: "{{ official_prefix_popup_title|escapejs }}",
+        officialPrefixPopupCloseLabel: "{{ official_prefix_popup_close_label|escapejs }}",
         followedLabel: "{{ followed_label|escapejs }}",
         notCNumLabel: "{{ not_c_num_label|escapejs }}",
         specialLikeChorusLabel: "{{ special_like_chorus_label|escapejs }}",
@@ -77,6 +91,8 @@
         okLabel: "{{ ok_label|escapejs }}",
         deleteBlockTitle: "{{ delete_block_title|escapejs }}",
         deleteBlockMessage: "{{ delete_block_message|escapejs }}",
+        deletePendingLabel: "{{ delete_pending_label|escapejs }}",
+        deletePendingIconAlt: "{{ delete_pending_icon_alt|escapejs }}",
         yesLabel: "{{ yes_label|escapejs }}",
         noLabel: "{{ no_label|escapejs }}",
         messagePopupTitle: "{{ song_message_popup_title|escapejs }}",
@@ -85,6 +101,8 @@
         slideModeChorusThenParallelLabel: "{{ slide_mode_chorus_then_parallel_label|escapejs }}",
         slideModeChorusAlwaysParallelLabel: "{{ slide_mode_chorus_always_parallel_label|escapejs }}",
         slideModeVersesByPairsLabel: "{{ slide_mode_verses_by_pairs_label|escapejs }}",
-        messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
+        messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}",
+        modifyPrefixesUrl: "{{ modify_prefixes_url|escapejs }}",
+        canManagePrefixCatalog: {% if can_manage_prefix_catalog %}true{% else %}false{% endif %}
     };
 </script>

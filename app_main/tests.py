@@ -1447,6 +1447,7 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "data-account-moderation-form")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
+        self.assertContains(response, "Préfixes officiels")
         self.assertNotContains(response, "Paramètres administrateur")
         self.assertNotContains(response, "Message global administrateur")
         self.assertRegex(
@@ -1466,6 +1467,7 @@ class AccountRoleTests(TestCase):
         response = account(request)
 
         self.assertNotIn('class="site-role-banner"', response.content.decode())
+        self.assertNotContains(response, "Préfixes officiels")
 
     def test_account_page_shows_admin_and_moderation_sections_for_admin(self):
         create_site_params(
@@ -1485,6 +1487,7 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "data-account-admin-form")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
+        self.assertContains(response, "Préfixes officiels")
         self.assertContains(response, "Membres du site")
         self.assertNotContains(response, "Titre du site")
         self.assertRegex(

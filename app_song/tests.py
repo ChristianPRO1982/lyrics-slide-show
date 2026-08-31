@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 from types import SimpleNamespace
 
 from django.http import HttpResponse, QueryDict
@@ -24,6 +25,7 @@ from .models import (
     SongSlideDisplayMode,
     SongStatus,
     Verse,
+    VersePrefix,
 )
 from . import views as song_views
 from .genre_labels import (
@@ -411,6 +413,76 @@ class ModifySongBlockLabelTests(SimpleTestCase):
                 RenderedSongBlockKind.VERSE,
                 RenderedSongBlockKind.CHORUS,
             ],
+        )
+
+
+class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
+    settings = SongRenderSettings(
+        chorus_prefix="Refrain",
+        verse_prefix1="Couplet ",
+        verse_prefix2="",
+        chorus_like_default_prefix="Refrain",
+    )
+
+    def test_modify_song_template_exposes_client_block_template_with_responsive_hooks(
+        self,
+    ):
+        template = Path("app_song/templates/song/modify_song.html").read_text()
+        self.assertIn("<template data-song-block-template>", template)
+        self.assertIn('class="song-edit-block-table"', template)
+        self.assertIn('class="song-edit-block-table-row"', template)
+        self.assertIn('class="song-edit-block-handle-cell"', template)
+        self.assertIn('class="song-edit-block-content-cell"', template)
+        self.assertIn('class="song-edit-block-delete-cell"', template)
+        self.assertIn("data-song-block-delete-pending-toggle", template)
+        self.assertIn('data-theme-icon="close"', template)
+        self.assertIn("icons/ui/normal/512/light/close.png", template)
+        self.assertIn("icons/ui/normal/512/dark/close.png", template)
+        self.assertIn("data-song-block-text-label", template)
+        self.assertIn("data-song-block-prefix-label", template)
+
+    def test_modify_song_javascript_clones_shared_block_template(self):
+        script = Path("static/js/app_song.js").read_text()
+        self.assertIn(
+            'const blockTemplate = document.querySelector("[data-song-block-template]");',
+            script,
+        )
+        self.assertIn("blockTemplate.content.firstElementChild.cloneNode(true)", script)
+        self.assertNotIn("buildPrefixActionMarkup", script)
+        self.assertIn(
+            'const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");',
+            script,
+        )
+        self.assertIn(
+            'card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");',
+            script,
+        )
+        self.assertNotIn("card.hidden = true;", script)
+
+    def test_new_dynamic_block_labels_use_dedicated_short_names(self):
+        i18n_template = Path(
+            "app_song/templates/song/modify_song_page_i18n.html"
+        ).read_text()
+        script = Path("static/js/app_song.js").read_text()
+        self.assertIn('{% trans "Nv. C." as new_verse_label %}', i18n_template)
+        self.assertIn('{% trans "Nv. R." as new_chorus_label %}', i18n_template)
+        self.assertIn(
+            'label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")',
+            script,
+        )
+        self.assertIn('label("newVerseLabel") || label("verseLabel")', script)
+
+    def test_delete_pending_labels_are_exposed_for_translation(self):
+        i18n_template = Path(
+            "app_song/templates/song/modify_song_page_i18n.html"
+        ).read_text()
+        self.assertIn(
+            '{% trans "Suppression demandée. Cliquer pour annuler." as delete_pending_label %}',
+            i18n_template,
+        )
+        self.assertIn(
+            '{% trans "Annuler la suppression du bloc" as delete_pending_icon_alt %}',
+            i18n_template,
         )
 
     def test_song_with_only_choruses_still_renders_chorus_group(self):
@@ -1712,6 +1784,28 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(response, "(Web)")
         self.assertNotContains(response, "(Score)")
         self.assertNotContains(response, "(Audio/video)")
+        self.assertContains(response, "/static/images/song_links/score.png", html=False)
+        self.assertContains(response, "/static/images/song_links/audio.png", html=False)
+        self.assertContains(
+            response, "/static/images/song_links/youtube.png", html=False
+        )
+        self.assertContains(response, "/static/images/song_links/web.png", html=False)
+        self.assertContains(
+            response, "/static/images/song_links/internal.png", html=False
+        )
+
+    def test_modify_song_view_uses_link_type_icons_in_associated_links(self):
+        SongLink.objects.create(song=self.song, link="https://score.test", type="score")
+        SongLink.objects.create(song=self.song, link="https://audio.test", type="audio")
+        SongLink.objects.create(song=self.song, link="https://web.test", type="web")
+
+        self._login()
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "/static/images/song_links/score.png", html=False)
+        self.assertContains(response, "/static/images/song_links/audio.png", html=False)
+        self.assertContains(response, "/static/images/song_links/web.png", html=False)
 
     @patch("app_song.views._can_read_song", return_value=False)
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
@@ -2224,6 +2318,12 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-editor")
         self.assertContains(response, "data-song-block-read-view")
         self.assertContains(response, "data-song-block-edit-view")
+        self.assertContains(response, "data-song-block-delete-pending-toggle")
+        self.assertContains(
+            response, 'data-song-block-pending-delete="false"', html=False
+        )
+        self.assertContains(response, "icons/ui/normal/512/light/close.png")
+        self.assertContains(response, "icons/ui/normal/512/dark/close.png")
         self.assertContains(
             response, "data-song-block-edit-view data-song-block-editor hidden"
         )
@@ -2231,6 +2331,8 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-open-prefix")
         self.assertNotContains(response, "Couplet (sans numérotation)")
         self.assertNotContains(response, "Section spéciale")
+        self.assertNotContains(response, "data-song-block-prefix-picker")
+        self.assertNotContains(response, "data-song-block-prefix-manage-link")
 
     def test_modify_song_with_chorus_shows_only_single_and_chorus_modes(self):
         self._login()
@@ -2538,6 +2640,93 @@ class ModifySongViewTests(TestCase):
             'type="checkbox"\n                                                                        checked\n                                                                        disabled\n                                                                        data-song-block-no-continue-numbering-checkbox',
             html,
         )
+
+    def test_chorus_like_block_shows_official_prefix_picker_for_member(self):
+        self._login()
+        VersePrefix.objects.create(prefix="Pont", comment="Transition")
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, "data-song-block-prefix-picker", html=False)
+        self.assertNotContains(
+            response,
+            "data-song-block-prefix-manage-link",
+            html=False,
+        )
+        self.assertContains(response, "modify-song-official-prefixes", html=False)
+        self.assertContains(response, "Transition")
+        self.assertContains(
+            response, 'officialPrefixPopupTitle: "Préfixes"', html=False
+        )
+        self.assertContains(
+            response,
+            'officialPrefixPopupCloseLabel: "Fermer"',
+            html=False,
+        )
+        self.assertNotContains(response, "officialPrefixPopupMessage", html=False)
+        self.assertNotContains(response, "officialPrefixPopupCancelLabel", html=False)
+
+    def test_chorus_like_block_shows_picker_and_manage_link_for_moderator(self):
+        self._login(is_moderator=True)
+        VersePrefix.objects.create(prefix="Pont", comment="Transition")
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont final",
+        )
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertContains(response, "data-song-block-prefix-picker", html=False)
+        self.assertContains(
+            response,
+            f'href="{reverse("modify_prefixes")}" data-song-block-prefix-manage-link',
+            html=False,
+        )
+
+    def test_chorus_like_block_hides_picker_when_catalog_is_empty(self):
+        self._login()
+        Verse.objects.create(
+            song=self.song,
+            num=6,
+            num_verse=1,
+            chorus=False,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Libre",
+            text="Pont final",
+        )
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertNotContains(response, "data-song-block-prefix-picker", html=False)
+        self.assertContains(response, "modify-song-official-prefixes", html=False)
+
+    def test_saving_free_prefix_does_not_create_official_prefix(self):
+        self._login()
+        self.assertEqual(VersePrefix.objects.count(), 0)
+
+        response = self.client.post(
+            reverse("modify_song", args=[self.song.song_id]), data=self._base_payload()
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(VersePrefix.objects.count(), 0)
 
     def test_non_chorus_like_verse_clears_prefix_to_null(self):
         self._login()
@@ -4253,11 +4442,13 @@ class ReferenceCatalogViewsTests(TestCase):
         genre_id = self._insert_reference("genres", ("group", "name"), ("Style", "Pop"))
         artist_id = self._insert_reference("artists", ("name",), ("Artist A",))
         band_id = self._insert_reference("bands", ("name",), ("Band A",))
+        prefix = VersePrefix.objects.create(prefix="Pont", comment="Transition")
 
         for route_name, expected in (
             ("modify_genres", "Pop"),
             ("modify_artists", "Artist A"),
             ("modify_bands", "Band A"),
+            ("modify_prefixes", "Pont"),
         ):
             with self.subTest(route=route_name):
                 response = self.client.get(reverse(route_name))
@@ -4270,12 +4461,14 @@ class ReferenceCatalogViewsTests(TestCase):
         self.assertIsNotNone(self._fetch_reference("genres", "genre_id", genre_id))
         self.assertIsNotNone(self._fetch_reference("artists", "artist_id", artist_id))
         self.assertIsNotNone(self._fetch_reference("bands", "band_id", band_id))
+        self.assertTrue(VersePrefix.objects.filter(prefix_id=prefix.prefix_id).exists())
 
         MemberRole.objects.filter(member_id=self.user_id).delete()
         session = self.client.session
         session["lss_user"]["is_moderator"] = False
         session.save()
         self.assertEqual(self.client.get(reverse("modify_genres")).status_code, 404)
+        self.assertEqual(self.client.get(reverse("modify_prefixes")).status_code, 404)
 
     def test_modify_genres_keeps_full_group_prefix_visible(self):
         self._insert_reference(
@@ -4289,7 +4482,12 @@ class ReferenceCatalogViewsTests(TestCase):
         self.assertContains(response, "Louange")
 
     def test_unknown_catalog_actions_redirect_with_error(self):
-        for route_name in ("modify_genres", "modify_artists", "modify_bands"):
+        for route_name in (
+            "modify_genres",
+            "modify_artists",
+            "modify_bands",
+            "modify_prefixes",
+        ):
             with self.subTest(route=route_name):
                 response = self.client.post(
                     reverse(route_name), {"action": "unknown"}, follow=True
@@ -4388,6 +4586,93 @@ class ReferenceCatalogViewsTests(TestCase):
                     follow=True,
                 )
                 self.assertContains(invalid, "nom obligatoire")
+
+    def test_prefix_save_covers_create_update_delete_invalid_and_usage_count(self):
+        update_item = VersePrefix.objects.create(
+            prefix="Bridge",
+            comment="Transition",
+        )
+        delete_item = VersePrefix.objects.create(
+            prefix="Interlude",
+            comment="Supprime",
+        )
+        unchanged_item = VersePrefix.objects.create(
+            prefix="Pont",
+            comment="Stable",
+        )
+        song = Song.objects.create(
+            title="Catalog song",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont 1",
+        )
+        Verse.objects.create(
+            song=song,
+            num=4,
+            num_verse=1,
+            chorus_like=True,
+            notcontinuenumbering=True,
+            prefix="Pont",
+            text="Pont 2",
+        )
+
+        response = self.client.post(
+            reverse("modify_prefixes"),
+            {
+                "action": "save",
+                "new_prefix": "Pré-chorus",
+                "new_comment": "Avant le refrain",
+                f"rows[{update_item.prefix_id}][prefix]": "Pont final",
+                f"rows[{update_item.prefix_id}][comment]": "Fin de transition",
+                f"rows[{delete_item.prefix_id}][delete]": "1",
+                f"rows[{unchanged_item.prefix_id}][prefix]": "Pont",
+                f"rows[{unchanged_item.prefix_id}][comment]": "Stable",
+                "rows[999999][prefix]": "Ignored",
+                "rows[999999][comment]": "Ignored",
+            },
+            follow=True,
+        )
+
+        self.assertContains(response, "Préfixes enregistrés")
+        update_item.refresh_from_db()
+        self.assertEqual(update_item.prefix, "Pont final")
+        self.assertEqual(update_item.comment, "Fin de transition")
+        self.assertFalse(
+            VersePrefix.objects.filter(prefix_id=delete_item.prefix_id).exists()
+        )
+        self.assertTrue(
+            VersePrefix.objects.filter(
+                prefix="Pré-chorus",
+                comment="Avant le refrain",
+            ).exists()
+        )
+        self.assertTrue(Verse.objects.filter(song=song, prefix="Pont").exists())
+
+        usage_response = self.client.get(reverse("modify_prefixes"))
+        self.assertContains(usage_response, ">2<", html=False)
+
+        invalid = self.client.post(
+            reverse("modify_prefixes"),
+            {
+                "action": "save",
+                "new_comment": "Comment only",
+                f"rows[{update_item.prefix_id}][prefix]": "",
+                f"rows[{update_item.prefix_id}][comment]": "Vide",
+            },
+            follow=True,
+        )
+        self.assertContains(invalid, "préfixe est obligatoire")
+        self.assertContains(invalid, "préfixe obligatoire")
 
 
 class SongMetadataPersistenceTests(TestCase):

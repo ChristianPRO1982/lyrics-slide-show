@@ -8,6 +8,7 @@ urlpatterns = [
     path("genres/modify/", views.modify_genres, name="modify_genres"),
     path("artists/modify/", views.modify_artists, name="modify_artists"),
     path("bands/modify/", views.modify_bands, name="modify_bands"),
+    path("prefixes/modify/", views.modify_prefixes, name="modify_prefixes"),
     path(
         "messages/<int:message_id>/read-state/",
         views.update_song_message_read_state,

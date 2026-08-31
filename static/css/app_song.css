@@ -277,8 +277,23 @@
 }
 
 .song-advanced-search summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     cursor: pointer;
     font-weight: 800;
+}
+
+.song-advanced-search summary::-webkit-details-marker {
+    display: none;
+}
+
+.song-advanced-search summary::marker {
+    content: "";
+}
+
+.song-advanced-search[open] .song-advanced-search-arrow {
+    transform: rotate(90deg);
 }
 
 .song-advanced-grid {
@@ -538,13 +553,29 @@
     display: grid;
     gap: 0.4rem;
     margin: 0;
-    padding-left: 1.2rem;
+    padding: 0;
+    list-style: none;
 }
 
 .song-link-list li,
 .song-link-list a {
     overflow-wrap: anywhere;
     word-break: break-word;
+}
+
+.song-link-list-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.55rem;
+}
+
+.song-link-list-bullet {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.15rem;
+    object-fit: contain;
 }
 
 .song-rendered-text {
@@ -674,6 +705,11 @@
         align-items: end;
     }
 
+    .song-meta-row--prefixes {
+        grid-template-columns: minmax(10rem, 0.8fr) minmax(14rem, 1.3fr) minmax(5rem, 0.3fr) minmax(8rem, 0.45fr);
+        align-items: end;
+    }
+
     .song-meta-row--head {
         font-weight: 800;
     }
@@ -694,11 +730,16 @@
     .song-meta-row--head.song-meta-row--simple {
         grid-template-columns: minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
     }
+
+    .song-meta-row--head.song-meta-row--prefixes {
+        grid-template-columns: minmax(10rem, 0.8fr) minmax(14rem, 1.3fr) minmax(5rem, 0.3fr) minmax(8rem, 0.45fr);
+    }
 }
 
 @media (max-width: 760px) {
     .song-meta-row--genres,
     .song-meta-row--simple,
+    .song-meta-row--prefixes,
     .song-meta-row--link {
         grid-template-columns: 1fr;
     }
@@ -1103,6 +1144,53 @@
     margin: 0;
 }
 
+.song-block-prefix-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+.song-block-prefix-row-label {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.song-block-prefix-row-input {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.song-block-prefix-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.song-block-prefix-actions .site-action,
+.song-block-prefix-actions .song-tool-link {
+    width: auto;
+}
+
+.song-block-prefix-actions .song-tool-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+@media (max-width: 760px) {
+    .song-block-prefix-row {
+        flex-wrap: wrap;
+        align-items: start;
+    }
+
+    .song-block-prefix-row-input {
+        flex-basis: 100%;
+    }
+}
+
 .song-edit-block-delete-cell {
     margin-top: 0.9rem;
     text-align: center;
@@ -1113,6 +1201,47 @@
     width: auto;
     min-width: min(100%, 12rem);
     margin-inline: auto;
+}
+
+.song-block-delete-pending-toggle {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 0.9rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--site-popup-warning-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-warning-bg);
+    color: var(--site-popup-warning-ink);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    font-weight: 700;
+}
+
+.song-block-delete-pending-toggle[hidden] {
+    display: none;
+}
+
+.song-block-delete-pending-icon,
+.song-block-delete-pending-icon-image {
+    display: block;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.song-edit-block.is-pending-delete [data-song-block-read-view],
+.song-edit-block.is-pending-delete [data-song-block-edit-view],
+.song-edit-block.is-pending-delete .song-edit-block-delete-cell,
+.song-edit-block.is-pending-delete .song-edit-block-drag-view {
+    opacity: 0.46;
+}
+
+.song-edit-block.is-pending-delete [data-song-block-open-prefix],
+.song-edit-block.is-pending-delete [data-song-block-open-text] {
+    cursor: default;
 }
 
 .song-block-prefix-col {
@@ -1155,6 +1284,11 @@
 
 .song-insert-inline-action {
     margin-top: 0.9rem;
+}
+
+.song-block-delete-pending-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--site-focus-ring);
 }
 
 .song-edit-empty {
