@@ -1615,10 +1615,11 @@ class SongViewsRenderingTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["title_complete"], "Le Sud - Nino Ferrer")
-        self.assertEqual(
-            [template.name for template in response.templates if template.name],
-            ["lyrics/lyrics.html"],
-        )
+        template_names = [
+            template.name for template in response.templates if template.name
+        ]
+        self.assertEqual(template_names[0], "lyrics/lyrics.html")
+        self.assertIn("includes/footer.html", template_names)
         self.assertContains(
             response, "<title>Le Sud - Nino Ferrer | Paroles</title>", html=True
         )
