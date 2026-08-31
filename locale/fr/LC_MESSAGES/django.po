@@ -194,6 +194,14 @@ msgstr ""
 msgid "Couplet"
 msgstr ""
 
+#: app_song/templates/song/modify_song_page_i18n.html:39
+msgid "Suppression demandée. Cliquer pour annuler."
+msgstr "Suppression demandée. Cliquer pour annuler."
+
+#: app_song/templates/song/modify_song_page_i18n.html:40
+msgid "Annuler la suppression du bloc"
+msgstr "Annuler la suppression du bloc"
+
 #: app_animation/services/song_edits.py:125
 #: app_song/templates/song/modify_song_page_i18n.html:45 app_song/views.py:693
 msgid "Simple"

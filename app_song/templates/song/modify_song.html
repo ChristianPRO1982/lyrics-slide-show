@@ -280,7 +280,31 @@
                                                 <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
                                             {% endif %}
                                         </td>
-                                            <td class="song-edit-block-content-cell" style="vertical-align: top;">
+                                        <td class="song-edit-block-content-cell" style="vertical-align: top;">
+                                            <button type="button" class="song-block-delete-pending-toggle" data-song-block-delete-pending-toggle hidden>
+                                                <picture class="song-block-delete-pending-icon" data-theme-icon="close" data-theme-alt="{% trans 'Annuler la suppression du bloc' %}">
+                                                    <source
+                                                        data-theme-size="512"
+                                                        data-theme-mode="dark"
+                                                        srcset="{% static 'icons/ui/normal/512/dark/close.png' %}"
+                                                        media="(prefers-color-scheme: dark)"
+                                                    >
+                                                    <source
+                                                        data-theme-size="512"
+                                                        data-theme-mode="light"
+                                                        srcset="{% static 'icons/ui/normal/512/light/close.png' %}"
+                                                        media="(prefers-color-scheme: light)"
+                                                    >
+                                                    <img
+                                                        class="song-block-delete-pending-icon-image"
+                                                        src="{% static 'icons/ui/normal/512/light/close.png' %}"
+                                                        alt="{% trans 'Annuler la suppression du bloc' %}"
+                                                        data-theme-size="512"
+                                                        data-theme-mode="light"
+                                                    >
+                                                </picture>
+                                                <span data-song-block-delete-pending-label>{% trans "Suppression demandée. Cliquer pour annuler." %}</span>
+                                            </button>
                                                 <div data-song-block-read-view>
                                                     <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
                                                         <tbody>
@@ -432,6 +456,30 @@
                                                 <button type="button" class="song-tool-button song-reorder-handle-symbol" data-reorder-handle>⋮↕⋮</button>
                                             </td>
                                             <td class="song-edit-block-content-cell" style="vertical-align: top;">
+                                                <button type="button" class="song-block-delete-pending-toggle" data-song-block-delete-pending-toggle hidden>
+                                                    <picture class="song-block-delete-pending-icon" data-theme-icon="close" data-theme-alt="{% trans 'Annuler la suppression du bloc' %}">
+                                                        <source
+                                                            data-theme-size="512"
+                                                            data-theme-mode="dark"
+                                                            srcset="{% static 'icons/ui/normal/512/dark/close.png' %}"
+                                                            media="(prefers-color-scheme: dark)"
+                                                        >
+                                                        <source
+                                                            data-theme-size="512"
+                                                            data-theme-mode="light"
+                                                            srcset="{% static 'icons/ui/normal/512/light/close.png' %}"
+                                                            media="(prefers-color-scheme: light)"
+                                                        >
+                                                        <img
+                                                            class="song-block-delete-pending-icon-image"
+                                                            src="{% static 'icons/ui/normal/512/light/close.png' %}"
+                                                            alt="{% trans 'Annuler la suppression du bloc' %}"
+                                                            data-theme-size="512"
+                                                            data-theme-mode="light"
+                                                        >
+                                                    </picture>
+                                                    <span data-song-block-delete-pending-label>{% trans "Suppression demandée. Cliquer pour annuler." %}</span>
+                                                </button>
                                                 <div data-song-block-read-view>
                                                     <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">
                                                         <tbody>

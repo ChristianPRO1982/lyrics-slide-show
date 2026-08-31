@@ -1188,6 +1188,47 @@
     margin-inline: auto;
 }
 
+.song-block-delete-pending-toggle {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 0.9rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--site-popup-warning-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-warning-bg);
+    color: var(--site-popup-warning-ink);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    font-weight: 700;
+}
+
+.song-block-delete-pending-toggle[hidden] {
+    display: none;
+}
+
+.song-block-delete-pending-icon,
+.song-block-delete-pending-icon-image {
+    display: block;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.song-edit-block.is-pending-delete [data-song-block-read-view],
+.song-edit-block.is-pending-delete [data-song-block-edit-view],
+.song-edit-block.is-pending-delete .song-edit-block-delete-cell,
+.song-edit-block.is-pending-delete .song-edit-block-drag-view {
+    opacity: 0.46;
+}
+
+.song-edit-block.is-pending-delete [data-song-block-open-prefix],
+.song-edit-block.is-pending-delete [data-song-block-open-text] {
+    cursor: default;
+}
+
 .song-block-prefix-col {
     width: 5rem;
     min-width: 5rem;
@@ -1228,6 +1269,11 @@
 
 .song-insert-inline-action {
     margin-top: 0.9rem;
+}
+
+.song-block-delete-pending-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--site-focus-ring);
 }
 
 .song-edit-empty {

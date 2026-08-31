@@ -1060,6 +1060,33 @@
             card.classList.toggle("song-edit-block--emphasis", normalized.type === "chorus" || normalized.type === "special");
         };
 
+        const renderDeletePendingState = (card) => {
+            if (!card) return;
+
+            const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+            const readView = getReadView(card);
+            const editView = getEditView(card);
+            const deleteAction = card.querySelector("[data-song-block-delete-action]");
+            const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");
+            const isPendingDelete = hiddenDelete?.value === "1";
+
+            card.classList.toggle("is-pending-delete", isPendingDelete);
+            card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");
+
+            if (deleteAction instanceof HTMLElement) {
+                deleteAction.hidden = isPendingDelete;
+            }
+
+            if (pendingToggle instanceof HTMLElement) {
+                pendingToggle.hidden = !isPendingDelete;
+            }
+
+            if (isPendingDelete) {
+                if (readView) readView.hidden = false;
+                if (editView) editView.hidden = true;
+            }
+        };
+
         const readStateFromHidden = (card) => {
             const hiddenType = getHidden(card, "[data-song-hidden-type]");
             const hiddenText = getHidden(card, "[data-song-hidden-text]");
@@ -1088,6 +1115,7 @@
             if (hiddenFollowed) hiddenFollowed.value = normalized.followed ? "1" : "0";
             if (hiddenNotCNum) hiddenNotCNum.value = normalized.notCNum ? "1" : "0";
             renderCardFromState(card, normalized);
+            renderDeletePendingState(card);
             rebuildSlideDisplayModeOptions();
             refreshUnsavedChanges();
             return normalized;
@@ -1152,6 +1180,7 @@
                 const editView = getEditView(card);
                 if (readView) readView.hidden = false;
                 if (editView) editView.hidden = true;
+                renderDeletePendingState(card);
             });
         };
 
@@ -1283,6 +1312,7 @@
             article.classList.toggle("is-reorder-compact", reorderIsEnabled);
             writeStateToHidden(article, initialState);
             renderCardFromState(article, initialState);
+            renderDeletePendingState(article);
             closeAllEditors();
             refreshUnsavedChanges();
 
@@ -1296,6 +1326,7 @@
                     card.setAttribute("data-song-block-default-label", labelNode.textContent || "");
                 }
                 renderCardFromState(card, readStateFromHidden(card));
+                renderDeletePendingState(card);
             });
         };
 
@@ -1328,6 +1359,15 @@
                 await chooseOfficialPrefix(card);
                 return;
             }
+            if (target.closest("[data-song-block-delete-pending-toggle]")) {
+                event.preventDefault();
+                const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+                if (hiddenDelete) hiddenDelete.value = "0";
+                renderDeletePendingState(card);
+                rebuildSlideDisplayModeOptions();
+                refreshUnsavedChanges();
+                return;
+            }
             if (target.closest("[data-song-block-delete-action]")) {
                 if (!messageBox) return;
                 event.preventDefault();
@@ -1343,7 +1383,7 @@
                 if (result.buttonId === "yes") {
                     const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
                     if (hiddenDelete) hiddenDelete.value = "1";
-                    card.hidden = true;
+                    renderDeletePendingState(card);
                     rebuildSlideDisplayModeOptions();
                     closeAllEditors();
                     refreshUnsavedChanges();

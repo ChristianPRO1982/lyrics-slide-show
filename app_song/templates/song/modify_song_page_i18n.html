@@ -38,6 +38,8 @@
 {% trans "OK" as ok_label %}
 {% trans "Supprimer le bloc" as delete_block_title %}
 {% trans "Êtes-vous sûr de vouloir supprimer ce couplet/refrain ? Cette suppression sera enregistrée uniquement après clic sur Enregistrer." as delete_block_message %}
+{% trans "Suppression demandée. Cliquer pour annuler." as delete_pending_label %}
+{% trans "Annuler la suppression du bloc" as delete_pending_icon_alt %}
 {% trans "Oui" as yes_label %}
 {% trans "Non" as no_label %}
 {% trans "Demandes de modification" as song_message_popup_title %}
@@ -89,6 +91,8 @@
         okLabel: "{{ ok_label|escapejs }}",
         deleteBlockTitle: "{{ delete_block_title|escapejs }}",
         deleteBlockMessage: "{{ delete_block_message|escapejs }}",
+        deletePendingLabel: "{{ delete_pending_label|escapejs }}",
+        deletePendingIconAlt: "{{ delete_pending_icon_alt|escapejs }}",
         yesLabel: "{{ yes_label|escapejs }}",
         noLabel: "{{ no_label|escapejs }}",
         messagePopupTitle: "{{ song_message_popup_title|escapejs }}",

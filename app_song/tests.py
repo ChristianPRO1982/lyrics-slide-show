@@ -432,6 +432,10 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         self.assertIn('class="song-edit-block-handle-cell"', template)
         self.assertIn('class="song-edit-block-content-cell"', template)
         self.assertIn('class="song-edit-block-delete-cell"', template)
+        self.assertIn("data-song-block-delete-pending-toggle", template)
+        self.assertIn('data-theme-icon="close"', template)
+        self.assertIn("icons/ui/normal/512/light/close.png", template)
+        self.assertIn("icons/ui/normal/512/dark/close.png", template)
         self.assertIn("data-song-block-text-label", template)
         self.assertIn("data-song-block-prefix-label", template)
 
@@ -440,6 +444,9 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         self.assertIn('const blockTemplate = document.querySelector("[data-song-block-template]");', script)
         self.assertIn("blockTemplate.content.firstElementChild.cloneNode(true)", script)
         self.assertNotIn("buildPrefixActionMarkup", script)
+        self.assertIn('const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");', script)
+        self.assertIn('card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");', script)
+        self.assertNotIn("card.hidden = true;", script)
 
     def test_new_dynamic_block_labels_use_dedicated_short_names(self):
         i18n_template = Path("app_song/templates/song/modify_song_page_i18n.html").read_text()
@@ -448,6 +455,17 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         self.assertIn('{% trans "Nv. R." as new_chorus_label %}', i18n_template)
         self.assertIn('label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")', script)
         self.assertIn('label("newVerseLabel") || label("verseLabel")', script)
+
+    def test_delete_pending_labels_are_exposed_for_translation(self):
+        i18n_template = Path("app_song/templates/song/modify_song_page_i18n.html").read_text()
+        self.assertIn(
+            '{% trans "Suppression demandée. Cliquer pour annuler." as delete_pending_label %}',
+            i18n_template,
+        )
+        self.assertIn(
+            '{% trans "Annuler la suppression du bloc" as delete_pending_icon_alt %}',
+            i18n_template,
+        )
 
     def test_song_with_only_choruses_still_renders_chorus_group(self):
         blocks = render_song_blocks(
@@ -2281,6 +2299,10 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-editor")
         self.assertContains(response, "data-song-block-read-view")
         self.assertContains(response, "data-song-block-edit-view")
+        self.assertContains(response, "data-song-block-delete-pending-toggle")
+        self.assertContains(response, 'data-song-block-pending-delete="false"', html=False)
+        self.assertContains(response, "icons/ui/normal/512/light/close.png")
+        self.assertContains(response, "icons/ui/normal/512/dark/close.png")
         self.assertContains(
             response, "data-song-block-edit-view data-song-block-editor hidden"
         )
