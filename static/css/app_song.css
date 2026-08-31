@@ -277,8 +277,23 @@
 }
 
 .song-advanced-search summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     cursor: pointer;
     font-weight: 800;
+}
+
+.song-advanced-search summary::-webkit-details-marker {
+    display: none;
+}
+
+.song-advanced-search summary::marker {
+    content: "";
+}
+
+.song-advanced-search[open] .song-advanced-search-arrow {
+    transform: rotate(90deg);
 }
 
 .song-advanced-grid {
