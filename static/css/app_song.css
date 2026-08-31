@@ -538,13 +538,29 @@
     display: grid;
     gap: 0.4rem;
     margin: 0;
-    padding-left: 1.2rem;
+    padding: 0;
+    list-style: none;
 }
 
 .song-link-list li,
 .song-link-list a {
     overflow-wrap: anywhere;
     word-break: break-word;
+}
+
+.song-link-list-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.55rem;
+}
+
+.song-link-list-bullet {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.15rem;
+    object-fit: contain;
 }
 
 .song-rendered-text {

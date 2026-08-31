@@ -1713,6 +1713,27 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(response, "(Web)")
         self.assertNotContains(response, "(Score)")
         self.assertNotContains(response, "(Audio/video)")
+        self.assertContains(response, '/static/images/song_links/score.png', html=False)
+        self.assertContains(response, '/static/images/song_links/audio.png', html=False)
+        self.assertContains(
+            response, '/static/images/song_links/youtube.png', html=False
+        )
+        self.assertContains(response, '/static/images/song_links/web.png', html=False)
+        self.assertContains(
+            response, '/static/images/song_links/internal.png', html=False
+        )
+
+    def test_modify_song_view_uses_link_type_icons_in_associated_links(self):
+        SongLink.objects.create(song=self.song, link="https://score.test", type="score")
+        SongLink.objects.create(song=self.song, link="https://audio.test", type="audio")
+        SongLink.objects.create(song=self.song, link="https://web.test", type="web")
+
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '/static/images/song_links/score.png', html=False)
+        self.assertContains(response, '/static/images/song_links/audio.png', html=False)
+        self.assertContains(response, '/static/images/song_links/web.png', html=False)
 
     @patch("app_song.views._can_read_song", return_value=False)
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):

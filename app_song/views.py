@@ -140,6 +140,26 @@ def _get_song_link_type_options() -> tuple[tuple[str, str], ...]:
     return tuple((choice.value, str(choice.label)) for choice in SongLinkType)
 
 
+def _normalize_song_link_type(value: str | None) -> str:
+    normalized = str(value or SongLinkType.SCORE)
+    if normalized == LEGACY_LINK_TYPE_AUDIO_VIDEO:
+        return SongLinkType.AUDIO
+    valid_link_types = {choice.value for choice in SongLinkType}
+    if normalized not in valid_link_types:
+        return SongLinkType.SCORE
+    return normalized
+
+
+def _prepare_song_links(links) -> list[SongLink]:
+    prepared_links: list[SongLink] = []
+    for item in links:
+        normalized_type = _normalize_song_link_type(item.type)
+        setattr(item, "display_type", normalized_type)
+        setattr(item, "display_label", str(SongLinkType(normalized_type).label))
+        prepared_links.append(item)
+    return prepared_links
+
+
 def _is_song_favorite(song_id: int, member_id: str | None) -> bool:
     return bool(
         member_id
@@ -949,7 +969,7 @@ def _build_modify_song_context(
         "licensed_label": _("Chant sous licence")
         if song.licensed
         else _("Chant hors licence"),
-        "links": song.links.all().order_by("link"),
+        "links": _prepare_song_links(song.links.all().order_by("link")),
         "bands": bands,
         "artists": artists,
         "genre_groups": genre_groups,
@@ -1815,7 +1835,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
                 member_id and unread_messages_popup_markdown
             ),
             "unread_messages_popup_markdown": unread_messages_popup_markdown,
-            "links": song_object.links.all().order_by("link"),
+            "links": _prepare_song_links(song_object.links.all().order_by("link")),
             "bands": bands,
             "artists": artists,
             "genre_groups": genre_groups,
@@ -1945,17 +1965,8 @@ def song_metadata(request: HttpRequest, song_id: int) -> HttpResponse:
         _update_song_metadata_from_form(song_object, request)
         return redirect("song_metadata", song_id=song_object.song_id)
 
-    metadata_links = list(song_object.links.all().order_by("link"))
+    metadata_links = _prepare_song_links(song_object.links.all().order_by("link"))
     link_type_options = _get_song_link_type_options()
-    valid_link_types = {value for value, _label in link_type_options}
-    for item in metadata_links:
-        display_type = str(item.type or SongLinkType.SCORE)
-        if display_type == LEGACY_LINK_TYPE_AUDIO_VIDEO:
-            # Short-lived fallback for rows not migrated yet.
-            display_type = SongLinkType.AUDIO
-        if display_type not in valid_link_types:
-            display_type = SongLinkType.SCORE
-        setattr(item, "display_type", display_type)
     bands, artists, genre_groups = _get_song_metadata_labels(song_object)
     reference_options = get_reference_options()
     selected_genre_ids = set(
