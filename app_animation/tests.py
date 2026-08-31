@@ -414,6 +414,21 @@ class MessageBoxShortcutSlotTests(SimpleTestCase):
         self.assertIn(".lss-messagebox-shortcut-slot-clear", stylesheet)
 
 
+class MessageBoxActionListTests(SimpleTestCase):
+    def test_message_box_supports_action_list_items(self):
+        script = Path("static/js/message_box.js").read_text()
+        self.assertIn("const normalizeActionList = (actionList) => {", script)
+        self.assertIn("data-action-list-id", script)
+        self.assertIn("actionListItemId", script)
+        self.assertIn("buttonId: null", script)
+
+    def test_message_box_styles_define_action_list_layout(self):
+        stylesheet = Path("static/css/normal.css").read_text()
+        self.assertIn(".lss-messagebox-action-list", stylesheet)
+        self.assertIn(".lss-messagebox-action-list-item", stylesheet)
+        self.assertIn(".lss-messagebox-action-list-description", stylesheet)
+
+
 class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
     def test_animations_page_uses_homepage_style_main_grid(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()

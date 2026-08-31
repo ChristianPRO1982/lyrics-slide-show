@@ -29,6 +29,15 @@ Cette page sert :
 - pour chaque bloc éditable :
   - ouverture inline du préfixe ou du texte
   - options `Refrain`, `Suivi`, `Not C. num`, `Comme un refrain`
+  - pour un bloc `comme un refrain`, le champ libre `Préfixe` reste présent
+  - si des préfixes officiels existent, le bloc `comme un refrain` expose un bouton `Choisir un préfixe officiel`
+  - cette popup a pour titre `Préfixes`
+  - cette popup liste les préfixes officiels triés par ordre alphabétique dans le corps principal
+  - chaque entrée de popup affiche le préfixe en dominant, et le commentaire en aide courte s’il existe
+  - un clic sur une entrée remplace immédiatement la valeur courante du champ `Préfixe`
+  - la popup conserve la croix de fermeture et un seul bouton de footer `Fermer`
+  - pour modérateur/admin, ce même bloc expose en plus un lien direct vers la gestion des préfixes officiels
+  - si aucun préfixe officiel n’existe, le bouton de choix n’est pas affiché
   - bouton `OK`
   - bouton `Supprimer`
 - affiche l’action `Ajouter un couplet/refrain`
@@ -52,9 +61,14 @@ Cette page sert :
 - `popup_full_plain_url`
 - `verse_max_lines`
 - `verse_max_characters_for_line`
+- `official_prefixes`
+- `can_manage_prefix_catalog`
+- `modify_prefixes_url`
 
 ## Notes
 
 - les cartes d’édition titre/description sont cachées au chargement et synchronisent leurs champs vers des inputs hidden du formulaire principal
 - le champ `slide_display_mode` fait partie de l’édition actuelle et remplace l’ancienne doc parlant d’une simple option “affichage double”
 - la logique de sauvegarde, de recalcul de numérotation et de permissions est décrite dans `functional_requirements.md`
+- la popup de choix des préfixes officiels passe par `window.LSSMessageBox` et sa `actionList`
+- la saisie libre du champ `Préfixe` ne crée jamais d’entrée dans le référentiel officiel

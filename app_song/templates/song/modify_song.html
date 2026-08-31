@@ -325,9 +325,21 @@
                                                             <textarea id="song-block-text-{{ block.row_key|slugify }}" rows="5" data-song-block-lyrics-input>{{ block.text }}</textarea>
                                                         </div>
                                                         <div class="song-block-edit-options-col" data-song-block-edit-options-col>
-                                                            <p data-song-block-prefix-field {% if block.type != 'special' %}hidden{% endif %}>
-                                                                <label for="song-block-prefix-{{ block.row_key|slugify }}">{% trans "Préfixe" %}</label>
-                                                                <input id="song-block-prefix-{{ block.row_key|slugify }}" type="text" value="{{ block.prefix }}" data-song-block-prefix-input>
+                                                            <p class="song-block-prefix-row" data-song-block-prefix-field {% if block.type != 'special' %}hidden{% endif %}>
+                                                                <label class="song-block-prefix-row-label" for="song-block-prefix-{{ block.row_key|slugify }}">{% trans "Préfixe" %}</label>
+                                                                <input class="song-block-prefix-row-input" id="song-block-prefix-{{ block.row_key|slugify }}" type="text" value="{{ block.prefix }}" data-song-block-prefix-input>
+                                                                <span class="song-block-prefix-actions" data-song-block-prefix-actions>
+                                                                    {% if official_prefixes %}
+                                                                        <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-prefix-picker>
+                                                                            {% trans "Choisir un préfixe officiel" %}
+                                                                        </button>
+                                                                    {% endif %}
+                                                                    {% if can_manage_prefix_catalog %}
+                                                                        <a class="song-tool-link" href="{{ modify_prefixes_url }}" data-song-block-prefix-manage-link>
+                                                                            {% trans "Modifier la liste des préfixes" %}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </span>
                                                             </p>
                                                             <p>
                                                                 <label>
@@ -412,6 +424,7 @@
 {% block page_scripts %}
     {% include "song/modify_song_page_i18n.html" %}
     {{ all_messages_popup_markdown|json_script:"modify-song-all-messages-popup-markdown" }}
+    {{ official_prefixes|json_script:"modify-song-official-prefixes" }}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script src="{% static 'js/app_song.js' %}"></script>
     <script>

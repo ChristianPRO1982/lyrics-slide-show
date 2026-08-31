@@ -157,6 +157,43 @@ Règles métier à appliquer sur un bloc (`s_verses`) :
 - si `chorus_like=true`, le champ `prefix` reste actif et porté par le bloc
 - `chorus=true` et `chorus_like=true` sont mutuellement exclusifs
 
+### Référentiel officiel des préfixes
+
+`app_song` maintient aussi un référentiel officiel des préfixes (`s_verse_prefixes`) distinct du champ libre porté par chaque bloc.
+
+Chaque entrée officielle comporte :
+
+- `prefix`
+- `comment` optionnel
+
+Règles métier :
+
+- seuls `Moderator` et `Admin` gèrent ce référentiel
+- `Admin` hérite toujours de tous les droits `Moderator`
+- la page de gestion dédiée est `/songs/prefixes/modify/`
+- le référentiel officiel sert uniquement de liste de choix rapide
+- le tri d’affichage se fait par `prefix`
+- le champ `prefix` d’un bloc `comme un refrain` reste libre
+- un préfixe libre saisi dans un bloc n’est jamais ajouté automatiquement au référentiel officiel
+- supprimer un préfixe officiel ne modifie jamais les chants existants
+- la page de gestion affiche un compteur d’usage basé sur le nombre exact de blocs `chorus_like` dont `prefix` correspond à l’entrée officielle
+
+### Utilisation du référentiel officiel dans `modify_song`
+
+Dans l’éditeur d’un bloc `comme un refrain` :
+
+- si le référentiel officiel n’est pas vide, un bouton ouvre une popup de choix
+- cette popup utilise `window.LSSMessageBox` avec une liste d’actions cliquables dans le corps principal
+- son titre est `Préfixes`
+- chaque entrée affiche le préfixe en dominant puis le commentaire en plus petit s’il existe
+- un clic sur un préfixe officiel remplace immédiatement la valeur courante du champ `prefix`
+- ce remplacement ne demande aucune confirmation
+- la fermeture visible reste limitée à la croix haute et à un seul bouton de footer `Fermer`
+- après remplacement, l’utilisateur peut encore modifier ou vider librement le champ
+- si le référentiel officiel est vide, le bouton de choix n’est pas affiché
+- pour `Moderator` et `Admin`, un lien direct vers la gestion des préfixes officiels apparaît aussi dans l’éditeur du bloc
+- ce lien reste disponible même si le référentiel officiel est vide
+
 ## Recherche
 
 La recherche est gérée par `app_song/search.py`.
@@ -232,6 +269,7 @@ Règles actuelles :
 - accès au formulaire de demande de correction sur chant validé : utilisateurs authentifiés sans droit d’édition directe
 - toggle favori : authentifié
 - modification du statut : modérateur ; l’admin hérite de ce droit
+- gestion du référentiel officiel des préfixes : modérateur ; l’admin hérite de ce droit
 - `Admin` hérite toujours des droits `Moderator`
 - en cas de concurrence, le backend refait toujours la vérification au `GET` utile et surtout au `POST`
 

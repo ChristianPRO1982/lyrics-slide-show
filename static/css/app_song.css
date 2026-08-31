@@ -674,6 +674,11 @@
         align-items: end;
     }
 
+    .song-meta-row--prefixes {
+        grid-template-columns: minmax(10rem, 0.8fr) minmax(14rem, 1.3fr) minmax(5rem, 0.3fr) minmax(8rem, 0.45fr);
+        align-items: end;
+    }
+
     .song-meta-row--head {
         font-weight: 800;
     }
@@ -694,11 +699,16 @@
     .song-meta-row--head.song-meta-row--simple {
         grid-template-columns: minmax(12rem, 1fr) minmax(5rem, 0.35fr) minmax(8rem, 0.45fr);
     }
+
+    .song-meta-row--head.song-meta-row--prefixes {
+        grid-template-columns: minmax(10rem, 0.8fr) minmax(14rem, 1.3fr) minmax(5rem, 0.3fr) minmax(8rem, 0.45fr);
+    }
 }
 
 @media (max-width: 760px) {
     .song-meta-row--genres,
     .song-meta-row--simple,
+    .song-meta-row--prefixes,
     .song-meta-row--link {
         grid-template-columns: 1fr;
     }
@@ -1101,6 +1111,53 @@
 
 .song-block-edit-options-col p {
     margin: 0;
+}
+
+.song-block-prefix-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+.song-block-prefix-row-label {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.song-block-prefix-row-input {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.song-block-prefix-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.song-block-prefix-actions .site-action,
+.song-block-prefix-actions .song-tool-link {
+    width: auto;
+}
+
+.song-block-prefix-actions .song-tool-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+@media (max-width: 760px) {
+    .song-block-prefix-row {
+        flex-wrap: wrap;
+        align-items: start;
+    }
+
+    .song-block-prefix-row-input {
+        flex-basis: 100%;
+    }
 }
 
 .song-edit-block-delete-cell {

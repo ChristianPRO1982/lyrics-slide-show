@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
+from django.db.models import Count
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -31,6 +32,7 @@ from .models import (
     SongSlideDisplayMode,
     SongStatus,
     Verse,
+    VersePrefix,
 )
 from .rendering import (
     ChorusRenderMode,
@@ -69,6 +71,9 @@ GENRE_ROW_FIELD_PATTERN = re.compile(
 )
 NAME_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<item_id>\d+)\]\[(?P<field>name|delete)\]$"
+)
+PREFIX_ROW_FIELD_PATTERN = re.compile(
+    r"^rows\[(?P<prefix_id>\d+)\]\[(?P<field>prefix|comment|delete)\]$"
 )
 MULTISPACE_PATTERN = re.compile(r"[ \t]+")
 FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
@@ -381,6 +386,17 @@ def _build_page_summary(value: str | None) -> tuple[str, bool]:
         end += 1
 
     return normalized[:end].rstrip(), True
+
+
+def _fetch_official_prefix_choices() -> tuple[dict[str, str], ...]:
+    return tuple(
+        {
+            "id": str(item.prefix_id),
+            "prefix": str(item.prefix or ""),
+            "comment": str(item.comment or ""),
+        }
+        for item in VersePrefix.objects.order_by("prefix", "prefix_id")
+    )
 
 
 def _build_song_cards(search_results, user) -> list[dict[str, object]]:
@@ -916,6 +932,7 @@ def _build_modify_song_context(
     bands, artists, genre_groups = _get_song_metadata_labels(song)
     page_summary_text, page_summary_truncated = _build_page_summary(song.description)
     member_id = get_member_id_from_user(request.user)
+    official_prefixes = _fetch_official_prefix_choices()
 
     return {
         "selected_group": selected_group,
@@ -939,6 +956,9 @@ def _build_modify_song_context(
         "is_favorite": _is_song_favorite(song.song_id, member_id),
         "can_edit": _can_edit_song(request.user, song),
         "can_devalidate": _can_devalidate_song(request.user, song),
+        "can_manage_prefix_catalog": _is_moderator(request.user),
+        "modify_prefixes_url": reverse("modify_prefixes"),
+        "official_prefixes": official_prefixes,
         "show_all_messages_link": bool(
             _is_moderator(request.user) and _song_has_messages(song)
         ),
@@ -1232,6 +1252,29 @@ def modify_bands(request: HttpRequest) -> HttpResponse:
     )
 
 
+def modify_prefixes(request: HttpRequest) -> HttpResponse:
+    if not _is_moderator(request.user):
+        raise Http404
+
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip()
+        if action != "save":
+            messages.error(request, _("Action inconnue."))
+            return redirect("modify_prefixes")
+        _save_prefixes(request)
+        return redirect("modify_prefixes")
+
+    return render(
+        request,
+        "song/modify_prefixes.html",
+        {
+            "selected_group": selected_group,
+            "item_rows": _fetch_prefix_rows(),
+        },
+    )
+
+
 def _fetch_genre_rows() -> list[dict[str, object]]:
     with connection.cursor() as cursor:
         cursor.execute(
@@ -1414,6 +1457,26 @@ def _fetch_name_item_rows(
     ]
 
 
+def _fetch_prefix_rows() -> list[dict[str, object]]:
+    usage_by_prefix = {
+        str(item["prefix"] or ""): int(item["usage_count"] or 0)
+        for item in Verse.objects.filter(chorus_like=True)
+        .exclude(prefix__isnull=True)
+        .exclude(prefix="")
+        .values("prefix")
+        .annotate(usage_count=Count("verse_id"))
+    }
+    return [
+        {
+            "prefix_id": int(item.prefix_id),
+            "prefix": str(item.prefix or ""),
+            "comment": str(item.comment or ""),
+            "usage_count": usage_by_prefix.get(str(item.prefix or ""), 0),
+        }
+        for item in VersePrefix.objects.order_by("prefix", "prefix_id")
+    ]
+
+
 def _parse_name_rows(post_data) -> tuple[str, dict[int, dict[str, object]]]:
     new_name = str(post_data.get("new_name") or "").strip()
     rows_by_id: dict[int, dict[str, object]] = {}
@@ -1431,6 +1494,28 @@ def _parse_name_rows(post_data) -> tuple[str, dict[int, dict[str, object]]]:
             row[field] = str(value or "").strip()
 
     return new_name, rows_by_id
+
+
+def _parse_prefix_rows(post_data) -> tuple[str, str, dict[int, dict[str, object]]]:
+    new_prefix = _normalize_inline_text(post_data.get("new_prefix"))
+    new_comment = _normalize_inline_text(post_data.get("new_comment"))
+    rows_by_id: dict[int, dict[str, object]] = {}
+
+    for key, value in post_data.items():
+        match = PREFIX_ROW_FIELD_PATTERN.match(key)
+        if not match:
+            continue
+        prefix_id = int(match.group("prefix_id"))
+        field = match.group("field")
+        row = rows_by_id.setdefault(
+            prefix_id, {"prefix": "", "comment": "", "delete": False}
+        )
+        if field == "delete":
+            row["delete"] = _is_truthy(value)
+        else:
+            row[field] = _normalize_inline_text(value)
+
+    return new_prefix, new_comment, rows_by_id
 
 
 def _save_name_items(
@@ -1542,6 +1627,96 @@ def _save_name_items(
                 "item": page_label,
                 "summary": ", ".join(success_parts),
             },
+        )
+    if error_parts:
+        messages.error(request, " ".join(error_parts))
+
+
+def _save_prefixes(request: HttpRequest) -> None:
+    new_prefix, new_comment, parsed_rows = _parse_prefix_rows(request.POST)
+    success_parts: list[str] = []
+    error_parts: list[str] = []
+
+    created_count = 0
+    updated_count = 0
+    deleted_count = 0
+
+    existing_rows = _fetch_prefix_rows()
+    existing_by_id = {int(item["prefix_id"]): item for item in existing_rows}
+
+    if new_prefix or new_comment:
+        if new_prefix:
+            try:
+                VersePrefix.objects.create(
+                    prefix=new_prefix,
+                    comment=new_comment or None,
+                )
+                created_count += 1
+            except IntegrityError:
+                error_parts.append(
+                    _('Création impossible pour le préfixe "%(prefix)s".')
+                    % {"prefix": new_prefix}
+                )
+        else:
+            error_parts.append(
+                _("Pour créer un préfixe officiel, le préfixe est obligatoire.")
+            )
+
+    for prefix_id, values in parsed_rows.items():
+        existing = existing_by_id.get(prefix_id)
+        if not existing:
+            continue
+
+        item = VersePrefix.objects.filter(prefix_id=prefix_id).first()
+        if item is None:
+            continue
+
+        if bool(values.get("delete")):
+            item.delete()
+            deleted_count += 1
+            continue
+
+        new_prefix_value = _normalize_inline_text(values.get("prefix"))
+        new_comment_value = _normalize_inline_text(values.get("comment"))
+        if not new_prefix_value:
+            error_parts.append(
+                _(
+                    "Mise à jour ignorée pour le préfixe #%(prefix_id)s (préfixe obligatoire)."
+                )
+                % {
+                    "prefix_id": prefix_id,
+                }
+            )
+            continue
+
+        old_prefix = _normalize_inline_text(existing.get("prefix"))
+        old_comment = _normalize_inline_text(existing.get("comment"))
+        if old_prefix == new_prefix_value and old_comment == new_comment_value:
+            continue
+
+        item.prefix = new_prefix_value
+        item.comment = new_comment_value or None
+        try:
+            item.save(update_fields=["prefix", "comment"])
+            updated_count += 1
+        except IntegrityError:
+            error_parts.append(
+                _("Mise à jour impossible pour le préfixe #%(prefix_id)s.")
+                % {"prefix_id": prefix_id}
+            )
+
+    if created_count:
+        success_parts.append(_("%(count)s création(s)") % {"count": created_count})
+    if updated_count:
+        success_parts.append(_("%(count)s mise(s) à jour") % {"count": updated_count})
+    if deleted_count:
+        success_parts.append(_("%(count)s suppression(s)") % {"count": deleted_count})
+
+    if success_parts:
+        messages.success(
+            request,
+            _("Préfixes enregistrés : %(summary)s.")
+            % {"summary": ", ".join(success_parts)},
         )
     if error_parts:
         messages.error(request, " ".join(error_parts))

@@ -57,6 +57,18 @@
         }
     };
 
+    const readJsonScriptValue = (id, fallback = null) => {
+        const node = document.getElementById(String(id || ""));
+        if (!node) {
+            return fallback;
+        }
+        try {
+            return JSON.parse(node.textContent || "null");
+        } catch (_error) {
+            return fallback;
+        }
+    };
+
     const getCsrfToken = () => {
         const field = document.querySelector("input[name=csrfmiddlewaretoken]");
         if (field && typeof field.value === "string" && field.value) {
@@ -814,6 +826,16 @@
     if (addBlockButton && reorderList) {
         let newBlockCounter = 0;
         const slideDisplayModeSelect = document.querySelector("[data-song-slide-display-mode-edit]");
+        const rawOfficialPrefixes = readJsonScriptValue("modify-song-official-prefixes", []);
+        const officialPrefixes = (Array.isArray(rawOfficialPrefixes) ? rawOfficialPrefixes : [])
+            .map((item) => ({
+                id: String(item?.id || ""),
+                prefix: String(item?.prefix || "").trim(),
+                comment: String(item?.comment || "").trim(),
+            }))
+            .filter((item) => item.id && item.prefix);
+        const canManagePrefixCatalog = Boolean(i18n.canManagePrefixCatalog);
+        const modifyPrefixesUrl = String(i18n.modifyPrefixesUrl || "").trim();
         const refreshUnsavedChanges = () => {
             if (modifySongUnsavedController) {
                 modifySongUnsavedController.refresh();
@@ -842,6 +864,78 @@
 
         const encodeForInputValue = (value) => {
             return escapeHtml(String(value || "")).replace(/\n/g, "&#10;");
+        };
+
+        const buildPrefixActionMarkup = () => {
+            const parts = [];
+            if (officialPrefixes.length > 0) {
+                parts.push(`
+                    <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-prefix-picker>
+                        ${escapeHtml(label("officialPrefixPickerLabel"))}
+                    </button>
+                `);
+            }
+            if (canManagePrefixCatalog && modifyPrefixesUrl) {
+                parts.push(`
+                    <a class="song-tool-link" href="${escapeHtml(modifyPrefixesUrl)}" data-song-block-prefix-manage-link>
+                        ${escapeHtml(label("managePrefixCatalogLabel"))}
+                    </a>
+                `);
+            }
+            if (!parts.length) {
+                return "";
+            }
+            return `<span class="song-block-prefix-actions" data-song-block-prefix-actions>${parts.join("")}</span>`;
+        };
+
+        const chooseOfficialPrefix = async (card) => {
+            if (!messageBox || !officialPrefixes.length || !card) {
+                return;
+            }
+            const result = await messageBox.show({
+                title: label("officialPrefixPopupTitle"),
+                size: "wide",
+                showCloseButton: true,
+                actionList: {
+                    items: officialPrefixes.map((item) => ({
+                        id: item.id,
+                        label: item.prefix,
+                        description: item.comment,
+                        payload: {
+                            prefixId: item.id,
+                        },
+                    })),
+                },
+                buttons: [
+                    {
+                        id: "close",
+                        label: label("officialPrefixPopupCloseLabel"),
+                        tone: "neutral",
+                    },
+                ],
+            });
+
+            const selectedPrefixId = String(result?.payload?.prefixId || "").trim();
+            if (!selectedPrefixId) {
+                return;
+            }
+
+            const selectedPrefix = officialPrefixes.find(
+                (item) => item.id === selectedPrefixId,
+            );
+            if (!selectedPrefix) {
+                return;
+            }
+
+            openEditor(card.getAttribute("data-song-block-row") || "", "prefix");
+            const prefixInput = card.querySelector("[data-song-block-prefix-input]");
+            if (!(prefixInput instanceof HTMLInputElement)) {
+                return;
+            }
+            prefixInput.value = selectedPrefix.prefix;
+            syncCardFromEditor(card);
+            prefixInput.focus();
+            prefixInput.select();
         };
 
         const getCards = () => Array.from(reorderList.querySelectorAll("[data-song-block-card]"));
@@ -1199,9 +1293,10 @@
                                 <textarea rows="5" data-song-block-lyrics-input>${escapeHtml(initialState.text)}</textarea>
                             </div>
                             <div class="song-block-edit-options-col" data-song-block-edit-options-col>
-                                <p data-song-block-prefix-field hidden>
-                                    <label>${escapeHtml(label("prefixFieldLabel"))}</label>
-                                    <input type="text" value="" data-song-block-prefix-input>
+                                <p class="song-block-prefix-row" data-song-block-prefix-field hidden>
+                                    <label class="song-block-prefix-row-label">${escapeHtml(label("prefixFieldLabel"))}</label>
+                                    <input class="song-block-prefix-row-input" type="text" value="" data-song-block-prefix-input>
+                                    ${buildPrefixActionMarkup()}
                                 </p>
                                 <p>
                                     <label><input type="checkbox" ${initialType === "chorus" ? "checked" : ""} data-song-block-chorus-checkbox> ${escapeHtml(label("chorusLabel"))}</label>
@@ -1296,6 +1391,11 @@
                 event.preventDefault();
                 syncCardFromEditor(card);
                 closeAllEditors();
+                return;
+            }
+            if (target.closest("[data-song-block-prefix-picker]")) {
+                event.preventDefault();
+                await chooseOfficialPrefix(card);
                 return;
             }
             if (target.closest("[data-song-block-delete-action]")) {
