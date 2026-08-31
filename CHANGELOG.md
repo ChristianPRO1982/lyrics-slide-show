@@ -1,3 +1,10 @@
+## [3.1.7](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.6...v3.1.7) (2026-08-31)
+
+
+### Bug Fixes
+
+* Add contextual wiki help integration and update footer links ([72f67cc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/72f67cc01afb033d4fe0aecb9a16e6c928186138))
+
 ## [3.1.6](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.5...v3.1.6) (2026-08-31)
 
 
