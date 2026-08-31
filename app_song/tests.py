@@ -424,7 +424,9 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         chorus_like_default_prefix="Refrain",
     )
 
-    def test_modify_song_template_exposes_client_block_template_with_responsive_hooks(self):
+    def test_modify_song_template_exposes_client_block_template_with_responsive_hooks(
+        self,
+    ):
         template = Path("app_song/templates/song/modify_song.html").read_text()
         self.assertIn("<template data-song-block-template>", template)
         self.assertIn('class="song-edit-block-table"', template)
@@ -441,23 +443,39 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
 
     def test_modify_song_javascript_clones_shared_block_template(self):
         script = Path("static/js/app_song.js").read_text()
-        self.assertIn('const blockTemplate = document.querySelector("[data-song-block-template]");', script)
+        self.assertIn(
+            'const blockTemplate = document.querySelector("[data-song-block-template]");',
+            script,
+        )
         self.assertIn("blockTemplate.content.firstElementChild.cloneNode(true)", script)
         self.assertNotIn("buildPrefixActionMarkup", script)
-        self.assertIn('const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");', script)
-        self.assertIn('card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");', script)
+        self.assertIn(
+            'const pendingToggle = card.querySelector("[data-song-block-delete-pending-toggle]");',
+            script,
+        )
+        self.assertIn(
+            'card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");',
+            script,
+        )
         self.assertNotIn("card.hidden = true;", script)
 
     def test_new_dynamic_block_labels_use_dedicated_short_names(self):
-        i18n_template = Path("app_song/templates/song/modify_song_page_i18n.html").read_text()
+        i18n_template = Path(
+            "app_song/templates/song/modify_song_page_i18n.html"
+        ).read_text()
         script = Path("static/js/app_song.js").read_text()
         self.assertIn('{% trans "Nv. C." as new_verse_label %}', i18n_template)
         self.assertIn('{% trans "Nv. R." as new_chorus_label %}', i18n_template)
-        self.assertIn('label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")', script)
+        self.assertIn(
+            'label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")',
+            script,
+        )
         self.assertIn('label("newVerseLabel") || label("verseLabel")', script)
 
     def test_delete_pending_labels_are_exposed_for_translation(self):
-        i18n_template = Path("app_song/templates/song/modify_song_page_i18n.html").read_text()
+        i18n_template = Path(
+            "app_song/templates/song/modify_song_page_i18n.html"
+        ).read_text()
         self.assertIn(
             '{% trans "Suppression demandée. Cliquer pour annuler." as delete_pending_label %}',
             i18n_template,
@@ -1766,14 +1784,14 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(response, "(Web)")
         self.assertNotContains(response, "(Score)")
         self.assertNotContains(response, "(Audio/video)")
-        self.assertContains(response, '/static/images/song_links/score.png', html=False)
-        self.assertContains(response, '/static/images/song_links/audio.png', html=False)
+        self.assertContains(response, "/static/images/song_links/score.png", html=False)
+        self.assertContains(response, "/static/images/song_links/audio.png", html=False)
         self.assertContains(
-            response, '/static/images/song_links/youtube.png', html=False
+            response, "/static/images/song_links/youtube.png", html=False
         )
-        self.assertContains(response, '/static/images/song_links/web.png', html=False)
+        self.assertContains(response, "/static/images/song_links/web.png", html=False)
         self.assertContains(
-            response, '/static/images/song_links/internal.png', html=False
+            response, "/static/images/song_links/internal.png", html=False
         )
 
     def test_modify_song_view_uses_link_type_icons_in_associated_links(self):
@@ -1781,12 +1799,13 @@ class SongViewsRenderingTests(TestCase):
         SongLink.objects.create(song=self.song, link="https://audio.test", type="audio")
         SongLink.objects.create(song=self.song, link="https://web.test", type="web")
 
+        self._login()
         response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '/static/images/song_links/score.png', html=False)
-        self.assertContains(response, '/static/images/song_links/audio.png', html=False)
-        self.assertContains(response, '/static/images/song_links/web.png', html=False)
+        self.assertContains(response, "/static/images/song_links/score.png", html=False)
+        self.assertContains(response, "/static/images/song_links/audio.png", html=False)
+        self.assertContains(response, "/static/images/song_links/web.png", html=False)
 
     @patch("app_song.views._can_read_song", return_value=False)
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):
@@ -2300,7 +2319,9 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-read-view")
         self.assertContains(response, "data-song-block-edit-view")
         self.assertContains(response, "data-song-block-delete-pending-toggle")
-        self.assertContains(response, 'data-song-block-pending-delete="false"', html=False)
+        self.assertContains(
+            response, 'data-song-block-pending-delete="false"', html=False
+        )
         self.assertContains(response, "icons/ui/normal/512/light/close.png")
         self.assertContains(response, "icons/ui/normal/512/dark/close.png")
         self.assertContains(
@@ -2644,7 +2665,9 @@ class ModifySongViewTests(TestCase):
         )
         self.assertContains(response, "modify-song-official-prefixes", html=False)
         self.assertContains(response, "Transition")
-        self.assertContains(response, 'officialPrefixPopupTitle: "Préfixes"', html=False)
+        self.assertContains(
+            response, 'officialPrefixPopupTitle: "Préfixes"', html=False
+        )
         self.assertContains(
             response,
             'officialPrefixPopupCloseLabel: "Fermer"',

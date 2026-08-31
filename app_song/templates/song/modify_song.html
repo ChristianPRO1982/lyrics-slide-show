@@ -262,6 +262,7 @@
                         data-id="{{ block.row_key }}"
                         data-song-block-card
                         data-song-block-row="{{ block.row_key }}"
+                        data-song-block-pending-delete="false"
                     >
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                             {% if can_edit %}
@@ -441,7 +442,7 @@
                         </p>
                     </article>
                     <template data-song-block-template>
-                        <article class="site-theme-card song-card song-edit-block" data-reorder-item data-song-block-card data-song-block-row="">
+                        <article class="site-theme-card song-card song-edit-block" data-reorder-item data-song-block-card data-song-block-row="" data-song-block-pending-delete="false">
                             <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                                 <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
                                 <strong class="song-edit-block-drag-label" data-song-block-drag-label></strong>
