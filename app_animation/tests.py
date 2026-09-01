@@ -394,6 +394,24 @@ class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
         self.assertIn(".lyrics-display-double", stylesheet)
         self.assertIn(".lyrics-display-column", stylesheet)
 
+    def test_remote_slide_cards_hidden_attribute_overrides_grid_display(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".lyrics-master-slide-card[hidden]", stylesheet)
+        hidden_rule_start = stylesheet.index(".lyrics-master-slide-card[hidden]")
+        hidden_rule_end = stylesheet.index("}", hidden_rule_start)
+        hidden_rule = stylesheet[hidden_rule_start:hidden_rule_end]
+        self.assertIn("display: none !important", hidden_rule)
+
+    def test_remote_slide_cards_style_chorus_and_chorus_like_kinds(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn('.lyrics-master-slide-card[data-kind="chorus"]', stylesheet)
+        self.assertIn('.lyrics-master-slide-card[data-kind="chorus_like"]', stylesheet)
+        self.assertIn("@media (prefers-color-scheme: dark)", stylesheet)
+        self.assertIn("border-left: 10px solid rgb(255, 100, 100)", stylesheet)
+        self.assertIn("border-left: 10px solid rgb(100, 255, 150)", stylesheet)
+        self.assertIn("border-left-color: rgb(150, 0, 0)", stylesheet)
+        self.assertIn("border-left-color: rgb(0, 100, 0)", stylesheet)
+
 
 class MessageBoxShortcutSlotTests(SimpleTestCase):
     def test_message_box_supports_shortcut_slot_field_type(self):

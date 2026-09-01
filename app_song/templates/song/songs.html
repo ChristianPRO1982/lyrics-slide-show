@@ -31,12 +31,23 @@
                 </a>
             </p>
         {% endif %}
+        {% if can_use_non_validated_quick %}
+            <p>
+                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ non_validated_toggle_query }}">
+                    {% trans "⚖️ Afficher les chants non validés" %}
+                </a>
+            </p>
+        {% endif %}
         {% if favorites_quick_active %}
             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
         {% if moderation_quick_active %}
             <p><em>{% trans "Mode modération temporaire actif." %}</em></p>
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+        {% endif %}
+        {% if non_validated_quick_active %}
+            <p><em>{% trans "Mode chants non validés temporaire actif." %}</em></p>
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
     {% endif %}
@@ -161,12 +172,23 @@
                                 </a>
                             </p>
                         {% endif %}
+                        {% if can_use_non_validated_quick %}
+                            <p>
+                                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ non_validated_toggle_query }}">
+                                    {% trans "⚖️ Afficher les chants non validés" %}
+                                </a>
+                            </p>
+                        {% endif %}
                         {% if favorites_quick_active %}
                             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
                             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
                         {% endif %}
                         {% if moderation_quick_active %}
                             <p><em>{% trans "Mode modération temporaire actif." %}</em></p>
+                            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+                        {% endif %}
+                        {% if non_validated_quick_active %}
+                            <p><em>{% trans "Mode chants non validés temporaire actif." %}</em></p>
                             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
                         {% endif %}
                     </div>

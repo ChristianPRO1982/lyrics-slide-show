@@ -3596,6 +3596,114 @@ class SongModerationQuickViewTests(TestCase):
         self.assertEqual(preferences.song_search["text"], "Saved Search")
 
 
+class SongNonValidatedQuickViewTests(TestCase):
+    user_id = "88888888-8888-8888-8888-888888888888"
+
+    def setUp(self):
+        DirectoryUserRecord.objects.create(
+            id=self.user_id,
+            username="quick.nonvalidated.user",
+            first_name="Quick",
+            last_name="NonValidated",
+            email="quick.nonvalidated.user@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        MemberPreferences.objects.create(
+            member_id=self.user_id,
+            song_search={
+                "text": "Saved Search",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
+        )
+        self.non_validated_song = Song.objects.create(
+            title="A valider",
+            subtitle="",
+            description="",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Song.objects.create(
+            title="Chant valide",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+
+    def _login(self, *, is_moderator=True, is_admin=False):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.user_id,
+            "username": "quick.nonvalidated.user",
+            "email": "quick.nonvalidated.user@example.test",
+            "first_name": "Quick",
+            "last_name": "NonValidated",
+            "is_moderator": is_moderator,
+            "is_admin": is_admin,
+        }
+        session.save()
+        MemberRole.objects.create(
+            member_id=self.user_id,
+            is_moderator=is_moderator,
+            is_admin=is_admin,
+        )
+
+    def test_non_validated_quick_view_ignores_and_does_not_overwrite_saved_search(self):
+        self._login()
+
+        response = self.client.get(reverse("songs") + "?non_validated_quick=1")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "A valider")
+        self.assertContains(response, "Mode chants non validés temporaire actif.")
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(displayed_titles, ["A valider"])
+        self.assertEqual(response.context["search_params"].text, "Saved Search")
+        self.assertTrue(response.context["non_validated_quick_active"])
+
+        preferences = MemberPreferences.objects.get(member_id=self.user_id)
+        self.assertEqual(preferences.song_search["text"], "Saved Search")
+        self.assertEqual(preferences.song_search["validation"], "all")
+
+    def test_non_moderator_does_not_see_non_validated_quick_button(self):
+        self._login(is_moderator=False)
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_use_non_validated_quick"])
+        self.assertNotContains(response, "⚖️ Afficher les chants non validés")
+
+    def test_non_validated_quick_button_is_hidden_without_non_validated_songs(self):
+        self._login()
+        self.non_validated_song.status = SongStatus.VALIDATED
+        self.non_validated_song.save(update_fields=["status"])
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_use_non_validated_quick"])
+        self.assertNotContains(response, "⚖️ Afficher les chants non validés")
+
+    def test_admin_can_use_non_validated_quick_button(self):
+        self._login(is_moderator=True, is_admin=True)
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["can_use_non_validated_quick"])
+        self.assertContains(response, "⚖️ Afficher les chants non validés")
+
+
 class SongGenresDisplayViewTests(TestCase):
     user_id = "55555555-5555-5555-5555-555555555555"
 

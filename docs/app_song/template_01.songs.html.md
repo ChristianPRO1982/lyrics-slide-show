@@ -21,7 +21,8 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
   - sélections `genres / groupes / artistes`
 - pour utilisateur authentifié, expose `💫 Afficher mes favoris`
 - pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
-- les modes `favorites_quick` et `moderation_quick` sont temporaires et n’écrasent pas la recherche persistée
+- pour modérateur/admin avec chants non validés, expose `⚖️ Afficher les chants non validés`
+- les modes `favorites_quick`, `moderation_quick` et `non_validated_quick` sont temporaires et n’écrasent pas la recherche persistée
 - affiche une liste desktop en cartes
 - affiche à part une liste compacte mobile avec panneau `⚙️`
 - chaque carte peut afficher :
@@ -50,12 +51,15 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - `song_catalog_count_help`
 - `can_use_favorites`
 - `can_use_moderation_quick`
+- `can_use_non_validated_quick`
 - `can_use_advanced_search`
 - `can_create_song`
 - `favorites_quick_active`
 - `moderation_quick_active`
+- `non_validated_quick_active`
 - `favorites_toggle_query`
 - `moderation_toggle_query`
+- `non_validated_toggle_query`
 - `song_identity_pairs`
 
 ## Nouveau chant
