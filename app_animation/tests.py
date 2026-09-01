@@ -410,7 +410,7 @@ class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
         self.assertIn("border-left: 10px solid rgb(255, 100, 100)", stylesheet)
         self.assertIn("border-left: 10px solid rgb(100, 255, 150)", stylesheet)
         self.assertIn("border-left-color: rgb(150, 0, 0)", stylesheet)
-        self.assertIn("border-left-color: rgb(0, 150, 0)", stylesheet)
+        self.assertIn("border-left-color: rgb(0, 100, 0)", stylesheet)
 
 
 class MessageBoxShortcutSlotTests(SimpleTestCase):
