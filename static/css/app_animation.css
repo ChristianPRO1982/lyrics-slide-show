@@ -1533,6 +1533,18 @@ body.animation-background-picker-overlay-open {
     padding: 0.45rem;
 }
 
+.lyrics-master-slide-card[hidden] {
+    display: none !important;
+}
+
+.lyrics-master-slide-card[data-kind="chorus"] {
+    border-left: 10px solid rgb(255, 100, 100);
+}
+
+.lyrics-master-slide-card[data-kind="chorus_like"] {
+    border-left: 10px solid rgb(100, 255, 150);
+}
+
 .lyrics-master-slide-card.is-active {
     outline: 2px solid rgba(82, 128, 255, 0.7);
 }
@@ -1545,6 +1557,16 @@ body.animation-background-picker-overlay-open {
 .lyrics-master-slide-card-text {
     font-size: 0.85rem;
     line-height: 1.2;
+}
+
+@media (prefers-color-scheme: dark) {
+    .lyrics-master-slide-card[data-kind="chorus"] {
+        border-left-color: rgb(150, 0, 0);
+    }
+
+    .lyrics-master-slide-card[data-kind="chorus_like"] {
+        border-left-color: rgb(0, 150, 0);
+    }
 }
 
 .lyrics-display-body {
