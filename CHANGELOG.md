@@ -1,3 +1,13 @@
+## [3.1.8](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.7...v3.1.8) (2026-09-01)
+
+
+### Bug Fixes
+
+* Add non-validated quick search functionality for moderators ([45e3c87](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/45e3c879a0d0f8cf0e62ce3e8267e121c94b50f0))
+* Add SQL script for seeding mock user accounts and roles ([d1ceadf](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d1ceadf10f458fbd58944e48afa1b17ea9694596))
+* Add styles for hidden slide cards and chorus-related display attributes ([be0400f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/be0400f2cb955b5312df00f42a956e555192839e))
+* Update border-left color for chorus-like slide cards ([49425f3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/49425f3dd745f2593d1ce80db9570c27204a85cd))
+
 ## [3.1.7](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.6...v3.1.7) (2026-08-31)
 
 
