@@ -245,6 +245,13 @@ Vue temporaire modération (`moderation_quick=1`) :
 - n’écrase pas la recherche persistée
 - le formulaire reste rempli avec la recherche persistée
 
+Vue temporaire chants non validés (`non_validated_quick=1`) :
+
+- disponible uniquement pour modérateur/admin et seulement s’il existe des chants `status=0`
+- applique uniquement le filtre `validation=non_validated_only`
+- n’écrase pas la recherche persistée
+- le formulaire reste rempli avec la recherche persistée
+
 ## Favoris
 
 Favoris stockés dans `m_songs_users` (`SongFavorite`).

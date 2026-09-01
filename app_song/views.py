@@ -1121,10 +1121,23 @@ def songs(request: HttpRequest) -> HttpResponse:
         and member_id
         and _is_truthy(request.GET.get("moderation_quick"))
     )
+    non_validated_search_params = SongSearchParams(validation="non_validated_only")
+    non_validated_search_results = search_songs(
+        non_validated_search_params, request.user, member_id
+    )
+    non_validated_quick = bool(
+        _is_moderator(request.user)
+        and member_id
+        and _is_truthy(request.GET.get("non_validated_quick"))
+    )
     if moderation_quick:
         applied_search_params = SongSearchParams.empty()
         display_search_params = load_member_song_search(member_id)
         search_results = moderation_search_results
+    elif non_validated_quick:
+        applied_search_params = non_validated_search_params
+        display_search_params = load_member_song_search(member_id)
+        search_results = non_validated_search_results
     elif favorites_quick:
         # Temporary view: ignore and do not overwrite the persisted member search.
         applied_search_params = SongSearchParams(favorites_only=True)
@@ -1164,6 +1177,9 @@ def songs(request: HttpRequest) -> HttpResponse:
             "can_use_moderation_quick": bool(
                 _is_moderator(request.user) and moderation_search_results.results
             ),
+            "can_use_non_validated_quick": bool(
+                _is_moderator(request.user) and non_validated_search_results.results
+            ),
             "song_identity_pairs": list(Song.objects.values_list("title", "subtitle"))
             if _is_authenticated(request.user)
             else [],
@@ -1171,6 +1187,8 @@ def songs(request: HttpRequest) -> HttpResponse:
             "favorites_quick_active": favorites_quick,
             "moderation_toggle_query": "moderation_quick=1",
             "moderation_quick_active": moderation_quick,
+            "non_validated_toggle_query": "non_validated_quick=1",
+            "non_validated_quick_active": non_validated_quick,
             "song_search_count_help": _(
                 "Nombre de chants retournés par la recherche sauvegardée"
             ),
