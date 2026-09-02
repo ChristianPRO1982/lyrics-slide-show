@@ -1691,7 +1691,7 @@
         });
     }
 
-    const shouldIgnoreKeydownTarget = (target) => {
+    const shouldIgnoreKeydownTarget = (target, key) => {
         if (!(target instanceof HTMLElement)) {
             return false;
         }
@@ -1703,6 +1703,9 @@
             return true;
         }
         const tagName = target.tagName.toLowerCase();
+        if (target.matches("select[data-lyrics-transition-select]")) {
+            return !buildShortcutActionIndex().has(key);
+        }
         if (["input", "textarea", "select"].includes(tagName)) {
             return true;
         }
@@ -1713,11 +1716,11 @@
     };
 
     const keydownHandler = async (event) => {
-        if (shouldIgnoreKeydownTarget(event.target)) {
+        const key = normalizeShortcutToken(event.key || "");
+        if (shouldIgnoreKeydownTarget(event.target, key)) {
             return;
         }
 
-        const key = normalizeShortcutToken(event.key || "");
         const scrollBlockKeys = [
             "arrowup",
             "arrowdown",
@@ -1734,6 +1737,7 @@
         const actionByKey = buildShortcutActionIndex();
         const resolvedAction = actionByKey.get(key);
         if (resolvedAction) {
+            event.preventDefault();
             await handleAction(resolvedAction);
         }
     };

@@ -15,6 +15,11 @@
 
     const bridgeStorageKey = `lss-lyrics-bridge:${sessionId}`;
     const frameStorageKey = `lss-lyrics-display-lastframe:${sessionId}`;
+    const debugPanelNode = document.querySelector("[data-lyrics-display-debug-panel]");
+    const debugLogNode = document.querySelector("[data-lyrics-display-debug-log]");
+    const debugToggleNode = document.querySelector("[data-lyrics-display-debug-toggle]");
+    const debugCopyNode = document.querySelector("[data-lyrics-display-debug-copy]");
+    const debugEntries = [];
     const transitionRegistry = {
         direct: true,
         fade: true,
@@ -39,12 +44,75 @@
     let currentTransitionController = null;
 
     let channel = null;
+    let debugCopyResetTimer = null;
     if (typeof window.BroadcastChannel === "function") {
         try {
             channel = new window.BroadcastChannel(bridgeStorageKey);
         } catch (_error) {
             channel = null;
         }
+    }
+
+    const writeDebugEntry = (entry) => {
+        if (!(debugLogNode instanceof HTMLElement)) {
+            return;
+        }
+        debugEntries.unshift({
+            at: new Date().toISOString(),
+            ...entry,
+        });
+        while (debugEntries.length > 8) {
+            debugEntries.pop();
+        }
+        debugLogNode.textContent = JSON.stringify(debugEntries, null, 2);
+    };
+
+    if (debugToggleNode instanceof HTMLButtonElement && debugPanelNode instanceof HTMLElement) {
+        debugToggleNode.addEventListener("click", () => {
+            const isCollapsed = debugPanelNode.classList.toggle("is-collapsed");
+            debugToggleNode.textContent = isCollapsed ? "🔼" : "🔽";
+        });
+    }
+
+    const copyDebugLog = async () => {
+        if (!(debugLogNode instanceof HTMLElement)) {
+            return false;
+        }
+        const text = String(debugLogNode.textContent || "");
+        if (!text) {
+            return false;
+        }
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "readonly");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        return true;
+    };
+
+    if (debugCopyNode instanceof HTMLButtonElement) {
+        const originalCopyLabel = debugCopyNode.textContent || "💽";
+        debugCopyNode.addEventListener("click", async () => {
+            if (!(await copyDebugLog())) {
+                return;
+            }
+            debugCopyNode.textContent = "copied";
+            if (debugCopyResetTimer !== null) {
+                window.clearTimeout(debugCopyResetTimer);
+            }
+            debugCopyResetTimer = window.setTimeout(() => {
+                debugCopyNode.textContent = originalCopyLabel;
+                debugCopyResetTimer = null;
+            }, 1000);
+        });
     }
 
     const rememberNonce = (value) => {
@@ -275,6 +343,7 @@
         displayLayer.style.clipPath = "";
         displayLayer.style.transition = "";
         displayLayer.style.zIndex = "";
+        displayLayer.style.willChange = "";
     };
 
     const cancelCurrentTransition = () => {
@@ -314,6 +383,10 @@
     };
 
     const runDirectTransition = (incomingIndex) => {
+        writeDebugEntry({
+            event: "transition-direct",
+            incomingIndex,
+        });
         activateLayer(incomingIndex);
     };
 
@@ -330,16 +403,28 @@
         let finished = false;
         const timerIds = [];
         const rafIds = [];
+        writeDebugEntry({
+            event: "transition-start",
+            transition,
+            outgoingIndex,
+            incomingIndex,
+        });
 
         const finish = () => {
             if (finished) {
                 return;
             }
             finished = true;
+            incomingLayer.removeEventListener("transitionend", onTransitionEnd);
             timerIds.forEach((timerId) => window.clearTimeout(timerId));
             rafIds.forEach((rafId) => window.cancelAnimationFrame(rafId));
             activateLayer(incomingIndex);
             currentTransitionController = null;
+            writeDebugEntry({
+                event: "transition-finish",
+                transition,
+                activeLayerIndex: incomingIndex,
+            });
         };
 
         currentTransitionController = {
@@ -348,9 +433,14 @@
                     return;
                 }
                 finished = true;
+                incomingLayer.removeEventListener("transitionend", onTransitionEnd);
                 timerIds.forEach((timerId) => window.clearTimeout(timerId));
                 rafIds.forEach((rafId) => window.cancelAnimationFrame(rafId));
                 layers.forEach((displayLayer) => resetLayerTransitionStyles(displayLayer.layer));
+                writeDebugEntry({
+                    event: "transition-cancel",
+                    transition,
+                });
             },
         };
 
@@ -361,14 +451,31 @@
         outgoingLayer.style.zIndex = "1";
         incomingLayer.style.zIndex = "2";
 
+        function onTransitionEnd(event) {
+            if (event.target !== incomingLayer) {
+                return;
+            }
+            writeDebugEntry({
+                event: "transitionend",
+                propertyName: String(event.propertyName || ""),
+                elapsedTime: event.elapsedTime,
+                transition,
+            });
+        }
+        incomingLayer.addEventListener("transitionend", onTransitionEnd, { once: true });
+
         if (transition.id === "fade") {
             incomingLayer.style.opacity = "0";
+            incomingLayer.style.willChange = "opacity";
+            void incomingLayer.offsetWidth;
             rafIds.push(window.requestAnimationFrame(() => {
                 incomingLayer.style.transition = `opacity ${transition.durationMs}ms ease`;
                 incomingLayer.style.opacity = "1";
             }));
         } else if (transition.id === "wipe") {
             incomingLayer.style.clipPath = "inset(0 100% 0 0)";
+            incomingLayer.style.willChange = "clip-path";
+            void incomingLayer.offsetWidth;
             rafIds.push(window.requestAnimationFrame(() => {
                 incomingLayer.style.transition = `clip-path ${transition.durationMs}ms ease`;
                 incomingLayer.style.clipPath = "inset(0 0 0 0)";
@@ -383,6 +490,13 @@
 
     const displayFrame = (frame, transition, options = {}) => {
         const animate = options.animate !== false;
+        const resolvedTransition = resolveTransition(transition);
+        writeDebugEntry({
+            event: "display-frame",
+            animate,
+            frameMode: String(frame?.mode || "idle"),
+            transition: resolvedTransition,
+        });
         if (!animate) {
             cancelCurrentTransition();
             renderFrameIntoLayer(layers[activeLayerIndex], frame);
@@ -393,7 +507,6 @@
         const incomingIndex = activeLayerIndex === 0 ? 1 : 0;
         try {
             renderFrameIntoLayer(layers[incomingIndex], frame);
-            const resolvedTransition = resolveTransition(transition);
             if (resolvedTransition.id === "direct" || resolvedTransition.durationMs <= 0) {
                 cancelCurrentTransition();
                 runDirectTransition(incomingIndex);
@@ -407,23 +520,56 @@
         }
     };
 
-    const handleMessage = (raw) => {
+    const handleMessage = (raw, source) => {
         const message = raw && typeof raw === "object" ? raw : null;
         if (!message) {
+            writeDebugEntry({ event: "ignored-message", reason: "not-object", source });
             return;
         }
         if (String(message.sessionId || "") !== sessionId) {
+            writeDebugEntry({
+                event: "ignored-message",
+                reason: "wrong-session",
+                source,
+                messageSessionId: String(message.sessionId || ""),
+            });
             return;
         }
 
         const type = String(message.type || "");
+        writeDebugEntry({
+            event: "received-message",
+            source,
+            type,
+            nonce: String(message.nonce || ""),
+            frameMode: String(message.frame?.mode || "idle"),
+            transition: message.transition || null,
+        });
         if (type === "heartbeat") {
+            writeDebugEntry({
+                event: "ignored-message",
+                reason: "heartbeat",
+                source,
+                nonce: String(message.nonce || ""),
+            });
             return;
         }
         if (!["init", "frame"].includes(type)) {
+            writeDebugEntry({
+                event: "ignored-message",
+                reason: "unsupported-type",
+                source,
+                type,
+            });
             return;
         }
         if (!rememberNonce(message.nonce)) {
+            writeDebugEntry({
+                event: "ignored-message",
+                reason: "duplicate-nonce",
+                source,
+                nonce: String(message.nonce || ""),
+            });
             return;
         }
 
@@ -448,7 +594,7 @@
 
     if (channel) {
         channel.addEventListener("message", (event) => {
-            handleMessage(event.data);
+            handleMessage(event.data, "broadcast-channel");
         });
     }
 
@@ -460,7 +606,7 @@
             return;
         }
         try {
-            handleMessage(JSON.parse(event.newValue));
+            handleMessage(JSON.parse(event.newValue), "local-storage");
         } catch (_error) {
             // Ignore invalid storage payloads.
         }

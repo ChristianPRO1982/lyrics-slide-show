@@ -5,6 +5,7 @@ import re
 import uuid
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -2382,6 +2383,7 @@ def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpRe
                 "waitingLabel": _("En attente du maître"),
                 "f11ReminderLabel": _("APPUYEZ SUR F11 SUR CETTE ÉCRAN"),
             },
+            "display_debug_enabled": settings.DEBUG,
         },
     )
 

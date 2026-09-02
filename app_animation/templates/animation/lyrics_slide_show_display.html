@@ -19,6 +19,19 @@
             <p class="lyrics-display-waiting" data-lyrics-display-waiting>{{ display_i18n.waitingLabel }}</p>
         </article>
     </main>
+    {% if display_debug_enabled %}
+        <aside class="lyrics-display-debug-panel" data-lyrics-display-debug-panel aria-label="{% trans 'Debug projection' %}">
+            <div class="lyrics-display-debug-toolbar">
+                <span class="lyrics-display-debug-title">{% trans "Debug" %}</span>
+                <button type="button" class="lyrics-display-debug-copy" data-lyrics-display-debug-copy title="{% trans 'Copier' %}" aria-label="{% trans 'Copier' %}">💽</button>
+                <button type="button" class="lyrics-display-debug-toggle" data-lyrics-display-debug-toggle title="{% trans 'Réduire le debug' %}" aria-label="{% trans 'Réduire le debug' %}">🔽</button>
+            </div>
+            <div class="lyrics-display-debug-content" data-lyrics-display-debug-content>
+                <h2>{% trans "Debug projection" %}</h2>
+                <pre data-lyrics-display-debug-log>{% trans "Aucun payload reçu." %}</pre>
+            </div>
+        </aside>
+    {% endif %}
     <script>
         window.LSS_LYRICS_DISPLAY_I18N = {
             waitingLabel: "{{ display_i18n.waitingLabel|escapejs }}",

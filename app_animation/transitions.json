@@ -16,7 +16,7 @@
       "enabled": true,
       "order": 1,
       "params": {
-        "duration_ms": 120
+        "duration_ms": 500
       }
     },
     {
@@ -25,7 +25,7 @@
       "enabled": true,
       "order": 2,
       "params": {
-        "duration_ms": 180,
+        "duration_ms": 400,
         "direction": "left_to_right"
       }
     }
