@@ -20,6 +20,8 @@ SHORTCUT_ACTION_ORDER: Final[list[str]] = [
     "toggle_chorus",
     "toggle_scroll",
     "toggle_qr",
+    "next_transition",
+    "force_direct",
 ]
 
 SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
@@ -33,6 +35,8 @@ SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
     "toggle_chorus": "toggle-chorus",
     "toggle_scroll": "toggle-scroll",
     "toggle_qr": "toggle-qr",
+    "next_transition": "next-transition",
+    "force_direct": "force-direct",
 }
 
 SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
@@ -46,6 +50,8 @@ SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
     "toggle_chorus": ["a", "d"],
     "toggle_scroll": ["l"],
     "toggle_qr": ["q"],
+    "next_transition": ["t"],
+    "force_direct": ["i"],
 }
 
 CUSTOMIZABLE_SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {

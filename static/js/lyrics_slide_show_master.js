@@ -124,6 +124,27 @@
     const publicUrl = String(payload.publicUrl || "");
     const qrCodePngBase64 = String(payload.qrCodePngBase64 || "");
     const backgroundUrls = Array.isArray(payload.backgroundUrls) ? payload.backgroundUrls.map((url) => String(url || "").trim()).filter(Boolean) : [];
+    const transitions = Array.isArray(payload.transitions)
+        ? payload.transitions
+            .map((item) => {
+                const id = String(item?.id || "").trim();
+                if (!id) {
+                    return null;
+                }
+                return {
+                    id,
+                    label: String(item?.label || id),
+                    params: item?.params && typeof item.params === "object" ? { ...item.params } : {},
+                };
+            })
+            .filter(Boolean)
+        : [];
+    const transitionById = new Map(transitions.map((item) => [item.id, item]));
+    const defaultTransitionId = transitionById.has(String(payload.defaultTransitionId || "").trim())
+        ? String(payload.defaultTransitionId || "").trim()
+        : transitionById.has("direct")
+            ? "direct"
+            : transitions[0]?.id || "direct";
 
     const stateStorageKey = `lss-lyrics-master-state:${animationId}`;
     const bridgeStorageKeyPrefix = "lss-lyrics-bridge:";
@@ -164,6 +185,7 @@
     const qrButtonImageNode = document.querySelector("[data-lyrics-qr-button-image]");
     const qrFallbackEmojiNode = document.querySelector("[data-lyrics-qr-fallback-emoji]");
     const qrFallbackTextNode = document.querySelector("[data-lyrics-qr-fallback-text]");
+    const transitionSelectNode = document.querySelector("[data-lyrics-transition-select]");
 
     const messageBox = window.LSSMessageBox;
 
@@ -178,6 +200,7 @@
         blockScrollKeys: true,
         chorusCursorBySong: {},
         progressCursorBySong: {},
+        activeTransitionId: defaultTransitionId,
         f11ReminderActive: false,
         shortcuts: {
             siteBindings: shortcutsConfig.siteBindings || {},
@@ -314,6 +337,63 @@
             });
         });
         return index;
+    };
+
+    const resolveTransitionId = (value) => {
+        const transitionId = String(value || "").trim();
+        if (transitionById.has(transitionId)) {
+            return transitionId;
+        }
+        return defaultTransitionId;
+    };
+
+    const getActiveTransition = () => {
+        const transitionId = resolveTransitionId(state.activeTransitionId);
+        return transitionById.get(transitionId) || {
+            id: "direct",
+            label: "direct",
+            params: { duration_ms: 0 },
+        };
+    };
+
+    const transitionFromState = () => {
+        const transition = getActiveTransition();
+        return {
+            id: transition.id,
+            params: transition.params && typeof transition.params === "object" ? { ...transition.params } : {},
+        };
+    };
+
+    const setActiveTransition = (transitionId) => {
+        state.activeTransitionId = resolveTransitionId(transitionId);
+        persistState();
+        refreshUI();
+    };
+
+    const cycleTransition = () => {
+        if (!transitions.length) {
+            setActiveTransition(defaultTransitionId);
+            return;
+        }
+        const activeTransitionId = resolveTransitionId(state.activeTransitionId);
+        const activeIndex = transitions.findIndex((item) => item.id === activeTransitionId);
+        const nextIndex = activeIndex >= 0 ? (activeIndex + 1) % transitions.length : 0;
+        setActiveTransition(transitions[nextIndex].id);
+    };
+
+    const renderTransitionChoices = () => {
+        if (!(transitionSelectNode instanceof HTMLSelectElement)) {
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        transitions.forEach((transition) => {
+            const option = document.createElement("option");
+            option.value = transition.id;
+            option.textContent = transition.label;
+            fragment.appendChild(option);
+        });
+        transitionSelectNode.replaceChildren(fragment);
+        transitionSelectNode.disabled = transitions.length <= 1;
     };
 
     const setCustomizationPopupFeedback = (message, isError = false) => {
@@ -569,6 +649,7 @@
             blockScrollKeys: state.blockScrollKeys,
             chorusCursorBySong: state.chorusCursorBySong,
             progressCursorBySong: state.progressCursorBySong,
+            activeTransitionId: state.activeTransitionId,
         };
         try {
             window.localStorage.setItem(stateStorageKey, JSON.stringify(payloadToStore));
@@ -611,6 +692,7 @@
             state.qrMode = Boolean(parsed.qrMode);
             state.hideChorusesInGrid = Boolean(parsed.hideChorusesInGrid);
             state.blockScrollKeys = Boolean(parsed.blockScrollKeys);
+            state.activeTransitionId = resolveTransitionId(parsed.activeTransitionId);
             if (parsed.chorusCursorBySong && typeof parsed.chorusCursorBySong === "object") {
                 state.chorusCursorBySong = parsed.chorusCursorBySong;
             }
@@ -631,6 +713,7 @@
         if (state.blackMode) {
             state.qrMode = false;
         }
+        state.activeTransitionId = resolveTransitionId(state.activeTransitionId);
         const projectedSongIndex = getProjectedSongIndex();
         if (projectedSongIndex >= 0) {
             const indexes = getSongProjectionIndexes(projectedSongIndex);
@@ -715,6 +798,7 @@
             type: "init",
             animationId,
             frame: frameFromState(),
+            transition: transitionFromState(),
         });
     };
 
@@ -723,6 +807,7 @@
             type: "frame",
             animationId,
             frame: frameFromState(),
+            transition: transitionFromState(),
         });
     };
 
@@ -732,11 +817,13 @@
             type: "init",
             animationId,
             frame: reminderFrame,
+            transition: transitionFromState(),
         });
         sendBridgeMessage({
             type: "frame",
             animationId,
             frame: reminderFrame,
+            transition: transitionFromState(),
         });
     };
 
@@ -1227,6 +1314,16 @@
         }
     };
 
+    const refreshTransitionControl = () => {
+        if (!(transitionSelectNode instanceof HTMLSelectElement)) {
+            return;
+        }
+        const activeTransitionId = resolveTransitionId(state.activeTransitionId);
+        if (transitionSelectNode.value !== activeTransitionId) {
+            transitionSelectNode.value = activeTransitionId;
+        }
+    };
+
     const refreshUI = () => {
         refreshSongNavigationLabels();
         refreshSelectionStyles();
@@ -1234,6 +1331,7 @@
         refreshPreview();
         refreshToggleButtons();
         refreshQrButton();
+        refreshTransitionControl();
         refreshFloatingSongSelection();
     };
 
@@ -1500,6 +1598,14 @@
         }
         if (action === "toggle-qr") {
             toggleQrMode();
+            return;
+        }
+        if (action === "next-transition") {
+            cycleTransition();
+            return;
+        }
+        if (action === "force-direct") {
+            setActiveTransition("direct");
         }
     };
 
@@ -1509,6 +1615,11 @@
             await handleAction(action);
         });
     });
+    if (transitionSelectNode instanceof HTMLSelectElement) {
+        transitionSelectNode.addEventListener("change", () => {
+            setActiveTransition(transitionSelectNode.value);
+        });
+    }
 
     slideCards.forEach((card) => {
         card.addEventListener("click", () => {
@@ -1635,6 +1746,7 @@
     state.shortcuts.effectiveBindings = normalizeBindingsMap(state.shortcuts.effectiveBindings);
     state.shortcuts.formBindings = normalizeBindingsMap(state.shortcuts.formBindings);
 
+    renderTransitionChoices();
     restoreState();
     normalizeState();
     ensureBridge();

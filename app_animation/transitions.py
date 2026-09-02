@@ -149,9 +149,27 @@ def list_enabled_transition_options() -> tuple[dict[str, str], ...]:
     )
 
 
+def list_enabled_transition_runtime_options() -> tuple[dict[str, Any], ...]:
+    return tuple(
+        {
+            "id": item["id"],
+            "label": str(_LABELS[item["label_key"]]),
+            "params": deepcopy(item["params"]),
+        }
+        for item in list_enabled_transitions()
+    )
+
+
 def is_enabled_transition_id(value: str | None) -> bool:
     transition_id = str(value or "").strip()
     return any(item["id"] == transition_id for item in list_enabled_transitions())
+
+
+def resolve_enabled_transition_id(value: str | None) -> str:
+    transition_id = str(value or "").strip()
+    if is_enabled_transition_id(transition_id):
+        return transition_id
+    return get_default_transition_id()
 
 
 def get_transition_config(value: str | None) -> dict[str, Any]:

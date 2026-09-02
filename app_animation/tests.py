@@ -50,6 +50,7 @@ from .transitions import (
     get_default_transition_id,
     list_enabled_transition_choices,
     list_enabled_transition_options,
+    list_enabled_transition_runtime_options,
     list_enabled_transitions,
 )
 
@@ -77,6 +78,14 @@ class AnimationFormFontValidationTests(SimpleTestCase):
             item["value"] for item in list_enabled_transition_options()
         )
         self.assertEqual(option_values, choices)
+        runtime_values = tuple(
+            item["id"] for item in list_enabled_transition_runtime_options()
+        )
+        self.assertEqual(runtime_values, choices)
+        self.assertEqual(
+            list_enabled_transition_runtime_options()[2]["params"]["direction"],
+            "left_to_right",
+        )
 
     def test_transition_manifest_uses_i18n_label_keys_only(self):
         manifest = json.loads(Path("app_animation/transitions.json").read_text())
@@ -462,6 +471,16 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn("dataset.targetProjectionIndex", script)
         self.assertIn('card.getAttribute("data-projection-index")', script)
 
+    def test_master_script_carries_transition_state_and_messages(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn("const transitions = Array.isArray(payload.transitions)", script)
+        self.assertIn("activeTransitionId: defaultTransitionId", script)
+        self.assertIn("renderTransitionChoices", script)
+        self.assertIn("transition: transitionFromState()", script)
+        self.assertIn('action === "next-transition"', script)
+        self.assertIn('action === "force-direct"', script)
+        self.assertNotIn("wipe_horizontal", script)
+
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
     def test_display_script_supports_double_projection_steps(self):
@@ -471,10 +490,23 @@ class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
         self.assertIn('wrapper.className = "lyrics-display-double"', script)
         self.assertIn("lyrics-display-column", script)
 
+    def test_display_script_declares_transition_engine(self):
+        script = Path("static/js/lyrics_slide_show_display.js").read_text()
+        self.assertIn("const transitionRegistry =", script)
+        self.assertIn("const processedNonces = new Set()", script)
+        self.assertIn('if (type === "heartbeat")', script)
+        self.assertIn("renderFrameIntoLayer", script)
+        self.assertIn('transitionId === "fade"', script)
+        self.assertIn('transitionId === "wipe"', script)
+        self.assertIn("opacity", script)
+        self.assertIn("clipPath", script)
+        self.assertNotIn("wipe_horizontal", script)
+
     def test_display_stylesheet_declares_double_layout_classes(self):
         stylesheet = Path("static/css/app_animation.css").read_text()
         self.assertIn(".lyrics-display-double", stylesheet)
         self.assertIn(".lyrics-display-column", stylesheet)
+        self.assertIn(".lyrics-display-layer", stylesheet)
 
     def test_remote_slide_cards_hidden_attribute_overrides_grid_display(self):
         stylesheet = Path("static/css/app_animation.css").read_text()
@@ -3399,6 +3431,52 @@ class AnimationViewsTests(TestCase):
             response.context["shortcuts_config"]["effectiveBindings"]["black"],
             ["escape", "m"],
         )
+        self.assertEqual(
+            [item["id"] for item in payload["transitions"]],
+            ["direct", "fade", "wipe"],
+        )
+        self.assertEqual(payload["defaultTransitionId"], "direct")
+        self.assertEqual(payload["transitions"][1]["params"]["duration_ms"], 120)
+        self.assertNotIn("wipe_horizontal", json.dumps(payload["transitions"]))
+
+    def test_lyrics_slide_show_runtime_payload_uses_animation_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            default_transition="wipe",
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["runtime_payload"]["defaultTransitionId"], "wipe"
+        )
+
+    def test_lyrics_slide_show_runtime_payload_falls_back_from_unknown_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        Animation.objects.filter(pk=animation.pk).update(
+            default_transition="wipe_horizontal"
+        )
+        animation.refresh_from_db()
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["runtime_payload"]["defaultTransitionId"], "direct"
+        )
 
     def test_lyrics_slide_show_remote_grid_keeps_current_behavior_for_single_mode(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -3921,6 +3999,7 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Raccourcis clavier (personnalisable)")
+        self.assertContains(response, "data-lyrics-transition-select")
 
     def test_lyrics_slide_show_uses_member_shortcuts_when_present(self):
         user_id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -4342,6 +4421,32 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(
             response.context["shortcuts_config"]["actionLabels"]["open_display"],
             "Afficher la fenêtre de la diapo en cours",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"][
+                "next_transition"
+            ],
+            ["t"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"]["force_direct"],
+            ["i"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionToRemoteAction"][
+                "next_transition"
+            ],
+            "next-transition",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionToRemoteAction"][
+                "force_direct"
+            ],
+            "force-direct",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionLabels"]["next_transition"],
+            "Transition suivante",
         )
 
     def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):

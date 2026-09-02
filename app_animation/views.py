@@ -43,7 +43,11 @@ from .models import (
     BackgroundImage,
     BackgroundImageStatus,
 )
-from .transitions import list_enabled_transition_options
+from .transitions import (
+    list_enabled_transition_options,
+    list_enabled_transition_runtime_options,
+    resolve_enabled_transition_id,
+)
 from .services.background_images import (
     active_background_image_options,
     build_background_context_slug,
@@ -118,6 +122,8 @@ def _shortcut_action_labels() -> dict[str, str]:
         "toggle_chorus": _("Afficher / masquer les refrains"),
         "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
         "toggle_qr": _("📱 QR code pour les paroles"),
+        "next_transition": _("Transition suivante"),
+        "force_direct": _("Forcer Direct"),
     }
 
 
@@ -2167,6 +2173,10 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
         "publicUrl": public_url,
         "qrCodePngBase64": build_qr_png_base64(public_url),
         "cardGroups": card_groups,
+        "transitions": list_enabled_transition_runtime_options(),
+        "defaultTransitionId": resolve_enabled_transition_id(
+            animation.default_transition
+        ),
     }
 
 
