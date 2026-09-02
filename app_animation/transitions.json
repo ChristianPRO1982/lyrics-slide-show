@@ -1,0 +1,33 @@
+{
+  "default": "direct",
+  "transitions": [
+    {
+      "id": "direct",
+      "label_key": "transition_direct",
+      "enabled": true,
+      "order": 0,
+      "params": {
+        "duration_ms": 0
+      }
+    },
+    {
+      "id": "fade",
+      "label_key": "transition_fade",
+      "enabled": true,
+      "order": 1,
+      "params": {
+        "duration_ms": 120
+      }
+    },
+    {
+      "id": "wipe",
+      "label_key": "transition_wipe",
+      "enabled": true,
+      "order": 2,
+      "params": {
+        "duration_ms": 180,
+        "direction": "left_to_right"
+      }
+    }
+  ]
+}

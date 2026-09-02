@@ -43,6 +43,7 @@ from .models import (
     BackgroundImage,
     BackgroundImageStatus,
 )
+from .transitions import list_enabled_transition_options
 from .services.background_images import (
     active_background_image_options,
     build_background_context_slug,
@@ -1337,6 +1338,7 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "popup_data": {
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
+                "transitionChoices": list_enabled_transition_options(),
                 "backgroundImageOptions": _background_image_popup_options(),
                 "backgroundPickerUrl": reverse(
                     "animation_background_picker", args=[animation.animation_id]

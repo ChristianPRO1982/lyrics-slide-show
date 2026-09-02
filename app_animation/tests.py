@@ -46,6 +46,12 @@ from .services.shortcuts import (
     build_form_shortcut_bindings,
     validate_shortcut_submission,
 )
+from .transitions import (
+    get_default_transition_id,
+    list_enabled_transition_choices,
+    list_enabled_transition_options,
+    list_enabled_transitions,
+)
 
 
 class PlaylistParsingTests(SimpleTestCase):
@@ -58,6 +64,42 @@ class PlaylistParsingTests(SimpleTestCase):
 
 
 class AnimationFormFontValidationTests(SimpleTestCase):
+    def test_transition_manifest_exposes_enabled_transitions(self):
+        transition_ids = tuple(item["id"] for item in list_enabled_transitions())
+        self.assertEqual(transition_ids, ("direct", "fade", "wipe"))
+        self.assertEqual(get_default_transition_id(), "direct")
+        self.assertNotIn("wipe_horizontal", transition_ids)
+
+    def test_transition_choices_follow_manifest_order(self):
+        choices = tuple(value for value, _label in list_enabled_transition_choices())
+        self.assertEqual(choices, ("direct", "fade", "wipe"))
+        option_values = tuple(
+            item["value"] for item in list_enabled_transition_options()
+        )
+        self.assertEqual(option_values, choices)
+
+    def test_transition_manifest_uses_i18n_label_keys_only(self):
+        manifest = json.loads(Path("app_animation/transitions.json").read_text())
+        transitions = manifest["transitions"]
+        self.assertEqual(
+            tuple(item["label_key"] for item in transitions),
+            ("transition_direct", "transition_fade", "transition_wipe"),
+        )
+        self.assertFalse(any("label" in item for item in transitions))
+
+    def test_transition_labels_are_translated_from_keys_in_po_files(self):
+        fr_catalog = Path("locale/fr/LC_MESSAGES/django.po").read_text()
+        en_catalog = Path("locale/en/LC_MESSAGES/django.po").read_text()
+
+        self.assertIn('msgid "transition_direct"\nmsgstr "Direct"', fr_catalog)
+        self.assertIn('msgid "transition_fade"\nmsgstr "Fondu"', fr_catalog)
+        self.assertIn('msgid "transition_wipe"\nmsgstr "Balayage"', fr_catalog)
+        self.assertIn('msgid "transition_direct"\nmsgstr "Direct"', en_catalog)
+        self.assertIn('msgid "transition_fade"\nmsgstr "Fade"', en_catalog)
+        self.assertIn('msgid "transition_wipe"\nmsgstr "Wipe"', en_catalog)
+        self.assertNotIn('msgid "Balayge"', fr_catalog)
+        self.assertNotIn('msgid "Balayge"', en_catalog)
+
     def test_animation_form_accepts_catalog_font(self):
         form = AnimationForm(
             data={
@@ -70,9 +112,29 @@ class AnimationFormFontValidationTests(SimpleTestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "fade",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["default_transition"], "fade")
+
+    def test_animation_form_defaults_empty_transition_to_direct(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation Direct",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["default_transition"], "direct")
 
 
 class AnimationSongSlideDisplayModeModelTests(TestCase):
@@ -124,10 +186,29 @@ class AnimationSongSlideDisplayModeModelTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "direct",
             }
         )
         self.assertFalse(form.is_valid())
         self.assertIn("font_family", form.errors)
+
+    def test_animation_form_rejects_unknown_transition(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation Transition",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "wipe_horizontal",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("default_transition", form.errors)
 
     def test_animation_form_allows_empty_bg_color_when_background_image_is_set(self):
         form = AnimationForm(
@@ -141,6 +222,7 @@ class AnimationSongSlideDisplayModeModelTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "direct",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
@@ -912,6 +994,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'name="title"')
         self.assertContains(response, 'name="scheduled_at"')
+        self.assertContains(response, 'name="default_transition"')
 
     def test_add_animation_post_creates_animation_in_selected_group(self):
         selected_group = Group.objects.create(
@@ -931,11 +1014,13 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "fade",
             },
         )
         self.assertEqual(response.status_code, 302)
         created = Animation.objects.get(title="Nouvelle animation")
         self.assertEqual(created.group_id, selected_group.group_id)
+        self.assertEqual(created.default_transition, "fade")
         self.assertNotEqual(created.group_id, other_group.group_id)
         self.assertEqual(
             response.headers["Location"],
@@ -959,6 +1044,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "direct",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -1018,6 +1104,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'id="id_title"')
+        self.assertContains(response, 'id="id_default_transition"')
         self.assertContains(response, 'name="ordered_mix"')
         self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
@@ -1030,6 +1117,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-song-style-parent-reset-trigger")
         self.assertContains(response, "unsavedChangesTitle")
         self.assertContains(response, "unsavedChangesMessage")
+        self.assertIn("transitionChoices", response.context["popup_data"])
         payload = json.loads(response.context["songs_payload_initial_json"])
         self.assertEqual(
             payload["items"][0]["song_style"]["slide_display_mode"],
@@ -1798,6 +1886,7 @@ class AnimationViewsTests(TestCase):
             font_size=72,
             horizontal_padding=80,
             background_asset_code=None,
+            default_transition="direct",
         )
         item_a = AnimationSong.objects.create(
             animation=animation, song=song_a, position=2
@@ -1818,6 +1907,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "66",
                 "horizontal_padding": "92",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "wipe",
                 "ordered_mix": f"asid:{item_b.animation_song_id}|sid:{song_c.song_id}|asid:{item_a.animation_song_id}",
             },
         )
@@ -1835,6 +1925,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(animation.font_size, 66)
         self.assertEqual(animation.horizontal_padding, 92)
         self.assertEqual(animation.background_asset_code, "bg-asset-01")
+        self.assertEqual(animation.default_transition, "wipe")
         reordered = list(
             AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
                 "position", "animation_song_id"
@@ -1885,6 +1976,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "direct",
                 "ordered_mix": f"asid:{item_b.animation_song_id}|asid:{item_a.animation_song_id}",
                 "songs_payload": json.dumps(
                     {
@@ -1924,6 +2016,37 @@ class AnimationViewsTests(TestCase):
         self.assertIsNone(item_a.bg_color_override)
         existing_override.refresh_from_db()
         self.assertFalse(existing_override.is_visible)
+
+    def test_modify_animation_post_rejects_wipe_horizontal_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            default_transition="direct",
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "wipe_horizontal",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Transition invalide.")
+        animation.refresh_from_db()
+        self.assertEqual(animation.default_transition, "direct")
 
     def test_modify_animation_post_redirects_to_background_picker_after_save(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

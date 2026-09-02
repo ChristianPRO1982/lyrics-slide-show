@@ -77,7 +77,7 @@ Trois transitions sont proposees :
 |---|---|---|
 | `direct` | Direct | remplacement instantane ; mode sur |
 | `fade` | Fondu | apparition tres courte du nouveau frame par opacite |
-| `wipe_horizontal` | Balayage | revelation du nouveau frame de gauche a droite |
+| `wipe` | Balayage | revelation du nouveau frame de gauche a droite |
 
 `Direct` est :
 
@@ -104,7 +104,7 @@ Utiliser des valeurs techniques stables et independantes des libelles traduits o
 Contraintes :
 
 - valeur obligatoire ;
-- choix limite a `direct`, `fade` et `wipe_horizontal` ;
+- choix limite a `direct`, `fade` et `wipe` ;
 - valeur par defaut : `direct` ;
 - migration des animations existantes vers `direct` ;
 - validation cote serveur, meme si le formulaire limite deja les choix.
@@ -383,7 +383,7 @@ Transitions disponibles :
 
 - `direct` ;
 - `fade` ;
-- `wipe_horizontal`.
+- `wipe`.
 
 ### Resolveur
 

@@ -12,12 +12,23 @@ from .font_catalog import (
     normalize_animation_font_family,
 )
 from .models import Animation
+from .transitions import (
+    get_default_transition_id,
+    is_enabled_transition_id,
+    list_enabled_transition_choices,
+)
 
 
 class AnimationForm(forms.ModelForm):
     font_family = forms.ChoiceField(
         choices=list_font_choices(),
         label=_("Police"),
+    )
+    default_transition = forms.ChoiceField(
+        choices=(),
+        label=_("Transition"),
+        required=False,
+        error_messages={"invalid_choice": _("Transition invalide.")},
     )
 
     class Meta:
@@ -32,6 +43,7 @@ class AnimationForm(forms.ModelForm):
             "font_size",
             "horizontal_padding",
             "background_asset_code",
+            "default_transition",
         ]
         widgets = {
             "title": forms.TextInput(attrs={"maxlength": 255}),
@@ -52,10 +64,12 @@ class AnimationForm(forms.ModelForm):
             "font_size": _("Taille de police"),
             "horizontal_padding": _("Marge horizontale"),
             "background_asset_code": _("Code d'image de fond"),
+            "default_transition": _("Transition"),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["default_transition"].choices = list_enabled_transition_choices()
         scheduled_value = self.initial.get("scheduled_at")
         if scheduled_value is None and getattr(self.instance, "pk", None):
             scheduled_value = self.instance.scheduled_at
@@ -67,6 +81,13 @@ class AnimationForm(forms.ModelForm):
             if initial_font is None and getattr(self.instance, "pk", None):
                 initial_font = self.instance.font_family
             self.initial["font_family"] = normalize_animation_font_family(initial_font)
+
+            initial_transition = self.initial.get("default_transition")
+            if initial_transition is None and getattr(self.instance, "pk", None):
+                initial_transition = self.instance.default_transition
+            if not is_enabled_transition_id(str(initial_transition or "")):
+                initial_transition = get_default_transition_id()
+            self.initial["default_transition"] = initial_transition
 
     def clean_title(self) -> str:
         title = str(self.cleaned_data["title"] or "").strip()
@@ -90,6 +111,14 @@ class AnimationForm(forms.ModelForm):
         value = str(self.cleaned_data.get("font_family") or "").strip()
         if not is_allowed_font_family(value):
             raise forms.ValidationError(_("Police invalide."))
+        return value
+
+    def clean_default_transition(self) -> str:
+        value = str(self.cleaned_data.get("default_transition") or "").strip()
+        if not value:
+            return get_default_transition_id()
+        if not is_enabled_transition_id(value):
+            raise forms.ValidationError(_("Transition invalide."))
         return value
 
 
