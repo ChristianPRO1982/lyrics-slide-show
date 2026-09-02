@@ -444,7 +444,7 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
             script,
         )
         self.assertIn(
-            'const shouldIgnoreKeydownTarget = (target, key) => {',
+            "const shouldIgnoreKeydownTarget = (target, key) => {",
             script,
         )
         self.assertIn(
