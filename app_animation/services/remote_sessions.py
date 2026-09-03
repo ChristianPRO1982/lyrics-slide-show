@@ -50,6 +50,18 @@ class MasterConnectionRegistration:
     replaced_channel_name: str | None
 
 
+@dataclass(frozen=True)
+class RemoteConnectionUpdate:
+    session: AnimationRemoteSession
+    master_channel_name: str | None
+
+
+@dataclass(frozen=True)
+class RemoteSessionDeactivation:
+    session_id: uuid.UUID
+    master_channel_name: str | None
+
+
 def _now(value: datetime | None = None) -> datetime:
     return value or timezone.now()
 
@@ -141,9 +153,77 @@ def authenticate_master_session(
 
 
 def deactivate_remote_session(
-    session_id: object, *, now: datetime | None = None
-) -> AnimationRemoteSession | None:
-    del now
+    session_id: object,
+    master_token: str,
+    *,
+    now: datetime | None = None,
+) -> RemoteSessionDeactivation | None:
+    deactivated_at = _now(now)
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None or not isinstance(master_token, str) or not master_token:
+            return None
+        if not session.master_token_digest or not secrets.compare_digest(
+            session.master_token_digest, _token_digest(master_token)
+        ):
+            return None
+        if not session.active or session.expires_at <= deactivated_at:
+            return None
+        master_channel_name = session.master_channel_name
+        session.active = False
+        session.master_channel_name = None
+        session.master_connection_id = None
+        session.remote_connection_count = 0
+        session.save(
+            update_fields=[
+                "active",
+                "master_channel_name",
+                "master_connection_id",
+                "remote_connection_count",
+            ]
+        )
+        return RemoteSessionDeactivation(
+            session_id=session.session_id,
+            master_channel_name=master_channel_name,
+        )
+
+
+def register_remote_connection(
+    session_id: object,
+    access_token: str,
+    *,
+    now: datetime | None = None,
+) -> RemoteConnectionUpdate | None:
+    connected_at = _now(now)
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None or not isinstance(access_token, str) or not access_token:
+            return None
+        if not secrets.compare_digest(
+            session.access_token_digest, _token_digest(access_token)
+        ):
+            return None
+        if not session.active or session.expires_at <= connected_at:
+            return None
+        session.remote_connection_count += 1
+        session.save(update_fields=["remote_connection_count"])
+        return RemoteConnectionUpdate(
+            session=session,
+            master_channel_name=session.master_channel_name,
+        )
+
+
+def unregister_remote_connection(
+    session_id: object,
+) -> RemoteConnectionUpdate | None:
     with transaction.atomic():
         session = (
             AnimationRemoteSession.objects.select_for_update()
@@ -152,10 +232,13 @@ def deactivate_remote_session(
         )
         if session is None:
             return None
-        if session.active:
-            session.active = False
-            session.save(update_fields=["active"])
-        return session
+        if session.remote_connection_count > 0:
+            session.remote_connection_count -= 1
+            session.save(update_fields=["remote_connection_count"])
+        return RemoteConnectionUpdate(
+            session=session,
+            master_channel_name=session.master_channel_name,
+        )
 
 
 def register_master_connection(

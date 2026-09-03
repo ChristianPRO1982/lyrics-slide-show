@@ -185,6 +185,7 @@
                                     data-animation-id="{{ animation.animation_id }}"
                                     data-display-session-id="{{ display_session_id }}"
                                     data-display-url-base="{% url 'lyrics_slide_show_display' animation.animation_id %}"
+                                    data-remote-create-url="{% url 'lyrics_remote_session_create' animation.animation_id %}"
                                 >
                                     <div class="lyrics-master-blackout-frame" data-lyrics-blackout-frame aria-hidden="true"></div>
                                     <nav class="site-floating-actions lyrics-master-floating-actions" aria-label="{% trans 'Navigation rapide remote' %}" data-lyrics-floating-nav>
@@ -272,7 +273,21 @@
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-toggle aria-expanded="false"><span class="lyrics-master-action-emoji">📡</span><span>{% trans "Télécommande distante" %}</span></button>
                                         </div>
+                                        <section class="lyrics-master-remote-management" data-remote-management-panel hidden>
+                                            <header>
+                                                <h2>{% trans "Télécommande distante" %}</h2>
+                                                <p data-remote-management-status>{% trans "Inactive" %}</p>
+                                            </header>
+                                            <img data-remote-management-qr alt="{% trans 'QR code de télécommande distante' %}" hidden>
+                                            <a data-remote-management-link target="_blank" rel="noreferrer" hidden></a>
+                                            <p data-remote-management-count hidden></p>
+                                            <div class="lyrics-master-remote-management-actions">
+                                                <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-activate>{% trans "Activer" %}</button>
+                                                <button type="button" class="animation-tool-button site-action site-action--danger" data-remote-management-deactivate hidden>{% trans "Désactiver" %}</button>
+                                            </div>
+                                        </section>
                                     </article>
 
                                     <article class="site-theme-card lyrics-master-previews" data-lyrics-previews-card>
@@ -373,13 +388,24 @@
             shortcutsGuestCustomizeMessage: "{{ lyrics_i18n.shortcutsGuestCustomizeMessage|escapejs }}",
             shortcutsGuestCustomizeTitle: "{{ lyrics_i18n.shortcutsGuestCustomizeTitle|escapejs }}",
             shortcutsSaveFailedTitle: "{{ lyrics_i18n.shortcutsSaveFailedTitle|escapejs }}",
-            shortcutsSaveFailedMessage: "{{ lyrics_i18n.shortcutsSaveFailedMessage|escapejs }}"
+            shortcutsSaveFailedMessage: "{{ lyrics_i18n.shortcutsSaveFailedMessage|escapejs }}",
+            remoteInactiveLabel: "{{ lyrics_i18n.remoteInactiveLabel|escapejs }}",
+            remoteActivatingLabel: "{{ lyrics_i18n.remoteActivatingLabel|escapejs }}",
+            remoteConnectingLabel: "{{ lyrics_i18n.remoteConnectingLabel|escapejs }}",
+            remoteConnectedLabel: "{{ lyrics_i18n.remoteConnectedLabel|escapejs }}",
+            remoteErrorLabel: "{{ lyrics_i18n.remoteErrorLabel|escapejs }}",
+            remoteDisabledLabel: "{{ lyrics_i18n.remoteDisabledLabel|escapejs }}",
+            remoteLinkLabel: "{{ lyrics_i18n.remoteLinkLabel|escapejs }}",
+            remoteCountLabel: "{{ lyrics_i18n.remoteCountLabel|escapejs }}",
+            remoteActivationFailedMessage: "{{ lyrics_i18n.remoteActivationFailedMessage|escapejs }}",
+            remoteDeactivationFailedMessage: "{{ lyrics_i18n.remoteDeactivationFailedMessage|escapejs }}"
         };
     </script>
     <script src="{% static 'js/base.js' %}"></script>
     <script src="{% static 'js/message_box.js' %}"></script>
     <script src="{% static 'js/lyrics_slide_show_master.js' %}"></script>
     <script src="{% static 'js/lyrics_remote_transport.js' %}"></script>
+    <script src="{% static 'js/lyrics_remote_management.js' %}"></script>
     <script src="{% static 'js/page_loader.js' %}"></script>
 </body>
 </html>

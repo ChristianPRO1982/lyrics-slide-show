@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
@@ -27,6 +28,7 @@ from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
 from .models import (
     Animation,
+    AnimationRemoteSession,
     AnimationRemoteShortcut,
     AnimationSong,
     AnimationVerseOverride,
@@ -73,8 +75,10 @@ from .services.remote_sessions import (
     deactivate_remote_session,
     get_remote_command_cooldown,
     register_master_connection,
+    register_remote_connection,
     store_remote_state,
     unregister_master_connection,
+    unregister_remote_connection,
 )
 
 
@@ -249,8 +253,10 @@ class AnimationRemoteSessionServiceTests(TestCase):
         )
 
         deactivated = create_remote_session(self._animation(), now=now)
-        self.assertFalse(
-            deactivate_remote_session(deactivated.session.session_id).active
+        self.assertIsNotNone(
+            deactivate_remote_session(
+                deactivated.session.session_id, deactivated.master_token
+            )
         )
         self.assertIsNone(
             authenticate_remote_session(
@@ -364,6 +370,21 @@ class AnimationRemoteSessionServiceTests(TestCase):
         with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
             with self.assertRaises(ImproperlyConfigured):
                 get_remote_command_cooldown()
+
+    def test_remote_connection_count_is_persisted_and_never_negative(self):
+        created = create_remote_session(self._animation())
+
+        registered = register_remote_connection(
+            created.session.session_id, created.access_token
+        )
+        self.assertIsNotNone(registered)
+        self.assertEqual(registered.session.remote_connection_count, 1)
+        unregistered = unregister_remote_connection(created.session.session_id)
+        self.assertIsNotNone(unregistered)
+        self.assertEqual(unregistered.session.remote_connection_count, 0)
+        still_zero = unregister_remote_connection(created.session.session_id)
+        self.assertIsNotNone(still_zero)
+        self.assertEqual(still_zero.session.remote_connection_count, 0)
 
 
 class AnimationFormFontValidationTests(SimpleTestCase):
@@ -874,6 +895,20 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn('message.type === "MASTER_REPLACED"', script)
         self.assertNotIn("?token=", script)
 
+    def test_remote_management_keeps_lifecycle_outside_the_projection_bridge(self):
+        management_script = Path("static/js/lyrics_remote_management.js").read_text()
+        transport_script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("pagehide", management_script)
+        self.assertIn("keepalive", management_script)
+        self.assertIn("master_token", management_script)
+        self.assertIn("window.LSSMessageBox?.alert", management_script)
+        self.assertNotIn("BroadcastChannel", management_script)
+        self.assertNotIn("localStorage", management_script)
+        self.assertIn('"REMOTE_COUNT"', transport_script)
+        self.assertIn('"SESSION_DISABLED"', transport_script)
+        self.assertIn("onRemoteCount", transport_script)
+
 
 class RemoteTransportConfigurationTests(SimpleTestCase):
     def test_asgi_routes_redis_and_daphne_are_configured_without_touching_local_bridge(
@@ -906,6 +941,10 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         self.assertNotIn("gunicorn", production_start)
         self.assertIn("new window.BroadcastChannel", master_script)
         self.assertIn("window.localStorage", master_script)
+        urls = Path("app_animation/urls.py").read_text()
+        self.assertIn("lyrics_remote_session_create", urls)
+        self.assertIn("lyrics_remote_session_deactivate", urls)
+        self.assertIn("lyrics_remote_access", urls)
 
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
@@ -1006,6 +1045,20 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         ).read_text()
         self.assertIn("js/lyrics_slide_show_master.js", template)
         self.assertIn("js/lyrics_remote_transport.js", template)
+        self.assertIn("js/lyrics_remote_management.js", template)
+        self.assertIn("data-remote-management-panel", template)
+        self.assertIn("data-remote-management-toggle", template)
+
+    def test_remote_access_relay_has_no_mobile_command_interface(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_remote_access.html"
+        ).read_text()
+        script = Path("static/js/lyrics_remote_access.js").read_text()
+        self.assertIn("data-remote-access-root", template)
+        self.assertIn("lyrics_remote_transport.js", template)
+        self.assertNotIn("sendCommand", template)
+        self.assertIn("window.history.replaceState", script)
+        self.assertNotIn("sendCommand", script)
 
     def test_animations_page_uses_homepage_style_main_grid(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
@@ -3694,6 +3747,93 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("groups"))
+
+    @patch("app_animation.views.get_channel_layer")
+    def test_remote_session_activation_and_deactivation_are_group_scoped(
+        self, get_channel_layer
+    ):
+        from channels.layers import InMemoryChannelLayer
+
+        get_channel_layer.return_value = InMemoryChannelLayer()
+        group = Group.objects.create(
+            group_id=100, name="Open Group", status=GroupStatus.OPEN
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        other_group = Group.objects.create(
+            group_id=101, name="Other Group", status=GroupStatus.OPEN
+        )
+        other_animation = Animation.objects.create(
+            group=other_group, title="Other", scheduled_at=timezone.now()
+        )
+
+        def select_group_for_request() -> None:
+            session_store = self.client.session
+            session_store[SELECTED_GROUP_ID_SESSION_KEY] = group.group_id
+            session_store.save()
+            self.client.cookies[settings.SESSION_COOKIE_NAME] = (
+                session_store.session_key
+            )
+
+        select_group_for_request()
+        activated = self.client.post(
+            reverse("lyrics_remote_session_create", args=[animation.animation_id])
+        )
+        self.assertEqual(
+            activated.status_code,
+            200,
+            msg=activated.content.decode("utf-8", errors="replace"),
+        )
+        self.assertEqual(activated.headers["Cache-Control"], "no-store")
+        payload = activated.json()
+        self.assertNotIn("access_token", payload)
+        self.assertIn("master_token", payload)
+        self.assertIn("#token=", payload["access_url"])
+        self.assertIn("/remote-access/", payload["access_url"])
+        session = AnimationRemoteSession.objects.get(session_id=payload["session_id"])
+        self.assertNotEqual(session.access_token_digest, payload["access_url"])
+        self.assertNotEqual(session.master_token_digest, payload["master_token"])
+
+        access = self.client.get(
+            reverse("lyrics_remote_access", args=[session.session_id])
+        )
+        self.assertEqual(access.status_code, 200)
+        self.assertEqual(access.headers["Cache-Control"], "no-store")
+        self.assertContains(access, "data-remote-access-root")
+        self.assertNotContains(access, payload["master_token"])
+
+        rejected = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": "wrong"},
+        )
+        self.assertEqual(rejected.status_code, 403)
+        session.refresh_from_db()
+        self.assertTrue(session.active)
+
+        deactivated = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": payload["master_token"]},
+        )
+        self.assertEqual(deactivated.status_code, 200)
+        session.refresh_from_db()
+        self.assertFalse(session.active)
+        self.assertEqual(session.remote_connection_count, 0)
+        self.assertIsNone(
+            authenticate_remote_session(session.session_id, "wrong", now=timezone.now())
+        )
+
+        select_group_for_request()
+        denied = self.client.post(
+            reverse("lyrics_remote_session_create", args=[other_animation.animation_id])
+        )
+        self.assertEqual(denied.status_code, 404)
 
     def test_lyrics_slide_show_refuses_animation_outside_selected_group(self):
         selected_group = Group.objects.create(

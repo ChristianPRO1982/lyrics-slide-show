@@ -9,10 +9,11 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .services.remote_protocol import RemoteRejectReason
 from .services.remote_sessions import (
     accept_remote_command,
-    authenticate_remote_session,
     register_master_connection,
+    register_remote_connection,
     store_remote_state,
     unregister_master_connection,
+    unregister_remote_connection,
 )
 
 
@@ -27,6 +28,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self.session_id = self.scope["url_route"]["kwargs"]["session_id"]
         self.authenticated = False
         self.connection_id: uuid.UUID | None = None
+        self.remote_connection_counted = False
         self.pending_command_channels: dict[str, str] = {}
         await self.accept()
 
@@ -47,6 +49,10 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_discard(
                 _remote_group_name(self.session_id), self.channel_name
             )
+            if self.remote_connection_counted:
+                update = await self._unregister_remote(self.session_id)
+                if update is not None:
+                    await self._notify_master_remote_count(update)
             return
         if self.connection_id is not None:
             await self._unregister_master(self.session_id, self.connection_id)
@@ -74,21 +80,31 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
                     registration.replaced_channel_name,
                     {"type": "remote.master.replaced"},
                 )
-            await self.send_json({"type": "READY", "role": "master"})
+            await self.send_json(
+                {
+                    "type": "READY",
+                    "role": "master",
+                    "remote_count": registration.session.remote_connection_count,
+                }
+            )
             return
 
-        session = await self._authenticate_remote(self.session_id, token)
-        if session is None:
+        registration = await self._register_remote(self.session_id, token)
+        if registration is None:
             await self.close(code=4403)
             return
         self.remote_token = token
         self.authenticated = True
+        self.remote_connection_counted = True
         await self.channel_layer.group_add(
             _remote_group_name(self.session_id), self.channel_name
         )
         await self.send_json({"type": "READY", "role": "remote"})
-        if session.latest_state_revision >= 0:
-            await self.send_json({"type": "STATE", "state": session.latest_state})
+        if registration.session.latest_state_revision >= 0:
+            await self.send_json(
+                {"type": "STATE", "state": registration.session.latest_state}
+            )
+        await self._notify_master_remote_count(registration)
 
     async def _receive_authenticated(self, content: dict[str, Any]) -> None:
         if self.connection_role == "master":
@@ -179,9 +195,28 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({"type": "MASTER_REPLACED"})
         await self.close(code=4409)
 
+    async def remote_connection_count(self, event: dict[str, Any]) -> None:
+        if self.connection_role == "master":
+            await self.send_json({"type": "REMOTE_COUNT", "count": event["count"]})
+
+    async def remote_session_disabled(self, event: dict[str, Any]) -> None:
+        del event
+        await self.send_json({"type": "SESSION_DISABLED"})
+        await self.close(code=4403)
+
+    async def _notify_master_remote_count(self, update: Any) -> None:
+        if update.master_channel_name:
+            await self.channel_layer.send(
+                update.master_channel_name,
+                {
+                    "type": "remote.connection.count",
+                    "count": update.session.remote_connection_count,
+                },
+            )
+
     @database_sync_to_async
-    def _authenticate_remote(self, session_id: uuid.UUID, token: str):
-        return authenticate_remote_session(session_id, token)
+    def _register_remote(self, session_id: uuid.UUID, token: str):
+        return register_remote_connection(session_id, token)
 
     @database_sync_to_async
     def _register_master(self, session_id: uuid.UUID, token: str, channel_name: str):
@@ -190,6 +225,10 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def _unregister_master(self, session_id: uuid.UUID, connection_id: uuid.UUID):
         return unregister_master_connection(session_id, connection_id)
+
+    @database_sync_to_async
+    def _unregister_remote(self, session_id: uuid.UUID):
+        return unregister_remote_connection(session_id)
 
     @database_sync_to_async
     def _accept_remote_command(

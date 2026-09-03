@@ -4,6 +4,7 @@ import uuid
 from datetime import timedelta
 
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
@@ -72,7 +73,8 @@ class RemoteTransportConsumerTests(TransactionTestCase):
                 created.session.session_id, "master", created.master_token
             )
             self.assertEqual(
-                await master.receive_json_from(), {"type": "READY", "role": "master"}
+                await master.receive_json_from(),
+                {"type": "READY", "role": "master", "remote_count": 0},
             )
             await master.send_json_to(self._state(3))
 
@@ -100,6 +102,9 @@ class RemoteTransportConsumerTests(TransactionTestCase):
                 created.session.session_id, "remote", created.access_token
             )
             await remote.receive_json_from()
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 1}
+            )
 
             command = {"type": "COMMAND", "command": "NEXT_SLIDE"}
             await remote.send_json_to(command)
@@ -114,6 +119,34 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await master.send_json_to(self._state(1))
             self.assertEqual(await remote.receive_json_from(), self._state(1))
             await remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_remote_connection_count_is_reported_and_session_disable_closes_sockets(
+        self,
+    ):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 1}
+            )
+            await get_channel_layer().group_send(
+                f"lss.remote.{created.session.session_id.hex}",
+                {"type": "remote.session.disabled"},
+            )
+            self.assertEqual(
+                await remote.receive_json_from(), {"type": "SESSION_DISABLED"}
+            )
             await master.disconnect()
 
         async_to_sync(scenario)()
@@ -174,7 +207,7 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             )
             self.assertEqual(
                 await second_master.receive_json_from(),
-                {"type": "READY", "role": "master"},
+                {"type": "READY", "role": "master", "remote_count": 0},
             )
             self.assertEqual(
                 await first_master.receive_json_from(), {"type": "MASTER_REPLACED"}

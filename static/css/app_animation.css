@@ -1445,6 +1445,53 @@ body.animation-background-picker-overlay-open {
         0 12px 24px rgba(66, 24, 11, 0.14);
 }
 
+.lyrics-master-remote-management {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.65rem 1rem;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid var(--site-line-strong);
+    border-radius: 0.5rem;
+}
+
+.lyrics-master-remote-management[hidden] {
+    display: none;
+}
+
+.lyrics-master-remote-management header,
+.lyrics-master-remote-management p {
+    margin: 0;
+}
+
+.lyrics-master-remote-management h2 {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+}
+
+.lyrics-master-remote-management img {
+    grid-row: span 3;
+    width: 7rem;
+    height: 7rem;
+    object-fit: contain;
+    background: #fff;
+    padding: 0.25rem;
+}
+
+.lyrics-master-remote-management a {
+    overflow-wrap: anywhere;
+}
+
+.lyrics-master-remote-management-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.lyrics-master-remote-management-actions .animation-tool-button {
+    min-height: 2.5rem;
+}
+
 .lyrics-master-action-emoji {
     display: block;
     line-height: 1;
@@ -1903,6 +1950,14 @@ body.animation-background-picker-overlay-open {
 
     .lyrics-public-controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lyrics-master-remote-management {
+        grid-template-columns: 1fr;
+    }
+
+    .lyrics-master-remote-management img {
+        grid-row: auto;
     }
 }
 

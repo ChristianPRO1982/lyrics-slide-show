@@ -148,6 +148,7 @@ class AnimationRemoteSession(models.Model):
     master_connected_at = models.DateTimeField(blank=True, null=True)
     master_channel_name = models.CharField(max_length=255, blank=True, null=True)
     master_connection_id = models.UUIDField(blank=True, null=True)
+    remote_connection_count = models.PositiveIntegerField(default=0)
     latest_state = models.JSONField(default=dict)
     latest_state_revision = models.IntegerField(default=-1)
 

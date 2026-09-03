@@ -1,0 +1,30 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ language_code|default:'fr' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>{% trans "Télécommande distante" %}</title>
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
+</head>
+<body class="lyrics-public-body">
+    <main class="lyrics-public-root lyrics-remote-access-root" data-remote-access-root data-session-id="{{ session_id }}">
+        <header class="lyrics-public-header">
+            <h1>{% trans "Télécommande distante" %}</h1>
+            <p data-remote-access-status>{% trans "Connexion…" %}</p>
+        </header>
+    </main>
+    <script>
+        window.LSS_REMOTE_ACCESS_I18N = {
+            connecting: "{% trans 'Connexion…'|escapejs %}",
+            connected: "{% trans 'Connecté'|escapejs %}",
+            reconnecting: "{% trans 'Reconnexion…'|escapejs %}",
+            unavailable: "{% trans 'Session indisponible'|escapejs %}",
+            disabled: "{% trans 'Session terminée'|escapejs %}"
+        };
+    </script>
+    <script src="{% static 'js/lyrics_remote_transport.js' %}"></script>
+    <script src="{% static 'js/lyrics_remote_access.js' %}"></script>
+</body>
+</html>

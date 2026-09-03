@@ -6,17 +6,24 @@
         return `${scheme}://${window.location.host}/ws/animations/remote/${encodeURIComponent(sessionId)}/${role}/`;
     };
 
-    const createConnection = ({ role, sessionId, token, onState, onStatus }) => {
+    const createConnection = ({ role, sessionId, token, onState, onStatus, onRemoteCount }) => {
         let socket = null;
         let reconnectTimer = null;
         let closedByCaller = false;
         let replaced = false;
+        let disabled = false;
         let ready = false;
         let unsubscribeState = null;
 
         const notifyStatus = (status) => {
             if (typeof onStatus === "function") {
                 onStatus(status);
+            }
+        };
+
+        const notifyRemoteCount = (count) => {
+            if (typeof onRemoteCount === "function" && Number.isInteger(count) && count >= 0) {
+                onRemoteCount(count);
             }
         };
 
@@ -64,12 +71,14 @@
                 if (message.type === "READY") {
                     ready = true;
                     notifyStatus("CONNECTED");
+                    notifyRemoteCount(message.remote_count);
                     if (role === "master") {
                         const adapter = window.LSSLyricsMasterAdapter;
                         if (!adapter) {
                             return;
                         }
                         unsubscribeState = adapter.subscribeRemoteState(sendMasterState);
+                        sendMasterState(adapter.getRemoteState());
                     }
                     return;
                 }
@@ -91,6 +100,15 @@
                 if (message.type === "MASTER_REPLACED" && role === "master") {
                     replaced = true;
                     notifyStatus("REPLACED");
+                    return;
+                }
+                if (message.type === "REMOTE_COUNT" && role === "master") {
+                    notifyRemoteCount(message.count);
+                    return;
+                }
+                if (message.type === "SESSION_DISABLED") {
+                    disabled = true;
+                    notifyStatus("DISABLED");
                 }
             });
             socket.addEventListener("close", () => {
@@ -99,7 +117,7 @@
                     unsubscribeState();
                     unsubscribeState = null;
                 }
-                if (closedByCaller || replaced) {
+                if (closedByCaller || replaced || disabled) {
                     return;
                 }
                 notifyStatus("RECONNECTING");
@@ -138,7 +156,7 @@
     };
 
     window.LSSRemoteTransport = Object.freeze({
-        connectMaster: ({ sessionId, masterToken, onStatus } = {}) => {
+        connectMaster: ({ sessionId, masterToken, onStatus, onRemoteCount } = {}) => {
             if (!window.LSSLyricsMasterAdapter || !sessionId || !masterToken) {
                 return null;
             }
@@ -147,6 +165,7 @@
                 sessionId,
                 token: masterToken,
                 onStatus,
+                onRemoteCount,
             });
         },
         connectRemote: ({ sessionId, accessToken, onState, onStatus } = {}) => {
