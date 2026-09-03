@@ -36,6 +36,33 @@ NEXT_SONG
 TOGGLE_BLACK
 ```
 
+L'interface smartphone cible prévoit aussi des commandes secondaires accessibles depuis les zones optionnelles ou le menu hamburger.
+
+La master doit donc prévoir des points d'entrée pour :
+
+```text
+GO_TO_SONG
+GO_TO_CHORUS
+SET_TRANSITION
+TOGGLE_QR
+GO_TO_PROJECTION_STEP
+```
+
+Ces commandes restent des intentions.
+Elles ne doivent pas embarquer de logique musicale.
+
+Les commandes ciblées doivent transporter uniquement un identifiant ou une valeur stable que la master peut valider dans son runtime courant.
+
+Exemples conceptuels :
+
+```text
+GO_TO_SONG(song_id ou animation_song_id)
+SET_TRANSITION(transition_id)
+GO_TO_PROJECTION_STEP(projection_step_id)
+```
+
+La forme exacte des identifiants doit suivre les structures existantes du payload runtime.
+
 Chaque commande distante doit appeler le même mécanisme que son équivalent local.
 
 ## Adaptation du code existant
@@ -69,8 +96,9 @@ handleExternalCommand(command)
 Son rôle est limité à :
 
 1. valider le type de commande ;
-2. appeler l'action locale correspondante ;
-3. produire le nouvel état de projection.
+2. valider la cible éventuelle dans le runtime courant ;
+3. appeler l'action locale correspondante ;
+4. produire le nouvel état de projection.
 
 Le transport réseau sera ajouté dans le lot `03`.
 
@@ -82,15 +110,32 @@ L'état doit notamment permettre de connaître :
 
 ```text
 current_slide
+next_slide
 current_song
 previous_song
 next_song
 next_block
 black_mode
 revision
+chorus_available
+current_transition
+available_transitions
+qr_mode
 ```
 
 Réutiliser les données déjà disponibles dans la remote autant que possible.
+
+Cet état doit être suffisant pour alimenter l'écran smartphone principal :
+
+* texte de la slide suivante ;
+* titres des chants précédent et suivant ;
+* liste compacte des chants ;
+* disponibilité du bouton `Refrain` ;
+* état du `BLACK MODE` ;
+* transition active et transitions disponibles pour le menu ;
+* état QR si la remote distante peut le piloter.
+
+La remote distante ne doit pas déduire seule le nouvel état après une commande acceptée.
 
 ## Priorité locale
 

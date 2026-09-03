@@ -42,9 +42,24 @@ NEXT_SONG
 TOGGLE_BLACK
 ```
 
+La remote distante mobile cible expose aussi des commandes secondaires dans son menu ou ses zones optionnelles.
+
+Le protocole doit donc pouvoir évoluer dès la V1 vers des intentions ciblées, sans faire calculer la navigation par le smartphone :
+
+```text
+GO_TO_SONG
+GO_TO_CHORUS
+SET_TRANSITION
+TOGGLE_QR
+GO_TO_PROJECTION_STEP
+```
+
 Les commandes représentent uniquement des intentions.
 
 Elles ne contiennent pas de logique de navigation.
+
+Lorsqu'une commande contient une cible, cette cible est toujours validée par la remote master avant exécution.
+Une cible inconnue, expirée ou incohérente doit être rejetée.
 
 ## Messages principaux
 
@@ -98,14 +113,37 @@ Prévoir notamment les informations nécessaires à la future UI distante :
 ```text
 revision
 current_slide
+next_slide
 current_song
 previous_song
 next_song
 next_block
 black_mode
+songs
+chorus_available
+current_transition
+available_transitions
+qr_mode
+master_status
 ```
 
 Le contenu exact peut être adapté aux structures existantes de Lyrics Slide Show.
+
+Le `STATE` destiné à la remote distante doit rester compact.
+
+Il doit permettre de remplir :
+
+* la zone optionnelle de slide suivante ;
+* le sélecteur compact des chants ;
+* les boutons chant précédent / chant suivant avec titres ;
+* l'état et la disponibilité du bouton `Refrain` ;
+* le contrôle de transition si exposé dans le menu ;
+* l'état QR si cette commande est pilotable depuis la remote distante.
+
+Il ne doit pas transporter tout le payload de projection destiné à l'afficheur si la remote distante n'en a pas besoin.
+
+La remote distante peut afficher une recherche locale sur un index compact fourni par l'état ou par un message dédié.
+La navigation finale issue d'une recherche doit cependant rester une intention ciblée envoyée à la master, par exemple `GO_TO_PROJECTION_STEP`.
 
 ## Révision de l'état
 

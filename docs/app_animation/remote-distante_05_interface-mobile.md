@@ -2,32 +2,116 @@
 
 ## Objectif
 
-Créer une interface mobile simple, pensée comme une vraie télécommande et non comme une seconde remote master.
+Créer une interface mobile pensée comme une vraie télécommande opérateur compacte, et non comme une seconde remote master.
+
+La remote distante peut exposer plusieurs commandes live utiles au direct, mais elle reste subordonnée à la remote master :
+
+* elle ne contrôle jamais directement l'afficheur ;
+* elle ne recalcule pas la navigation musicale ;
+* elle envoie des intentions que la master valide et exécute avec son mécanisme local.
 
 Ce document complète les lots `00` à `04`.
 
-## Priorité UX
+## Structure De L'écran Principal Fermé
 
 L'usage principal est un smartphone tenu à la main pendant la projection.
 
-Les actions les plus fréquentes doivent être les plus accessibles.
+L'écran principal fermé doit rester immédiatement utilisable, avec les commandes fréquentes accessibles sans ouvrir le menu.
 
-Ordre recommandé :
+La structure de référence est une grille verticale.
+
+La maquette fonctionnelle peut être représentée ainsi :
 
 ```text
 ☰
 
-Bloc suivant                     ×
+Slide suivante                  X
 
-CHANT PRÉCÉDENT      CHANT SUIVANT
-<nom>                        <nom>
+<select chants>                 X
+
+Refrain                         X
+
+CHANT PRÉCÉDENT        CHANT SUIVANT
+<titre précédent>          <titre suivant>
 
 ████████████████████████████
           BLACK MODE
 ████████████████████████████
 
-SLIDE PRÉC.           SLIDE SUIV.
+SLIDE PRÉC.              SLIDE SUIV.
 ```
+
+Cette maquette décrit la structure UX attendue.
+
+Elle n'impose pas une implémentation en `<table>` HTML.
+Une grille CSS, des flex containers ou un autre layout adapté peuvent être utilisés.
+
+La ligne supplémentaire éventuellement présente dans une maquette de travail ne fait pas partie de l'interface.
+
+## Zones Optionnelles De L'écran Principal
+
+Trois zones peuvent apparaître sur l'écran principal, dans cet ordre fixe :
+
+1. texte de la slide suivante ;
+2. sélecteur de chants ;
+3. bouton `Refrain`.
+
+Chaque zone optionnelle :
+
+* occupe toute la largeur de contenu disponible ;
+* réserve une colonne de fermeture à droite avec un bouton `X` ;
+* est moins haute que les grosses commandes principales ;
+* peut être masquée individuellement par son bouton `X` ;
+* peut être réaffichée depuis le menu hamburger ;
+* relève uniquement d'un choix local au smartphone courant.
+
+Masquer ou afficher une zone optionnelle ne modifie jamais la session live, l'état de projection, ni les autres remotes distantes.
+
+### Slide Suivante
+
+La première zone optionnelle affiche le texte ou résumé utile de la prochaine slide.
+
+Elle sert d'aide opérateur rapide.
+
+Elle ne doit pas déclencher de navigation par elle-même.
+
+### Sélecteur De Chants
+
+La deuxième zone optionnelle affiche un `<select>` ou contrôle équivalent permettant d'aller directement à un chant.
+
+Le changement de chant envoie une intention à la master, qui vérifie et exécute la navigation.
+
+Le smartphone ne doit pas recalculer lui-même la position officielle de projection.
+
+### Bouton Refrain
+
+La troisième zone optionnelle affiche le bouton `Refrain`.
+
+Ce bouton utilise le même comportement fonctionnel que le bouton `Refrain` de la remote master.
+
+Il envoie une intention à la master et ne reconstruit pas localement la logique des refrains.
+
+## Proportions Et Hiérarchie Tactile
+
+Les trois zones optionnelles affichées doivent prendre environ `30 %` de la hauteur utile.
+
+Lorsque le menu hamburger est ouvert, l'ensemble :
+
+```text
+zones optionnelles visibles + menu
+```
+
+peut occuper environ `40 %` de la hauteur utile.
+
+Les commandes principales doivent conserver au moins `60 %` de la hauteur utile.
+
+Les lignes principales restent donc grandes et tactiles :
+
+* chant précédent / chant suivant ;
+* `BLACK MODE` ;
+* slide précédente / slide suivante.
+
+Les boutons de slide restent les commandes les plus directement accessibles au pouce.
 
 ## Navigation principale
 
@@ -38,6 +122,10 @@ Les boutons `SLIDE PRÉC.` et `SLIDE SUIV.` sont prioritaires :
 * placés en bas de l'écran.
 
 Les boutons de changement de chant doivent afficher le nom du chant cible.
+
+Si le titre d'un chant est trop long, il peut être tronqué ou défiler de manière comparable à un lecteur MP3.
+
+Ce comportement est purement visuel et ne change pas la commande envoyée.
 
 ## Black Mode
 
@@ -50,29 +138,24 @@ L'utilisateur doit comprendre sans ambiguïté si un appui va :
 * activer le noir ;
 * ou revenir à la projection.
 
-## Bloc suivant
-
-Afficher une petite zone indiquant le prochain bloc utile.
-
-Cette zone peut être fermée avec `×`.
-
-Sa réouverture se fait depuis le menu.
-
-Ce choix est local à la remote distante et ne modifie pas la session de projection.
-
 ## Menu hamburger
 
 Le menu contient les fonctions secondaires, notamment :
 
-* affichage/réaffichage du bloc suivant ;
-* accès direct à un chant ;
-* autres commandes disponibles mais non prioritaires ;
+* affichage/réaffichage de la zone `slide suivante` ;
+* affichage/réaffichage de la zone `select chants` ;
+* affichage/réaffichage de la zone `Refrain` ;
+* accès direct à un chant, même si le select principal est masqué ;
+* choix du type de transition ;
+* QR-code ;
+* recherche d'une slide ;
 * état de connexion ;
 * quitter la session.
 
-Le sélecteur complet de chants reste dans le menu par défaut.
+Les fonctions du menu ne doivent pas encombrer l'écran principal.
 
-Prévoir une architecture permettant éventuellement de l'afficher plus tard sur l'écran principal sans refonte importante.
+Le menu ne doit cependant pas reproduire toute l'interface master.
+Il reste un panneau de commandes secondaires et de réglages locaux de la remote distante.
 
 ## Retour utilisateur
 
@@ -113,8 +196,8 @@ Une reconnexion ne doit jamais provoquer le rejeu d'une ancienne commande.
 * pas de double tap ou long press nécessaire ;
 * grands targets tactiles ;
 * éviter les modales pendant la projection ;
-* conserver l'écran principal très simple.
+* conserver l'écran principal lisible même avec les trois zones optionnelles affichées.
 
 Ne pas reproduire toutes les fonctions de la remote master.
 
-L'objectif est une télécommande rapide, lisible et utilisable sans attention prolongée.
+L'objectif est une télécommande rapide, lisible et utilisable sans attention prolongée, tout en donnant accès aux commandes live nécessaires depuis un smartphone.
