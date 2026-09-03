@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -125,6 +127,33 @@ class AnimationRemoteShortcut(models.Model):
 
     class Meta:
         db_table = 'lss"."m_animation_remote_shortcuts'
+
+
+class AnimationRemoteSession(models.Model):
+    session_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    animation = models.ForeignKey(
+        Animation,
+        on_delete=models.CASCADE,
+        db_column="animation_id",
+        related_name="remote_sessions",
+    )
+    access_token_digest = models.CharField(max_length=64, unique=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    last_remote_command_at = models.DateTimeField(blank=True, null=True)
+    master_connected_at = models.DateTimeField(blank=True, null=True)
+    latest_state = models.JSONField(default=dict)
+    latest_state_revision = models.IntegerField(default=-1)
+
+    class Meta:
+        db_table = 'lss"."a_animation_remote_sessions'
+        indexes = [
+            models.Index(
+                fields=["active", "expires_at"],
+                name="a_anim_remote_active_exp_idx",
+            ),
+        ]
 
 
 class BackgroundImageStatus(models.TextChoices):

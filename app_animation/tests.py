@@ -2,11 +2,13 @@ import json
 import shutil
 import tempfile
 import uuid
+from datetime import timedelta
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
@@ -54,6 +56,24 @@ from .transitions import (
     list_enabled_transition_runtime_options,
     list_enabled_transitions,
 )
+from .services.remote_protocol import (
+    RemoteCommand,
+    RemoteCommandAcceptedMessage,
+    RemoteCommandMessage,
+    RemoteCommandRejectedMessage,
+    RemoteMessageType,
+    RemoteRejectReason,
+    RemoteStateMessage,
+)
+from .services.remote_sessions import (
+    accept_remote_command,
+    authenticate_remote_session,
+    create_remote_session,
+    deactivate_remote_session,
+    get_remote_command_cooldown,
+    mark_master_connected,
+    store_remote_state,
+)
 
 
 class PlaylistParsingTests(SimpleTestCase):
@@ -64,6 +84,237 @@ class PlaylistParsingTests(SimpleTestCase):
             [("asid", 10), ("sid", 20), ("asid", 11)],
         )
 
+
+class AnimationRemoteProtocolTests(SimpleTestCase):
+    def _state_payload(self, revision: int) -> dict[str, object]:
+        return {
+            "type": RemoteMessageType.STATE,
+            "state": {
+                "revision": revision,
+                "current_projection_step": {
+                    "projection_index": 4,
+                    "label": "Couplet 1",
+                    "excerpt": "Texte courant",
+                },
+                "next_projection_step": {
+                    "projection_index": 5,
+                    "label": "Couplet 2",
+                    "excerpt": "Texte suivant",
+                },
+                "current_song": {"animation_song_id": 8, "title": "Chant A"},
+                "previous_song": None,
+                "next_song": {"animation_song_id": 9, "title": "Chant B"},
+                "black_mode": False,
+                "songs": [{"animation_song_id": 8, "title": "Chant A", "selected": True}],
+                "chorus_available": True,
+                "current_transition": {"transition_id": "fade"},
+                "available_transitions": [{"transition_id": "fade"}],
+                "qr_mode": False,
+                "master_status": "MASTER_CONNECTED",
+            },
+        }
+
+    def test_command_and_response_messages_are_json_serializable(self):
+        command = RemoteCommandMessage(
+            command=RemoteCommand.GO_TO_SONG,
+            target={"animation_song_id": 12},
+        )
+
+        self.assertEqual(
+            command.to_payload(),
+            {
+                "type": RemoteMessageType.COMMAND,
+                "command": RemoteCommand.GO_TO_SONG,
+                "target": {"animation_song_id": 12},
+            },
+        )
+        self.assertEqual(
+            RemoteCommandMessage.from_payload(command.to_payload()), command
+        )
+        self.assertEqual(
+            RemoteCommandAcceptedMessage(RemoteCommand.NEXT_SLIDE).to_payload()["type"],
+            RemoteMessageType.COMMAND_ACCEPTED,
+        )
+        self.assertEqual(
+            RemoteCommandRejectedMessage(RemoteRejectReason.COOLDOWN).to_payload()[
+                "reason"
+            ],
+            RemoteRejectReason.COOLDOWN,
+        )
+        self.assertEqual(
+            RemoteStateMessage.from_payload(self._state_payload(0)).revision,
+            0,
+        )
+        json.dumps(command.to_payload())
+        json.dumps(RemoteCommandAcceptedMessage(RemoteCommand.NEXT_SLIDE).to_payload())
+        json.dumps(
+            RemoteCommandRejectedMessage(RemoteRejectReason.COOLDOWN).to_payload()
+        )
+        json.dumps(RemoteStateMessage.from_payload(self._state_payload(0)).to_payload())
+
+    def test_state_requires_the_compact_protocol_fields(self):
+        payload = self._state_payload(1)
+        del payload["state"]["master_status"]
+
+        with self.assertRaises(ValueError):
+            RemoteStateMessage.from_payload(payload)
+
+
+class AnimationRemoteSessionServiceTests(TestCase):
+    def _animation(self) -> Animation:
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        return Animation.objects.create(
+            group=group,
+            title="Remote session",
+            scheduled_at=timezone.now(),
+        )
+
+    def _state_payload(self, revision: int) -> dict[str, object]:
+        return {
+            "type": RemoteMessageType.STATE,
+            "state": {
+                "revision": revision,
+                "current_projection_step": None,
+                "next_projection_step": None,
+                "current_song": None,
+                "previous_song": None,
+                "next_song": None,
+                "black_mode": False,
+                "songs": [],
+                "chorus_available": False,
+                "current_transition": None,
+                "available_transitions": [],
+                "qr_mode": False,
+                "master_status": "MASTER_CONNECTED",
+            },
+        }
+
+    def test_create_session_keeps_only_token_digest_and_uses_eight_hour_ttl(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        session = created.session
+
+        self.assertIsInstance(session.session_id, uuid.UUID)
+        self.assertTrue(created.access_token)
+        self.assertNotEqual(session.access_token_digest, created.access_token)
+        self.assertEqual(session.expires_at, now + timedelta(hours=8))
+        self.assertEqual(session.latest_state_revision, -1)
+        self.assertTrue(
+            authenticate_remote_session(session.session_id, created.access_token, now=now)
+        )
+
+    def test_token_inactive_and_expired_sessions_are_refused(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        self.assertIsNone(
+            authenticate_remote_session(created.session.session_id, "wrong", now=now)
+        )
+        created.session.active = False
+        created.session.save(update_fields=["active"])
+        self.assertIsNone(
+            authenticate_remote_session(
+                created.session.session_id, created.access_token, now=now
+            )
+        )
+
+        expired = create_remote_session(self._animation(), now=now)
+        self.assertIsNone(
+            authenticate_remote_session(
+                expired.session.session_id,
+                expired.access_token,
+                now=expired.session.expires_at,
+            )
+        )
+
+        deactivated = create_remote_session(self._animation(), now=now)
+        self.assertFalse(
+            deactivate_remote_session(deactivated.session.session_id).active
+        )
+        self.assertIsNone(
+            authenticate_remote_session(
+                deactivated.session.session_id, deactivated.access_token, now=now
+            )
+        )
+
+    def test_command_cooldown_is_persisted_and_invalid_commands_do_not_consume_it(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        command = {"type": RemoteMessageType.COMMAND, "command": "NEXT_SLIDE"}
+
+        invalid = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            {"type": RemoteMessageType.COMMAND, "command": "UNKNOWN"},
+            now=now,
+        )
+        self.assertFalse(invalid.accepted)
+        self.assertEqual(invalid.reason, RemoteRejectReason.INVALID_COMMAND)
+
+        accepted = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertTrue(accepted.accepted)
+        self.assertEqual(accepted.session.last_remote_command_at, now)
+
+        rejected = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            command,
+            now=now + timedelta(milliseconds=599),
+        )
+        self.assertFalse(rejected.accepted)
+        self.assertEqual(rejected.reason, RemoteRejectReason.COOLDOWN)
+        self.assertTrue(
+            accept_remote_command(
+                created.session.session_id,
+                created.access_token,
+                command,
+                now=now + timedelta(milliseconds=600),
+            ).accepted
+        )
+
+    def test_state_storage_accepts_newer_revision_only(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        first = store_remote_state(
+            created.session.session_id,
+            created.access_token,
+            self._state_payload(0),
+            now=now,
+        )
+        self.assertTrue(first.stored)
+        stale = store_remote_state(
+            created.session.session_id,
+            created.access_token,
+            self._state_payload(0),
+            now=now,
+        )
+        self.assertFalse(stale.stored)
+        newest = store_remote_state(
+            created.session.session_id,
+            created.access_token,
+            self._state_payload(1),
+            now=now,
+        )
+        self.assertTrue(newest.stored)
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.latest_state_revision, 1)
+        self.assertEqual(created.session.latest_state["revision"], 1)
+
+    def test_master_connection_and_cooldown_configuration_are_validated(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        connected = mark_master_connected(
+            created.session.session_id, created.access_token, now=now
+        )
+        self.assertEqual(connected.master_connected_at, now)
+
+        with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_command_cooldown()
 
 class AnimationFormFontValidationTests(SimpleTestCase):
     def test_transition_manifest_exposes_enabled_transitions(self):

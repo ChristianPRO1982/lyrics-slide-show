@@ -132,6 +132,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "lyrics_slide_show.wsgi.application"
 
+# Remote distant sessions are intentionally server-side. The browser-side transport
+# will be added in a later implementation lot.
+REMOTE_SESSION_TTL_SECONDS = int(os.environ.get("REMOTE_SESSION_TTL_SECONDS", "28800"))
+REMOTE_COMMAND_COOLDOWN_MS = int(
+    os.environ.get("REMOTE_COMMAND_COOLDOWN_MS", "600")
+)
+
 
 DATABASES = {
     "default": {
