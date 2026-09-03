@@ -10,6 +10,11 @@ Ce document complète `remote-distante_00_architecture.md`.
 
 Une session distante représente une projection actuellement active.
 
+Elle est persistée côté serveur dans PostgreSQL.
+
+Cette persistance est obligatoire parce que le déploiement peut utiliser plusieurs workers ou processus.
+L'état critique d'activation, d'expiration, de token et de cooldown ne doit pas dépendre uniquement de la mémoire d'un processus.
+
 Elle doit au minimum permettre de gérer :
 
 ```text
@@ -18,6 +23,8 @@ access_token
 active
 created_at
 expires_at
+last_remote_command_at
+master_connected_at
 ```
 
 Le token :
@@ -27,6 +34,8 @@ Le token :
 * devient invalide lorsque la session est désactivée ou expirée.
 
 Une animation enregistrée ne doit jamais être contrôlable directement via son identifiant.
+
+La session peut référencer l'animation pour vérifier le contexte, mais l'accès de commande passe toujours par le token temporaire de session live.
 
 ## Commandes initiales
 
@@ -60,6 +69,12 @@ Elles ne contiennent pas de logique de navigation.
 
 Lorsqu'une commande contient une cible, cette cible est toujours validée par la remote master avant exécution.
 Une cible inconnue, expirée ou incohérente doit être rejetée.
+
+Les cibles live suivent le runtime existant :
+
+* un chant est ciblé par `animation_song_id`, pas par `song_id`, car un même chant global peut apparaître plusieurs fois dans une animation ;
+* une slide projetable est ciblée par `projection_index`, correspondant à `projectionSteps[].projectionIndex` dans le payload runtime actuel ;
+* une transition est ciblée par son `transition_id` activé dans le manifeste.
 
 ## Messages principaux
 
@@ -102,6 +117,7 @@ COOLDOWN
 SESSION_INACTIVE
 MASTER_UNAVAILABLE
 INVALID_COMMAND
+INVALID_TARGET
 ```
 
 ### STATE
@@ -112,12 +128,11 @@ Prévoir notamment les informations nécessaires à la future UI distante :
 
 ```text
 revision
-current_slide
-next_slide
+current_projection_step
+next_projection_step
 current_song
 previous_song
 next_song
-next_block
 black_mode
 songs
 chorus_available
@@ -130,6 +145,9 @@ master_status
 Le contenu exact peut être adapté aux structures existantes de Lyrics Slide Show.
 
 Le `STATE` destiné à la remote distante doit rester compact.
+
+Il est dérivé par la remote master depuis son état JavaScript courant.
+Le serveur peut le stocker ou le relayer, mais il ne le reconstruit pas depuis l'animation en base.
 
 Il doit permettre de remplir :
 
@@ -144,6 +162,25 @@ Il ne doit pas transporter tout le payload de projection destiné à l'afficheur
 
 La remote distante peut afficher une recherche locale sur un index compact fourni par l'état ou par un message dédié.
 La navigation finale issue d'une recherche doit cependant rester une intention ciblée envoyée à la master, par exemple `GO_TO_PROJECTION_STEP`.
+
+Forme conceptuelle des résumés :
+
+```text
+current_projection_step:
+  projection_index
+  label
+  excerpt
+
+next_projection_step:
+  projection_index
+  label
+  excerpt
+
+songs:
+  animation_song_id
+  title
+  selected
+```
 
 ## Révision de l'état
 
@@ -165,16 +202,19 @@ Le cooldown :
 
 * est configurable côté serveur ;
 * doit être supérieur à la durée maximale d'une transition ;
-* sera probablement inférieur à 500 ms ;
+* doit tenir compte des transitions activées dans `app_animation/transitions.json` ;
 * ne bloque jamais les commandes locales.
 
 Exemple :
 
 ```text
-REMOTE_COMMAND_COOLDOWN_MS = 400
+REMOTE_COMMAND_COOLDOWN_MS = 600
 ```
 
-La valeur définitive sera ajustée après tests réels.
+Cette valeur d'exemple est volontairement supérieure au `fade` actuel à `500 ms`.
+La valeur définitive sera ajustée après tests réels si le catalogue de transitions change.
+
+Le contrôle de cooldown doit s'appuyer sur l'état de session persisté, pas sur une variable JavaScript de remote distante ni sur une mémoire process serveur.
 
 ## Pas de file d'attente
 

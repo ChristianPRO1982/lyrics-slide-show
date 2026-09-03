@@ -79,6 +79,10 @@ Elle ne doit pas déclencher de navigation par elle-même.
 
 La deuxième zone optionnelle affiche un `<select>` ou contrôle équivalent permettant d'aller directement à un chant.
 
+Chaque option cible une occurrence de chant dans l'animation via `animation_song_id`.
+
+Elle ne cible pas `song_id`, car un même chant global peut apparaître plusieurs fois dans la même animation.
+
 Le changement de chant envoie une intention à la master, qui vérifie et exécute la navigation.
 
 Le smartphone ne doit pas recalculer lui-même la position officielle de projection.
@@ -157,6 +161,16 @@ Les fonctions du menu ne doivent pas encombrer l'écran principal.
 Le menu ne doit cependant pas reproduire toute l'interface master.
 Il reste un panneau de commandes secondaires et de réglages locaux de la remote distante.
 
+### Recherche De Slide
+
+La recherche de slide peut utiliser un index compact fourni par l'état distant.
+
+Le résultat sélectionné doit envoyer une intention `GO_TO_PROJECTION_STEP` avec un `projection_index`.
+
+La master vérifie que ce `projection_index` existe encore dans `projectionSteps` avant d'exécuter `projectProjectionStep`.
+
+Le smartphone ne doit pas reconstruire ou deviner la séquence de projection.
+
 ## Retour utilisateur
 
 Une commande doit produire un feedback discret et non bloquant.
@@ -197,6 +211,9 @@ Une reconnexion ne doit jamais provoquer le rejeu d'une ancienne commande.
 * grands targets tactiles ;
 * éviter les modales pendant la projection ;
 * conserver l'écran principal lisible même avec les trois zones optionnelles affichées.
+
+Les préférences locales d'affichage des trois zones optionnelles peuvent être persistées dans le navigateur du smartphone.
+Elles ne sont pas synchronisées entre remotes distantes.
 
 Ne pas reproduire toutes les fonctions de la remote master.
 

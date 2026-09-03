@@ -96,7 +96,7 @@ Ajoute dans la remote master la gestion de la fonctionnalité distante :
 
 Décrit l'UI de la télécommande distante.
 
-Cette interface doit rester une télécommande simple, pas devenir une seconde remote master.
+Cette interface doit rester une télécommande opérateur compacte, pas devenir une copie de la remote master.
 
 ### `06_resilience-tests`
 
@@ -139,6 +139,38 @@ Afficheur
 ```
 
 La remote distante ne contrôle jamais directement l'afficheur.
+
+## Greffon Au Code Actuel
+
+Le code actuel de projection repose déjà sur une remote master autonome :
+
+* `lyrics_slide_show.html` rend le payload runtime de l'animation ;
+* `lyrics_slide_show_master.js` porte l'état live de navigation ;
+* la master calcule les frames à afficher ;
+* l'afficheur `lyrics_slide_show_display.html` reçoit uniquement ces frames via le bridge navigateur local `BroadcastChannel` avec fallback `localStorage` ;
+* le projet est actuellement servi en Django WSGI/gunicorn pour la production.
+
+La remote distante doit donc être ajoutée comme un greffon.
+
+Elle ne doit pas :
+
+* remplacer `lyrics_slide_show_master.js` ;
+* déplacer la source de vérité vers le serveur ;
+* modifier le contrat master → display ;
+* faire calculer les frames ou la navigation musicale par l'afficheur ;
+* refondre le payload runtime existant.
+
+Le serveur distant transporte les commandes, valide la session et diffuse l'état compact.
+
+Il ne calcule pas la navigation de projection.
+
+La master reste responsable de convertir une commande acceptée en action locale, puis de publier le nouvel état officiel.
+
+L'ajout WebSocket implique une évolution d'infrastructure encadrée :
+
+* ajout d'une entrée ASGI pour les WebSockets ;
+* maintien du fonctionnement HTTP Django existant ;
+* aucune hypothèse que le déploiement WSGI actuel suffise à lui seul pour le temps réel.
 
 ## Principes à respecter
 
@@ -198,6 +230,11 @@ PREVIOUS_SLIDE
 NEXT_SONG
 PREVIOUS_SONG
 TOGGLE_BLACK
+GO_TO_SONG
+GO_TO_CHORUS
+SET_TRANSITION
+TOGGLE_QR
+GO_TO_PROJECTION_STEP
 ```
 
 Après traitement, l'état courant de la projection est diffusé.

@@ -12,6 +12,16 @@ Ce document complète les lots `00` à `05`.
 
 ## Scénarios à tester
 
+### Greffon Inactif
+
+Sans session distante active :
+
+* la remote master actuelle fonctionne comme avant ;
+* `lyrics_slide_show_master.js` initialise son état local normalement ;
+* le display local reçoit toujours les frames via `BroadcastChannel` ou `localStorage` ;
+* le QR public actuel des paroles reste inchangé ;
+* aucune connexion WebSocket distante n'est nécessaire pour projeter.
+
 ### Perte d'Internet
 
 Si Internet devient indisponible :
@@ -98,6 +108,15 @@ Lorsqu'une session distante est désactivée :
 
 Un token issu d'une ancienne session ne doit jamais permettre de contrôler une nouvelle projection.
 
+### Déploiement Multi-Workers
+
+Avec plusieurs workers ou processus :
+
+* la validation du token ne dépend pas de la mémoire process ;
+* l'expiration de session reste cohérente ;
+* le cooldown distant reste partagé ;
+* une session désactivée est refusée par tous les workers.
+
 ## Tests de non-régression
 
 Vérifier également le fonctionnement de LSS sans activer la fonctionnalité distante :
@@ -111,6 +130,45 @@ Vérifier également le fonctionnement de LSS sans activer la fonctionnalité di
 * afficheur.
 
 Le comportement existant doit rester inchangé.
+
+Vérifier en particulier que :
+
+* l'afficheur ne connaît pas la remote distante ;
+* le bridge local master → display conserve son protocole ;
+* `BLACK MODE`, QR public et transitions restent pilotés par la master.
+
+## Tests Techniques Attendus
+
+### Tests Django
+
+Prévoir des tests `TestCase` pour :
+
+* création de session distante persistée en PostgreSQL ;
+* génération de token non prédictible ;
+* refus d'une session inactive ou expirée ;
+* invalidation d'un ancien token après désactivation ;
+* cooldown partagé entre commandes distantes ;
+* refus des commandes sans master connectée.
+
+### Tests JavaScript Ciblés
+
+Prévoir des tests ou assertions ciblées sur l'adaptateur master :
+
+* `handleExternalCommand` existe comme point d'entrée unique ;
+* les commandes simples appellent les actions locales existantes ;
+* `GO_TO_SONG` utilise `animation_song_id` ;
+* `GO_TO_PROJECTION_STEP` utilise `projection_index` ;
+* une cible invalide est rejetée sans modifier l'état local.
+
+### Tests De Transport
+
+Prévoir des tests de protocole WebSocket pour :
+
+* connexion master avec session valide ;
+* connexion remote distante avec token valide ;
+* rejet d'un token invalide ;
+* diffusion d'un `STATE` de la master vers toutes les remotes ;
+* rejet immédiat d'une commande pendant cooldown.
 
 ## Critère de validation
 

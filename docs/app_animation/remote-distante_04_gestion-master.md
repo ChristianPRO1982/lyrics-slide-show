@@ -12,6 +12,11 @@ La fonctionnalité distante doit être inactive par défaut.
 
 Depuis la remote master, l'utilisateur peut activer une session distante.
 
+Cette gestion est ajoutée à la remote master existante.
+
+Elle doit s'insérer dans son interface actuelle sans réorganiser toute la page de projection.
+Le bon emplacement initial est un contrôle dans la barre ou le panneau d'outils de la master.
+
 L'activation doit :
 
 * créer ou activer la session live ;
@@ -19,11 +24,13 @@ L'activation doit :
 * connecter la master au canal temps réel ;
 * rendre l'accès distant utilisable immédiatement.
 
+La connexion au canal distant n'a pas d'effet sur le `display_session_id` existant, utilisé uniquement entre la master et l'écran d'affichage local.
+
 ## Affichage de l'accès
 
 Une fois activée, la remote master doit afficher au minimum :
 
-* un QR code ;
+* un QR code de télécommande distante ;
 * un lien d'accès distant ;
 * l'état de la session ;
 * le nombre de remotes distantes connectées.
@@ -42,6 +49,13 @@ Télécommande distante : active
 
 Le token technique ne doit pas être affiché séparément s'il est déjà intégré au lien.
 
+Ce QR code est distinct du QR code public actuel des paroles.
+
+Le QR public actuel affiche une page smartphone de lecture des paroles.
+Le nouveau QR distant ouvre une remote de commande live.
+
+Les libellés doivent éviter toute confusion entre ces deux accès.
+
 ## Désactivation
 
 La désactivation doit :
@@ -53,16 +67,24 @@ La désactivation doit :
 
 La projection locale continue normalement.
 
+La désactivation ne doit pas :
+
+* changer la slide projetée ;
+* fermer l'afficheur local ;
+* modifier `state.sessionId` côté master ;
+* modifier le bridge navigateur local vers le display.
+
 ## Statuts
 
 Prévoir des états simples :
 
 ```text
 INACTIVE
-ACTIVE
+ACTIVATING
 MASTER_CONNECTING
 MASTER_CONNECTED
 ERROR
+DISABLED
 ```
 
 L'interface doit rester compréhensible sans exposer les détails techniques.

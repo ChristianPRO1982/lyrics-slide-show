@@ -30,9 +30,24 @@ La remote distante ne communique jamais directement avec l'afficheur.
 
 ## Technologie
 
-Utiliser un mécanisme temps réel adapté à l'architecture Django existante, de préférence WebSocket si cela s'intègre proprement au projet.
+La cible retenue est WebSocket via ASGI.
 
-Éviter d'introduire une infrastructure supplémentaire lourde si elle n'est pas nécessaire.
+Le projet actuel est majoritairement HTTP Django et lancé en production via WSGI/gunicorn.
+Le transport distant nécessite donc un ajout explicite et isolé :
+
+* configuration `ASGI_APPLICATION` ;
+* serveur ASGI compatible WebSocket en production ;
+* couche WebSocket limitée à `app_animation` ;
+* routage WebSocket séparé des routes HTTP existantes ;
+* channel layer partagé si plusieurs workers ou processus doivent échanger les messages.
+
+La mise en place ne doit pas transformer tout le projet en refonte temps réel.
+
+Les vues HTTP existantes et le bridge local master → display restent inchangés.
+
+Les sessions distantes, tokens, expirations et cooldowns sont persistés dans PostgreSQL.
+
+Il est interdit de faire dépendre la validité d'une session distante ou d'un token uniquement d'une variable en mémoire process.
 
 ## Connexion
 
@@ -59,6 +74,10 @@ Le serveur :
 
 La remote master exécute ensuite l'action via le mécanisme défini dans le lot `02`.
 
+Le serveur ne calcule pas la navigation.
+
+Il ne choisit pas la slide suivante et ne reconstruit pas de frame de projection.
+
 ## Diffusion de l'état
 
 Après toute modification de projection, la remote master transmet le nouvel `STATE`.
@@ -66,6 +85,10 @@ Après toute modification de projection, la remote master transmet le nouvel `ST
 Le serveur le diffuse à toutes les remotes distantes connectées à la session.
 
 L'état le plus récent fait autorité.
+
+Cet état est compact et destiné à l'interface smartphone.
+
+Il ne remplace pas les frames envoyées localement par la master à l'afficheur.
 
 ## Plusieurs remotes
 
@@ -94,6 +117,8 @@ COMMAND
 Aucune commande rejetée ne doit être mise en attente.
 
 Les commandes locales de la master restent toujours disponibles.
+
+Le cooldown distant s'appuie sur les données persistées de session afin de rester cohérent avec plusieurs connexions et plusieurs workers.
 
 ## Reconnexion
 
@@ -132,3 +157,5 @@ Ne pas implémenter dans ce lot :
 * reprise ou replay de commandes.
 
 L'objectif est uniquement d'obtenir un canal temps réel simple et fiable entre les différents clients.
+
+Ce lot ne modifie pas le protocole local `BroadcastChannel` / `localStorage` entre la master et l'afficheur.

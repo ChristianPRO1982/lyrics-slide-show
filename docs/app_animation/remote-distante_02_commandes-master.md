@@ -56,12 +56,17 @@ Les commandes ciblées doivent transporter uniquement un identifiant ou une vale
 Exemples conceptuels :
 
 ```text
-GO_TO_SONG(song_id ou animation_song_id)
+GO_TO_SONG(animation_song_id)
 SET_TRANSITION(transition_id)
-GO_TO_PROJECTION_STEP(projection_step_id)
+GO_TO_PROJECTION_STEP(projection_index)
 ```
 
-La forme exacte des identifiants doit suivre les structures existantes du payload runtime.
+Les identifiants doivent suivre les structures existantes du payload runtime.
+
+En particulier :
+
+* `GO_TO_SONG` cible une occurrence d'animation par `animation_song_id`, pas un chant global par `song_id` ;
+* `GO_TO_PROJECTION_STEP` cible `projectionSteps[].projectionIndex`.
 
 Chaque commande distante doit appeler le même mécanisme que son équivalent local.
 
@@ -71,14 +76,20 @@ Analyser la remote actuelle avant modification.
 
 Si les actions sont directement liées aux événements DOM ou clavier, extraire uniquement la logique nécessaire dans des fonctions communes.
 
-Exemple conceptuel :
+Le code actuel contient déjà les fonctions de navigation et d'état nécessaires dans `lyrics_slide_show_master.js`.
+
+La greffe doit les réutiliser au lieu de créer une seconde logique.
+
+Fonctions existantes à préserver et utiliser comme points d'appui :
 
 ```text
-nextSlide()
-previousSlide()
-nextSong()
-previousSong()
-toggleBlack()
+navigateSlide(direction)
+navigateChorus()
+setCurrentSong(songIndex)
+projectProjectionStep(projectionIndex, options)
+toggleBlackMode()
+toggleQrMode()
+setActiveTransition(transitionId)
 ```
 
 Les boutons, raccourcis clavier, pédalier et commandes distantes appellent ensuite ces mêmes actions.
@@ -93,12 +104,29 @@ Prévoir un point d'entrée unique dans la remote master, conceptuellement :
 handleExternalCommand(command)
 ```
 
+Ce point d'entrée est un adaptateur.
+
 Son rôle est limité à :
 
 1. valider le type de commande ;
 2. valider la cible éventuelle dans le runtime courant ;
 3. appeler l'action locale correspondante ;
 4. produire le nouvel état de projection.
+
+Mapping attendu :
+
+```text
+PREVIOUS_SLIDE          -> navigateSlide(-1)
+NEXT_SLIDE              -> navigateSlide(1)
+PREVIOUS_SONG           -> setCurrentSong(selectedSongIndex - 1)
+NEXT_SONG               -> setCurrentSong(selectedSongIndex + 1)
+TOGGLE_BLACK            -> toggleBlackMode()
+GO_TO_SONG              -> résoudre animation_song_id vers songIndex, puis setCurrentSong(songIndex)
+GO_TO_CHORUS            -> navigateChorus()
+SET_TRANSITION          -> setActiveTransition(transition_id)
+TOGGLE_QR               -> toggleQrMode()
+GO_TO_PROJECTION_STEP   -> projectProjectionStep(projection_index)
+```
 
 Le transport réseau sera ajouté dans le lot `03`.
 
@@ -109,12 +137,11 @@ Après toute action influençant la projection, la master doit pouvoir produire 
 L'état doit notamment permettre de connaître :
 
 ```text
-current_slide
-next_slide
+current_projection_step
+next_projection_step
 current_song
 previous_song
 next_song
-next_block
 black_mode
 revision
 chorus_available
@@ -124,6 +151,11 @@ qr_mode
 ```
 
 Réutiliser les données déjà disponibles dans la remote autant que possible.
+
+L'état distant est publié par la master.
+Il doit être recalculé et envoyé après toute action locale ou distante qui modifie la projection, si une session distante est active.
+
+Le serveur ne doit pas reconstruire cet état à partir de l'animation en base.
 
 Cet état doit être suffisant pour alimenter l'écran smartphone principal :
 
