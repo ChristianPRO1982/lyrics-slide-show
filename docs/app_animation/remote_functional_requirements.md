@@ -62,6 +62,12 @@ En mode double :
 - l'écran projeté applique les règles globales de fond et de couleur commune à partir du bloc gauche ;
 - chaque côté conserve cependant sa propre police, sa propre taille et son propre poids de police.
 
+Chaque ordre réel d'affichage transporte aussi la transition à utiliser pour atteindre le nouveau frame.
+La remote reste l'autorité de cette transition live.
+
+Le heartbeat sert à maintenir ou vérifier la liaison, mais il ne déclenche jamais de transition visuelle côté écran d'affichage.
+Un même ordre logique reçu plusieurs fois par les transports navigateur est dédupliqué côté display par `nonce`.
+
 ## Structure Générale De La Remote
 
 Les panneaux sont empilés verticalement sur toute la largeur utile.
@@ -97,9 +103,13 @@ Première ligne :
 Deuxième ligne :
 - 🖥️📽️ `Ouvrir un second écran`
 - ⌨️👢 `Raccourcis clavier (personnalisable)`
+- sélecteur `Transition`
 - ↕️ / 🧱 `Scroll` / `Stop scroll`
 - 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
 - QR embarqué ou fallback 📱 `QR-code`
+
+Le sélecteur `Transition` affiche les transitions activées fournies par le manifeste technique.
+Son ordre suit l'ordre résolu côté Django.
 
 ### Prévisualisation
 
@@ -295,6 +305,29 @@ Action :
 - injecte un message initial de rappel F11,
 - plusieurs écrans d'affichage peuvent coexister et restent synchronisés.
 
+### Transition Active
+
+Position :
+- contrôle de sélection dans la deuxième ligne.
+
+Action :
+- choisit la transition live active pour les prochains ordres d'affichage,
+- met à jour l'indicateur de la remote,
+- persiste l'état live local avec la session remote,
+- ne modifie pas l'animation en base,
+- ne modifie pas le frame déjà projeté.
+
+Source des choix :
+- catalogue activé fourni par le payload runtime ;
+- ordre issu du manifeste technique des transitions.
+
+Au lancement d'une nouvelle session, la transition active est initialisée depuis `defaultTransitionId`.
+Au retour sur la remote avec le même état local, `activeTransitionId` est restauré depuis `lss-lyrics-master-state:<animationId>`.
+
+L'évolution future vers une transition par chant, par slide ou par bloc doit passer par un resolveur de transition central.
+La remote ne doit pas disperser cette priorité dans les actions de navigation.
+Une nouvelle transition doit aussi être réellement supportée par le display avant d'être proposée comme transition active.
+
 ### Raccourcis Clavier
 
 Position :
@@ -335,6 +368,15 @@ Raccourcis site par défaut :
 - `A`, `D` : `Display/hide choruses`
 - `L` : `Scroll on ↕️ or not 🧱`
 - `Q` : `📱 QR code for lyrics`
+- `T` : `Transition suivante`
+- `I` : `Forcer Direct`
+
+Actions de transition :
+- `Transition suivante` cycle dans l'ordre des transitions activées fourni par le manifeste ;
+- `Forcer Direct` sélectionne `direct` pour les prochains ordres d'affichage.
+
+Ces actions modifient uniquement l'état live de la remote.
+Elles ne sauvegardent pas la préférence de l'animation.
 
 ### Blocage Du Scroll
 

@@ -16,6 +16,9 @@ Ce fichier décrit les comportements fonctionnels transverses et les contrats de
 Les détails d'interface par template sont documentés dans `docs/app_animation/template_*.md`.
 Ce document ne doit pas décrire la composition visuelle des pages ni les contrôles UI fins.
 
+Le contrat détaillé des transitions de projection est documenté dans `docs/app_animation/transitions.md`.
+Ce fichier sépare le fonctionnement runtime stable du catalogue évolutif des transitions.
+
 `docs/general_overview.md` reste la référence inter-apps et doit rester cohérent avec ce document.
 
 ## Concepts Clés
@@ -26,6 +29,7 @@ Une `Animation` :
 - est rattachée à un groupe,
 - contient une playlist ordonnée de chants,
 - porte des paramètres visuels de projection par défaut,
+- porte une préférence de transition par défaut,
 - est planifiée via `scheduled_at` (datetime timezone-aware).
 
 Il n'existe pas de statut `draft` ou `archived`.
@@ -77,6 +81,9 @@ Le runtime de projection est local au navigateur et piloté par état.
 
 La page `remote` construit et maintient le payload runtime, puis envoie des frames à l'écran projeté sans aller-retour serveur à chaque navigation de slide.
 
+La transition active de projection est un état live porté par la remote.
+Elle est initialisée depuis la préférence persistée de l'animation, puis peut être changée pendant le direct sans modifier l'animation en base.
+
 ## Règles D'accès
 
 Un groupe sélectionné est obligatoire pour les workflows de gestion d'animations.
@@ -104,7 +111,11 @@ Règles spécifiques aux images de fond :
 Champs gérés :
 - identité et FK groupe,
 - `title`, `description`, `scheduled_at`,
-- défauts visuels : `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`.
+- défauts visuels : `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`,
+- `default_transition` : identifiant technique de la transition par défaut.
+
+`default_transition` est une préférence d'animation.
+Le modèle actuel ne porte pas de transition par chant, par slide, par bloc ou par couplet.
 
 ### AnimationSong
 
@@ -469,7 +480,8 @@ Contrats d'entrée/sortie gérés côté back et consommés par le front :
 - synchronisation playlist via `ordered_mix` (`asid`/`sid`),
 - synchronisation des overrides via `songs_payload`,
 - route de choix d'image dédiée `animation_background_picker`,
-- bundle runtime `lyrics_slide_show` (`slides`, `projectionSteps`, `songs`, `cardGroups`, `backgroundUrls`, `publicUrl`, `qrCodePngBase64`),
+- manifeste technique des transitions (`app_animation/transitions.json`) lu par Django,
+- bundle runtime `lyrics_slide_show` (`slides`, `projectionSteps`, `songs`, `cardGroups`, `backgroundUrls`, `publicUrl`, `qrCodePngBase64`, `transitions`, `defaultTransitionId`),
 - configuration structurée de raccourcis pour la remote (`siteBindings`, `effectiveBindings`, `formBindings`, `actionOrder`, `actionToRemoteAction`, `actionLabels`, `canCustomizeShortcuts`, `customizeUrl`),
 - endpoint JSON de personnalisation des raccourcis `lyrics_slide_show_shortcuts`,
 - vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet.
@@ -478,7 +490,12 @@ Dans ce bundle :
 - `slides` est l'inventaire plat des blocs rendus avec leur style résolu individuel ;
 - `projectionSteps` est la séquence réelle de projection consommée par la remote et l'écran projeté ;
 - un `projection step` de mode `double` contient deux entrées distinctes `left` et `right`, chacune avec son propre `style` ;
-- `cardGroups` est une vue de navigation pour la grille Remote et non la source de vérité de la projection.
+- `cardGroups` est une vue de navigation pour la grille Remote et non la source de vérité de la projection ;
+- `transitions` expose le catalogue activé, ordonné et déjà localisé pour la remote ;
+- `defaultTransitionId` expose la transition par défaut résolue pour initialiser l'état live de la remote.
+
+Chaque ordre réel d'affichage envoyé par la remote transporte un frame complet et la transition résolue à appliquer.
+Les détails du manifeste, du resolveur et du moteur display sont décrits dans `docs/app_animation/transitions.md`.
 
 Les comportements UI détaillés de ces contrats sont décrits dans les documents template dédiés.
 

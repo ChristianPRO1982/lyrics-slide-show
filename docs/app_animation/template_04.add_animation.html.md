@@ -7,6 +7,7 @@ Créer une nouvelle animation dans le groupe sélectionné.
 ## Périmètre
 
 - formulaire complet des propriétés animation,
+- choix de la transition par défaut,
 - aperçu visuel live,
 - popup dédiée pour choisir les couleurs texte/fond.
 
@@ -18,7 +19,8 @@ Créer une nouvelle animation dans le groupe sélectionné.
 ## Comportements UI
 
 - sections communes de navigation/actions via `includes/_animation_actions.html`,
-- champs rendus explicitement : titre, description, date/heure, couleurs, police, taille, marge horizontale, code image de fond,
+- champs rendus explicitement : titre, description, date/heure, transition, couleurs, police, taille, marge horizontale, code image de fond,
+- choix de transition alimenté par `AnimationForm` depuis le manifeste technique,
 - résumé live (`Test`) synchronisé avec les champs style,
 - bouton `Couleurs du chant` ouvrant `LSSMessageBox` pour éditer texte/fond,
 - bouton de soumission `Créer l'animation`.

@@ -26,13 +26,16 @@ La vue construit un bundle `runtime_payload` issu de `build_animation_render_bun
 - `cardGroups` (grille des cartes de navigation),
 - `backgroundUrls` (préchargement),
 - `publicUrl` (page smartphone),
-- `qrCodePngBase64`.
+- `qrCodePngBase64`,
+- `transitions` (catalogue activé, ordonné, localisé, avec paramètres runtime),
+- `defaultTransitionId` (transition initiale résolue pour la remote).
 
 Rôles respectifs :
 - `slides` sert d'inventaire de rendu bloc par bloc ;
 - `projectionSteps` est le contrat effectivement consommé par la remote pour naviguer et par l'écran projeté pour afficher ;
 - en mode double, `projectionSteps` contient deux entrées distinctes `left` et `right`, chacune avec son propre `style` ;
-- `cardGroups` est une représentation de navigation dérivée, pas la source de vérité de la projection.
+- `cardGroups` est une représentation de navigation dérivée, pas la source de vérité de la projection ;
+- `transitions` alimente le sélecteur live et le cycle `Transition suivante`.
 
 Le payload est injecté via `json_script` (`lss-lyrics-runtime-payload`).
 
@@ -50,13 +53,14 @@ Un second `json_script` expose `shortcuts_config` avec :
 
 - chaque ouverture crée un `display_session_id` (`<16hex>-<animation_id>`),
 - la page display exige ce `session` dans l'URL,
-- le remote stocke aussi son état local (`lss-lyrics-master-state:<animationId>`).
+- le remote stocke aussi son état local (`lss-lyrics-master-state:<animationId>`), dont `activeTransitionId`.
 
 ## Mise En Page
 
 La page contient :
 - surcouche visuelle de `BLACK MODE` non interactive,
 - barre d'actions,
+- contrôle de transition live,
 - panneau aperçu diapo courante,
 - panneau aperçu diapo suivante,
 - liste par chant avec grille de cartes de diapos.
@@ -74,6 +78,9 @@ Actions implémentées :
 - toggle scroll (`↕️ / 🧱`),
 - toggle affichage cartes refrain,
 - toggle QR public,
+- choix de la transition active,
+- `Transition suivante`,
+- `Forcer Direct`,
 - affichage popup d'aide raccourcis,
 - personnalisation persistée des raccourcis membre.
 
@@ -102,6 +109,9 @@ Frames possibles :
 - `qr` (URL publique + image QR encodée),
 - `f11-reminder` (rappel initial lors de l'ouverture d'un nouvel écran).
 
+Chaque frame réelle envoyée au display inclut aussi la transition active à appliquer.
+Changer la transition dans la remote ne produit pas de frame à lui seul.
+
 La page display applique :
 - centrage horizontal/vertical,
 - `white-space: pre-wrap`,
@@ -119,7 +129,7 @@ Le gras n'est pas encodé dans le contenu lui-même ; il provient du `fontWeight
 - préchargement des backgrounds côté remote,
 - avertissement popup si préchargement incomplet,
 - persistance du dernier frame côté display (`lss-lyrics-display-lastframe:<sessionId>`),
-- heartbeat du remote pour continuité de synchro.
+- heartbeat du remote pour continuité de synchro, sans rejeu de transition visuelle.
 
 ## Popups Et Raccourcis
 
@@ -131,7 +141,7 @@ Popup d'aide raccourcis :
 - pour un invité, cette action ouvre une popup d'information de connexion requise.
 
 Popup de personnalisation :
-- 10 lignes d'actions,
+- lignes d'actions incluant `Transition suivante` et `Forcer Direct`,
 - 3 slots readonly par action,
 - capture par clic puis frappe clavier,
 - croix d'effacement par slot,
