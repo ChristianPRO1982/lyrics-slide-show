@@ -51,8 +51,14 @@ def _token_digest(access_token: str) -> str:
 
 def get_remote_session_ttl() -> timedelta:
     ttl_seconds = getattr(settings, "REMOTE_SESSION_TTL_SECONDS", 0)
-    if isinstance(ttl_seconds, bool) or not isinstance(ttl_seconds, int) or ttl_seconds <= 0:
-        raise ImproperlyConfigured("REMOTE_SESSION_TTL_SECONDS must be a positive integer")
+    if (
+        isinstance(ttl_seconds, bool)
+        or not isinstance(ttl_seconds, int)
+        or ttl_seconds <= 0
+    ):
+        raise ImproperlyConfigured(
+            "REMOTE_SESSION_TTL_SECONDS must be a positive integer"
+        )
     return timedelta(seconds=ttl_seconds)
 
 
@@ -89,7 +95,9 @@ def _authenticated_session(
     session = AnimationRemoteSession.objects.filter(session_id=session_id).first()
     if session is None or not isinstance(access_token, str) or not access_token:
         return None
-    if not secrets.compare_digest(session.access_token_digest, _token_digest(access_token)):
+    if not secrets.compare_digest(
+        session.access_token_digest, _token_digest(access_token)
+    ):
         return None
     if not session.active or session.expires_at <= now:
         return None
@@ -132,7 +140,9 @@ def mark_master_connected(
         )
         if session is None or not isinstance(access_token, str) or not access_token:
             return None
-        if not secrets.compare_digest(session.access_token_digest, _token_digest(access_token)):
+        if not secrets.compare_digest(
+            session.access_token_digest, _token_digest(access_token)
+        ):
             return None
         if not session.active or session.expires_at <= connected_at:
             return None
@@ -170,7 +180,9 @@ def accept_remote_command(
                 reason=RemoteRejectReason.SESSION_INACTIVE,
                 session=None,
             )
-        if not secrets.compare_digest(session.access_token_digest, _token_digest(access_token)):
+        if not secrets.compare_digest(
+            session.access_token_digest, _token_digest(access_token)
+        ):
             return RemoteCommandDecision(
                 accepted=False,
                 reason=RemoteRejectReason.SESSION_INACTIVE,
@@ -226,7 +238,9 @@ def store_remote_state(
                 reason=RemoteRejectReason.SESSION_INACTIVE,
                 session=None,
             )
-        if not secrets.compare_digest(session.access_token_digest, _token_digest(access_token)):
+        if not secrets.compare_digest(
+            session.access_token_digest, _token_digest(access_token)
+        ):
             return RemoteStateStoreResult(
                 stored=False,
                 reason=RemoteRejectReason.SESSION_INACTIVE,

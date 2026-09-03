@@ -105,7 +105,9 @@ class AnimationRemoteProtocolTests(SimpleTestCase):
                 "previous_song": None,
                 "next_song": {"animation_song_id": 9, "title": "Chant B"},
                 "black_mode": False,
-                "songs": [{"animation_song_id": 8, "title": "Chant A", "selected": True}],
+                "songs": [
+                    {"animation_song_id": 8, "title": "Chant A", "selected": True}
+                ],
                 "chorus_available": True,
                 "current_transition": {"transition_id": "fade"},
                 "available_transitions": [{"transition_id": "fade"}],
@@ -200,7 +202,9 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertEqual(session.expires_at, now + timedelta(hours=8))
         self.assertEqual(session.latest_state_revision, -1)
         self.assertTrue(
-            authenticate_remote_session(session.session_id, created.access_token, now=now)
+            authenticate_remote_session(
+                session.session_id, created.access_token, now=now
+            )
         )
 
     def test_token_inactive_and_expired_sessions_are_refused(self):
@@ -315,6 +319,7 @@ class AnimationRemoteSessionServiceTests(TestCase):
         with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
             with self.assertRaises(ImproperlyConfigured):
                 get_remote_command_cooldown()
+
 
 class AnimationFormFontValidationTests(SimpleTestCase):
     def test_transition_manifest_exposes_enabled_transitions(self):
@@ -745,6 +750,72 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn('action === "next-transition"', script)
         self.assertIn('action === "force-direct"', script)
         self.assertNotIn("wipe_horizontal", script)
+
+    def test_master_script_exposes_external_command_adapter_and_remote_state(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("window.LSSLyricsMasterAdapter = Object.freeze({", script)
+        self.assertIn("handleExternalCommand,", script)
+        self.assertIn("getRemoteState,", script)
+        self.assertIn("subscribeRemoteState,", script)
+        self.assertIn('message.type !== "COMMAND"', script)
+        self.assertIn('return rejectedExternalCommand("INVALID_COMMAND");', script)
+        self.assertIn('return rejectedExternalCommand("INVALID_TARGET");', script)
+
+    def test_master_script_maps_external_commands_to_existing_actions(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        expected_mappings = (
+            ('command === "PREVIOUS_SLIDE"', "navigateSlide(-1);"),
+            ('command === "NEXT_SLIDE"', "navigateSlide(1);"),
+            (
+                'command === "PREVIOUS_SONG"',
+                "setCurrentSong(state.selectedSongIndex - 1);",
+            ),
+            ('command === "NEXT_SONG"', "setCurrentSong(state.selectedSongIndex + 1);"),
+            ('command === "TOGGLE_BLACK"', "toggleBlackMode();"),
+            ('command === "GO_TO_SONG"', "setCurrentSong(songIndex);"),
+            ('command === "GO_TO_CHORUS"', "navigateChorus();"),
+            ('command === "SET_TRANSITION"', "setActiveTransition(transitionId);"),
+            ('command === "TOGGLE_QR"', "toggleQrMode();"),
+            (
+                'command === "GO_TO_PROJECTION_STEP"',
+                "projectProjectionStep(projectionIndex);",
+            ),
+        )
+        for command, action in expected_mappings:
+            self.assertIn(command, script)
+            self.assertIn(action, script)
+
+        self.assertIn("songIndexByAnimationSongId.get(animationSongId)", script)
+        self.assertIn("projectionStepByIndex(projectionIndex)", script)
+        self.assertIn("transitionById.has(transitionId)", script)
+
+    def test_master_script_builds_and_publishes_compact_remote_state(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("const buildRemoteState = () => {", script)
+        for field_name in (
+            "revision:",
+            "current_projection_step:",
+            "next_projection_step:",
+            "current_song:",
+            "previous_song:",
+            "next_song:",
+            "black_mode:",
+            "songs:",
+            "chorus_available:",
+            "current_transition:",
+            "available_transitions:",
+            "qr_mode:",
+            'master_status: "INACTIVE"',
+        ):
+            self.assertIn(field_name, script)
+        self.assertIn("remoteStateRevision: state.remoteStateRevision", script)
+        self.assertIn("const publishRemoteState = () => {", script)
+        self.assertIn("remoteStateSubscribers.forEach", script)
+        self.assertEqual(script.count("publishRemoteState();"), 5)
+        self.assertNotIn("new WebSocket", script)
 
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
