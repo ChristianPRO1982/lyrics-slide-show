@@ -67,12 +67,14 @@ from .services.remote_protocol import (
 )
 from .services.remote_sessions import (
     accept_remote_command,
+    authenticate_master_session,
     authenticate_remote_session,
     create_remote_session,
     deactivate_remote_session,
     get_remote_command_cooldown,
-    mark_master_connected,
+    register_master_connection,
     store_remote_state,
+    unregister_master_connection,
 )
 
 
@@ -164,7 +166,9 @@ class AnimationRemoteProtocolTests(SimpleTestCase):
 
 class AnimationRemoteSessionServiceTests(TestCase):
     def _animation(self) -> Animation:
-        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        group = Group.objects.create(
+            name=f"Open Group {uuid.uuid4()}", status=GroupStatus.OPEN
+        )
         return Animation.objects.create(
             group=group,
             title="Remote session",
@@ -198,12 +202,20 @@ class AnimationRemoteSessionServiceTests(TestCase):
 
         self.assertIsInstance(session.session_id, uuid.UUID)
         self.assertTrue(created.access_token)
+        self.assertTrue(created.master_token)
         self.assertNotEqual(session.access_token_digest, created.access_token)
+        self.assertNotEqual(session.master_token_digest, created.master_token)
+        self.assertNotEqual(created.access_token, created.master_token)
         self.assertEqual(session.expires_at, now + timedelta(hours=8))
         self.assertEqual(session.latest_state_revision, -1)
         self.assertTrue(
             authenticate_remote_session(
                 session.session_id, created.access_token, now=now
+            )
+        )
+        self.assertTrue(
+            authenticate_master_session(
+                session.session_id, created.master_token, now=now
             )
         )
 
@@ -213,6 +225,11 @@ class AnimationRemoteSessionServiceTests(TestCase):
 
         self.assertIsNone(
             authenticate_remote_session(created.session.session_id, "wrong", now=now)
+        )
+        self.assertIsNone(
+            authenticate_master_session(
+                created.session.session_id, created.access_token, now=now
+            )
         )
         created.session.active = False
         created.session.save(update_fields=["active"])
@@ -254,6 +271,12 @@ class AnimationRemoteSessionServiceTests(TestCase):
         )
         self.assertFalse(invalid.accepted)
         self.assertEqual(invalid.reason, RemoteRejectReason.INVALID_COMMAND)
+        register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "test-master-channel",
+            now=now,
+        )
 
         accepted = accept_remote_command(
             created.session.session_id, created.access_token, command, now=now
@@ -284,21 +307,21 @@ class AnimationRemoteSessionServiceTests(TestCase):
 
         first = store_remote_state(
             created.session.session_id,
-            created.access_token,
+            created.master_token,
             self._state_payload(0),
             now=now,
         )
         self.assertTrue(first.stored)
         stale = store_remote_state(
             created.session.session_id,
-            created.access_token,
+            created.master_token,
             self._state_payload(0),
             now=now,
         )
         self.assertFalse(stale.stored)
         newest = store_remote_state(
             created.session.session_id,
-            created.access_token,
+            created.master_token,
             self._state_payload(1),
             now=now,
         )
@@ -311,10 +334,32 @@ class AnimationRemoteSessionServiceTests(TestCase):
         now = timezone.now()
         created = create_remote_session(self._animation(), now=now)
 
-        connected = mark_master_connected(
-            created.session.session_id, created.access_token, now=now
+        connected = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
         )
-        self.assertEqual(connected.master_connected_at, now)
+        self.assertEqual(connected.session.master_connected_at, now)
+        self.assertEqual(connected.session.master_channel_name, "first-master-channel")
+
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now,
+        )
+        self.assertEqual(replacement.replaced_channel_name, "first-master-channel")
+        unregister_master_connection(
+            created.session.session_id, connected.connection_id
+        )
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.master_channel_name, "second-master-channel")
+        unregister_master_connection(
+            created.session.session_id, replacement.connection_id
+        )
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
 
         with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
             with self.assertRaises(ImproperlyConfigured):
@@ -817,6 +862,51 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertEqual(script.count("publishRemoteState();"), 5)
         self.assertNotIn("new WebSocket", script)
 
+    def test_passive_remote_transport_uses_first_message_authentication(self):
+        script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("window.LSSRemoteTransport = Object.freeze({", script)
+        self.assertIn("connectMaster:", script)
+        self.assertIn("connectRemote:", script)
+        self.assertIn('type: "AUTH", token', script)
+        self.assertIn('socket.send(JSON.stringify({ type: "AUTH", token }));', script)
+        self.assertIn("window.setTimeout(connect, reconnectDelayMs)", script)
+        self.assertIn('message.type === "MASTER_REPLACED"', script)
+        self.assertNotIn("?token=", script)
+
+
+class RemoteTransportConfigurationTests(SimpleTestCase):
+    def test_asgi_routes_redis_and_daphne_are_configured_without_touching_local_bridge(
+        self,
+    ):
+        asgi = Path("lyrics_slide_show/asgi.py").read_text()
+        routing = Path("app_animation/routing.py").read_text()
+        settings = Path("lyrics_slide_show/settings.py").read_text()
+        development_compose = Path("compose.dev.yaml").read_text()
+        production_compose = Path("compose.prod.yaml").read_text()
+        production_start = Path("scripts/start-web-prod.sh").read_text()
+        master_script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("ProtocolTypeRouter", asgi)
+        self.assertIn("AllowedHostsOriginValidator", asgi)
+        self.assertIn('"websocket":', asgi)
+        self.assertIn("RemoteMasterConsumer", routing)
+        self.assertIn("RemoteMobileConsumer", routing)
+        self.assertIn("<uuid:session_id>/master", routing)
+        self.assertIn("<uuid:session_id>/remote", routing)
+        self.assertIn(
+            'ASGI_APPLICATION = "lyrics_slide_show.asgi.application"', settings
+        )
+        self.assertIn("channels_redis.core.RedisChannelLayer", settings)
+        self.assertIn("REMOTE_CHANNEL_REDIS_URL", settings)
+        for compose in (development_compose, production_compose):
+            self.assertIn("remote_redis:", compose)
+            self.assertNotIn('"6379:6379"', compose)
+        self.assertIn("exec daphne", production_start)
+        self.assertNotIn("gunicorn", production_start)
+        self.assertIn("new window.BroadcastChannel", master_script)
+        self.assertIn("window.localStorage", master_script)
+
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
     def test_display_script_supports_double_projection_steps(self):
@@ -910,6 +1000,13 @@ class MessageBoxActionListTests(SimpleTestCase):
 
 
 class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
+    def test_master_template_loads_the_passive_remote_transport_client(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_slide_show.html"
+        ).read_text()
+        self.assertIn("js/lyrics_slide_show_master.js", template)
+        self.assertIn("js/lyrics_remote_transport.js", template)
+
     def test_animations_page_uses_homepage_style_main_grid(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
         self.assertIn('<section class="site-theme-selection">', template)

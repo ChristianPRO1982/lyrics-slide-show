@@ -26,6 +26,15 @@ services:
       - "traefik.http.routers.lss.tls.certresolver=letsencrypt"
       - "traefik.http.services.lss.loadbalancer.server.port=8000"
     restart: unless-stopped
+    depends_on:
+      - remote_redis
+
+  remote_redis:
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    restart: unless-stopped
+    networks:
+      - default
 
 networks:
   shared_backend:

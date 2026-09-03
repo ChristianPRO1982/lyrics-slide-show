@@ -138,11 +138,16 @@ class AnimationRemoteSession(models.Model):
         related_name="remote_sessions",
     )
     access_token_digest = models.CharField(max_length=64, unique=True)
+    master_token_digest = models.CharField(
+        max_length=64, unique=True, blank=True, null=True
+    )
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     last_remote_command_at = models.DateTimeField(blank=True, null=True)
     master_connected_at = models.DateTimeField(blank=True, null=True)
+    master_channel_name = models.CharField(max_length=255, blank=True, null=True)
+    master_connection_id = models.UUIDField(blank=True, null=True)
     latest_state = models.JSONField(default=dict)
     latest_state_revision = models.IntegerField(default=-1)
 

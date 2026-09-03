@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -25,6 +26,7 @@ from .remote_protocol import (
 class CreatedRemoteSession:
     session: AnimationRemoteSession
     access_token: str
+    master_token: str
 
 
 @dataclass(frozen=True)
@@ -39,6 +41,13 @@ class RemoteStateStoreResult:
     stored: bool
     reason: RemoteRejectReason | None
     session: AnimationRemoteSession | None
+
+
+@dataclass(frozen=True)
+class MasterConnectionRegistration:
+    session: AnimationRemoteSession
+    connection_id: uuid.UUID
+    replaced_channel_name: str | None
 
 
 def _now(value: datetime | None = None) -> datetime:
@@ -81,12 +90,18 @@ def create_remote_session(
 ) -> CreatedRemoteSession:
     created_at = _now(now)
     access_token = secrets.token_urlsafe(32)
+    master_token = secrets.token_urlsafe(32)
     session = AnimationRemoteSession.objects.create(
         animation=animation,
         access_token_digest=_token_digest(access_token),
+        master_token_digest=_token_digest(master_token),
         expires_at=created_at + get_remote_session_ttl(),
     )
-    return CreatedRemoteSession(session=session, access_token=access_token)
+    return CreatedRemoteSession(
+        session=session,
+        access_token=access_token,
+        master_token=master_token,
+    )
 
 
 def _authenticated_session(
@@ -110,6 +125,21 @@ def authenticate_remote_session(
     return _authenticated_session(session_id, access_token, now=_now(now))
 
 
+def authenticate_master_session(
+    session_id: object, master_token: str, *, now: datetime | None = None
+) -> AnimationRemoteSession | None:
+    session = AnimationRemoteSession.objects.filter(session_id=session_id).first()
+    if session is None or not isinstance(master_token, str) or not master_token:
+        return None
+    if not session.master_token_digest or not secrets.compare_digest(
+        session.master_token_digest, _token_digest(master_token)
+    ):
+        return None
+    if not session.active or session.expires_at <= _now(now):
+        return None
+    return session
+
+
 def deactivate_remote_session(
     session_id: object, *, now: datetime | None = None
 ) -> AnimationRemoteSession | None:
@@ -128,9 +158,13 @@ def deactivate_remote_session(
         return session
 
 
-def mark_master_connected(
-    session_id: object, access_token: str, *, now: datetime | None = None
-) -> AnimationRemoteSession | None:
+def register_master_connection(
+    session_id: object,
+    master_token: str,
+    channel_name: str,
+    *,
+    now: datetime | None = None,
+) -> MasterConnectionRegistration | None:
     connected_at = _now(now)
     with transaction.atomic():
         session = (
@@ -138,16 +172,47 @@ def mark_master_connected(
             .filter(session_id=session_id)
             .first()
         )
-        if session is None or not isinstance(access_token, str) or not access_token:
+        if session is None or not isinstance(master_token, str) or not master_token:
             return None
-        if not secrets.compare_digest(
-            session.access_token_digest, _token_digest(access_token)
+        if not session.master_token_digest or not secrets.compare_digest(
+            session.master_token_digest, _token_digest(master_token)
         ):
             return None
         if not session.active or session.expires_at <= connected_at:
             return None
+        replaced_channel_name = session.master_channel_name
+        connection_id = uuid.uuid4()
         session.master_connected_at = connected_at
-        session.save(update_fields=["master_connected_at"])
+        session.master_channel_name = channel_name
+        session.master_connection_id = connection_id
+        session.save(
+            update_fields=[
+                "master_connected_at",
+                "master_channel_name",
+                "master_connection_id",
+            ]
+        )
+        return MasterConnectionRegistration(
+            session=session,
+            connection_id=connection_id,
+            replaced_channel_name=replaced_channel_name,
+        )
+
+
+def unregister_master_connection(
+    session_id: object, connection_id: object
+) -> AnimationRemoteSession | None:
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None or session.master_connection_id != connection_id:
+            return session
+        session.master_channel_name = None
+        session.master_connection_id = None
+        session.save(update_fields=["master_channel_name", "master_connection_id"])
         return session
 
 
@@ -194,6 +259,12 @@ def accept_remote_command(
                 reason=RemoteRejectReason.SESSION_INACTIVE,
                 session=session,
             )
+        if not session.master_channel_name:
+            return RemoteCommandDecision(
+                accepted=False,
+                reason=RemoteRejectReason.MASTER_UNAVAILABLE,
+                session=session,
+            )
         cooldown = get_remote_command_cooldown()
         if (
             session.last_remote_command_at is not None
@@ -211,7 +282,7 @@ def accept_remote_command(
 
 def store_remote_state(
     session_id: object,
-    access_token: str,
+    master_token: str,
     message: object,
     *,
     now: datetime | None = None,
@@ -232,14 +303,14 @@ def store_remote_state(
             .filter(session_id=session_id)
             .first()
         )
-        if session is None or not isinstance(access_token, str) or not access_token:
+        if session is None or not isinstance(master_token, str) or not master_token:
             return RemoteStateStoreResult(
                 stored=False,
                 reason=RemoteRejectReason.SESSION_INACTIVE,
                 session=None,
             )
-        if not secrets.compare_digest(
-            session.access_token_digest, _token_digest(access_token)
+        if not session.master_token_digest or not secrets.compare_digest(
+            session.master_token_digest, _token_digest(master_token)
         ):
             return RemoteStateStoreResult(
                 stored=False,

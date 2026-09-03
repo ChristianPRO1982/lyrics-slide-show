@@ -90,6 +90,7 @@ USER_TABLE = os.environ.get("USER_TABLE", "users")
 
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -131,11 +132,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "lyrics_slide_show.wsgi.application"
+ASGI_APPLICATION = "lyrics_slide_show.asgi.application"
 
-# Remote distant sessions are intentionally server-side. The browser-side transport
-# will be added in a later implementation lot.
+# Remote distant sessions and their WebSocket transport remain server-side.
 REMOTE_SESSION_TTL_SECONDS = int(os.environ.get("REMOTE_SESSION_TTL_SECONDS", "28800"))
 REMOTE_COMMAND_COOLDOWN_MS = int(os.environ.get("REMOTE_COMMAND_COOLDOWN_MS", "600"))
+REMOTE_CHANNEL_REDIS_URL = os.environ.get(
+    "REMOTE_CHANNEL_REDIS_URL", "redis://remote_redis:6379/0"
+)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [REMOTE_CHANNEL_REDIS_URL]},
+    }
+}
 
 
 DATABASES = {
