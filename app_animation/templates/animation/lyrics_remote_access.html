@@ -10,18 +10,77 @@
 </head>
 <body class="lyrics-public-body">
     <main class="lyrics-public-root lyrics-remote-access-root" data-remote-access-root data-session-id="{{ session_id }}">
-        <header class="lyrics-public-header">
-            <h1>{% trans "Télécommande distante" %}</h1>
-            <p data-remote-access-status>{% trans "Connexion…" %}</p>
+        <header class="lyrics-remote-access-header">
+            <button type="button" class="lyrics-remote-icon-button" data-remote-menu-toggle aria-expanded="false" aria-controls="lyrics-remote-menu" aria-label="{% trans 'Ouvrir le menu' %}">&#9776;</button>
+            <div>
+                <h1>{% trans "Télécommande distante" %}</h1>
+                <p data-remote-access-status>{% trans "Connexion…" %}</p>
+            </div>
         </header>
+        <p class="lyrics-remote-feedback" data-remote-feedback aria-live="polite" hidden></p>
+
+        <section id="lyrics-remote-menu" class="lyrics-remote-menu" data-remote-menu hidden>
+            <div class="lyrics-remote-menu-heading">
+                <h2>{% trans "Commandes secondaires" %}</h2>
+                <button type="button" class="lyrics-remote-icon-button" data-remote-menu-close aria-label="{% trans 'Fermer le menu' %}">&times;</button>
+            </div>
+            <fieldset class="lyrics-remote-visibility-settings">
+                <legend>{% trans "Zones de l'écran" %}</legend>
+                <label><input type="checkbox" data-remote-preference="next-slide" checked> {% trans "Slide suivante" %}</label>
+                <label><input type="checkbox" data-remote-preference="song-select" checked> {% trans "Sélecteur de chants" %}</label>
+                <label><input type="checkbox" data-remote-preference="chorus" checked> {% trans "Refrain" %}</label>
+            </fieldset>
+            <label class="lyrics-remote-field">
+                <span>{% trans "Aller au chant" %}</span>
+                <select data-remote-menu-song-select disabled></select>
+            </label>
+            <label class="lyrics-remote-field">
+                <span>{% trans "Transition" %}</span>
+                <select data-remote-transition-select disabled></select>
+            </label>
+            <button type="button" class="lyrics-remote-menu-action" data-remote-command="TOGGLE_QR" disabled>{% trans "QR paroles" %}</button>
+            <p class="lyrics-remote-menu-status" data-remote-menu-status></p>
+            <button type="button" class="lyrics-remote-quit-button" data-remote-quit>{% trans "Quitter la session" %}</button>
+        </section>
+
+        <section class="lyrics-remote-optional" data-remote-section="next-slide">
+            <div class="lyrics-remote-next-slide" data-remote-next-slide>{% trans "Aucune slide suivante" %}</div>
+            <button type="button" class="lyrics-remote-close-section" data-remote-hide-section="next-slide" aria-label="{% trans 'Masquer la slide suivante' %}">&times;</button>
+        </section>
+        <section class="lyrics-remote-optional" data-remote-section="song-select">
+            <label class="lyrics-remote-field">
+                <span class="visually-hidden">{% trans "Choisir un chant" %}</span>
+                <select data-remote-song-select disabled></select>
+            </label>
+            <button type="button" class="lyrics-remote-close-section" data-remote-hide-section="song-select" aria-label="{% trans 'Masquer le sélecteur de chants' %}">&times;</button>
+        </section>
+        <section class="lyrics-remote-optional" data-remote-section="chorus">
+            <button type="button" class="lyrics-remote-optional-command" data-remote-command="GO_TO_CHORUS" disabled>{% trans "Refrain" %}</button>
+            <button type="button" class="lyrics-remote-close-section" data-remote-hide-section="chorus" aria-label="{% trans 'Masquer le bouton Refrain' %}">&times;</button>
+        </section>
+
+        <section class="lyrics-remote-primary-controls" aria-label="{% trans 'Commandes de projection' %}">
+            <button type="button" data-remote-command="PREVIOUS_SONG" disabled><span>{% trans "Chant précédent" %}</span><strong data-remote-previous-song>{% trans "Aucun chant" %}</strong></button>
+            <button type="button" data-remote-command="NEXT_SONG" disabled><span>{% trans "Chant suivant" %}</span><strong data-remote-next-song>{% trans "Aucun chant" %}</strong></button>
+            <button type="button" class="lyrics-remote-black-mode" data-remote-command="TOGGLE_BLACK" disabled aria-pressed="false"><span>{% trans "BLACK MODE" %}</span><strong data-remote-black-mode-state>{% trans "Inactif" %}</strong></button>
+            <button type="button" data-remote-command="PREVIOUS_SLIDE" disabled>{% trans "Slide préc." %}</button>
+            <button type="button" data-remote-command="NEXT_SLIDE" disabled>{% trans "Slide suiv." %}</button>
+        </section>
     </main>
     <script>
         window.LSS_REMOTE_ACCESS_I18N = {
             connecting: "{% trans 'Connexion…'|escapejs %}",
             connected: "{% trans 'Connecté'|escapejs %}",
             reconnecting: "{% trans 'Reconnexion…'|escapejs %}",
-            unavailable: "{% trans 'Session indisponible'|escapejs %}",
-            disabled: "{% trans 'Session terminée'|escapejs %}"
+            unavailable: "{% trans 'Master indisponible'|escapejs %}",
+            disabled: "{% trans 'Session terminée'|escapejs %}",
+            accepted: "{% trans 'Commande exécutée'|escapejs %}",
+            cooldown: "{% trans 'Commande ignorée : autre action en cours'|escapejs %}",
+            rejected: "{% trans 'Commande ignorée'|escapejs %}",
+            noNextSlide: "{% trans 'Aucune slide suivante'|escapejs %}",
+            noSong: "{% trans 'Aucun chant'|escapejs %}",
+            blackActive: "{% trans 'Actif'|escapejs %}",
+            blackInactive: "{% trans 'Inactif'|escapejs %}"
         };
     </script>
     <script src="{% static 'js/lyrics_remote_transport.js' %}"></script>

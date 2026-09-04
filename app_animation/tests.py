@@ -1049,16 +1049,45 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("data-remote-management-panel", template)
         self.assertIn("data-remote-management-toggle", template)
 
-    def test_remote_access_relay_has_no_mobile_command_interface(self):
+    def test_remote_access_renders_the_mobile_operator_interface(self):
         template = Path(
             "app_animation/templates/animation/lyrics_remote_access.html"
         ).read_text()
         script = Path("static/js/lyrics_remote_access.js").read_text()
         self.assertIn("data-remote-access-root", template)
         self.assertIn("lyrics_remote_transport.js", template)
-        self.assertNotIn("sendCommand", template)
+        self.assertIn("data-remote-menu-toggle", template)
+        self.assertIn('data-remote-section="next-slide"', template)
+        self.assertIn("data-remote-song-select", template)
+        self.assertIn('data-remote-command="TOGGLE_BLACK"', template)
         self.assertIn("window.history.replaceState", script)
-        self.assertNotIn("sendCommand", script)
+        self.assertIn(
+            'sendCommand("GO_TO_SONG", { animation_song_id: animationSongId })', script
+        )
+        self.assertIn(
+            'sendCommand("SET_TRANSITION", { transition_id: transitionId })', script
+        )
+        self.assertIn(
+            'const preferenceKey = "lss.remote.access.preferences.v1"', script
+        )
+        self.assertIn("window.localStorage", script)
+        self.assertIn("onCommandAccepted", script)
+        self.assertIn("onCommandRejected", script)
+        self.assertNotIn("BroadcastChannel", script)
+        self.assertNotIn("GO_TO_PROJECTION_STEP", script)
+
+    def test_remote_transport_exposes_remote_command_feedback_callbacks(self):
+        script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("onCommandAccepted", script)
+        self.assertIn("onCommandRejected", script)
+        self.assertIn(
+            'message.type === "COMMAND_ACCEPTED" && role === "remote"', script
+        )
+        self.assertIn(
+            'message.type === "COMMAND_REJECTED" && role === "remote"', script
+        )
+        self.assertIn('message.reason === "MASTER_UNAVAILABLE"', script)
 
     def test_animations_page_uses_homepage_style_main_grid(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()

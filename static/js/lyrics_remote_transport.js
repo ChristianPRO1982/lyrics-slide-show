@@ -6,7 +6,16 @@
         return `${scheme}://${window.location.host}/ws/animations/remote/${encodeURIComponent(sessionId)}/${role}/`;
     };
 
-    const createConnection = ({ role, sessionId, token, onState, onStatus, onRemoteCount }) => {
+    const createConnection = ({
+        role,
+        sessionId,
+        token,
+        onState,
+        onStatus,
+        onRemoteCount,
+        onCommandAccepted,
+        onCommandRejected,
+    }) => {
         let socket = null;
         let reconnectTimer = null;
         let closedByCaller = false;
@@ -84,6 +93,21 @@
                 }
                 if (message.type === "STATE" && typeof onState === "function") {
                     onState(message.state);
+                    return;
+                }
+                if (message.type === "COMMAND_ACCEPTED" && role === "remote") {
+                    if (typeof onCommandAccepted === "function") {
+                        onCommandAccepted(message);
+                    }
+                    return;
+                }
+                if (message.type === "COMMAND_REJECTED" && role === "remote") {
+                    if (message.reason === "MASTER_UNAVAILABLE") {
+                        notifyStatus("MASTER_UNAVAILABLE");
+                    }
+                    if (typeof onCommandRejected === "function") {
+                        onCommandRejected(message);
+                    }
                     return;
                 }
                 if (message.type === "COMMAND" && role === "master") {
@@ -168,7 +192,14 @@
                 onRemoteCount,
             });
         },
-        connectRemote: ({ sessionId, accessToken, onState, onStatus } = {}) => {
+        connectRemote: ({
+            sessionId,
+            accessToken,
+            onState,
+            onStatus,
+            onCommandAccepted,
+            onCommandRejected,
+        } = {}) => {
             if (!sessionId || !accessToken) {
                 return null;
             }
@@ -178,6 +209,8 @@
                 token: accessToken,
                 onState,
                 onStatus,
+                onCommandAccepted,
+                onCommandRejected,
             });
         },
     });

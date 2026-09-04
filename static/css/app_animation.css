@@ -1898,6 +1898,184 @@ body.animation-background-picker-overlay-open {
     overflow-wrap: anywhere;
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.lyrics-remote-access-root {
+    min-height: 100vh;
+    max-width: 620px;
+    grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
+    align-content: start;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.lyrics-remote-access-header,
+.lyrics-remote-menu-heading,
+.lyrics-remote-optional,
+.lyrics-remote-primary-controls {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.lyrics-remote-access-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+}
+
+.lyrics-remote-access-header h1,
+.lyrics-remote-access-header p,
+.lyrics-remote-menu h2,
+.lyrics-remote-menu p {
+    margin: 0;
+}
+
+.lyrics-remote-icon-button,
+.lyrics-remote-close-section,
+.lyrics-remote-primary-controls button,
+.lyrics-remote-optional-command,
+.lyrics-remote-menu-action,
+.lyrics-remote-quit-button {
+    min-height: 3rem;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    color: #111827;
+    background: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.lyrics-remote-icon-button,
+.lyrics-remote-close-section {
+    width: 3rem;
+    padding: 0;
+    font-size: 1.45rem;
+}
+
+.lyrics-remote-feedback {
+    margin: 0;
+    min-height: 1.25rem;
+    color: #075e3c;
+    font-size: 0.9rem;
+}
+
+.lyrics-remote-menu {
+    display: grid;
+    gap: 0.7rem;
+    padding: 0.75rem;
+    border: 1px solid #b8c2ce;
+    border-radius: 6px;
+    background: #eaf2f1;
+}
+
+.lyrics-remote-menu-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.lyrics-remote-visibility-settings {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.6rem;
+    border: 1px solid #b8c2ce;
+}
+
+.lyrics-remote-field {
+    display: grid;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.lyrics-remote-field select {
+    min-height: 3rem;
+    width: 100%;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+}
+
+.lyrics-remote-menu-action,
+.lyrics-remote-quit-button {
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+}
+
+.lyrics-remote-quit-button {
+    border-color: #a61b1b;
+    color: #8b1515;
+}
+
+.lyrics-remote-optional {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+}
+
+.lyrics-remote-next-slide,
+.lyrics-remote-optional-command {
+    min-height: 3.2rem;
+    box-sizing: border-box;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #b8c2ce;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.lyrics-remote-optional-command {
+    text-align: left;
+}
+
+.lyrics-remote-primary-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-self: end;
+    margin-top: auto;
+}
+
+.lyrics-remote-primary-controls button {
+    min-height: 5.4rem;
+    padding: 0.7rem;
+    display: grid;
+    gap: 0.35rem;
+    align-content: center;
+    text-align: center;
+}
+
+.lyrics-remote-primary-controls strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lyrics-remote-black-mode {
+    grid-column: 1 / -1;
+    background: #1b1b1b !important;
+    color: #fff !important;
+}
+
+.lyrics-remote-black-mode.is-active {
+    background: #b91c1c !important;
+    border-color: #7f1d1d !important;
+}
+
+.lyrics-remote-primary-controls button:disabled,
+.lyrics-remote-menu button:disabled,
+.lyrics-remote-field select:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
 @media (max-width: 1024px) {
     .lyrics-master-slide-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1965,5 +2143,9 @@ body.animation-background-picker-overlay-open {
     .lyrics-master-actions-row-primary,
     .lyrics-master-actions-row-secondary {
         grid-template-columns: 1fr;
+    }
+
+    .lyrics-remote-access-root {
+        min-height: 100dvh;
     }
 }
