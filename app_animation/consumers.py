@@ -13,6 +13,7 @@ from .services.remote_sessions import (
     cancel_remote_command_reservation,
     get_remote_connection_heartbeat,
     get_remote_master_command_ack_timeout,
+    get_remote_state_snapshot,
     inspect_remote_connection,
     RemoteCommandDecision,
     register_master_connection,
@@ -128,10 +129,11 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             _remote_group_name(self.session_id), self.channel_name
         )
         await self.send_json({"type": "READY", "role": "remote"})
-        if registration.session.latest_state_revision >= 0:
-            await self.send_json(
-                {"type": "STATE", "state": registration.session.latest_state}
-            )
+        state_snapshot = await self._get_remote_state_snapshot(
+            self.session_id, self.remote_token
+        )
+        if state_snapshot is not None:
+            await self.send_json({"type": "STATE", "state": state_snapshot})
         await self._notify_master_remote_count(registration)
         if registration.master_lost or not registration.master_channel_name:
             await self._broadcast_master_unavailable()
@@ -569,6 +571,10 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self, session_id: uuid.UUID, connection_id: uuid.UUID, role: str
     ):
         return inspect_remote_connection(session_id, connection_id, role)
+
+    @database_sync_to_async
+    def _get_remote_state_snapshot(self, session_id: uuid.UUID, token: str):
+        return get_remote_state_snapshot(session_id, token)
 
     @database_sync_to_async
     def _accept_remote_command(

@@ -6,11 +6,28 @@ services:
     env_file:
       - .env.dev
     ports:
-      - "8000:8000"
+      - "${LSS_BIND_PORT:-8000}:8000"
     volumes:
       - .:/app
+    networks:
+      - default
+      - shared_backend
     depends_on:
       - auth_mock
+      - remote_redis
+
+  remote_lease_reaper:
+    build:
+      context: .
+    command: sh /app/scripts/start-remote-lease-reaper.sh
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/app
+    networks:
+      - default
+      - shared_backend
+    depends_on:
       - remote_redis
 
   auth_mock:

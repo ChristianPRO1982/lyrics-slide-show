@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.security.websocket import OriginValidator
 from channels.testing import WebsocketCommunicator
+from django.core.management import call_command
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
 
@@ -408,6 +409,62 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await master.disconnect()
 
         async_to_sync(scenario)()
+
+    def test_reaper_notifies_remotes_when_a_master_lease_expires(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            await database_sync_to_async(
+                AnimationRemoteConnection.objects.filter(
+                    session_id=created.session.session_id,
+                    role=AnimationRemoteConnectionRole.MASTER,
+                ).update
+            )(last_seen_at=timezone.now() - timedelta(seconds=16))
+
+            await database_sync_to_async(call_command)("purge_remote_connections")
+            self.assertEqual(
+                await remote.receive_json_from(), {"type": "MASTER_UNAVAILABLE"}
+            )
+            await remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_reaper_notifies_the_master_of_a_purged_remote_count(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            await database_sync_to_async(
+                AnimationRemoteConnection.objects.filter(
+                    session_id=created.session.session_id,
+                    role=AnimationRemoteConnectionRole.REMOTE,
+                ).update
+            )(last_seen_at=timezone.now() - timedelta(seconds=16))
+
+            await database_sync_to_async(call_command)("purge_remote_connections")
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 0}
+            )
+            await remote.disconnect()
+            await master.disconnect()
 
     def test_expired_remote_lease_cannot_send_a_command(self):
         created = self._create_session()

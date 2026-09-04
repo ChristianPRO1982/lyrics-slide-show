@@ -84,6 +84,21 @@ class RemoteSessionDeactivation:
     master_channel_name: str | None
 
 
+@dataclass(frozen=True)
+class RemoteConnectionPurgeUpdate:
+    session_id: uuid.UUID
+    master_channel_name: str | None
+    master_lost: bool
+    remote_count_changed: bool
+    remote_connection_count: int
+
+
+@dataclass(frozen=True)
+class RemoteConnectionPurgeResult:
+    removed_count: int
+    updates: tuple[RemoteConnectionPurgeUpdate, ...]
+
+
 def _now(value: datetime | None = None) -> datetime:
     return value or timezone.now()
 
@@ -238,6 +253,17 @@ def authenticate_remote_session(
     session_id: object, access_token: str, *, now: datetime | None = None
 ) -> AnimationRemoteSession | None:
     return _authenticated_session(session_id, access_token, now=_now(now))
+
+
+def get_remote_state_snapshot(
+    session_id: object, access_token: str, *, now: datetime | None = None
+) -> dict[str, object] | None:
+    """Return the latest persisted state for an authenticated remote."""
+
+    session = authenticate_remote_session(session_id, access_token, now=now)
+    if session is None or session.latest_state_revision < 0:
+        return None
+    return session.latest_state
 
 
 def authenticate_master_session(
@@ -566,6 +592,56 @@ def inspect_remote_connection(
             master_lost=master_lost,
             remote_count_changed=remote_count_changed,
         )
+
+
+def purge_expired_remote_connections(
+    *, now: datetime | None = None
+) -> RemoteConnectionPurgeResult:
+    """Remove stale leases left behind after a worker or network failure."""
+
+    purged_at = _now(now)
+    stale_before = purged_at - get_remote_connection_stale_after()
+    session_ids = list(
+        AnimationRemoteConnection.objects.filter(last_seen_at__lt=stale_before)
+        .values_list("session_id", flat=True)
+        .distinct()
+    )
+    removed_count = 0
+    updates: list[RemoteConnectionPurgeUpdate] = []
+    for session_id in session_ids:
+        with transaction.atomic():
+            session = (
+                AnimationRemoteSession.objects.select_for_update()
+                .filter(session_id=session_id)
+                .first()
+            )
+            if session is None:
+                continue
+            before_count = AnimationRemoteConnection.objects.filter(
+                session=session
+            ).count()
+            previous_remote_count = session.remote_connection_count
+            master_lost = _sync_live_connections(session, purged_at)
+            removed_for_session = (
+                before_count
+                - AnimationRemoteConnection.objects.filter(session=session).count()
+            )
+            removed_count += removed_for_session
+            if removed_for_session:
+                updates.append(
+                    RemoteConnectionPurgeUpdate(
+                        session_id=session.session_id,
+                        master_channel_name=session.master_channel_name,
+                        master_lost=master_lost,
+                        remote_count_changed=(
+                            session.remote_connection_count != previous_remote_count
+                        ),
+                        remote_connection_count=session.remote_connection_count,
+                    )
+                )
+    return RemoteConnectionPurgeResult(
+        removed_count=removed_count, updates=tuple(updates)
+    )
 
 
 def accept_remote_command(

@@ -29,6 +29,20 @@ services:
     depends_on:
       - remote_redis
 
+  remote_lease_reaper:
+    image: carthographie/lyrics-slide-show:latest
+    command: sh /app/scripts/start-remote-lease-reaper.sh
+    env_file:
+      - .env.prod
+    volumes:
+      - "${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:ro"
+    restart: unless-stopped
+    depends_on:
+      - remote_redis
+    networks:
+      - default
+      - shared_backend
+
   remote_redis:
     image: redis:7-alpine
     command: redis-server --save "" --appendonly no

@@ -78,7 +78,9 @@ from .services.remote_sessions import (
     deactivate_remote_session,
     get_remote_connection_stale_after,
     get_remote_command_cooldown,
+    get_remote_state_snapshot,
     inspect_remote_connection,
+    purge_expired_remote_connections,
     register_master_connection,
     register_remote_connection,
     store_remote_state,
@@ -393,6 +395,27 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertEqual(created.session.latest_state_revision, 1)
         self.assertEqual(created.session.latest_state["revision"], 1)
 
+    def test_authenticated_remote_gets_the_latest_state_snapshot(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(2),
+                now=now,
+            ).stored
+        )
+
+        snapshot = get_remote_state_snapshot(
+            created.session.session_id, created.access_token, now=now
+        )
+
+        self.assertEqual(snapshot, self._state_payload(2)["state"])
+        self.assertIsNone(
+            get_remote_state_snapshot(created.session.session_id, "wrong", now=now)
+        )
+
     def test_master_connection_and_cooldown_configuration_are_validated(self):
         now = timezone.now()
         created = create_remote_session(self._animation(), now=now)
@@ -562,6 +585,35 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertFalse(inspected.alive)
         self.assertTrue(inspected.lease_expired)
         created.session.refresh_from_db()
+        self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_periodic_lease_purge_clears_stale_master_and_remote_connections(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        self.assertIsNotNone(
+            register_master_connection(
+                created.session.session_id,
+                created.master_token,
+                "master-channel",
+                now=now,
+            )
+        )
+        self.assertIsNotNone(
+            register_remote_connection(
+                created.session.session_id, created.access_token, now=now
+            )
+        )
+
+        purge_result = purge_expired_remote_connections(
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        )
+
+        self.assertEqual(purge_result.removed_count, 2)
+        self.assertEqual(len(purge_result.updates), 1)
+        self.assertTrue(purge_result.updates[0].master_lost)
+        self.assertTrue(purge_result.updates[0].remote_count_changed)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
         self.assertEqual(created.session.remote_connection_count, 0)
 
     def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
@@ -1346,6 +1398,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("window.localStorage", script)
         self.assertIn("onCommandAccepted", script)
         self.assertIn("onCommandRejected", script)
+        self.assertIn("Number.isInteger(revision)", script)
+        self.assertIn("revision <= currentRevision", script)
+        self.assertIn("Commande acceptée", template)
         self.assertNotIn("BroadcastChannel", script)
         self.assertNotIn("GO_TO_PROJECTION_STEP", script)
 

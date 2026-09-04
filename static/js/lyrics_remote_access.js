@@ -105,6 +105,20 @@
         if (!state || typeof state !== "object") {
             return;
         }
+        const revision = Number(state.revision);
+        const currentRevision = latestState === null ? null : Number(latestState.revision);
+        if (!Number.isInteger(revision) || revision < 0) {
+            return;
+        }
+        if (
+            isFreshState
+            &&
+            currentRevision !== null
+            && Number.isInteger(currentRevision)
+            && revision <= currentRevision
+        ) {
+            return;
+        }
         latestState = state;
         const selectedSong = state.current_song || {};
         const previousSong = state.previous_song || null;
@@ -234,7 +248,7 @@
             renderStatus();
             updateControls();
         },
-        onCommandAccepted: () => showFeedback(i18n.accepted || "Commande exécutée"),
+        onCommandAccepted: () => showFeedback(i18n.accepted || "Commande acceptée"),
         onCommandRejected: (message) => {
             showFeedback(message.reason === "COOLDOWN" ? i18n.cooldown : i18n.rejected);
             updateControls();
