@@ -78,6 +78,7 @@ from .services.remote_sessions import (
     deactivate_remote_session,
     get_remote_connection_stale_after,
     get_remote_command_cooldown,
+    inspect_remote_connection,
     register_master_connection,
     register_remote_connection,
     store_remote_state,
@@ -540,6 +541,28 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertFalse(heartbeat.alive)
         self.assertTrue(heartbeat.lease_expired)
         self.assertFalse(heartbeat.session_invalid)
+
+    def test_lease_inspection_expires_a_remote_without_renewing_it(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+
+        inspected = inspect_remote_connection(
+            created.session.session_id,
+            remote.connection_id,
+            AnimationRemoteConnectionRole.REMOTE,
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1),
+        )
+
+        self.assertFalse(inspected.alive)
+        self.assertTrue(inspected.lease_expired)
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.remote_connection_count, 0)
 
     def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
         now = timezone.now()
@@ -1133,6 +1156,8 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn("stopHeartbeat();", script)
         self.assertIn('message.type === "MASTER_UNAVAILABLE"', script)
         self.assertIn('type: "MASTER_COMMAND_RECEIVED"', script)
+        self.assertIn('message.type === "MASTER_COMMAND_EXECUTE"', script)
+        self.assertIn("pendingMasterCommands", script)
         self.assertIn(
             'message.type === "COMMAND_REJECTED" && role === "remote"', script
         )
@@ -4102,6 +4127,15 @@ class AnimationViewsTests(TestCase):
         session.refresh_from_db()
         self.assertFalse(session.active)
         self.assertEqual(session.remote_connection_count, 0)
+        repeated_deactivation = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": payload["master_token"]},
+        )
+        self.assertEqual(repeated_deactivation.status_code, 200)
+        self.assertEqual(repeated_deactivation.json(), {"status": "DISABLED"})
         self.assertIsNone(
             authenticate_remote_session(session.session_id, "wrong", now=timezone.now())
         )

@@ -131,6 +131,13 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             self.assertEqual(accepted["type"], "COMMAND_ACCEPTED")
             self.assertEqual(accepted["command"], "NEXT_SLIDE")
             self.assertEqual(received["command_id"], accepted["command_id"])
+            self.assertEqual(
+                await master.receive_json_from(),
+                {
+                    "type": "MASTER_COMMAND_EXECUTE",
+                    "command_id": received["command_id"],
+                },
+            )
 
             await master.send_json_to(self._state(1))
             self.assertEqual(await remote.receive_json_from(), self._state(1))
@@ -398,6 +405,37 @@ class RemoteTransportConsumerTests(TransactionTestCase):
                 await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 0}
             )
             await remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_expired_remote_lease_cannot_send_a_command(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            await database_sync_to_async(
+                AnimationRemoteConnection.objects.filter(
+                    session_id=created.session.session_id,
+                    role=AnimationRemoteConnectionRole.REMOTE,
+                ).update
+            )(last_seen_at=timezone.now() - timedelta(seconds=16))
+
+            await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
+            close_event = await remote.receive_output()
+            self.assertEqual(close_event["type"], "websocket.close")
+            self.assertEqual(close_event["code"], 4408)
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 0}
+            )
             await master.disconnect()
 
         async_to_sync(scenario)()

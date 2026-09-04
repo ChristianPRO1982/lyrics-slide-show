@@ -25,6 +25,7 @@
         let ready = false;
         let unsubscribeState = null;
         let heartbeatTimer = null;
+        const pendingMasterCommands = new Map();
 
         const notifyStatus = (status) => {
             if (typeof onStatus === "function") {
@@ -152,23 +153,33 @@
                         });
                         return;
                     }
+                    pendingMasterCommands.set(message.command_id, message);
                     send({
                         type: "MASTER_COMMAND_RECEIVED",
                         command_id: message.command_id,
                     });
+                    return;
+                }
+                if (message.type === "MASTER_COMMAND_EXECUTE" && role === "master") {
+                    const command = pendingMasterCommands.get(message.command_id);
+                    pendingMasterCommands.delete(message.command_id);
+                    if (!command) {
+                        return;
+                    }
+                    const adapter = window.LSSLyricsMasterAdapter;
                     let result = null;
                     try {
-                        result = adapter.handleExternalCommand(message);
+                        result = adapter?.handleExternalCommand(command);
                     } catch (_error) {
                         result = null;
                     }
-                    if (!result || !result.accepted) {
-                        send({
-                            type: "MASTER_COMMAND_REJECTED",
-                            command_id: message.command_id,
-                            reason: result?.reason || "INVALID_COMMAND",
-                        });
-                    }
+                    // The server has already accepted this validated command. A
+                    // disappearing adapter cannot turn it into a replay.
+                    void result;
+                    return;
+                }
+                if (message.type === "MASTER_COMMAND_CANCELLED" && role === "master") {
+                    pendingMasterCommands.delete(message.command_id);
                     return;
                 }
                 if (message.type === "MASTER_UNAVAILABLE" && role === "remote") {
@@ -176,6 +187,7 @@
                     return;
                 }
                 if (message.type === "MASTER_REPLACED" && role === "master") {
+                    pendingMasterCommands.clear();
                     replaced = true;
                     notifyStatus("REPLACED");
                     return;
@@ -185,6 +197,7 @@
                     return;
                 }
                 if (message.type === "SESSION_DISABLED") {
+                    pendingMasterCommands.clear();
                     disabled = true;
                     notifyStatus("DISABLED");
                 }
@@ -192,6 +205,7 @@
             socket.addEventListener("close", () => {
                 ready = false;
                 stopHeartbeat();
+                pendingMasterCommands.clear();
                 if (typeof unsubscribeState === "function") {
                     unsubscribeState();
                     unsubscribeState = null;

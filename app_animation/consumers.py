@@ -11,7 +11,9 @@ from .services.remote_protocol import RemoteRejectReason
 from .services.remote_sessions import (
     accept_remote_command,
     cancel_remote_command_reservation,
+    get_remote_connection_heartbeat,
     get_remote_master_command_ack_timeout,
+    inspect_remote_connection,
     RemoteCommandDecision,
     register_master_connection,
     register_remote_connection,
@@ -34,9 +36,10 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self.authenticated = False
         self.connection_id: uuid.UUID | None = None
         self.remote_connection_counted = False
-        self.pending_command_channels: dict[str, str] = {}
+        self.pending_command_channels: dict[str, tuple[str, uuid.UUID]] = {}
         self.pending_command_receipts: dict[str, asyncio.Future[str | None]] = {}
         self.pending_command_tasks: set[asyncio.Task[None]] = set()
+        self.lease_watchdog_task: asyncio.Task[None] | None = None
         await self.accept()
 
     async def receive_json(self, content: Any, **kwargs: Any) -> None:
@@ -53,6 +56,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code: int) -> None:
         del close_code
+        await self._stop_lease_watchdog()
         if not getattr(self, "authenticated", False):
             return
         await self._cancel_pending_command_tasks()
@@ -93,6 +97,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             self.master_token = token
             self.connection_id = registration.connection_id
             self.authenticated = True
+            self._start_lease_watchdog()
             if registration.replaced_channel_name:
                 await self.channel_layer.send(
                     registration.replaced_channel_name,
@@ -118,6 +123,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self.connection_id = registration.connection_id
         self.authenticated = True
         self.remote_connection_counted = True
+        self._start_lease_watchdog()
         await self.channel_layer.group_add(
             _remote_group_name(self.session_id), self.channel_name
         )
@@ -145,7 +151,40 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             return
         await self._receive_remote(content)
 
+    def _start_lease_watchdog(self) -> None:
+        self.lease_watchdog_task = asyncio.create_task(self._watch_connection_lease())
+
+    async def _stop_lease_watchdog(self) -> None:
+        task = self.lease_watchdog_task
+        self.lease_watchdog_task = None
+        if task is None or task is asyncio.current_task():
+            return
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    async def _watch_connection_lease(self) -> None:
+        try:
+            while self.authenticated and self.connection_id is not None:
+                await asyncio.sleep(get_remote_connection_heartbeat().total_seconds())
+                result = await self._inspect_connection(
+                    self.session_id, self.connection_id, self.connection_role
+                )
+                await self._handle_connection_liveness(result)
+                if not result.alive:
+                    return
+        except asyncio.CancelledError:
+            return
+
     async def _receive_remote(self, content: dict[str, Any]) -> None:
+        if self.connection_id is None:
+            await self.close(code=4403)
+            return
+        liveness = await self._inspect_connection(
+            self.session_id, self.connection_id, self.connection_role
+        )
+        await self._handle_connection_liveness(liveness)
+        if not liveness.alive:
+            return
         if content.get("type") != "COMMAND":
             await self.send_json(
                 {
@@ -176,8 +215,12 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
                 decision.session.master_channel_name,
                 {
                     "type": "remote.command",
-                    "message": {**content, "command_id": command_id},
+                    "message": {
+                        **content,
+                        "command_id": command_id,
+                    },
                     "reply_channel": self.channel_name,
+                    "master_connection_id": str(decision.master_connection_id),
                 },
             )
         except Exception:
@@ -298,7 +341,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         if self.connection_id is None:
             await self.close(code=4403)
             return False
-        result = await self._touch_connection(
+        result = await self._inspect_connection(
             self.session_id, self.connection_id, self.connection_role
         )
         await self._handle_connection_liveness(result)
@@ -345,8 +388,19 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
     async def _complete_master_command(
         self, command_id: str, reason: RemoteRejectReason | None
     ) -> None:
-        reply_channel = self.pending_command_channels.pop(command_id, "")
-        if not reply_channel:
+        pending = self.pending_command_channels.pop(command_id, None)
+        if pending is None:
+            return
+        reply_channel, expected_connection_id = pending
+        if self.connection_id != expected_connection_id:
+            await self.channel_layer.send(
+                reply_channel,
+                {
+                    "type": "remote.command.rejected",
+                    "command_id": command_id,
+                    "reason": RemoteRejectReason.MASTER_UNAVAILABLE,
+                },
+            )
             return
         event_type = (
             "remote.command.received" if reason is None else "remote.command.rejected"
@@ -355,6 +409,15 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         if reason is not None:
             payload["reason"] = reason
         await self.channel_layer.send(reply_channel, payload)
+        if reason is None:
+            await self.channel_layer.send(
+                self.channel_name,
+                {
+                    "type": "remote.command.execute",
+                    "command_id": command_id,
+                    "master_connection_id": str(expected_connection_id),
+                },
+            )
 
     async def remote_state(self, event: dict[str, Any]) -> None:
         await self.send_json(event["message"])
@@ -363,9 +426,21 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         if self.connection_role != "master":
             return
         message = event["message"]
-        self.pending_command_channels[str(message["command_id"])] = event[
-            "reply_channel"
-        ]
+        expected_connection_id = uuid.UUID(event["master_connection_id"])
+        if self.connection_id != expected_connection_id:
+            await self.channel_layer.send(
+                event["reply_channel"],
+                {
+                    "type": "remote.command.rejected",
+                    "command_id": str(message["command_id"]),
+                    "reason": RemoteRejectReason.MASTER_UNAVAILABLE,
+                },
+            )
+            return
+        self.pending_command_channels[str(message["command_id"])] = (
+            event["reply_channel"],
+            expected_connection_id,
+        )
         await self.send_json(message)
 
     async def remote_command_received(self, event: dict[str, Any]) -> None:
@@ -374,7 +449,21 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             receipt.set_result(None)
 
     async def remote_command_cancelled(self, event: dict[str, Any]) -> None:
-        self.pending_command_channels.pop(str(event.get("command_id") or ""), None)
+        command_id = str(event.get("command_id") or "")
+        self.pending_command_channels.pop(command_id, None)
+        if self.connection_role == "master":
+            await self.send_json(
+                {"type": "MASTER_COMMAND_CANCELLED", "command_id": command_id}
+            )
+
+    async def remote_command_execute(self, event: dict[str, Any]) -> None:
+        if self.connection_role != "master" or not await self._ensure_current_master():
+            return
+        if self.connection_id != uuid.UUID(event["master_connection_id"]):
+            return
+        await self.send_json(
+            {"type": "MASTER_COMMAND_EXECUTE", "command_id": event["command_id"]}
+        )
 
     async def remote_command_rejected(self, event: dict[str, Any]) -> None:
         receipt = self.pending_command_receipts.get(str(event.get("command_id") or ""))
@@ -406,7 +495,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
     async def _reject_pending_master_commands(self) -> None:
         pending = self.pending_command_channels
         self.pending_command_channels = {}
-        for command_id, reply_channel in pending.items():
+        for command_id, (reply_channel, _connection_id) in pending.items():
             await self.channel_layer.send(
                 reply_channel,
                 {
@@ -474,6 +563,12 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self, session_id: uuid.UUID, connection_id: uuid.UUID, role: str
     ):
         return touch_remote_connection(session_id, connection_id, role)
+
+    @database_sync_to_async
+    def _inspect_connection(
+        self, session_id: uuid.UUID, connection_id: uuid.UUID, role: str
+    ):
+        return inspect_remote_connection(session_id, connection_id, role)
 
     @database_sync_to_async
     def _accept_remote_command(

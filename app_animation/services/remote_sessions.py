@@ -264,12 +264,13 @@ def deactivate_remote_session(
             .filter(session_id=session_id)
             .first()
         )
-        if (
-            session is None
-            or not _is_valid_master_token(session, master_token)
-            or not session.active
-            or session.expires_at <= deactivated_at
-        ):
+        if session is None or not _is_valid_master_token(session, master_token):
+            return None
+        if not session.active:
+            return RemoteSessionDeactivation(
+                session_id=session.session_id, master_channel_name=None
+            )
+        if session.expires_at <= deactivated_at:
             return None
         master_channel_name = session.master_channel_name
         AnimationRemoteConnection.objects.filter(session=session).delete()
@@ -501,6 +502,64 @@ def touch_remote_connection(
             )
         connection.last_seen_at = seen_at
         connection.save(update_fields=["last_seen_at"])
+        return ConnectionHeartbeatResult(
+            session=session,
+            alive=True,
+            master_lost=master_lost,
+            remote_count_changed=remote_count_changed,
+        )
+
+
+def inspect_remote_connection(
+    session_id: object,
+    connection_id: uuid.UUID,
+    role: str,
+    *,
+    now: datetime | None = None,
+) -> ConnectionHeartbeatResult:
+    """Check a lease without extending it.
+
+    Consumers use this from their watchdog. Only an explicit client heartbeat
+    is allowed to renew a lease.
+    """
+
+    inspected_at = _now(now)
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None:
+            return ConnectionHeartbeatResult(session=None, alive=False)
+        previous_remote_count = session.remote_connection_count
+        master_lost = _sync_live_connections(session, inspected_at)
+        remote_count_changed = session.remote_connection_count != previous_remote_count
+        if not session.active or session.expires_at <= inspected_at:
+            return ConnectionHeartbeatResult(
+                session=session,
+                alive=False,
+                master_lost=master_lost,
+                session_invalid=True,
+                remote_count_changed=remote_count_changed,
+            )
+        connection = AnimationRemoteConnection.objects.filter(
+            session=session, connection_id=connection_id, role=role
+        ).first()
+        if connection is None:
+            replaced = (
+                role == AnimationRemoteConnectionRole.MASTER
+                and session.master_connection_id is not None
+                and session.master_connection_id != connection_id
+            )
+            return ConnectionHeartbeatResult(
+                session=session,
+                alive=False,
+                master_lost=master_lost,
+                replaced=replaced,
+                lease_expired=not replaced,
+                remote_count_changed=remote_count_changed,
+            )
         return ConnectionHeartbeatResult(
             session=session,
             alive=True,

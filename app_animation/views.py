@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import random
 import re
 import uuid
@@ -102,6 +103,7 @@ from .services.shortcuts import (
 from .services.remote_sessions import create_remote_session, deactivate_remote_session
 
 qrcode = lyrics_helpers.qrcode
+logger = logging.getLogger(__name__)
 
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
@@ -2430,15 +2432,21 @@ def lyrics_remote_session_deactivate(
     if result is None:
         return JsonResponse({"message": _("Session distante invalide.")}, status=403)
 
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"lss.remote.{result.session_id.hex}",
-        {"type": "remote.session.disabled"},
-    )
-    if result.master_channel_name:
-        async_to_sync(channel_layer.send)(
-            result.master_channel_name,
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"lss.remote.{result.session_id.hex}",
             {"type": "remote.session.disabled"},
+        )
+        if result.master_channel_name:
+            async_to_sync(channel_layer.send)(
+                result.master_channel_name,
+                {"type": "remote.session.disabled"},
+            )
+    except Exception:
+        logger.exception(
+            "Remote session %s was disabled but Channels notifications failed.",
+            result.session_id,
         )
     response = JsonResponse({"status": "DISABLED"})
     response["Cache-Control"] = "no-store"
