@@ -73,7 +73,9 @@ class ConnectionHeartbeatResult:
     alive: bool
     master_lost: bool = False
     replaced: bool = False
+    lease_expired: bool = False
     session_invalid: bool = False
+    remote_count_changed: bool = False
 
 
 @dataclass(frozen=True)
@@ -469,28 +471,41 @@ def touch_remote_connection(
         )
         if session is None:
             return ConnectionHeartbeatResult(session=None, alive=False)
+        previous_remote_count = session.remote_connection_count
         master_lost = _sync_live_connections(session, seen_at)
+        remote_count_changed = session.remote_connection_count != previous_remote_count
         if not session.active or session.expires_at <= seen_at:
             return ConnectionHeartbeatResult(
                 session=session,
                 alive=False,
                 master_lost=master_lost,
                 session_invalid=True,
+                remote_count_changed=remote_count_changed,
             )
         connection = AnimationRemoteConnection.objects.filter(
             session=session, connection_id=connection_id, role=role
         ).first()
         if connection is None:
+            replaced = (
+                role == AnimationRemoteConnectionRole.MASTER
+                and session.master_connection_id is not None
+                and session.master_connection_id != connection_id
+            )
             return ConnectionHeartbeatResult(
                 session=session,
                 alive=False,
                 master_lost=master_lost,
-                replaced=role == AnimationRemoteConnectionRole.MASTER,
+                replaced=replaced,
+                lease_expired=not replaced,
+                remote_count_changed=remote_count_changed,
             )
         connection.last_seen_at = seen_at
         connection.save(update_fields=["last_seen_at"])
         return ConnectionHeartbeatResult(
-            session=session, alive=True, master_lost=master_lost
+            session=session,
+            alive=True,
+            master_lost=master_lost,
+            remote_count_changed=remote_count_changed,
         )
 
 

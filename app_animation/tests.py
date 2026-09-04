@@ -520,6 +520,26 @@ class AnimationRemoteSessionServiceTests(TestCase):
         )
         self.assertFalse(stale_heartbeat.alive)
         self.assertTrue(stale_heartbeat.replaced)
+        self.assertFalse(stale_heartbeat.lease_expired)
+
+    def test_expired_lease_is_reconnectable_and_not_a_disabled_session(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+        heartbeat = touch_remote_connection(
+            created.session.session_id,
+            remote.connection_id,
+            AnimationRemoteConnectionRole.REMOTE,
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1),
+        )
+        self.assertFalse(heartbeat.alive)
+        self.assertTrue(heartbeat.lease_expired)
+        self.assertFalse(heartbeat.session_invalid)
 
     def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
         now = timezone.now()

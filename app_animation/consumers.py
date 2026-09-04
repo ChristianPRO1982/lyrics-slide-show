@@ -127,7 +127,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
                 {"type": "STATE", "state": registration.session.latest_state}
             )
         await self._notify_master_remote_count(registration)
-        if registration.master_lost:
+        if registration.master_lost or not registration.master_channel_name:
             await self._broadcast_master_unavailable()
 
     async def _receive_heartbeat(self) -> None:
@@ -137,24 +137,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         result = await self._touch_connection(
             self.session_id, self.connection_id, self.connection_role
         )
-        if result.master_lost:
-            await self._broadcast_master_unavailable()
-        if result.alive:
-            return
-        if result.session_invalid:
-            await self.channel_layer.group_send(
-                _remote_group_name(self.session_id), {"type": "remote.session.disabled"}
-            )
-            if self.connection_role == "master":
-                await self.send_json({"type": "SESSION_DISABLED"})
-                await self.close(code=4403)
-            return
-        if result.replaced and self.connection_role == "master":
-            await self.send_json({"type": "MASTER_REPLACED"})
-            await self.close(code=4409)
-            return
-        await self.send_json({"type": "SESSION_DISABLED"})
-        await self.close(code=4403)
+        await self._handle_connection_liveness(result)
 
     async def _receive_authenticated(self, content: dict[str, Any]) -> None:
         if self.connection_role == "master":
@@ -283,6 +266,8 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             )
 
     async def _receive_master(self, content: dict[str, Any]) -> None:
+        if not await self._ensure_current_master():
+            return
         if content.get("type") == "STATE":
             result = await self._store_remote_state(
                 self.session_id, self.master_token, content, self.connection_id
@@ -308,6 +293,54 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             )
             return
         await self.close(code=4400)
+
+    async def _ensure_current_master(self) -> bool:
+        if self.connection_id is None:
+            await self.close(code=4403)
+            return False
+        result = await self._touch_connection(
+            self.session_id, self.connection_id, self.connection_role
+        )
+        await self._handle_connection_liveness(result)
+        return result.alive
+
+    async def _handle_connection_liveness(self, result: Any) -> None:
+        if result.master_lost:
+            await self._broadcast_master_unavailable()
+        if result.remote_count_changed and result.session is not None:
+            await self._send_remote_count(
+                result.session.master_channel_name,
+                result.session.remote_connection_count,
+            )
+        if result.alive:
+            return
+        if result.session_invalid:
+            await self.channel_layer.group_send(
+                _remote_group_name(self.session_id), {"type": "remote.session.disabled"}
+            )
+            if (
+                result.session is not None
+                and result.session.master_channel_name
+                and result.session.master_channel_name != self.channel_name
+            ):
+                await self.channel_layer.send(
+                    result.session.master_channel_name,
+                    {"type": "remote.session.disabled"},
+                )
+            if self.connection_role == "master":
+                await self.send_json({"type": "SESSION_DISABLED"})
+                await self.close(code=4403)
+            return
+        if result.replaced and self.connection_role == "master":
+            await self._reject_pending_master_commands()
+            await self.send_json({"type": "MASTER_REPLACED"})
+            await self.close(code=4409)
+            return
+        if result.lease_expired:
+            await self.close(code=4408)
+            return
+        await self.send_json({"type": "SESSION_DISABLED"})
+        await self.close(code=4403)
 
     async def _complete_master_command(
         self, command_id: str, reason: RemoteRejectReason | None
@@ -396,13 +429,17 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def _notify_master_remote_count(self, update: Any) -> None:
-        if update.master_channel_name:
+        await self._send_remote_count(
+            update.master_channel_name, update.session.remote_connection_count
+        )
+
+    async def _send_remote_count(
+        self, master_channel_name: str | None, count: int
+    ) -> None:
+        if master_channel_name:
             await self.channel_layer.send(
-                update.master_channel_name,
-                {
-                    "type": "remote.connection.count",
-                    "count": update.session.remote_connection_count,
-                },
+                master_channel_name,
+                {"type": "remote.connection.count", "count": count},
             )
 
     @database_sync_to_async
