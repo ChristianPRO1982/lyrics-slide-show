@@ -125,6 +125,19 @@ def get_remote_connection_heartbeat() -> timedelta:
     )
 
 
+def get_remote_connection_auth_timeout() -> float:
+    timeout = getattr(settings, "REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS", 0)
+    if (
+        isinstance(timeout, bool)
+        or not isinstance(timeout, (int, float))
+        or timeout <= 0
+    ):
+        raise ImproperlyConfigured(
+            "REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS must be a positive number"
+        )
+    return float(timeout)
+
+
 def get_remote_connection_stale_after() -> timedelta:
     heartbeat = get_remote_connection_heartbeat()
     stale_after = timedelta(

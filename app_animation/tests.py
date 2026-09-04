@@ -77,6 +77,7 @@ from .services.remote_sessions import (
     create_remote_session,
     deactivate_remote_session,
     get_remote_connection_stale_after,
+    get_remote_connection_auth_timeout,
     get_remote_command_cooldown,
     get_remote_state_snapshot,
     inspect_remote_connection,
@@ -456,6 +457,9 @@ class AnimationRemoteSessionServiceTests(TestCase):
         ):
             with self.assertRaises(ImproperlyConfigured):
                 get_remote_connection_stale_after()
+        with self.settings(REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS=0):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_connection_auth_timeout()
 
     def test_remote_connection_count_is_persisted_and_never_negative(self):
         created = create_remote_session(self._animation())

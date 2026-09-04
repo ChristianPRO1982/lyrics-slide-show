@@ -25,6 +25,7 @@ from .services.remote_sessions import (
     authenticate_remote_session,
     create_remote_session,
     deactivate_remote_session,
+    register_master_connection,
 )
 
 
@@ -387,6 +388,63 @@ class RemoteTransportConsumerTests(TransactionTestCase):
 
         async_to_sync(scenario)()
 
+    def test_replaced_master_does_not_receive_a_stale_command_event(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            old_master = await database_sync_to_async(
+                lambda: AnimationRemoteConnection.objects.get(
+                    session_id=created.session.session_id,
+                    role=AnimationRemoteConnectionRole.MASTER,
+                )
+            )()
+            remote_channel_name = await database_sync_to_async(
+                lambda: (
+                    AnimationRemoteConnection.objects.get(
+                        session_id=created.session.session_id,
+                        role=AnimationRemoteConnectionRole.REMOTE,
+                    ).channel_name
+                )
+            )()
+            self.assertIsNotNone(old_master.channel_name)
+            self.assertIsNotNone(remote_channel_name)
+            replacement = await database_sync_to_async(register_master_connection)(
+                created.session.session_id,
+                created.master_token,
+                "replacement-master-channel",
+            )
+            self.assertIsNotNone(replacement)
+
+            await get_channel_layer().send(
+                old_master.channel_name,
+                {
+                    "type": "remote.command",
+                    "message": {
+                        "type": "COMMAND",
+                        "command": "NEXT_SLIDE",
+                        "command_id": "stale-command",
+                    },
+                    "reply_channel": remote_channel_name,
+                    "master_connection_id": str(old_master.connection_id),
+                },
+            )
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "MASTER_REPLACED"}
+            )
+            await master.wait()
+            await remote.disconnect()
+
+        async_to_sync(scenario)()
+
     def test_master_heartbeat_reports_a_remote_lease_purged_after_crash(self):
         created = self._create_session()
 
@@ -592,6 +650,24 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             inactive.session.session_id, inactive.access_token
         )
         async_to_sync(assert_refused)(expired.session.session_id, expired.access_token)
+
+    def test_unauthenticated_socket_is_closed_after_the_authentication_timeout(self):
+        created = self._create_session()
+
+        async def scenario():
+            communicator = WebsocketCommunicator(
+                application,
+                f"/ws/animations/remote/{created.session.session_id}/remote/",
+                headers=[(b"origin", b"http://testserver")],
+            )
+            connected, _ = await communicator.connect()
+            self.assertTrue(connected)
+            close_event = await communicator.receive_output()
+            self.assertEqual(close_event["type"], "websocket.close")
+            self.assertEqual(close_event["code"], 4401)
+
+        with self.settings(REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS=0.01):
+            async_to_sync(scenario)()
 
     def test_invalid_and_deactivated_tokens_are_refused_during_authentication(self):
         invalid = self._create_session()

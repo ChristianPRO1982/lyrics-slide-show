@@ -11,6 +11,7 @@ from .services.remote_protocol import RemoteRejectReason
 from .services.remote_sessions import (
     accept_remote_command,
     cancel_remote_command_reservation,
+    get_remote_connection_auth_timeout,
     get_remote_connection_heartbeat,
     get_remote_connection_count_for_master,
     get_remote_master_command_ack_timeout,
@@ -42,8 +43,13 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self.pending_command_channels: dict[str, tuple[str, uuid.UUID]] = {}
         self.pending_command_receipts: dict[str, asyncio.Future[str | None]] = {}
         self.pending_command_tasks: set[asyncio.Task[None]] = set()
+        self.authentication_timeout_task: asyncio.Task[None] | None = None
+        self.authentication_timed_out = False
         self.lease_watchdog_task: asyncio.Task[None] | None = None
         await self.accept()
+        self.authentication_timeout_task = asyncio.create_task(
+            self._expire_unauthenticated_connection()
+        )
 
     async def receive_json(self, content: Any, **kwargs: Any) -> None:
         if not isinstance(content, dict):
@@ -59,6 +65,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code: int) -> None:
         del close_code
+        await self._stop_authentication_timeout()
         await self._stop_lease_watchdog()
         if not getattr(self, "authenticated", False):
             return
@@ -94,12 +101,21 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
             registration = await self._register_master(
                 self.session_id, token, self.channel_name
             )
+            if self.authentication_timed_out:
+                if registration is not None:
+                    update = await self._unregister_master(
+                        self.session_id, registration.connection_id
+                    )
+                    if update is not None and update.master_lost:
+                        await self._broadcast_master_unavailable()
+                return
             if registration is None:
                 await self.close(code=4403)
                 return
             self.master_token = token
             self.connection_id = registration.connection_id
             self.authenticated = True
+            await self._stop_authentication_timeout()
             self._start_lease_watchdog()
             if registration.replaced_channel_name:
                 await self.channel_layer.send(
@@ -119,6 +135,16 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         registration = await self._register_remote(
             self.session_id, token, uuid.uuid4(), self.channel_name
         )
+        if self.authentication_timed_out:
+            if registration is not None and registration.connection_id is not None:
+                update = await self._unregister_remote(
+                    self.session_id, registration.connection_id
+                )
+                if update is not None:
+                    await self._notify_master_remote_count(update)
+                    if update.master_lost:
+                        await self._broadcast_master_unavailable()
+            return
         if registration is None or registration.connection_id is None:
             await self.close(code=4403)
             return
@@ -126,6 +152,7 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self.connection_id = registration.connection_id
         self.authenticated = True
         self.remote_connection_counted = True
+        await self._stop_authentication_timeout()
         self._start_lease_watchdog()
         await self.channel_layer.group_add(
             _remote_group_name(self.session_id), self.channel_name
@@ -157,6 +184,23 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
 
     def _start_lease_watchdog(self) -> None:
         self.lease_watchdog_task = asyncio.create_task(self._watch_connection_lease())
+
+    async def _expire_unauthenticated_connection(self) -> None:
+        try:
+            await asyncio.sleep(get_remote_connection_auth_timeout())
+            if not self.authenticated:
+                self.authentication_timed_out = True
+                await self.close(code=4401)
+        except asyncio.CancelledError:
+            return
+
+    async def _stop_authentication_timeout(self) -> None:
+        task = self.authentication_timeout_task
+        self.authentication_timeout_task = None
+        if task is None or task is asyncio.current_task():
+            return
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
 
     async def _stop_lease_watchdog(self) -> None:
         task = self.lease_watchdog_task
@@ -432,6 +476,16 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         message = event["message"]
         expected_connection_id = uuid.UUID(event["master_connection_id"])
         if self.connection_id != expected_connection_id:
+            await self.channel_layer.send(
+                event["reply_channel"],
+                {
+                    "type": "remote.command.rejected",
+                    "command_id": str(message["command_id"]),
+                    "reason": RemoteRejectReason.MASTER_UNAVAILABLE,
+                },
+            )
+            return
+        if not await self._ensure_current_master():
             await self.channel_layer.send(
                 event["reply_channel"],
                 {
