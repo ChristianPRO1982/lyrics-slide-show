@@ -28,6 +28,8 @@ from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
 from .models import (
     Animation,
+    AnimationRemoteConnection,
+    AnimationRemoteConnectionRole,
     AnimationRemoteSession,
     AnimationRemoteShortcut,
     AnimationSong,
@@ -71,12 +73,15 @@ from .services.remote_sessions import (
     accept_remote_command,
     authenticate_master_session,
     authenticate_remote_session,
+    cancel_remote_command_reservation,
     create_remote_session,
     deactivate_remote_session,
+    get_remote_connection_stale_after,
     get_remote_command_cooldown,
     register_master_connection,
     register_remote_connection,
     store_remote_state,
+    touch_remote_connection,
     unregister_master_connection,
     unregister_remote_connection,
 )
@@ -107,16 +112,24 @@ class AnimationRemoteProtocolTests(SimpleTestCase):
                     "label": "Couplet 2",
                     "excerpt": "Texte suivant",
                 },
-                "current_song": {"animation_song_id": 8, "title": "Chant A"},
+                "current_song": {
+                    "animation_song_id": 8,
+                    "title": "Chant A",
+                    "selected": True,
+                },
                 "previous_song": None,
-                "next_song": {"animation_song_id": 9, "title": "Chant B"},
+                "next_song": {
+                    "animation_song_id": 9,
+                    "title": "Chant B",
+                    "selected": False,
+                },
                 "black_mode": False,
                 "songs": [
                     {"animation_song_id": 8, "title": "Chant A", "selected": True}
                 ],
                 "chorus_available": True,
-                "current_transition": {"transition_id": "fade"},
-                "available_transitions": [{"transition_id": "fade"}],
+                "current_transition": {"transition_id": "fade", "label": "Fondu"},
+                "available_transitions": [{"transition_id": "fade", "label": "Fondu"}],
                 "qr_mode": False,
                 "master_status": "MASTER_CONNECTED",
             },
@@ -163,6 +176,13 @@ class AnimationRemoteProtocolTests(SimpleTestCase):
     def test_state_requires_the_compact_protocol_fields(self):
         payload = self._state_payload(1)
         del payload["state"]["master_status"]
+
+        with self.assertRaises(ValueError):
+            RemoteStateMessage.from_payload(payload)
+
+    def test_state_rejects_incomplete_nested_summaries(self):
+        payload = self._state_payload(1)
+        del payload["state"]["current_projection_step"]["excerpt"]
 
         with self.assertRaises(ValueError):
             RemoteStateMessage.from_payload(payload)
@@ -406,6 +426,12 @@ class AnimationRemoteSessionServiceTests(TestCase):
         with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
             with self.assertRaises(ImproperlyConfigured):
                 get_remote_command_cooldown()
+        with self.settings(
+            REMOTE_CONNECTION_HEARTBEAT_SECONDS=5,
+            REMOTE_CONNECTION_STALE_SECONDS=5,
+        ):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_connection_stale_after()
 
     def test_remote_connection_count_is_persisted_and_never_negative(self):
         created = create_remote_session(self._animation())
@@ -421,6 +447,157 @@ class AnimationRemoteSessionServiceTests(TestCase):
         still_zero = unregister_remote_connection(created.session.session_id)
         self.assertIsNotNone(still_zero)
         self.assertEqual(still_zero.session.remote_connection_count, 0)
+
+    def test_leases_expire_atomically_and_recompute_the_remote_count(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            channel_name="remote-channel",
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+        self.assertEqual(remote.session.remote_connection_count, 1)
+        self.assertEqual(
+            AnimationRemoteConnection.objects.filter(
+                session=created.session,
+                role=AnimationRemoteConnectionRole.REMOTE,
+            ).count(),
+            1,
+        )
+
+        stale_at = now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        decision = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            {"type": "COMMAND", "command": "NEXT_SLIDE"},
+            now=stale_at,
+        )
+        self.assertFalse(decision.accepted)
+        self.assertEqual(decision.reason, RemoteRejectReason.MASTER_UNAVAILABLE)
+        self.assertTrue(decision.master_lost)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
+        self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_heartbeat_preserves_a_lease_and_rejects_a_replaced_master(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        first = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(first)
+        heartbeat = touch_remote_connection(
+            created.session.session_id,
+            first.connection_id,
+            AnimationRemoteConnectionRole.MASTER,
+            now=now + timedelta(seconds=1),
+        )
+        self.assertTrue(heartbeat.alive)
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now + timedelta(seconds=2),
+        )
+        self.assertIsNotNone(replacement)
+        stale_heartbeat = touch_remote_connection(
+            created.session.session_id,
+            first.connection_id,
+            AnimationRemoteConnectionRole.MASTER,
+            now=now + timedelta(seconds=3),
+        )
+        self.assertFalse(stale_heartbeat.alive)
+        self.assertTrue(stale_heartbeat.replaced)
+
+    def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        command = {"type": "COMMAND", "command": "NEXT_SLIDE"}
+        reserved = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertTrue(reserved.accepted)
+        cancelled = cancel_remote_command_reservation(
+            created.session.session_id,
+            reserved.accepted_at,
+            reserved.master_connection_id,
+            invalidate_master=False,
+            now=now + timedelta(milliseconds=1),
+        )
+        self.assertIsNotNone(cancelled)
+        self.assertTrue(
+            accept_remote_command(
+                created.session.session_id,
+                created.access_token,
+                command,
+                now=now + timedelta(milliseconds=2),
+            ).accepted
+        )
+
+    def test_replacement_master_adopts_a_revision_strictly_after_persisted_state(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        first = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(first)
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(4),
+                connection_id=first.connection_id,
+                now=now,
+            ).stored
+        )
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now + timedelta(seconds=1),
+        )
+        self.assertIsNotNone(replacement)
+        self.assertEqual(replacement.next_state_revision, 5)
+        self.assertFalse(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(4),
+                connection_id=replacement.connection_id,
+                now=now + timedelta(seconds=1),
+            ).stored
+        )
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(5),
+                connection_id=replacement.connection_id,
+                now=now + timedelta(seconds=1),
+            ).stored
+        )
 
 
 class AnimationFormFontValidationTests(SimpleTestCase):
@@ -860,6 +1037,8 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn("handleExternalCommand,", script)
         self.assertIn("getRemoteState,", script)
         self.assertIn("subscribeRemoteState,", script)
+        self.assertIn("ensureRemoteStateRevision,", script)
+        self.assertIn("validateExternalCommand,", script)
         self.assertIn('message.type !== "COMMAND"', script)
         self.assertIn('return rejectedExternalCommand("INVALID_COMMAND");', script)
         self.assertIn('return rejectedExternalCommand("INVALID_TARGET");', script)
@@ -929,6 +1108,11 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn('socket.send(JSON.stringify({ type: "AUTH", token }));', script)
         self.assertIn("window.setTimeout(connect, reconnectDelayMs)", script)
         self.assertIn('message.type === "MASTER_REPLACED"', script)
+        self.assertIn('type: "HEARTBEAT"', script)
+        self.assertIn("startHeartbeat();", script)
+        self.assertIn("stopHeartbeat();", script)
+        self.assertIn('message.type === "MASTER_UNAVAILABLE"', script)
+        self.assertIn('type: "MASTER_COMMAND_RECEIVED"', script)
         self.assertIn(
             'message.type === "COMMAND_REJECTED" && role === "remote"', script
         )

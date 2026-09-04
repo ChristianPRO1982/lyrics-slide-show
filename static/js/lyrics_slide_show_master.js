@@ -1414,6 +1414,15 @@
 
     const getRemoteState = () => buildRemoteState();
 
+    const ensureRemoteStateRevision = (minimumRevision) => {
+        const revision = toNonNegativeIndexOrNull(minimumRevision);
+        if (!Number.isInteger(revision) || state.remoteStateRevision >= revision) {
+            return;
+        }
+        state.remoteStateRevision = revision;
+        persistState();
+    };
+
     const publishRemoteState = () => {
         state.remoteStateRevision += 1;
         persistState();
@@ -1449,9 +1458,53 @@
         state: getRemoteState(),
     });
 
-    const handleExternalCommand = (message) => {
+    const validateExternalCommand = (message) => {
         if (!message || typeof message !== "object" || message.type !== "COMMAND") {
             return rejectedExternalCommand("INVALID_COMMAND");
+        }
+        const command = String(message.command || "").trim();
+        const rawTarget = message.target;
+        const target = rawTarget === undefined || rawTarget === null
+            ? null
+            : rawTarget && typeof rawTarget === "object" && !Array.isArray(rawTarget)
+                ? rawTarget
+                : null;
+        if (rawTarget !== undefined && rawTarget !== null && !target) {
+            return rejectedExternalCommand("INVALID_TARGET");
+        }
+        if (command === "GO_TO_SONG") {
+            const animationSongId = toIntegerOrNull(target?.animation_song_id);
+            if (!Number.isInteger(animationSongId) || !Number.isInteger(songIndexByAnimationSongId.get(animationSongId))) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (command === "SET_TRANSITION") {
+            const transitionId = String(target?.transition_id || "").trim();
+            if (!transitionById.has(transitionId)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (command === "GO_TO_PROJECTION_STEP") {
+            const projectionIndex = toNonNegativeIndexOrNull(target?.projection_index);
+            if (!Number.isInteger(projectionIndex) || !projectionStepByIndex(projectionIndex)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (![
+            "PREVIOUS_SLIDE",
+            "NEXT_SLIDE",
+            "PREVIOUS_SONG",
+            "NEXT_SONG",
+            "TOGGLE_BLACK",
+            "GO_TO_CHORUS",
+            "TOGGLE_QR",
+        ].includes(command)) {
+            return rejectedExternalCommand("INVALID_COMMAND");
+        }
+        return { accepted: true };
+    };
+
+    const handleExternalCommand = (message) => {
+        const validation = validateExternalCommand(message);
+        if (!validation.accepted) {
+            return validation;
         }
         const command = String(message.command || "").trim();
         const rawTarget = message.target;
@@ -1936,8 +1989,10 @@
 
     window.LSSLyricsMasterAdapter = Object.freeze({
         handleExternalCommand,
+        validateExternalCommand,
         getRemoteState,
         subscribeRemoteState,
+        ensureRemoteStateRevision,
     });
 
     window.setInterval(() => {

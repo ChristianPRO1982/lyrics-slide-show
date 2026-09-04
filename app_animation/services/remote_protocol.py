@@ -74,6 +74,55 @@ def _as_non_negative_integer(value: object, field_name: str) -> int:
     return value
 
 
+def _as_string(value: object, field_name: str) -> str:
+    if not isinstance(value, str):
+        raise RemoteProtocolError(f"{field_name} must be a string")
+    return value
+
+
+def _require_exact_fields(
+    value: Mapping[str, Any], field_name: str, fields: frozenset[str]
+) -> None:
+    if set(value) != fields:
+        raise RemoteProtocolError(f"{field_name} has missing or unknown fields")
+
+
+def _validate_projection_summary(value: object, field_name: str) -> None:
+    summary = _as_mapping(value, field_name)
+    _require_exact_fields(
+        summary,
+        field_name,
+        frozenset({"projection_index", "label", "excerpt"}),
+    )
+    _as_non_negative_integer(
+        summary["projection_index"], f"{field_name}.projection_index"
+    )
+    _as_string(summary["label"], f"{field_name}.label")
+    _as_string(summary["excerpt"], f"{field_name}.excerpt")
+
+
+def _validate_song_summary(value: object, field_name: str) -> None:
+    summary = _as_mapping(value, field_name)
+    _require_exact_fields(
+        summary,
+        field_name,
+        frozenset({"animation_song_id", "title", "selected"}),
+    )
+    _as_non_negative_integer(
+        summary["animation_song_id"], f"{field_name}.animation_song_id"
+    )
+    _as_string(summary["title"], f"{field_name}.title")
+    if not isinstance(summary["selected"], bool):
+        raise RemoteProtocolError(f"{field_name}.selected must be a boolean")
+
+
+def _validate_transition_summary(value: object, field_name: str) -> None:
+    summary = _as_mapping(value, field_name)
+    _require_exact_fields(summary, field_name, frozenset({"transition_id", "label"}))
+    _as_string(summary["transition_id"], f"{field_name}.transition_id")
+    _as_string(summary["label"], f"{field_name}.label")
+
+
 @dataclass(frozen=True)
 class RemoteCommandMessage:
     command: RemoteCommand
@@ -136,19 +185,26 @@ class RemoteStateMessage:
         if set(state) != STATE_FIELDS:
             raise RemoteProtocolError("state has missing or unknown fields")
         _as_non_negative_integer(state["revision"], "state.revision")
-        for field_name in (
-            "current_projection_step",
-            "next_projection_step",
-            "current_song",
-            "previous_song",
-            "next_song",
-            "current_transition",
-        ):
-            _as_optional_mapping(state[field_name], f"state.{field_name}")
+        for field_name in ("current_projection_step", "next_projection_step"):
+            if state[field_name] is not None:
+                _validate_projection_summary(state[field_name], f"state.{field_name}")
+        for field_name in ("current_song", "previous_song", "next_song"):
+            if state[field_name] is not None:
+                _validate_song_summary(state[field_name], f"state.{field_name}")
+        if state["current_transition"] is not None:
+            _validate_transition_summary(
+                state["current_transition"], "state.current_transition"
+            )
         if not isinstance(state["songs"], list):
             raise RemoteProtocolError("state.songs must be a list")
+        for index, song in enumerate(state["songs"]):
+            _validate_song_summary(song, f"state.songs[{index}]")
         if not isinstance(state["available_transitions"], list):
             raise RemoteProtocolError("state.available_transitions must be a list")
+        for index, transition in enumerate(state["available_transitions"]):
+            _validate_transition_summary(
+                transition, f"state.available_transitions[{index}]"
+            )
         for field_name in ("black_mode", "chorus_available", "qr_mode"):
             if not isinstance(state[field_name], bool):
                 raise RemoteProtocolError(f"state.{field_name} must be a boolean")

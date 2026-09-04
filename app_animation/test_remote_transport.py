@@ -81,10 +81,11 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             master = await self._connect(
                 created.session.session_id, "master", created.master_token
             )
-            self.assertEqual(
-                await master.receive_json_from(),
-                {"type": "READY", "role": "master", "remote_count": 0},
-            )
+            ready = await master.receive_json_from()
+            self.assertEqual(ready["type"], "READY")
+            self.assertEqual(ready["role"], "master")
+            self.assertEqual(ready["remote_count"], 0)
+            self.assertEqual(ready["next_state_revision"], 0)
             await master.send_json_to(self._state(3))
 
             remote = await self._connect(
@@ -117,12 +118,18 @@ class RemoteTransportConsumerTests(TransactionTestCase):
 
             command = {"type": "COMMAND", "command": "NEXT_SLIDE"}
             await remote.send_json_to(command)
-            accepted = await remote.receive_json_from()
-            self.assertEqual(accepted["type"], "COMMAND_ACCEPTED")
-            self.assertEqual(accepted["command"], "NEXT_SLIDE")
             received = await master.receive_json_from()
             self.assertEqual(received["type"], "COMMAND")
             self.assertEqual(received["command"], "NEXT_SLIDE")
+            await master.send_json_to(
+                {
+                    "type": "MASTER_COMMAND_RECEIVED",
+                    "command_id": received["command_id"],
+                }
+            )
+            accepted = await remote.receive_json_from()
+            self.assertEqual(accepted["type"], "COMMAND_ACCEPTED")
+            self.assertEqual(accepted["command"], "NEXT_SLIDE")
             self.assertEqual(received["command_id"], accepted["command_id"])
 
             await master.send_json_to(self._state(1))
@@ -158,9 +165,15 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await first_remote.send_json_to(
                 {"type": "COMMAND", "command": "NEXT_SLIDE"}
             )
+            received = await master.receive_json_from()
+            await master.send_json_to(
+                {
+                    "type": "MASTER_COMMAND_RECEIVED",
+                    "command_id": received["command_id"],
+                }
+            )
             accepted = await first_remote.receive_json_from()
             self.assertEqual(accepted["type"], "COMMAND_ACCEPTED")
-            await master.receive_json_from()
             await second_remote.send_json_to(
                 {"type": "COMMAND", "command": "NEXT_SLIDE"}
             )
@@ -238,6 +251,9 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await remote.receive_json_from()
             await master.receive_json_from()
             await master.disconnect()
+            self.assertEqual(
+                await remote.receive_json_from(), {"type": "MASTER_UNAVAILABLE"}
+            )
 
             await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
             self.assertEqual(
@@ -247,6 +263,81 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await remote.disconnect()
 
         async_to_sync(scenario)()
+
+    def test_master_rejection_releases_the_reservation_without_acknowledging(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+
+            await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
+            command = await master.receive_json_from()
+            await master.send_json_to(
+                {
+                    "type": "MASTER_COMMAND_REJECTED",
+                    "command_id": command["command_id"],
+                    "reason": "INVALID_TARGET",
+                }
+            )
+            self.assertEqual(
+                await remote.receive_json_from(),
+                {"type": "COMMAND_REJECTED", "reason": "INVALID_TARGET"},
+            )
+
+            await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
+            retry = await master.receive_json_from()
+            await master.send_json_to(
+                {
+                    "type": "MASTER_COMMAND_RECEIVED",
+                    "command_id": retry["command_id"],
+                }
+            )
+            self.assertEqual(
+                (await remote.receive_json_from())["type"], "COMMAND_ACCEPTED"
+            )
+            await remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_missing_master_receipt_invalidates_master_and_rejects_command(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+
+            await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
+            self.assertEqual((await master.receive_json_from())["type"], "COMMAND")
+            messages = [
+                await remote.receive_json_from(),
+                await remote.receive_json_from(),
+            ]
+            self.assertIn({"type": "MASTER_UNAVAILABLE"}, messages)
+            self.assertIn(
+                {"type": "COMMAND_REJECTED", "reason": "MASTER_UNAVAILABLE"},
+                messages,
+            )
+            await remote.disconnect()
+            await master.disconnect()
+
+        with self.settings(REMOTE_MASTER_COMMAND_ACK_SECONDS=0.01):
+            async_to_sync(scenario)()
 
     def test_inactive_and_expired_sessions_are_refused_during_authentication(self):
         inactive = self._create_session()
@@ -352,10 +443,7 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             second_master = await self._connect(
                 created.session.session_id, "master", created.master_token
             )
-            self.assertEqual(
-                await second_master.receive_json_from(),
-                {"type": "READY", "role": "master", "remote_count": 0},
-            )
+            self.assertEqual((await second_master.receive_json_from())["type"], "READY")
             self.assertEqual(
                 await first_master.receive_json_from(), {"type": "MASTER_REPLACED"}
             )

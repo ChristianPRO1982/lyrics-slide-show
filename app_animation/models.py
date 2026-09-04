@@ -162,6 +162,38 @@ class AnimationRemoteSession(models.Model):
         ]
 
 
+class AnimationRemoteConnectionRole(models.TextChoices):
+    MASTER = "master", _("Master")
+    REMOTE = "remote", _("Remote")
+
+
+class AnimationRemoteConnection(models.Model):
+    connection_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False
+    )
+    session = models.ForeignKey(
+        AnimationRemoteSession,
+        on_delete=models.CASCADE,
+        db_column="session_id",
+        related_name="connections",
+    )
+    role = models.CharField(
+        max_length=16, choices=AnimationRemoteConnectionRole.choices
+    )
+    channel_name = models.CharField(max_length=255, blank=True, null=True)
+    last_seen_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'lss"."a_animation_remote_connections'
+        indexes = [
+            models.Index(
+                fields=["session", "role"], name="a_anim_remote_conn_role_idx"
+            ),
+            models.Index(fields=["last_seen_at"], name="a_anim_remote_conn_seen_idx"),
+        ]
+
+
 class BackgroundImageStatus(models.TextChoices):
     PENDING = "pending", _("En attente")
     INACTIVE = "inactive", _("Inactive")

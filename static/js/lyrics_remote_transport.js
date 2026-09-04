@@ -1,5 +1,6 @@
 (() => {
     const reconnectDelayMs = 1000;
+    const heartbeatIntervalMs = 5000;
 
     const websocketUrl = (sessionId, role) => {
         const scheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -23,6 +24,7 @@
         let disabled = false;
         let ready = false;
         let unsubscribeState = null;
+        let heartbeatTimer = null;
 
         const notifyStatus = (status) => {
             if (typeof onStatus === "function") {
@@ -57,6 +59,20 @@
             });
         };
 
+        const stopHeartbeat = () => {
+            if (heartbeatTimer !== null) {
+                window.clearInterval(heartbeatTimer);
+                heartbeatTimer = null;
+            }
+        };
+
+        const startHeartbeat = () => {
+            stopHeartbeat();
+            heartbeatTimer = window.setInterval(() => {
+                send({ type: "HEARTBEAT" });
+            }, heartbeatIntervalMs);
+        };
+
         const connect = () => {
             if (closedByCaller || replaced) {
                 return;
@@ -81,11 +97,18 @@
                     ready = true;
                     notifyStatus("CONNECTED");
                     notifyRemoteCount(message.remote_count);
+                    startHeartbeat();
                     if (role === "master") {
                         const adapter = window.LSSLyricsMasterAdapter;
                         if (!adapter) {
+                            send({
+                                type: "MASTER_COMMAND_REJECTED",
+                                command_id: "",
+                                reason: "INVALID_COMMAND",
+                            });
                             return;
                         }
+                        adapter.ensureRemoteStateRevision?.(message.next_state_revision);
                         unsubscribeState = adapter.subscribeRemoteState(sendMasterState);
                         sendMasterState(adapter.getRemoteState());
                     }
@@ -111,14 +134,45 @@
                     return;
                 }
                 if (message.type === "COMMAND" && role === "master") {
-                    const result = window.LSSLyricsMasterAdapter?.handleExternalCommand(message);
-                    if (result && !result.accepted) {
+                    const adapter = window.LSSLyricsMasterAdapter;
+                    if (!adapter) {
                         send({
                             type: "MASTER_COMMAND_REJECTED",
                             command_id: message.command_id,
-                            reason: result.reason,
+                            reason: "INVALID_COMMAND",
+                        });
+                        return;
+                    }
+                    const validation = adapter.validateExternalCommand?.(message);
+                    if (validation && !validation.accepted) {
+                        send({
+                            type: "MASTER_COMMAND_REJECTED",
+                            command_id: message.command_id,
+                            reason: validation.reason || "INVALID_COMMAND",
+                        });
+                        return;
+                    }
+                    send({
+                        type: "MASTER_COMMAND_RECEIVED",
+                        command_id: message.command_id,
+                    });
+                    let result = null;
+                    try {
+                        result = adapter.handleExternalCommand(message);
+                    } catch (_error) {
+                        result = null;
+                    }
+                    if (!result || !result.accepted) {
+                        send({
+                            type: "MASTER_COMMAND_REJECTED",
+                            command_id: message.command_id,
+                            reason: result?.reason || "INVALID_COMMAND",
                         });
                     }
+                    return;
+                }
+                if (message.type === "MASTER_UNAVAILABLE" && role === "remote") {
+                    notifyStatus("MASTER_UNAVAILABLE");
                     return;
                 }
                 if (message.type === "MASTER_REPLACED" && role === "master") {
@@ -137,6 +191,7 @@
             });
             socket.addEventListener("close", () => {
                 ready = false;
+                stopHeartbeat();
                 if (typeof unsubscribeState === "function") {
                     unsubscribeState();
                     unsubscribeState = null;
@@ -161,6 +216,7 @@
                     window.clearTimeout(reconnectTimer);
                     reconnectTimer = null;
                 }
+                stopHeartbeat();
                 if (typeof unsubscribeState === "function") {
                     unsubscribeState();
                     unsubscribeState = null;
