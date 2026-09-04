@@ -12,9 +12,11 @@ from .services.remote_sessions import (
     accept_remote_command,
     cancel_remote_command_reservation,
     get_remote_connection_heartbeat,
+    get_remote_connection_count_for_master,
     get_remote_master_command_ack_timeout,
     get_remote_state_snapshot,
     inspect_remote_connection,
+    is_remote_master_available,
     RemoteCommandDecision,
     register_master_connection,
     register_remote_connection,
@@ -480,12 +482,21 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
 
     async def remote_master_unavailable(self, event: dict[str, Any]) -> None:
         del event
-        if self.connection_role == "remote":
+        if (
+            self.connection_role == "remote"
+            and not await self._is_remote_master_available(self.session_id)
+        ):
             await self.send_json({"type": "MASTER_UNAVAILABLE"})
 
     async def remote_connection_count(self, event: dict[str, Any]) -> None:
-        if self.connection_role == "master":
-            await self.send_json({"type": "REMOTE_COUNT", "count": event["count"]})
+        del event
+        if self.connection_role != "master" or self.connection_id is None:
+            return
+        count = await self._get_remote_connection_count_for_master(
+            self.session_id, self.connection_id
+        )
+        if count is not None:
+            await self.send_json({"type": "REMOTE_COUNT", "count": count})
 
     async def remote_session_disabled(self, event: dict[str, Any]) -> None:
         del event
@@ -571,6 +582,16 @@ class BaseRemoteSessionConsumer(AsyncJsonWebsocketConsumer):
         self, session_id: uuid.UUID, connection_id: uuid.UUID, role: str
     ):
         return inspect_remote_connection(session_id, connection_id, role)
+
+    @database_sync_to_async
+    def _is_remote_master_available(self, session_id: uuid.UUID):
+        return is_remote_master_available(session_id)
+
+    @database_sync_to_async
+    def _get_remote_connection_count_for_master(
+        self, session_id: uuid.UUID, master_connection_id: uuid.UUID
+    ):
+        return get_remote_connection_count_for_master(session_id, master_connection_id)
 
     @database_sync_to_async
     def _get_remote_state_snapshot(self, session_id: uuid.UUID, token: str):

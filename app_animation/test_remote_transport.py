@@ -14,7 +14,12 @@ from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
 
 from app_group.models import Group, GroupStatus
-from .models import Animation, AnimationRemoteConnection, AnimationRemoteConnectionRole
+from .models import (
+    Animation,
+    AnimationRemoteConnection,
+    AnimationRemoteConnectionRole,
+    AnimationRemoteSession,
+)
 from .routing import websocket_urlpatterns
 from .services.remote_sessions import (
     authenticate_remote_session,
@@ -433,6 +438,71 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             await database_sync_to_async(call_command)("purge_remote_connections")
             self.assertEqual(
                 await remote.receive_json_from(), {"type": "MASTER_UNAVAILABLE"}
+            )
+            await remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_stale_master_unavailable_event_is_ignored_after_master_replacement(self):
+        created = self._create_session()
+
+        async def scenario():
+            first_master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await first_master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await first_master.receive_json_from()
+
+            replacement = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await replacement.receive_json_from()
+            self.assertEqual(
+                await first_master.receive_json_from(), {"type": "MASTER_REPLACED"}
+            )
+            await get_channel_layer().group_send(
+                f"lss.remote.{created.session.session_id.hex}",
+                {"type": "remote.master.unavailable"},
+            )
+            self.assertTrue(await remote.receive_nothing(timeout=0.1))
+            await remote.disconnect()
+            await replacement.disconnect()
+
+        async_to_sync(scenario)()
+
+    def test_stale_remote_count_event_is_replaced_with_persisted_count(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 1}
+            )
+            channel_name = await database_sync_to_async(
+                lambda: (
+                    AnimationRemoteSession.objects.get(
+                        session_id=created.session.session_id
+                    ).master_channel_name
+                )
+            )()
+            self.assertIsNotNone(channel_name)
+            await get_channel_layer().send(
+                channel_name, {"type": "remote.connection.count", "count": 0}
+            )
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 1}
             )
             await remote.disconnect()
             await master.disconnect()

@@ -595,6 +595,67 @@ def inspect_remote_connection(
         )
 
 
+def is_remote_master_available(
+    session_id: object, *, now: datetime | None = None
+) -> bool:
+    """Return whether this session still has a live master lease.
+
+    Channels events can be delivered after a replacement master has connected.
+    Rechecking the persisted lease at delivery time prevents such stale events
+    from incorrectly marking the remote interface as unavailable.
+    """
+
+    checked_at = _now(now)
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None:
+            return False
+        _sync_live_connections(session, checked_at)
+        return (
+            session.active
+            and session.expires_at > checked_at
+            and session.master_channel_name is not None
+            and session.master_connection_id is not None
+        )
+
+
+def get_remote_connection_count_for_master(
+    session_id: object,
+    master_connection_id: uuid.UUID,
+    *,
+    now: datetime | None = None,
+) -> int | None:
+    """Return the current count only when ``master_connection_id`` is current.
+
+    A reaper can enqueue a count update immediately before a remote reconnects
+    or the master is replaced. The active master must render the PostgreSQL
+    value, not the stale count carried by that queued event.
+    """
+
+    checked_at = _now(now)
+    with transaction.atomic():
+        session = (
+            AnimationRemoteSession.objects.select_for_update()
+            .filter(session_id=session_id)
+            .first()
+        )
+        if session is None:
+            return None
+        _sync_live_connections(session, checked_at)
+        if (
+            not session.active
+            or session.expires_at <= checked_at
+            or session.master_channel_name is None
+            or session.master_connection_id != master_connection_id
+        ):
+            return None
+        return session.remote_connection_count
+
+
 def purge_expired_remote_connections(
     *, now: datetime | None = None
 ) -> RemoteConnectionPurgeResult:
