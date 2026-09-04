@@ -17,7 +17,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lyrics_slide_show.settings")
 
 django_asgi_application = get_asgi_application()
 
-from app_animation.routing import websocket_urlpatterns
+from app_animation.routing import websocket_urlpatterns  # noqa: E402
 
 
 application = ProtocolTypeRouter(

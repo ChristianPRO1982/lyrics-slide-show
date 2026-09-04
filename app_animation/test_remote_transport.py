@@ -6,14 +6,15 @@ from datetime import timedelta
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
+from channels.routing import URLRouter
+from channels.security.websocket import OriginValidator
 from channels.testing import WebsocketCommunicator
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
 
 from app_group.models import Group, GroupStatus
-from lyrics_slide_show.asgi import application
-
 from .models import Animation
+from .routing import websocket_urlpatterns
 from .services.remote_sessions import (
     authenticate_remote_session,
     create_remote_session,
@@ -21,10 +22,13 @@ from .services.remote_sessions import (
 )
 
 
+application = OriginValidator(URLRouter(websocket_urlpatterns), ["http://testserver"])
+
+
 @override_settings(
     CHANNEL_LAYERS={
         "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
-    }
+    },
 )
 class RemoteTransportConsumerTests(TransactionTestCase):
     def _create_session(self):
