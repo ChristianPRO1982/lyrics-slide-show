@@ -97,6 +97,7 @@ class RemoteConnectionPurgeUpdate:
 class RemoteConnectionPurgeResult:
     removed_count: int
     updates: tuple[RemoteConnectionPurgeUpdate, ...]
+    master_unavailable_session_ids: tuple[uuid.UUID, ...]
 
 
 def _now(value: datetime | None = None) -> datetime:
@@ -639,8 +640,22 @@ def purge_expired_remote_connections(
                         remote_connection_count=session.remote_connection_count,
                     )
                 )
+    master_unavailable_session_ids = tuple(
+        AnimationRemoteSession.objects.filter(
+            active=True,
+            expires_at__gt=purged_at,
+            master_channel_name__isnull=True,
+            master_connection_id__isnull=True,
+            connections__role=AnimationRemoteConnectionRole.REMOTE,
+            connections__last_seen_at__gte=stale_before,
+        )
+        .values_list("session_id", flat=True)
+        .distinct()
+    )
     return RemoteConnectionPurgeResult(
-        removed_count=removed_count, updates=tuple(updates)
+        removed_count=removed_count,
+        updates=tuple(updates),
+        master_unavailable_session_ids=master_unavailable_session_ids,
     )
 
 

@@ -12,12 +12,12 @@ class Command(BaseCommand):
         del args, options
         result = purge_expired_remote_connections()
         channel_layer = get_channel_layer()
+        for session_id in result.master_unavailable_session_ids:
+            async_to_sync(channel_layer.group_send)(
+                f"lss.remote.{session_id.hex}",
+                {"type": "remote.master.unavailable"},
+            )
         for update in result.updates:
-            if update.master_lost:
-                async_to_sync(channel_layer.group_send)(
-                    f"lss.remote.{update.session_id.hex}",
-                    {"type": "remote.master.unavailable"},
-                )
             if update.remote_count_changed and update.master_channel_name:
                 async_to_sync(channel_layer.send)(
                     update.master_channel_name,

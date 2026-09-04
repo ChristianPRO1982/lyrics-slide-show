@@ -612,9 +612,54 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertEqual(len(purge_result.updates), 1)
         self.assertTrue(purge_result.updates[0].master_lost)
         self.assertTrue(purge_result.updates[0].remote_count_changed)
+        self.assertEqual(purge_result.master_unavailable_session_ids, ())
         created.session.refresh_from_db()
         self.assertIsNone(created.session.master_channel_name)
         self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_reaper_reannounces_an_unavailable_master_while_remotes_are_live(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now + timedelta(seconds=1),
+        )
+        self.assertIsNotNone(remote)
+        first_purge_at = (
+            now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        )
+
+        first_purge = purge_expired_remote_connections(now=first_purge_at)
+        self.assertEqual(first_purge.removed_count, 1)
+        self.assertEqual(
+            first_purge.master_unavailable_session_ids,
+            (created.session.session_id,),
+        )
+        self.assertTrue(
+            touch_remote_connection(
+                created.session.session_id,
+                remote.connection_id,
+                AnimationRemoteConnectionRole.REMOTE,
+                now=first_purge_at,
+            ).alive
+        )
+
+        retry_purge = purge_expired_remote_connections(
+            now=first_purge_at + timedelta(seconds=1)
+        )
+        self.assertEqual(retry_purge.removed_count, 0)
+        self.assertEqual(
+            retry_purge.master_unavailable_session_ids,
+            (created.session.session_id,),
+        )
 
     def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
         now = timezone.now()
