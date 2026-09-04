@@ -202,6 +202,7 @@ class AnimationRemoteSessionServiceTests(TestCase):
     def test_create_session_keeps_only_token_digest_and_uses_eight_hour_ttl(self):
         now = timezone.now()
         created = create_remote_session(self._animation(), now=now)
+        other = create_remote_session(created.session.animation, now=now)
         session = created.session
 
         self.assertIsInstance(session.session_id, uuid.UUID)
@@ -210,6 +211,13 @@ class AnimationRemoteSessionServiceTests(TestCase):
         self.assertNotEqual(session.access_token_digest, created.access_token)
         self.assertNotEqual(session.master_token_digest, created.master_token)
         self.assertNotEqual(created.access_token, created.master_token)
+        self.assertNotEqual(session.session_id, other.session.session_id)
+        self.assertNotEqual(created.access_token, other.access_token)
+        self.assertIsNone(
+            authenticate_remote_session(
+                other.session.session_id, created.access_token, now=now
+            )
+        )
         self.assertEqual(session.expires_at, now + timedelta(hours=8))
         self.assertEqual(session.latest_state_revision, -1)
         self.assertTrue(
@@ -277,6 +285,15 @@ class AnimationRemoteSessionServiceTests(TestCase):
         )
         self.assertFalse(invalid.accepted)
         self.assertEqual(invalid.reason, RemoteRejectReason.INVALID_COMMAND)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.last_remote_command_at)
+        unavailable = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertFalse(unavailable.accepted)
+        self.assertEqual(unavailable.reason, RemoteRejectReason.MASTER_UNAVAILABLE)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.last_remote_command_at)
         register_master_connection(
             created.session.session_id,
             created.master_token,
@@ -305,6 +322,25 @@ class AnimationRemoteSessionServiceTests(TestCase):
                 command,
                 now=now + timedelta(milliseconds=600),
             ).accepted
+        )
+
+    def test_deactivated_token_cannot_access_a_new_session_for_same_animation(self):
+        now = timezone.now()
+        old = create_remote_session(self._animation(), now=now)
+        self.assertIsNotNone(
+            deactivate_remote_session(old.session.session_id, old.master_token, now=now)
+        )
+        replacement = create_remote_session(old.session.animation, now=now)
+
+        self.assertIsNone(
+            authenticate_remote_session(
+                old.session.session_id, old.access_token, now=now
+            )
+        )
+        self.assertIsNone(
+            authenticate_remote_session(
+                replacement.session.session_id, old.access_token, now=now
+            )
         )
 
     def test_state_storage_accepts_newer_revision_only(self):
@@ -893,6 +929,11 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn('socket.send(JSON.stringify({ type: "AUTH", token }));', script)
         self.assertIn("window.setTimeout(connect, reconnectDelayMs)", script)
         self.assertIn('message.type === "MASTER_REPLACED"', script)
+        self.assertIn(
+            'message.type === "COMMAND_REJECTED" && role === "remote"', script
+        )
+        self.assertNotIn("pendingCommands", script)
+        self.assertNotIn("commandQueue", script)
         self.assertNotIn("?token=", script)
 
     def test_remote_management_keeps_lifecycle_outside_the_projection_bridge(self):
@@ -941,6 +982,9 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         self.assertNotIn("gunicorn", production_start)
         self.assertIn("new window.BroadcastChannel", master_script)
         self.assertIn("window.localStorage", master_script)
+        display_script = Path("static/js/lyrics_slide_show_display.js").read_text()
+        self.assertNotIn("LSSRemoteTransport", display_script)
+        self.assertNotIn("WebSocket", display_script)
         urls = Path("app_animation/urls.py").read_text()
         self.assertIn("lyrics_remote_session_create", urls)
         self.assertIn("lyrics_remote_session_deactivate", urls)

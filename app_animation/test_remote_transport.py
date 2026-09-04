@@ -4,6 +4,7 @@ import uuid
 from datetime import timedelta
 
 from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from django.test import TransactionTestCase, override_settings
@@ -13,7 +14,11 @@ from app_group.models import Group, GroupStatus
 from lyrics_slide_show.asgi import application
 
 from .models import Animation
-from .services.remote_sessions import create_remote_session
+from .services.remote_sessions import (
+    authenticate_remote_session,
+    create_remote_session,
+    deactivate_remote_session,
+)
 
 
 @override_settings(
@@ -34,7 +39,7 @@ class RemoteTransportConsumerTests(TransactionTestCase):
         return create_remote_session(animation)
 
     @staticmethod
-    def _state(revision: int) -> dict[str, object]:
+    def _state(revision: int, *, black_mode: bool = False) -> dict[str, object]:
         return {
             "type": "STATE",
             "state": {
@@ -44,7 +49,7 @@ class RemoteTransportConsumerTests(TransactionTestCase):
                 "current_song": None,
                 "previous_song": None,
                 "next_song": None,
-                "black_mode": False,
+                "black_mode": black_mode,
                 "songs": [],
                 "chorus_available": False,
                 "current_transition": None,
@@ -123,6 +128,53 @@ class RemoteTransportConsumerTests(TransactionTestCase):
 
         async_to_sync(scenario)()
 
+    def test_multiple_remotes_converge_after_a_shared_cooldown_rejection(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            first_remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await first_remote.receive_json_from()
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 1}
+            )
+            second_remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await second_remote.receive_json_from()
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "REMOTE_COUNT", "count": 2}
+            )
+
+            await first_remote.send_json_to(
+                {"type": "COMMAND", "command": "NEXT_SLIDE"}
+            )
+            accepted = await first_remote.receive_json_from()
+            self.assertEqual(accepted["type"], "COMMAND_ACCEPTED")
+            await master.receive_json_from()
+            await second_remote.send_json_to(
+                {"type": "COMMAND", "command": "NEXT_SLIDE"}
+            )
+            self.assertEqual(
+                await second_remote.receive_json_from(),
+                {"type": "COMMAND_REJECTED", "reason": "COOLDOWN"},
+            )
+
+            state = self._state(7, black_mode=True)
+            await master.send_json_to(state)
+            self.assertEqual(await first_remote.receive_json_from(), state)
+            self.assertEqual(await second_remote.receive_json_from(), state)
+            await first_remote.disconnect()
+            await second_remote.disconnect()
+            await master.disconnect()
+
+        async_to_sync(scenario)()
+
     def test_remote_connection_count_is_reported_and_session_disable_closes_sockets(
         self,
     ):
@@ -168,6 +220,30 @@ class RemoteTransportConsumerTests(TransactionTestCase):
 
         async_to_sync(scenario)()
 
+    def test_master_disconnect_rejects_new_commands_without_queueing_them(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            await master.disconnect()
+
+            await remote.send_json_to({"type": "COMMAND", "command": "NEXT_SLIDE"})
+            self.assertEqual(
+                await remote.receive_json_from(),
+                {"type": "COMMAND_REJECTED", "reason": "MASTER_UNAVAILABLE"},
+            )
+            await remote.disconnect()
+
+        async_to_sync(scenario)()
+
     def test_inactive_and_expired_sessions_are_refused_during_authentication(self):
         inactive = self._create_session()
         inactive.session.active = False
@@ -193,6 +269,73 @@ class RemoteTransportConsumerTests(TransactionTestCase):
             inactive.session.session_id, inactive.access_token
         )
         async_to_sync(assert_refused)(expired.session.session_id, expired.access_token)
+
+    def test_invalid_and_deactivated_tokens_are_refused_during_authentication(self):
+        invalid = self._create_session()
+        deactivated = self._create_session()
+        self.assertIsNotNone(
+            deactivate_remote_session(
+                deactivated.session.session_id, deactivated.master_token
+            )
+        )
+
+        async def assert_refused(session_id, token):
+            communicator = WebsocketCommunicator(
+                application,
+                f"/ws/animations/remote/{session_id}/remote/",
+                headers=[(b"origin", b"http://testserver")],
+            )
+            connected, _ = await communicator.connect()
+            self.assertTrue(connected)
+            await communicator.send_json_to({"type": "AUTH", "token": token})
+            close_event = await communicator.receive_output()
+            self.assertEqual(close_event["type"], "websocket.close")
+            self.assertEqual(close_event["code"], 4403)
+
+        async_to_sync(assert_refused)(invalid.session.session_id, "wrong-token")
+        async_to_sync(assert_refused)(
+            deactivated.session.session_id, deactivated.access_token
+        )
+
+    def test_deactivation_closes_connected_remotes_and_invalidates_access(self):
+        created = self._create_session()
+
+        async def scenario():
+            master = await self._connect(
+                created.session.session_id, "master", created.master_token
+            )
+            await master.receive_json_from()
+            remote = await self._connect(
+                created.session.session_id, "remote", created.access_token
+            )
+            await remote.receive_json_from()
+            await master.receive_json_from()
+            result = await database_sync_to_async(deactivate_remote_session)(
+                created.session.session_id, created.master_token
+            )
+            self.assertIsNotNone(result)
+            await get_channel_layer().group_send(
+                f"lss.remote.{created.session.session_id.hex}",
+                {"type": "remote.session.disabled"},
+            )
+            await get_channel_layer().send(
+                result.master_channel_name, {"type": "remote.session.disabled"}
+            )
+            self.assertEqual(
+                await remote.receive_json_from(), {"type": "SESSION_DISABLED"}
+            )
+            self.assertEqual(
+                await master.receive_json_from(), {"type": "SESSION_DISABLED"}
+            )
+            await remote.wait()
+            await master.wait()
+
+        async_to_sync(scenario)()
+        self.assertIsNone(
+            authenticate_remote_session(
+                created.session.session_id, created.access_token, now=timezone.now()
+            )
+        )
 
     def test_new_master_replaces_the_previous_connection(self):
         created = self._create_session()
