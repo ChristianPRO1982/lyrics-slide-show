@@ -55,12 +55,17 @@ Un second `json_script` expose `shortcuts_config` avec :
 - la page display exige ce `session` dans l'URL,
 - le remote stocke aussi son état local (`lss-lyrics-master-state:<animationId>`), dont `activeTransitionId`.
 
+Cette session locale ne doit pas être confondue avec une session Web Remote. La
+session Web Remote est temporaire, possède son propre UUID et ne change jamais le
+`display_session_id`, le bridge local ou l'état local de projection.
+
 ## Mise En Page
 
 La page contient :
 - surcouche visuelle de `BLACK MODE` non interactive,
 - barre d'actions,
 - contrôle de transition live,
+- contrôle et panneau de gestion Web Remote,
 - panneau aperçu diapo courante,
 - panneau aperçu diapo suivante,
 - liste par chant avec grille de cartes de diapos.
@@ -81,8 +86,30 @@ Actions implémentées :
 - choix de la transition active,
 - `Transition suivante`,
 - `Forcer Direct`,
+- ouverture du panneau `Télécommande distante`,
 - affichage popup d'aide raccourcis,
 - personnalisation persistée des raccourcis membre.
+
+### Gestion De La Web Remote
+
+Le bouton `Télécommande distante` ouvre un panneau inline persistant dans la
+toolbar. Il est inactif par défaut et expose les états : `INACTIVE`, `ACTIVATING`,
+`MASTER_CONNECTING`, `MASTER_CONNECTED`, `ERROR` et `DISABLED`.
+
+Après activation, le panneau affiche :
+- un QR code de télécommande distinct du QR public des paroles ;
+- un lien d'accès contenant le token remote dans son fragment ;
+- le nombre de remotes actuellement connectées ;
+- l'action de désactivation.
+
+L'activation appelle l'endpoint JSON de création pour l'animation du groupe
+sélectionné, puis connecte la master au WebSocket avec son secret dédié. La
+désactivation exige ce secret master, ferme le transport et invalide la session.
+À `pagehide`, la master demande aussi la désactivation avec `keepalive`; une perte
+réseau ordinaire conserve en revanche la reconnexion du transport.
+
+Les erreurs de gestion utilisent `window.LSSMessageBox`. Elles ne bloquent jamais
+la navigation locale, les raccourcis, le pédalier, le bridge ou l'afficheur.
 
 ## Comportement De Navigation
 
@@ -130,6 +157,11 @@ Le gras n'est pas encodé dans le contenu lui-même ; il provient du `fontWeight
 - avertissement popup si préchargement incomplet,
 - persistance du dernier frame côté display (`lss-lyrics-display-lastframe:<sessionId>`),
 - heartbeat du remote pour continuité de synchro, sans rejeu de transition visuelle.
+- la Web Remote est chargée mais inactive sans session ; aucune connexion WebSocket
+  n'est nécessaire pour initialiser ou projeter localement ;
+- une perte de Web Remote ne modifie pas les frames locales et n'empêche pas les
+  actions de la master ;
+- une master remplacée cesse son transport distant sans tentative de reconnexion.
 
 ## Popups Et Raccourcis
 
@@ -158,3 +190,7 @@ Cette vue publique :
 - rend les blocs en mode refrain complet,
 - propose navigation par chant, taille de texte, thème clair/sombre,
 - n'est pas synchronisée avec la slide projetée en cours.
+
+Ce QR public ne donne aucun contrôle de projection. Le QR de la Web Remote est
+généré uniquement depuis le panneau de gestion distant et ouvre
+`lyrics_remote_access`.

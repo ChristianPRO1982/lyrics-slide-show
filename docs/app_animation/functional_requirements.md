@@ -16,6 +16,11 @@ Ce fichier décrit les comportements fonctionnels transverses et les contrats de
 Les détails d'interface par template sont documentés dans `docs/app_animation/template_*.md`.
 Ce document ne doit pas décrire la composition visuelle des pages ni les contrôles UI fins.
 
+Les contrats fonctionnels de la remote master et de la Web Remote sont regroupés
+dans `docs/app_animation/remote_functional_requirements.md`; leurs interfaces sont
+décrites dans `template_03.lyrics_slide_show.html.md` et
+`template_12.lyrics_remote_access.html.md`.
+
 Le contrat détaillé des transitions de projection est documenté dans `docs/app_animation/transitions.md`.
 Ce fichier sépare le fonctionnement runtime stable du catalogue évolutif des transitions.
 
@@ -145,6 +150,28 @@ Champs gérés :
 
 Table :
 - `lss"."m_animation_remote_shortcuts`.
+
+### AnimationRemoteSession Et AnimationRemoteConnection
+
+La Web Remote utilise une session live temporaire distincte de l'animation et de
+la session navigateur locale de projection.
+
+`AnimationRemoteSession` référence une animation et persiste :
+- un `session_id` UUID ;
+- les condensats SHA-256 du token d'accès remote et du secret master ;
+- l'activation, la création et l'expiration ;
+- le dernier instant de commande distante accepté ;
+- la présence de la master active, le nombre de remotes connectées et le dernier
+  `STATE` compact avec sa révision.
+
+Les secrets bruts ne sont jamais persistés. Ils sont retournés uniquement lors de
+la création de session. Le token remote fait partie du fragment de l'URL de partage,
+jamais de son chemin, de sa query string ou de l'URL WebSocket.
+
+`AnimationRemoteConnection` représente une lease live persistante par socket,
+avec un UUID de connexion, le rôle `master` ou `remote`, le canal Channels et le
+dernier heartbeat. Ces leases permettent de recalculer le compteur de remotes et
+d'éliminer les présences laissées par une coupure réseau ou un worker arrêté.
 
 ### BackgroundImage
 
@@ -472,6 +499,49 @@ Comportement de session :
 - la page display peut restaurer la dernière frame via local storage,
 - il n'existe pas de verrou global exclusif côté serveur par animation.
 
+## Modèle De Session Web Remote
+
+La Web Remote est une fonctionnalité Internet optionnelle. Elle relie une ou
+plusieurs interfaces mobiles à une master déjà ouverte ; elle ne remplace jamais
+la session locale de projection.
+
+Principes :
+- la master reste l'autorité de navigation, de frames et d'état ;
+- l'afficheur ne connaît que le bridge navigateur local `BroadcastChannel` /
+  `localStorage` ;
+- le serveur conserve les sessions, secrets condensés, expirations, cooldowns,
+  leases et dernier état dans PostgreSQL ;
+- Redis est réservé à la couche Channels de transport, sans donnée métier
+  autoritaire ;
+- une panne Internet, Redis ou Web Remote ne bloque ni les boutons locaux, ni le
+  clavier, ni le pédalier, ni l'afficheur.
+
+Une session Web Remote est créée depuis la master pour le groupe sélectionné.
+Elle expire après huit heures par défaut et peut être désactivée immédiatement.
+La désactivation invalide les secrets, ferme les sockets concernés et ne change
+ni la slide projetée ni le `display_session_id`.
+
+Une unique master est active par session Web Remote. Une nouvelle connexion master
+remplace l'ancienne. Plusieurs remotes mobiles peuvent être connectées en même
+temps ; elles sont indépendantes et ne communiquent qu'avec le serveur.
+
+Le transport WebSocket utilise ASGI/Daphne et Channels avec Redis. Les paramètres
+opérationnels par défaut sont :
+- TTL de session : `28800 s` ;
+- cooldown de commande : `600 ms`, strictement supérieur à la transition active
+  la plus longue ;
+- heartbeat : `5 s` ; lease périmée après `15 s` ;
+- authentification de socket : `10 s` au plus ;
+- accusé de réception master : `1 s` au plus.
+
+Les valeurs sont configurables par variables `REMOTE_*`. Les commandes ne sont
+ni mises en attente ni rejouées : le cooldown est réservé de manière persistante,
+la master doit accuser la réception, puis l'intention est exécutée par ses
+primitives locales existantes. Une master absente, remplacée ou périmée produit un
+rejet immédiat lorsqu'elle est déjà connue indisponible. Si elle disparaît après la
+réservation, le rejet intervient au plus tard à l'expiration de la fenêtre d'accusé
+et annule conditionnellement cette réservation.
+
 ## Contrats Back -> Front
 
 Contrats d'entrée/sortie gérés côté back et consommés par le front :
@@ -484,7 +554,11 @@ Contrats d'entrée/sortie gérés côté back et consommés par le front :
 - bundle runtime `lyrics_slide_show` (`slides`, `projectionSteps`, `songs`, `cardGroups`, `backgroundUrls`, `publicUrl`, `qrCodePngBase64`, `transitions`, `defaultTransitionId`),
 - configuration structurée de raccourcis pour la remote (`siteBindings`, `effectiveBindings`, `formBindings`, `actionOrder`, `actionToRemoteAction`, `actionLabels`, `canCustomizeShortcuts`, `customizeUrl`),
 - endpoint JSON de personnalisation des raccourcis `lyrics_slide_show_shortcuts`,
-- vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet.
+- vue publique smartphone basée sur l'ordre de playlist et le rendu des blocs en refrain complet ;
+- endpoints JSON de création et désactivation des sessions Web Remote,
+- page publique d'accès Web Remote par UUID de session, avec token dans le fragment,
+- WebSockets master et remote authentifiés par message `AUTH`,
+- protocole Web Remote `COMMAND`, `COMMAND_ACCEPTED`, `COMMAND_REJECTED` et `STATE`.
 
 Dans ce bundle :
 - `slides` est l'inventaire plat des blocs rendus avec leur style résolu individuel ;

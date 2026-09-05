@@ -1,6 +1,7 @@
 FROM python:3.12-slim AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:0.6.9 /uv /uvx /bin/
+# Keep the dependency bootstrap tool immutable while the lock file pins packages.
+COPY --from=ghcr.io/astral-sh/uv:0.6.9@sha256:cbc016e49b55190e17bfd0b89a1fdc1a54e0a54a8f737dfacc72eca9ad078338 /uv /uvx /bin/
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

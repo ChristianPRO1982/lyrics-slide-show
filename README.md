@@ -29,6 +29,78 @@ Main reference documents:
 - `docs/keycloak_connexion.md`
 - `docs/popup_messagebox.md`
 
+## Run Locally
+
+Prerequisites: Docker Engine with the Compose plugin, the shared local PostgreSQL
+stack, and its Docker network (`pg-carthographie_backend` by default).
+
+Create the local environment file once, then complete it with the local database
+and authentication mock values:
+
+```bash
+cp .env.dev.example .env.dev
+```
+
+Start Lyrics Slide Show, Redis, the remote lease reaper, and `auth_mock`:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml up --build
+```
+
+In a second terminal, apply migrations and verify the Django configuration:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml exec web python manage.py migrate
+docker compose -f compose.yaml -f compose.dev.yaml exec web python manage.py check
+```
+
+Open `http://localhost:8000`, unless `LSS_BIND_PORT` in `.env.dev` defines another
+port. Stop the stack with `Ctrl+C`, or run the following from another terminal:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml down
+```
+
+To inspect the WebSocket remote transport and lease cleanup while testing:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml logs -f web remote_lease_reaper remote_redis
+```
+
+## Run In Production
+
+Production uses a prebuilt `carthographie/lyrics-slide-show:latest` image, PostgreSQL
+on the external `shared_backend` network, Redis for Channels, and Traefik for HTTPS
+and WebSocket routing. The `web` container starts Daphne, runs migrations, and
+collects static files before serving the ASGI application.
+
+On the VPS, create the untracked production environment file and configure the
+database, Keycloak, domain, Docker network, volume, and secret-file paths:
+
+```bash
+cp .env.prod.example .env.prod
+```
+
+The external Docker networks (`backend` and `proxy` by default) and volumes
+(`lss_static` and `lss_media` by default) must already exist. Pull and start the
+production stack with `.env.prod` supplied to Compose, which is required for
+Compose variable interpolation:
+
+```bash
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml pull
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml up -d
+```
+
+Check the deployment and follow startup logs:
+
+```bash
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml ps
+docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml logs -f web remote_lease_reaper
+```
+
+After an image update, repeat `pull` then `up -d`. Do not commit `.env.dev`,
+`.env.prod`, or production secret files.
+
 ## Daily Quality Routine (Local + CI)
 
 Use this short sequence before a push:

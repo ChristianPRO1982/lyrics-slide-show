@@ -4,8 +4,14 @@
 .github/
 .agents
 .codex
+.idea/
+.vscode/
 .python-version
 .pre-commit-config.yaml
+.DS_Store
+*.swp
+*.swo
+*~
 
 # Local Python environments and caches
 .venv/
@@ -32,6 +38,14 @@ package-lock.json
 .env
 .env.*
 
+# Private credentials and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+
 # Local databases and generated runtime data
 *.sqlite*
 logs/
@@ -42,7 +56,6 @@ staticfiles/
 docs/
 chris/
 CHANGELOG.md
-README.md
 README_chris.md
 compose.yaml
 compose.*.yaml

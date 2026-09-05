@@ -1,16 +1,25 @@
-# LSS Remote For Animation, Functional Requirements
+# LSS Remote Master Et Web Remote, Exigences Fonctionnelles
 
 ## Objectif
 
-Ce document décrit les exigences fonctionnelles actuellement implémentées par la remote `lyrics_slide_show.html`.
+Ce document décrit les exigences fonctionnelles de la remote master
+`lyrics_slide_show.html` et de la Web Remote `lyrics_remote_access.html`.
 
 La portée principale est le comportement opérateur et le contrat back/front de la remote.
-Le design fin du template est documenté séparément dans `template_03.lyrics_slide_show.html.md`.
+Le design fin des templates est documenté séparément dans
+`template_03.lyrics_slide_show.html.md` pour la master et
+`template_12.lyrics_remote_access.html.md` pour la Web Remote.
 
 ## Vocabulaire
 
-Remote :
-- interface HTML opérateur du template `lyrics_slide_show.html`.
+Remote master :
+- interface HTML opérateur du template `lyrics_slide_show.html` ;
+- seule autorité de navigation, de frames et d'état de projection.
+
+Web Remote :
+- interface mobile Internet du template `lyrics_remote_access.html` ;
+- cliente d'une session temporaire, qui envoie uniquement des intentions à la
+  remote master.
 
 Diapo en cours :
 - diapo actuellement projetée sur l'écran d'affichage.
@@ -20,6 +29,12 @@ Chant sélectionné :
 
 Écran d'affichage :
 - page `lyrics_slide_show_display.html` ouverte dans une autre fenêtre du navigateur et synchronisée avec la remote.
+
+Session Web Remote :
+- session temporaire identifiée par UUID, rattachée à une animation mais distincte
+  du `display_session_id` local ;
+- accès remote et accès master protégés par deux secrets différents, persistés
+  uniquement sous forme de condensats.
 
 ## Échange Entre La Remote Et Les Écrans D'affichage
 
@@ -68,6 +83,113 @@ La remote reste l'autorité de cette transition live.
 Le heartbeat sert à maintenir ou vérifier la liaison, mais il ne déclenche jamais de transition visuelle côté écran d'affichage.
 Un même ordre logique reçu plusieurs fois par les transports navigateur est dédupliqué côté display par `nonce`.
 
+## Web Remote Internet
+
+La Web Remote suit une chaîne d'autorité unique :
+
+```text
+Web Remote mobile -> serveur LSS -> remote master -> bridge local -> afficheur
+```
+
+La Web Remote ne communique jamais directement avec l'afficheur, ne calcule jamais
+la navigation musicale et ne reconstruit aucune frame. La remote master réutilise
+les mêmes primitives de navigation pour les boutons locaux, le clavier, le pédalier
+et les intentions distantes.
+
+Le serveur transporte, authentifie et persiste le dernier état compact ; il ne
+calcule ni slide, ni frame, ni transition. PostgreSQL porte les sessions,
+expirations, cooldowns, secrets condensés et leases. Redis/Channels porte seulement
+les messages entre processus. En production, le service est ASGI/Daphne derrière
+Traefik.
+
+### Cycle De Vie Et Partage
+
+La Web Remote est inactive par défaut. Depuis la toolbar master, l'opérateur crée
+une session pour l'animation du groupe sélectionné. La réponse fournit une seule
+fois le secret master et une URL d'accès remote ; le token remote est intégré au
+fragment `#token=...` de cette URL, puis le navigateur mobile retire ce fragment de
+son historique.
+
+Le panneau master affiche l'URL, son QR code dédié, l'état de connexion et le
+compteur de remotes authentifiées. Il ne montre jamais le token séparément. Le QR
+Web Remote est distinct du QR public de lecture des paroles.
+
+Une session est temporaire, désactivable à tout moment et expire après huit heures
+par défaut. La désactivation ferme les sockets, invalide les deux secrets et ne
+modifie ni la projection, ni l'afficheur, ni la session locale. Le bouton mobile
+`Quitter la session` ferme seulement le socket de ce navigateur ; il ne désactive
+pas la session serveur.
+
+### Routes HTTP Et WebSocket
+
+Les interfaces sont limitées à `app_animation` :
+- `POST /animations/<animation_id>/lyrics-slide-show/remote-sessions/` crée une
+  session pour l'animation du groupe sélectionné ;
+- `POST /animations/<animation_id>/lyrics-slide-show/remote-sessions/<session_id>/deactivate/`
+  désactive une session avec le secret master ;
+- `GET /animations/remote-access/<session_id>/` rend la page mobile sans recevoir
+  le token placé dans son fragment ;
+- `WS /ws/animations/remote/<session_id>/master/` et
+  `WS /ws/animations/remote/<session_id>/remote/` portent respectivement les
+  connexions master et mobile.
+
+Les deux endpoints `POST` sont protégés par CSRF et par le groupe sélectionné.
+Les WebSockets ne reçoivent aucun secret dans leur URL : le premier message est
+`AUTH` avec le secret adapté au rôle.
+
+### Connexion, Présence Et Résilience
+
+Les WebSockets sont séparés par rôle : une route master et une route remote. Le
+secret est envoyé dans le premier message `AUTH`, jamais dans l'URL WebSocket.
+L'authentification doit arriver dans les dix secondes. Les clients prêts émettent
+des heartbeats ; les leases expirées sont purgées et le compteur remote est
+recalculé depuis les leases persistées.
+
+Une seule master active est autorisée. Une nouvelle master remplace la précédente,
+qui reçoit une fermeture contrôlée sans reconnexion. Les remotes peuvent se
+reconnecter et reçoivent le dernier `STATE`, sans rejeu de commandes. Si la master
+est indisponible, les commandes sont désactivées côté mobile et un
+`MASTER_UNAVAILABLE` est rendu ; une nouvelle publication de `STATE` réactive
+l'interface.
+
+La perte Internet ou l'arrêt du transport distant ne doit jamais empêcher la
+projection locale. Les boutons, raccourcis clavier, pédalier, `BLACK MODE`, QR
+public, transitions et bridge master-afficheur restent disponibles.
+
+### Commandes, État Et Retours
+
+Le protocole public comprend `COMMAND`, `COMMAND_ACCEPTED`, `COMMAND_REJECTED` et
+`STATE`. Les motifs de rejet exploitables sont `COOLDOWN`, `SESSION_INACTIVE`,
+`MASTER_UNAVAILABLE`, `INVALID_COMMAND` et `INVALID_TARGET`.
+
+Les intentions prévues sont :
+- `PREVIOUS_SLIDE`, `NEXT_SLIDE`, `PREVIOUS_SONG`, `NEXT_SONG`, `TOGGLE_BLACK` ;
+- `GO_TO_SONG`, `GO_TO_CHORUS`, `SET_TRANSITION`, `TOGGLE_QR` et
+  `GO_TO_PROJECTION_STEP`.
+
+Les cibles restent stables et sont validées dans le runtime de la master :
+`animation_song_id` pour un chant d'animation, `projection_index` pour une étape
+et `transition_id` pour une transition active. L'interface mobile actuelle expose
+les neuf premières intentions utiles à son écran ; elle ne propose pas de recherche
+de slide car l'état compact ne fournit pas encore son index.
+
+Une commande distante est soumise à un cooldown persistant de `600 ms` par défaut,
+réservé avant l'envoi à la master. La master doit en accuser réception sous une
+seconde ; sinon la commande est rejetée, la réservation est annulée et aucune
+commande n'est mémorisée ou rejouée. Une master déjà absente est rejetée
+immédiatement ; une perte ou un remplacement intervenant après la réservation est
+détecté au plus tard à l'expiration de cet accusé.
+
+Le `STATE` est produit par la master et stocké seulement si sa révision est plus
+élevée. Il contient les résumés courant/suivant, les chants courant/précédent/
+suivant, la liste des chants, la disponibilité du refrain, les modes noir et QR,
+la transition active, les transitions disponibles et le statut master. Les remotes
+affichent ce dernier état autoritaire et ignorent les révisions obsolètes.
+
+L'interface mobile affiche un feedback inline discret après acceptation ou rejet.
+Ses statuts sont `Connexion…`, `Connecté`, `Reconnexion…`, `Master indisponible`
+et `Session terminée`.
+
 ## Structure Générale De La Remote
 
 Les panneaux sont empilés verticalement sur toute la largeur utile.
@@ -107,6 +229,7 @@ Deuxième ligne :
 - ↕️ / 🧱 `Scroll` / `Stop scroll`
 - 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
 - QR embarqué ou fallback 📱 `QR-code`
+- 📡 `Télécommande distante`
 
 Le sélecteur `Transition` affiche les transitions activées fournies par le manifeste technique.
 Son ordre suit l'ordre résolu côté Django.
