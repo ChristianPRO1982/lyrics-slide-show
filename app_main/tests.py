@@ -1397,8 +1397,10 @@ class AuthFlowTests(TestCase):
         response = account(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Compte de known.user")
-        self.assertContains(response, "11111111-1111-1111-1111-111111111111")
+        self.assertContains(response, "Known User")
+        self.assertContains(response, "Mes rôles")
+        self.assertNotContains(response, "Compte de known.user")
+        self.assertNotContains(response, "11111111-1111-1111-1111-111111111111")
 
     def test_removed_test_route_returns_404(self):
         response = self.client.get("/test/")
@@ -1455,14 +1457,23 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Préfixes officiels")
+        content = response.content.decode()
+        self.assertRegex(
+            content,
+            r'<textarea[^>]*name="moderation-moderator_message"[^>]*style="width: 100%;"',
+        )
+        self.assertNotRegex(
+            content,
+            r'<textarea[^>]*name="moderation-moderator_message"[^>]*cols=',
+        )
         self.assertNotContains(response, "Paramètres administrateur")
         self.assertNotContains(response, "Message global administrateur")
         self.assertRegex(
-            response.content.decode(),
+            content,
             r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
         )
         self.assertNotRegex(
-            response.content.decode(),
+            content,
             r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
         )
 
@@ -1496,17 +1507,34 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Préfixes officiels")
         self.assertContains(response, "Membres du site")
+        content = response.content.decode()
+        self.assertRegex(
+            content,
+            r'<textarea[^>]*name="moderation-moderator_message"[^>]*style="width: 100%;"',
+        )
+        self.assertRegex(
+            content,
+            r'<textarea[^>]*name="admin-popup-admin_message"[^>]*style="width: 100%;"',
+        )
+        self.assertNotRegex(
+            content,
+            r'<textarea[^>]*name="moderation-moderator_message"[^>]*cols=',
+        )
+        self.assertNotRegex(
+            content,
+            r'<textarea[^>]*name="admin-popup-admin_message"[^>]*cols=',
+        )
         self.assertNotContains(response, "Titre du site")
         self.assertRegex(
-            response.content.decode(),
+            content,
             r'class="site-role-banner song-tag-badge">👑\s*Administrateur</p>',
         )
         self.assertRegex(
-            response.content.decode(),
+            content,
             r'class="site-role-banner song-tag-badge">⚖️\s*Modérateur</p>',
         )
         self.assertRegex(
-            response.content.decode(),
+            content,
             r'👑\s*Administrateur</p>\s*<p class="site-role-banner song-tag-badge">⚖️\s*Modérateur',
         )
 

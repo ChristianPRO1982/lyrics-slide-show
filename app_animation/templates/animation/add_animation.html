@@ -39,7 +39,7 @@
 {% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
 {% block page_summary %}
     <div class="animation-summary-preview" data-animation-create-summary-preview>
-        <p data-animation-create-summary-live>{% trans "Exemple" %}</p>
+        <p data-animation-create-summary-live>{% trans "Test" %}</p>
     </div>
     <p>
         <span class="animation-color-dot" data-animation-create-summary-text-dot></span>
@@ -79,6 +79,13 @@
                 <div class="animation-create-form-control">
                     {{ form.scheduled_at }}
                     {{ form.scheduled_at.errors }}
+                </div>
+            </div>
+            <div class="animation-create-form-row">
+                <label for="{{ form.default_transition.id_for_label }}">{{ form.default_transition.label }}</label>
+                <div class="animation-create-form-control">
+                    {{ form.default_transition }}
+                    {{ form.default_transition.errors }}
                 </div>
             </div>
         </article>

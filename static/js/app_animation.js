@@ -24,6 +24,7 @@
 
     const fontChoices = Array.isArray(popupData.fontChoices) ? popupData.fontChoices : [];
     const fontPreviews = Array.isArray(popupData.fontPreviews) ? popupData.fontPreviews : [];
+    const transitionChoices = Array.isArray(popupData.transitionChoices) ? popupData.transitionChoices : [];
     const backgroundImageOptions = Array.isArray(popupData.backgroundImageOptions) ? popupData.backgroundImageOptions : [];
     const backgroundPickerBaseUrl = String(popupData.backgroundPickerUrl || "").trim();
     const stylePickerBaseUrl = String(popupData.stylePickerUrl || "").trim();
@@ -43,6 +44,7 @@
         "font_size",
         "horizontal_padding",
         "background_asset_code",
+        "default_transition",
     ];
 
     const hiddenFields = Object.fromEntries(
@@ -323,7 +325,7 @@
             buttons: [
                 { id: "ok", label: label("okLabel"), tone: "success", validate: true },
                 { id: "cancel", label: label("cancelLabel"), tone: "warning", validate: false },
-                makeResetButton(["title", "description", "scheduled_at"]),
+                makeResetButton(["title", "description", "scheduled_at", "default_transition"]),
             ],
             fields: [
                 {
@@ -348,6 +350,14 @@
                     value: values.scheduled_at,
                     required: true,
                 },
+                {
+                    id: "default_transition",
+                    label: label("labelTransition"),
+                    type: "select",
+                    value: values.default_transition,
+                    required: true,
+                    options: transitionChoices,
+                },
             ],
             enterButtonId: "ok",
             escapeButtonId: "cancel",
@@ -362,6 +372,7 @@
             title: String(result.values?.title || "").trim(),
             description: String(result.values?.description || ""),
             scheduled_at: String(result.values?.scheduled_at || "").trim(),
+            default_transition: String(result.values?.default_transition || "").trim(),
         });
         applySummaryPreview();
         refreshDirtyState();

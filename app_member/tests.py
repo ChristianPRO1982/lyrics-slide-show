@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from app_main.models import DirectoryUserRecord, SiteParams
-from app_member.forms import SiteParamsAdminForm
+from app_member.forms import AdminMessageForm, ModeratorMessageForm, SiteParamsAdminForm
 from app_member.models import (
     MemberPreferences,
     MemberRole,
@@ -109,6 +109,21 @@ class MemberPreferencesModelTests(SimpleTestCase):
                     "search_txt": "legacy",
                 }
             )
+
+
+class MemberMessageFormRenderingTests(SimpleTestCase):
+    def test_popup_message_textareas_are_full_width_without_cols(self):
+        moderator_html = str(
+            ModeratorMessageForm(prefix="moderation")["moderator_message"]
+        )
+        admin_html = str(AdminMessageForm(prefix="admin-popup")["admin_message"])
+
+        self.assertIn('name="moderation-moderator_message"', moderator_html)
+        self.assertIn('style="width: 100%;"', moderator_html)
+        self.assertNotIn("cols=", moderator_html)
+        self.assertIn('name="admin-popup-admin_message"', admin_html)
+        self.assertIn('style="width: 100%;"', admin_html)
+        self.assertNotIn("cols=", admin_html)
 
 
 def create_directory_user(**overrides):

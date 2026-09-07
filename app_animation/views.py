@@ -5,6 +5,7 @@ import re
 import uuid
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -42,6 +43,11 @@ from .models import (
     AnimationVerseOverride,
     BackgroundImage,
     BackgroundImageStatus,
+)
+from .transitions import (
+    list_enabled_transition_options,
+    list_enabled_transition_runtime_options,
+    resolve_enabled_transition_id,
 )
 from .services.background_images import (
     active_background_image_options,
@@ -117,6 +123,8 @@ def _shortcut_action_labels() -> dict[str, str]:
         "toggle_chorus": _("Afficher / masquer les refrains"),
         "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
         "toggle_qr": _("📱 QR code pour les paroles"),
+        "next_transition": _("Transition suivante"),
+        "force_direct": _("Forcer Direct"),
     }
 
 
@@ -1337,6 +1345,7 @@ def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
             "popup_data": {
                 "fontChoices": font_choices,
                 "fontPreviews": font_previews,
+                "transitionChoices": list_enabled_transition_options(),
                 "backgroundImageOptions": _background_image_popup_options(),
                 "backgroundPickerUrl": reverse(
                     "animation_background_picker", args=[animation.animation_id]
@@ -2165,6 +2174,10 @@ def _build_runtime_payload(animation: Animation, public_url: str) -> dict[str, o
         "publicUrl": public_url,
         "qrCodePngBase64": build_qr_png_base64(public_url),
         "cardGroups": card_groups,
+        "transitions": list_enabled_transition_runtime_options(),
+        "defaultTransitionId": resolve_enabled_transition_id(
+            animation.default_transition
+        ),
     }
 
 
@@ -2370,6 +2383,7 @@ def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpRe
                 "waitingLabel": _("En attente du maître"),
                 "f11ReminderLabel": _("APPUYEZ SUR F11 SUR CETTE ÉCRAN"),
             },
+            "display_debug_enabled": settings.DEBUG,
         },
     )
 

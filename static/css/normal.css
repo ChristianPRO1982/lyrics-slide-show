@@ -1329,6 +1329,14 @@ body.lss-messagebox-open {
     object-fit: contain;
 }
 
+[data-account-moderation-form] textarea,
+[data-account-admin-form] textarea {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    resize: vertical;
+}
+
 .site-home-dropcap-copy::after {
     content: "";
     display: block;

@@ -284,6 +284,18 @@ def _build_account_context(
 ) -> dict[str, object]:
     is_moderator = can_manage_moderator_popup(request.user)
     is_admin = can_manage_site_settings(request.user)
+    account_display_name = " ".join(
+        part
+        for part in (
+            str(getattr(request.user, "first_name", "") or "").strip(),
+            str(getattr(request.user, "last_name", "") or "").strip(),
+        )
+        if part
+    )
+    if not account_display_name:
+        account_display_name = str(getattr(request.user, "username", "") or "").strip()
+    if not account_display_name:
+        account_display_name = str(getattr(request.user, "email", "") or "").strip()
 
     if member_search_form is None:
         member_search_form = MemberSearchForm(initial={"member_search": member_search})
@@ -315,8 +327,7 @@ def _build_account_context(
         "member_results": member_results,
         "member_search": member_search,
         "site_params_missing": site_params is None,
-        "account_heading": _("Compte de %(username)s")
-        % {"username": request.user.username},
+        "account_display_name": account_display_name,
     }
 
 

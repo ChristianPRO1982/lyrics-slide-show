@@ -164,9 +164,7 @@
 
 {% block page_summary %}
     {% if page_mode == "account" %}
-        <p><strong>{{ account_heading }}</strong></p>
-        <p><strong>{{ request.user.username }}</strong></p>
-        <p>{{ request.user.first_name }} {{ request.user.last_name }}</p>
+        <p><strong>{{ account_display_name }}</strong></p>
     {% else %}
         <p>{% trans "La connexion passe par la structure mère cARThographie, qui fournit l'identité utilisée ensuite dans l'application avec simplicité et continuité." %}</p>
     {% endif %}
@@ -201,10 +199,9 @@
             <article class="site-theme-card">
                 <header class="site-theme-card-header">
                     <div>
-                        <h2>{% trans "Rôles du site" %}</h2>
+                        <h2>{% trans "Mes rôles" %}</h2>
                     </div>
                 </header>
-                <p><code>{{ request.user.external_id }}</code></p>
                 {% if is_admin %}
                     <p>{% trans "Vous êtes administrateur du site. Vous disposez aussi automatiquement des droits de modération." %}</p>
                 {% elif is_moderator %}

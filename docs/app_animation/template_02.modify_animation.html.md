@@ -53,7 +53,7 @@ Actions disponibles :
 ## Formulaire Et Données Persistées
 
 Le formulaire caché `#modify-animation-form` contient :
-- champs cachés `AnimationForm` : `title`, `description`, `scheduled_at`, `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`,
+- champs cachés `AnimationForm` : `title`, `description`, `scheduled_at`, `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`, `default_transition`,
 - champs cachés de redirection : `background_picker_level`, `background_picker_animation_song_id`, `background_picker_source_verse_id`, `background_picker_after_save`,
 - `ordered_mix` (playlist sérialisée),
 - `songs_payload` (JSON des options par chant/couplet).
@@ -103,12 +103,16 @@ Les popups utilisent `window.LSSMessageBox`.
 Champs :
 - titre,
 - description,
-- date/heure.
+- date/heure,
+- transition par défaut.
 
 Boutons :
 - `OK`,
 - `Abandonner`,
 - `Réinitialiser` (sur ce sous-ensemble).
+
+Le champ de transition utilise les options `transitionChoices` fournies par Django depuis le manifeste technique.
+La page ne contient pas de liste de transitions codée en dur.
 
 ### Popup `Couleurs et style`
 

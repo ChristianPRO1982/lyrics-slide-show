@@ -13,7 +13,7 @@ Servir de pont i18n entre Django et `static/js/app_animation.js`.
 
 Expose les libellés utilisés par le JS de la page `modify_animation`, notamment :
 - titres et boutons des popups générales/visuelles,
-- labels des champs et previews,
+- labels des champs et previews, dont le champ `Transition`,
 - confirmations (suppression, reset parent, perte de modifications),
 - labels de navigation popup vers chant,
 - labels des onglets d'ajout de chant (avancé/favoris/tous).

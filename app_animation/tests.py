@@ -44,7 +44,15 @@ from .services.render_bundle import build_animation_render_bundle
 from .services.shortcuts import (
     build_effective_shortcut_bindings,
     build_form_shortcut_bindings,
+    normalize_stored_bindings,
     validate_shortcut_submission,
+)
+from .transitions import (
+    get_default_transition_id,
+    list_enabled_transition_choices,
+    list_enabled_transition_options,
+    list_enabled_transition_runtime_options,
+    list_enabled_transitions,
 )
 
 
@@ -58,6 +66,50 @@ class PlaylistParsingTests(SimpleTestCase):
 
 
 class AnimationFormFontValidationTests(SimpleTestCase):
+    def test_transition_manifest_exposes_enabled_transitions(self):
+        transition_ids = tuple(item["id"] for item in list_enabled_transitions())
+        self.assertEqual(transition_ids, ("direct", "fade", "wipe"))
+        self.assertEqual(get_default_transition_id(), "direct")
+        self.assertNotIn("wipe_horizontal", transition_ids)
+
+    def test_transition_choices_follow_manifest_order(self):
+        choices = tuple(value for value, _label in list_enabled_transition_choices())
+        self.assertEqual(choices, ("direct", "fade", "wipe"))
+        option_values = tuple(
+            item["value"] for item in list_enabled_transition_options()
+        )
+        self.assertEqual(option_values, choices)
+        runtime_values = tuple(
+            item["id"] for item in list_enabled_transition_runtime_options()
+        )
+        self.assertEqual(runtime_values, choices)
+        self.assertEqual(
+            list_enabled_transition_runtime_options()[2]["params"]["direction"],
+            "left_to_right",
+        )
+
+    def test_transition_manifest_uses_i18n_label_keys_only(self):
+        manifest = json.loads(Path("app_animation/transitions.json").read_text())
+        transitions = manifest["transitions"]
+        self.assertEqual(
+            tuple(item["label_key"] for item in transitions),
+            ("transition_direct", "transition_fade", "transition_wipe"),
+        )
+        self.assertFalse(any("label" in item for item in transitions))
+
+    def test_transition_labels_are_translated_from_keys_in_po_files(self):
+        fr_catalog = Path("locale/fr/LC_MESSAGES/django.po").read_text()
+        en_catalog = Path("locale/en/LC_MESSAGES/django.po").read_text()
+
+        self.assertIn('msgid "transition_direct"\nmsgstr "Direct"', fr_catalog)
+        self.assertIn('msgid "transition_fade"\nmsgstr "Fondu"', fr_catalog)
+        self.assertIn('msgid "transition_wipe"\nmsgstr "Balayage"', fr_catalog)
+        self.assertIn('msgid "transition_direct"\nmsgstr "Direct"', en_catalog)
+        self.assertIn('msgid "transition_fade"\nmsgstr "Fade"', en_catalog)
+        self.assertIn('msgid "transition_wipe"\nmsgstr "Wipe"', en_catalog)
+        self.assertNotIn('msgid "Balayge"', fr_catalog)
+        self.assertNotIn('msgid "Balayge"', en_catalog)
+
     def test_animation_form_accepts_catalog_font(self):
         form = AnimationForm(
             data={
@@ -70,9 +122,29 @@ class AnimationFormFontValidationTests(SimpleTestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "fade",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["default_transition"], "fade")
+
+    def test_animation_form_defaults_empty_transition_to_direct(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation Direct",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["default_transition"], "direct")
 
 
 class AnimationSongSlideDisplayModeModelTests(TestCase):
@@ -124,10 +196,29 @@ class AnimationSongSlideDisplayModeModelTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "direct",
             }
         )
         self.assertFalse(form.is_valid())
         self.assertIn("font_family", form.errors)
+
+    def test_animation_form_rejects_unknown_transition(self):
+        form = AnimationForm(
+            data={
+                "title": "Animation Transition",
+                "description": "",
+                "scheduled_at": "2026-05-06T10:00",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "wipe_horizontal",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("default_transition", form.errors)
 
     def test_animation_form_allows_empty_bg_color_when_background_image_is_set(self):
         form = AnimationForm(
@@ -141,6 +232,7 @@ class AnimationSongSlideDisplayModeModelTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "direct",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)
@@ -351,6 +443,19 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
             'return !Boolean(target.closest("[data-lyrics-master-root]"));',
             script,
         )
+        self.assertIn(
+            "const shouldIgnoreKeydownTarget = (target, key) => {",
+            script,
+        )
+        self.assertIn(
+            'target.matches("select[data-lyrics-transition-select]")',
+            script,
+        )
+        self.assertIn(
+            "return !buildShortcutActionIndex().has(key);",
+            script,
+        )
+        self.assertIn("event.preventDefault();", script)
 
     def test_customize_popup_uses_shortcut_slot_fields(self):
         script = Path("static/js/lyrics_slide_show_master.js").read_text()
@@ -380,6 +485,16 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn("dataset.targetProjectionIndex", script)
         self.assertIn('card.getAttribute("data-projection-index")', script)
 
+    def test_master_script_carries_transition_state_and_messages(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+        self.assertIn("const transitions = Array.isArray(payload.transitions)", script)
+        self.assertIn("activeTransitionId: defaultTransitionId", script)
+        self.assertIn("renderTransitionChoices", script)
+        self.assertIn("transition: transitionFromState()", script)
+        self.assertIn('action === "next-transition"', script)
+        self.assertIn('action === "force-direct"', script)
+        self.assertNotIn("wipe_horizontal", script)
+
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
     def test_display_script_supports_double_projection_steps(self):
@@ -389,10 +504,35 @@ class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
         self.assertIn('wrapper.className = "lyrics-display-double"', script)
         self.assertIn("lyrics-display-column", script)
 
+    def test_display_script_declares_transition_engine(self):
+        script = Path("static/js/lyrics_slide_show_display.js").read_text()
+        self.assertIn("const transitionRegistry =", script)
+        self.assertIn("const processedNonces = new Set()", script)
+        self.assertIn("writeDebugEntry", script)
+        self.assertIn('event: "transition-start"', script)
+        self.assertIn('event: "transition-finish"', script)
+        self.assertIn('event: "transitionend"', script)
+        self.assertIn("data-lyrics-display-debug-log", script)
+        self.assertIn("data-lyrics-display-debug-copy", script)
+        self.assertIn("navigator.clipboard.writeText", script)
+        self.assertIn('isCollapsed ? "🔼" : "🔽"', script)
+        self.assertIn('debugCopyNode.textContent = "copied"', script)
+        self.assertIn("}, 1000)", script)
+        self.assertIn('if (type === "heartbeat")', script)
+        self.assertIn("renderFrameIntoLayer", script)
+        self.assertIn('transitionId === "fade"', script)
+        self.assertIn('transitionId === "wipe"', script)
+        self.assertIn("opacity", script)
+        self.assertIn("clipPath", script)
+        self.assertIn("void incomingLayer.offsetWidth", script)
+        self.assertNotIn("wipe_horizontal", script)
+
     def test_display_stylesheet_declares_double_layout_classes(self):
         stylesheet = Path("static/css/app_animation.css").read_text()
         self.assertIn(".lyrics-display-double", stylesheet)
         self.assertIn(".lyrics-display-column", stylesheet)
+        self.assertIn(".lyrics-display-layer", stylesheet)
+        self.assertIn(".lyrics-display-debug-panel", stylesheet)
 
     def test_remote_slide_cards_hidden_attribute_overrides_grid_display(self):
         stylesheet = Path("static/css/app_animation.css").read_text()
@@ -617,6 +757,8 @@ class ShortcutValidationTests(SimpleTestCase):
             "toggle_chorus": "Display/hide choruses",
             "toggle_scroll": "Scroll on ↕️ or not 🧱",
             "toggle_qr": "📱 QR code for lyrics",
+            "next_transition": "Next transition",
+            "force_direct": "Force Direct",
         }
         result = validate_shortcut_submission(
             {
@@ -630,6 +772,8 @@ class ShortcutValidationTests(SimpleTestCase):
                 "toggle_chorus": "",
                 "toggle_scroll": "",
                 "toggle_qr": "",
+                "next_transition": "",
+                "force_direct": "",
             },
             action_labels=labels,
         )
@@ -638,6 +782,46 @@ class ShortcutValidationTests(SimpleTestCase):
         self.assertEqual(result.saved_bindings["prev_slide"], ["b"])
         self.assertIn("Escape", result.field_errors["black"])
         self.assertIn("combinaison", result.field_errors["prev_slide"])
+
+    def test_validation_reports_transition_shortcut_conflicts(self):
+        labels = {
+            "black": "BLACK MODE",
+            "prev_slide": "Previous slide",
+            "next_slide": "Next slide",
+            "chorus": "Chorus",
+            "open_display": "Display current slide window",
+            "prev_song": "Previous song",
+            "next_song": "Next song",
+            "toggle_chorus": "Display/hide choruses",
+            "toggle_scroll": "Scroll on ↕️ or not 🧱",
+            "toggle_qr": "📱 QR code for lyrics",
+            "next_transition": "Next transition",
+            "force_direct": "Force Direct",
+        }
+        result = validate_shortcut_submission(
+            {
+                "black": "",
+                "prev_slide": "",
+                "next_slide": "",
+                "chorus": "",
+                "open_display": "",
+                "prev_song": "",
+                "next_song": "",
+                "toggle_chorus": "",
+                "toggle_scroll": "t",
+                "toggle_qr": "i",
+                "next_transition": "t",
+                "force_direct": "i",
+            },
+            action_labels=labels,
+        )
+
+        self.assertEqual(result.saved_bindings["toggle_scroll"], ["t"])
+        self.assertEqual(result.saved_bindings["toggle_qr"], ["i"])
+        self.assertEqual(result.saved_bindings["next_transition"], [])
+        self.assertEqual(result.saved_bindings["force_direct"], [])
+        self.assertIn("Scroll on", result.field_errors["next_transition"])
+        self.assertIn("QR code", result.field_errors["force_direct"])
 
     def test_effective_bindings_keep_escape_for_black_mode(self):
         effective = build_effective_shortcut_bindings(
@@ -652,9 +836,49 @@ class ShortcutValidationTests(SimpleTestCase):
                 "toggle_chorus": [],
                 "toggle_scroll": [],
                 "toggle_qr": [],
+                "next_transition": [],
+                "force_direct": [],
             }
         )
         self.assertEqual(effective["black"], ["escape", "x"])
+
+    def test_stored_bindings_add_missing_transition_defaults_without_conflict(self):
+        normalized = normalize_stored_bindings(
+            {
+                "black": ["x"],
+                "prev_slide": ["k"],
+                "next_slide": ["j"],
+                "chorus": ["h"],
+                "open_display": ["p"],
+                "prev_song": ["u"],
+                "next_song": ["n"],
+                "toggle_chorus": ["y"],
+                "toggle_scroll": ["l"],
+                "toggle_qr": ["q"],
+            }
+        )
+
+        self.assertEqual(normalized["next_transition"], ["t"])
+        self.assertEqual(normalized["force_direct"], ["i"])
+
+    def test_stored_bindings_skip_missing_transition_defaults_on_conflict(self):
+        normalized = normalize_stored_bindings(
+            {
+                "black": ["x"],
+                "prev_slide": ["k"],
+                "next_slide": ["j"],
+                "chorus": ["h"],
+                "open_display": ["p"],
+                "prev_song": ["u"],
+                "next_song": ["i"],
+                "toggle_chorus": ["y"],
+                "toggle_scroll": ["t"],
+                "toggle_qr": ["q"],
+            }
+        )
+
+        self.assertEqual(normalized["next_transition"], [])
+        self.assertEqual(normalized["force_direct"], [])
 
 
 class AnimationRenderBundleTests(TestCase):
@@ -912,6 +1136,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'name="title"')
         self.assertContains(response, 'name="scheduled_at"')
+        self.assertContains(response, 'name="default_transition"')
 
     def test_add_animation_post_creates_animation_in_selected_group(self):
         selected_group = Group.objects.create(
@@ -931,11 +1156,13 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "fade",
             },
         )
         self.assertEqual(response.status_code, 302)
         created = Animation.objects.get(title="Nouvelle animation")
         self.assertEqual(created.group_id, selected_group.group_id)
+        self.assertEqual(created.default_transition, "fade")
         self.assertNotEqual(created.group_id, other_group.group_id)
         self.assertEqual(
             response.headers["Location"],
@@ -959,6 +1186,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "direct",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -1018,6 +1246,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, 'id="id_title"')
+        self.assertContains(response, 'id="id_default_transition"')
         self.assertContains(response, 'name="ordered_mix"')
         self.assertContains(response, 'name="songs_payload"')
         self.assertContains(response, f"asid:{item.animation_song_id}")
@@ -1030,6 +1259,7 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-song-style-parent-reset-trigger")
         self.assertContains(response, "unsavedChangesTitle")
         self.assertContains(response, "unsavedChangesMessage")
+        self.assertIn("transitionChoices", response.context["popup_data"])
         payload = json.loads(response.context["songs_payload_initial_json"])
         self.assertEqual(
             payload["items"][0]["song_style"]["slide_display_mode"],
@@ -1798,6 +2028,7 @@ class AnimationViewsTests(TestCase):
             font_size=72,
             horizontal_padding=80,
             background_asset_code=None,
+            default_transition="direct",
         )
         item_a = AnimationSong.objects.create(
             animation=animation, song=song_a, position=2
@@ -1818,6 +2049,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "66",
                 "horizontal_padding": "92",
                 "background_asset_code": "bg-asset-01",
+                "default_transition": "wipe",
                 "ordered_mix": f"asid:{item_b.animation_song_id}|sid:{song_c.song_id}|asid:{item_a.animation_song_id}",
             },
         )
@@ -1835,6 +2067,7 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(animation.font_size, 66)
         self.assertEqual(animation.horizontal_padding, 92)
         self.assertEqual(animation.background_asset_code, "bg-asset-01")
+        self.assertEqual(animation.default_transition, "wipe")
         reordered = list(
             AnimationSong.objects.filter(animation_id=animation.animation_id).order_by(
                 "position", "animation_song_id"
@@ -1885,6 +2118,7 @@ class AnimationViewsTests(TestCase):
                 "font_size": "72",
                 "horizontal_padding": "80",
                 "background_asset_code": "",
+                "default_transition": "direct",
                 "ordered_mix": f"asid:{item_b.animation_song_id}|asid:{item_a.animation_song_id}",
                 "songs_payload": json.dumps(
                     {
@@ -1924,6 +2158,37 @@ class AnimationViewsTests(TestCase):
         self.assertIsNone(item_a.bg_color_override)
         existing_override.refresh_from_db()
         self.assertFalse(existing_override.is_visible)
+
+    def test_modify_animation_post_rejects_wipe_horizontal_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            default_transition="direct",
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("modify_animation", args=[animation.animation_id]),
+            data={
+                "title": "Session",
+                "description": "",
+                "scheduled_at": "2026-05-08T19:45",
+                "text_color": "#FFFFFF",
+                "bg_color": "#000000",
+                "font_family": "Ubuntu",
+                "font_size": "72",
+                "horizontal_padding": "80",
+                "background_asset_code": "",
+                "default_transition": "wipe_horizontal",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Transition invalide.")
+        animation.refresh_from_db()
+        self.assertEqual(animation.default_transition, "direct")
 
     def test_modify_animation_post_redirects_to_background_picker_after_save(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
@@ -3089,6 +3354,41 @@ class AnimationViewsTests(TestCase):
             response, GOOGLE_FONTS_STYLESHEET_HREF.replace("&", "&amp;")
         )
 
+    @override_settings(DEBUG=True)
+    def test_lyrics_slide_show_display_shows_debug_panel_when_debug_enabled(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "abcd1234-valid"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-lyrics-display-debug-panel")
+        self.assertContains(response, "data-lyrics-display-debug-log")
+        self.assertContains(response, "data-lyrics-display-debug-copy")
+        self.assertContains(response, "data-lyrics-display-debug-toggle")
+
+    @override_settings(DEBUG=False)
+    def test_lyrics_slide_show_display_hides_debug_panel_when_debug_disabled(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show_display", args=[animation.animation_id]),
+            data={"session": "abcd1234-valid"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "data-lyrics-display-debug-panel")
+
     def test_lyrics_slide_show_public_is_accessible_without_group_selection(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         animation = Animation.objects.create(
@@ -3275,6 +3575,62 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(
             response.context["shortcuts_config"]["effectiveBindings"]["black"],
             ["escape", "m"],
+        )
+        self.assertEqual(
+            [item["id"] for item in payload["transitions"]],
+            ["direct", "fade", "wipe"],
+        )
+        self.assertEqual(payload["defaultTransitionId"], "direct")
+        manifest_transitions = json.loads(
+            Path("app_animation/transitions.json").read_text()
+        )["transitions"]
+        self.assertEqual(
+            payload["transitions"][1]["params"]["duration_ms"],
+            manifest_transitions[1]["params"]["duration_ms"],
+        )
+        self.assertEqual(
+            payload["transitions"][2]["params"]["duration_ms"],
+            manifest_transitions[2]["params"]["duration_ms"],
+        )
+        self.assertNotIn("wipe_horizontal", json.dumps(payload["transitions"]))
+
+    def test_lyrics_slide_show_runtime_payload_uses_animation_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group,
+            title="Session",
+            scheduled_at=timezone.now(),
+            default_transition="wipe",
+        )
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["runtime_payload"]["defaultTransitionId"], "wipe"
+        )
+
+    def test_lyrics_slide_show_runtime_payload_falls_back_from_unknown_transition(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        Animation.objects.filter(pk=animation.pk).update(
+            default_transition="wipe_horizontal"
+        )
+        animation.refresh_from_db()
+        self._select_group(group)
+
+        response = self.client.get(
+            reverse("lyrics_slide_show", args=[animation.animation_id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["runtime_payload"]["defaultTransitionId"], "direct"
         )
 
     def test_lyrics_slide_show_remote_grid_keeps_current_behavior_for_single_mode(self):
@@ -3798,6 +4154,7 @@ class AnimationViewsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Raccourcis clavier (personnalisable)")
+        self.assertContains(response, "data-lyrics-transition-select")
 
     def test_lyrics_slide_show_uses_member_shortcuts_when_present(self):
         user_id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -4219,6 +4576,32 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(
             response.context["shortcuts_config"]["actionLabels"]["open_display"],
             "Afficher la fenêtre de la diapo en cours",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"][
+                "next_transition"
+            ],
+            ["t"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["effectiveBindings"]["force_direct"],
+            ["i"],
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionToRemoteAction"][
+                "next_transition"
+            ],
+            "next-transition",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionToRemoteAction"][
+                "force_direct"
+            ],
+            "force-direct",
+        )
+        self.assertEqual(
+            response.context["shortcuts_config"]["actionLabels"]["next_transition"],
+            "Transition suivante",
         )
 
     def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):

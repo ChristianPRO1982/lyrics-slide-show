@@ -20,6 +20,8 @@ SHORTCUT_ACTION_ORDER: Final[list[str]] = [
     "toggle_chorus",
     "toggle_scroll",
     "toggle_qr",
+    "next_transition",
+    "force_direct",
 ]
 
 SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
@@ -33,6 +35,8 @@ SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
     "toggle_chorus": "toggle-chorus",
     "toggle_scroll": "toggle-scroll",
     "toggle_qr": "toggle-qr",
+    "next_transition": "next-transition",
+    "force_direct": "force-direct",
 }
 
 SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
@@ -46,6 +50,8 @@ SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
     "toggle_chorus": ["a", "d"],
     "toggle_scroll": ["l"],
     "toggle_qr": ["q"],
+    "next_transition": ["t"],
+    "force_direct": ["i"],
 }
 
 CUSTOMIZABLE_SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
@@ -120,13 +126,15 @@ def build_customizable_site_shortcut_bindings() -> dict[str, list[str]]:
 
 
 def normalize_stored_bindings(raw_value: object) -> dict[str, list[str]]:
-    normalized = build_customizable_site_shortcut_bindings()
-    for action in SHORTCUT_ACTION_ORDER:
-        normalized[action] = []
+    normalized = {action: [] for action in SHORTCUT_ACTION_ORDER}
     if not isinstance(raw_value, dict):
         return normalized
+    taken_tokens: set[str] = set()
     for action in SHORTCUT_ACTION_ORDER:
+        action_is_missing = action not in raw_value
         values = raw_value.get(action)
+        if action_is_missing:
+            values = SITE_SHORTCUT_BINDINGS.get(action, [])
         if not isinstance(values, list):
             continue
         seen: set[str] = set()
@@ -137,7 +145,10 @@ def normalize_stored_bindings(raw_value: object) -> dict[str, list[str]]:
             token = item.strip().lower()
             if not token or token in seen or token == "escape":
                 continue
+            if action_is_missing and token in taken_tokens:
+                continue
             seen.add(token)
+            taken_tokens.add(token)
             tokens.append(token)
         normalized[action] = tokens[:3]
     return normalized

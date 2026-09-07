@@ -8,7 +8,8 @@ Afficher l'écran projeté piloté par la page maître `lyrics_slide_show.html`.
 
 - page volontairement minimaliste,
 - aucune action utilisateur opérateur,
-- rendu du frame reçu (`idle`, `slide`, `black`, `qr`, `f11-reminder`).
+- rendu du frame reçu (`idle`, `slide`, `black`, `qr`, `f11-reminder`),
+- transition visuelle entre deux frames complets,
 - en frame `slide`, rendu soit d'un bloc unique pleine largeur, soit d'une composition double sur la même diapo.
 
 ## Contrat de données (back -> template)
@@ -23,9 +24,22 @@ Afficher l'écran projeté piloté par la page maître `lyrics_slide_show.html`.
 - charge la feuille Google Fonts LSS pour pouvoir appliquer les polices autorisées du catalogue animation,
 - charge `static/js/lyrics_slide_show_display.js`,
 - écoute les messages runtime via `BroadcastChannel` puis fallback `storage`,
-- restaure la dernière frame persistée par session.
+- restaure la dernière frame persistée par session,
 - injecte le texte projeté via `textContent` puis laisse CSS gérer les retours à la ligne (`white-space: pre-wrap`),
-- applique sur les frames `slide` le ou les styles résolus reçus : couleur texte, couleur fond, police, poids, taille, marge horizontale et image de fond.
+- applique sur les frames `slide` le ou les styles résolus reçus : couleur texte, couleur fond, police, poids, taille, marge horizontale et image de fond,
+- filtre les messages déjà traités par `nonce`,
+- ignore les heartbeats pour le rendu visuel.
+
+Le display utilise deux couches plein écran superposées.
+Le frame entrant est rendu dans la couche inactive, puis la stratégie de transition rend cette couche active.
+
+Transitions actuellement prises en charge :
+- `direct` : activation immédiate ;
+- `fade` : apparition par opacité ;
+- `wipe` : révélation de gauche à droite.
+
+Les durées et paramètres proviennent du message transmis par la remote.
+Une transition absente, inconnue ou en erreur se replie sur `direct`.
 
 En mode slide double :
 - les deux zones de texte restent du texte brut sans HTML de paroles ;
@@ -97,6 +111,9 @@ Le contrat runtime réel de l'écran projeté est basé sur `projectionStep` :
 - `projectionStep.left` fournit toujours le contenu gauche ;
 - `projectionStep.right` n'est présent que pour un affichage double ;
 - chaque côté porte son propre objet `style`.
+
+Le moteur de transitions ne modifie pas ces règles.
+Il reçoit deux couches déjà rendues et ne connaît pas la logique métier des chants, refrains ou modes doubles.
 
 ## Padding En Mode Double
 

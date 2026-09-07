@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from app_group.models import Group
 from app_song.models import Song, SongSlideDisplayMode
 
+from .transitions import get_default_transition_id
+
 
 class Animation(models.Model):
     animation_id = models.AutoField(primary_key=True)
@@ -23,6 +25,10 @@ class Animation(models.Model):
     font_size = models.PositiveIntegerField(default=72)
     horizontal_padding = models.PositiveIntegerField(default=80)
     background_asset_code = models.CharField(max_length=128, blank=True, null=True)
+    default_transition = models.CharField(
+        max_length=64,
+        default=get_default_transition_id,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -261,6 +261,14 @@
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier (personnalisable)" %}</span></button>
+                                            <label class="lyrics-master-transition-control">
+                                                <span class="lyrics-master-transition-label">{% trans "Transition" %}</span>
+                                                <select
+                                                    class="lyrics-master-transition-select"
+                                                    data-lyrics-transition-select
+                                                    aria-label="{% trans 'Transition' %}"
+                                                ></select>
+                                            </label>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
