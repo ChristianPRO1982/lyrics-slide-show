@@ -1,3 +1,22 @@
+# [3.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.8...v3.2.0) (2026-09-07)
+
+
+### Bug Fixes
+
+* Add central JSON manifest for transition specifications in Lyrics Slide Show ([7419758](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/74197587a43aed96abbec4170d3022a4d6c6717a))
+* Correct string quotation in LyricsSlideShowMasterScriptTests ([9f92ab0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9f92ab0d3480d8350f8a60dc7f9e5eaeafce9a74))
+* Enhance song link display with compact domain names and duplicate markers ([cdc5386](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cdc53862f90edfb4c5197404d566bffd7dac6a78))
+* Implement default transition feature in Animation model and forms ([3d4f799](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3d4f799abccdbb7a257c1b5ea58896750581828c))
+* Update account display name and improve textarea styling in moderation forms ([966b024](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/966b024998ae3f2d5a94423b136c28599d7c1a40))
+* Update account display name and improve textarea styling in moderation forms ([cf7f8e7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/cf7f8e75e8cf560f9f31a8c3667895e2a660b0c0))
+
+
+### Features
+
+* Add debug panel and logging functionality to Lyrics Slide Show ([231fca4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/231fca451e5064003851947c42df0ca47e8dabd4))
+* Add implementation specification for slide transitions ([228bbff](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/228bbff3210d094c08cc7fd97532d3bba1174ee1))
+* Add transition control and functionality for cycling transitions in Lyrics Slide Show ([e96efc5](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e96efc564938eb2df3ee14c58a32bde3962bfd70))
+
 ## [3.1.8](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.7...v3.1.8) (2026-09-01)
 
 
