@@ -416,6 +416,56 @@ class ModifySongBlockLabelTests(SimpleTestCase):
         )
 
 
+class SongLinkDisplayPreparationTests(SimpleTestCase):
+    def test_prepare_song_links_displays_compact_root_domain(self):
+        links = [
+            SimpleNamespace(
+                link="https://musique.topchretien.com/album/abba-pere-1/",
+                type="web",
+            )
+        ]
+
+        prepared_links = song_views._prepare_song_links(links)
+
+        self.assertEqual(prepared_links[0].display_href_label, "topchretien.com")
+        self.assertEqual(prepared_links[0].display_duplicate_marker, "")
+        self.assertEqual(prepared_links[0].link, links[0].link)
+
+    def test_prepare_song_links_marks_duplicate_domain_labels_past_twenty(self):
+        links = [
+            SimpleNamespace(
+                link=f"https://musique.topchretien.com/album/{index}/",
+                type="web",
+            )
+            for index in range(1, 22)
+        ]
+
+        prepared_links = song_views._prepare_song_links(links)
+
+        self.assertEqual(prepared_links[0].display_duplicate_marker, "①")
+        self.assertEqual(prepared_links[1].display_duplicate_marker, "②")
+        self.assertEqual(prepared_links[19].display_duplicate_marker, "⑳")
+        self.assertEqual(prepared_links[20].display_duplicate_marker, "21")
+
+    def test_prepare_song_links_displays_internal_relative_links_as_product_name(self):
+        links = [SimpleNamespace(link="/songs/12/", type="internal")]
+
+        prepared_links = song_views._prepare_song_links(links)
+
+        self.assertEqual(prepared_links[0].display_href_label, "Lyrics Slide Show")
+        self.assertEqual(prepared_links[0].display_duplicate_marker, "")
+        self.assertEqual(prepared_links[0].display_type, "internal")
+
+    def test_prepare_song_links_keeps_multipart_public_suffix(self):
+        links = [
+            SimpleNamespace(link="https://www.example.co.uk/scores/", type="score")
+        ]
+
+        prepared_links = song_views._prepare_song_links(links)
+
+        self.assertEqual(prepared_links[0].display_href_label, "example.co.uk")
+
+
 class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
     settings = SongRenderSettings(
         chorus_prefix="Refrain",
@@ -1807,6 +1857,53 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(response, "/static/images/song_links/score.png", html=False)
         self.assertContains(response, "/static/images/song_links/audio.png", html=False)
         self.assertContains(response, "/static/images/song_links/web.png", html=False)
+
+    def test_song_view_displays_compact_root_domain_for_associated_links(self):
+        SongLink.objects.create(
+            song=self.song,
+            link="https://musique.topchretien.com/album/abba-pere-1/",
+            type="web",
+        )
+
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'href="https://musique.topchretien.com/album/abba-pere-1/"',
+            html=False,
+        )
+        self.assertContains(response, ">topchretien.com</a>", html=False)
+        self.assertNotContains(response, ">musique.topchretien.com</a>", html=False)
+
+    def test_song_view_marks_associated_links_with_duplicate_domain_labels(self):
+        for index in range(1, 22):
+            SongLink.objects.create(
+                song=self.song,
+                link=f"https://musique.topchretien.com/album/{index}/",
+                type="web",
+            )
+
+        self._login()
+        response = self.client.get(reverse("song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, ">topchretien.com</a> ①", html=False)
+        self.assertContains(response, ">topchretien.com</a> ②", html=False)
+        self.assertContains(response, ">topchretien.com</a> ⑳", html=False)
+        self.assertContains(response, ">topchretien.com</a> 21", html=False)
+
+    def test_modify_song_view_displays_internal_relative_link_label(self):
+        SongLink.objects.create(song=self.song, link="/songs/12/", type="internal")
+
+        self._login()
+        response = self.client.get(reverse("modify_song", args=[self.song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'href="/songs/12/"', html=False)
+        self.assertContains(response, ">Lyrics Slide Show</a>", html=False)
+        self.assertContains(response, "(lien interne - Lyrics Slide Show)")
 
     @patch("app_song.views._can_read_song", return_value=False)
     def test_song_text_popup_endpoint_refuses_unreadable_song(self, _can_read_song):

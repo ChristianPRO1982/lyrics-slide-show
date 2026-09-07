@@ -11,7 +11,9 @@
                         width="16"
                         height="16"
                     >
-                    <a href="{{ link.link }}" target="_blank" rel="noopener noreferrer">{{ link.link }}</a>
+                    <span>
+                        <a href="{{ link.link }}" target="_blank" rel="noopener noreferrer">{{ link.display_href_label }}</a>{% if link.display_duplicate_marker %} {{ link.display_duplicate_marker }}{% endif %}
+                    </span>
                     <small>({{ link.display_label }})</small>
                 </li>
             {% endfor %}

@@ -25,7 +25,11 @@ Partiels partagés par plusieurs pages de `app_song`.
   - chaque badge peut devenir un lien de recherche rapide si `add_url` est fourni
 - `_song_links.html`
   - affiche la liste des liens du chant
-  - chaque ligne montre l’URL et `link.get_type_display`
+  - chaque ligne garde l’URL complète comme cible du lien
+  - le texte visible du lien est compacté au domaine racine pour une URL externe
+  - un lien interne relatif s’affiche avec le libellé `Lyrics Slide Show`
+  - si plusieurs liens partagent le même libellé compact, chaque ligne reçoit un marqueur `①` à `⑳`, puis le nombre brut au-delà
+  - chaque ligne montre aussi le libellé localisé du type de lien
 - `_active_search_tags.html`
   - affiche les filtres de recherche actifs et leurs actions de retrait
 

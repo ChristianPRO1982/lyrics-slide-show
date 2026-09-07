@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
@@ -78,6 +79,42 @@ PREFIX_ROW_FIELD_PATTERN = re.compile(
 MULTISPACE_PATTERN = re.compile(r"[ \t]+")
 FRENCH_PUNCTUATION_PATTERN = re.compile(r"(?<=\S)[ \u00A0\u202F]*([!?;:])")
 LEGACY_LINK_TYPE_AUDIO_VIDEO = "audio-video"
+LINK_DUPLICATE_MARKERS = (
+    "①",
+    "②",
+    "③",
+    "④",
+    "⑤",
+    "⑥",
+    "⑦",
+    "⑧",
+    "⑨",
+    "⑩",
+    "⑪",
+    "⑫",
+    "⑬",
+    "⑭",
+    "⑮",
+    "⑯",
+    "⑰",
+    "⑱",
+    "⑲",
+    "⑳",
+)
+MULTIPART_PUBLIC_SUFFIXES = {
+    "ac.uk",
+    "co.jp",
+    "co.uk",
+    "com.au",
+    "com.br",
+    "com.mx",
+    "com.tr",
+    "com.tw",
+    "gov.uk",
+    "net.au",
+    "org.au",
+    "org.uk",
+}
 
 
 @dataclass
@@ -150,12 +187,79 @@ def _normalize_song_link_type(value: str | None) -> str:
     return normalized
 
 
+def _extract_song_link_hostname(value: str | None) -> str:
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        return ""
+
+    parsed = urlsplit(raw_value)
+    hostname = parsed.hostname or ""
+    if hostname:
+        return hostname
+
+    if raw_value.startswith("/") or raw_value.startswith("#"):
+        return ""
+
+    candidate = raw_value.split("/", 1)[0].split("?", 1)[0].split("#", 1)[0]
+    if "." not in candidate:
+        return ""
+
+    parsed_without_scheme = urlsplit(f"//{raw_value}")
+    return parsed_without_scheme.hostname or ""
+
+
+def _display_root_domain(hostname: str) -> str:
+    normalized = hostname.strip().lower().rstrip(".")
+    if normalized.startswith("www."):
+        normalized = normalized[4:]
+    if not normalized:
+        return ""
+
+    parts = [part for part in normalized.split(".") if part]
+    if len(parts) <= 2:
+        return normalized
+
+    suffix = ".".join(parts[-2:])
+    if suffix in MULTIPART_PUBLIC_SUFFIXES and len(parts) >= 3:
+        return ".".join(parts[-3:])
+    return suffix
+
+
+def _build_song_link_display_label(value: str | None) -> str:
+    hostname = _extract_song_link_hostname(value)
+    if not hostname:
+        return "Lyrics Slide Show"
+    return _display_root_domain(hostname) or "Lyrics Slide Show"
+
+
+def _duplicate_marker(position: int) -> str:
+    if 1 <= position <= len(LINK_DUPLICATE_MARKERS):
+        return LINK_DUPLICATE_MARKERS[position - 1]
+    return str(position)
+
+
 def _prepare_song_links(links) -> list[SongLink]:
     prepared_links: list[SongLink] = []
-    for item in links:
+    link_items = list(links)
+    display_labels = [_build_song_link_display_label(item.link) for item in link_items]
+    label_totals: dict[str, int] = {}
+    label_positions: dict[str, int] = {}
+    for display_label in display_labels:
+        label_totals[display_label] = label_totals.get(display_label, 0) + 1
+
+    for item, display_label in zip(link_items, display_labels, strict=False):
         normalized_type = _normalize_song_link_type(item.type)
+        label_positions[display_label] = label_positions.get(display_label, 0) + 1
         setattr(item, "display_type", normalized_type)
         setattr(item, "display_label", str(SongLinkType(normalized_type).label))
+        setattr(item, "display_href_label", display_label)
+        setattr(
+            item,
+            "display_duplicate_marker",
+            _duplicate_marker(label_positions[display_label])
+            if label_totals[display_label] > 1
+            else "",
+        )
         prepared_links.append(item)
     return prepared_links
 
