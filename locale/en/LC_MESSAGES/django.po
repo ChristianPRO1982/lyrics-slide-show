@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 15:09+0200\n"
+"POT-Creation-Date: 2026-09-07 09:11+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -144,32 +144,32 @@ msgstr "Active"
 msgid "Sélectionnez d'abord un groupe pour gérer les animations."
 msgstr "Select a group first to manage animations."
 
-#: app_animation/services/shortcuts.py:299
+#: app_animation/services/shortcuts.py:304
 msgid "Aucune combinaison n'est autorisée."
 msgstr "No key combination is allowed."
 
-#: app_animation/services/shortcuts.py:302
+#: app_animation/services/shortcuts.py:307
 msgid "Escape n'est pas personnalisable."
 msgstr "Escape cannot be customised."
 
-#: app_animation/services/shortcuts.py:306
+#: app_animation/services/shortcuts.py:311
 msgid "Une touche modificatrice seule n'est pas autorisée."
 msgstr "A modifier key on its own is not allowed."
 
-#: app_animation/services/shortcuts.py:310
+#: app_animation/services/shortcuts.py:315
 msgid "Cette touche n'est pas reconnue."
 msgstr "This key is not recognised."
 
-#: app_animation/services/shortcuts.py:316
+#: app_animation/services/shortcuts.py:321
 #, python-format
 msgid "La touche %(key)s est déjà utilisée pour %(action)s."
 msgstr "The %(key)s key is already used for %(action)s."
 
-#: app_animation/services/shortcuts.py:326
+#: app_animation/services/shortcuts.py:331
 msgid "Maximum 3 touches par action."
 msgstr "Maximum of 3 keys per action."
 
-#: app_animation/services/shortcuts.py:344
+#: app_animation/services/shortcuts.py:349
 #, python-format
 msgid "Certaines touches n'ont pas été enregistrées : %(actions)s."
 msgstr "Some keys were not saved: %(actions)s."
