@@ -1400,9 +1400,7 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "Known User")
         self.assertContains(response, "Mes rôles")
         self.assertNotContains(response, "Compte de known.user")
-        self.assertNotContains(
-            response, "11111111-1111-1111-1111-111111111111"
-        )
+        self.assertNotContains(response, "11111111-1111-1111-1111-111111111111")
 
     def test_removed_test_route_returns_404(self):
         response = self.client.get("/test/")

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 09:11+0200\n"
+"POT-Creation-Date: 2026-09-07 09:55+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -81,7 +81,7 @@ msgid "Code d'image de fond"
 msgstr "Background image code"
 
 #: app_animation/forms.py:95 app_animation/forms.py:245
-#: app_animation/views.py:1025 app_song/views.py:1073
+#: app_animation/views.py:1025 app_song/views.py:1177
 msgid "Le titre est obligatoire."
 msgstr "The title is required."
 
@@ -116,7 +116,7 @@ msgstr "Image"
 #: app_animation/forms.py:139 app_animation/forms.py:216
 #: app_animation/templates/animation/background_images.html:89
 #: app_animation/templates/animation/background_images.html:141
-#: app_animation/views.py:1018 app_main/templates/main/connexion.html:224
+#: app_animation/views.py:1018 app_main/templates/main/connexion.html:221
 #: app_song/templates/song/metadata.html:124
 #: app_song/templates/song/modify_genres.html:23
 #: app_song/templates/song/songs.html:325
@@ -201,22 +201,22 @@ msgid "Couplet"
 msgstr "Verse"
 
 #: app_animation/services/song_edits.py:125
-#: app_song/templates/song/modify_song_page_i18n.html:47 app_song/views.py:693
+#: app_song/templates/song/modify_song_page_i18n.html:47 app_song/views.py:797
 msgid "Simple"
 msgstr ""
 
 #: app_animation/services/song_edits.py:132
-#: app_song/templates/song/modify_song_page_i18n.html:48 app_song/views.py:701
+#: app_song/templates/song/modify_song_page_i18n.html:48 app_song/views.py:805
 msgid "Refrain seul puis refrain + couplet"
 msgstr ""
 
 #: app_animation/services/song_edits.py:136
-#: app_song/templates/song/modify_song_page_i18n.html:49 app_song/views.py:705
+#: app_song/templates/song/modify_song_page_i18n.html:49 app_song/views.py:809
 msgid "Refrain et couplet toujours en parallèle"
 msgstr ""
 
 #: app_animation/services/song_edits.py:144
-#: app_song/templates/song/modify_song_page_i18n.html:50 app_song/views.py:713
+#: app_song/templates/song/modify_song_page_i18n.html:50 app_song/views.py:817
 #, fuzzy
 #| msgid "Couplets et refrains"
 msgid "Couplets deux par deux"
@@ -1467,20 +1467,20 @@ msgstr ""
 msgid "Mise à jour impossible pour la cible #%(target_id)s."
 msgstr ""
 
-#: app_animation/views.py:847 app_song/views.py:1452 app_song/views.py:1654
-#: app_song/views.py:1747
+#: app_animation/views.py:847 app_song/views.py:1556 app_song/views.py:1758
+#: app_song/views.py:1851
 #, python-format
 msgid "%(count)s création(s)"
 msgstr ""
 
-#: app_animation/views.py:849 app_song/views.py:1454 app_song/views.py:1656
-#: app_song/views.py:1749
+#: app_animation/views.py:849 app_song/views.py:1558 app_song/views.py:1760
+#: app_song/views.py:1853
 #, python-format
 msgid "%(count)s mise(s) à jour"
 msgstr "%(count)s update(s)"
 
-#: app_animation/views.py:851 app_song/views.py:1456 app_song/views.py:1658
-#: app_song/views.py:1751
+#: app_animation/views.py:851 app_song/views.py:1560 app_song/views.py:1762
+#: app_song/views.py:1855
 #, python-format
 msgid "%(count)s suppression(s)"
 msgstr ""
@@ -1541,8 +1541,8 @@ msgstr "Edit inactive image"
 msgid "Sélectionnez une cible."
 msgstr "Select a target."
 
-#: app_animation/views.py:1039 app_song/views.py:1208 app_song/views.py:1231
-#: app_song/views.py:1266 app_song/views.py:1301
+#: app_animation/views.py:1039 app_song/views.py:1312 app_song/views.py:1335
+#: app_song/views.py:1370 app_song/views.py:1405
 msgid "Action inconnue."
 msgstr "Unknown action."
 
@@ -2508,8 +2508,8 @@ msgstr "No song"
 
 #: app_main/templates/main/connexion.html:5
 #: app_main/templates/main/connexion.html:81
-#: app_main/templates/main/connexion.html:197
-#: app_main/templates/main/connexion.html:492
+#: app_main/templates/main/connexion.html:195
+#: app_main/templates/main/connexion.html:489
 #: app_main/templates/main/homepage.html:55
 #: app_main/templates/main/homepage.html:56
 #: app_main/templates/main/homepage.html:88
@@ -2587,15 +2587,15 @@ msgstr "Settings"
 msgid "Mon profil"
 msgstr "My profile"
 
-#: app_main/templates/main/connexion.html:156 app_member/forms.py:30
+#: app_main/templates/main/connexion.html:156 app_member/forms.py:37
 msgid "Administrateur"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:159 app_member/forms.py:29
+#: app_main/templates/main/connexion.html:159 app_member/forms.py:36
 msgid "Modérateur"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:171
+#: app_main/templates/main/connexion.html:169
 msgid ""
 "La connexion passe par la structure mère cARThographie, qui fournit "
 "l'identité utilisée ensuite dans l'application avec simplicité et continuité."
@@ -2603,29 +2603,29 @@ msgstr ""
 "Sign-in is handled by the parent cARThographie platform, which provides the "
 "identity then used throughout the app for a smooth, consistent experience."
 
-#: app_main/templates/main/connexion.html:177
-#: app_main/templates/main/connexion.html:482
+#: app_main/templates/main/connexion.html:175
+#: app_main/templates/main/connexion.html:479
 msgid "Informations du profil"
 msgstr "Profile information"
 
-#: app_main/templates/main/connexion.html:181
+#: app_main/templates/main/connexion.html:179
 msgid "Données personnelles"
 msgstr "Personal information"
 
-#: app_main/templates/main/connexion.html:184
-#: app_main/templates/main/connexion.html:484
+#: app_main/templates/main/connexion.html:182
+#: app_main/templates/main/connexion.html:481
 msgid ""
 "Les données personnelles demandées servent uniquement à la connexion et à la "
 "gestion des groupes."
 msgstr "Personal data is used only for sign-in and group management."
 
-#: app_main/templates/main/connexion.html:185
-#: app_main/templates/main/connexion.html:485
+#: app_main/templates/main/connexion.html:183
+#: app_main/templates/main/connexion.html:482
 msgid "Elles ne sont jamais affichées au grand public."
 msgstr "It is never displayed publicly."
 
-#: app_main/templates/main/connexion.html:186
-#: app_main/templates/main/connexion.html:486
+#: app_main/templates/main/connexion.html:184
+#: app_main/templates/main/connexion.html:483
 msgid ""
 "L'adresse e-mail est utilisée seulement pour la gestion du compte, par "
 "exemple pour la récupération du mot de passe, l'information en cas "
@@ -2636,54 +2636,54 @@ msgstr ""
 "recovery, notifications about changes to the terms of use, or warnings "
 "before an inactive account is deleted."
 
-#: app_main/templates/main/connexion.html:192
+#: app_main/templates/main/connexion.html:190
 msgid "Confidentialité"
 msgstr "Privacy"
 
-#: app_main/templates/main/connexion.html:204
-msgid "Rôles du site"
-msgstr "Site roles"
+#: app_main/templates/main/connexion.html:202
+msgid "Mes rôles"
+msgstr ""
 
-#: app_main/templates/main/connexion.html:209
+#: app_main/templates/main/connexion.html:206
 msgid ""
 "Vous êtes administrateur du site. Vous disposez aussi automatiquement des "
 "droits de modération."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:211
+#: app_main/templates/main/connexion.html:208
 msgid "Vous êtes modérateur du site."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:213
+#: app_main/templates/main/connexion.html:210
 msgid "Vous êtes membre authentifié sans droit privilégié global."
 msgstr ""
 
-#: app_main/templates/main/connexion.html:221
+#: app_main/templates/main/connexion.html:218
 msgid "Gestion des métadonnées"
 msgstr "Manage metadata"
 
-#: app_main/templates/main/connexion.html:225
+#: app_main/templates/main/connexion.html:222
 #: app_song/templates/song/metadata.html:159
 #: app_song/templates/song/modify_artists.html:23
 #: app_song/templates/song/songs.html:349
-#: app_song/templates/song/songs.html:473 app_song/views.py:1235
+#: app_song/templates/song/songs.html:473 app_song/views.py:1339
 msgid "Artistes"
 msgstr "Artists"
 
-#: app_main/templates/main/connexion.html:226
+#: app_main/templates/main/connexion.html:223
 #: app_song/templates/song/metadata.html:194
 msgid "Groupes de musique"
 msgstr "Bands"
 
-#: app_main/templates/main/connexion.html:227
+#: app_main/templates/main/connexion.html:224
 msgid "Préfixes officiels"
 msgstr ""
 
-#: app_main/templates/main/connexion.html:228
+#: app_main/templates/main/connexion.html:225
 msgid "Cibles"
 msgstr "Targets"
 
-#: app_main/templates/main/connexion.html:230
+#: app_main/templates/main/connexion.html:227
 #: app_main/templates/main/site_params.html:5
 #: app_main/templates/main/site_params.html:10
 #: app_main/templates/main/site_params.html:13
@@ -2694,23 +2694,23 @@ msgstr "Targets"
 msgid "Paramètres du site"
 msgstr "Site settings"
 
-#: app_main/templates/main/connexion.html:237
+#: app_main/templates/main/connexion.html:234
 msgid "Outils de modération"
 msgstr "Moderation tools"
 
-#: app_main/templates/main/connexion.html:241
-#: app_member/context_processors.py:48 app_member/forms.py:46
+#: app_main/templates/main/connexion.html:238
+#: app_member/context_processors.py:48 app_member/forms.py:53
 msgid "Message de modération"
 msgstr "Moderation message"
 
-#: app_main/templates/main/connexion.html:242
+#: app_main/templates/main/connexion.html:239
 msgid ""
 "Ce message est public sur la page d'accueil et sur les pages principales des "
 "apps."
 msgstr ""
 "This message is public on the home page and on the main pages of the apps."
 
-#: app_main/templates/main/connexion.html:246
+#: app_main/templates/main/connexion.html:243
 msgid ""
 "Les paramètres du site ne sont pas encore disponibles pour cette langue. "
 "L'édition du message de modération est temporairement indisponible."
@@ -2718,19 +2718,19 @@ msgstr ""
 "Site settings are not yet available for this language. Editing the "
 "moderation message is temporarily unavailable."
 
-#: app_main/templates/main/connexion.html:262
+#: app_main/templates/main/connexion.html:259
 msgid "Enregistrer la modération"
 msgstr "Save moderation settings"
 
-#: app_main/templates/main/connexion.html:271 app_member/forms.py:64
+#: app_main/templates/main/connexion.html:268 app_member/forms.py:73
 msgid "Message global administrateur"
 msgstr "Global administrator message"
 
-#: app_main/templates/main/connexion.html:272
+#: app_main/templates/main/connexion.html:269
 msgid "Ce message est public sur toutes les pages du site."
 msgstr "This message is public on every page of the site."
 
-#: app_main/templates/main/connexion.html:276
+#: app_main/templates/main/connexion.html:273
 msgid ""
 "Les paramètres du site ne sont pas encore disponibles pour cette langue. "
 "L'édition du message administrateur est temporairement indisponible."
@@ -2738,15 +2738,15 @@ msgstr ""
 "Site settings are not yet available for this language. Editing the "
 "administrator message is temporarily unavailable."
 
-#: app_main/templates/main/connexion.html:292
+#: app_main/templates/main/connexion.html:289
 msgid "Enregistrer l'administration"
 msgstr "Save administration settings"
 
-#: app_main/templates/main/connexion.html:301
+#: app_main/templates/main/connexion.html:298
 msgid "Notifications de modération"
 msgstr "Moderation notifications"
 
-#: app_main/templates/main/connexion.html:304
+#: app_main/templates/main/connexion.html:301
 msgid ""
 "Le flux de modération des chants est désormais visible sur la page d'accueil "
 "publique quand des demandes sont en attente."
@@ -2754,21 +2754,21 @@ msgstr ""
 "The song moderation feed is now visible on the public home page when "
 "requests are pending."
 
-#: app_main/templates/main/connexion.html:305
+#: app_main/templates/main/connexion.html:302
 msgid ""
 "Cette zone reste disponible pour de futurs outils de modération "
 "complémentaires."
 msgstr "This area remains available for future moderation tools."
 
-#: app_main/templates/main/connexion.html:311
+#: app_main/templates/main/connexion.html:308
 msgid "Administration du site"
 msgstr "Site administration"
 
-#: app_main/templates/main/connexion.html:315
+#: app_main/templates/main/connexion.html:312
 msgid "Membres du site"
 msgstr "Site members"
 
-#: app_main/templates/main/connexion.html:316
+#: app_main/templates/main/connexion.html:313
 msgid ""
 "La recherche lit uniquement `users.users` et la gestion des rôles reste "
 "locale à Lyrics Slide Show."
@@ -2776,83 +2776,83 @@ msgstr ""
 "Search reads only `users.users`, and role management remains local to Lyrics "
 "Slide Show."
 
-#: app_main/templates/main/connexion.html:328
+#: app_main/templates/main/connexion.html:325
 #: app_song/templates/song/songs.html:196
 msgid "Rechercher"
 msgstr "Search"
 
-#: app_main/templates/main/connexion.html:332
+#: app_main/templates/main/connexion.html:329
 #, python-format
 msgid "Résultats pour « %(search)s »"
 msgstr "Results for “%(search)s”"
 
-#: app_main/templates/main/connexion.html:342
+#: app_main/templates/main/connexion.html:339
 msgid "Rôle actuel : administrateur"
 msgstr "Current role: administrator"
 
-#: app_main/templates/main/connexion.html:344
+#: app_main/templates/main/connexion.html:341
 msgid "Rôle actuel : modérateur"
 msgstr "Current role: moderator"
 
-#: app_main/templates/main/connexion.html:346
+#: app_main/templates/main/connexion.html:343
 msgid "Rôle actuel : membre"
 msgstr "Current role: member"
 
-#: app_main/templates/main/connexion.html:351
+#: app_main/templates/main/connexion.html:348
 msgid "Compte actif dans users.users"
 msgstr "Active account in users.users"
 
-#: app_main/templates/main/connexion.html:353
+#: app_main/templates/main/connexion.html:350
 msgid "Compte désactivé dans users.users"
 msgstr "Disabled account in users.users"
 
-#: app_main/templates/main/connexion.html:366
+#: app_main/templates/main/connexion.html:363
 msgid "Retirer modérateur"
 msgstr "Remove moderator"
 
-#: app_main/templates/main/connexion.html:368
+#: app_main/templates/main/connexion.html:365
 msgid "Attribuer modérateur"
 msgstr "Grant moderator"
 
-#: app_main/templates/main/connexion.html:382
+#: app_main/templates/main/connexion.html:379
 msgid "Retirer administrateur"
 msgstr "Remove administrator"
 
-#: app_main/templates/main/connexion.html:384
+#: app_main/templates/main/connexion.html:381
 msgid "Attribuer administrateur"
 msgstr "Grant administrator"
 
-#: app_main/templates/main/connexion.html:391
+#: app_main/templates/main/connexion.html:388
 msgid "Aucun membre ne correspond à cette recherche."
 msgstr "No member matches this search."
 
-#: app_main/templates/main/connexion.html:402
+#: app_main/templates/main/connexion.html:399
 msgid "Paramètres du profil"
 msgstr "Profile settings"
 
-#: app_main/templates/main/connexion.html:407
-#: app_main/templates/main/connexion.html:417
-#: app_main/templates/main/connexion.html:432
+#: app_main/templates/main/connexion.html:404
+#: app_main/templates/main/connexion.html:414
+#: app_main/templates/main/connexion.html:429
 msgid "Langue utilisée"
 msgstr "Language in use"
 
-#: app_main/templates/main/connexion.html:410
+#: app_main/templates/main/connexion.html:407
 #: app_main/templates/main/language.html:98
 #: app_main/templates/main/language.html:127
 #: app_main/templates/main/site_params.html:49
 msgid "English"
 msgstr "English"
 
-#: app_main/templates/main/connexion.html:412
+#: app_main/templates/main/connexion.html:409
 #: app_main/templates/main/language.html:98
 #: app_main/templates/main/language.html:106
 #: app_main/templates/main/site_params.html:48 templates/includes/nav.html:173
 msgid "Français"
 msgstr "French"
 
-#: app_main/templates/main/connexion.html:448
-#: app_main/templates/main/connexion.html:453
-#: app_main/templates/main/connexion.html:468
+#: app_main/templates/main/connexion.html:445
+#: app_main/templates/main/connexion.html:450
+#: app_main/templates/main/connexion.html:465
 msgid "Thème choisi"
 msgstr "Selected theme"
 
@@ -3770,154 +3770,149 @@ msgstr ""
 msgid "Palette métal avec des néons de couleurs"
 msgstr "A metallic palette with colorful neon accents."
 
-#: app_main/views.py:318
-#, python-format
-msgid "Compte de %(username)s"
-msgstr "%(username)s account"
-
-#: app_main/views.py:330
+#: app_main/views.py:341
 msgid "La connexion interactive n'est pas configurée pour cet environnement."
 msgstr "Interactive login is not configured for this environment."
 
-#: app_main/views.py:393
+#: app_main/views.py:404
 msgid "Unsupported authentication mode."
 msgstr "Unsupported authentication mode."
 
-#: app_main/views.py:430
+#: app_main/views.py:441
 msgid ""
 "Votre compte Lyrics Slide Show doit être synchronisé depuis cARThographie."
 msgstr ""
 
-#: app_main/views.py:462
+#: app_main/views.py:473
 #, python-format
 msgid "Connecté en tant que %(username)s."
 msgstr "Connected as %(username)s."
 
-#: app_main/views.py:482
+#: app_main/views.py:493
 msgid "Secret client Keycloak invalide ou non monté dans le conteneur LSS."
 msgstr ""
 
-#: app_main/views.py:483
+#: app_main/views.py:494
 msgid "Client ID différent entre LSS et Keycloak."
 msgstr ""
 
-#: app_main/views.py:484
+#: app_main/views.py:495
 msgid "Client Keycloak non configuré comme client confidentiel."
 msgstr "Keycloak client is not configured as a confidential client."
 
-#: app_main/views.py:488
+#: app_main/views.py:499
 msgid "URL de retour Keycloak différente de celle déclarée dans le client."
 msgstr ""
 
-#: app_main/views.py:489
+#: app_main/views.py:500
 msgid "Code OAuth déjà consommé ou expiré."
 msgstr ""
 
-#: app_main/views.py:490
+#: app_main/views.py:501
 msgid "Décalage d'horloge entre les services."
 msgstr ""
 
-#: app_main/views.py:494
+#: app_main/views.py:505
 msgid "Jeton d'accès refusé par l'endpoint userinfo."
 msgstr ""
 
-#: app_main/views.py:495
+#: app_main/views.py:506
 msgid "Realm ou endpoint userinfo incohérent avec le jeton reçu."
 msgstr ""
 
-#: app_main/views.py:499
+#: app_main/views.py:510
 msgid "Consultez les logs LSS autour de keycloak_http_error."
 msgstr ""
 
-#: app_main/views.py:500
+#: app_main/views.py:511
 msgid "Vérifiez la configuration Keycloak non sensible affichée ci-dessous."
 msgstr ""
 
-#: app_main/views.py:510
+#: app_main/views.py:521
 msgid ""
 "Vérifier que KEYCLOAK_CLIENT_SECRET_FILE pointe vers un fichier monté dans "
 "le conteneur LSS."
 msgstr ""
 
-#: app_main/views.py:512
+#: app_main/views.py:523
 msgid "Vérifier KEYCLOAK_CLIENT_ID et KEYCLOAK_REDIRECT_URI dans .env.prod."
 msgstr ""
 
-#: app_main/views.py:513
+#: app_main/views.py:524
 msgid "Chercher keycloak_http_error dans les logs LSS."
 msgstr ""
 
-#: app_main/views.py:514
+#: app_main/views.py:525
 msgid ""
 "Vérifier le chemin du secret Home si le flux de provisioning est atteint."
 msgstr ""
 
-#: app_main/views.py:537
+#: app_main/views.py:548
 msgid "Aucune synchronisation de compte n'est en attente."
 msgstr ""
 
-#: app_main/views.py:556
+#: app_main/views.py:567
 msgid "Aucune finalisation de synchronisation n'est en attente."
 msgstr ""
 
-#: app_main/views.py:593
+#: app_main/views.py:604
 #, python-format
 msgid "Connecté en tant que %(username)s après synchronisation du compte."
 msgstr "Connected as %(username)s after account synchronisation."
 
-#: app_main/views.py:611
+#: app_main/views.py:622
 msgid "Vous êtes déconnecté."
 msgstr "You are logged out."
 
-#: app_main/views.py:635 app_main/views.py:671 app_main/views.py:707
+#: app_main/views.py:646 app_main/views.py:682 app_main/views.py:718
 msgid "Accès refusé."
 msgstr ""
 
-#: app_main/views.py:640 app_main/views.py:676
+#: app_main/views.py:651 app_main/views.py:687
 msgid "Les paramètres du site sont introuvables pour cette langue."
 msgstr ""
 
-#: app_main/views.py:650
+#: app_main/views.py:661
 msgid "Les réglages de modération ont été enregistrés."
 msgstr ""
 
-#: app_main/views.py:686
+#: app_main/views.py:697
 msgid "Les réglages administrateur ont été enregistrés."
 msgstr "Administrator settings have been saved."
 
-#: app_main/views.py:718
+#: app_main/views.py:729
 msgid "administrateur"
 msgstr ""
 
-#: app_main/views.py:720
+#: app_main/views.py:731
 msgid "modérateur"
 msgstr ""
 
-#: app_main/views.py:725
+#: app_main/views.py:736
 #, python-format
 msgid "Le rôle %(role)s a été attribué."
 msgstr ""
 
-#: app_main/views.py:730
+#: app_main/views.py:741
 #, python-format
 msgid "Le rôle %(role)s a été retiré."
 msgstr ""
 
-#: app_main/views.py:737
+#: app_main/views.py:748
 msgid "La demande de mise à jour des rôles est invalide."
 msgstr ""
 
-#: app_main/views.py:751
+#: app_main/views.py:762
 msgid "Action de compte inconnue."
 msgstr ""
 
-#: app_main/views.py:832
+#: app_main/views.py:843
 #, python-format
 msgid ""
 "Enregistrement impossible: informations manquantes ou invalides (%(fields)s)."
 msgstr ""
 
-#: app_main/views.py:841
+#: app_main/views.py:852
 msgid "Enregistrement impossible: informations manquantes ou invalides."
 msgstr ""
 
@@ -3929,175 +3924,175 @@ msgstr ""
 msgid "Informations du site"
 msgstr "Site information"
 
-#: app_member/forms.py:14
+#: app_member/forms.py:21
 msgid "Recherche membre"
 msgstr ""
 
-#: app_member/forms.py:19
+#: app_member/forms.py:26
 msgid "Username, prénom, nom ou e-mail"
 msgstr ""
 
-#: app_member/forms.py:48
+#: app_member/forms.py:55
 msgid "Délai de réaffichage du message de modération (minutes)"
 msgstr ""
 
-#: app_member/forms.py:66 app_member/forms.py:195
+#: app_member/forms.py:75 app_member/forms.py:206
 msgid "Délai de réaffichage du message administrateur (minutes)"
 msgstr ""
 
-#: app_member/forms.py:76
+#: app_member/forms.py:87
 msgid "Carte accueil 1 - Titre"
 msgstr ""
 
-#: app_member/forms.py:79
+#: app_member/forms.py:90
 msgid "Carte accueil 1 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:84
+#: app_member/forms.py:95
 msgid "Carte accueil 1 - Image"
 msgstr ""
 
-#: app_member/forms.py:89
+#: app_member/forms.py:100
 msgid "Carte accueil 2 - Titre"
 msgstr ""
 
-#: app_member/forms.py:92
+#: app_member/forms.py:103
 msgid "Carte accueil 2 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:97
+#: app_member/forms.py:108
 msgid "Carte accueil 2 - Image"
 msgstr ""
 
-#: app_member/forms.py:102
+#: app_member/forms.py:113
 msgid "Carte accueil 3 - Titre"
 msgstr ""
 
-#: app_member/forms.py:105
+#: app_member/forms.py:116
 msgid "Carte accueil 3 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:110
+#: app_member/forms.py:121
 msgid "Carte accueil 3 - Image"
 msgstr ""
 
-#: app_member/forms.py:115
+#: app_member/forms.py:126
 msgid "Carte accueil 4 - Titre"
 msgstr ""
 
-#: app_member/forms.py:118
+#: app_member/forms.py:129
 msgid "Carte accueil 4 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:123
+#: app_member/forms.py:134
 msgid "Carte accueil 4 - Image"
 msgstr ""
 
-#: app_member/forms.py:128
+#: app_member/forms.py:139
 msgid "Carte accueil 5 - Titre"
 msgstr ""
 
-#: app_member/forms.py:131
+#: app_member/forms.py:142
 msgid "Carte accueil 5 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:136
+#: app_member/forms.py:147
 msgid "Carte accueil 5 - Image"
 msgstr ""
 
-#: app_member/forms.py:141
+#: app_member/forms.py:152
 msgid "Carte accueil 6 - Titre"
 msgstr ""
 
-#: app_member/forms.py:144
+#: app_member/forms.py:155
 msgid "Carte accueil 6 - Texte (markdown léger)"
 msgstr ""
 
-#: app_member/forms.py:149
+#: app_member/forms.py:160
 msgid "Carte accueil 6 - Image"
 msgstr ""
 
-#: app_member/forms.py:181
+#: app_member/forms.py:192
 msgid "Titre du site"
 msgstr ""
 
-#: app_member/forms.py:182
+#: app_member/forms.py:193
 msgid "Titre principal"
 msgstr "Main title"
 
-#: app_member/forms.py:183
+#: app_member/forms.py:194
 msgid "URL d'inscription"
 msgstr "Sign-up URL"
 
-#: app_member/forms.py:184
+#: app_member/forms.py:195
 msgid "Texte d'accueil"
 msgstr ""
 
-#: app_member/forms.py:185
+#: app_member/forms.py:196
 msgid "Texte du bloc 1"
 msgstr ""
 
-#: app_member/forms.py:186
+#: app_member/forms.py:197
 msgid "Texte du bloc 2"
 msgstr ""
 
-#: app_member/forms.py:187
+#: app_member/forms.py:198
 msgid "Nombre maximal de lignes par couplet"
 msgstr ""
 
-#: app_member/forms.py:189
+#: app_member/forms.py:200
 msgid "Nombre maximal de caractères par ligne"
 msgstr ""
 
-#: app_member/forms.py:191
+#: app_member/forms.py:202
 msgid "Préfixe du refrain"
 msgstr ""
 
-#: app_member/forms.py:192
+#: app_member/forms.py:203
 msgid "Préfixe de couplet"
 msgstr ""
 
-#: app_member/forms.py:193
+#: app_member/forms.py:204
 msgid "Suffixe de couplet"
 msgstr ""
 
-#: app_member/forms.py:198
+#: app_member/forms.py:209
 msgid "Délai de réaffichage du message modérateur (minutes)"
 msgstr ""
 
-#: app_member/forms.py:200
+#: app_member/forms.py:211
 msgid "Taille maximale des images de fond (octets)"
 msgstr ""
 
-#: app_member/forms.py:201
+#: app_member/forms.py:212
 msgid "Largeur minimale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:202
+#: app_member/forms.py:213
 msgid "Hauteur minimale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:203
+#: app_member/forms.py:214
 msgid "Largeur maximale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:204
+#: app_member/forms.py:215
 msgid "Hauteur maximale des images de fond"
 msgstr ""
 
-#: app_member/forms.py:205
+#: app_member/forms.py:216
 msgid "Ratio minimal des images de fond"
 msgstr ""
 
-#: app_member/forms.py:206
+#: app_member/forms.py:217
 msgid "Ratio maximal des images de fond"
 msgstr ""
 
-#: app_member/forms.py:207
+#: app_member/forms.py:218
 msgid "Extensions d'images autorisées"
 msgstr ""
 
-#: app_member/forms.py:208
+#: app_member/forms.py:219
 msgid "Types MIME d'images autorisés"
 msgstr ""
 
@@ -4196,16 +4191,16 @@ msgid "Couplet "
 msgstr ""
 
 #: app_song/search.py:225 app_song/templates/song/songs.html:97
-#: app_song/views.py:649 app_song/views.py:1802
+#: app_song/views.py:753 app_song/views.py:1906
 msgid "Chant validé"
 msgstr "Validated song"
 
 #: app_song/search.py:227 app_song/templates/song/songs.html:98
-#: app_song/views.py:651 app_song/views.py:1804
+#: app_song/views.py:755 app_song/views.py:1908
 msgid "Chant validé avec des messages"
 msgstr "Validated song with messages"
 
-#: app_song/search.py:228 app_song/views.py:652 app_song/views.py:1806
+#: app_song/search.py:228 app_song/views.py:756 app_song/views.py:1910
 msgid "Chant non validé"
 msgstr "Non-validated song"
 
@@ -4249,7 +4244,7 @@ msgstr "Metadata"
 msgid "Signaler une correction"
 msgstr ""
 
-#: app_song/templates/song/includes/_song_links.html:20
+#: app_song/templates/song/includes/_song_links.html:22
 #: app_song/templates/song/metadata.html:97
 msgid "Aucun lien associé."
 msgstr ""
@@ -4348,7 +4343,7 @@ msgstr ""
 msgid "Gestion des groupes de musiques"
 msgstr ""
 
-#: app_song/templates/song/modify_bands.html:23 app_song/views.py:1270
+#: app_song/templates/song/modify_bands.html:23 app_song/views.py:1374
 msgid "Groupes de musiques"
 msgstr ""
 
@@ -4553,8 +4548,8 @@ msgstr "Deletion requested. Click to undo."
 
 #: app_song/templates/song/modify_song.html:329
 #: app_song/templates/song/modify_song.html:336
-#: app_song/templates/song/modify_song_page_i18n.html:16 app_song/views.py:884
-#: app_song/views.py:890
+#: app_song/templates/song/modify_song_page_i18n.html:16 app_song/views.py:988
+#: app_song/views.py:994
 msgid "Bloc vide"
 msgstr ""
 
@@ -4808,8 +4803,8 @@ msgstr "Search ⓘ"
 msgid "Total ⓘ"
 msgstr "Total ⓘ"
 
-#: app_song/templates/song/songs.html:99 app_song/views.py:969
-#: app_song/views.py:1843
+#: app_song/templates/song/songs.html:99 app_song/views.py:1073
+#: app_song/views.py:1947
 msgid "Chant sous licence"
 msgstr "Licensed song"
 
@@ -4923,123 +4918,123 @@ msgstr "Create the new song"
 msgid "La création de chant est réservée aux membres authentifiés."
 msgstr "Song creation is reserved for authenticated members."
 
-#: app_song/views.py:757
+#: app_song/views.py:861
 msgid ""
 "La devalidation directe depuis status=2 est ignoree. Le chant doit d'abord "
 "revenir explicitement a status=1."
 msgstr ""
 
-#: app_song/views.py:836
+#: app_song/views.py:940
 msgid "Marquer non lu"
 msgstr ""
 
-#: app_song/views.py:842
+#: app_song/views.py:946
 msgid "Marquer lu"
 msgstr ""
 
-#: app_song/views.py:971 app_song/views.py:1845
+#: app_song/views.py:1075 app_song/views.py:1949
 msgid "Chant hors licence"
 msgstr ""
 
-#: app_song/views.py:1097
+#: app_song/views.py:1201
 msgid "Impossible de créer le chant pour le moment."
 msgstr ""
 
-#: app_song/views.py:1193
+#: app_song/views.py:1297
 msgid "Nombre de chants retournés par la recherche sauvegardée"
 msgstr ""
 
-#: app_song/views.py:1195
+#: app_song/views.py:1299
 msgid "Nombre total de chants en base de données"
 msgstr ""
 
-#: app_song/views.py:1387
+#: app_song/views.py:1491
 #, python-format
 msgid "Création impossible pour le nouveau genre (%(group)s / %(name)s)."
 msgstr ""
 
-#: app_song/views.py:1396
+#: app_song/views.py:1500
 msgid "Pour créer un genre, renseignez à la fois le groupe et le nom."
 msgstr ""
 
-#: app_song/views.py:1415
+#: app_song/views.py:1519
 #, python-format
 msgid "Suppression impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1425
+#: app_song/views.py:1529
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le genre #%(genre_id)s (groupe et nom obligatoires)."
 msgstr ""
 
-#: app_song/views.py:1447
+#: app_song/views.py:1551
 #, python-format
 msgid "Mise à jour impossible pour le genre #%(genre_id)s."
 msgstr ""
 
-#: app_song/views.py:1461
+#: app_song/views.py:1565
 #, python-format
 msgid "Genres enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1594
+#: app_song/views.py:1698
 #, python-format
 msgid "Création impossible pour %(item)s \"%(name)s\"."
 msgstr ""
 
-#: app_song/views.py:1614
+#: app_song/views.py:1718
 #, python-format
 msgid "Suppression impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1625
+#: app_song/views.py:1729
 #, python-format
 msgid "Mise à jour ignorée pour %(item)s #%(item_id)s (nom obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1646
+#: app_song/views.py:1750
 #, python-format
 msgid "Mise à jour impossible pour %(item)s #%(item_id)s."
 msgstr ""
 
-#: app_song/views.py:1663
+#: app_song/views.py:1767
 #, python-format
 msgid "%(item)s enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1695
+#: app_song/views.py:1799
 #, python-format
 msgid "Création impossible pour le préfixe \"%(prefix)s\"."
 msgstr ""
 
-#: app_song/views.py:1700
+#: app_song/views.py:1804
 msgid "Pour créer un préfixe officiel, le préfixe est obligatoire."
 msgstr ""
 
-#: app_song/views.py:1722
+#: app_song/views.py:1826
 #, python-format
 msgid ""
 "Mise à jour ignorée pour le préfixe #%(prefix_id)s (préfixe obligatoire)."
 msgstr ""
 
-#: app_song/views.py:1742
+#: app_song/views.py:1846
 #, python-format
 msgid "Mise à jour impossible pour le préfixe #%(prefix_id)s."
 msgstr ""
 
-#: app_song/views.py:1756
+#: app_song/views.py:1860
 #, python-format
 msgid "Préfixes enregistrés : %(summary)s."
 msgstr ""
 
-#: app_song/views.py:1908
+#: app_song/views.py:2012
 msgid ""
 "Le chant doit d'abord repasser explicitement par l'état validé avant d'être "
 "dévalidé."
 msgstr ""
 
-#: app_song/views.py:1918
+#: app_song/views.py:2022
 msgid ""
 "Impossible de dévalider ce chant tant qu'il reste des demandes de "
 "modification non lues."
@@ -5284,6 +5279,13 @@ msgstr "View my profile"
 #: templates/includes/nav.html:26
 msgid "Anglais"
 msgstr "English"
+
+#~ msgid "Rôles du site"
+#~ msgstr "Site roles"
+
+#, python-format
+#~ msgid "Compte de %(username)s"
+#~ msgstr "%(username)s account"
 
 #~ msgid "Aide ▶"
 #~ msgstr "Help ▶"

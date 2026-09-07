@@ -9,6 +9,13 @@ from app_main.home_cards import (
 from app_main.models import SiteParams
 
 
+class FullWidthTextarea(forms.Textarea):
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context["widget"]["attrs"].pop("cols", None)
+        return context
+
+
 class MemberSearchForm(forms.Form):
     member_search = forms.CharField(
         label=_("Recherche membre"),
@@ -49,8 +56,8 @@ class ModeratorMessageForm(forms.ModelForm):
             ),
         }
         widgets = {
-            "moderator_message": forms.Textarea(
-                attrs={"rows": 6, "cols": None, "style": "width: 100%;"}
+            "moderator_message": FullWidthTextarea(
+                attrs={"rows": 6, "style": "width: 100%;"}
             ),
         }
 
@@ -69,8 +76,8 @@ class AdminMessageForm(forms.ModelForm):
             ),
         }
         widgets = {
-            "admin_message": forms.Textarea(
-                attrs={"rows": 6, "cols": None, "style": "width: 100%;"}
+            "admin_message": FullWidthTextarea(
+                attrs={"rows": 6, "style": "width: 100%;"}
             ),
         }
 
