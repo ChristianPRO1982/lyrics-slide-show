@@ -49,7 +49,9 @@ class ModeratorMessageForm(forms.ModelForm):
             ),
         }
         widgets = {
-            "moderator_message": forms.Textarea(attrs={"rows": 6}),
+            "moderator_message": forms.Textarea(
+                attrs={"rows": 6, "cols": None, "style": "width: 100%;"}
+            ),
         }
 
 
@@ -67,7 +69,9 @@ class AdminMessageForm(forms.ModelForm):
             ),
         }
         widgets = {
-            "admin_message": forms.Textarea(attrs={"rows": 6}),
+            "admin_message": forms.Textarea(
+                attrs={"rows": 6, "cols": None, "style": "width: 100%;"}
+            ),
         }
 
 
