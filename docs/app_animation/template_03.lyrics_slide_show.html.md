@@ -89,6 +89,11 @@ Actions implémentées :
 - `Transition suivante`,
 - `Forcer Direct`.
 
+Le contrôle `Transition` reste un contrôle de formulaire composé d'un libellé et
+d'un `<select>`. Son encadré extérieur est toutefois aligné visuellement sur les
+boutons de la toolbar afin de partager le même dégradé, la même bordure, le même
+rayon et les mêmes états hover/focus. Le `<select>` conserve son style de champ.
+
 ### Gestion De La Web Remote
 
 Le bouton `Télécommande distante` ouvre un panneau inline persistant dans la

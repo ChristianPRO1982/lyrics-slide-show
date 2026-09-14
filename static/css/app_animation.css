@@ -1501,13 +1501,34 @@ body.animation-background-picker-overlay-open {
 .lyrics-master-transition-control {
     min-width: 0;
     min-height: 5.6rem;
-    border: 1px solid var(--site-line-strong);
-    border-radius: 0.5rem;
+    border: 1px solid var(--site-action-border);
+    border-radius: var(--site-action-radius);
     display: grid;
     align-content: center;
     gap: 0.4rem;
     padding: 0.8rem 0.65rem;
-    background: var(--site-surface);
+    background: var(--site-action-bg);
+    color: var(--site-action-ink);
+    box-shadow: 0 8px 20px rgba(66, 24, 11, 0.08);
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        background 160ms ease;
+}
+
+.lyrics-master-transition-control:hover,
+.lyrics-master-transition-control:focus-within {
+    transform: translateY(-1px);
+    border-color: var(--site-action-border-hover);
+    color: var(--site-action-ink-hover);
+    background: var(--site-action-bg-hover);
+    box-shadow: 0 12px 24px rgba(66, 24, 11, 0.14);
+}
+
+.lyrics-master-transition-control:focus-within {
+    box-shadow: var(--site-focus-ring), 0 12px 24px rgba(66, 24, 11, 0.14);
 }
 
 .lyrics-master-transition-label {
