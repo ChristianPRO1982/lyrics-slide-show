@@ -226,7 +226,6 @@ Deuxième ligne :
 - 🖥️📽️ `Ouvrir un second écran`
 - ⌨️👢 `Raccourcis clavier (personnalisable)`
 - sélecteur `Transition`
-- ↕️ / 🧱 `Scroll` / `Stop scroll`
 - 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
 - QR embarqué ou fallback 📱 `QR-code`
 - 📡 `Télécommande distante`
@@ -489,7 +488,6 @@ Raccourcis site par défaut :
 - `F`, `←` : `Previous song`
 - `Enter`, `N`, `→` : `Next song`
 - `A`, `D` : `Display/hide choruses`
-- `L` : `Scroll on ↕️ or not 🧱`
 - `Q` : `📱 QR code for lyrics`
 - `T` : `Transition suivante`
 - `I` : `Forcer Direct`
@@ -501,18 +499,16 @@ Actions de transition :
 Ces actions modifient uniquement l'état live de la remote.
 Elles ne sauvegardent pas la préférence de l'animation.
 
-### Blocage Du Scroll
+### Blocage Du Scroll (Contrôle En Pause)
 
-Position :
-- bouton 3 de la deuxième ligne.
+Le contrôle opérateur `↕️ Scroll` / `🧱 Stop scroll` est en pause.
 
-États :
-- `↕️ Scroll`
-- `🧱 Stop scroll`
+Il n'est plus affiché dans la toolbar de la remote principale et son raccourci
+historique `L` n'est plus exposé ni actif dans les raccourcis clavier.
 
-Action :
-- toggle local autorisant ou bloquant le scroll navigateur sur certaines touches physiques,
-- quand le blocage est actif, la remote empêche le scroll navigateur sur :
+Comportement conservé :
+- le blocage reste actif par défaut ;
+- la remote empêche le scroll navigateur sur :
   - `ArrowUp`,
   - `ArrowDown`,
   - `ArrowLeft`,
@@ -524,6 +520,7 @@ Action :
 Notes :
 - ce blocage reste actif même si le focus est sur un bouton de la toolbar de la remote,
 - les popups `LSSMessageBox` continuent en revanche à suspendre les raccourcis de la remote.
+- l'ancien bouton et l'ancien raccourci sont conservés côté code/documentation comme fonctionnalité dormante afin de pouvoir les réactiver sans reconstruire le mécanisme.
 
 ### Affichage Des Refrains Dans La Grille
 

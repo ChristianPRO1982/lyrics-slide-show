@@ -270,7 +270,12 @@
                                                     aria-label="{% trans 'Transition' %}"
                                                 ></select>
                                             </label>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-scroll"><span class="lyrics-master-action-emoji" data-lyrics-scroll-emoji>🧱</span><span data-lyrics-scroll-text>{% trans "Stop scroll" %}</span></button>
+                                            {% comment %}
+                                                Bouton Scroll / Stop scroll volontairement en pause.
+                                                Le blocage clavier reste actif par défaut côté JS.
+                                                À réactiver avec l'action data-lyrics-action="toggle-scroll"
+                                                et le raccourci PAUSED toggle_scroll.
+                                            {% endcomment %}
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-toggle aria-expanded="false"><span class="lyrics-master-action-emoji">📡</span><span>{% trans "Télécommande distante" %}</span></button>

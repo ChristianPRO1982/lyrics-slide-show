@@ -127,7 +127,6 @@ def _shortcut_action_labels() -> dict[str, str]:
         "prev_song": _("Chant précédent"),
         "next_song": _("Chant suivant"),
         "toggle_chorus": _("Afficher / masquer les refrains"),
-        "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
         "toggle_qr": _("📱 QR code pour les paroles"),
         "next_transition": _("Transition suivante"),
         "force_direct": _("Forcer Direct"),

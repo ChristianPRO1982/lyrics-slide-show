@@ -1633,7 +1633,6 @@ class ShortcutValidationTests(SimpleTestCase):
             "prev_song": "Previous song",
             "next_song": "Next song",
             "toggle_chorus": "Display/hide choruses",
-            "toggle_scroll": "Scroll on ↕️ or not 🧱",
             "toggle_qr": "📱 QR code for lyrics",
             "next_transition": "Next transition",
             "force_direct": "Force Direct",
@@ -1648,7 +1647,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": "",
                 "next_song": "",
                 "toggle_chorus": "",
-                "toggle_scroll": "",
                 "toggle_qr": "",
                 "next_transition": "",
                 "force_direct": "",
@@ -1671,7 +1669,6 @@ class ShortcutValidationTests(SimpleTestCase):
             "prev_song": "Previous song",
             "next_song": "Next song",
             "toggle_chorus": "Display/hide choruses",
-            "toggle_scroll": "Scroll on ↕️ or not 🧱",
             "toggle_qr": "📱 QR code for lyrics",
             "next_transition": "Next transition",
             "force_direct": "Force Direct",
@@ -1685,8 +1682,7 @@ class ShortcutValidationTests(SimpleTestCase):
                 "open_display": "",
                 "prev_song": "",
                 "next_song": "",
-                "toggle_chorus": "",
-                "toggle_scroll": "t",
+                "toggle_chorus": "t",
                 "toggle_qr": "i",
                 "next_transition": "t",
                 "force_direct": "i",
@@ -1694,11 +1690,11 @@ class ShortcutValidationTests(SimpleTestCase):
             action_labels=labels,
         )
 
-        self.assertEqual(result.saved_bindings["toggle_scroll"], ["t"])
+        self.assertEqual(result.saved_bindings["toggle_chorus"], ["t"])
         self.assertEqual(result.saved_bindings["toggle_qr"], ["i"])
         self.assertEqual(result.saved_bindings["next_transition"], [])
         self.assertEqual(result.saved_bindings["force_direct"], [])
-        self.assertIn("Scroll on", result.field_errors["next_transition"])
+        self.assertIn("Display/hide choruses", result.field_errors["next_transition"])
         self.assertIn("QR code", result.field_errors["force_direct"])
 
     def test_effective_bindings_keep_escape_for_black_mode(self):
@@ -1712,7 +1708,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": [],
                 "next_song": [],
                 "toggle_chorus": [],
-                "toggle_scroll": [],
                 "toggle_qr": [],
                 "next_transition": [],
                 "force_direct": [],
@@ -1731,7 +1726,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": ["u"],
                 "next_song": ["n"],
                 "toggle_chorus": ["y"],
-                "toggle_scroll": ["l"],
                 "toggle_qr": ["q"],
             }
         )
@@ -1749,7 +1743,7 @@ class ShortcutValidationTests(SimpleTestCase):
                 "open_display": ["p"],
                 "prev_song": ["u"],
                 "next_song": ["i"],
-                "toggle_chorus": ["y"],
+                "toggle_chorus": ["t"],
                 "toggle_scroll": ["t"],
                 "toggle_qr": ["q"],
             }
@@ -5577,6 +5571,19 @@ class AnimationViewsTests(TestCase):
             response.context["shortcuts_config"]["actionLabels"]["next_transition"],
             "Transition suivante",
         )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["actionOrder"],
+        )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["effectiveBindings"],
+        )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["actionToRemoteAction"],
+        )
+        self.assertNotContains(response, 'data-lyrics-action="toggle-scroll"')
 
     def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)

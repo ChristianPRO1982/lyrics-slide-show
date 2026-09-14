@@ -178,8 +178,6 @@
     }
     const prevSongButton = document.querySelector("[data-lyrics-action='prev-song']");
     const nextSongButton = document.querySelector("[data-lyrics-action='next-song']");
-    const scrollToggleEmojiNode = document.querySelector("[data-lyrics-scroll-emoji]");
-    const scrollToggleTextNode = document.querySelector("[data-lyrics-scroll-text]");
     const chorusToggleEmojiNode = document.querySelector("[data-lyrics-chorus-toggle-emoji]");
     const chorusToggleTextNode = document.querySelector("[data-lyrics-chorus-toggle-text]");
     const qrButtonImageNode = document.querySelector("[data-lyrics-qr-button-image]");
@@ -694,7 +692,7 @@
             state.blackMode = Boolean(parsed.blackMode);
             state.qrMode = Boolean(parsed.qrMode);
             state.hideChorusesInGrid = Boolean(parsed.hideChorusesInGrid);
-            state.blockScrollKeys = Boolean(parsed.blockScrollKeys);
+            state.blockScrollKeys = true;
             state.activeTransitionId = resolveTransitionId(parsed.activeTransitionId);
             const restoredRemoteStateRevision = toNonNegativeIndexOrNull(parsed.remoteStateRevision);
             if (Number.isInteger(restoredRemoteStateRevision)) {
@@ -983,11 +981,13 @@
         refreshUI();
     };
 
-    const toggleScrollMode = () => {
-        state.blockScrollKeys = !state.blockScrollKeys;
-        persistState();
-        refreshUI();
-    };
+    // Paused: the toolbar button and shortcut for this action are hidden.
+    // Keep the implementation nearby so the scroll toggle can be restored quickly.
+    // const toggleScrollMode = () => {
+    //     state.blockScrollKeys = !state.blockScrollKeys;
+    //     persistState();
+    //     refreshUI();
+    // };
 
     const formatSlideLabel = (slide) => {
         if (!slide) {
@@ -1288,12 +1288,10 @@
         );
 
         setText(chorusVisibilityNode, state.hideChorusesInGrid ? label("hiddenChorusLabel") : "");
-        setText(scrollModeNode, state.blockScrollKeys ? label("scrollLockedLabel") : label("scrollUnlockedLabel"));
+        setText(scrollModeNode, "");
     };
 
     const refreshToggleButtons = () => {
-        setText(scrollToggleEmojiNode, state.blockScrollKeys ? label("scrollStopEmoji") : label("scrollAllowEmoji"));
-        setText(scrollToggleTextNode, state.blockScrollKeys ? label("scrollStopText") : label("scrollAllowText"));
         setText(chorusToggleEmojiNode, state.hideChorusesInGrid ? label("chorusHideEmoji") : label("chorusShowEmoji"));
         setText(chorusToggleTextNode, state.hideChorusesInGrid ? label("chorusHideText") : label("chorusShowText"));
         if (blackModeButtonNode instanceof HTMLElement) {
@@ -1815,10 +1813,8 @@
             setCurrentSong(state.selectedSongIndex + 1);
             return;
         }
-        if (action === "toggle-scroll") {
-            toggleScrollMode();
-            return;
-        }
+        // Paused: "toggle-scroll" is intentionally not handled while scroll
+        // blocking remains always enabled by default.
         if (action === "toggle-chorus") {
             toggleChorusVisibility();
             return;

@@ -80,7 +80,6 @@ Actions implémentées :
 - diapo suivante,
 - chant précédent,
 - chant suivant,
-- toggle scroll (`↕️ / 🧱`),
 - toggle affichage cartes refrain,
 - toggle QR public,
 - choix de la transition active,
@@ -126,6 +125,12 @@ Dans ce cas, la navigation manipule des slides logiques déjà synchronisées :
 
 Les raccourcis clavier restent actifs même si le focus est sur un bouton de la remote.
 Ils sont suspendus quand une popup `LSSMessageBox` est ouverte et focusée.
+
+Le contrôle historique `↕️ / 🧱` de blocage du scroll est en pause :
+- le bouton n'est plus rendu dans la toolbar ;
+- le raccourci `L` n'est plus exposé ni actif ;
+- le blocage des touches de scroll reste actif par défaut pour les flèches, `Space`, `PageUp` et `PageDown` ;
+- le code dormant doit rester facile à réactiver si ce contrôle redevient utile.
 
 ## Frames Envoyées À L'écran Projeté
 
