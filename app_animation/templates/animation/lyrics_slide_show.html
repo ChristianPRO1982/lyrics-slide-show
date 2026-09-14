@@ -261,7 +261,9 @@
                                         </div>
                                         <div class="lyrics-master-actions-row lyrics-master-actions-row-secondary">
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="open-display"><span class="lyrics-master-action-emoji">🖥️📽️</span><span>{% trans "Ouvrir un second écran" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-toggle aria-expanded="false"><span class="lyrics-master-action-emoji">📡</span><span>{% trans "Télécommande distante" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="show-shortcuts"><span class="lyrics-master-action-emoji">⌨️👢</span><span>{% trans "Raccourcis clavier (personnalisable)" %}</span></button>
+                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <label class="lyrics-master-transition-control">
                                                 <span class="lyrics-master-transition-label">{% trans "Transition" %}</span>
                                                 <select
@@ -276,9 +278,7 @@
                                                 À réactiver avec l'action data-lyrics-action="toggle-scroll"
                                                 et le raccourci PAUSED toggle_scroll.
                                             {% endcomment %}
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-chorus"><span class="lyrics-master-action-emoji" data-lyrics-chorus-toggle-emoji>🎼🔼</span><span data-lyrics-chorus-toggle-text>{% trans "Refrain" %}</span></button>
                                             <button type="button" class="animation-tool-button site-action site-action--primary" data-lyrics-action="toggle-qr"><img class="lyrics-master-qr-button-image" data-lyrics-qr-button-image alt="{% trans 'QR-code' %}" hidden><span class="lyrics-master-action-emoji" data-lyrics-qr-fallback-emoji>📱</span><span data-lyrics-qr-fallback-text>{% trans "QR-code" %}</span></button>
-                                            <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-toggle aria-expanded="false"><span class="lyrics-master-action-emoji">📡</span><span>{% trans "Télécommande distante" %}</span></button>
                                         </div>
                                         <section class="lyrics-master-remote-management" data-remote-management-panel hidden>
                                             <header>

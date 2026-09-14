@@ -224,11 +224,11 @@ Première ligne :
 
 Deuxième ligne :
 - 🖥️📽️ `Ouvrir un second écran`
-- ⌨️👢 `Raccourcis clavier (personnalisable)`
-- sélecteur `Transition`
-- 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
-- QR embarqué ou fallback 📱 `QR-code`
 - 📡 `Télécommande distante`
+- ⌨️👢 `Raccourcis clavier (personnalisable)`
+- 🎼🔼 / 🎼🔽 `Refrain` / `Pas de refrain`
+- sélecteur `Transition`
+- QR embarqué ou fallback 📱 `QR-code`
 
 Le sélecteur `Transition` affiche les transitions activées fournies par le manifeste technique.
 Son ordre suit l'ordre résolu côté Django.

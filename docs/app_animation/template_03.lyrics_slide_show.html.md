@@ -74,20 +74,20 @@ La page contient :
 
 Actions implémentées :
 - ouvrir second écran,
+- ouverture du panneau `Télécommande distante`,
+- affichage popup d'aide raccourcis,
+- personnalisation persistée des raccourcis membre,
+- toggle affichage cartes refrain,
+- choix de la transition active,
+- toggle QR public,
 - `BLACK MODE`,
 - diapo précédente,
 - refrain (cycle sur les refrains du chant courant),
 - diapo suivante,
 - chant précédent,
 - chant suivant,
-- toggle affichage cartes refrain,
-- toggle QR public,
-- choix de la transition active,
 - `Transition suivante`,
-- `Forcer Direct`,
-- ouverture du panneau `Télécommande distante`,
-- affichage popup d'aide raccourcis,
-- personnalisation persistée des raccourcis membre.
+- `Forcer Direct`.
 
 ### Gestion De La Web Remote
 
