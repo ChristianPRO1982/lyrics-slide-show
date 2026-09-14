@@ -2278,6 +2278,8 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "remoteErrorLabel": _("Télécommande indisponible"),
                 "remoteDisabledLabel": _("Désactivée"),
                 "remoteLinkLabel": _("Ouvrir la télécommande distante"),
+                "remoteCopyLinkLabel": _("Copier le lien"),
+                "remoteCopiedLinkLabel": _("Lien copié"),
                 "remoteCountLabel": _("{count} télécommande(s) connectée(s)"),
                 "remoteActivationFailedMessage": _(
                     "L'activation de la télécommande distante a échoué."

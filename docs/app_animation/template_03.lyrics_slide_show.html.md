@@ -103,8 +103,12 @@ toolbar. Il est inactif par défaut et expose les états : `INACTIVE`, `ACTIVATI
 Après activation, le panneau affiche :
 - un QR code de télécommande distinct du QR public des paroles ;
 - un lien d'accès contenant le token remote dans son fragment ;
+- un bouton `Copier le lien` qui copie cette URL d'accès ;
 - le nombre de remotes actuellement connectées ;
 - l'action de désactivation.
+
+Le QR code de télécommande occupe toute la hauteur disponible du panneau de
+gestion afin de rester facilement scannable.
 
 L'activation appelle l'endpoint JSON de création pour l'animation du groupe
 sélectionné, puis connecte la master au WebSocket avec son secret dédié. La

@@ -46,21 +46,34 @@ modale pendant la projection.
 
 ## Mise En Page Mobile
 
-L'en-tête fournit le menu hamburger et l'état de connexion. Les trois zones
-optionnelles, dans cet ordre, sont :
-- aperçu de la slide suivante ;
+L'en-tête fournit le bouton hamburger et l'état de connexion. Le menu secondaire
+est caché par défaut sous forme de tiroir latéral gauche. Un clic sur le bouton
+hamburger ouvre ce tiroir au-dessus de l'écran avec un backdrop légèrement
+transparent ; le bouton de fermeture, le backdrop et `Escape` le referment.
+
+Les trois zones optionnelles restent visibles par défaut, dans cet ordre :
+- aperçu de la slide suivante, avec le libellé `Slide suivante` en surimpression sur la ligne supérieure du champ ;
 - sélecteur de chant ;
 - bouton `Refrain`.
 
 Chaque zone peut être masquée par son bouton de fermeture et réaffichée depuis le
 menu. Ces préférences sont strictement locales au navigateur, sous la clé
 `lss.remote.access.preferences.v1`; elles ne modifient jamais la session live.
+Une zone décochée ou fermée est réellement retirée de l'affichage principal.
 
 Les commandes principales sont les chants précédent/suivant avec leur titre,
 `BLACK MODE` avec un état visuel contrasté, puis les grandes commandes slide
 précédente/suivante en bas de l'écran. Le menu secondaire contient le réaffichage
 des zones, l'accès direct aux chants, le choix de transition, le toggle QR paroles,
 l'état de connexion et la déconnexion locale.
+
+La page est contrainte à la hauteur du viewport afin d'éviter un ascenseur global.
+Les commandes principales sont réparties en trois lignes fixes et hautes :
+chants précédent/suivant, `BLACK MODE`, puis slides précédente/suivante.
+
+Le zoom par pincement est désactivé sur cette page afin d'éviter les changements
+d'échelle accidentels pendant le pilotage. Le scroll tactile à un doigt reste
+disponible.
 
 ## Commandes Et États
 

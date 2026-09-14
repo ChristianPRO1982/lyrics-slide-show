@@ -3,6 +3,7 @@
     const panel = document.querySelector("[data-remote-management-panel]");
     const toggleButton = document.querySelector("[data-remote-management-toggle]");
     const activateButton = document.querySelector("[data-remote-management-activate]");
+    const copyButton = document.querySelector("[data-remote-management-copy]");
     const deactivateButton = document.querySelector("[data-remote-management-deactivate]");
     const statusNode = document.querySelector("[data-remote-management-status]");
     const countNode = document.querySelector("[data-remote-management-count]");
@@ -22,6 +23,7 @@
     let connection = null;
     let sessionId = "";
     let masterToken = "";
+    let copyResetTimer = 0;
 
     const statusLabels = {
         INACTIVE: label("remoteInactiveLabel", "Inactive"),
@@ -36,6 +38,10 @@
         statusNode.textContent = statusLabels[state] || statusLabels.ERROR;
         const active = state !== "INACTIVE" && state !== "DISABLED";
         activateButton.hidden = active;
+        if (copyButton instanceof HTMLButtonElement) {
+            copyButton.hidden = !active || !linkNode.href;
+            copyButton.textContent = label("remoteCopyLinkLabel", "Copier le lien");
+        }
         deactivateButton.hidden = !active;
         countNode.hidden = !active;
         countNode.textContent = label("remoteCountLabel", "{count} télécommande(s) connectée(s)")
@@ -100,6 +106,10 @@
             qrNode.removeAttribute("src");
             linkNode.hidden = true;
             linkNode.removeAttribute("href");
+            if (copyButton instanceof HTMLButtonElement) {
+                copyButton.hidden = true;
+                copyButton.textContent = label("remoteCopyLinkLabel", "Copier le lien");
+            }
             setState("DISABLED");
         } catch (_error) {
             setState("ERROR");
@@ -136,6 +146,10 @@
             linkNode.href = accessUrl;
             linkNode.textContent = label("remoteLinkLabel", "Ouvrir la télécommande distante");
             linkNode.hidden = false;
+            if (copyButton instanceof HTMLButtonElement) {
+                copyButton.hidden = false;
+                copyButton.textContent = label("remoteCopyLinkLabel", "Copier le lien");
+            }
             const qrCode = String(payload.access_qr_code_png_base64 || "");
             if (qrCode) {
                 qrNode.src = `data:image/png;base64,${qrCode}`;
@@ -166,6 +180,47 @@
     toggleButton?.addEventListener("click", () => {
         panel.hidden = !panel.hidden;
         toggleButton.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+    copyButton?.addEventListener("click", async () => {
+        const url = String(linkNode.href || "").trim();
+        if (!url) {
+            return;
+        }
+        let copied = false;
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(url);
+                copied = true;
+            }
+        } catch (_error) {
+            copied = false;
+        }
+        if (!copied) {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = url;
+            input.setAttribute("readonly", "readonly");
+            input.style.position = "fixed";
+            input.style.left = "-9999px";
+            document.body.append(input);
+            input.select();
+            try {
+                copied = document.execCommand("copy");
+            } catch (_error) {
+                copied = false;
+            }
+            input.remove();
+        }
+        if (copied) {
+            copyButton.textContent = label("remoteCopiedLinkLabel", "Lien copié");
+            if (copyResetTimer) {
+                window.clearTimeout(copyResetTimer);
+            }
+            copyResetTimer = window.setTimeout(() => {
+                copyButton.textContent = label("remoteCopyLinkLabel", "Copier le lien");
+                copyResetTimer = 0;
+            }, 1800);
+        }
     });
     activateButton?.addEventListener("click", () => void activate());
     deactivateButton?.addEventListener("click", () => void deactivate());

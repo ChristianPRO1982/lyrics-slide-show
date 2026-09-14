@@ -290,6 +290,7 @@
                                             <p data-remote-management-count hidden></p>
                                             <div class="lyrics-master-remote-management-actions">
                                                 <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-activate>{% trans "Activer" %}</button>
+                                                <button type="button" class="animation-tool-button site-action site-action--primary" data-remote-management-copy hidden>{% trans "Copier le lien" %}</button>
                                                 <button type="button" class="animation-tool-button site-action site-action--danger" data-remote-management-deactivate hidden>{% trans "Désactiver" %}</button>
                                             </div>
                                         </section>
@@ -401,6 +402,8 @@
             remoteErrorLabel: "{{ lyrics_i18n.remoteErrorLabel|escapejs }}",
             remoteDisabledLabel: "{{ lyrics_i18n.remoteDisabledLabel|escapejs }}",
             remoteLinkLabel: "{{ lyrics_i18n.remoteLinkLabel|escapejs }}",
+            remoteCopyLinkLabel: "{{ lyrics_i18n.remoteCopyLinkLabel|escapejs }}",
+            remoteCopiedLinkLabel: "{{ lyrics_i18n.remoteCopiedLinkLabel|escapejs }}",
             remoteCountLabel: "{{ lyrics_i18n.remoteCountLabel|escapejs }}",
             remoteActivationFailedMessage: "{{ lyrics_i18n.remoteActivationFailedMessage|escapejs }}",
             remoteDeactivationFailedMessage: "{{ lyrics_i18n.remoteDeactivationFailedMessage|escapejs }}"

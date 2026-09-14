@@ -3,12 +3,12 @@
 <html lang="{{ language_code|default:'fr' }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="referrer" content="no-referrer">
     <title>{% trans "Télécommande distante" %}</title>
     <style>@import url("{% static 'css/app_animation.css' %}");</style>
 </head>
-<body class="lyrics-public-body">
+<body class="lyrics-public-body lyrics-remote-access-body">
     <main class="lyrics-public-root lyrics-remote-access-root" data-remote-access-root data-session-id="{{ session_id }}">
         <header class="lyrics-remote-access-header">
             <button type="button" class="lyrics-remote-icon-button" data-remote-menu-toggle aria-expanded="false" aria-controls="lyrics-remote-menu" aria-label="{% trans 'Ouvrir le menu' %}">&#9776;</button>
@@ -19,7 +19,8 @@
         </header>
         <p class="lyrics-remote-feedback" data-remote-feedback aria-live="polite" hidden></p>
 
-        <section id="lyrics-remote-menu" class="lyrics-remote-menu" data-remote-menu hidden>
+        <div class="lyrics-remote-menu-backdrop" data-remote-menu-backdrop hidden></div>
+        <section id="lyrics-remote-menu" class="lyrics-remote-menu" data-remote-menu aria-hidden="true">
             <div class="lyrics-remote-menu-heading">
                 <h2>{% trans "Commandes secondaires" %}</h2>
                 <button type="button" class="lyrics-remote-icon-button" data-remote-menu-close aria-label="{% trans 'Fermer le menu' %}">&times;</button>
@@ -44,7 +45,10 @@
         </section>
 
         <section class="lyrics-remote-optional" data-remote-section="next-slide">
-            <div class="lyrics-remote-next-slide" data-remote-next-slide>{% trans "Aucune slide suivante" %}</div>
+            <div class="lyrics-remote-next-slide">
+                <span class="lyrics-remote-next-slide-label">{% trans "Slide suivante" %}</span>
+                <span data-remote-next-slide>{% trans "Aucune slide suivante" %}</span>
+            </div>
             <button type="button" class="lyrics-remote-close-section" data-remote-hide-section="next-slide" aria-label="{% trans 'Masquer la slide suivante' %}">&times;</button>
         </section>
         <section class="lyrics-remote-optional" data-remote-section="song-select">

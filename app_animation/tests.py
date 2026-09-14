@@ -1273,6 +1273,10 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn("pagehide", management_script)
         self.assertIn("keepalive", management_script)
         self.assertIn("master_token", management_script)
+        self.assertIn("data-remote-management-copy", management_script)
+        self.assertIn("navigator.clipboard?.writeText", management_script)
+        self.assertIn('document.execCommand("copy")', management_script)
+        self.assertIn("remoteCopiedLinkLabel", management_script)
         self.assertIn("window.LSSMessageBox?.alert", management_script)
         self.assertNotIn("BroadcastChannel", management_script)
         self.assertNotIn("localStorage", management_script)
@@ -1422,6 +1426,9 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("js/lyrics_remote_management.js", template)
         self.assertIn("data-remote-management-panel", template)
         self.assertIn("data-remote-management-toggle", template)
+        self.assertIn("data-remote-management-copy", template)
+        self.assertIn("remoteCopyLinkLabel", template)
+        self.assertIn("remoteCopiedLinkLabel", template)
 
     def test_remote_access_renders_the_mobile_operator_interface(self):
         template = Path(
@@ -1431,7 +1438,13 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("data-remote-access-root", template)
         self.assertIn("lyrics_remote_transport.js", template)
         self.assertIn("data-remote-menu-toggle", template)
+        self.assertIn("maximum-scale=1, user-scalable=no, viewport-fit=cover", template)
+        self.assertIn("lyrics-remote-access-body", template)
+        self.assertIn("data-remote-menu-backdrop", template)
+        self.assertIn('data-remote-menu aria-hidden="true"', template)
         self.assertIn('data-remote-section="next-slide"', template)
+        self.assertIn("lyrics-remote-next-slide-label", template)
+        self.assertIn("Slide suivante", template)
         self.assertIn("data-remote-song-select", template)
         self.assertIn('data-remote-command="TOGGLE_BLACK"', template)
         self.assertIn("window.history.replaceState", script)
@@ -1447,11 +1460,45 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("window.localStorage", script)
         self.assertIn("onCommandAccepted", script)
         self.assertIn("onCommandRejected", script)
+        self.assertIn('menu.classList.toggle("is-open", isOpen)', script)
+        self.assertIn('menu.setAttribute("aria-hidden", String(!isOpen))', script)
+        self.assertIn("menuBackdrop.hidden = !isOpen", script)
+        self.assertIn('if (event.key === "Escape")', script)
+        self.assertIn(
+            'document.addEventListener("gesturestart", preventPinchZoom', script
+        )
+        self.assertIn(
+            'document.addEventListener("gesturechange", preventPinchZoom', script
+        )
+        self.assertIn('document.addEventListener("touchmove", preventPinchZoom', script)
         self.assertIn("Number.isInteger(revision)", script)
         self.assertIn("revision <= currentRevision", script)
         self.assertIn("Commande acceptée", template)
         self.assertNotIn("BroadcastChannel", script)
         self.assertNotIn("GO_TO_PROJECTION_STEP", script)
+
+    def test_remote_access_styles_hide_closed_drawer_and_optional_sections(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".lyrics-remote-menu.is-open", stylesheet)
+        self.assertIn(".lyrics-remote-menu-backdrop[hidden]", stylesheet)
+        self.assertIn(".lyrics-remote-optional[hidden]", stylesheet)
+        self.assertIn(".lyrics-remote-access-body", stylesheet)
+        self.assertIn(".lyrics-remote-next-slide-label", stylesheet)
+        self.assertIn("position: absolute", stylesheet)
+        self.assertIn("height: 100vh", stylesheet)
+        self.assertIn("height: 100dvh", stylesheet)
+        self.assertIn("overflow: hidden", stylesheet)
+        self.assertIn("margin-top: 0", stylesheet)
+        self.assertIn("grid-template-rows: auto auto auto auto auto auto", stylesheet)
+        self.assertIn("grid-template-rows: repeat(3, minmax(0, auto))", stylesheet)
+        self.assertIn("min-height: 7rem", stylesheet)
+        optional_hidden_rule = stylesheet[
+            stylesheet.index(".lyrics-remote-optional[hidden]") : stylesheet.index(
+                ".lyrics-remote-next-slide"
+            )
+        ]
+        self.assertIn("display: none !important", optional_hidden_rule)
+        self.assertIn("touch-action: pan-x pan-y", stylesheet)
 
     def test_remote_transport_exposes_remote_command_feedback_callbacks(self):
         script = Path("static/js/lyrics_remote_transport.js").read_text()
@@ -1609,6 +1656,10 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn(".animation-style-picker-grid", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
+        self.assertIn(".lyrics-master-remote-management img", stylesheet)
+        self.assertIn("grid-row: 1 / span 4", stylesheet)
+        self.assertIn("height: 100%", stylesheet)
+        self.assertIn("aspect-ratio: 1 / 1", stylesheet)
         self.assertIn(
             ".lyrics-master-actions-row .animation-tool-button.is-alert-active",
             stylesheet,

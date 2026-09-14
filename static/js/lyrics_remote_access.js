@@ -9,6 +9,7 @@
     let token = new URLSearchParams(window.location.hash.slice(1)).get("token") || "";
     const sessionId = String(root.dataset.sessionId || "");
     const menu = root.querySelector("[data-remote-menu]");
+    const menuBackdrop = root.querySelector("[data-remote-menu-backdrop]");
     const menuToggle = root.querySelector("[data-remote-menu-toggle]");
     const menuClose = root.querySelector("[data-remote-menu-close]");
     const menuStatus = root.querySelector("[data-remote-menu-status]");
@@ -57,6 +58,16 @@
     };
 
     const canSend = () => latestStatus === "CONNECTED" && remote !== null;
+
+    const preventPinchZoom = (event) => {
+        if (event.type.startsWith("gesture")) {
+            event.preventDefault();
+            return;
+        }
+        if (event.touches && event.touches.length > 1) {
+            event.preventDefault();
+        }
+    };
 
     const sendCommand = (command, target) => {
         if (!canSend() || !remote.sendCommand(command, target)) {
@@ -220,15 +231,29 @@
         }
     });
     const setMenuOpen = (open) => {
+        const isOpen = Boolean(open);
         if (menu instanceof HTMLElement) {
-            menu.hidden = !open;
+            menu.classList.toggle("is-open", isOpen);
+            menu.setAttribute("aria-hidden", String(!isOpen));
+        }
+        if (menuBackdrop instanceof HTMLElement) {
+            menuBackdrop.hidden = !isOpen;
         }
         if (menuToggle instanceof HTMLButtonElement) {
-            menuToggle.setAttribute("aria-expanded", String(open));
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
         }
     };
-    menuToggle?.addEventListener("click", () => setMenuOpen(menu?.hidden));
+    menuToggle?.addEventListener("click", () => setMenuOpen(!(menu instanceof HTMLElement && menu.classList.contains("is-open"))));
     menuClose?.addEventListener("click", () => setMenuOpen(false));
+    menuBackdrop?.addEventListener("click", () => setMenuOpen(false));
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            setMenuOpen(false);
+        }
+    });
+    document.addEventListener("gesturestart", preventPinchZoom, { passive: false });
+    document.addEventListener("gesturechange", preventPinchZoom, { passive: false });
+    document.addEventListener("touchmove", preventPinchZoom, { passive: false });
     root.querySelector("[data-remote-quit]")?.addEventListener("click", () => {
         token = "";
         remote?.disconnect();
@@ -239,6 +264,7 @@
         setMenuOpen(false);
     });
     applyPreferences();
+    setMenuOpen(false);
     remote = window.LSSRemoteTransport.connectRemote({
         sessionId,
         accessToken: token,
