@@ -284,6 +284,58 @@ docker compose --env-file .env.prod -f compose.yaml -f compose.prod.yaml up -d
 
 `--env-file .env.prod` reste obligatoire pour l'interpolation Compose (`COMPOSE_PROJECT_NAME`, `SHARED_DB_NETWORK`, `API_BIND_PORT`, etc.).
 
+### Verification prod LSS Web Remote
+
+Sur le VPS, depuis `/opt/stacks/apps/lss`, verifier la configuration effective :
+
+```bash
+docker compose -f compose.yaml -f compose.prod.yaml config
+docker compose -f compose.yaml -f compose.prod.yaml up -d
+```
+
+La sortie `config` doit montrer que le service `web` :
+
+- lance `sh /app/scripts/start-web-prod.sh`, qui demarre Daphne ASGI sur le port interne `8000` ;
+- ne publie pas de port direct via `ports`, Traefik restant l'unique entree publique HTTPS ;
+- depend de `remote_redis` et partage le reseau Docker `default` avec lui ;
+- expose les labels Traefik `lss` et `lss-ws`, avec `lss-ws` route vers `PathPrefix /ws/` et le service Traefik `lss`.
+
+Le service `web` et le service `remote_lease_reaper` doivent utiliser exactement
+la meme image Docker via `LSS_IMAGE`. Pendant un deploiement de test, regler par
+exemple `LSS_IMAGE=carthographie/lyrics-slide-show:new_remote` dans `.env.prod`
+evite de lancer le web sur une image recente et le reaper sur une ancienne image
+`latest`.
+
+Tester Redis depuis le conteneur web :
+
+```bash
+docker compose -f compose.yaml -f compose.prod.yaml exec web sh -lc 'python - <<EOF
+import os
+from urllib.parse import urlparse
+import redis
+
+url = os.environ["REMOTE_CHANNEL_REDIS_URL"]
+parsed = urlparse(url)
+client = redis.Redis(host=parsed.hostname, port=parsed.port or 6379, db=int((parsed.path or "/0").strip("/") or 0))
+print(client.ping())
+EOF'
+```
+
+Tester que la route WebSocket publique arrive bien sur ASGI/Daphne, en remplacant
+`<session_id>` par un UUID de session existant :
+
+```bash
+curl -i \
+  -H 'Connection: Upgrade' \
+  -H 'Upgrade: websocket' \
+  -H 'Sec-WebSocket-Version: 13' \
+  -H 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==' \
+  https://lss.carthographie.fr/ws/animations/remote/<session_id>/master/
+```
+
+Le test ne remplace pas l'authentification applicative WebSocket, mais il doit
+atteindre la route ASGI `/ws/...` via Traefik, pas `nginx-statics`.
+
 ## 9) Checks de validation
 
 - L'API repond sur `GET /healthz`.

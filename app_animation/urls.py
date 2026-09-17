@@ -38,6 +38,21 @@ urlpatterns = [
         name="lyrics_slide_show_shortcuts",
     ),
     path(
+        "<int:animation_id>/lyrics-slide-show/remote-sessions/",
+        views.lyrics_remote_session_create,
+        name="lyrics_remote_session_create",
+    ),
+    path(
+        "<int:animation_id>/lyrics-slide-show/remote-sessions/<uuid:session_id>/deactivate/",
+        views.lyrics_remote_session_deactivate,
+        name="lyrics_remote_session_deactivate",
+    ),
+    path(
+        "remote-access/<uuid:session_id>/",
+        views.lyrics_remote_access,
+        name="lyrics_remote_access",
+    ),
+    path(
         "<int:animation_id>/lyrics-slide-show/display/",
         views.lyrics_slide_show_display,
         name="lyrics_slide_show_display",

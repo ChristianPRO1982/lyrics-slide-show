@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import logging
 import random
 import re
 import uuid
 from urllib.parse import urlencode
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError, connection, transaction
@@ -39,6 +42,7 @@ from .forms import (
 )
 from .models import (
     Animation,
+    AnimationRemoteSession,
     AnimationSong,
     AnimationVerseOverride,
     BackgroundImage,
@@ -96,8 +100,10 @@ from .services.shortcuts import (
     save_member_shortcut_bindings,
     validate_shortcut_submission,
 )
+from .services.remote_sessions import create_remote_session, deactivate_remote_session
 
 qrcode = lyrics_helpers.qrcode
+logger = logging.getLogger(__name__)
 
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
@@ -121,7 +127,6 @@ def _shortcut_action_labels() -> dict[str, str]:
         "prev_song": _("Chant précédent"),
         "next_song": _("Chant suivant"),
         "toggle_chorus": _("Afficher / masquer les refrains"),
-        "toggle_scroll": _("Scroll on ↕️ or not 🧱"),
         "toggle_qr": _("📱 QR code pour les paroles"),
         "next_transition": _("Transition suivante"),
         "force_direct": _("Forcer Direct"),
@@ -2266,6 +2271,22 @@ def lyrics_slide_show(request: HttpRequest, animation_id: int) -> HttpResponse:
                 "shortcutsSaveFailedMessage": _(
                     "Les raccourcis n'ont pas pu être enregistrés."
                 ),
+                "remoteInactiveLabel": _("Inactive"),
+                "remoteActivatingLabel": _("Activation…"),
+                "remoteConnectingLabel": _("Connexion de la master…"),
+                "remoteConnectedLabel": _("Master connectée"),
+                "remoteErrorLabel": _("Télécommande indisponible"),
+                "remoteDisabledLabel": _("Désactivée"),
+                "remoteLinkLabel": _("Ouvrir la télécommande distante"),
+                "remoteCopyLinkLabel": _("Copier le lien"),
+                "remoteCopiedLinkLabel": _("Lien copié"),
+                "remoteCountLabel": _("{count} télécommande(s) connectée(s)"),
+                "remoteActivationFailedMessage": _(
+                    "L'activation de la télécommande distante a échoué."
+                ),
+                "remoteDeactivationFailedMessage": _(
+                    "La désactivation de la télécommande distante a échoué."
+                ),
             },
         },
     )
@@ -2356,6 +2377,93 @@ def lyrics_slide_show_shortcuts(
             },
         }
     )
+
+
+def lyrics_remote_session_create(
+    request: HttpRequest, animation_id: int
+) -> JsonResponse:
+    if request.method != "POST":
+        raise Http404
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return JsonResponse({"message": _("Aucun groupe sélectionné.")}, status=404)
+    animation = get_object_or_404(Animation, animation_id=animation_id)
+    if animation.group_id != selected_group.group_id:
+        raise Http404
+
+    created = create_remote_session(animation)
+    access_base_url = request.build_absolute_uri(
+        reverse("lyrics_remote_access", args=[created.session.session_id])
+    )
+    access_url = f"{access_base_url}#{urlencode({'token': created.access_token})}"
+    response = JsonResponse(
+        {
+            "session_id": str(created.session.session_id),
+            "access_url": access_url,
+            "access_qr_code_png_base64": build_qr_png_base64(access_url),
+            "master_token": created.master_token,
+            "remote_count": created.session.remote_connection_count,
+        }
+    )
+    response["Cache-Control"] = "no-store"
+    return response
+
+
+def lyrics_remote_session_deactivate(
+    request: HttpRequest, animation_id: int, session_id: uuid.UUID
+) -> JsonResponse:
+    if request.method != "POST":
+        raise Http404
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return JsonResponse({"message": _("Aucun groupe sélectionné.")}, status=404)
+    animation = get_object_or_404(Animation, animation_id=animation_id)
+    if animation.group_id != selected_group.group_id:
+        raise Http404
+    session = get_object_or_404(
+        AnimationRemoteSession,
+        session_id=session_id,
+        animation_id=animation.animation_id,
+    )
+    result = deactivate_remote_session(
+        session.session_id, request.POST.get("master_token", "")
+    )
+    if result is None:
+        return JsonResponse({"message": _("Session distante invalide.")}, status=403)
+
+    try:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"lss.remote.{result.session_id.hex}",
+            {"type": "remote.session.disabled"},
+        )
+        if result.master_channel_name:
+            async_to_sync(channel_layer.send)(
+                result.master_channel_name,
+                {"type": "remote.session.disabled"},
+            )
+    except Exception:
+        logger.exception(
+            "Remote session %s was disabled but Channels notifications failed.",
+            result.session_id,
+        )
+    response = JsonResponse({"status": "DISABLED"})
+    response["Cache-Control"] = "no-store"
+    return response
+
+
+def lyrics_remote_access(request: HttpRequest, session_id: uuid.UUID) -> HttpResponse:
+    get_object_or_404(AnimationRemoteSession, session_id=session_id)
+    response = render(
+        request,
+        "animation/lyrics_remote_access.html",
+        {"session_id": str(session_id)},
+    )
+    response["Cache-Control"] = "no-store"
+    response["Referrer-Policy"] = "no-referrer"
+    return response
 
 
 def lyrics_slide_show_display(request: HttpRequest, animation_id: int) -> HttpResponse:

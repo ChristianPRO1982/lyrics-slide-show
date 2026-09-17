@@ -18,10 +18,15 @@ SHORTCUT_ACTION_ORDER: Final[list[str]] = [
     "prev_song",
     "next_song",
     "toggle_chorus",
-    "toggle_scroll",
     "toggle_qr",
     "next_transition",
     "force_direct",
+]
+
+PAUSED_SHORTCUT_ACTION_ORDER: Final[list[str]] = [
+    # Paused while the remote keeps scroll-blocking always enabled by default.
+    # Restore this action in SHORTCUT_ACTION_ORDER to expose the toolbar/raccourci again.
+    "toggle_scroll",
 ]
 
 SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
@@ -33,10 +38,13 @@ SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
     "prev_song": "prev-song",
     "next_song": "next-song",
     "toggle_chorus": "toggle-chorus",
-    "toggle_scroll": "toggle-scroll",
     "toggle_qr": "toggle-qr",
     "next_transition": "next-transition",
     "force_direct": "force-direct",
+}
+
+PAUSED_SHORTCUT_ACTION_TO_REMOTE_ACTION: Final[dict[str, str]] = {
+    "toggle_scroll": "toggle-scroll",
 }
 
 SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
@@ -48,10 +56,13 @@ SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
     "prev_song": ["f", "arrowleft"],
     "next_song": ["enter", "n", "arrowright"],
     "toggle_chorus": ["a", "d"],
-    "toggle_scroll": ["l"],
     "toggle_qr": ["q"],
     "next_transition": ["t"],
     "force_direct": ["i"],
+}
+
+PAUSED_SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {
+    "toggle_scroll": ["l"],
 }
 
 CUSTOMIZABLE_SITE_SHORTCUT_BINDINGS: Final[dict[str, list[str]]] = {

@@ -2,11 +2,14 @@ import json
 import shutil
 import tempfile
 import uuid
+from datetime import timedelta
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
@@ -25,6 +28,9 @@ from .forms import AnimationForm
 from .font_catalog import GOOGLE_FONTS_STYLESHEET_HREF
 from .models import (
     Animation,
+    AnimationRemoteConnection,
+    AnimationRemoteConnectionRole,
+    AnimationRemoteSession,
     AnimationRemoteShortcut,
     AnimationSong,
     AnimationVerseOverride,
@@ -54,6 +60,35 @@ from .transitions import (
     list_enabled_transition_runtime_options,
     list_enabled_transitions,
 )
+from .services.remote_protocol import (
+    RemoteCommand,
+    RemoteCommandAcceptedMessage,
+    RemoteCommandMessage,
+    RemoteCommandRejectedMessage,
+    RemoteMessageType,
+    RemoteRejectReason,
+    RemoteStateMessage,
+)
+from .services.remote_sessions import (
+    accept_remote_command,
+    authenticate_master_session,
+    authenticate_remote_session,
+    cancel_remote_command_reservation,
+    create_remote_session,
+    deactivate_remote_session,
+    get_remote_connection_stale_after,
+    get_remote_connection_auth_timeout,
+    get_remote_command_cooldown,
+    get_remote_state_snapshot,
+    inspect_remote_connection,
+    purge_expired_remote_connections,
+    register_master_connection,
+    register_remote_connection,
+    store_remote_state,
+    touch_remote_connection,
+    unregister_master_connection,
+    unregister_remote_connection,
+)
 
 
 class PlaylistParsingTests(SimpleTestCase):
@@ -62,6 +97,650 @@ class PlaylistParsingTests(SimpleTestCase):
         self.assertEqual(
             [(token.token_type, token.token_id) for token in tokens],
             [("asid", 10), ("sid", 20), ("asid", 11)],
+        )
+
+
+class AnimationRemoteProtocolTests(SimpleTestCase):
+    def _state_payload(self, revision: int) -> dict[str, object]:
+        return {
+            "type": RemoteMessageType.STATE,
+            "state": {
+                "revision": revision,
+                "current_projection_step": {
+                    "projection_index": 4,
+                    "label": "Couplet 1",
+                    "excerpt": "Texte courant",
+                },
+                "next_projection_step": {
+                    "projection_index": 5,
+                    "label": "Couplet 2",
+                    "excerpt": "Texte suivant",
+                },
+                "current_song": {
+                    "animation_song_id": 8,
+                    "title": "Chant A",
+                    "selected": True,
+                },
+                "previous_song": None,
+                "next_song": {
+                    "animation_song_id": 9,
+                    "title": "Chant B",
+                    "selected": False,
+                },
+                "black_mode": False,
+                "songs": [
+                    {"animation_song_id": 8, "title": "Chant A", "selected": True}
+                ],
+                "chorus_available": True,
+                "current_transition": {"transition_id": "fade", "label": "Fondu"},
+                "available_transitions": [{"transition_id": "fade", "label": "Fondu"}],
+                "qr_mode": False,
+                "master_status": "MASTER_CONNECTED",
+            },
+        }
+
+    def test_command_and_response_messages_are_json_serializable(self):
+        command = RemoteCommandMessage(
+            command=RemoteCommand.GO_TO_SONG,
+            target={"animation_song_id": 12},
+        )
+
+        self.assertEqual(
+            command.to_payload(),
+            {
+                "type": RemoteMessageType.COMMAND,
+                "command": RemoteCommand.GO_TO_SONG,
+                "target": {"animation_song_id": 12},
+            },
+        )
+        self.assertEqual(
+            RemoteCommandMessage.from_payload(command.to_payload()), command
+        )
+        self.assertEqual(
+            RemoteCommandAcceptedMessage(RemoteCommand.NEXT_SLIDE).to_payload()["type"],
+            RemoteMessageType.COMMAND_ACCEPTED,
+        )
+        self.assertEqual(
+            RemoteCommandRejectedMessage(RemoteRejectReason.COOLDOWN).to_payload()[
+                "reason"
+            ],
+            RemoteRejectReason.COOLDOWN,
+        )
+        self.assertEqual(
+            RemoteStateMessage.from_payload(self._state_payload(0)).revision,
+            0,
+        )
+        json.dumps(command.to_payload())
+        json.dumps(RemoteCommandAcceptedMessage(RemoteCommand.NEXT_SLIDE).to_payload())
+        json.dumps(
+            RemoteCommandRejectedMessage(RemoteRejectReason.COOLDOWN).to_payload()
+        )
+        json.dumps(RemoteStateMessage.from_payload(self._state_payload(0)).to_payload())
+
+    def test_state_requires_the_compact_protocol_fields(self):
+        payload = self._state_payload(1)
+        del payload["state"]["master_status"]
+
+        with self.assertRaises(ValueError):
+            RemoteStateMessage.from_payload(payload)
+
+    def test_state_rejects_incomplete_nested_summaries(self):
+        payload = self._state_payload(1)
+        del payload["state"]["current_projection_step"]["excerpt"]
+
+        with self.assertRaises(ValueError):
+            RemoteStateMessage.from_payload(payload)
+
+
+class AnimationRemoteSessionServiceTests(TestCase):
+    def _animation(self) -> Animation:
+        group = Group.objects.create(
+            name=f"Open Group {uuid.uuid4()}", status=GroupStatus.OPEN
+        )
+        return Animation.objects.create(
+            group=group,
+            title="Remote session",
+            scheduled_at=timezone.now(),
+        )
+
+    def _state_payload(self, revision: int) -> dict[str, object]:
+        return {
+            "type": RemoteMessageType.STATE,
+            "state": {
+                "revision": revision,
+                "current_projection_step": None,
+                "next_projection_step": None,
+                "current_song": None,
+                "previous_song": None,
+                "next_song": None,
+                "black_mode": False,
+                "songs": [],
+                "chorus_available": False,
+                "current_transition": None,
+                "available_transitions": [],
+                "qr_mode": False,
+                "master_status": "MASTER_CONNECTED",
+            },
+        }
+
+    def test_create_session_keeps_only_token_digest_and_uses_eight_hour_ttl(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        other = create_remote_session(created.session.animation, now=now)
+        session = created.session
+
+        self.assertIsInstance(session.session_id, uuid.UUID)
+        self.assertTrue(created.access_token)
+        self.assertTrue(created.master_token)
+        self.assertNotEqual(session.access_token_digest, created.access_token)
+        self.assertNotEqual(session.master_token_digest, created.master_token)
+        self.assertNotEqual(created.access_token, created.master_token)
+        self.assertNotEqual(session.session_id, other.session.session_id)
+        self.assertNotEqual(created.access_token, other.access_token)
+        self.assertIsNone(
+            authenticate_remote_session(
+                other.session.session_id, created.access_token, now=now
+            )
+        )
+        self.assertEqual(session.expires_at, now + timedelta(hours=8))
+        self.assertEqual(session.latest_state_revision, -1)
+        self.assertTrue(
+            authenticate_remote_session(
+                session.session_id, created.access_token, now=now
+            )
+        )
+        self.assertTrue(
+            authenticate_master_session(
+                session.session_id, created.master_token, now=now
+            )
+        )
+
+    def test_token_inactive_and_expired_sessions_are_refused(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        self.assertIsNone(
+            authenticate_remote_session(created.session.session_id, "wrong", now=now)
+        )
+        self.assertIsNone(
+            authenticate_master_session(
+                created.session.session_id, created.access_token, now=now
+            )
+        )
+        created.session.active = False
+        created.session.save(update_fields=["active"])
+        self.assertIsNone(
+            authenticate_remote_session(
+                created.session.session_id, created.access_token, now=now
+            )
+        )
+
+        expired = create_remote_session(self._animation(), now=now)
+        self.assertIsNone(
+            authenticate_remote_session(
+                expired.session.session_id,
+                expired.access_token,
+                now=expired.session.expires_at,
+            )
+        )
+
+        deactivated = create_remote_session(self._animation(), now=now)
+        self.assertIsNotNone(
+            deactivate_remote_session(
+                deactivated.session.session_id, deactivated.master_token
+            )
+        )
+        self.assertIsNone(
+            authenticate_remote_session(
+                deactivated.session.session_id, deactivated.access_token, now=now
+            )
+        )
+
+    def test_command_cooldown_is_persisted_and_invalid_commands_do_not_consume_it(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        command = {"type": RemoteMessageType.COMMAND, "command": "NEXT_SLIDE"}
+
+        invalid = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            {"type": RemoteMessageType.COMMAND, "command": "UNKNOWN"},
+            now=now,
+        )
+        self.assertFalse(invalid.accepted)
+        self.assertEqual(invalid.reason, RemoteRejectReason.INVALID_COMMAND)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.last_remote_command_at)
+        unavailable = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertFalse(unavailable.accepted)
+        self.assertEqual(unavailable.reason, RemoteRejectReason.MASTER_UNAVAILABLE)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.last_remote_command_at)
+        register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "test-master-channel",
+            now=now,
+        )
+
+        accepted = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertTrue(accepted.accepted)
+        self.assertEqual(accepted.session.last_remote_command_at, now)
+
+        rejected = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            command,
+            now=now + timedelta(milliseconds=599),
+        )
+        self.assertFalse(rejected.accepted)
+        self.assertEqual(rejected.reason, RemoteRejectReason.COOLDOWN)
+        self.assertTrue(
+            accept_remote_command(
+                created.session.session_id,
+                created.access_token,
+                command,
+                now=now + timedelta(milliseconds=600),
+            ).accepted
+        )
+
+    def test_deactivated_token_cannot_access_a_new_session_for_same_animation(self):
+        now = timezone.now()
+        old = create_remote_session(self._animation(), now=now)
+        self.assertIsNotNone(
+            deactivate_remote_session(old.session.session_id, old.master_token, now=now)
+        )
+        replacement = create_remote_session(old.session.animation, now=now)
+
+        self.assertIsNone(
+            authenticate_remote_session(
+                old.session.session_id, old.access_token, now=now
+            )
+        )
+        self.assertIsNone(
+            authenticate_remote_session(
+                replacement.session.session_id, old.access_token, now=now
+            )
+        )
+
+    def test_state_storage_accepts_newer_revision_only(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        first = store_remote_state(
+            created.session.session_id,
+            created.master_token,
+            self._state_payload(0),
+            now=now,
+        )
+        self.assertTrue(first.stored)
+        stale = store_remote_state(
+            created.session.session_id,
+            created.master_token,
+            self._state_payload(0),
+            now=now,
+        )
+        self.assertFalse(stale.stored)
+        newest = store_remote_state(
+            created.session.session_id,
+            created.master_token,
+            self._state_payload(1),
+            now=now,
+        )
+        self.assertTrue(newest.stored)
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.latest_state_revision, 1)
+        self.assertEqual(created.session.latest_state["revision"], 1)
+
+    def test_authenticated_remote_gets_the_latest_state_snapshot(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(2),
+                now=now,
+            ).stored
+        )
+
+        snapshot = get_remote_state_snapshot(
+            created.session.session_id, created.access_token, now=now
+        )
+
+        self.assertEqual(snapshot, self._state_payload(2)["state"])
+        self.assertIsNone(
+            get_remote_state_snapshot(created.session.session_id, "wrong", now=now)
+        )
+
+    def test_master_connection_and_cooldown_configuration_are_validated(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+
+        connected = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
+        )
+        self.assertEqual(connected.session.master_connected_at, now)
+        self.assertEqual(connected.session.master_channel_name, "first-master-channel")
+
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now,
+        )
+        self.assertEqual(replacement.replaced_channel_name, "first-master-channel")
+        unregister_master_connection(
+            created.session.session_id, connected.connection_id
+        )
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.master_channel_name, "second-master-channel")
+        unregister_master_connection(
+            created.session.session_id, replacement.connection_id
+        )
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
+
+        with self.settings(REMOTE_COMMAND_COOLDOWN_MS=500):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_command_cooldown()
+        with self.settings(
+            REMOTE_CONNECTION_HEARTBEAT_SECONDS=5,
+            REMOTE_CONNECTION_STALE_SECONDS=5,
+        ):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_connection_stale_after()
+        with self.settings(REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS=0):
+            with self.assertRaises(ImproperlyConfigured):
+                get_remote_connection_auth_timeout()
+
+    def test_remote_connection_count_is_persisted_and_never_negative(self):
+        created = create_remote_session(self._animation())
+
+        registered = register_remote_connection(
+            created.session.session_id, created.access_token
+        )
+        self.assertIsNotNone(registered)
+        self.assertEqual(registered.session.remote_connection_count, 1)
+        unregistered = unregister_remote_connection(created.session.session_id)
+        self.assertIsNotNone(unregistered)
+        self.assertEqual(unregistered.session.remote_connection_count, 0)
+        still_zero = unregister_remote_connection(created.session.session_id)
+        self.assertIsNotNone(still_zero)
+        self.assertEqual(still_zero.session.remote_connection_count, 0)
+
+    def test_leases_expire_atomically_and_recompute_the_remote_count(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            channel_name="remote-channel",
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+        self.assertEqual(remote.session.remote_connection_count, 1)
+        self.assertEqual(
+            AnimationRemoteConnection.objects.filter(
+                session=created.session,
+                role=AnimationRemoteConnectionRole.REMOTE,
+            ).count(),
+            1,
+        )
+
+        stale_at = now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        decision = accept_remote_command(
+            created.session.session_id,
+            created.access_token,
+            {"type": "COMMAND", "command": "NEXT_SLIDE"},
+            now=stale_at,
+        )
+        self.assertFalse(decision.accepted)
+        self.assertEqual(decision.reason, RemoteRejectReason.MASTER_UNAVAILABLE)
+        self.assertTrue(decision.master_lost)
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
+        self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_heartbeat_preserves_a_lease_and_rejects_a_replaced_master(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        first = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(first)
+        heartbeat = touch_remote_connection(
+            created.session.session_id,
+            first.connection_id,
+            AnimationRemoteConnectionRole.MASTER,
+            now=now + timedelta(seconds=1),
+        )
+        self.assertTrue(heartbeat.alive)
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now + timedelta(seconds=2),
+        )
+        self.assertIsNotNone(replacement)
+        stale_heartbeat = touch_remote_connection(
+            created.session.session_id,
+            first.connection_id,
+            AnimationRemoteConnectionRole.MASTER,
+            now=now + timedelta(seconds=3),
+        )
+        self.assertFalse(stale_heartbeat.alive)
+        self.assertTrue(stale_heartbeat.replaced)
+        self.assertFalse(stale_heartbeat.lease_expired)
+
+    def test_expired_lease_is_reconnectable_and_not_a_disabled_session(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+        heartbeat = touch_remote_connection(
+            created.session.session_id,
+            remote.connection_id,
+            AnimationRemoteConnectionRole.REMOTE,
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1),
+        )
+        self.assertFalse(heartbeat.alive)
+        self.assertTrue(heartbeat.lease_expired)
+        self.assertFalse(heartbeat.session_invalid)
+
+    def test_lease_inspection_expires_a_remote_without_renewing_it(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now,
+        )
+        self.assertIsNotNone(remote)
+
+        inspected = inspect_remote_connection(
+            created.session.session_id,
+            remote.connection_id,
+            AnimationRemoteConnectionRole.REMOTE,
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1),
+        )
+
+        self.assertFalse(inspected.alive)
+        self.assertTrue(inspected.lease_expired)
+        created.session.refresh_from_db()
+        self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_periodic_lease_purge_clears_stale_master_and_remote_connections(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        self.assertIsNotNone(
+            register_master_connection(
+                created.session.session_id,
+                created.master_token,
+                "master-channel",
+                now=now,
+            )
+        )
+        self.assertIsNotNone(
+            register_remote_connection(
+                created.session.session_id, created.access_token, now=now
+            )
+        )
+
+        purge_result = purge_expired_remote_connections(
+            now=now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        )
+
+        self.assertEqual(purge_result.removed_count, 2)
+        self.assertEqual(len(purge_result.updates), 1)
+        self.assertTrue(purge_result.updates[0].master_lost)
+        self.assertTrue(purge_result.updates[0].remote_count_changed)
+        self.assertEqual(purge_result.master_unavailable_session_ids, ())
+        created.session.refresh_from_db()
+        self.assertIsNone(created.session.master_channel_name)
+        self.assertEqual(created.session.remote_connection_count, 0)
+
+    def test_reaper_reannounces_an_unavailable_master_while_remotes_are_live(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        remote = register_remote_connection(
+            created.session.session_id,
+            created.access_token,
+            now=now + timedelta(seconds=1),
+        )
+        self.assertIsNotNone(remote)
+        first_purge_at = (
+            now + get_remote_connection_stale_after() + timedelta(seconds=1)
+        )
+
+        first_purge = purge_expired_remote_connections(now=first_purge_at)
+        self.assertEqual(first_purge.removed_count, 1)
+        self.assertEqual(
+            first_purge.master_unavailable_session_ids,
+            (created.session.session_id,),
+        )
+        self.assertTrue(
+            touch_remote_connection(
+                created.session.session_id,
+                remote.connection_id,
+                AnimationRemoteConnectionRole.REMOTE,
+                now=first_purge_at,
+            ).alive
+        )
+
+        retry_purge = purge_expired_remote_connections(
+            now=first_purge_at + timedelta(seconds=1)
+        )
+        self.assertEqual(retry_purge.removed_count, 0)
+        self.assertEqual(
+            retry_purge.master_unavailable_session_ids,
+            (created.session.session_id,),
+        )
+
+    def test_cancelled_master_receipt_releases_its_cooldown_reservation(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        master = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(master)
+        command = {"type": "COMMAND", "command": "NEXT_SLIDE"}
+        reserved = accept_remote_command(
+            created.session.session_id, created.access_token, command, now=now
+        )
+        self.assertTrue(reserved.accepted)
+        cancelled = cancel_remote_command_reservation(
+            created.session.session_id,
+            reserved.accepted_at,
+            reserved.master_connection_id,
+            invalidate_master=False,
+            now=now + timedelta(milliseconds=1),
+        )
+        self.assertIsNotNone(cancelled)
+        self.assertTrue(
+            accept_remote_command(
+                created.session.session_id,
+                created.access_token,
+                command,
+                now=now + timedelta(milliseconds=2),
+            ).accepted
+        )
+
+    def test_replacement_master_adopts_a_revision_strictly_after_persisted_state(self):
+        now = timezone.now()
+        created = create_remote_session(self._animation(), now=now)
+        first = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "first-master-channel",
+            now=now,
+        )
+        self.assertIsNotNone(first)
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(4),
+                connection_id=first.connection_id,
+                now=now,
+            ).stored
+        )
+        replacement = register_master_connection(
+            created.session.session_id,
+            created.master_token,
+            "second-master-channel",
+            now=now + timedelta(seconds=1),
+        )
+        self.assertIsNotNone(replacement)
+        self.assertEqual(replacement.next_state_revision, 5)
+        self.assertFalse(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(4),
+                connection_id=replacement.connection_id,
+                now=now + timedelta(seconds=1),
+            ).stored
+        )
+        self.assertTrue(
+            store_remote_state(
+                created.session.session_id,
+                created.master_token,
+                self._state_payload(5),
+                connection_id=replacement.connection_id,
+                now=now + timedelta(seconds=1),
+            ).stored
         )
 
 
@@ -495,6 +1174,185 @@ class LyricsSlideShowMasterScriptTests(SimpleTestCase):
         self.assertIn('action === "force-direct"', script)
         self.assertNotIn("wipe_horizontal", script)
 
+    def test_master_script_exposes_external_command_adapter_and_remote_state(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("window.LSSLyricsMasterAdapter = Object.freeze({", script)
+        self.assertIn("handleExternalCommand,", script)
+        self.assertIn("getRemoteState,", script)
+        self.assertIn("subscribeRemoteState,", script)
+        self.assertIn("ensureRemoteStateRevision,", script)
+        self.assertIn("validateExternalCommand,", script)
+        self.assertIn('message.type !== "COMMAND"', script)
+        self.assertIn('return rejectedExternalCommand("INVALID_COMMAND");', script)
+        self.assertIn('return rejectedExternalCommand("INVALID_TARGET");', script)
+
+    def test_master_script_maps_external_commands_to_existing_actions(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        expected_mappings = (
+            ('command === "PREVIOUS_SLIDE"', "navigateSlide(-1);"),
+            ('command === "NEXT_SLIDE"', "navigateSlide(1);"),
+            (
+                'command === "PREVIOUS_SONG"',
+                "setCurrentSong(state.selectedSongIndex - 1);",
+            ),
+            ('command === "NEXT_SONG"', "setCurrentSong(state.selectedSongIndex + 1);"),
+            ('command === "TOGGLE_BLACK"', "toggleBlackMode();"),
+            ('command === "GO_TO_SONG"', "setCurrentSong(songIndex);"),
+            ('command === "GO_TO_CHORUS"', "navigateChorus();"),
+            ('command === "SET_TRANSITION"', "setActiveTransition(transitionId);"),
+            ('command === "TOGGLE_QR"', "toggleQrMode();"),
+            (
+                'command === "GO_TO_PROJECTION_STEP"',
+                "projectProjectionStep(projectionIndex);",
+            ),
+        )
+        for command, action in expected_mappings:
+            self.assertIn(command, script)
+            self.assertIn(action, script)
+
+        self.assertIn("songIndexByAnimationSongId.get(animationSongId)", script)
+        self.assertIn("projectionStepByIndex(projectionIndex)", script)
+        self.assertIn("transitionById.has(transitionId)", script)
+
+    def test_master_script_builds_and_publishes_compact_remote_state(self):
+        script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("const buildRemoteState = () => {", script)
+        for field_name in (
+            "revision:",
+            "current_projection_step:",
+            "next_projection_step:",
+            "current_song:",
+            "previous_song:",
+            "next_song:",
+            "black_mode:",
+            "songs:",
+            "chorus_available:",
+            "current_transition:",
+            "available_transitions:",
+            "qr_mode:",
+            'master_status: "INACTIVE"',
+        ):
+            self.assertIn(field_name, script)
+        self.assertIn("remoteStateRevision: state.remoteStateRevision", script)
+        self.assertIn("const publishRemoteState = () => {", script)
+        self.assertIn("remoteStateSubscribers.forEach", script)
+        self.assertEqual(script.count("publishRemoteState();"), 5)
+        self.assertNotIn("new WebSocket", script)
+
+    def test_passive_remote_transport_uses_first_message_authentication(self):
+        script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("window.LSSRemoteTransport = Object.freeze({", script)
+        self.assertIn("connectMaster:", script)
+        self.assertIn("connectRemote:", script)
+        self.assertIn('type: "AUTH", token', script)
+        self.assertIn('socket.send(JSON.stringify({ type: "AUTH", token }));', script)
+        self.assertIn("window.setTimeout(connect, reconnectDelayMs)", script)
+        self.assertIn('message.type === "MASTER_REPLACED"', script)
+        self.assertIn('type: "HEARTBEAT"', script)
+        self.assertIn("startHeartbeat();", script)
+        self.assertIn("stopHeartbeat();", script)
+        self.assertIn('message.type === "MASTER_UNAVAILABLE"', script)
+        self.assertIn('type: "MASTER_COMMAND_RECEIVED"', script)
+        self.assertIn('message.type === "MASTER_COMMAND_EXECUTE"', script)
+        self.assertIn("pendingMasterCommands", script)
+        self.assertIn(
+            'message.type === "COMMAND_REJECTED" && role === "remote"', script
+        )
+        self.assertNotIn("pendingCommands", script)
+        self.assertNotIn("commandQueue", script)
+        self.assertNotIn("?token=", script)
+
+    def test_remote_management_keeps_lifecycle_outside_the_projection_bridge(self):
+        management_script = Path("static/js/lyrics_remote_management.js").read_text()
+        transport_script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("pagehide", management_script)
+        self.assertIn("keepalive", management_script)
+        self.assertIn("master_token", management_script)
+        self.assertIn("data-remote-management-copy", management_script)
+        self.assertIn("navigator.clipboard?.writeText", management_script)
+        self.assertIn('document.execCommand("copy")', management_script)
+        self.assertIn("remoteCopiedLinkLabel", management_script)
+        self.assertIn("window.LSSMessageBox?.alert", management_script)
+        self.assertNotIn("BroadcastChannel", management_script)
+        self.assertNotIn("localStorage", management_script)
+        self.assertIn('"REMOTE_COUNT"', transport_script)
+        self.assertIn('"SESSION_DISABLED"', transport_script)
+        self.assertIn("onRemoteCount", transport_script)
+
+
+class RemoteTransportConfigurationTests(SimpleTestCase):
+    def test_asgi_routes_redis_and_daphne_are_configured_without_touching_local_bridge(
+        self,
+    ):
+        asgi = Path("lyrics_slide_show/asgi.py").read_text()
+        routing = Path("app_animation/routing.py").read_text()
+        settings = Path("lyrics_slide_show/settings.py").read_text()
+        development_compose = Path("compose.dev.yaml").read_text()
+        production_compose = Path("compose.prod.yaml").read_text()
+        production_start = Path("scripts/start-web-prod.sh").read_text()
+        lease_reaper_start = Path("scripts/start-remote-lease-reaper.sh").read_text()
+        dockerfile = Path("Dockerfile").read_text()
+        master_script = Path("static/js/lyrics_slide_show_master.js").read_text()
+
+        self.assertIn("ProtocolTypeRouter", asgi)
+        self.assertIn("AllowedHostsOriginValidator", asgi)
+        self.assertIn('"websocket":', asgi)
+        self.assertIn("RemoteMasterConsumer", routing)
+        self.assertIn("RemoteMobileConsumer", routing)
+        self.assertIn("<uuid:session_id>/master", routing)
+        self.assertIn("<uuid:session_id>/remote", routing)
+        self.assertIn(
+            'ASGI_APPLICATION = "lyrics_slide_show.asgi.application"', settings
+        )
+        self.assertIn("channels_redis.core.RedisChannelLayer", settings)
+        self.assertIn("REMOTE_CHANNEL_REDIS_URL", settings)
+        for compose in (development_compose, production_compose):
+            self.assertIn("remote_redis:", compose)
+            self.assertNotIn('"6379:6379"', compose)
+        self.assertIn(
+            "image: ${LSS_IMAGE:-carthographie/lyrics-slide-show:latest}",
+            production_compose,
+        )
+        self.assertEqual(production_compose.count("image: ${LSS_IMAGE:-"), 2)
+        self.assertIn("command: sh /app/scripts/start-web-prod.sh", production_compose)
+        self.assertIn("traefik.http.routers.lss-ws.rule", production_compose)
+        self.assertIn("PathPrefix(`/ws/`)", production_compose)
+        self.assertIn(
+            "traefik.http.routers.lss-ws.service=lss", production_compose
+        )
+        self.assertIn(
+            "traefik.http.routers.lss-ws.priority=300", production_compose
+        )
+        self.assertIn(
+            "traefik.http.services.lss.loadbalancer.server.port=8000",
+            production_compose,
+        )
+        self.assertNotIn("${LSS_BIND_PORT:-8000}:8000", production_compose)
+        self.assertIn("exec daphne", production_start)
+        self.assertIn("--bind 0.0.0.0", production_start)
+        self.assertIn("--port 8000", production_start)
+        self.assertIn("--proxy-headers", production_start)
+        self.assertIn("lyrics_slide_show.asgi:application", production_start)
+        self.assertNotIn("gunicorn", production_start)
+        self.assertIn("purge_remote_connections", lease_reaper_start)
+        self.assertIn(
+            "test -f /app/scripts/start-remote-lease-reaper.sh", dockerfile
+        )
+        self.assertIn("new window.BroadcastChannel", master_script)
+        self.assertIn("window.localStorage", master_script)
+        display_script = Path("static/js/lyrics_slide_show_display.js").read_text()
+        self.assertNotIn("LSSRemoteTransport", display_script)
+        self.assertNotIn("WebSocket", display_script)
+        urls = Path("app_animation/urls.py").read_text()
+        self.assertIn("lyrics_remote_session_create", urls)
+        self.assertIn("lyrics_remote_session_deactivate", urls)
+        self.assertIn("lyrics_remote_access", urls)
+
 
 class LyricsSlideShowDisplayScriptTests(SimpleTestCase):
     def test_display_script_supports_double_projection_steps(self):
@@ -588,6 +1446,102 @@ class MessageBoxActionListTests(SimpleTestCase):
 
 
 class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
+    def test_master_template_loads_the_passive_remote_transport_client(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_slide_show.html"
+        ).read_text()
+        self.assertIn("js/lyrics_slide_show_master.js", template)
+        self.assertIn("js/lyrics_remote_transport.js", template)
+        self.assertIn("js/lyrics_remote_management.js", template)
+        self.assertIn("data-remote-management-panel", template)
+        self.assertIn("data-remote-management-toggle", template)
+        self.assertIn("data-remote-management-copy", template)
+        self.assertIn("remoteCopyLinkLabel", template)
+        self.assertIn("remoteCopiedLinkLabel", template)
+
+    def test_remote_access_renders_the_mobile_operator_interface(self):
+        template = Path(
+            "app_animation/templates/animation/lyrics_remote_access.html"
+        ).read_text()
+        script = Path("static/js/lyrics_remote_access.js").read_text()
+        self.assertIn("data-remote-access-root", template)
+        self.assertIn("lyrics_remote_transport.js", template)
+        self.assertIn("data-remote-menu-toggle", template)
+        self.assertIn("maximum-scale=1, user-scalable=no, viewport-fit=cover", template)
+        self.assertIn("lyrics-remote-access-body", template)
+        self.assertIn("data-remote-menu-backdrop", template)
+        self.assertIn('data-remote-menu aria-hidden="true"', template)
+        self.assertIn('data-remote-section="next-slide"', template)
+        self.assertIn("lyrics-remote-next-slide-label", template)
+        self.assertIn("Slide suivante", template)
+        self.assertIn("data-remote-song-select", template)
+        self.assertIn('data-remote-command="TOGGLE_BLACK"', template)
+        self.assertIn("window.history.replaceState", script)
+        self.assertIn(
+            'sendCommand("GO_TO_SONG", { animation_song_id: animationSongId })', script
+        )
+        self.assertIn(
+            'sendCommand("SET_TRANSITION", { transition_id: transitionId })', script
+        )
+        self.assertIn(
+            'const preferenceKey = "lss.remote.access.preferences.v1"', script
+        )
+        self.assertIn("window.localStorage", script)
+        self.assertIn("onCommandAccepted", script)
+        self.assertIn("onCommandRejected", script)
+        self.assertIn('menu.classList.toggle("is-open", isOpen)', script)
+        self.assertIn('menu.setAttribute("aria-hidden", String(!isOpen))', script)
+        self.assertIn("menuBackdrop.hidden = !isOpen", script)
+        self.assertIn('if (event.key === "Escape")', script)
+        self.assertIn(
+            'document.addEventListener("gesturestart", preventPinchZoom', script
+        )
+        self.assertIn(
+            'document.addEventListener("gesturechange", preventPinchZoom', script
+        )
+        self.assertIn('document.addEventListener("touchmove", preventPinchZoom', script)
+        self.assertIn("Number.isInteger(revision)", script)
+        self.assertIn("revision <= currentRevision", script)
+        self.assertIn("Commande acceptée", template)
+        self.assertNotIn("BroadcastChannel", script)
+        self.assertNotIn("GO_TO_PROJECTION_STEP", script)
+
+    def test_remote_access_styles_hide_closed_drawer_and_optional_sections(self):
+        stylesheet = Path("static/css/app_animation.css").read_text()
+        self.assertIn(".lyrics-remote-menu.is-open", stylesheet)
+        self.assertIn(".lyrics-remote-menu-backdrop[hidden]", stylesheet)
+        self.assertIn(".lyrics-remote-optional[hidden]", stylesheet)
+        self.assertIn(".lyrics-remote-access-body", stylesheet)
+        self.assertIn(".lyrics-remote-next-slide-label", stylesheet)
+        self.assertIn("position: absolute", stylesheet)
+        self.assertIn("height: 100vh", stylesheet)
+        self.assertIn("height: 100dvh", stylesheet)
+        self.assertIn("overflow: hidden", stylesheet)
+        self.assertIn("margin-top: 0", stylesheet)
+        self.assertIn("grid-template-rows: auto auto auto auto auto auto", stylesheet)
+        self.assertIn("grid-template-rows: repeat(3, minmax(0, auto))", stylesheet)
+        self.assertIn("min-height: 7rem", stylesheet)
+        optional_hidden_rule = stylesheet[
+            stylesheet.index(".lyrics-remote-optional[hidden]") : stylesheet.index(
+                ".lyrics-remote-next-slide"
+            )
+        ]
+        self.assertIn("display: none !important", optional_hidden_rule)
+        self.assertIn("touch-action: pan-x pan-y", stylesheet)
+
+    def test_remote_transport_exposes_remote_command_feedback_callbacks(self):
+        script = Path("static/js/lyrics_remote_transport.js").read_text()
+
+        self.assertIn("onCommandAccepted", script)
+        self.assertIn("onCommandRejected", script)
+        self.assertIn(
+            'message.type === "COMMAND_ACCEPTED" && role === "remote"', script
+        )
+        self.assertIn(
+            'message.type === "COMMAND_REJECTED" && role === "remote"', script
+        )
+        self.assertIn('message.reason === "MASTER_UNAVAILABLE"', script)
+
     def test_animations_page_uses_homepage_style_main_grid(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
         self.assertIn('<section class="site-theme-selection">', template)
@@ -731,6 +1685,10 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn(".animation-style-picker-grid", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame", stylesheet)
         self.assertIn(".lyrics-master-blackout-frame.is-visible", stylesheet)
+        self.assertIn(".lyrics-master-remote-management img", stylesheet)
+        self.assertIn("grid-row: 1 / span 4", stylesheet)
+        self.assertIn("height: 100%", stylesheet)
+        self.assertIn("aspect-ratio: 1 / 1", stylesheet)
         self.assertIn(
             ".lyrics-master-actions-row .animation-tool-button.is-alert-active",
             stylesheet,
@@ -755,7 +1713,6 @@ class ShortcutValidationTests(SimpleTestCase):
             "prev_song": "Previous song",
             "next_song": "Next song",
             "toggle_chorus": "Display/hide choruses",
-            "toggle_scroll": "Scroll on ↕️ or not 🧱",
             "toggle_qr": "📱 QR code for lyrics",
             "next_transition": "Next transition",
             "force_direct": "Force Direct",
@@ -770,7 +1727,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": "",
                 "next_song": "",
                 "toggle_chorus": "",
-                "toggle_scroll": "",
                 "toggle_qr": "",
                 "next_transition": "",
                 "force_direct": "",
@@ -793,7 +1749,6 @@ class ShortcutValidationTests(SimpleTestCase):
             "prev_song": "Previous song",
             "next_song": "Next song",
             "toggle_chorus": "Display/hide choruses",
-            "toggle_scroll": "Scroll on ↕️ or not 🧱",
             "toggle_qr": "📱 QR code for lyrics",
             "next_transition": "Next transition",
             "force_direct": "Force Direct",
@@ -807,8 +1762,7 @@ class ShortcutValidationTests(SimpleTestCase):
                 "open_display": "",
                 "prev_song": "",
                 "next_song": "",
-                "toggle_chorus": "",
-                "toggle_scroll": "t",
+                "toggle_chorus": "t",
                 "toggle_qr": "i",
                 "next_transition": "t",
                 "force_direct": "i",
@@ -816,11 +1770,11 @@ class ShortcutValidationTests(SimpleTestCase):
             action_labels=labels,
         )
 
-        self.assertEqual(result.saved_bindings["toggle_scroll"], ["t"])
+        self.assertEqual(result.saved_bindings["toggle_chorus"], ["t"])
         self.assertEqual(result.saved_bindings["toggle_qr"], ["i"])
         self.assertEqual(result.saved_bindings["next_transition"], [])
         self.assertEqual(result.saved_bindings["force_direct"], [])
-        self.assertIn("Scroll on", result.field_errors["next_transition"])
+        self.assertIn("Display/hide choruses", result.field_errors["next_transition"])
         self.assertIn("QR code", result.field_errors["force_direct"])
 
     def test_effective_bindings_keep_escape_for_black_mode(self):
@@ -834,7 +1788,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": [],
                 "next_song": [],
                 "toggle_chorus": [],
-                "toggle_scroll": [],
                 "toggle_qr": [],
                 "next_transition": [],
                 "force_direct": [],
@@ -853,7 +1806,6 @@ class ShortcutValidationTests(SimpleTestCase):
                 "prev_song": ["u"],
                 "next_song": ["n"],
                 "toggle_chorus": ["y"],
-                "toggle_scroll": ["l"],
                 "toggle_qr": ["q"],
             }
         )
@@ -871,7 +1823,7 @@ class ShortcutValidationTests(SimpleTestCase):
                 "open_display": ["p"],
                 "prev_song": ["u"],
                 "next_song": ["i"],
-                "toggle_chorus": ["y"],
+                "toggle_chorus": ["t"],
                 "toggle_scroll": ["t"],
                 "toggle_qr": ["q"],
             }
@@ -3276,6 +4228,102 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers["Location"], reverse("groups"))
 
+    @patch("app_animation.views.get_channel_layer")
+    def test_remote_session_activation_and_deactivation_are_group_scoped(
+        self, get_channel_layer
+    ):
+        from channels.layers import InMemoryChannelLayer
+
+        get_channel_layer.return_value = InMemoryChannelLayer()
+        group = Group.objects.create(
+            group_id=100, name="Open Group", status=GroupStatus.OPEN
+        )
+        animation = Animation.objects.create(
+            group=group, title="Session", scheduled_at=timezone.now()
+        )
+        other_group = Group.objects.create(
+            group_id=101, name="Other Group", status=GroupStatus.OPEN
+        )
+        other_animation = Animation.objects.create(
+            group=other_group, title="Other", scheduled_at=timezone.now()
+        )
+
+        def select_group_for_request() -> None:
+            session_store = self.client.session
+            session_store[SELECTED_GROUP_ID_SESSION_KEY] = group.group_id
+            session_store.save()
+            self.client.cookies[settings.SESSION_COOKIE_NAME] = (
+                session_store.session_key
+            )
+
+        select_group_for_request()
+        activated = self.client.post(
+            reverse("lyrics_remote_session_create", args=[animation.animation_id])
+        )
+        self.assertEqual(
+            activated.status_code,
+            200,
+            msg=activated.content.decode("utf-8", errors="replace"),
+        )
+        self.assertEqual(activated.headers["Cache-Control"], "no-store")
+        payload = activated.json()
+        self.assertNotIn("access_token", payload)
+        self.assertIn("master_token", payload)
+        self.assertIn("#token=", payload["access_url"])
+        self.assertIn("/remote-access/", payload["access_url"])
+        session = AnimationRemoteSession.objects.get(session_id=payload["session_id"])
+        self.assertNotEqual(session.access_token_digest, payload["access_url"])
+        self.assertNotEqual(session.master_token_digest, payload["master_token"])
+
+        access = self.client.get(
+            reverse("lyrics_remote_access", args=[session.session_id])
+        )
+        self.assertEqual(access.status_code, 200)
+        self.assertEqual(access.headers["Cache-Control"], "no-store")
+        self.assertContains(access, "data-remote-access-root")
+        self.assertNotContains(access, payload["master_token"])
+
+        rejected = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": "wrong"},
+        )
+        self.assertEqual(rejected.status_code, 403)
+        session.refresh_from_db()
+        self.assertTrue(session.active)
+
+        deactivated = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": payload["master_token"]},
+        )
+        self.assertEqual(deactivated.status_code, 200)
+        session.refresh_from_db()
+        self.assertFalse(session.active)
+        self.assertEqual(session.remote_connection_count, 0)
+        repeated_deactivation = self.client.post(
+            reverse(
+                "lyrics_remote_session_deactivate",
+                args=[animation.animation_id, session.session_id],
+            ),
+            {"master_token": payload["master_token"]},
+        )
+        self.assertEqual(repeated_deactivation.status_code, 200)
+        self.assertEqual(repeated_deactivation.json(), {"status": "DISABLED"})
+        self.assertIsNone(
+            authenticate_remote_session(session.session_id, "wrong", now=timezone.now())
+        )
+
+        select_group_for_request()
+        denied = self.client.post(
+            reverse("lyrics_remote_session_create", args=[other_animation.animation_id])
+        )
+        self.assertEqual(denied.status_code, 404)
+
     def test_lyrics_slide_show_refuses_animation_outside_selected_group(self):
         selected_group = Group.objects.create(
             name="Open Group", status=GroupStatus.OPEN
@@ -4603,6 +5651,19 @@ class AnimationViewsTests(TestCase):
             response.context["shortcuts_config"]["actionLabels"]["next_transition"],
             "Transition suivante",
         )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["actionOrder"],
+        )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["effectiveBindings"],
+        )
+        self.assertNotIn(
+            "toggle_scroll",
+            response.context["shortcuts_config"]["actionToRemoteAction"],
+        )
+        self.assertNotContains(response, 'data-lyrics-action="toggle-scroll"')
 
     def test_lyrics_slide_show_shortcuts_endpoint_requires_authenticated_member(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
