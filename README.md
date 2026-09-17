@@ -4,38 +4,22 @@
 
 ---
 
-Backend:
-
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-![Django](https://img.shields.io/badge/Django-6.x-0C4B33?style=for-the-badge&logo=django&logoColor=white)
-![Django Channels](https://img.shields.io/badge/Django%20Channels-WebSockets-0C4B33?style=for-the-badge&logo=django&logoColor=white)
-![Daphne](https://img.shields.io/badge/Daphne-ASGI-6B7280?style=for-the-badge)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-Channels-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-
-Authentication:
-
-![Keycloak](https://img.shields.io/badge/Keycloak-SSO-4D4D4D?style=for-the-badge)
-
-Infrastructure:
-
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![Docker Compose](https://img.shields.io/badge/docker--compose-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![Traefik](https://img.shields.io/badge/Traefik-HTTPS%20%2F%20WebSockets-24A1C1?style=for-the-badge&logo=traefikproxy&logoColor=white)
-![WhiteNoise](https://img.shields.io/badge/WhiteNoise-static%20files-6B7280?style=for-the-badge)
-
-Libraries and tooling:
-
-![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json&style=for-the-badge)
-![Pillow](https://img.shields.io/badge/Pillow-image%20validation-3776AB?style=for-the-badge)
-![qrcode](https://img.shields.io/badge/qrcode-QR%20generation-111827?style=for-the-badge)
-![psycopg](https://img.shields.io/badge/psycopg-PostgreSQL%20driver-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+| Backend | Infrastructure + Auth | Libraries and tooling |
+| --- | --- | --- |
+| [![Python](https://img.shields.io/badge/python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/) | ![Keycloak](https://img.shields.io/badge/Keycloak-SSO-4D4D4D?style=for-the-badge) | ![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json&style=for-the-badge) |
+| ![Django](https://img.shields.io/badge/Django-6.x-0C4B33?style=for-the-badge&logo=django&logoColor=white) | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | ![Pillow](https://img.shields.io/badge/Pillow-image%20validation-3776AB?style=for-the-badge) |
+| ![Django Channels](https://img.shields.io/badge/Django%20Channels-WebSockets-0C4B33?style=for-the-badge&logo=django&logoColor=white) | ![Docker Compose](https://img.shields.io/badge/docker--compose-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | ![qrcode](https://img.shields.io/badge/qrcode-QR%20generation-111827?style=for-the-badge) |
+| ![Daphne](https://img.shields.io/badge/Daphne-ASGI-6B7280?style=for-the-badge) | ![Traefik](https://img.shields.io/badge/Traefik-HTTPS%20%2F%20WebSockets-24A1C1?style=for-the-badge&logo=traefikproxy&logoColor=white) | ![psycopg](https://img.shields.io/badge/psycopg-PostgreSQL%20driver-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white) | ![WhiteNoise](https://img.shields.io/badge/WhiteNoise-static%20files-6B7280?style=for-the-badge) |  |
+| ![Redis](https://img.shields.io/badge/Redis-Channels-DC382D?style=for-the-badge&logo=redis&logoColor=white) |  |  |
 
 ---
 
-EN: Django-based web service for preparing and projecting song lyrics as live slides, with open guest access for public use cases and Keycloak-based authentication for member access.
+**EN:** Django-based web service for preparing and projecting song lyrics as live slides, with open guest access for public use cases and Keycloak-based authentication for member access.
 
-FR: Service web Django dédié a la preparation et a la projection en direct de paroles de chants, avec un acces invite ouvert pour les usages publics et une authentification membre basee sur Keycloak.
+**FR:** Service web Django dédié à la préparation et a la projection en direct de paroles de chants, avec un accès invité ouvert pour les usages publics et une authentification membre basée sur Keycloak.
+
+---
 
 This repository is documented from the `docs/` directory, which is the source of truth for project documentation.
 
