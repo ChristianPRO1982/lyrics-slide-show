@@ -1,3 +1,34 @@
+# [3.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.2.0...v3.3.0) (2026-09-17)
+
+
+### Bug Fixes
+
+* Implement custom 404 error handling and page template ([175acc1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/175acc1e9f57c908e5f1e618432216f2fe8363d9))
+* Update Docker and Compose configurations for remote management and enhance documentation ([a482ed0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a482ed067f93e63fb3936037be20de8fa29a0651))
+
+
+### Features
+
+* Add master unavailable session handling to remote connection purge ([2708d5c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2708d5ce09aa23de40401430e185b7ed44378dfa))
+* Add remote control architecture and functionality documentation ([002887b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/002887b5c9e29ad2f844743fdcec0fd6d2e656e0))
+* Add remote lease reaper and purge command; enhance remote state management ([ebf86ec](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ebf86ecd4b52ec7490daf0d1749b7f327e9d68cd))
+* Add remote management toggle button and update related documentation ([e9c28c6](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e9c28c6ba6764d8477c9d21d21250a611ffbd908))
+* Add tests for remote session management and command handling ([a137078](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/a1370783fc54d5f7dcdc0e80329995f5693f44d9))
+* Enhance remote control functionality with state management and command handling ([1065518](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/10655183e45e7dbd98b66d47e3bbf035c73eabb6))
+* Enhance remote control interface with command handling and user preferences ([db93251](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/db932511d10512d980aaf2ba0dead910be654531))
+* Enhance remote protocol validation and connection management ([67023ff](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/67023ff3a42260ec0cb33256c6651a9a94b38dd7))
+* Enhance remote session management with connection liveness checks and master replacement handling ([51c48df](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/51c48df91c2efca121331599273cd82b229b4db2))
+* Enhance remote session management with master availability checks and connection count retrieval ([650fc4d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/650fc4db828e53fc689b9cd3128f6b713d9cf591))
+* Enhance transition control styling and interaction effects ([93ec330](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/93ec330cfa8b17b1b32b2afc7550bf3adee61589))
+* Implement authentication timeout for remote connections and enhance session management ([0c6f1f0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/0c6f1f0f2cb4c4069eae34311e544e30f4f405d6))
+* Implement connection lease management and command handling for remote sessions ([8b794d0](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8b794d0791e9fe96e80fda2d37b4afb2919ac7f8))
+* Implement custom 404 error handling and create not found page ([9619948](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9619948f18fb1e9b79e1385f9acb22f23ef2e12c))
+* Implement remote management copy link functionality and enhance UI interactions ([b669666](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b66966698cbdaf4ced55682f7c7a9993a5c009a4))
+* Implement remote session management and command handling for animation control ([1f19c1e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1f19c1ed55256d3c940e6167a8873c0e004e9254))
+* Implement remote session management with connection count tracking ([923db64](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/923db64c4394cb853f901c5fcc5780216e93d107))
+* Pause scroll toggle functionality and update related documentation ([aff4f05](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/aff4f0503536c5777652ae114736d2e402806271))
+* Update ASGI application to use OriginValidator for WebSocket routing ([28f3dd8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/28f3dd860f54d122e1f6a32c38e1c769744f2021))
+
 # [3.2.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.1.8...v3.2.0) (2026-09-07)
 
 
