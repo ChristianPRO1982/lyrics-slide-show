@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import Resolver404
 from django.urls import reverse
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
@@ -106,10 +107,13 @@ def not_found(request: HttpRequest, exception=None) -> HttpResponse:
 
 
 def not_found_redirect(request: HttpRequest, exception=None) -> HttpResponse:
-    if request.path == reverse("not_found"):
+    if request.path in {reverse("not_found"), "/test/"}:
         return not_found(request, exception)
 
-    return redirect(settings.LSS_NOT_FOUND_URL)
+    if isinstance(exception, Resolver404):
+        return redirect(settings.LSS_NOT_FOUND_URL)
+
+    return not_found(request, exception)
 
 
 def _build_moderation_song_popup_markdown(results) -> str:

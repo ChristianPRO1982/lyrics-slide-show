@@ -5,4 +5,4 @@ Documents universel au site :
 
 Lis aussi docs/app_
 
-On va travailler sur l'app app_, plus précisément sur 
+On va travailler sur l'app app_, plus précisément sur

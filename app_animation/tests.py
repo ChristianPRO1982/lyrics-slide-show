@@ -1322,12 +1322,8 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         self.assertIn("command: sh /app/scripts/start-web-prod.sh", production_compose)
         self.assertIn("traefik.http.routers.lss-ws.rule", production_compose)
         self.assertIn("PathPrefix(`/ws/`)", production_compose)
-        self.assertIn(
-            "traefik.http.routers.lss-ws.service=lss", production_compose
-        )
-        self.assertIn(
-            "traefik.http.routers.lss-ws.priority=300", production_compose
-        )
+        self.assertIn("traefik.http.routers.lss-ws.service=lss", production_compose)
+        self.assertIn("traefik.http.routers.lss-ws.priority=300", production_compose)
         self.assertIn(
             "traefik.http.services.lss.loadbalancer.server.port=8000",
             production_compose,
@@ -1340,9 +1336,7 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         self.assertIn("lyrics_slide_show.asgi:application", production_start)
         self.assertNotIn("gunicorn", production_start)
         self.assertIn("purge_remote_connections", lease_reaper_start)
-        self.assertIn(
-            "test -f /app/scripts/start-remote-lease-reaper.sh", dockerfile
-        )
+        self.assertIn("test -f /app/scripts/start-remote-lease-reaper.sh", dockerfile)
         self.assertIn("new window.BroadcastChannel", master_script)
         self.assertIn("window.localStorage", master_script)
         display_script = Path("static/js/lyrics_slide_show_display.js").read_text()
