@@ -1,4 +1,4 @@
-lis et prends en conscience le document docs/general_overview.md, ainsi que docs/app_song/functional_requirements.md.
+lis et prends en conscience le document docs/general_overview.md.
 Documents universel au site :
 - docs/pj_codex_block_naming.md
 - docs/popup_messagebox.md (toutes boites de dialogue doit passer par celle-ci)
