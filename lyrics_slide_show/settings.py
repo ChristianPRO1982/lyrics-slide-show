@@ -87,6 +87,9 @@ HOME_PROVISION_SHARED_SECRET = env_secret_with_default_file(
 HOME_PROVISION_RETURN_URL = os.environ.get("HOME_PROVISION_RETURN_URL", "")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
+LSS_NOT_FOUND_URL = os.environ.get(
+    "LSS_NOT_FOUND_URL", "https://lss.carthographie.fr/404"
+)
 
 
 INSTALLED_APPS = [

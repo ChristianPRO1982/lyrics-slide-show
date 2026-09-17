@@ -94,6 +94,24 @@ def _get_selected_group(request: HttpRequest):
     return selected_group
 
 
+def not_found(request: HttpRequest, exception=None) -> HttpResponse:
+    return render(
+        request,
+        "main/404.html",
+        {
+            "selected_group": _get_selected_group(request),
+        },
+        status=404,
+    )
+
+
+def not_found_redirect(request: HttpRequest, exception=None) -> HttpResponse:
+    if request.path == reverse("not_found"):
+        return not_found(request, exception)
+
+    return redirect(settings.LSS_NOT_FOUND_URL)
+
+
 def _build_moderation_song_popup_markdown(results) -> str:
     entries: list[str] = []
     for item in results:
