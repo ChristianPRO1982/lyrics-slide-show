@@ -1408,6 +1408,37 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class NotFoundPageTests(SimpleTestCase):
+    @override_settings(DEBUG=False)
+    def test_not_found_route_returns_http_404(self):
+        response = self.client.get(reverse("not_found"))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, "main/404.html")
+        self.assertContains(
+            response,
+            "Page introuvable",
+            status_code=404,
+        )
+
+    @override_settings(
+        DEBUG=False,
+        LSS_NOT_FOUND_URL="https://lss.carthographie.fr/404",
+    )
+    def test_unknown_route_redirects_to_canonical_not_found_url(self):
+        response = self.client.get("/url-inconnue-lss/")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "https://lss.carthographie.fr/404")
+
+    @override_settings(DEBUG=False)
+    def test_not_found_route_does_not_redirect_to_itself(self):
+        response = self.client.get(reverse("not_found"))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn(response.status_code, {301, 302, 303, 307, 308})
+
+
 class AccountRoleTests(TestCase):
     member_id = "11111111-1111-1111-1111-111111111111"
 

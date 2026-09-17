@@ -178,8 +178,6 @@
     }
     const prevSongButton = document.querySelector("[data-lyrics-action='prev-song']");
     const nextSongButton = document.querySelector("[data-lyrics-action='next-song']");
-    const scrollToggleEmojiNode = document.querySelector("[data-lyrics-scroll-emoji]");
-    const scrollToggleTextNode = document.querySelector("[data-lyrics-scroll-text]");
     const chorusToggleEmojiNode = document.querySelector("[data-lyrics-chorus-toggle-emoji]");
     const chorusToggleTextNode = document.querySelector("[data-lyrics-chorus-toggle-text]");
     const qrButtonImageNode = document.querySelector("[data-lyrics-qr-button-image]");
@@ -202,6 +200,7 @@
         progressCursorBySong: {},
         activeTransitionId: defaultTransitionId,
         f11ReminderActive: false,
+        remoteStateRevision: 0,
         shortcuts: {
             siteBindings: shortcutsConfig.siteBindings || {},
             effectiveBindings: shortcutsConfig.effectiveBindings || {},
@@ -368,6 +367,7 @@
         state.activeTransitionId = resolveTransitionId(transitionId);
         persistState();
         refreshUI();
+        publishRemoteState();
     };
 
     const cycleTransition = () => {
@@ -650,6 +650,7 @@
             chorusCursorBySong: state.chorusCursorBySong,
             progressCursorBySong: state.progressCursorBySong,
             activeTransitionId: state.activeTransitionId,
+            remoteStateRevision: state.remoteStateRevision,
         };
         try {
             window.localStorage.setItem(stateStorageKey, JSON.stringify(payloadToStore));
@@ -691,8 +692,12 @@
             state.blackMode = Boolean(parsed.blackMode);
             state.qrMode = Boolean(parsed.qrMode);
             state.hideChorusesInGrid = Boolean(parsed.hideChorusesInGrid);
-            state.blockScrollKeys = Boolean(parsed.blockScrollKeys);
+            state.blockScrollKeys = true;
             state.activeTransitionId = resolveTransitionId(parsed.activeTransitionId);
+            const restoredRemoteStateRevision = toNonNegativeIndexOrNull(parsed.remoteStateRevision);
+            if (Number.isInteger(restoredRemoteStateRevision)) {
+                state.remoteStateRevision = restoredRemoteStateRevision;
+            }
             if (parsed.chorusCursorBySong && typeof parsed.chorusCursorBySong === "object") {
                 state.chorusCursorBySong = parsed.chorusCursorBySong;
             }
@@ -714,6 +719,7 @@
             state.qrMode = false;
         }
         state.activeTransitionId = resolveTransitionId(state.activeTransitionId);
+        state.remoteStateRevision = toNonNegativeIndexOrNull(state.remoteStateRevision) || 0;
         const projectedSongIndex = getProjectedSongIndex();
         if (projectedSongIndex >= 0) {
             const indexes = getSongProjectionIndexes(projectedSongIndex);
@@ -843,6 +849,7 @@
         state.pendingSongRestartIndex = songIndex;
         persistState();
         refreshUI();
+        publishRemoteState();
     };
 
     const projectProjectionStep = (projectionIndex, options = {}) => {
@@ -877,6 +884,7 @@
         persistState();
         refreshUI();
         sendFrame();
+        publishRemoteState();
     };
 
     const navigateSlide = (direction) => {
@@ -949,6 +957,7 @@
         persistState();
         refreshUI();
         sendFrame();
+        publishRemoteState();
     };
 
     const toggleQrMode = () => {
@@ -963,6 +972,7 @@
         persistState();
         refreshUI();
         sendFrame();
+        publishRemoteState();
     };
 
     const toggleChorusVisibility = () => {
@@ -971,11 +981,13 @@
         refreshUI();
     };
 
-    const toggleScrollMode = () => {
-        state.blockScrollKeys = !state.blockScrollKeys;
-        persistState();
-        refreshUI();
-    };
+    // Paused: the toolbar button and shortcut for this action are hidden.
+    // Keep the implementation nearby so the scroll toggle can be restored quickly.
+    // const toggleScrollMode = () => {
+    //     state.blockScrollKeys = !state.blockScrollKeys;
+    //     persistState();
+    //     refreshUI();
+    // };
 
     const formatSlideLabel = (slide) => {
         if (!slide) {
@@ -1145,22 +1157,24 @@
         });
     };
 
-    const refreshPreview = () => {
-        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+    const getNextProjectionStep = () => {
         const songIndexes = getSongProjectionIndexes(state.selectedSongIndex);
-        let nextProjectionStep = null;
-        let nextProjectionIndex = null;
-
         if (songIndexes.length) {
             const preparedPosition = getPreparedProjectionPosition(state.selectedSongIndex);
             if (preparedPosition < 0) {
-                nextProjectionIndex = songIndexes[0];
-                nextProjectionStep = projectionStepByIndex(nextProjectionIndex);
-            } else {
-                nextProjectionIndex = songIndexes[(preparedPosition + 1) % songIndexes.length];
-                nextProjectionStep = projectionStepByIndex(nextProjectionIndex);
+                return projectionStepByIndex(songIndexes[0]);
             }
+            return projectionStepByIndex(songIndexes[(preparedPosition + 1) % songIndexes.length]);
         }
+        return null;
+    };
+
+    const refreshPreview = () => {
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        const nextProjectionStep = getNextProjectionStep();
+        const nextProjectionIndex = nextProjectionStep
+            ? toNonNegativeIndexOrNull(nextProjectionStep.projectionIndex)
+            : null;
 
         setText(
             previewCurrentLabelNode,
@@ -1274,12 +1288,10 @@
         );
 
         setText(chorusVisibilityNode, state.hideChorusesInGrid ? label("hiddenChorusLabel") : "");
-        setText(scrollModeNode, state.blockScrollKeys ? label("scrollLockedLabel") : label("scrollUnlockedLabel"));
+        setText(scrollModeNode, "");
     };
 
     const refreshToggleButtons = () => {
-        setText(scrollToggleEmojiNode, state.blockScrollKeys ? label("scrollStopEmoji") : label("scrollAllowEmoji"));
-        setText(scrollToggleTextNode, state.blockScrollKeys ? label("scrollStopText") : label("scrollAllowText"));
         setText(chorusToggleEmojiNode, state.hideChorusesInGrid ? label("chorusHideEmoji") : label("chorusShowEmoji"));
         setText(chorusToggleTextNode, state.hideChorusesInGrid ? label("chorusHideText") : label("chorusShowText"));
         if (blackModeButtonNode instanceof HTMLElement) {
@@ -1333,6 +1345,219 @@
         refreshQrButton();
         refreshTransitionControl();
         refreshFloatingSongSelection();
+    };
+
+    const remoteStateSubscribers = new Set();
+
+    const summarizeRemoteProjectionStep = (projectionStep) => {
+        if (!projectionStep || typeof projectionStep !== "object") {
+            return null;
+        }
+        const projectionIndex = toNonNegativeIndexOrNull(projectionStep.projectionIndex);
+        if (!Number.isInteger(projectionIndex)) {
+            return null;
+        }
+        return {
+            projection_index: projectionIndex,
+            label: formatProjectionStepLabel(projectionStep),
+            excerpt: formatProjectionStepPreviewText(projectionStep),
+        };
+    };
+
+    const summarizeRemoteSong = (songIndex) => {
+        const song = getSongByIndex(songIndex);
+        if (!song) {
+            return null;
+        }
+        const animationSongId = toIntegerOrNull(song.animationSongId);
+        if (!Number.isInteger(animationSongId)) {
+            return null;
+        }
+        return {
+            animation_song_id: animationSongId,
+            title: String(song.songTitle || ""),
+            selected: songIndex === state.selectedSongIndex,
+        };
+    };
+
+    const buildRemoteState = () => {
+        const currentProjectionStep = projectionStepByIndex(state.projectedProjectionIndex);
+        const selectedSong = summarizeRemoteSong(state.selectedSongIndex);
+        const previousSong = summarizeRemoteSong(state.selectedSongIndex - 1);
+        const nextSong = summarizeRemoteSong(state.selectedSongIndex + 1);
+        const activeTransition = getActiveTransition();
+
+        return {
+            revision: state.remoteStateRevision,
+            current_projection_step: summarizeRemoteProjectionStep(currentProjectionStep),
+            next_projection_step: summarizeRemoteProjectionStep(getNextProjectionStep()),
+            current_song: selectedSong,
+            previous_song: previousSong,
+            next_song: nextSong,
+            black_mode: state.blackMode,
+            songs: songs.map((_song, songIndex) => summarizeRemoteSong(songIndex)).filter(Boolean),
+            chorus_available: getSongChorusProjectionIndexes(state.selectedSongIndex).length > 0,
+            current_transition: {
+                transition_id: activeTransition.id,
+                label: activeTransition.label,
+            },
+            available_transitions: transitions.map((transition) => ({
+                transition_id: transition.id,
+                label: transition.label,
+            })),
+            qr_mode: state.qrMode,
+            master_status: "INACTIVE",
+        };
+    };
+
+    const getRemoteState = () => buildRemoteState();
+
+    const ensureRemoteStateRevision = (minimumRevision) => {
+        const revision = toNonNegativeIndexOrNull(minimumRevision);
+        if (!Number.isInteger(revision) || state.remoteStateRevision >= revision) {
+            return;
+        }
+        state.remoteStateRevision = revision;
+        persistState();
+    };
+
+    const publishRemoteState = () => {
+        state.remoteStateRevision += 1;
+        persistState();
+        const remoteState = getRemoteState();
+        remoteStateSubscribers.forEach((listener) => {
+            try {
+                listener(remoteState);
+            } catch (_error) {
+                // A distant transport listener must not affect local projection.
+            }
+        });
+        return remoteState;
+    };
+
+    const subscribeRemoteState = (listener) => {
+        if (typeof listener !== "function") {
+            return () => {};
+        }
+        remoteStateSubscribers.add(listener);
+        try {
+            listener(getRemoteState());
+        } catch (_error) {
+            // A distant transport listener must not affect local projection.
+        }
+        return () => {
+            remoteStateSubscribers.delete(listener);
+        };
+    };
+
+    const rejectedExternalCommand = (reason) => ({
+        accepted: false,
+        reason,
+        state: getRemoteState(),
+    });
+
+    const validateExternalCommand = (message) => {
+        if (!message || typeof message !== "object" || message.type !== "COMMAND") {
+            return rejectedExternalCommand("INVALID_COMMAND");
+        }
+        const command = String(message.command || "").trim();
+        const rawTarget = message.target;
+        const target = rawTarget === undefined || rawTarget === null
+            ? null
+            : rawTarget && typeof rawTarget === "object" && !Array.isArray(rawTarget)
+                ? rawTarget
+                : null;
+        if (rawTarget !== undefined && rawTarget !== null && !target) {
+            return rejectedExternalCommand("INVALID_TARGET");
+        }
+        if (command === "GO_TO_SONG") {
+            const animationSongId = toIntegerOrNull(target?.animation_song_id);
+            if (!Number.isInteger(animationSongId) || !Number.isInteger(songIndexByAnimationSongId.get(animationSongId))) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (command === "SET_TRANSITION") {
+            const transitionId = String(target?.transition_id || "").trim();
+            if (!transitionById.has(transitionId)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (command === "GO_TO_PROJECTION_STEP") {
+            const projectionIndex = toNonNegativeIndexOrNull(target?.projection_index);
+            if (!Number.isInteger(projectionIndex) || !projectionStepByIndex(projectionIndex)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+        } else if (![
+            "PREVIOUS_SLIDE",
+            "NEXT_SLIDE",
+            "PREVIOUS_SONG",
+            "NEXT_SONG",
+            "TOGGLE_BLACK",
+            "GO_TO_CHORUS",
+            "TOGGLE_QR",
+        ].includes(command)) {
+            return rejectedExternalCommand("INVALID_COMMAND");
+        }
+        return { accepted: true };
+    };
+
+    const handleExternalCommand = (message) => {
+        const validation = validateExternalCommand(message);
+        if (!validation.accepted) {
+            return validation;
+        }
+        const command = String(message.command || "").trim();
+        const rawTarget = message.target;
+        const target = rawTarget === undefined || rawTarget === null
+            ? null
+            : rawTarget && typeof rawTarget === "object" && !Array.isArray(rawTarget)
+                ? rawTarget
+                : null;
+        if (rawTarget !== undefined && rawTarget !== null && !target) {
+            return rejectedExternalCommand("INVALID_TARGET");
+        }
+
+        if (command === "PREVIOUS_SLIDE") {
+            navigateSlide(-1);
+        } else if (command === "NEXT_SLIDE") {
+            navigateSlide(1);
+        } else if (command === "PREVIOUS_SONG") {
+            setCurrentSong(state.selectedSongIndex - 1);
+        } else if (command === "NEXT_SONG") {
+            setCurrentSong(state.selectedSongIndex + 1);
+        } else if (command === "TOGGLE_BLACK") {
+            toggleBlackMode();
+        } else if (command === "GO_TO_SONG") {
+            const animationSongId = toIntegerOrNull(target?.animation_song_id);
+            const songIndex = Number.isInteger(animationSongId)
+                ? songIndexByAnimationSongId.get(animationSongId)
+                : null;
+            if (!Number.isInteger(songIndex)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+            setCurrentSong(songIndex);
+        } else if (command === "GO_TO_CHORUS") {
+            navigateChorus();
+        } else if (command === "SET_TRANSITION") {
+            const transitionId = String(target?.transition_id || "").trim();
+            if (!transitionById.has(transitionId)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+            setActiveTransition(transitionId);
+        } else if (command === "TOGGLE_QR") {
+            toggleQrMode();
+        } else if (command === "GO_TO_PROJECTION_STEP") {
+            const projectionIndex = toNonNegativeIndexOrNull(target?.projection_index);
+            if (!Number.isInteger(projectionIndex) || !projectionStepByIndex(projectionIndex)) {
+                return rejectedExternalCommand("INVALID_TARGET");
+            }
+            projectProjectionStep(projectionIndex);
+        } else {
+            return rejectedExternalCommand("INVALID_COMMAND");
+        }
+
+        return {
+            accepted: true,
+            state: getRemoteState(),
+        };
     };
 
     const maybeShowPopup = async (title, message) => {
@@ -1588,10 +1813,8 @@
             setCurrentSong(state.selectedSongIndex + 1);
             return;
         }
-        if (action === "toggle-scroll") {
-            toggleScrollMode();
-            return;
-        }
+        // Paused: "toggle-scroll" is intentionally not handled while scroll
+        // blocking remains always enabled by default.
         if (action === "toggle-chorus") {
             toggleChorusVisibility();
             return;
@@ -1759,6 +1982,14 @@
     persistState();
     sendInit();
     sendFrame();
+
+    window.LSSLyricsMasterAdapter = Object.freeze({
+        handleExternalCommand,
+        validateExternalCommand,
+        getRemoteState,
+        subscribeRemoteState,
+        ensureRemoteStateRevision,
+    });
 
     window.setInterval(() => {
         sendHeartbeat();

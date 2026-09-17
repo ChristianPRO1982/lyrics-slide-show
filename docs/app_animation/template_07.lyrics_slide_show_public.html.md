@@ -10,6 +10,11 @@ Fournir une lecture publique smartphone des chants d'une animation.
 - navigation par chant,
 - réglages de confort de lecture (taille/contraste).
 
+Cette page ne doit pas être confondue avec `lyrics_remote_access.html`, qui est la
+Web Remote opérateur. Le QR public des paroles ouvre cette page de lecture ; le QR
+Web Remote est temporaire, porte un token dans son fragment et permet d'envoyer des
+intentions à une master connectée.
+
 Note d'implémentation actuelle :
 
 - la vue `lyrics_slide_show_public` réutilise le template partagé `lyrics/lyrics.html` ;
@@ -35,3 +40,5 @@ Note d'implémentation actuelle :
 - le thème suit toujours le navigateur à l'ouverture ; le toggle thème est un override temporaire pour la page courante seulement ;
 - la taille de texte est persistée globalement pour toutes les vues smartphone de paroles ;
 - le comportement front est celui du template partagé `lyrics/lyrics.html`.
+- aucune connexion WebSocket, commande de projection, session Web Remote ou état
+  live de la master n'est chargé par cette vue.

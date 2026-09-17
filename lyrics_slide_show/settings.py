@@ -87,9 +87,13 @@ HOME_PROVISION_SHARED_SECRET = env_secret_with_default_file(
 HOME_PROVISION_RETURN_URL = os.environ.get("HOME_PROVISION_RETURN_URL", "")
 USER_SCHEMA = os.environ.get("USER_SCHEMA", "users")
 USER_TABLE = os.environ.get("USER_TABLE", "users")
+LSS_NOT_FOUND_URL = os.environ.get(
+    "LSS_NOT_FOUND_URL", "https://lss.carthographie.fr/404"
+)
 
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -131,6 +135,32 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "lyrics_slide_show.wsgi.application"
+ASGI_APPLICATION = "lyrics_slide_show.asgi.application"
+
+# Remote distant sessions and their WebSocket transport remain server-side.
+REMOTE_SESSION_TTL_SECONDS = int(os.environ.get("REMOTE_SESSION_TTL_SECONDS", "28800"))
+REMOTE_COMMAND_COOLDOWN_MS = int(os.environ.get("REMOTE_COMMAND_COOLDOWN_MS", "600"))
+REMOTE_CONNECTION_HEARTBEAT_SECONDS = int(
+    os.environ.get("REMOTE_CONNECTION_HEARTBEAT_SECONDS", "5")
+)
+REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS = float(
+    os.environ.get("REMOTE_CONNECTION_AUTH_TIMEOUT_SECONDS", "10")
+)
+REMOTE_CONNECTION_STALE_SECONDS = int(
+    os.environ.get("REMOTE_CONNECTION_STALE_SECONDS", "15")
+)
+REMOTE_MASTER_COMMAND_ACK_SECONDS = float(
+    os.environ.get("REMOTE_MASTER_COMMAND_ACK_SECONDS", "1")
+)
+REMOTE_CHANNEL_REDIS_URL = os.environ.get(
+    "REMOTE_CHANNEL_REDIS_URL", "redis://remote_redis:6379/0"
+)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [REMOTE_CHANNEL_REDIS_URL]},
+    }
+}
 
 
 DATABASES = {

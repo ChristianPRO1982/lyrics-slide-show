@@ -3,6 +3,7 @@ from app_main import views
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
+    path("404", views.not_found, name="not_found"),
     path("login/", views.login, name="login"),
     path("login/diagnostic/", views.keycloak_diagnostic, name="keycloak_diagnostic"),
     path("account/", views.account, name="account"),

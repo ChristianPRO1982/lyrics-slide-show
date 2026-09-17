@@ -334,7 +334,7 @@ The remote can expose:
 - keyboard shortcuts,
 - black mode,
 - chorus display toggling,
-- scroll mode toggle,
+- keyboard scroll blocking enabled by default, with its former toggle currently paused,
 - QR code access for the spectator lyrics page,
 - direct access to songs and slides in the animation.
 

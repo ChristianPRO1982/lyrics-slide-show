@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import Resolver404
 from django.urls import reverse
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
@@ -92,6 +93,27 @@ HEAVY_IMAGE_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
 def _get_selected_group(request: HttpRequest):
     selected_group, _selected_via_secret = get_selected_group_state(request)
     return selected_group
+
+
+def not_found(request: HttpRequest, exception=None) -> HttpResponse:
+    return render(
+        request,
+        "main/404.html",
+        {
+            "selected_group": _get_selected_group(request),
+        },
+        status=404,
+    )
+
+
+def not_found_redirect(request: HttpRequest, exception=None) -> HttpResponse:
+    if request.path in {reverse("not_found"), "/test/"}:
+        return not_found(request, exception)
+
+    if isinstance(exception, Resolver404):
+        return redirect(settings.LSS_NOT_FOUND_URL)
+
+    return not_found(request, exception)
 
 
 def _build_moderation_song_popup_markdown(results) -> str:

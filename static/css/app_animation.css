@@ -1445,6 +1445,58 @@ body.animation-background-picker-overlay-open {
         0 12px 24px rgba(66, 24, 11, 0.14);
 }
 
+.lyrics-master-remote-management {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.65rem 1rem;
+    align-items: stretch;
+    padding: 0.75rem;
+    border: 1px solid var(--site-line-strong);
+    border-radius: 0.5rem;
+}
+
+.lyrics-master-remote-management[hidden] {
+    display: none;
+}
+
+.lyrics-master-remote-management header,
+.lyrics-master-remote-management p {
+    margin: 0;
+}
+
+.lyrics-master-remote-management h2 {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+}
+
+.lyrics-master-remote-management img {
+    grid-row: 1 / span 4;
+    width: auto;
+    height: 100%;
+    min-height: 7rem;
+    max-height: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    justify-self: center;
+    align-self: stretch;
+    background: #fff;
+    padding: 0.25rem;
+}
+
+.lyrics-master-remote-management a {
+    overflow-wrap: anywhere;
+}
+
+.lyrics-master-remote-management-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.lyrics-master-remote-management-actions .animation-tool-button {
+    min-height: 2.5rem;
+}
+
 .lyrics-master-action-emoji {
     display: block;
     line-height: 1;
@@ -1454,13 +1506,34 @@ body.animation-background-picker-overlay-open {
 .lyrics-master-transition-control {
     min-width: 0;
     min-height: 5.6rem;
-    border: 1px solid var(--site-line-strong);
-    border-radius: 0.5rem;
+    border: 1px solid var(--site-action-border);
+    border-radius: var(--site-action-radius);
     display: grid;
     align-content: center;
     gap: 0.4rem;
     padding: 0.8rem 0.65rem;
-    background: var(--site-surface);
+    background: var(--site-action-bg);
+    color: var(--site-action-ink);
+    box-shadow: 0 8px 20px rgba(66, 24, 11, 0.08);
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        background 160ms ease;
+}
+
+.lyrics-master-transition-control:hover,
+.lyrics-master-transition-control:focus-within {
+    transform: translateY(-1px);
+    border-color: var(--site-action-border-hover);
+    color: var(--site-action-ink-hover);
+    background: var(--site-action-bg-hover);
+    box-shadow: 0 12px 24px rgba(66, 24, 11, 0.14);
+}
+
+.lyrics-master-transition-control:focus-within {
+    box-shadow: var(--site-focus-ring), 0 12px 24px rgba(66, 24, 11, 0.14);
 }
 
 .lyrics-master-transition-label {
@@ -1781,6 +1854,12 @@ body.animation-background-picker-overlay-open {
     color: #f7f7f7;
 }
 
+.lyrics-remote-access-body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
 .lyrics-public-root {
     max-width: 900px;
     margin: 0 auto;
@@ -1851,6 +1930,246 @@ body.animation-background-picker-overlay-open {
     overflow-wrap: anywhere;
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.lyrics-remote-access-root {
+    height: 100vh;
+    height: 100dvh;
+    max-width: 620px;
+    box-sizing: border-box;
+    grid-template-rows: auto auto auto auto auto auto;
+    align-content: start;
+    gap: 0.5rem;
+    padding-top: max(0.55rem, env(safe-area-inset-top));
+    padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
+    overflow: hidden;
+    touch-action: pan-x pan-y;
+}
+
+.lyrics-remote-access-header,
+.lyrics-remote-menu-heading,
+.lyrics-remote-optional,
+.lyrics-remote-primary-controls {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.lyrics-remote-access-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+}
+
+.lyrics-remote-access-header h1,
+.lyrics-remote-access-header p,
+.lyrics-remote-menu h2,
+.lyrics-remote-menu p {
+    margin: 0;
+}
+
+.lyrics-remote-icon-button,
+.lyrics-remote-close-section,
+.lyrics-remote-primary-controls button,
+.lyrics-remote-optional-command,
+.lyrics-remote-menu-action,
+.lyrics-remote-quit-button {
+    min-height: 3rem;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    color: #111827;
+    background: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.lyrics-remote-icon-button,
+.lyrics-remote-close-section {
+    width: 3rem;
+    padding: 0;
+    font-size: 1.45rem;
+}
+
+.lyrics-remote-feedback {
+    margin: 0;
+    min-height: 1rem;
+    color: #075e3c;
+    font-size: 0.86rem;
+}
+
+.lyrics-remote-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 48;
+    background: rgba(15, 23, 42, 0.28);
+}
+
+.lyrics-remote-menu-backdrop[hidden] {
+    display: none !important;
+}
+
+.lyrics-remote-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 49;
+    width: min(88vw, 26rem);
+    max-width: 100%;
+    box-sizing: border-box;
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    padding: max(0.85rem, env(safe-area-inset-top)) 0.9rem max(0.9rem, env(safe-area-inset-bottom));
+    border: 1px solid #b8c2ce;
+    border-left: 0;
+    border-radius: 0 10px 10px 0;
+    background: rgba(234, 242, 241, 0.94);
+    box-shadow: 0 26px 72px rgba(15, 23, 42, 0.22);
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+    backdrop-filter: blur(10px);
+}
+
+.lyrics-remote-menu.is-open {
+    transform: translateX(0);
+}
+
+.lyrics-remote-menu-heading {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.lyrics-remote-visibility-settings {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.6rem;
+    border: 1px solid #b8c2ce;
+}
+
+.lyrics-remote-field {
+    display: grid;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.lyrics-remote-field select {
+    min-height: 3rem;
+    width: 100%;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+}
+
+.lyrics-remote-menu-action,
+.lyrics-remote-quit-button {
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+}
+
+.lyrics-remote-quit-button {
+    border-color: #a61b1b;
+    color: #8b1515;
+}
+
+.lyrics-remote-optional {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+}
+
+.lyrics-remote-optional[hidden] {
+    display: none !important;
+}
+
+.lyrics-remote-next-slide,
+.lyrics-remote-optional-command {
+    min-height: 2.55rem;
+    box-sizing: border-box;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #b8c2ce;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.lyrics-remote-next-slide {
+    position: relative;
+    padding-top: 1.05rem;
+}
+
+.lyrics-remote-next-slide-label {
+    position: absolute;
+    top: 0.16rem;
+    left: 0.55rem;
+    right: 0.55rem;
+    color: #475569;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    pointer-events: none;
+}
+
+.lyrics-remote-optional-command {
+    text-align: left;
+}
+
+.lyrics-remote-primary-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, auto));
+    align-self: start;
+    gap: 0.5rem;
+    margin-top: 0;
+    min-height: 0;
+}
+
+.lyrics-remote-primary-controls button {
+    min-height: 7rem;
+    padding: 0.55rem;
+    display: grid;
+    gap: 0.25rem;
+    align-content: center;
+    text-align: center;
+}
+
+.lyrics-remote-primary-controls strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lyrics-remote-black-mode {
+    grid-column: 1 / -1;
+    background: #1b1b1b !important;
+    color: #fff !important;
+}
+
+.lyrics-remote-black-mode.is-active {
+    background: #b91c1c !important;
+    border-color: #7f1d1d !important;
+}
+
+.lyrics-remote-primary-controls button:disabled,
+.lyrics-remote-menu button:disabled,
+.lyrics-remote-field select:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
 @media (max-width: 1024px) {
     .lyrics-master-slide-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1903,6 +2222,14 @@ body.animation-background-picker-overlay-open {
 
     .lyrics-public-controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lyrics-master-remote-management {
+        grid-template-columns: 1fr;
+    }
+
+    .lyrics-master-remote-management img {
+        grid-row: auto;
     }
 }
 
