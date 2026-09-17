@@ -33,7 +33,9 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
 
-RUN mkdir -p /app/staticfiles /app/media
+RUN test -f /app/scripts/start-web-prod.sh \
+    && test -f /app/scripts/start-remote-lease-reaper.sh \
+    && mkdir -p /app/staticfiles /app/media
 
 EXPOSE 8000
 

@@ -1295,6 +1295,8 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         development_compose = Path("compose.dev.yaml").read_text()
         production_compose = Path("compose.prod.yaml").read_text()
         production_start = Path("scripts/start-web-prod.sh").read_text()
+        lease_reaper_start = Path("scripts/start-remote-lease-reaper.sh").read_text()
+        dockerfile = Path("Dockerfile").read_text()
         master_script = Path("static/js/lyrics_slide_show_master.js").read_text()
 
         self.assertIn("ProtocolTypeRouter", asgi)
@@ -1312,8 +1314,35 @@ class RemoteTransportConfigurationTests(SimpleTestCase):
         for compose in (development_compose, production_compose):
             self.assertIn("remote_redis:", compose)
             self.assertNotIn('"6379:6379"', compose)
+        self.assertIn(
+            "image: ${LSS_IMAGE:-carthographie/lyrics-slide-show:latest}",
+            production_compose,
+        )
+        self.assertEqual(production_compose.count("image: ${LSS_IMAGE:-"), 2)
+        self.assertIn("command: sh /app/scripts/start-web-prod.sh", production_compose)
+        self.assertIn("traefik.http.routers.lss-ws.rule", production_compose)
+        self.assertIn("PathPrefix(`/ws/`)", production_compose)
+        self.assertIn(
+            "traefik.http.routers.lss-ws.service=lss", production_compose
+        )
+        self.assertIn(
+            "traefik.http.routers.lss-ws.priority=300", production_compose
+        )
+        self.assertIn(
+            "traefik.http.services.lss.loadbalancer.server.port=8000",
+            production_compose,
+        )
+        self.assertNotIn("${LSS_BIND_PORT:-8000}:8000", production_compose)
         self.assertIn("exec daphne", production_start)
+        self.assertIn("--bind 0.0.0.0", production_start)
+        self.assertIn("--port 8000", production_start)
+        self.assertIn("--proxy-headers", production_start)
+        self.assertIn("lyrics_slide_show.asgi:application", production_start)
         self.assertNotIn("gunicorn", production_start)
+        self.assertIn("purge_remote_connections", lease_reaper_start)
+        self.assertIn(
+            "test -f /app/scripts/start-remote-lease-reaper.sh", dockerfile
+        )
         self.assertIn("new window.BroadcastChannel", master_script)
         self.assertIn("window.localStorage", master_script)
         display_script = Path("static/js/lyrics_slide_show_display.js").read_text()

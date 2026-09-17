@@ -2,13 +2,11 @@ name: ${COMPOSE_PROJECT_NAME:-lss}
 
 services:
   web:
-    image: carthographie/lyrics-slide-show:latest
+    image: ${LSS_IMAGE:-carthographie/lyrics-slide-show:latest}
     container_name: app_lss
     command: sh /app/scripts/start-web-prod.sh
     env_file:
       - .env.prod
-    ports:
-      - "${LSS_BIND_PORT:-8000}:8000"
     volumes:
       - "${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:${SHARED_SECRETS_DIR:-/opt/stacks/_shared/secrets}:ro"
       - "lss_static:/app/staticfiles"
@@ -25,12 +23,18 @@ services:
       - "traefik.http.routers.lss.tls=true"
       - "traefik.http.routers.lss.tls.certresolver=letsencrypt"
       - "traefik.http.services.lss.loadbalancer.server.port=8000"
+      - "traefik.http.routers.lss-ws.rule=Host(`${LSS_DOMAIN:-lss.carthographie.fr}`) && PathPrefix(`/ws/`)"
+      - "traefik.http.routers.lss-ws.entrypoints=websecure"
+      - "traefik.http.routers.lss-ws.tls=true"
+      - "traefik.http.routers.lss-ws.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lss-ws.service=lss"
+      - "traefik.http.routers.lss-ws.priority=300"
     restart: unless-stopped
     depends_on:
       - remote_redis
 
   remote_lease_reaper:
-    image: carthographie/lyrics-slide-show:latest
+    image: ${LSS_IMAGE:-carthographie/lyrics-slide-show:latest}
     command: sh /app/scripts/start-remote-lease-reaper.sh
     env_file:
       - .env.prod
