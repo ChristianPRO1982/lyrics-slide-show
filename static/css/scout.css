@@ -39,6 +39,8 @@
     --site-radius-lg: 0;
     --site-radius-md: 0;
     --site-radius-sm: 0;
+    --site-mobile-home-image-radius: var(--site-leaf-radius-lg) var(--site-leaf-radius-sm) var(--site-leaf-radius-lg) var(--site-leaf-radius-sm);
+    --site-mobile-app-image-radius: 0;
     --site-leaf-radius-lg: 28px;
     --site-leaf-radius-sm: 10px;
 }
@@ -86,6 +88,16 @@
 .site-section-panel .site-home-media img {
     display: block;
     border-radius: inherit !important;
+}
+
+@media (max-width: 720px) {
+    .site-home-mobile-hero picture {
+        border-radius: var(--site-mobile-home-image-radius) !important;
+    }
+
+    .site-home-mobile-hero img {
+        border-radius: inherit !important;
+    }
 }
 
 body {
