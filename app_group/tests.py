@@ -1,5 +1,7 @@
+import uuid
 from unittest.mock import patch
 
+from django.db import connection
 from django.http import Http404
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
@@ -51,7 +53,19 @@ from .views import _build_group_share_link, _duplicate_name_exists
 ADMIN_ID = "11111111-1111-1111-1111-111111111111"
 MEMBER_ID = "22222222-2222-2222-2222-222222222222"
 OTHER_ID = "33333333-3333-3333-3333-333333333333"
-MISSING_ID = "44444444-4444-4444-4444-444444444444"
+
+
+def reset_group_test_data() -> None:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            TRUNCATE TABLE
+                common.g_group_user_ask_to_join,
+                common.g_group_user,
+                common.g_groups
+            RESTART IDENTITY CASCADE
+            """
+        )
 
 
 def make_user(external_id=MEMBER_ID, *, moderator=False, admin=False):
@@ -67,6 +81,9 @@ def make_user(external_id=MEMBER_ID, *, moderator=False, admin=False):
 
 
 class GroupModelAndFormTests(TestCase):
+    def setUp(self):
+        reset_group_test_data()
+
     def test_normalizers_strip_markup_spaces_and_preserve_lines(self):
         self.assertEqual(
             normalize_group_name("  Groupe   test \n A  "), "Groupe test A"
@@ -200,26 +217,30 @@ class GroupServiceUnitTests(SimpleTestCase):
 
 class GroupDatabaseServiceTests(TestCase):
     def setUp(self):
+        reset_group_test_data()
         self.group = Group.objects.create(name="Groupe", status=GroupStatus.PRIVATE)
         for external_id, username, first_name, last_name in (
             (ADMIN_ID, "admin.user", "Admin", "User"),
             (MEMBER_ID, "member.user", "Member", "User"),
             (OTHER_ID, "other.user", "Other", "User"),
         ):
-            DirectoryUserRecord.objects.create(
+            DirectoryUserRecord.objects.update_or_create(
                 id=external_id,
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
-                email=f"{username}@example.test",
-                enabled=True,
-                email_verified=False,
+                defaults={
+                    "username": username,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "email": f"{username}@example.test",
+                    "enabled": True,
+                    "email_verified": False,
+                },
             )
 
     def test_fetch_directory_users_returns_records_and_uuid_fallback(self):
-        summaries = fetch_directory_users([MEMBER_ID, MISSING_ID])
+        missing_id = str(uuid.uuid4())
+        summaries = fetch_directory_users([MEMBER_ID, missing_id])
         self.assertEqual(summaries[MEMBER_ID].display_name, "Member User")
-        self.assertEqual(summaries[MISSING_ID].username, MISSING_ID)
+        self.assertEqual(summaries[missing_id].username, missing_id)
         self.assertEqual(fetch_directory_users([]), {})
 
     def test_selected_group_state_handles_missing_invalid_open_member_and_secret(self):
@@ -307,20 +328,24 @@ class GroupDatabaseServiceTests(TestCase):
 
 class GroupViewsTests(TestCase):
     def setUp(self):
+        reset_group_test_data()
         self.admin = self._create_directory_user(ADMIN_ID, "admin.user")
         self.member = self._create_directory_user(MEMBER_ID, "member.user")
         self.other = self._create_directory_user(OTHER_ID, "other.user")
 
     def _create_directory_user(self, external_id, username):
-        return DirectoryUserRecord.objects.create(
+        record, _created = DirectoryUserRecord.objects.update_or_create(
             id=external_id,
-            username=username,
-            first_name=username.split(".")[0].title(),
-            last_name="User",
-            email=f"{username}@example.test",
-            enabled=True,
-            email_verified=False,
+            defaults={
+                "username": username,
+                "first_name": username.split(".")[0].title(),
+                "last_name": "User",
+                "email": f"{username}@example.test",
+                "enabled": True,
+                "email_verified": False,
+            },
         )
+        return record
 
     def _login(self, external_id=MEMBER_ID, *, moderator=False, admin=False):
         if moderator or admin:

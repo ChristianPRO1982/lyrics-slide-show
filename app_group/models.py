@@ -1,8 +1,6 @@
 import re
 
 from django.db import models
-from django.db.models import Q
-from django.db.models.functions import Lower
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 
@@ -41,20 +39,8 @@ class Group(models.Model):
     )
 
     class Meta:
-        db_table = 'lss"."g_groups'
-        indexes = [
-            models.Index(fields=["status"], name="g_groups_status_idx"),
-        ]
-        constraints = [
-            models.CheckConstraint(
-                condition=Q(status__in=[GroupStatus.OPEN, GroupStatus.PRIVATE]),
-                name="g_groups_status_check",
-            ),
-            models.UniqueConstraint(
-                Lower("name"),
-                name="g_groups_name_unique",
-            ),
-        ]
+        db_table = 'common"."g_groups'
+        managed = False
 
     def clean(self) -> None:
         super().clean()
@@ -86,12 +72,11 @@ class GroupMembership(models.Model):
     )
     member_id = models.UUIDField()
     is_group_admin = models.BooleanField(default=False)
+    am_access = models.BooleanField(default=False, editable=False)
 
     class Meta:
-        db_table = 'lss"."g_group_user'
-        indexes = [
-            models.Index(fields=["is_group_admin"], name="g_grp_usr_is_admin_idx"),
-        ]
+        db_table = 'common"."g_group_user'
+        managed = False
 
 
 class GroupJoinRequest(models.Model):
@@ -105,4 +90,5 @@ class GroupJoinRequest(models.Model):
     member_id = models.UUIDField()
 
     class Meta:
-        db_table = 'lss"."g_group_user_ask_to_join'
+        db_table = 'common"."g_group_user_ask_to_join'
+        managed = False
