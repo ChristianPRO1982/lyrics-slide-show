@@ -37,6 +37,8 @@ These tables are common to `Lyrics Slide Show` and `Animation-messe`.
 
 `Lyrics Slide Show` keeps full CRUD access to groups, memberships, and join requests, but it no longer owns the physical table creation through its Django migrations.
 
+The Django ORM models remain the LSS facade for this CRUD, but they must be unmanaged models. Django migrations for these tables must be state-only on the LSS side and must not create, alter, or drop the shared `common` tables.
+
 All relations to an authenticated user must rely only on `users.users.id`, as a `UUID`, never on `username`.
 
 The legacy MySQL design must be adapted to PostgreSQL and to the current identity model. Historical `username` foreign keys must not be kept.

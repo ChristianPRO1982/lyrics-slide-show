@@ -16,6 +16,8 @@
     --site-radius-lg: 22px;
     --site-radius-md: 16px;
     --site-radius-sm: 12px;
+    --site-mobile-home-image-radius: 24px;
+    --site-mobile-app-image-radius: 16px;
     --site-rail-width: 56px;
     --site-max-width: 1320px;
     --site-font-body: Georgia, "Times New Roman", serif;
@@ -2031,6 +2033,26 @@ body.lss-messagebox-open {
 
     .site-mobile-side-visual {
         width: 60px;
+    }
+
+    .site-home-mobile-hero picture {
+        overflow: hidden;
+        line-height: 0;
+        border-radius: var(--site-mobile-home-image-radius);
+    }
+
+    .site-mobile-side-visual .site-home-media picture {
+        overflow: hidden;
+        line-height: 0;
+        border-radius: var(--site-mobile-app-image-radius);
+    }
+
+    .site-home-mobile-hero img {
+        border-radius: inherit;
+    }
+
+    .site-mobile-side-visual .site-home-media img {
+        border-radius: inherit;
     }
 
     .site-main-panel,

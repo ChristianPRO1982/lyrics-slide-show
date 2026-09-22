@@ -3931,21 +3931,46 @@ class SongGenresDisplayViewTests(TestCase):
             html=False,
         )
 
-    def test_songs_page_moves_new_song_card_after_song_list_in_footer(self):
+    def test_songs_page_uses_popup_create_form_instead_of_visible_card(self):
         response = self._render_songs_response()
-        rendered = response.content.decode()
 
-        self.assertLess(
-            rendered.index('id="song-list-section" class="song-list-section"'),
-            rendered.index('class="site-theme-card song-create-card"'),
+        self.assertNotContains(
+            response,
+            'class="site-theme-card song-create-card"',
+            html=False,
         )
-        self.assertLess(
-            rendered.index('<section class="site-main-content">'),
-            rendered.index('class="site-theme-card song-search-card"'),
+        self.assertContains(response, "data-song-create-trigger", html=False)
+        self.assertContains(
+            response,
+            '<script id="song-existing-identities" type="application/json">',
+            html=False,
         )
-        self.assertNotIn(
-            '<section class="site-main-content">\n    <article class="site-theme-card song-create-card"',
-            rendered,
+        self.assertContains(
+            response,
+            'class="song-create-hidden-form" data-song-create-form hidden',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            '<input type="hidden" name="action" value="create_song">',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            'createGuestMessage: "La création de chant est réservée aux membres authentifiés."',
+            html=False,
+        )
+
+    def test_songs_page_guest_create_button_uses_info_popup_without_form(self):
+        response = self.client.get(reverse("songs"))
+
+        self.assertContains(response, "data-song-create-trigger", html=False)
+        self.assertNotContains(response, "song-existing-identities", html=False)
+        self.assertNotContains(response, "data-song-create-form", html=False)
+        self.assertContains(
+            response,
+            'createGuestMessage: "La création de chant est réservée aux membres authentifiés."',
+            html=False,
         )
 
     def test_songs_page_duplicates_quick_links_inside_search_card_for_mobile(self):
@@ -3994,7 +4019,7 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertContains(response, "data-song-compact-options-panel", html=False)
 
         compact_start = rendered.index('class="song-list song-compact-list"')
-        compact_end = rendered.index('class="site-theme-card song-create-card"')
+        compact_end = rendered.index("</section>", compact_start)
         compact_markup = rendered[compact_start:compact_end]
 
         self.assertIn(
@@ -4040,7 +4065,7 @@ class SongGenresDisplayViewTests(TestCase):
         response = self.client.get(reverse("songs"))
         rendered = response.content.decode()
         compact_start = rendered.index('class="song-list song-compact-list"')
-        compact_end = rendered.index('class="site-theme-card song-create-card"')
+        compact_end = rendered.index("</section>", compact_start)
         compact_markup = rendered[compact_start:compact_end]
         validated_link = f'href="/songs/{validated_song.song_id}/"'
         validated_index = compact_markup.index(validated_link)
@@ -4065,7 +4090,8 @@ class SongGenresDisplayViewTests(TestCase):
         ]
         compact_markup = rendered[
             rendered.index('class="song-list song-compact-list"') : rendered.index(
-                'class="site-theme-card song-create-card"'
+                "</section>",
+                rendered.index('class="song-list song-compact-list"'),
             )
         ]
 

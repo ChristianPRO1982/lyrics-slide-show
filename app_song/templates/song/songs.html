@@ -116,8 +116,9 @@
         <button
             type="button"
             class="site-floating-action song-create-anchor"
-            title="{% trans 'Aller au nouveau chant' %}"
-            aria-label="{% trans 'Aller au nouveau chant' %}"
+            title="{% trans 'Nouveau chant' %}"
+            aria-label="{% trans 'Nouveau chant' %}"
+            data-song-create-trigger
         >
             ➕
         </button>
@@ -497,31 +498,15 @@
         {% endif %}
     </section>
 
-    <article class="site-theme-card song-create-card" data-song-create-card>
-        <header class="site-theme-card-header">
-            <div>
-                <h2>{% trans "Nouveau chant" %}</h2>
-            </div>
-        </header>
-        {% if can_create_song %}
-            {{ song_identity_pairs|json_script:"song-existing-identities" }}
-            <form method="post" class="song-search-form" data-song-create-form>
-                {% csrf_token %}
-                <input type="hidden" name="action" value="create_song">
-                <div class="song-search-main">
-                    <label for="song-create-title">{% trans "Titre" %}</label>
-                    <input id="song-create-title" name="title" type="text" data-song-create-title>
-
-                    <label for="song-create-subtitle">{% trans "Sous-titre" %}</label>
-                    <input id="song-create-subtitle" name="subtitle" type="text" data-song-create-subtitle>
-
-                    <button type="submit" class="site-action site-action--primary" data-song-create-submit disabled>{% trans "Créer le nouveau chant" %}</button>
-                </div>
-            </form>
-        {% else %}
-            <p>{% trans "La création de chant est réservée aux membres authentifiés." %}</p>
-        {% endif %}
-    </article>
+    {% if can_create_song %}
+        {{ song_identity_pairs|json_script:"song-existing-identities" }}
+        <form method="post" class="song-create-hidden-form" data-song-create-form hidden>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_song">
+            <input type="hidden" name="title" value="" data-song-create-title>
+            <input type="hidden" name="subtitle" value="" data-song-create-subtitle>
+        </form>
+    {% endif %}
 {% endblock %}
 {% block page_scripts %}
     {% include "song/song_page_i18n.html" %}

@@ -40,8 +40,8 @@ At this stage, the app covers:
 - personal identity data management,
 - email, first name, last name, or other sensitive profile data,
 - write access to schema `users`,
-- write access to schema `common`,
-- CRUD ownership helpers coming from schema `common`,
+- ownership of schema `common`,
+- group CRUD helpers owned by `app_group`,
 - guest preference persistence on the server,
 - external role assignment in `Keycloak`.
 
@@ -60,18 +60,19 @@ Its user-facing contribution is indirect:
 
 ## Source Of Truth And Database Boundaries
 
-The Django project only manages tables that belong to its own perimeter in schema `lss`.
+The persistent tables owned by `app_member` remain in schema `lss`.
 
-`app_member` must never write to:
+`app_member` must never write to schema `users`.
 
-- schema `users`,
-- schema `common`.
+`app_member` does not own tables in schema `common`. The exception at project level is `app_group`, which exposes the `Lyrics Slide Show` CRUD facade for shared group tables such as `common.g_groups`, `common.g_group_user`, and `common.g_group_user_ask_to_join`.
 
 `users.users` remains an external read-only reference table.
 
 The authenticated member identifier used by `app_member` is the `Keycloak` UUID stored in `users.users.id`.
 
 `app_member` is also the local source of truth for site-wide privileged roles after authentication. Those roles are business roles of `Lyrics Slide Show`, not identity-provider roles.
+
+The global privileged role table remains owned by `Lyrics Slide Show` in schema `lss`, specifically `lss.m_member_roles`.
 
 ## Authentication Rule
 

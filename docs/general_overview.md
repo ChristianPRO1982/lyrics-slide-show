@@ -105,6 +105,10 @@ The following rules describe the current functional intent.
 - The last remaining group admin cannot be revoked through ordinary role-management actions.
 - Rare exception: if the last remaining group admin deletes their own account, the group may temporarily have no group admin until a moderator or admin appoints a new one.
 
+Groups are shared business resources between `Lyrics Slide Show` and `Animation-messe`.
+
+The canonical group tables live in the `common` schema. Group membership is represented by `common.g_group_user`: for `Lyrics Slide Show`, the existence of a `(group_id, member_id)` row is enough to grant membership. `Animation-messe` may require the same membership row to also have `am_access = true` before allowing AM-specific usage of that group. `Lyrics Slide Show` must ignore `am_access`.
+
 ### Songs
 
 - Songs are global resources, never scoped to a group.

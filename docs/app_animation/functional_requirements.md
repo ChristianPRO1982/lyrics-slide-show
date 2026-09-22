@@ -99,6 +99,9 @@ Le contrat d'accès effectif suit les règles produit globales :
 - un membre (et rôles supérieurs) peut gérer les animations du groupe accessible sélectionné,
 - un groupe `private` nécessite authentification + appartenance.
 
+Les groupes sont stockés dans les tables communes documentées par `app_group`.
+Pour `Lyrics Slide Show`, l'appartenance est déterminée par la ligne de membership commune, et le champ `am_access` de `common.g_group_user` n'a aucun effet sur les autorisations LSS.
+
 Contrôles implémentés côté vues :
 - sans groupe sélectionné : redirection vers `groups` avec message,
 - accès inter-groupe : `404`.
@@ -114,7 +117,7 @@ Règles spécifiques aux images de fond :
 ### Animation
 
 Champs gérés :
-- identité et FK groupe,
+- identité et FK groupe, avec `lss.a_animations.group_id` référencé vers `common.g_groups(group_id)`,
 - `title`, `description`, `scheduled_at`,
 - défauts visuels : `text_color`, `bg_color`, `font_family`, `font_size`, `horizontal_padding`, `background_asset_code`,
 - `default_transition` : identifiant technique de la transition par défaut.

@@ -107,42 +107,7 @@
         };
         floatingSearchAnchor.addEventListener("click", focusSearchInput);
     }
-    const createSongCard = document.querySelector("[data-song-create-card]");
-    const floatingCreateAnchor = document.querySelector(".song-create-anchor");
-    if (floatingCreateAnchor && createSongCard instanceof HTMLElement) {
-        // Keep the floating button from taking focus back after its click.
-        floatingCreateAnchor.addEventListener("pointerdown", (event) => {
-            event.preventDefault();
-        });
-        floatingCreateAnchor.addEventListener("click", (event) => {
-            event.preventDefault();
-            const firstInput = document.getElementById("song-create-title");
-            if (
-                !(
-                    firstInput instanceof HTMLInputElement
-                    || firstInput instanceof HTMLTextAreaElement
-                    || firstInput instanceof HTMLSelectElement
-                )
-            ) {
-                createSongCard.scrollIntoView({ block: "start", behavior: "smooth" });
-                return;
-            }
-
-            const focusCreateTitle = () => {
-                firstInput.focus({ preventScroll: true });
-            };
-
-            // Run within the user click so browsers retain the field focus.
-            focusCreateTitle();
-            createSongCard.scrollIntoView({ block: "start", behavior: "smooth" });
-            window.requestAnimationFrame(() => {
-                // Some browsers drop focus while completing smooth scrolling.
-                if (document.activeElement !== firstInput) {
-                    focusCreateTitle();
-                }
-            });
-        });
-    }
+    const floatingCreateAnchor = document.querySelector("[data-song-create-trigger]");
     const songCardNodes = Array.from(document.querySelectorAll("[data-song-card-id]"));
     const visibleCountTargets = Array.from(document.querySelectorAll("[data-song-visible-count]"));
     const localEmptyState = document.querySelector("[data-song-local-empty]");
@@ -779,30 +744,109 @@
     });
 
     const createForm = document.querySelector("[data-song-create-form]");
-    const createTitleInput = document.querySelector("[data-song-create-title]");
-    const createSubtitleInput = document.querySelector("[data-song-create-subtitle]");
-    const createSubmit = document.querySelector("[data-song-create-submit]");
+    const createTitleInput = createForm
+        ? createForm.querySelector("[data-song-create-title]")
+        : null;
+    const createSubtitleInput = createForm
+        ? createForm.querySelector("[data-song-create-subtitle]")
+        : null;
     const existingIdentityNode = document.getElementById("song-existing-identities");
-    if (createForm && createTitleInput && createSubtitleInput && createSubmit && existingIdentityNode) {
-        const existingIdentityPairs = JSON.parse(existingIdentityNode.textContent || "[]");
-        const existingIdentitySet = new Set(
-            existingIdentityPairs.map((entry) => {
-                const pair = Array.isArray(entry) ? entry : ["", ""];
-                return `${normalizeSearch(pair[0])}::${normalizeSearch(pair[1])}`;
-            }),
-        );
+    const parseExistingIdentityPairs = () => {
+        if (!existingIdentityNode) {
+            return [];
+        }
+        try {
+            return JSON.parse(existingIdentityNode.textContent || "[]");
+        } catch (_error) {
+            return [];
+        }
+    };
 
-        const updateCreateSongState = () => {
-            const title = normalizeSearch(createTitleInput.value);
-            const subtitle = normalizeSearch(createSubtitleInput.value);
-            const hasTitle = title.length > 0;
-            const duplicate = existingIdentitySet.has(`${title}::${subtitle}`);
-            createSubmit.disabled = !hasTitle || duplicate;
-        };
+    const existingIdentityPairs = parseExistingIdentityPairs();
+    const existingIdentitySet = new Set(
+        existingIdentityPairs.map((entry) => {
+            const pair = Array.isArray(entry) ? entry : ["", ""];
+            return `${normalizeSearch(pair[0])}::${normalizeSearch(pair[1])}`;
+        }),
+    );
 
-        createTitleInput.addEventListener("input", updateCreateSongState);
-        createSubtitleInput.addEventListener("input", updateCreateSongState);
-        updateCreateSongState();
+    const isExistingSongIdentity = (title, subtitle) => {
+        return existingIdentitySet.has(`${normalizeSearch(title)}::${normalizeSearch(subtitle)}`);
+    };
+
+    if (floatingCreateAnchor) {
+        floatingCreateAnchor.addEventListener("click", async (event) => {
+            event.preventDefault();
+
+            if (!messageBox) {
+                return;
+            }
+
+            if (
+                !(
+                    createForm instanceof HTMLFormElement
+                    && createTitleInput instanceof HTMLInputElement
+                    && createSubtitleInput instanceof HTMLInputElement
+                )
+            ) {
+                await messageBox.alert({
+                    title: label("createPopupTitle"),
+                    messageMarkdown: label("createGuestMessage"),
+                    showCloseButton: true,
+                });
+                return;
+            }
+
+            await messageBox.show({
+                title: label("createPopupTitle"),
+                showCloseButton: true,
+                fields: [
+                    {
+                        id: "title",
+                        label: label("createTitleLabel"),
+                        type: "text",
+                        required: true,
+                    },
+                    {
+                        id: "subtitle",
+                        label: label("createSubtitleLabel"),
+                        type: "text",
+                    },
+                ],
+                buttons: [
+                    {
+                        id: "create",
+                        label: label("createSubmitLabel"),
+                        tone: "success",
+                        validate: true,
+                        onClick: ({ values, keepOpen, setFieldError }) => {
+                            const title = String(values.title || "").trim();
+                            const subtitle = String(values.subtitle || "").trim();
+
+                            if (isExistingSongIdentity(title, subtitle)) {
+                                keepOpen();
+                                setFieldError("title", label("createDuplicateMessage"));
+                                return false;
+                            }
+
+                            createTitleInput.value = title;
+                            createSubtitleInput.value = subtitle;
+                            createForm.submit();
+                            return false;
+                        },
+                    },
+                    {
+                        id: "cancel",
+                        label: label("createCancelLabel"),
+                        tone: "neutral",
+                        validate: false,
+                    },
+                ],
+                initialFocus: "first-field",
+                enterButtonId: "create",
+                escapeButtonId: "cancel",
+            });
+        });
     }
 
     const unsavedChanges = window.LSSUnsavedChanges;

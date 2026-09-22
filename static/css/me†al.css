@@ -18,6 +18,8 @@
     --site-radius-lg: 12px;
     --site-radius-md: 10px;
     --site-radius-sm: 8px;
+    --site-mobile-home-image-radius: 0;
+    --site-mobile-app-image-radius: 0;
     --site-focus-ring: 0 0 0 3px rgba(62, 200, 255, 0.22);
     --site-popup-overlay: rgba(86, 67, 73, 0.32);
     --site-popup-surface: rgba(255, 244, 244, 0.98);

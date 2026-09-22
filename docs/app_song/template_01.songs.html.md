@@ -11,7 +11,7 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - affiche les tags de recherche active
 - affiche un panneau d’aide rappelant les marqueurs `✔️`, `✔️⁉️`, `📄`, `📱`, `🖨️`
 - le panneau d’aide explique aussi le marqueur `2️⃣` pour les chants en affichage double slide
-- expose des actions flottantes vers la recherche et le bloc `Nouveau chant`
+- expose des actions flottantes vers la recherche et la popup `Nouveau chant`
 - affiche la recherche simple
 - pour utilisateur authentifié, affiche la recherche avancée :
   - `Inclure description et paroles`
@@ -37,7 +37,7 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - `Supprimer` passe par la popup partagée `LSSMessageBox`
 - l’action `🖨️` ouvre le menu d’impression existant
 - affiche l’état vide backend et l’état vide du filtre local JS
-- affiche une carte `Nouveau chant`
+- ouvre une popup `Nouveau chant` via le bouton flottant `+`
 
 ## Contrat d’interface (variables attendues)
 
@@ -64,20 +64,26 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 
 ## Nouveau chant
 
-Le formulaire `Nouveau chant` possède :
+La popup `Nouveau chant` possède :
 
 - `Titre`
 - `Sous-titre`
-- le bouton `Créer le nouveau chant`
+- le bouton `Créer`
+- le bouton `Annuler`
+- la croix de fermeture visible
 
-Le bouton est désactivé par défaut.
+Le bouton flottant `+` ne change pas le scroll de la page.
 
-Il est activé seulement si :
+Pour utilisateur authentifié, la popup soumet un formulaire POST caché.
+
+La création est acceptée seulement si :
 
 - le titre n’est pas vide après normalisation
 - le couple `Titre / Sous-titre` n’existe pas déjà dans `song_identity_pairs`
 
 Si le couple existe déjà, le backend redirige vers `modify_song` du chant existant.
+
+Pour utilisateur invité, le bouton `+` ouvre une popup d’information indiquant que la création est réservée aux membres authentifiés.
 
 ## Notes
 
