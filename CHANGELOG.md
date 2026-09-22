@@ -1,3 +1,11 @@
+## [3.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.0...v3.4.1) (2026-09-22)
+
+
+### Bug Fixes
+
+* Add mobile hero image radius variables and styles for responsive design ([bbace5a](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bbace5a780bbaa3ed9578fb23624a9785240a5f9))
+* Implement popup for creating new songs and update related UI components ([f5e4ed3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f5e4ed34ce2479989c080844b2e17b32a3f51259))
+
 # [3.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.3.0...v3.4.0) (2026-09-22)
 
 
