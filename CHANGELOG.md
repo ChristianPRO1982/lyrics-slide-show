@@ -1,3 +1,12 @@
+# [3.4.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.3.0...v3.4.0) (2026-09-22)
+
+
+### Features
+
+* Implement migration scripts for group data to common schema ([2bee1e8](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/2bee1e886d3185c3be1c86d054d38b037dd47f14))
+* Implement shared common group tables and update related migrations ([1b7deee](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/1b7deeed9479a32640b619913eef698036512f58))
+* Implement shared common group tables and update related migrations ([f226368](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/f22636810316a7075e82986a99592289cecff5ad))
+
 # [3.3.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.2.0...v3.3.0) (2026-09-17)
 
 
