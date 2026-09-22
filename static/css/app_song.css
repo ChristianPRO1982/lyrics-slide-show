@@ -252,7 +252,6 @@
 }
 
 .song-search-main button,
-.song-create-card button,
 .song-card-actions button {
     min-height: 2.75rem;
 }
@@ -863,10 +862,6 @@
     flex: 0 0 auto;
     font-size: 1.2rem;
     line-height: 1.2;
-}
-
-.site-main-footer .song-list-section + .song-create-card {
-    margin-top: 1rem;
 }
 
 .song-compact-item {

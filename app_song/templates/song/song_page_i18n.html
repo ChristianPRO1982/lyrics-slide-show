@@ -32,6 +32,13 @@
 {% trans "Le message ne peut pas être vide." as song_report_empty_error %}
 {% trans "Information" as song_info_popup_title %}
 {% trans "Options" as song_compact_options_label %}
+{% trans "Nouveau chant" as song_create_popup_title %}
+{% trans "Titre" as song_create_title_label %}
+{% trans "Sous-titre" as song_create_subtitle_label %}
+{% trans "Créer" as song_create_submit_label %}
+{% trans "Annuler" as song_create_cancel_label %}
+{% trans "La création de chant est réservée aux membres authentifiés." as song_create_guest_message %}
+{% trans "Un chant existe déjà avec ce titre et ce sous-titre." as song_create_duplicate_message %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -66,6 +73,13 @@
         reportEmptyError: "{{ song_report_empty_error|escapejs }}",
         infoPopupTitle: "{{ song_info_popup_title|escapejs }}",
         compactOptionsLabel: "{{ song_compact_options_label|escapejs }}",
+        createPopupTitle: "{{ song_create_popup_title|escapejs }}",
+        createTitleLabel: "{{ song_create_title_label|escapejs }}",
+        createSubtitleLabel: "{{ song_create_subtitle_label|escapejs }}",
+        createSubmitLabel: "{{ song_create_submit_label|escapejs }}",
+        createCancelLabel: "{{ song_create_cancel_label|escapejs }}",
+        createGuestMessage: "{{ song_create_guest_message|escapejs }}",
+        createDuplicateMessage: "{{ song_create_duplicate_message|escapejs }}",
         messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}"
     };
 </script>
