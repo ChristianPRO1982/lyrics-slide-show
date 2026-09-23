@@ -699,6 +699,22 @@ def account(request: HttpRequest) -> HttpResponse:
             )
             return render(request, "main/connexion.html", context)
 
+        if action == "clear_moderator_message":
+            if not can_manage_moderator_popup(request.user):
+                return HttpResponseForbidden(_("Accès refusé."))
+
+            if site_params is None:
+                messages.error(
+                    request,
+                    _("Les paramètres du site sont introuvables pour cette langue."),
+                )
+                return _account_redirect(request, posted_member_search)
+
+            site_params.moderator_message = ""
+            site_params.save(update_fields=["moderator_message"])
+            messages.success(request, _("Le message de modération a été supprimé."))
+            return _account_redirect(request, posted_member_search)
+
         if action == "save_admin_message_settings":
             if not can_manage_site_settings(request.user):
                 return HttpResponseForbidden(_("Accès refusé."))
@@ -734,6 +750,22 @@ def account(request: HttpRequest) -> HttpResponse:
                 member_search=posted_member_search,
             )
             return render(request, "main/connexion.html", context)
+
+        if action == "clear_admin_message":
+            if not can_manage_site_settings(request.user):
+                return HttpResponseForbidden(_("Accès refusé."))
+
+            if site_params is None:
+                messages.error(
+                    request,
+                    _("Les paramètres du site sont introuvables pour cette langue."),
+                )
+                return _account_redirect(request, posted_member_search)
+
+            site_params.admin_message = ""
+            site_params.save(update_fields=["admin_message"])
+            messages.success(request, _("Le message administrateur a été supprimé."))
+            return _account_redirect(request, posted_member_search)
 
         if action == "update_member_role":
             if not can_manage_site_members(request.user):

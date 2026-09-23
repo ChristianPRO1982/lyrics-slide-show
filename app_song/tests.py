@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from django.http import HttpResponse, QueryDict
 from django.contrib.messages import get_messages
 from django.template.loader import get_template
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 from unittest.mock import MagicMock, patch
 from django.db import IntegrityError, connection
@@ -3493,6 +3493,103 @@ class ModifyArtistsAndBandsViewTests(TestCase):
         self.assertContains(bands_response, "song-meta-row--simple")
         self.assertNotContains(bands_response, "<table")
         self.assertContains(bands_response, "Enregistrer", count=2)
+
+    @override_settings(DEBUG=True)
+    @patch("app_song.views.messages.error")
+    @patch("app_song.views._fetch_name_item_rows", return_value=[])
+    @patch("app_song.views.connection.cursor")
+    def test_name_item_debug_logs_create_integrity_error(
+        self, cursor_factory, _fetch_rows, error_mock
+    ):
+        cursor = MagicMock()
+        cursor_factory.return_value.__enter__.return_value = cursor
+        cursor.execute.side_effect = IntegrityError("random insert failure")
+        request = RequestFactory().post(
+            reverse("modify_artists"),
+            {"new_name": "Grégory Turpin"},
+        )
+        request.user = SimpleNamespace(username="metadata.moderator", email="")
+
+        with self.assertLogs("app_song.metadata", level="DEBUG") as captured:
+            song_views._save_name_items(
+                request,
+                page_label="Artistes",
+                table_name="artists",
+                id_column="artist_id",
+                relation_table="s_song_artists",
+                relation_id_column="artist_id",
+            )
+
+        output = "\n".join(captured.output)
+        self.assertIn("name_item_create_integrity_error", output)
+        self.assertIn("Grégory Turpin", output)
+        self.assertIn("random insert failure", output)
+        error_mock.assert_called()
+
+    @override_settings(DEBUG=False)
+    @patch("app_song.views.metadata_logger.debug")
+    @patch("app_song.views.messages.success")
+    @patch("app_song.views._fetch_name_item_rows", return_value=[])
+    @patch("app_song.views.connection.cursor")
+    def test_name_item_debug_logging_is_disabled_when_debug_false(
+        self, cursor_factory, _fetch_rows, _success_mock, debug_mock
+    ):
+        cursor = MagicMock()
+        cursor_factory.return_value.__enter__.return_value = cursor
+        cursor.execute.return_value = None
+        request = RequestFactory().post(
+            reverse("modify_artists"),
+            {"new_name": "Grégory Turpin"},
+        )
+        request.user = SimpleNamespace(username="metadata.moderator", email="")
+
+        song_views._save_name_items(
+            request,
+            page_label="Artistes",
+            table_name="artists",
+            id_column="artist_id",
+            relation_table="s_song_artists",
+            relation_id_column="artist_id",
+        )
+
+        debug_mock.assert_not_called()
+
+    @override_settings(DEBUG=True)
+    @patch("app_song.views.messages.success")
+    @patch("app_song.views._sync_common_identity_sequence")
+    @patch("app_song.views._insert_common_name_item")
+    @patch("app_song.views._fetch_name_item_rows", return_value=[])
+    def test_name_item_create_resyncs_sequence_and_retries_primary_key_collision(
+        self, _fetch_rows, insert_mock, sync_mock, success_mock
+    ):
+        insert_mock.side_effect = [
+            IntegrityError(
+                'duplicate key value violates unique constraint "bands_pkey"'
+            ),
+            None,
+        ]
+        request = RequestFactory().post(
+            reverse("modify_bands"),
+            {"new_name": "Natasha St-Pier"},
+        )
+        request.user = SimpleNamespace(username="metadata.moderator", email="")
+
+        with self.assertLogs("app_song.metadata", level="DEBUG") as captured:
+            song_views._save_name_items(
+                request,
+                page_label="Groupes de musiques",
+                table_name="bands",
+                id_column="band_id",
+                relation_table="s_song_bands",
+                relation_id_column="band_id",
+            )
+
+        self.assertEqual(insert_mock.call_count, 2)
+        sync_mock.assert_called_once_with(table_name="bands", id_column="band_id")
+        success_mock.assert_called()
+        output = "\n".join(captured.output)
+        self.assertIn("name_item_create_sequence_resync_attempt", output)
+        self.assertIn("name_item_create_retry_success", output)
 
 
 class SongFavoritesSearchRegressionTests(TestCase):

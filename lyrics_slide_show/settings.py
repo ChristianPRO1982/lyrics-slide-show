@@ -243,6 +243,11 @@ LOGGING = {
             "handlers": ["console"],
             "level": os.environ.get("DJANGO_AUTH_LOG_LEVEL", "INFO"),
             "propagate": False,
-        }
+        },
+        "app_song.metadata": {
+            "handlers": ["console"],
+            "level": os.environ.get("DJANGO_METADATA_LOG_LEVEL", "DEBUG"),
+            "propagate": False,
+        },
     },
 }

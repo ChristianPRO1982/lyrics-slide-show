@@ -1339,6 +1339,14 @@ body.lss-messagebox-open {
     resize: vertical;
 }
 
+.account-message-word-sphere {
+    margin: 0.8rem auto 0.45rem;
+}
+
+.account-message-clear-form {
+    margin-top: 0.85rem;
+}
+
 .site-home-dropcap-copy::after {
     content: "";
     display: block;

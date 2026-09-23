@@ -251,12 +251,79 @@
                                 <div>
                                     {{ field.label_tag }}
                                     {{ field }}
+                                    {% if field.name == "moderator_message" %}
+                                        <div
+                                            id="moderator-message-word-sphere"
+                                            class="account-message-word-sphere"
+                                            data-lss-word-sphere
+                                            aria-label="{% trans 'Émojis rapides' %}"
+                                        ></div>
+                                        <script type="application/json" data-lss-word-sphere-config-for="moderator-message-word-sphere">
+                                            {
+                                                "action": "insert",
+                                                "targetId": "{{ field.id_for_label }}",
+                                                "size": 220,
+                                                "fontSize": 22,
+                                                "fontColor": "var(--site-text)",
+                                                "backgroundColor": "var(--site-surface-soft)",
+                                                "backgroundAlpha": 0.35,
+                                                "autoRotateSpeed": 0.0025,
+                                                "edgeRotateSpeed": 0.03,
+                                                "centerDeadZone": 0.32,
+                                                "items": [
+                                                {"label": "⚠️", "value": "⚠️ "},
+                                                {"label": "🚧", "value": "🚧 "},
+                                                {"label": "🚨", "value": "🚨 "},
+                                                {"label": "❗", "value": "❗ "},
+                                                {"label": "❌", "value": "❌ "},
+                                                {"label": "🚫", "value": "🚫 "},
+                                                {"label": "⛔", "value": "⛔ "},
+                                                {"label": "🛠️", "value": "🛠️ "},
+                                                {"label": "🔧", "value": "🔧 "},
+                                                {"label": "⚙️", "value": "⚙️ "},
+                                                {"label": "⏳", "value": "⏳ "},
+                                                {"label": "🔒", "value": "🔒 "},
+                                                {"label": "🔓", "value": "🔓 "},
+                                                {"label": "🛡️", "value": "🛡️ "},
+                                                {"label": "🕵️", "value": "🕵️ "},
+                                                {"label": "🐛", "value": "🐛 "},
+                                                {"label": "✅", "value": "✅ "},
+                                                {"label": "🟢", "value": "🟢 "},
+                                                {"label": "🟠", "value": "🟠 "},
+                                                {"label": "🔴", "value": "🔴 "},
+                                                {"label": "🆗", "value": "🆗 "},
+                                                {"label": "🎉", "value": "🎉 "},
+                                                {"label": "👉", "value": "👉 "},
+                                                {"label": "ℹ️", "value": "ℹ️ "},
+                                                {"label": "📢", "value": "📢 "},
+                                                {"label": "🔔", "value": "🔔 "},
+                                                {"label": "📌", "value": "📌 "},
+                                                {"label": "💡", "value": "💡 "},
+                                                {"label": "🙏", "value": "🙏 "}
+                                                ]
+                                            }
+                                        </script>
+                                    {% endif %}
                                     {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
                                     {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
                                 </div>
                             {% endfor %}
                             {% for error in moderator_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
                             <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer la modération" %}</button>
+                        </form>
+                        <form
+                            method="post"
+                            class="account-message-clear-form"
+                            data-account-clear-message-form
+                            data-confirm-title="{% trans 'Supprimer le message de modération' %}"
+                            data-confirm-message="{% trans 'Supprimer ce message public de modération ?' %}"
+                            data-confirm-yes-label="{% trans 'Oui' %}"
+                            data-confirm-no-label="{% trans 'Non' %}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="clear_moderator_message">
+                            <input type="hidden" name="member_search" value="{{ member_search }}">
+                            <button type="submit" class="site-action site-action--danger">{% trans "Supprimer le message" %}</button>
                         </form>
                     {% endif %}
                 </article>
@@ -281,12 +348,79 @@
                                     <div>
                                         {{ field.label_tag }}
                                         {{ field }}
+                                        {% if field.name == "admin_message" %}
+                                            <div
+                                                id="admin-message-word-sphere"
+                                                class="account-message-word-sphere"
+                                                data-lss-word-sphere
+                                                aria-label="{% trans 'Émojis rapides' %}"
+                                            ></div>
+                                            <script type="application/json" data-lss-word-sphere-config-for="admin-message-word-sphere">
+                                                {
+                                                    "action": "insert",
+                                                    "targetId": "{{ field.id_for_label }}",
+                                                    "size": 220,
+                                                    "fontSize": 22,
+                                                    "fontColor": "var(--site-text)",
+                                                    "backgroundColor": "var(--site-surface-soft)",
+                                                    "backgroundAlpha": 0.35,
+                                                    "autoRotateSpeed": 0.0025,
+                                                    "edgeRotateSpeed": 0.03,
+                                                    "centerDeadZone": 0.32,
+                                                    "items": [
+                                                    {"label": "⚠️", "value": "⚠️ "},
+                                                    {"label": "🚧", "value": "🚧 "},
+                                                    {"label": "🚨", "value": "🚨 "},
+                                                    {"label": "❗", "value": "❗ "},
+                                                    {"label": "❌", "value": "❌ "},
+                                                    {"label": "🚫", "value": "🚫 "},
+                                                    {"label": "⛔", "value": "⛔ "},
+                                                    {"label": "🛠️", "value": "🛠️ "},
+                                                    {"label": "🔧", "value": "🔧 "},
+                                                    {"label": "⚙️", "value": "⚙️ "},
+                                                    {"label": "⏳", "value": "⏳ "},
+                                                    {"label": "🔒", "value": "🔒 "},
+                                                    {"label": "🔓", "value": "🔓 "},
+                                                    {"label": "🛡️", "value": "🛡️ "},
+                                                    {"label": "🕵️", "value": "🕵️ "},
+                                                    {"label": "🐛", "value": "🐛 "},
+                                                    {"label": "✅", "value": "✅ "},
+                                                    {"label": "🟢", "value": "🟢 "},
+                                                    {"label": "🟠", "value": "🟠 "},
+                                                    {"label": "🔴", "value": "🔴 "},
+                                                    {"label": "🆗", "value": "🆗 "},
+                                                    {"label": "🎉", "value": "🎉 "},
+                                                    {"label": "👉", "value": "👉 "},
+                                                    {"label": "ℹ️", "value": "ℹ️ "},
+                                                    {"label": "📢", "value": "📢 "},
+                                                    {"label": "🔔", "value": "🔔 "},
+                                                    {"label": "📌", "value": "📌 "},
+                                                    {"label": "💡", "value": "💡 "},
+                                                    {"label": "🙏", "value": "🙏 "}
+                                                    ]
+                                                }
+                                            </script>
+                                        {% endif %}
                                         {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
                                         {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
                                     </div>
                                 {% endfor %}
                                 {% for error in admin_message_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
                                 <button type="submit" class="site-action site-action--primary">{% trans "Enregistrer l'administration" %}</button>
+                            </form>
+                            <form
+                                method="post"
+                                class="account-message-clear-form"
+                                data-account-clear-message-form
+                                data-confirm-title="{% trans 'Supprimer le message administrateur' %}"
+                                data-confirm-message="{% trans 'Supprimer ce message public administrateur ?' %}"
+                                data-confirm-yes-label="{% trans 'Oui' %}"
+                                data-confirm-no-label="{% trans 'Non' %}"
+                            >
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="clear_admin_message">
+                                <input type="hidden" name="member_search" value="{{ member_search }}">
+                                <button type="submit" class="site-action site-action--danger">{% trans "Supprimer le message" %}</button>
                             </form>
                         {% endif %}
                     </article>
@@ -496,6 +630,7 @@
 {% block page_scripts %}
     {% if page_mode == "account" %}
         <script src="{% static 'js/unsaved_changes.js' %}"></script>
+        <script src="{% static 'js/lss_word_sphere.js' %}"></script>
         <script>
             (() => {
                 const unsavedChanges = window.LSSUnsavedChanges;
@@ -507,6 +642,37 @@
                 if (unsavedChanges && adminForm instanceof HTMLFormElement) {
                     unsavedChanges.attach(adminForm);
                 }
+
+
+                document.querySelectorAll("[data-account-clear-message-form]").forEach((form) => {
+                    form.addEventListener("submit", async (event) => {
+                        const messageBox = window.LSSMessageBox;
+                        if (!(form instanceof HTMLFormElement) || !messageBox || typeof messageBox.confirm !== "function") {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        const result = await messageBox.confirm({
+                            title: form.getAttribute("data-confirm-title") || "",
+                            messageMarkdown: form.getAttribute("data-confirm-message") || "",
+                            buttons: [
+                                {
+                                    id: "yes",
+                                    label: form.getAttribute("data-confirm-yes-label") || "",
+                                    tone: "danger",
+                                },
+                                {
+                                    id: "no",
+                                    label: form.getAttribute("data-confirm-no-label") || "",
+                                    tone: "neutral",
+                                },
+                            ],
+                        });
+                        if (result && result.buttonId === "yes") {
+                            form.submit();
+                        }
+                    });
+                });
 
                 const themeName = document.getElementById("account-theme-name");
                 const labelsRoot = document.getElementById("account-theme-labels");

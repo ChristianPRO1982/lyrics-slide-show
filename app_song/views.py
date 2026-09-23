@@ -1,3 +1,5 @@
+from django.conf import settings
+import logging
 import re
 from dataclasses import dataclass
 from urllib.parse import urlsplit
@@ -60,6 +62,8 @@ from .search import (
     search_songs_to_moderate,
 )
 from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
+
+metadata_logger = logging.getLogger("app_song.metadata")
 
 
 SONG_DESCRIPTION_SUMMARY_LENGTH = 180
@@ -1660,6 +1664,53 @@ def _parse_prefix_rows(post_data) -> tuple[str, str, dict[int, dict[str, object]
     return new_prefix, new_comment, rows_by_id
 
 
+def _debug_metadata_event(event: str, *, exc_info=False, **context) -> None:
+    if not settings.DEBUG:
+        return
+    metadata_logger.debug("%s %s", event, context, exc_info=exc_info)
+
+
+def _common_primary_key_constraint_name(table_name: str) -> str:
+    return f"{table_name}_pkey"
+
+
+def _integrity_error_constraint_name(exc: IntegrityError) -> str:
+    cause = getattr(exc, "__cause__", None)
+    diag = getattr(cause, "diag", None)
+    return str(getattr(diag, "constraint_name", "") or "")
+
+
+def _is_common_primary_key_integrity_error(
+    exc: IntegrityError, *, table_name: str
+) -> bool:
+    constraint_name = _common_primary_key_constraint_name(table_name)
+    if _integrity_error_constraint_name(exc) == constraint_name:
+        return True
+    return f'unique constraint "{constraint_name}"' in str(exc)
+
+
+def _sync_common_identity_sequence(*, table_name: str, id_column: str) -> None:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f'''
+            SELECT setval(
+                pg_get_serial_sequence(%s, %s),
+                COALESCE((SELECT MAX("{id_column}") FROM "common"."{table_name}"), 0) + 1,
+                false
+            )
+            ''',
+            [f"common.{table_name}", id_column],
+        )
+
+
+def _insert_common_name_item(*, table_name: str, name: str) -> None:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f'INSERT INTO "common"."{table_name}" ("name") VALUES (%s)',
+            [name],
+        )
+
+
 def _save_name_items(
     request: HttpRequest,
     *,
@@ -1684,27 +1735,99 @@ def _save_name_items(
         relation_id_column=relation_id_column,
     )
     existing_by_id = {int(item["item_id"]): item for item in existing_rows}
+    _debug_metadata_event(
+        "name_items_save_start",
+        table_name=table_name,
+        id_column=id_column,
+        new_name=new_name,
+        parsed_rows=parsed_rows,
+        existing_ids=sorted(existing_by_id),
+        post_keys=list(request.POST.keys()),
+        user=str(
+            getattr(request.user, "username", "")
+            or getattr(request.user, "email", "")
+            or ""
+        ),
+    )
 
     if new_name:
+        _debug_metadata_event(
+            "name_item_create_attempt",
+            table_name=table_name,
+            name=new_name,
+        )
         try:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    f'INSERT INTO "common"."{table_name}" ("name") VALUES (%s)',
-                    [new_name],
-                )
+            _insert_common_name_item(table_name=table_name, name=new_name)
             created_count += 1
-        except IntegrityError:
-            error_parts.append(
-                _('Création impossible pour %(item)s "%(name)s".')
-                % {"item": page_label, "name": new_name}
+            _debug_metadata_event(
+                "name_item_create_success",
+                table_name=table_name,
+                name=new_name,
             )
+        except IntegrityError as exc:
+            _debug_metadata_event(
+                "name_item_create_integrity_error",
+                table_name=table_name,
+                name=new_name,
+                error=repr(exc),
+                exc_info=True,
+            )
+            if _is_common_primary_key_integrity_error(exc, table_name=table_name):
+                _debug_metadata_event(
+                    "name_item_create_sequence_resync_attempt",
+                    table_name=table_name,
+                    id_column=id_column,
+                    name=new_name,
+                )
+                try:
+                    _sync_common_identity_sequence(
+                        table_name=table_name, id_column=id_column
+                    )
+                    _insert_common_name_item(table_name=table_name, name=new_name)
+                    created_count += 1
+                    _debug_metadata_event(
+                        "name_item_create_retry_success",
+                        table_name=table_name,
+                        id_column=id_column,
+                        name=new_name,
+                    )
+                except IntegrityError as retry_exc:
+                    _debug_metadata_event(
+                        "name_item_create_retry_integrity_error",
+                        table_name=table_name,
+                        id_column=id_column,
+                        name=new_name,
+                        error=repr(retry_exc),
+                        exc_info=True,
+                    )
+                    error_parts.append(
+                        _('Création impossible pour %(item)s "%(name)s".')
+                        % {"item": page_label, "name": new_name}
+                    )
+            else:
+                error_parts.append(
+                    _('Création impossible pour %(item)s "%(name)s".')
+                    % {"item": page_label, "name": new_name}
+                )
 
     for item_id, values in parsed_rows.items():
         existing = existing_by_id.get(item_id)
         if not existing:
+            _debug_metadata_event(
+                "name_item_missing_existing_row",
+                table_name=table_name,
+                item_id=item_id,
+                values=values,
+            )
             continue
 
         if bool(values.get("delete")):
+            _debug_metadata_event(
+                "name_item_delete_attempt",
+                table_name=table_name,
+                item_id=item_id,
+                existing_name=str(existing.get("name") or ""),
+            )
             try:
                 with transaction.atomic():
                     with connection.cursor() as cursor:
@@ -1713,7 +1836,19 @@ def _save_name_items(
                             [item_id],
                         )
                 deleted_count += 1
-            except Exception:
+                _debug_metadata_event(
+                    "name_item_delete_success",
+                    table_name=table_name,
+                    item_id=item_id,
+                )
+            except Exception as exc:
+                _debug_metadata_event(
+                    "name_item_delete_error",
+                    table_name=table_name,
+                    item_id=item_id,
+                    error=repr(exc),
+                    exc_info=True,
+                )
                 error_parts.append(
                     _("Suppression impossible pour %(item)s #%(item_id)s.")
                     % {
@@ -1736,8 +1871,21 @@ def _save_name_items(
 
         old_name = str(existing.get("name") or "").strip()
         if old_name == new_name_value:
+            _debug_metadata_event(
+                "name_item_update_unchanged",
+                table_name=table_name,
+                item_id=item_id,
+                name=new_name_value,
+            )
             continue
 
+        _debug_metadata_event(
+            "name_item_update_attempt",
+            table_name=table_name,
+            item_id=item_id,
+            old_name=old_name,
+            new_name=new_name_value,
+        )
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -1745,7 +1893,23 @@ def _save_name_items(
                     [new_name_value, item_id],
                 )
             updated_count += 1
-        except IntegrityError:
+            _debug_metadata_event(
+                "name_item_update_success",
+                table_name=table_name,
+                item_id=item_id,
+                old_name=old_name,
+                new_name=new_name_value,
+            )
+        except IntegrityError as exc:
+            _debug_metadata_event(
+                "name_item_update_integrity_error",
+                table_name=table_name,
+                item_id=item_id,
+                old_name=old_name,
+                new_name=new_name_value,
+                error=repr(exc),
+                exc_info=True,
+            )
             error_parts.append(
                 _("Mise à jour impossible pour %(item)s #%(item_id)s.")
                 % {
@@ -1772,6 +1936,16 @@ def _save_name_items(
         )
     if error_parts:
         messages.error(request, " ".join(error_parts))
+
+    _debug_metadata_event(
+        "name_items_save_done",
+        table_name=table_name,
+        created_count=created_count,
+        updated_count=updated_count,
+        deleted_count=deleted_count,
+        error_parts=[str(item) for item in error_parts],
+        success_parts=[str(item) for item in success_parts],
+    )
 
 
 def _save_prefixes(request: HttpRequest) -> None:
