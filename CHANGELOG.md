@@ -1,3 +1,13 @@
+## [3.4.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.1...v3.4.2) (2026-09-23)
+
+
+### Bug Fixes
+
+* Add detailed debug logging for metadata events and handle integrity errors in name item management ([d037815](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/d037815b683082678ee7be8fb9c3228ef2d1b9c6))
+* Add emoji palette and clear message functionality for moderator and admin messages ([c1cc740](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/c1cc740a13571d425bcf74ab66b12fa54a5f9c35))
+* Replace emoji palette with interactive word sphere for moderator and admin messages ([691a82d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/691a82d2343511af8a1b051934aed0bde06c7065))
+* Update POT-Creation-Date and adjust template references in translation files ([49fbfc7](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/49fbfc7ba0b2b57715177bc8d7e80fad99eb3e4f))
+
 ## [3.4.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.0...v3.4.1) (2026-09-22)
 
 
