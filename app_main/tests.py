@@ -1485,6 +1485,12 @@ class AccountRoleTests(TestCase):
 
         self.assertContains(response, "Message de modération")
         self.assertContains(response, "data-account-moderation-form")
+        self.assertContains(response, "data-account-clear-message-form")
+        self.assertContains(response, "data-account-message-emoji")
+        self.assertContains(response, "clear_moderator_message")
+        self.assertContains(response, "Supprimer le message")
+        self.assertContains(response, "⚠️")
+        self.assertContains(response, "🙏")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Préfixes officiels")
@@ -1534,6 +1540,13 @@ class AccountRoleTests(TestCase):
         self.assertContains(response, "Message global administrateur")
         self.assertContains(response, "data-account-moderation-form")
         self.assertContains(response, "data-account-admin-form")
+        self.assertContains(response, "clear_moderator_message")
+        self.assertContains(response, "data-account-message-emoji")
+        self.assertContains(response, "clear_moderator_message")
+        self.assertContains(response, "clear_admin_message")
+        self.assertContains(response, "Supprimer le message")
+        self.assertContains(response, "⚠️")
+        self.assertContains(response, "🙏")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "Préfixes officiels")
@@ -2207,7 +2220,9 @@ class AccountActionCoverageTests(TestCase):
         self._login()
         for action in (
             "save_moderation_settings",
+            "clear_moderator_message",
             "save_admin_message_settings",
+            "clear_admin_message",
             "update_member_role",
         ):
             with self.subTest(action=action):
@@ -2285,6 +2300,46 @@ class AccountActionCoverageTests(TestCase):
         search = self.client.get(reverse("account"), {"member_search": "target"})
         self.assertEqual(search.status_code, 200)
         self.assertEqual(len(search.context["member_results"]), 1)
+
+    def test_moderator_clears_moderator_message_without_changing_cooldown(self):
+        params = create_site_params(
+            moderator_message="Message moderation",
+            moderator_message_cooldown_minutes=42,
+        )
+        self._login(moderator=True)
+
+        response = self.client.post(
+            reverse("account"),
+            {
+                "action": "clear_moderator_message",
+                "member_search": "target",
+            },
+        )
+
+        self.assertRedirects(response, reverse("account") + "?member_search=target")
+        params.refresh_from_db()
+        self.assertEqual(params.moderator_message, "")
+        self.assertEqual(params.moderator_message_cooldown_minutes, 42)
+
+    def test_admin_clears_admin_message_without_changing_cooldown(self):
+        params = create_site_params(
+            admin_message="Message admin",
+            admin_message_cooldown_minutes=24,
+        )
+        self._login(admin=True)
+
+        response = self.client.post(
+            reverse("account"),
+            {
+                "action": "clear_admin_message",
+                "member_search": "target",
+            },
+        )
+
+        self.assertRedirects(response, reverse("account") + "?member_search=target")
+        params.refresh_from_db()
+        self.assertEqual(params.admin_message, "")
+        self.assertEqual(params.admin_message_cooldown_minutes, 24)
 
     def test_admin_role_actions_cover_remove_invalid_and_unknown(self):
         create_site_params()

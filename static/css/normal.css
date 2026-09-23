@@ -1339,6 +1339,36 @@ body.lss-messagebox-open {
     resize: vertical;
 }
 
+.account-message-emoji-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.65rem 0 0.35rem;
+}
+
+.account-message-emoji-button {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--site-line);
+    border-radius: 8px;
+    background: var(--site-surface-soft);
+    color: var(--site-text);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.account-message-emoji-button:hover,
+.account-message-emoji-button:focus-visible {
+    border-color: var(--site-action-border-hover);
+    box-shadow: var(--site-focus-ring);
+    outline: none;
+}
+
+.account-message-clear-form {
+    margin-top: 0.85rem;
+}
+
 .site-home-dropcap-copy::after {
     content: "";
     display: block;
