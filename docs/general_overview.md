@@ -257,7 +257,7 @@ Animations contain songs only.
 
 An animation is prepared ahead of time and includes an animation date stored as `datetimeTZ`.
 
-Past animations are hidden by default in the interface, but they remain accessible through an explicit history view.
+Past animations are hidden by default in the interface after a configurable visibility delay based on `scheduled_at`. They remain accessible through an explicit history view. The current default delay is `48` hours through `ANIMATION_ARCHIVE_DELAY_HOURS`.
 
 There is no dedicated animation status such as draft or archived in the current product definition.
 

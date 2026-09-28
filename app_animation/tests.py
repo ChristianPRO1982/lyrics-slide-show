@@ -2067,6 +2067,48 @@ class AnimationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("add_animation"))
 
+    @override_settings(ANIMATION_ARCHIVE_DELAY_HOURS=48)
+    def test_recently_started_animation_remains_visible_before_archive_delay(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        recent = Animation.objects.create(
+            group=group,
+            title="Animation commencée",
+            scheduled_at=timezone.now() - timedelta(hours=47),
+        )
+        old = Animation.objects.create(
+            group=group,
+            title="Animation archivée",
+            scheduled_at=timezone.now() - timedelta(hours=49),
+        )
+
+        response = self.client.get(reverse("animations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(recent, response.context["upcoming_animations"])
+        self.assertNotIn(old, response.context["upcoming_animations"])
+
+    @override_settings(ANIMATION_ARCHIVE_DELAY_HOURS=48)
+    def test_animation_history_starts_after_archive_delay(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        recent = Animation.objects.create(
+            group=group,
+            title="Animation commencée",
+            scheduled_at=timezone.now() - timedelta(hours=47),
+        )
+        old = Animation.objects.create(
+            group=group,
+            title="Animation archivée",
+            scheduled_at=timezone.now() - timedelta(hours=49),
+        )
+
+        response = self.client.get(reverse("animation_history"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(old, response.context["past_animations"])
+        self.assertNotIn(recent, response.context["past_animations"])
+
     def test_add_animation_requires_selected_group(self):
         response = self.client.get(reverse("add_animation"))
         self.assertEqual(response.status_code, 302)

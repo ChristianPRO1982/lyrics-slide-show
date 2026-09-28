@@ -39,7 +39,14 @@ Une `Animation` :
 
 Il n'existe pas de statut `draft` ou `archived`.
 
-Les animations à venir et passées sont séparées via `scheduled_at` (vues liste/historique).
+Les animations à venir et passées sont séparées via `scheduled_at` (vues liste/historique),
+avec une fenêtre de visibilité après l'heure planifiée.
+
+La durée de cette fenêtre est configurée par la variable d'environnement
+`ANIMATION_ARCHIVE_DELAY_HOURS`, exprimée en heures, avec une valeur par défaut de `48`.
+Une animation reste visible dans la liste principale tant que son `scheduled_at` n'est pas
+dépassé de cette durée. Elle apparaît dans l'historique uniquement lorsque
+`scheduled_at < now - ANIMATION_ARCHIVE_DELAY_HOURS`.
 
 ### Animation Song
 

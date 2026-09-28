@@ -89,6 +89,7 @@ from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
 )
+from .services.archive import get_animation_archive_threshold
 from .services.shortcuts import (
     SHORTCUT_ACTION_ORDER,
     SHORTCUT_ACTION_TO_REMOTE_ACTION,
@@ -173,10 +174,10 @@ def animations(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    now = timezone.now()
+    archive_threshold = get_animation_archive_threshold()
     upcoming_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__gte=now,
+        scheduled_at__gte=archive_threshold,
     ).order_by("scheduled_at", "animation_id")
 
     return render(
@@ -1157,10 +1158,10 @@ def animation_history(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    now = timezone.now()
+    archive_threshold = get_animation_archive_threshold()
     past_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__lt=now,
+        scheduled_at__lt=archive_threshold,
     ).order_by("-scheduled_at", "-animation_id")
 
     return render(
