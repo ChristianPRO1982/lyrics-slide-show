@@ -2,7 +2,7 @@ import json
 import shutil
 import tempfile
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone as datetime_timezone
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
@@ -824,6 +824,35 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         )
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["default_transition"], "direct")
+
+    @override_settings(TIME_ZONE="Europe/Paris")
+    def test_animation_form_initial_scheduled_at_uses_local_timezone(self):
+        animation = Animation(
+            animation_id=1,
+            title="Animation locale",
+            scheduled_at=datetime(
+                2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc
+            ),
+        )
+
+        form = AnimationForm(instance=animation)
+
+        self.assertEqual(form.initial["scheduled_at"], "2026-05-08T19:45")
+
+    @override_settings(TIME_ZONE="Europe/Paris")
+    def test_animation_form_hidden_scheduled_at_uses_local_timezone(self):
+        animation = Animation(
+            animation_id=1,
+            title="Animation locale",
+            scheduled_at=datetime(
+                2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc
+            ),
+        )
+
+        html = AnimationForm(instance=animation)["scheduled_at"].as_hidden()
+
+        self.assertIn('value="2026-05-08T19:45"', html)
+        self.assertNotIn('value="2026-05-08T17:45"', html)
 
 
 class AnimationSongSlideDisplayModeModelTests(TestCase):

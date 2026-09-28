@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from app_animation.services.background_images import (
@@ -74,6 +75,8 @@ class AnimationForm(forms.ModelForm):
         if scheduled_value is None and getattr(self.instance, "pk", None):
             scheduled_value = self.instance.scheduled_at
         if scheduled_value is not None:
+            if timezone.is_aware(scheduled_value):
+                scheduled_value = timezone.localtime(scheduled_value)
             self.initial["scheduled_at"] = scheduled_value.strftime("%Y-%m-%dT%H:%M")
 
         if not self.is_bound:
