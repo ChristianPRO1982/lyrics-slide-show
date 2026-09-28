@@ -830,9 +830,7 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         animation = Animation(
             animation_id=1,
             title="Animation locale",
-            scheduled_at=datetime(
-                2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc
-            ),
+            scheduled_at=datetime(2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc),
         )
 
         form = AnimationForm(instance=animation)
@@ -844,9 +842,7 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         animation = Animation(
             animation_id=1,
             title="Animation locale",
-            scheduled_at=datetime(
-                2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc
-            ),
+            scheduled_at=datetime(2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc),
         )
 
         html = AnimationForm(instance=animation)["scheduled_at"].as_hidden()
