@@ -70,11 +70,7 @@ def seo_context(
     extra: dict[str, object] | None = None,
 ) -> dict[str, object]:
     canonical_value = (
-        canonical
-        if canonical is not None
-        else canonical_url(path)
-        if path
-        else ""
+        canonical if canonical is not None else canonical_url(path) if path else ""
     )
     normalized_description = normalize_text(description) or normalize_text(
         DEFAULT_DESCRIPTION
