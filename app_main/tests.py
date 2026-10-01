@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 from unittest.mock import MagicMock, patch
 from io import BytesIO
 from urllib.parse import parse_qs, urlparse
+from xml.etree import ElementTree
 
 from django.core.management import call_command
 from django.contrib.messages import get_messages
@@ -2040,6 +2041,12 @@ class SeoIntegrationTests(TestCase):
     def test_sitemap_contains_only_public_canonical_urls(self):
         response = self.client.get(reverse("sitemap_xml"))
         content = self._content(response)
+        root = ElementTree.fromstring(content)
+        namespace = {"sitemap": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        urls = [
+            item.text or ""
+            for item in root.findall("sitemap:url/sitemap:loc", namespace)
+        ]
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("https://lss.carthographie.fr/</loc>", content)
@@ -2061,7 +2068,8 @@ class SeoIntegrationTests(TestCase):
         self.assertNotIn("/account/", content)
         self.assertNotIn("/site-params/", content)
         self.assertNotIn("github.com", content)
-        self.assertNotIn("?", content)
+        self.assertTrue(urls)
+        self.assertTrue(all("?" not in url for url in urls))
 
     def test_robots_txt_declares_sitemap_without_blocking_noindex_pages(self):
         response = self.client.get(reverse("robots_txt"))
