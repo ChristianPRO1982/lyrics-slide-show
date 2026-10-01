@@ -90,6 +90,9 @@ USER_TABLE = os.environ.get("USER_TABLE", "users")
 LSS_NOT_FOUND_URL = os.environ.get(
     "LSS_NOT_FOUND_URL", "https://lss.carthographie.fr/404"
 )
+LSS_CANONICAL_BASE_URL = os.environ.get(
+    "LSS_CANONICAL_BASE_URL", "https://lss.carthographie.fr"
+)
 
 
 INSTALLED_APPS = [
@@ -154,6 +157,9 @@ REMOTE_MASTER_COMMAND_ACK_SECONDS = float(
 )
 REMOTE_CHANNEL_REDIS_URL = os.environ.get(
     "REMOTE_CHANNEL_REDIS_URL", "redis://remote_redis:6379/0"
+)
+ANIMATION_ARCHIVE_DELAY_HOURS = int(
+    os.environ.get("ANIMATION_ARCHIVE_DELAY_HOURS", "48")
 )
 CHANNEL_LAYERS = {
     "default": {

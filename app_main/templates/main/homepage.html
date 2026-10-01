@@ -4,8 +4,7 @@
 {% trans "Journal des versions sur GitHub" as homepage_changelog_label %}
 {% trans "Dernière version publiée" as homepage_latest_release_label %}
 
-{% block title %}{{ home_site_title }} - Lyrics Slide Show{% endblock %}
-{% block meta_description %}{% endblock %}
+{% block title %}{{ seo_title|default:home_site_title }}{% endblock %}
 
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% endif %}{% endblock %}
 {% block section_intro %}{% endblock %}

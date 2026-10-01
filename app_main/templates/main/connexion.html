@@ -5,7 +5,9 @@
 {% trans "Politique de confidentialité" as privacy_label %}
 
 {% block title %}
-    {% if page_mode == "account" %}
+    {% if seo_title %}
+        {{ seo_title }}
+    {% elif page_mode == "account" %}
         {{ request.user.username }} | Lyrics Slide Show
     {% else %}
         {% trans "Connexion" %} | Lyrics Slide Show

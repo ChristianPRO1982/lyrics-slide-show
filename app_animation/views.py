@@ -14,7 +14,6 @@ from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
@@ -89,6 +88,7 @@ from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
 )
+from .services.archive import get_animation_archive_threshold
 from .services.shortcuts import (
     SHORTCUT_ACTION_ORDER,
     SHORTCUT_ACTION_TO_REMOTE_ACTION,
@@ -108,6 +108,7 @@ logger = logging.getLogger(__name__)
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
 )
+BACKGROUND_IMAGES_SUMMARY_LIMIT = 20
 
 
 def _safe_int(value: str | None, fallback: int) -> int:
@@ -173,10 +174,10 @@ def animations(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    now = timezone.now()
+    archive_threshold = get_animation_archive_threshold()
     upcoming_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__gte=now,
+        scheduled_at__gte=archive_threshold,
     ).order_by("scheduled_at", "animation_id")
 
     return render(
@@ -996,7 +997,7 @@ def background_images(request: HttpRequest) -> HttpResponse:
     )
     summary_background_images = random.sample(
         summary_candidates,
-        min(15, len(summary_candidates)),
+        min(BACKGROUND_IMAGES_SUMMARY_LIMIT, len(summary_candidates)),
     )
 
     return render(
@@ -1157,10 +1158,10 @@ def animation_history(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    now = timezone.now()
+    archive_threshold = get_animation_archive_threshold()
     past_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__lt=now,
+        scheduled_at__lt=archive_threshold,
     ).order_by("-scheduled_at", "-animation_id")
 
     return render(

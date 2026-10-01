@@ -2,7 +2,7 @@ import json
 import shutil
 import tempfile
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone as datetime_timezone
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
@@ -824,6 +824,31 @@ class AnimationFormFontValidationTests(SimpleTestCase):
         )
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["default_transition"], "direct")
+
+    @override_settings(TIME_ZONE="Europe/Paris")
+    def test_animation_form_initial_scheduled_at_uses_local_timezone(self):
+        animation = Animation(
+            animation_id=1,
+            title="Animation locale",
+            scheduled_at=datetime(2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc),
+        )
+
+        form = AnimationForm(instance=animation)
+
+        self.assertEqual(form.initial["scheduled_at"], "2026-05-08T19:45")
+
+    @override_settings(TIME_ZONE="Europe/Paris")
+    def test_animation_form_hidden_scheduled_at_uses_local_timezone(self):
+        animation = Animation(
+            animation_id=1,
+            title="Animation locale",
+            scheduled_at=datetime(2026, 5, 8, 17, 45, tzinfo=datetime_timezone.utc),
+        )
+
+        html = AnimationForm(instance=animation)["scheduled_at"].as_hidden()
+
+        self.assertIn('value="2026-05-08T19:45"', html)
+        self.assertNotIn('value="2026-05-08T17:45"', html)
 
 
 class AnimationSongSlideDisplayModeModelTests(TestCase):
@@ -2066,6 +2091,48 @@ class AnimationViewsTests(TestCase):
         response = self.client.get(reverse("animations"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("add_animation"))
+
+    @override_settings(ANIMATION_ARCHIVE_DELAY_HOURS=48)
+    def test_recently_started_animation_remains_visible_before_archive_delay(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        recent = Animation.objects.create(
+            group=group,
+            title="Animation commencée",
+            scheduled_at=timezone.now() - timedelta(hours=47),
+        )
+        old = Animation.objects.create(
+            group=group,
+            title="Animation archivée",
+            scheduled_at=timezone.now() - timedelta(hours=49),
+        )
+
+        response = self.client.get(reverse("animations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(recent, response.context["upcoming_animations"])
+        self.assertNotIn(old, response.context["upcoming_animations"])
+
+    @override_settings(ANIMATION_ARCHIVE_DELAY_HOURS=48)
+    def test_animation_history_starts_after_archive_delay(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        recent = Animation.objects.create(
+            group=group,
+            title="Animation commencée",
+            scheduled_at=timezone.now() - timedelta(hours=47),
+        )
+        old = Animation.objects.create(
+            group=group,
+            title="Animation archivée",
+            scheduled_at=timezone.now() - timedelta(hours=49),
+        )
+
+        response = self.client.get(reverse("animation_history"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(old, response.context["past_animations"])
+        self.assertNotIn(recent, response.context["past_animations"])
 
     def test_add_animation_requires_selected_group(self):
         response = self.client.get(reverse("add_animation"))
@@ -6004,12 +6071,12 @@ class BackgroundImageViewsTests(TestCase):
         self.assertEqual(BackgroundImage.objects.count(), 0)
         self.assertContains(response, "Sélectionnez un choix valide")
 
-    def test_background_images_context_summary_shows_only_active_entries_and_caps_at_15(
+    def test_background_images_context_summary_shows_only_active_entries_and_caps_at_20(
         self,
     ):
         self._login(moderator=True)
         created_active_ids: list[int] = []
-        for index in range(18):
+        for index in range(23):
             image = BackgroundImage.objects.create(
                 asset_code=f"bg-active-{index}",
                 storage_filename=f"active-{index}.png",
@@ -6043,8 +6110,8 @@ class BackgroundImageViewsTests(TestCase):
         response = self.client.get(reverse("background_images"))
         self.assertEqual(response.status_code, 200)
         summary_items = response.context["summary_background_images"]
-        self.assertLessEqual(len(summary_items), 15)
-        self.assertEqual(len(summary_items), 15)
+        self.assertLessEqual(len(summary_items), 20)
+        self.assertEqual(len(summary_items), 20)
         self.assertTrue(
             all(int(item["image_id"]) in created_active_ids for item in summary_items)
         )

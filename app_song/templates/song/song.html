@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{{ title_complete_with_tags }} | Lyrics Slide Show{% endblock %}
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}{{ title_complete_with_tags }} | Lyrics Slide Show{% endif %}{% endblock %}
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
 {% block section_intro %}
     <style>@import url("{% static 'css/app_song.css' %}");</style>

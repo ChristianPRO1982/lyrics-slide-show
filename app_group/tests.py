@@ -649,7 +649,7 @@ class GroupViewsTests(TestCase):
         Animation.objects.create(
             group=group,
             title="Past",
-            scheduled_at=timezone.now() - timezone.timedelta(days=1),
+            scheduled_at=timezone.now() - timezone.timedelta(days=3),
         )
 
         denied = self.client.get(reverse("modify_group", args=[group.group_id]))

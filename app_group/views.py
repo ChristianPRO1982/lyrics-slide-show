@@ -7,9 +7,9 @@ from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from app_main.seo import GROUPS_DESCRIPTION, seo_context
 from .forms import GroupCreateForm, GroupSettingsForm
 from .models import (
     Group,
@@ -44,6 +44,7 @@ from .services import (
 )
 from app_member.services import can_manage_groups_globally
 from app_animation.models import Animation
+from app_animation.services.archive import get_animation_archive_threshold
 
 
 def _duplicate_name_exists(name: str, exclude_group_id: int | None = None) -> bool:
@@ -166,6 +167,12 @@ def _build_groups_page_context(
         )
 
     return {
+        **seo_context(
+            title=_("Groupes | Lyrics Slide Show"),
+            description=GROUPS_DESCRIPTION,
+            path=reverse("groups"),
+            index=True,
+        ),
         "create_form": create_form or GroupCreateForm(),
         "group_cards": group_cards,
         "selected_group": selected_group,
@@ -531,7 +538,7 @@ def modify_group(request: HttpRequest, group_id: int) -> HttpResponse:
         "upcoming_animations": list(
             Animation.objects.filter(
                 group_id=group.group_id,
-                scheduled_at__gte=timezone.now(),
+                scheduled_at__gte=get_animation_archive_threshold(),
             ).order_by("scheduled_at", "animation_id")
         ),
         "can_select_current_group": user_can_select_group(
