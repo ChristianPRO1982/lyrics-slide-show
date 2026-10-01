@@ -1,3 +1,20 @@
+# [3.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.2...v3.5.0) (2026-10-01)
+
+
+### Bug Fixes
+
+* Add ElementTree import for sitemap XML parsing in SeoIntegrationTests ([31f60de](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/31f60deed1d4231e70fbbb7b248e312f85423cbe))
+* Adjust scheduled_at handling in AnimationForm to use local timezone ([6599dd9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6599dd930bd01eee645c4f060ced3e4e65c3e6bb))
+* Clean up unused timezone import in views and streamline AnimationForm scheduled_at initialization ([b0ed83d](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/b0ed83dfe526a9af54babb4dea1cdeb3532869d0))
+* Implement animation archive delay feature with configurable visibility window ([6e31b1f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6e31b1f55d1308d61cf6b9e8febbe7a00b079888))
+* Simplify canonical URL assignment in seo_context function ([85bbb9b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/85bbb9bfc5b9250fb0df58c0d070155a34e43acc))
+* Update SEO documentation and add SEO policy overview to general overview ([7b4f74c](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/7b4f74cb43893712805ddef1055e8f6358aba0cc))
+
+
+### Features
+
+* Implement SEO enhancements across templates and views, including dynamic title and meta description handling, sitemap generation, and robots.txt configuration ([486d421](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/486d421acf6acd2e62c10a25977c35cc1b8059be))
+
 ## [3.4.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.1...v3.4.2) (2026-09-23)
 
 
