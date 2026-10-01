@@ -8,8 +8,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Lyrics Slide Show{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{% block title %}{% firstof seo_title "Lyrics Slide Show" %}{% endblock %}</title>
+    <meta name="description" content="{{ seo_description|default:'' }}">
+    <meta name="robots" content="{{ seo_robots|default:'noindex, follow' }}">
+    {% if seo_canonical_url %}<link rel="canonical" href="{{ seo_canonical_url }}">{% endif %}
+    {% if seo_og_title and seo_og_description and seo_og_url %}
+        <meta property="og:title" content="{{ seo_og_title }}">
+        <meta property="og:description" content="{{ seo_og_description }}">
+        <meta property="og:url" content="{{ seo_og_url }}">
+        <meta property="og:type" content="{{ seo_og_type|default:'website' }}">
+        <meta property="og:site_name" content="{{ seo_site_name|default:'Lyrics Slide Show' }}">
+    {% endif %}
+    {% if seo_json_ld %}<script type="application/ld+json">{{ seo_json_ld|safe }}</script>{% endif %}
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Anton&family=Baloo+2&family=Bangers&family=Bree+Serif&family=Caveat&family=Caveat+Brush&family=Chewy&family=Concert+One&family=Fredoka&family=Fugaz+One&family=Gloria+Hallelujah&family=Indie+Flower&family=Lobster&family=Patrick+Hand&family=Poppins&family=Quicksand&family=Raleway&family=Righteous&family=Roboto+Slab&family=Sacramento&family=Sarabun&family=Source+Sans+Pro&family=Special+Elite&family=Staatliches&family=Ubuntu&family=Work+Sans&display=swap" rel="stylesheet">
     <link id="site-favicon" rel="icon" sizes="64x64" href="{% static 'icons/favicon.png' %}" type="image/png"/>
     <script>

@@ -20,6 +20,12 @@ from app_main.lyrics import (
     build_lyrics_song_entry,
     build_request_share_url,
 )
+from app_main.seo import (
+    SONGS_DESCRIPTION,
+    build_song_meta_description,
+    canonical_reverse,
+    seo_context,
+)
 from app_member.services import get_site_params_for_language
 
 from .genre_labels import normalize_genre_group_display_name
@@ -1271,6 +1277,12 @@ def songs(request: HttpRequest) -> HttpResponse:
         request,
         "song/songs.html",
         {
+            **seo_context(
+                title=_("Catalogue de chants | Lyrics Slide Show"),
+                description=SONGS_DESCRIPTION,
+                canonical=canonical_reverse("songs"),
+                index=not bool(request.GET),
+            ),
             "selected_group": selected_group,
             "search_params": display_search_params,
             "reference_options": reference_options,
@@ -2105,6 +2117,22 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         request,
         "song/song.html",
         {
+            **(
+                seo_context(
+                    title=f"{text_artifacts.full_title} | Lyrics Slide Show",
+                    description=build_song_meta_description(
+                        song_object,
+                        bands=bands,
+                        artists=artists,
+                        genre_groups=genre_groups,
+                    ),
+                    path=reverse("song", args=[song_object.song_id]),
+                    index=True,
+                    og_type="article",
+                )
+                if not song_object.licensed
+                else {}
+            ),
             "selected_group": selected_group,
             "song": song_object,
             "show_double_slide_marker": (

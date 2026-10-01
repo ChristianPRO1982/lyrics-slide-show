@@ -55,6 +55,9 @@ from app_main.wiki_help import (
     WIKI_PAGE_BY_URL_NAME,
     get_wiki_help_url,
 )
+from app_animation.models import Animation
+from app_group.models import Group, GroupMembership, GroupStatus
+from app_group.services import SELECTED_GROUP_ID_SESSION_KEY
 from app_member.models import MemberRole
 from app_member.forms import AdminMessageForm, SiteParamsAdminForm
 from app_member.services import MemberRoleFlags
@@ -1882,6 +1885,193 @@ class WikiHelpTemplateTests(SimpleTestCase):
             'href="https://github.com/ChristianPRO1982/lyrics-slide-show/wiki/Smarthpone-view"',
             rendered,
         )
+
+
+class SeoIntegrationTests(TestCase):
+    member_id = "11111111-1111-1111-1111-111111111111"
+
+    def setUp(self):
+        create_site_params()
+        create_directory_user(id=self.member_id)
+        self.group = Group.objects.create(
+            name="SEO Group",
+            status=GroupStatus.OPEN,
+        )
+        self.public_song = Song.objects.create(
+            title="SEO Public Song",
+            subtitle="Test",
+            description="Une description fiable pour le référencement du chant.",
+            status=SongStatus.NOT_VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(
+            song=self.public_song,
+            num=2,
+            num_verse=1,
+            text="Couplet public",
+        )
+        self.licensed_song = Song.objects.create(
+            title="SEO Licensed Song",
+            subtitle="",
+            description="Chant sous licence",
+            status=SongStatus.VALIDATED,
+            licensed=True,
+        )
+
+    def _content(self, response):
+        return response.content.decode(response.charset or "utf-8")
+
+    def _login(self):
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": self.member_id,
+            "username": "known.user",
+            "email": "known.user@example.test",
+            "first_name": "Known",
+            "last_name": "User",
+            "is_moderator": False,
+            "is_admin": False,
+        }
+        session.save()
+
+    def _select_group(self):
+        session = self.client.session
+        session[SELECTED_GROUP_ID_SESSION_KEY] = self.group.group_id
+        session.save()
+
+    def assertRobots(self, response, value):
+        self.assertContains(
+            response,
+            f'<meta name="robots" content="{value}">',
+            html=False,
+        )
+
+    def assertCanonical(self, response, url):
+        self.assertContains(
+            response,
+            f'<link rel="canonical" href="{url}">',
+            html=False,
+        )
+
+    def test_homepage_is_indexable_with_canonical_and_description(self):
+        response = self.client.get(reverse("homepage"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "index, follow")
+        self.assertCanonical(response, "https://lss.carthographie.fr/")
+        self.assertContains(response, "outil gratuit", html=False)
+        self.assertContains(response, '"@type":"WebSite"', html=False)
+
+    def test_songs_root_is_indexable_without_query_params(self):
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "index, follow")
+        self.assertCanonical(response, "https://lss.carthographie.fr/songs/")
+        self.assertContains(response, "Catalogue de chants | Lyrics Slide Show")
+
+    def test_songs_search_variant_is_noindex_with_catalog_canonical(self):
+        response = self.client.get(reverse("songs"), {"text": "SEO"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "noindex, follow")
+        self.assertCanonical(response, "https://lss.carthographie.fr/songs/")
+
+    def test_public_song_page_is_indexable_and_canonicalized(self):
+        response = self.client.get(reverse("song", args=[self.public_song.song_id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "index, follow")
+        self.assertCanonical(
+            response,
+            f"https://lss.carthographie.fr/songs/{self.public_song.song_id}/",
+        )
+        self.assertContains(response, "SEO Public Song - Test | Lyrics Slide Show")
+        self.assertContains(response, "description fiable", html=False)
+
+    def test_public_index_pages_are_indexable(self):
+        cases = (
+            (reverse("groups"), "https://lss.carthographie.fr/groups/"),
+            (reverse("login"), "https://lss.carthographie.fr/login/"),
+            (
+                reverse("privacy_policy"),
+                "https://lss.carthographie.fr/privacy-policy/",
+            ),
+        )
+
+        for path, canonical in cases:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertRobots(response, "index, follow")
+                self.assertCanonical(response, canonical)
+
+    def test_business_pages_remain_noindex(self):
+        self._login()
+        GroupMembership.objects.create(
+            group=self.group,
+            member_id=self.member_id,
+            is_group_admin=True,
+        )
+        self._select_group()
+        Animation.objects.create(
+            group=self.group,
+            title="SEO Animation",
+            description="",
+            scheduled_at=timezone.now() + timedelta(days=1),
+        )
+        cases = (
+            reverse("modify_group", args=[self.group.group_id]),
+            reverse("animations"),
+            reverse("theme_preferences"),
+            reverse("language"),
+            reverse("account"),
+        )
+
+        for path in cases:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertRobots(response, "noindex, follow")
+                self.assertNotContains(response, 'rel="canonical"', html=False)
+
+    def test_sitemap_contains_only_public_canonical_urls(self):
+        response = self.client.get(reverse("sitemap_xml"))
+        content = self._content(response)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("https://lss.carthographie.fr/</loc>", content)
+        self.assertIn("https://lss.carthographie.fr/privacy-policy/</loc>", content)
+        self.assertIn("https://lss.carthographie.fr/login/</loc>", content)
+        self.assertIn("https://lss.carthographie.fr/songs/</loc>", content)
+        self.assertIn("https://lss.carthographie.fr/groups/</loc>", content)
+        self.assertIn(
+            f"https://lss.carthographie.fr/songs/{self.public_song.song_id}/</loc>",
+            content,
+        )
+        self.assertNotIn(
+            f"https://lss.carthographie.fr/songs/{self.licensed_song.song_id}/",
+            content,
+        )
+        self.assertNotIn("/animations/", content)
+        self.assertNotIn("/themes/", content)
+        self.assertNotIn("/language/", content)
+        self.assertNotIn("/account/", content)
+        self.assertNotIn("/site-params/", content)
+        self.assertNotIn("github.com", content)
+        self.assertNotIn("?", content)
+
+    def test_robots_txt_declares_sitemap_without_blocking_noindex_pages(self):
+        response = self.client.get(reverse("robots_txt"))
+        content = self._content(response)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("User-agent: *", content)
+        self.assertIn("Allow: /", content)
+        self.assertIn("Sitemap: https://lss.carthographie.fr/sitemap.xml", content)
+        self.assertNotIn("Disallow: /animations/", content)
 
 
 class HomepageModerationCardTests(TestCase):

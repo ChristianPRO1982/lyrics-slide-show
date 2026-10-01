@@ -1,5 +1,6 @@
 import logging
 import mimetypes
+from xml.etree.ElementTree import Element, SubElement, tostring
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -40,6 +41,15 @@ from app_main.auth import (
 from app_main.home_cards import parse_home_cards
 from app_main.home_cards import filter_display_home_cards
 from app_main.homepage_markdown import render_homepage_markdown
+from app_main.seo import (
+    HOMEPAGE_DESCRIPTION,
+    LOGIN_DESCRIPTION,
+    PRIVACY_DESCRIPTION,
+    canonical_reverse,
+    homepage_json_ld,
+    seo_context,
+)
+from app_song.models import Song
 from app_song.search import search_songs_to_moderate
 from app_main.models import SiteParams
 from app_member.forms import (
@@ -158,6 +168,13 @@ def homepage(request: HttpRequest) -> HttpResponse:
         request,
         "main/homepage.html",
         {
+            **seo_context(
+                title="Lyrics Slide Show - gestion et projection de chants",
+                description=HOMEPAGE_DESCRIPTION,
+                path=reverse("homepage"),
+                index=True,
+                extra={"seo_json_ld": homepage_json_ld()},
+            ),
             "auth_mode": settings.AUTH_MODE,
             "selected_group": _get_selected_group(request),
             "home_site_title": (
@@ -389,6 +406,12 @@ def login(request: HttpRequest) -> HttpResponse:
         request,
         "main/connexion.html",
         {
+            **seo_context(
+                title="Connexion | Lyrics Slide Show",
+                description=LOGIN_DESCRIPTION,
+                path=reverse("login"),
+                index=True,
+            ),
             "auth_mode": settings.AUTH_MODE,
             "session_user": get_session_user(request.session),
             "selected_group": _get_selected_group(request),
@@ -929,10 +952,49 @@ def privacy_policy(request: HttpRequest) -> HttpResponse:
         request,
         "main/privacy_policy.html",
         {
+            **seo_context(
+                title="Politique de confidentialité | Lyrics Slide Show",
+                description=PRIVACY_DESCRIPTION,
+                path=reverse("privacy_policy"),
+                index=True,
+            ),
             "auth_mode": settings.AUTH_MODE,
             "selected_group": _get_selected_group(request),
         },
     )
+
+
+def sitemap_xml(_request: HttpRequest) -> HttpResponse:
+    urlset = Element(
+        "urlset",
+        xmlns="http://www.sitemaps.org/schemas/sitemap/0.9",
+    )
+    static_url_names = (
+        "homepage",
+        "privacy_policy",
+        "login",
+        "songs",
+        "groups",
+    )
+
+    for url_name in static_url_names:
+        url = SubElement(urlset, "url")
+        SubElement(url, "loc").text = canonical_reverse(url_name)
+
+    for song_id in (
+        Song.objects.filter(licensed=False)
+        .order_by("song_id")
+        .values_list("song_id", flat=True)
+    ):
+        url = SubElement(urlset, "url")
+        SubElement(url, "loc").text = canonical_reverse("song", args=[song_id])
+
+    content = b'<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(
+        urlset,
+        encoding="utf-8",
+        xml_declaration=False,
+    )
+    return HttpResponse(content, content_type="application/xml; charset=utf-8")
 
 
 def theme_preferences(request: HttpRequest) -> HttpResponse:

@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Liste des groupes" %} | Lyrics Slide Show{% endblock %}
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}{% trans "Liste des groupes" %} | Lyrics Slide Show{% endif %}{% endblock %}
 {% block section_title %}{{ selected_group.name }}{% endblock %}
 {% block section_intro %}
     <style>@import url("{% static 'css/app_group.css' %}");</style>

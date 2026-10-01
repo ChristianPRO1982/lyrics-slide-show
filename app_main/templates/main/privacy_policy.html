@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Politique de confidentialité" %} | Lyrics Slide Show{% endblock %}
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}{% trans "Politique de confidentialité" %} | Lyrics Slide Show{% endif %}{% endblock %}
 
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Politique de confidentialité" %}{% endif %}{% endblock %}
 

@@ -90,6 +90,9 @@ USER_TABLE = os.environ.get("USER_TABLE", "users")
 LSS_NOT_FOUND_URL = os.environ.get(
     "LSS_NOT_FOUND_URL", "https://lss.carthographie.fr/404"
 )
+LSS_CANONICAL_BASE_URL = os.environ.get(
+    "LSS_CANONICAL_BASE_URL", "https://lss.carthographie.fr"
+)
 
 
 INSTALLED_APPS = [

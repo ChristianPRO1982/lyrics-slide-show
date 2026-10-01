@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from app_main.seo import GROUPS_DESCRIPTION, seo_context
 from .forms import GroupCreateForm, GroupSettingsForm
 from .models import (
     Group,
@@ -166,6 +167,12 @@ def _build_groups_page_context(
         )
 
     return {
+        **seo_context(
+            title=_("Groupes | Lyrics Slide Show"),
+            description=GROUPS_DESCRIPTION,
+            path=reverse("groups"),
+            index=True,
+        ),
         "create_form": create_form or GroupCreateForm(),
         "group_cards": group_cards,
         "selected_group": selected_group,
