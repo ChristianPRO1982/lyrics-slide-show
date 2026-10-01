@@ -6071,12 +6071,12 @@ class BackgroundImageViewsTests(TestCase):
         self.assertEqual(BackgroundImage.objects.count(), 0)
         self.assertContains(response, "Sélectionnez un choix valide")
 
-    def test_background_images_context_summary_shows_only_active_entries_and_caps_at_15(
+    def test_background_images_context_summary_shows_only_active_entries_and_caps_at_20(
         self,
     ):
         self._login(moderator=True)
         created_active_ids: list[int] = []
-        for index in range(18):
+        for index in range(23):
             image = BackgroundImage.objects.create(
                 asset_code=f"bg-active-{index}",
                 storage_filename=f"active-{index}.png",
@@ -6110,8 +6110,8 @@ class BackgroundImageViewsTests(TestCase):
         response = self.client.get(reverse("background_images"))
         self.assertEqual(response.status_code, 200)
         summary_items = response.context["summary_background_images"]
-        self.assertLessEqual(len(summary_items), 15)
-        self.assertEqual(len(summary_items), 15)
+        self.assertLessEqual(len(summary_items), 20)
+        self.assertEqual(len(summary_items), 20)
         self.assertTrue(
             all(int(item["image_id"]) in created_active_ids for item in summary_items)
         )

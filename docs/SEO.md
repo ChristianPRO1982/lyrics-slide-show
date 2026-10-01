@@ -1,313 +1,307 @@
-Je veux mettre en place un SEO propre et maintenable pour Lyrics Slide Show, sans chercher une optimisation SEO professionnelle poussée.
+# SEO Lyrics Slide Show
 
-Avant de modifier le code, analyse l’architecture Django existante et réutilise au maximum les mécanismes déjà présents, notamment `templates/base.html`, les templates applicatifs et les URL existantes.
+Ce document décrit le socle SEO réellement appliqué dans `Lyrics Slide Show`.
 
-Ne modifie pas les URL publiques existantes, le fonctionnement métier, l’authentification Keycloak, les recherches, les permissions ni la navigation sauf si cela est strictement nécessaire au SEO.
+L'objectif reste volontairement raisonnable : rendre les pages publiques compréhensibles par les moteurs de recherche sans transformer le projet en chantier SEO professionnel lourd.
 
-## Objectif général
+## Principe général
 
-Lyrics Slide Show doit être clairement compris par Google et Bing comme :
+La politique d'indexation est sécurisante :
 
-- une application gratuite de gestion et de projection de chants ;
-- permettant de rechercher des chants ;
-- proposant des pages publiques individuelles pour les chants ;
-- disposant de groupes permettant d’organiser l’usage ;
-- avec une documentation externe sur le Wiki GitHub.
+- toutes les pages sont `noindex, follow` par défaut ;
+- seules les pages publiques explicitement déclarées optent pour `index, follow` ;
+- les pages métier, privées, techniques ou futures restent donc non indexables tant qu'elles ne sont pas volontairement exposées.
 
-Le cœur SEO du site est :
+Cette règle évite qu'une nouvelle page d'administration, de modification ou de workflow interne devienne indexable par accident.
 
-1. `/songs/`
-2. `/songs/<song_id>/`
-3. la homepage
-4. `/groups/`
+Le SEO ne doit pas modifier :
 
-Le reste est secondaire ou doit être exclu de l’index.
+- les URL publiques existantes ;
+- l'authentification Keycloak ;
+- les permissions métier ;
+- les recherches ;
+- la navigation ;
+- le comportement fonctionnel des pages.
 
-## Politique d’indexation
+## Implémentation
 
-Appliquer cette politique :
+Le socle commun est centralisé dans `templates/base.html`.
 
-### INDEX très important
+Les variables de contexte SEO utilisées par le template sont :
 
-- `/songs/`
-- `/songs/<song_id>/`
+- `seo_title` ;
+- `seo_description` ;
+- `seo_robots` ;
+- `seo_canonical_url` ;
+- `seo_og_title` ;
+- `seo_og_description` ;
+- `seo_og_url` ;
+- `seo_og_type` ;
+- `seo_site_name` ;
+- `seo_json_ld`.
 
-Toutes les pages publiques individuelles de chants doivent être indexables et présentes dans le sitemap.
+Les helpers sont centralisés dans `app_main/seo.py`.
 
-### INDEX important
+Ils fournissent notamment :
 
-- `/`
-- `/groups/`
+- la base canonique ;
+- la construction d'URL absolues ;
+- le contexte SEO standard ;
+- les descriptions SEO communes ;
+- la description dynamique d'une page de chant ;
+- le JSON-LD de la homepage ;
+- la réponse `robots.txt`.
 
-Attention : seule la liste publique `/groups/` est indexable.
+La base canonique par défaut est :
 
-Les pages de modification/gestion d’un groupe, notamment `/groups/<group_id>/` si elles correspondent à de la gestion métier, ne doivent pas être indexées.
+```text
+https://lss.carthographie.fr
+```
 
-### INDEX
+Elle peut être surchargée par la variable d'environnement :
 
-- `/privacy-policy/`
-- `/login/`
+```text
+LSS_CANONICAL_BASE_URL
+```
 
-Le Wiki GitHub reste externe au site Django :
-`https://github.com/ChristianPRO1982/lyrics-slide-show/wiki`
+Les pages indexables doivent utiliser une canonical absolue en HTTPS.
 
-Ne pas mettre les URL GitHub dans le sitemap LSS.
+Les pages `noindex` ne doivent normalement pas fournir de canonical, afin d'éviter des signaux contradictoires. La seule exception prévue est une variante de recherche du catalogue `/songs/?...`, qui reste `noindex, follow` mais pointe vers la canonical `/songs/`.
 
-### NOINDEX
+## Pages indexables
 
-Au minimum :
+Les pages suivantes sont indexables :
+
+| URL | Raison |
+| --- | --- |
+| `/` | présentation publique du service |
+| `/songs/` sans paramètres | catalogue public des chants |
+| `/songs/<song_id>/` pour les chants publics | page individuelle d'un chant |
+| `/groups/` | liste publique des groupes |
+| `/login/` | entrée de connexion au service |
+| `/privacy-policy/` | politique de confidentialité |
+
+Un chant est considéré public pour le SEO s'il est accessible anonymement avec les règles métier actuelles, donc avec `licensed=False`.
+
+Le statut de validation du chant ne décide pas son indexation SEO. Un chant non licencié peut apparaître dans le sitemap même s'il n'est pas validé, car il est déjà accessible publiquement selon les règles actuelles du site.
+
+## Pages non indexables
+
+Toutes les autres pages restent `noindex, follow` par défaut.
+
+Cela couvre notamment :
 
 - `/animations/` et toutes les pages fonctionnelles dessous ;
-- `/themes/`
-- `/language/`
-- `/account/`
-- `/site-params/`
-- `/login/diagnostic/`
-- `/auth/callback/`
-- `/provision/redirect/`
-- `/provision/complete/`
-- `/logout/`
+- `/themes/` ;
+- `/language/` ;
+- `/account/` ;
+- `/site-params/` ;
+- `/login/diagnostic/` ;
+- `/auth/callback/` ;
+- `/provision/redirect/` ;
+- `/provision/complete/` ;
+- `/logout/` ;
 - `/heavy/` et ses dépendances ;
-- toutes les interfaces de création/modification/administration ;
-- `/songs/<id>/modify/`
-- les interfaces de modification des genres, artistes, groupes musicaux, préfixes ;
-- les endpoints techniques liés aux messages, métadonnées, popups ou rendus de texte qui ne sont pas des pages publiques autonomes destinées à Google ;
+- les pages de création, modification, administration ou modération ;
+- `/groups/<group_id>/` ;
+- `/songs/<song_id>/modify/` ;
+- les pages de modification des genres, artistes, groupes musicaux et préfixes ;
+- les endpoints techniques de messages, métadonnées, popups ou rendu de texte ;
 - toute future page métier non explicitement déclarée publique.
 
-Je préfère une approche sécurisante :
+Les pages `noindex` ne doivent pas être bloquées dans `robots.txt`, car les robots doivent pouvoir lire la balise `noindex`.
 
-**les pages sont `noindex, follow` par défaut et seules les pages publiques listées ci-dessus optent explicitement pour l’indexation.**
+## Catalogue de chants
 
-Ainsi une future page métier ne deviendra pas indexable accidentellement.
+La page `/songs/` sans paramètre est indexable.
 
-Ne pas utiliser `robots.txt` pour empêcher Google d’accéder aux pages `noindex`, car le crawler doit pouvoir lire la directive `noindex`.
+Les variantes avec paramètres GET ne sont pas indexables :
 
-## Socle SEO commun dans `base.html`
+```text
+/songs/?text=...
+/songs/?genre_ids=...
+/songs/?favorites_only=...
+/songs/?validation=...
+```
 
-Centraliser proprement les éléments suivants :
+Ces variantes conservent leur fonctionnement utilisateur normal, mais émettent :
 
-- `<title>`
-- `meta description`
-- `meta robots`
-- URL canonical
-- Open Graph minimal :
-  - `og:title`
-  - `og:description`
-  - `og:url`
-  - `og:type`
-  - `og:site_name`
+```text
+noindex, follow
+```
 
-Éviter de dupliquer le `<head>` dans chaque template.
+et une canonical vers :
 
-Prévoir des blocs ou variables Django permettant aux pages importantes de personnaliser ces informations.
+```text
+https://lss.carthographie.fr/songs/
+```
 
-Les pages indexables doivent avoir une canonical absolue en HTTPS sur :
+Ce choix évite de créer un grand nombre de pages indexables pour les recherches, filtres et préférences.
 
-`https://lss.carthographie.fr/...`
+Les liens affichés vers les chants restent de vrais liens HTML `<a href="...">`.
 
-Les pages `noindex` ne doivent pas envoyer de signaux contradictoires.
+## Pages individuelles de chants
 
-## Homepage `/`
+Les pages `/songs/<song_id>/` conservent l'URL numérique historique.
 
-Conserver son contenu et son fonctionnement actuels.
+Il n'y a pas de slug dans ce chantier.
 
-Vérifier :
+Pour une page de chant publique :
 
-- un seul H1 réellement descriptif ;
-- un `<title>` explicitant Lyrics Slide Show ;
-- une vraie `meta description`.
+- le titre SEO est basé sur le titre complet du chant avec `Lyrics Slide Show` en suffixe ;
+- le H1 existant reste le titre du chant ;
+- la description SEO est courte ;
+- la canonical pointe vers l'URL propre du chant ;
+- la page est présente dans le sitemap.
 
-La description doit expliquer naturellement qu’il s’agit d’un outil gratuit permettant de gérer, rechercher, organiser et projeter des chants pour des animations, célébrations, concerts ou usages similaires.
+La description SEO d'un chant est construite uniquement à partir de données fiables déjà disponibles :
 
-Ne pas faire de keyword stuffing.
-
-La homepage doit contenir des liens HTML crawlables vers :
-
-- `/songs/`
-- `/groups/`
-- la documentation GitHub Wiki
-- éventuellement `/login/` et `/privacy-policy/`
-
-Le Wiki GitHub doit rester un lien externe normal, sans `nofollow`.
-
-## Catalogue `/songs/`
-
-C’est la page publique la plus importante du site.
-
-Elle doit avoir :
-
-- un `<title>` spécifique ;
-- une `meta description` spécifique ;
-- un H1 expliquant clairement qu’il s’agit de la recherche/catalogue de chants de Lyrics Slide Show ;
-- une canonical vers :
-  `https://lss.carthographie.fr/songs/`
-
-La version de base `/songs/` doit être indexable.
-
-Les variantes produites par des paramètres de recherche, filtres, favoris, validation, modération, pagination ou autres paramètres GET ne doivent pas créer des milliers de pages indexables.
-
-Pour ces variantes :
-
-- conserver leur fonctionnement normal pour l’utilisateur ;
-- les laisser crawlables ;
-- les passer en `noindex, follow` ;
-- utiliser `/songs/` comme canonical lorsque le contenu représente simplement une variante filtrée du catalogue.
-
-Ne pas casser les formulaires de recherche.
-
-Tous les chants affichés dans la liste doivent utiliser de vrais liens HTML `<a href>` vers leurs pages individuelles lorsqu’un lien vers le chant est présenté.
-
-## Pages individuelles `/songs/<song_id>/`
-
-Elles sont essentielles au référencement.
-
-Conserver l’URL numérique actuelle : ne pas introduire de slug ni de migration d’URL dans ce chantier.
-
-Pour chaque chant public et indexable :
-
-- title dynamique basé sur le titre du chant, avec `Lyrics Slide Show` en suffixe ;
-- H1 = titre du chant ;
-- meta description dynamique mais courte et lisible ;
-- canonical absolue vers sa propre URL ;
-- page présente dans le sitemap.
-
-Construire la meta description uniquement à partir de métadonnées fiables déjà disponibles dans le modèle/contexte : titre, sous-titre, auteur, compositeur, description, références ou informations équivalentes pertinentes.
-
-Ne pas fabriquer artificiellement une description à partir de grandes portions de paroles.
-
-Éviter les descriptions identiques pour tous les chants.
-
-Ne pas modifier les règles actuelles de visibilité ou de validation des chants : seuls les chants réellement publics doivent apparaître dans le sitemap et être indexables.
-
-## `/groups/`
-
-La page racine `/groups/` doit être indexable.
-
-Lui donner :
-
-- un title clair ;
-- une meta description expliquant le rôle des groupes dans Lyrics Slide Show ;
-- un H1 clair ;
-- une canonical propre.
-
-Les pages de gestion/modification d’un groupe ne sont pas indexables.
-
-## Login et confidentialité
-
-`/login/` :
-- indexable ;
-- title et description simples ;
-- canonical propre.
-
-La page doit expliquer que l’authentification permet d’accéder aux fonctionnalités personnelles ou collaboratives de Lyrics Slide Show.
-
-Ne pas essayer d’indexer Keycloak lui-même.
-
-`/privacy-policy/` :
-- indexable ;
-- title ;
+- titre ;
+- sous-titre ;
 - description ;
-- canonical propre.
+- artistes ;
+- groupes musicaux ;
+- genres.
 
-## Sitemap LSS
+Elle ne doit pas être fabriquée à partir de grandes portions de paroles.
 
-Créer :
+## Homepage
 
-`https://lss.carthographie.fr/sitemap.xml`
+La homepage `/` est indexable.
 
-Utiliser de préférence les mécanismes Django adaptés plutôt qu’un XML maintenu manuellement.
+Elle reçoit :
 
-Le sitemap doit contenir seulement les URL canoniques indexables :
+- un title explicite ;
+- une meta description décrivant Lyrics Slide Show comme outil gratuit de gestion, recherche, organisation et projection de chants ;
+- une canonical absolue ;
+- un JSON-LD raisonnable de type `WebSite` et `SoftwareApplication`.
 
-- `/`
-- `/privacy-policy/`
-- `/login/`
-- `/songs/`
-- chaque `/songs/<song_id>/` réellement public
-- `/groups/`
+Le Wiki GitHub reste une documentation externe :
 
-Ne jamais inclure :
+```text
+https://github.com/ChristianPRO1982/lyrics-slide-show/wiki
+```
 
-- paramètres de recherche ;
-- animations ;
-- thèmes ;
-- langue ;
-- compte ;
-- pages d’administration/modification ;
-- callbacks ;
-- pages techniques ;
-- pages privées ;
-- GitHub Wiki.
+Il peut être lié depuis les pages du site, mais il ne doit pas être inclus dans le sitemap LSS.
 
-Ajouter `lastmod` uniquement si une vraie donnée fiable de dernière modification existe déjà. Ne pas inventer de date.
+## Sitemap
 
-Ne pas ajouter `priority` ou `changefreq` juste pour donner artificiellement plus d’importance à certaines pages.
+Le sitemap est généré dynamiquement par Django à l'adresse :
+
+```text
+/sitemap.xml
+```
+
+La route est déclarée dans `lyrics_slide_show/urls.py` et la vue dans `app_main/views.py`.
+
+Le sitemap contient uniquement les URL canoniques indexables :
+
+- `/` ;
+- `/privacy-policy/` ;
+- `/login/` ;
+- `/songs/` ;
+- `/groups/` ;
+- chaque `/songs/<song_id>/` dont le chant a `licensed=False`.
+
+Le sitemap ne contient jamais :
+
+- des paramètres de recherche ;
+- des pages d'animations ;
+- des pages de thèmes ;
+- la page de langue ;
+- la page de compte ;
+- des pages d'administration ou modification ;
+- des callbacks ;
+- des pages techniques ;
+- des pages privées ;
+- le Wiki GitHub.
+
+Le sitemap ne fournit pas `lastmod`, car le modèle `Song` ne possède pas de date fiable de dernière modification.
+
+Il ne fournit pas non plus `priority` ni `changefreq`.
 
 ## robots.txt
 
-Créer ou vérifier :
+Le fichier `robots.txt` est généré par Django à l'adresse :
 
-`https://lss.carthographie.fr/robots.txt`
+```text
+/robots.txt
+```
 
-Objectif simple :
+Il autorise l'exploration normale et déclare le sitemap :
 
-- permettre l’exploration normale ;
-- déclarer le sitemap LSS.
+```text
+User-agent: *
+Allow: /
+Sitemap: https://lss.carthographie.fr/sitemap.xml
+```
 
-Ne pas bloquer par `robots.txt` les pages disposant d’un `noindex`.
+Il ne bloque pas les pages `noindex`.
 
-## Données structurées
+## Open Graph
 
-Rester raisonnable.
+`base.html` expose un Open Graph minimal quand les données SEO sont présentes :
 
-Sur la homepage uniquement, si cela s’intègre proprement, ajouter un JSON-LD Schema.org correspondant réellement à Lyrics Slide Show, par exemple `WebSite` et/ou `SoftwareApplication`.
+- `og:title` ;
+- `og:description` ;
+- `og:url` ;
+- `og:type` ;
+- `og:site_name`.
 
-Ne pas ajouter de données structurées artificielles uniquement pour multiplier les balises SEO.
-
-Pour les pages de chants, ne pas inventer de schéma complexe si aucun type pertinent n’est clairement adapté aux données disponibles.
+Il n'y a pas d'image Open Graph dédiée à ce stade.
 
 ## Internationalisation
 
-Le projet possède plusieurs langues d’interface.
+Le site possède plusieurs langues d'interface, mais il n'existe pas d'URL stable distincte par langue pour chaque page.
 
-Ne pas ajouter `hreflang` sauf si des URL distinctes et stables existent réellement pour chaque version linguistique d’une même page.
+Il ne faut donc pas ajouter de `hreflang` dans l'état actuel.
 
-Ne pas créer de nouvelles URL uniquement pour ce chantier.
+Il ne faut pas créer de nouvelles URL uniquement pour le SEO.
+
+Les textes SEO ajoutés côté Python doivent rester compatibles avec Django i18n.
+
+## Maintenance
+
+Pour rendre une nouvelle page indexable :
+
+1. vérifier qu'elle est réellement publique et utile pour les moteurs ;
+2. ajouter un contexte SEO explicite avec `seo_context(..., index=True, ...)` ;
+3. fournir une canonical absolue ;
+4. vérifier que la page ne dépend pas d'un état de session privé ;
+5. l'ajouter au sitemap seulement si elle est canonicale et publique ;
+6. ajouter ou adapter un test SEO.
+
+Pour créer une page métier, de gestion ou technique :
+
+- ne rien ajouter au SEO ;
+- laisser le fallback `noindex, follow` ;
+- ne pas l'ajouter au sitemap.
 
 ## Tests
 
-Ajouter des tests Django ciblés qui vérifient au minimum :
+Les tests SEO ciblés sont dans `app_main.tests.SeoIntegrationTests`.
 
-1. homepage indexable ;
-2. `/songs/` indexable sans paramètres ;
-3. une page publique `/songs/<id>/` indexable et canonicalisée ;
-4. une recherche `/songs/?...` en `noindex`;
-5. `/groups/` indexable ;
-6. une page de gestion de groupe en `noindex`;
-7. `/animations/` en `noindex`;
-8. `/themes/` en `noindex`;
-9. `/language/` en `noindex`;
-10. `/account/` en `noindex`;
-11. sitemap contenant les principales URL publiques ;
-12. sitemap contenant les chants publics ;
-13. sitemap ne contenant aucune URL métier privée ou `noindex`;
-14. `robots.txt` déclarant correctement le sitemap.
+Ils vérifient notamment :
 
-## Contraintes
+- la homepage indexable ;
+- `/songs/` indexable sans paramètres ;
+- une variante `/songs/?...` en `noindex` ;
+- une page de chant publique indexable et canonicalisée ;
+- `/groups/`, `/login/` et `/privacy-policy/` indexables ;
+- des pages métier en `noindex` ;
+- le contenu du sitemap ;
+- l'absence de chants licenciés dans le sitemap ;
+- l'absence d'URL privées ou techniques dans le sitemap ;
+- `robots.txt`.
 
-- conserver les URL existantes ;
-- conserver le comportement fonctionnel existant ;
-- ne pas refaire l’UI ;
-- ne pas introduire de dépendance SEO externe ;
-- privilégier une implémentation Django simple et centralisée ;
-- respecter l’architecture actuelle du projet ;
-- éviter le sur-engineering ;
-- ajouter ou adapter la documentation technique nécessaire.
+Commande utile :
 
-Avant de coder, fais un court état des lieux des mécanismes existants et indique les fichiers que tu comptes modifier.
+```bash
+uv run python manage.py test app_main.tests.SeoIntegrationTests --noinput -v 2
+```
 
-Après implémentation, donne-moi :
-- la liste des fichiers modifiés ;
-- les règles INDEX/NOINDEX effectivement appliquées ;
-- les URL présentes dans le sitemap ;
-- les tests ajoutés et leur résultat.
+Pour le contrôle global du projet :
+
+```bash
+uv run python manage.py test app_main app_song app_group app_animation --noinput -v 2
+```

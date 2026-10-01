@@ -108,6 +108,7 @@ logger = logging.getLogger(__name__)
 TARGET_ROW_FIELD_PATTERN = re.compile(
     r"^rows\[(?P<target_id>\d+)\]\[(?P<field>name|sort_order|delete)\]$"
 )
+BACKGROUND_IMAGES_SUMMARY_LIMIT = 20
 
 
 def _safe_int(value: str | None, fallback: int) -> int:
@@ -996,7 +997,7 @@ def background_images(request: HttpRequest) -> HttpResponse:
     )
     summary_background_images = random.sample(
         summary_candidates,
-        min(15, len(summary_candidates)),
+        min(BACKGROUND_IMAGES_SUMMARY_LIMIT, len(summary_candidates)),
     )
 
     return render(
