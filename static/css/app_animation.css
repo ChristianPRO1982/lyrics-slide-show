@@ -3,6 +3,69 @@
     gap: 1rem;
 }
 
+.animation-group-stats {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.animation-group-stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+}
+
+.animation-group-stats-header h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.animation-group-stats-list {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+}
+
+.animation-group-stats-list > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--site-line);
+}
+
+.animation-group-stats-list > div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.animation-group-stats-list dt {
+    color: var(--site-ink-soft);
+}
+
+.animation-group-stats-list dd {
+    margin: 0;
+    color: var(--site-ink);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.animation-inline-info-link {
+    appearance: none;
+    display: inline;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--site-link);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+    cursor: pointer;
+}
+
 .animation-background-summary-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));

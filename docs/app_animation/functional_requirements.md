@@ -48,6 +48,13 @@ Une animation reste visible dans la liste principale tant que son `scheduled_at`
 dépassé de cette durée. Elle apparaît dans l'historique uniquement lorsque
 `scheduled_at < now - ANIMATION_ARCHIVE_DELAY_HOURS`.
 
+Le résumé des pages liste et historique affiche aussi des statistiques de groupe.
+La statistique `Animations à venir` est limitée à une fenêtre future configurable par
+`ANIMATION_UPCOMING_LOOKAHEAD_DAYS`, exprimée en jours, avec une valeur par défaut de `63`.
+La statistique `Animations futures` reprend toutes les animations non archivées sans
+limite haute. La statistique `Animations passées` reprend les animations strictement
+avant le seuil d'archivage.
+
 ### Animation Song
 
 Une `Animation Song` est une occurrence d'un chant global dans une animation.

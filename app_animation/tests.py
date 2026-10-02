@@ -2134,6 +2134,72 @@ class AnimationViewsTests(TestCase):
         self.assertIn(old, response.context["past_animations"])
         self.assertNotIn(recent, response.context["past_animations"])
 
+    @override_settings(
+        ANIMATION_ARCHIVE_DELAY_HOURS=48,
+        ANIMATION_UPCOMING_LOOKAHEAD_DAYS=63,
+    )
+    def test_animation_group_stats_use_archive_and_future_windows(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        now = timezone.now()
+        Animation.objects.create(
+            group=group,
+            title="Animation passée",
+            scheduled_at=now - timedelta(hours=49),
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation récente",
+            scheduled_at=now - timedelta(hours=47),
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation bientôt",
+            scheduled_at=now + timedelta(days=10),
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation loin",
+            scheduled_at=now + timedelta(days=64),
+        )
+        Animation.objects.create(
+            group=other_group,
+            title="Animation autre groupe",
+            scheduled_at=now + timedelta(days=10),
+        )
+
+        response = self.client.get(reverse("animations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["animation_group_stats"],
+            {
+                "upcoming": 2,
+                "future": 3,
+                "past": 1,
+            },
+        )
+        self.assertContains(response, "Animations à venir")
+        self.assertContains(response, "Animations futures")
+        self.assertContains(response, "Animations passées")
+        self.assertContains(response, "data-animation-stats-popup")
+        self.assertContains(response, "Statistiques du groupe ⓘ")
+
+        history_response = self.client.get(reverse("animation_history"))
+
+        self.assertEqual(history_response.status_code, 200)
+        self.assertEqual(
+            history_response.context["animation_group_stats"],
+            {
+                "upcoming": 2,
+                "future": 3,
+                "past": 1,
+            },
+        )
+        self.assertContains(history_response, "Animations futures")
+        self.assertContains(history_response, "data-animation-stats-popup")
+
     def test_add_animation_requires_selected_group(self):
         response = self.client.get(reverse("add_animation"))
         self.assertEqual(response.status_code, 302)

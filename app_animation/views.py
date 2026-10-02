@@ -88,7 +88,12 @@ from .services.access import (
     get_selected_group_or_404,
     redirect_to_groups_when_no_selection,
 )
-from .services.archive import get_animation_archive_threshold
+from .services.archive import (
+    build_animation_group_stats,
+    get_animation_archive_delay,
+    get_animation_archive_threshold,
+    get_animation_upcoming_lookahead_days,
+)
 from .services.shortcuts import (
     SHORTCUT_ACTION_ORDER,
     SHORTCUT_ACTION_TO_REMOTE_ACTION,
@@ -169,6 +174,29 @@ def _build_shortcuts_config(
     }
 
 
+def _build_animation_group_stats_context(group_id: int) -> dict[str, object]:
+    archive_delay_hours = int(get_animation_archive_delay().total_seconds() // 3600)
+    upcoming_lookahead_days = get_animation_upcoming_lookahead_days()
+    return {
+        "animation_group_stats": build_animation_group_stats(group_id),
+        "animation_archive_delay_hours": archive_delay_hours,
+        "animation_upcoming_lookahead_days": upcoming_lookahead_days,
+        "animation_stats_help": _(
+            "Animations à venir : animations du groupe programmées depuis "
+            "moins de %(archive_hours)s h ou dans les %(lookahead_days)s "
+            "prochains jours.\n\n"
+            "Animations futures : animations du groupe programmées depuis "
+            "moins de %(archive_hours)s h ou dans le futur, sans limite haute.\n\n"
+            "Animations passées : animations du groupe programmées avant la "
+            "fenêtre de %(archive_hours)s h."
+        )
+        % {
+            "archive_hours": archive_delay_hours,
+            "lookahead_days": upcoming_lookahead_days,
+        },
+    }
+
+
 def animations(request: HttpRequest) -> HttpResponse:
     try:
         selected_group = get_selected_group_or_404(request)
@@ -186,6 +214,7 @@ def animations(request: HttpRequest) -> HttpResponse:
         {
             "selected_group": selected_group,
             "upcoming_animations": upcoming_animations,
+            **_build_animation_group_stats_context(selected_group.group_id),
         },
     )
 
@@ -1170,6 +1199,7 @@ def animation_history(request: HttpRequest) -> HttpResponse:
         {
             "selected_group": selected_group,
             "past_animations": past_animations,
+            **_build_animation_group_stats_context(selected_group.group_id),
         },
     )
 

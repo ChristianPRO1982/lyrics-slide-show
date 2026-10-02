@@ -37,6 +37,9 @@
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Liste des animations" %}{% endblock %}
+{% block page_summary %}
+    {% include "animation/includes/_animation_group_stats_summary.html" %}
+{% endblock %}
 {% block content %}
     <section class="site-theme-selection">
         {% for animation in upcoming_animations %}
@@ -64,4 +67,7 @@
             </article>
         {% endfor %}
     </section>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{% static 'js/app_animation_stats.js' %}"></script>
 {% endblock %}

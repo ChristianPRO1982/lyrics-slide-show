@@ -161,6 +161,9 @@ REMOTE_CHANNEL_REDIS_URL = os.environ.get(
 ANIMATION_ARCHIVE_DELAY_HOURS = int(
     os.environ.get("ANIMATION_ARCHIVE_DELAY_HOURS", "48")
 )
+ANIMATION_UPCOMING_LOOKAHEAD_DAYS = int(
+    os.environ.get("ANIMATION_UPCOMING_LOOKAHEAD_DAYS", "63")
+)
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
