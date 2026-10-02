@@ -235,7 +235,7 @@ Before confirming deletion, the interface must display the impact of that action
 In the current implementation, that impact is summarized through:
 
 - the current number of members linked to the group,
-- the current number of upcoming `animations` linked to that group.
+- the current number of non-archived `animations` linked to that group.
 
 The deletion workflow must require an explicit textual confirmation with the exact input expected in the current interface language.
 

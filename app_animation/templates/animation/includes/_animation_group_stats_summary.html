@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="animation-group-stats" aria-label="{% trans 'Statistiques du groupe' %}">
+    <div class="animation-group-stats-header">
+        <h2>{% trans "Statistiques du groupe" %}</h2>
+        <button
+            type="button"
+            class="animation-inline-info-link"
+            data-animation-stats-popup
+            data-popup-title="{% trans 'Statistiques du groupe ⓘ' %}"
+            data-popup-message="{{ animation_stats_help|escape }}"
+            aria-label="{% trans 'Explication des statistiques du groupe' %}"
+        >ⓘ</button>
+    </div>
+    <dl class="animation-group-stats-list">
+        <div>
+            <dt>{% trans "Animations à venir" %}</dt>
+            <dd>{{ animation_group_stats.upcoming }}</dd>
+        </div>
+        <div>
+            <dt>{% trans "Animations futures" %}</dt>
+            <dd>{{ animation_group_stats.future }}</dd>
+        </div>
+        <div>
+            <dt>{% trans "Animations passées" %}</dt>
+            <dd>{{ animation_group_stats.past }}</dd>
+        </div>
+    </dl>
+</div>

@@ -2134,6 +2134,94 @@ class AnimationViewsTests(TestCase):
         self.assertIn(old, response.context["past_animations"])
         self.assertNotIn(recent, response.context["past_animations"])
 
+    @override_settings(
+        ANIMATION_ARCHIVE_DELAY_HOURS=48,
+        ANIMATION_UPCOMING_LOOKAHEAD_DAYS=63,
+    )
+    def test_animation_group_stats_use_archive_and_future_windows(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        now = datetime(2026, 5, 8, 12, 0, tzinfo=datetime_timezone.utc)
+        archive_threshold = now - timedelta(hours=48)
+        upcoming_limit = now + timedelta(days=63)
+        Animation.objects.create(
+            group=group,
+            title="Animation passée",
+            scheduled_at=archive_threshold - timedelta(seconds=1),
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation seuil archive",
+            scheduled_at=archive_threshold,
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation bientôt",
+            scheduled_at=now + timedelta(days=10),
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation limite à venir",
+            scheduled_at=upcoming_limit,
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation future lointaine",
+            scheduled_at=upcoming_limit + timedelta(seconds=1),
+        )
+        Animation.objects.create(
+            group=other_group,
+            title="Animation autre groupe",
+            scheduled_at=now + timedelta(days=10),
+        )
+
+        with patch("app_animation.views.timezone.now", return_value=now):
+            response = self.client.get(reverse("animations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["animation_group_stats"],
+            {
+                "upcoming": 3,
+                "future": 4,
+                "past": 1,
+            },
+        )
+        self.assertEqual(
+            [item.title for item in response.context["upcoming_animations"]],
+            [
+                "Animation seuil archive",
+                "Animation bientôt",
+                "Animation limite à venir",
+                "Animation future lointaine",
+            ],
+        )
+        self.assertContains(response, "Animations à venir")
+        self.assertContains(response, "Animations futures")
+        self.assertContains(response, "Animations passées")
+        self.assertContains(response, "data-animation-stats-popup")
+        self.assertContains(response, "Statistiques du groupe ⓘ")
+
+        with patch("app_animation.views.timezone.now", return_value=now):
+            history_response = self.client.get(reverse("animation_history"))
+
+        self.assertEqual(history_response.status_code, 200)
+        self.assertEqual(
+            history_response.context["animation_group_stats"],
+            {
+                "upcoming": 3,
+                "future": 4,
+                "past": 1,
+            },
+        )
+        self.assertEqual(
+            [item.title for item in history_response.context["past_animations"]],
+            ["Animation passée"],
+        )
+        self.assertContains(history_response, "Animations futures")
+        self.assertContains(history_response, "data-animation-stats-popup")
+
     def test_add_animation_requires_selected_group(self):
         response = self.client.get(reverse("add_animation"))
         self.assertEqual(response.status_code, 302)
