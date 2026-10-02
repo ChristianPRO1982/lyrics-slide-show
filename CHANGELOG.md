@@ -1,3 +1,10 @@
+## [3.5.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.1...v3.5.2) (2026-10-02)
+
+
+### Bug Fixes
+
+* Implement safe link rendering in markdown and update documentation ([ae15544](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/ae1554434df271eeb093f6e16b420157c1cf7942))
+
 ## [3.5.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.0...v3.5.1) (2026-10-02)
 
 
