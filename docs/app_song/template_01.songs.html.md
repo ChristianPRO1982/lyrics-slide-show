@@ -7,6 +7,7 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 ## Responsabilité front
 
 - affiche le titre de section et l’icône songs
+- affiche une phrase de contexte indiquant que la page est une bibliothèque de paroles de chants
 - affiche les compteurs `Chants`, `Recherche ⓘ`, `Total ⓘ`
 - affiche les tags de recherche active
 - affiche un panneau d’aide rappelant les marqueurs `✔️`, `✔️⁉️`, `📄`, `📱`, `🖨️`
@@ -26,7 +27,8 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - affiche une liste desktop en cartes
 - affiche à part une liste compacte mobile avec panneau `⚙️`
 - chaque carte peut afficher :
-  - titre cliquable
+  - titre complet cliquable, sans préfixe `Paroles de`
+  - marqueurs `✔️`, `✔️⁉️` et `📄` séparés du texte du lien quand ils s’appliquent
   - marqueur `2️⃣` à droite si `slide_display_mode != single`
   - étoile favori éventuelle
   - ordre des marqueurs à droite : `2️⃣` puis `⭐` quand les deux sont présents

@@ -66,6 +66,7 @@
 {% block page_kicker %}{% trans "Chants" %}{% endblock %}
 {% block page_title %}{% trans "Liste des chants" %}{% endblock %}
 {% block page_intro %}
+    <p>{% trans "Parcourez les paroles de chants disponibles dans Lyrics Slide Show et ouvrez chaque chant pour consulter sa structure complète." %}</p>
     <div class="song-page-stats">
         <p>{% trans "Chants" %} : <strong data-song-visible-count>{{ displayed_count }}</strong></p>
         <p>
@@ -284,9 +285,11 @@
                 <article class="site-theme-card song-card" data-song-card data-song-card-id="{{ item.song.song_id }}" data-song-search-text="{{ item.song.title }} {{ item.song.subtitle }}">
                     <div class="song-card-main">
                         <div>
-                            <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a></h3>
+                            <h3><a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete }}</a></h3>
                         </div>
                         <div class="song-card-markers">
+                            {% if item.song.validation_marker %}<span title="{{ item.validation_label }}" aria-label="{{ item.validation_label }}">{{ item.song.validation_marker }}</span>{% endif %}
+                            {% if item.song.licensed %}<span title="{{ item.licensed_label }}" aria-label="{{ item.licensed_label }}">📄</span>{% endif %}
                             {% if item.show_double_slide_marker %}<span title="{% trans 'Double slide' %}" aria-label="{% trans 'Double slide' %}">2️⃣</span>{% endif %}
                             {% if item.is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>{% endif %}
                         </div>
@@ -399,10 +402,16 @@
                     <div class="song-compact-item-head">
                         <div class="song-compact-item-main">
                             <h3 class="song-compact-item-title">
-                                <a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete_with_tags }}</a>
+                                <a class="song-title-link" href="{{ item.display_url }}">{{ item.title_complete }}</a>
                             </h3>
                         </div>
                         <div class="song-compact-item-tools">
+                            {% if item.song.validation_marker %}
+                                <span class="song-compact-favorite" title="{{ item.validation_label }}" aria-label="{{ item.validation_label }}">{{ item.song.validation_marker }}</span>
+                            {% endif %}
+                            {% if item.song.licensed %}
+                                <span class="song-compact-favorite" title="{{ item.licensed_label }}" aria-label="{{ item.licensed_label }}">📄</span>
+                            {% endif %}
                             {% if item.show_double_slide_marker %}
                                 <span class="song-compact-favorite" title="{% trans 'Double slide' %}" aria-label="{% trans 'Double slide' %}">2️⃣</span>
                             {% endif %}

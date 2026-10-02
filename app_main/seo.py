@@ -137,46 +137,15 @@ def truncate_text(value: object, *, max_length: int = 155) -> str:
     return f"{truncated}…"
 
 
-def _labels(items) -> list[str]:
-    labels: list[str] = []
-    for item in items or ():
-        if isinstance(item, dict):
-            label = normalize_text(item.get("label"))
-        else:
-            label = normalize_text(item)
-        if label:
-            labels.append(label)
-    return labels
-
-
-def _genre_labels(genre_groups) -> list[str]:
-    labels: list[str] = []
-    for _group_name, genres in genre_groups or ():
-        labels.extend(_labels(genres))
-    return labels
-
-
 def build_song_meta_description(song, *, bands=(), artists=(), genre_groups=()) -> str:
     title = normalize_text(getattr(song, "title", ""))
     subtitle = normalize_text(getattr(song, "subtitle", ""))
-    description = truncate_text(getattr(song, "description", ""), max_length=130)
-    metadata = []
-    if subtitle:
-        metadata.append(subtitle)
-    metadata.extend(_labels(artists)[:2])
-    metadata.extend(_labels(bands)[:2])
-    metadata.extend(_genre_labels(genre_groups)[:2])
-
-    parts = [part for part in [description, ", ".join(metadata)] if part]
-    if parts:
-        return truncate_text(
-            _("Chant %(title)s sur Lyrics Slide Show. %(details)s")
-            % {"title": title, "details": " ".join(parts)},
-            max_length=160,
-        )
+    full_title = f"{title} - {subtitle}" if subtitle else title
     return truncate_text(
-        _("Paroles et informations du chant %(title)s sur Lyrics Slide Show.")
-        % {"title": title or SITE_NAME},
+        _(
+            "Retrouvez les paroles de %(title)s, avec le texte du chant structuré pour la lecture et la projection dans Lyrics Slide Show."
+        )
+        % {"title": full_title or SITE_NAME},
         max_length=160,
     )
 

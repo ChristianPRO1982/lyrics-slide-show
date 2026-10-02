@@ -183,6 +183,14 @@ def _song_title_with_validation_marker(song: Song) -> str:
     return title
 
 
+def _validation_label_for_song(song: Song) -> str:
+    if song.status == SongStatus.VALIDATED:
+        return _("Chant validé")
+    if song.status == SongStatus.VALIDATED_WITH_CONCERN:
+        return _("Chant validé avec des messages")
+    return _("Chant non validé")
+
+
 def _get_song_link_type_options() -> tuple[tuple[str, str], ...]:
     return tuple((choice.value, str(choice.label)) for choice in SongLinkType)
 
@@ -552,9 +560,12 @@ def _build_song_cards(search_results, user) -> list[dict[str, object]]:
                 ),
                 "is_favorite": result.is_favorite,
                 "is_validated": song.is_validated,
+                "validation_label": _validation_label_for_song(song),
+                "licensed_label": _("Chant sous licence") if song.licensed else "",
                 "description_summary": description_summary,
                 "description_rest": description_rest,
                 "can_edit": _can_edit_song(user, song),
+                "title_complete": build_song_full_title(song),
                 "title_complete_with_tags": build_song_full_title_with_tags(song),
                 "genres": [
                     {
@@ -2087,13 +2098,7 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
     page_summary_text, page_summary_truncated = _build_page_summary(
         song_object.description
     )
-    validation_label = ""
-    if song_object.status == SongStatus.VALIDATED:
-        validation_label = _("Chant validé")
-    elif song_object.status == SongStatus.VALIDATED_WITH_CONCERN:
-        validation_label = _("Chant validé avec des messages")
-    else:
-        validation_label = _("Chant non validé")
+    validation_label = _validation_label_for_song(song_object)
 
     member_id = get_member_id_from_user(request.user)
     is_favorite = _is_song_favorite(song_object.song_id, member_id)
@@ -2119,13 +2124,9 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
         {
             **(
                 seo_context(
-                    title=f"{text_artifacts.full_title} | Lyrics Slide Show",
-                    description=build_song_meta_description(
-                        song_object,
-                        bands=bands,
-                        artists=artists,
-                        genre_groups=genre_groups,
-                    ),
+                    title=_("Paroles de %(title)s – Lyrics Slide Show")
+                    % {"title": text_artifacts.full_title},
+                    description=build_song_meta_description(song_object),
                     path=reverse("song", args=[song_object.song_id]),
                     index=True,
                     og_type="article",

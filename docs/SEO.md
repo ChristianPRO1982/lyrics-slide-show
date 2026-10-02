@@ -115,6 +115,10 @@ Les pages `noindex` ne doivent pas être bloquées dans `robots.txt`, car les ro
 
 La page `/songs/` sans paramètre est indexable.
 
+Elle affiche un contexte visible indiquant qu'il s'agit d'une bibliothèque de
+paroles de chants. Les liens vers les chants conservent le titre complet du
+chant comme ancre naturelle, sans préfixe systématique `Paroles de`.
+
 Les variantes avec paramètres GET ne sont pas indexables :
 
 ```text
@@ -148,22 +152,24 @@ Il n'y a pas de slug dans ce chantier.
 
 Pour une page de chant publique :
 
-- le titre SEO est basé sur le titre complet du chant avec `Lyrics Slide Show` en suffixe ;
-- le H1 existant reste le titre du chant ;
-- la description SEO est courte ;
+- le titre SEO suit le format `Paroles de <titre complet> – Lyrics Slide Show` ;
+- le titre complet du chant est `title - subtitle` quand un sous-titre existe ;
+- le H1 reste le titre complet du chant, sans préfixe `Paroles de` et sans marqueurs métier ;
+- le contexte visible près du titre indique `Paroles du chant` ;
+- les marqueurs métier éventuels restent visibles hors du H1 ;
+- la description SEO est courte, déterministe, et basée sur le titre complet ;
 - la canonical pointe vers l'URL propre du chant ;
 - la page est présente dans le sitemap.
 
-La description SEO d'un chant est construite uniquement à partir de données fiables déjà disponibles :
+La description SEO d'un chant ne doit pas utiliser directement la description libre du chant,
+les métadonnées associées, ni de grandes portions de paroles. La description libre du chant
+peut rester visible dans la page quand elle apporte une information utile à l'utilisateur.
 
-- titre ;
-- sous-titre ;
-- description ;
-- artistes ;
-- groupes musicaux ;
-- genres.
+La formulation de meta description utilisée pour une page de chant publique est :
 
-Elle ne doit pas être fabriquée à partir de grandes portions de paroles.
+```text
+Retrouvez les paroles de <titre complet>, avec le texte du chant structuré pour la lecture et la projection dans Lyrics Slide Show.
+```
 
 ## Homepage
 

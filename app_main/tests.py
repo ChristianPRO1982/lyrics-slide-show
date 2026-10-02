@@ -1902,7 +1902,7 @@ class SeoIntegrationTests(TestCase):
             title="SEO Public Song",
             subtitle="Test",
             description="Une description fiable pour le référencement du chant.",
-            status=SongStatus.NOT_VALIDATED,
+            status=SongStatus.VALIDATED,
             licensed=False,
         )
         Verse.objects.create(
@@ -1970,6 +1970,16 @@ class SeoIntegrationTests(TestCase):
         self.assertRobots(response, "index, follow")
         self.assertCanonical(response, "https://lss.carthographie.fr/songs/")
         self.assertContains(response, "Catalogue de chants | Lyrics Slide Show")
+        self.assertContains(
+            response,
+            "Parcourez les paroles de chants disponibles dans Lyrics Slide Show",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<a class="song-title-link" href="/songs/{self.public_song.song_id}/">SEO Public Song - Test</a>',
+            html=False,
+        )
 
     def test_songs_search_variant_is_noindex_with_catalog_canonical(self):
         response = self.client.get(reverse("songs"), {"text": "SEO"})
@@ -1980,15 +1990,44 @@ class SeoIntegrationTests(TestCase):
 
     def test_public_song_page_is_indexable_and_canonicalized(self):
         response = self.client.get(reverse("song", args=[self.public_song.song_id]))
+        content = self._content(response)
+        canonical = f"https://lss.carthographie.fr/songs/{self.public_song.song_id}/"
+        seo_title = "Paroles de SEO Public Song - Test – Lyrics Slide Show"
+        seo_description = (
+            "Retrouvez les paroles de SEO Public Song - Test, avec le texte du chant "
+            "structuré pour la lecture et la projection dans Lyrics Slide Show."
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertRobots(response, "index, follow")
-        self.assertCanonical(
+        self.assertCanonical(response, canonical)
+        self.assertContains(response, f"<title>{seo_title}</title>", html=False)
+        self.assertContains(
             response,
-            f"https://lss.carthographie.fr/songs/{self.public_song.song_id}/",
+            f'<meta name="description" content="{seo_description}">',
+            html=False,
         )
-        self.assertContains(response, "SEO Public Song - Test | Lyrics Slide Show")
+        self.assertContains(
+            response,
+            f'<meta property="og:title" content="{seo_title}">',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<meta property="og:description" content="{seo_description}">',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            f'<meta property="og:url" content="{canonical}">',
+            html=False,
+        )
+        self.assertContains(response, "<h1>SEO Public Song - Test</h1>", html=True)
+        self.assertEqual(content.count("<h1"), 1)
+        self.assertContains(response, "Paroles du chant", html=False)
         self.assertContains(response, "description fiable", html=False)
+        self.assertNotIn("<h1>Paroles de", content)
+        self.assertNotIn("<h1>SEO Public Song - Test ✔️", content)
 
     def test_public_index_pages_are_indexable(self):
         cases = (

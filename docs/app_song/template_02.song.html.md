@@ -6,9 +6,9 @@ Page de lecture d’un chant (`/songs/<song_id>/`).
 
 ## Responsabilité front
 
-- affiche le titre complet du chant avec ses marqueurs métier
-- affiche `2️⃣` à la suite du titre principal quand `slide_display_mode != single`
-- affiche l’étoile favori éventuelle dans le titre de page
+- affiche le contexte visible `Paroles du chant` au-dessus du titre principal
+- affiche le titre complet du chant seul dans le H1, sans marqueurs métier
+- affiche les marqueurs métier éventuels `✔️`, `✔️⁉️`, `📄`, `2️⃣`, `⭐` dans un élément séparé proche du titre
 - affiche, pour membre authentifié avec messages non lus visibles, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici`
 - ce lien ouvre une popup Markdown contenant uniquement les messages non lus du plus récent au plus ancien
 - affiche les tags actifs de recherche
@@ -28,6 +28,7 @@ Page de lecture d’un chant (`/songs/<song_id>/`).
 ## Contrat d’interface (variables attendues)
 
 - `song`
+- `title_complete`
 - `title_complete_with_tags`
 - `page_summary_text`
 - `page_summary_truncated`

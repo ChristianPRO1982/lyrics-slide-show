@@ -100,9 +100,17 @@
         </div>
     </div>
 {% endblock %}
-{% block page_kicker %}{% trans "Chants" %}{% endblock %}
-{% block page_title %}{{ title_complete_with_tags }}{% if show_double_slide_marker %} 2️⃣{% endif %}{% if is_favorite %} ⭐{% endif %}{% endblock %}
+{% block page_kicker %}{% trans "Paroles du chant" %}{% endblock %}
+{% block page_title %}{{ title_complete }}{% endblock %}
 {% block page_intro %}
+    {% if song.validation_marker or song.licensed or show_double_slide_marker or is_favorite %}
+        <p class="song-card-markers song-detail-markers">
+            {% if song.validation_marker %}<span title="{{ validation_label }}" aria-label="{{ validation_label }}">{{ song.validation_marker }}</span>{% endif %}
+            {% if song.licensed %}<span title="{{ licensed_label }}" aria-label="{{ licensed_label }}">📄</span>{% endif %}
+            {% if show_double_slide_marker %}<span title="{% trans 'Double slide' %}" aria-label="{% trans 'Double slide' %}">2️⃣</span>{% endif %}
+            {% if is_favorite %}<span title="{% trans 'Favori' %}" aria-label="{% trans 'Favori' %}">⭐</span>{% endif %}
+        </p>
+    {% endif %}
     {% if show_unread_messages_link %}
         <p>
             <a
