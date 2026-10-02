@@ -1,3 +1,10 @@
+## [3.5.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.2...v3.5.3) (2026-10-02)
+
+
+### Bug Fixes
+
+* Enhance SEO and song display features with improved titles and validation markers ([e8f6eab](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e8f6eab42cb74ade8233bde2de5bc30219390113))
+
 ## [3.5.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.1...v3.5.2) (2026-10-02)
 
 
