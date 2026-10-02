@@ -1601,7 +1601,7 @@ class SongViewsRenderingTests(TestCase):
         self.assertContains(response, "<h2># Tags</h2>", html=False)
         self.assertNotContains(response, "<h2># tags</h2>", html=False)
 
-    def test_song_page_title_adds_double_slide_marker_before_favorite_star(self):
+    def test_song_page_title_keeps_markers_separate_from_h1(self):
         self._login()
         self.song.slide_display_mode = SongSlideDisplayMode.CHORUS_ALWAYS_PARALLEL
         self.song.save(update_fields=["slide_display_mode"])
@@ -1609,7 +1609,12 @@ class SongViewsRenderingTests(TestCase):
 
         response = self.client.get(reverse("song", args=[self.song.song_id]))
 
-        self.assertContains(response, "Le Sud - Nino Ferrer ✔️ 📄 2️⃣ ⭐", html=False)
+        self.assertContains(response, "<h1>Le Sud - Nino Ferrer</h1>", html=True)
+        self.assertNotContains(response, "<h1>Le Sud - Nino Ferrer ✔️", html=False)
+        self.assertContains(response, 'aria-label="Chant validé"', html=False)
+        self.assertContains(response, 'aria-label="Chant sous licence"', html=False)
+        self.assertContains(response, 'aria-label="Double slide"', html=False)
+        self.assertContains(response, 'aria-label="Favori"', html=False)
         self.assertContains(
             response,
             "<title>Le Sud - Nino Ferrer ✔️ 📄 | Lyrics Slide Show</title>",
@@ -1623,7 +1628,8 @@ class SongViewsRenderingTests(TestCase):
 
         response = self.client.get(reverse("song", args=[self.song.song_id]))
 
-        self.assertNotContains(response, "Le Sud - Nino Ferrer ✔️ 📄 2️⃣", html=False)
+        self.assertContains(response, "<h1>Le Sud - Nino Ferrer</h1>", html=True)
+        self.assertNotContains(response, 'aria-label="Double slide"', html=False)
 
     def test_song_view_has_floating_link_to_smartphone_lyrics_page(self):
         self._login()
