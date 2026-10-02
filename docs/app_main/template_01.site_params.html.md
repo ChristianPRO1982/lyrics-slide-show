@@ -72,6 +72,7 @@ Le contenu texte des cartes d’accueil est interprété avec un mini-markdown c
 
 - `**gras**`,
 - `*italique*`,
+- liens `[libellé](url)` vers des URLs sûres,
 - ligne commençant par `> ` pour une citation mise en valeur et centrée,
 - retours à la ligne ordinaires rendus en `<br>`.
 
