@@ -1,3 +1,11 @@
+## [3.5.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.0...v3.5.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* Add animation group statistics and related functionality to templates and views ([e72f68b](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e72f68bc49013814434f7b029599c467a282b92a))
+* Remove deprecated .env.dev.migrate file and its configurations ([35f532e](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/35f532eb918132fd0e469a5c8cc616074c39ebe8))
+
 # [3.5.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.4.2...v3.5.0) (2026-10-01)
 
 
