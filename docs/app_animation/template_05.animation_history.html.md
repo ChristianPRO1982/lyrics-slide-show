@@ -14,6 +14,8 @@ Afficher la liste des animations passées du groupe sélectionné.
 - `selected_group`,
 - `past_animations` (ordonnées décroissantes par date puis id),
 - `animation_group_stats`,
+- `animation_archive_threshold`,
+- `animation_upcoming_limit`,
 - `animation_archive_delay_hours`,
 - `animation_upcoming_lookahead_days`,
 - `animation_stats_help`.

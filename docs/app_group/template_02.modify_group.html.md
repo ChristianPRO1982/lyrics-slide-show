@@ -83,5 +83,5 @@ The last remaining group admin does not get normal demotion/removal actions.
 
 A dedicated deletion card shows:
 - current member count,
-- current count of upcoming animations,
+- current count of non-archived animations,
 - a destructive action guarded by a translated textual confirmation word entered through a popup.

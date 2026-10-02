@@ -16,6 +16,8 @@ Afficher la liste des animations à venir du groupe sélectionné.
 - `selected_group`,
 - `upcoming_animations` (ordonnées par date puis id),
 - `animation_group_stats`,
+- `animation_archive_threshold`,
+- `animation_upcoming_limit`,
 - `animation_archive_delay_hours`,
 - `animation_upcoming_lookahead_days`,
 - `animation_stats_help`.

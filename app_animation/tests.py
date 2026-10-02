@@ -2142,16 +2142,18 @@ class AnimationViewsTests(TestCase):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
         other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
         self._select_group(group)
-        now = timezone.now()
+        now = datetime(2026, 5, 8, 12, 0, tzinfo=datetime_timezone.utc)
+        archive_threshold = now - timedelta(hours=48)
+        upcoming_limit = now + timedelta(days=63)
         Animation.objects.create(
             group=group,
             title="Animation passée",
-            scheduled_at=now - timedelta(hours=49),
+            scheduled_at=archive_threshold - timedelta(seconds=1),
         )
         Animation.objects.create(
             group=group,
-            title="Animation récente",
-            scheduled_at=now - timedelta(hours=47),
+            title="Animation seuil archive",
+            scheduled_at=archive_threshold,
         )
         Animation.objects.create(
             group=group,
@@ -2160,8 +2162,13 @@ class AnimationViewsTests(TestCase):
         )
         Animation.objects.create(
             group=group,
-            title="Animation loin",
-            scheduled_at=now + timedelta(days=64),
+            title="Animation limite à venir",
+            scheduled_at=upcoming_limit,
+        )
+        Animation.objects.create(
+            group=group,
+            title="Animation future lointaine",
+            scheduled_at=upcoming_limit + timedelta(seconds=1),
         )
         Animation.objects.create(
             group=other_group,
@@ -2169,16 +2176,26 @@ class AnimationViewsTests(TestCase):
             scheduled_at=now + timedelta(days=10),
         )
 
-        response = self.client.get(reverse("animations"))
+        with patch("app_animation.views.timezone.now", return_value=now):
+            response = self.client.get(reverse("animations"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["animation_group_stats"],
             {
-                "upcoming": 2,
-                "future": 3,
+                "upcoming": 3,
+                "future": 4,
                 "past": 1,
             },
+        )
+        self.assertEqual(
+            [item.title for item in response.context["upcoming_animations"]],
+            [
+                "Animation seuil archive",
+                "Animation bientôt",
+                "Animation limite à venir",
+                "Animation future lointaine",
+            ],
         )
         self.assertContains(response, "Animations à venir")
         self.assertContains(response, "Animations futures")
@@ -2186,16 +2203,21 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-animation-stats-popup")
         self.assertContains(response, "Statistiques du groupe ⓘ")
 
-        history_response = self.client.get(reverse("animation_history"))
+        with patch("app_animation.views.timezone.now", return_value=now):
+            history_response = self.client.get(reverse("animation_history"))
 
         self.assertEqual(history_response.status_code, 200)
         self.assertEqual(
             history_response.context["animation_group_stats"],
             {
-                "upcoming": 2,
-                "future": 3,
+                "upcoming": 3,
+                "future": 4,
                 "past": 1,
             },
+        )
+        self.assertEqual(
+            [item.title for item in history_response.context["past_animations"]],
+            ["Animation passée"],
         )
         self.assertContains(history_response, "Animations futures")
         self.assertContains(history_response, "data-animation-stats-popup")

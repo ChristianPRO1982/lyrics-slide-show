@@ -535,7 +535,7 @@ def modify_group(request: HttpRequest, group_id: int) -> HttpResponse:
         ),
         "join_request_cards": join_request_cards,
         "member_cards": member_cards,
-        "upcoming_animations": list(
+        "non_archived_animations": list(
             Animation.objects.filter(
                 group_id=group.group_id,
                 scheduled_at__gte=get_animation_archive_threshold(),

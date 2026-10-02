@@ -246,7 +246,7 @@
             </div>
         </header>
         <p>{% trans "Membres actuellement liés :" %} {{ member_cards|length }}</p>
-        <p>{% trans "Animations planifiées connues dans cette version :" %} {{ upcoming_animations|length }}</p>
+        <p>{% trans "Animations non archivées liées :" %} {{ non_archived_animations|length }}</p>
         <form method="post" class="group-inline-form" data-group-delete-form data-confirm-word="{{ delete_confirmation_word }}" data-confirm-title="{% trans 'Suppression du groupe' %}" data-confirm-message="{% blocktrans with word=delete_confirmation_word %}Tapez exactement {{ word }} pour confirmer la suppression définitive de ce groupe.{% endblocktrans %}">
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_group">

@@ -664,9 +664,10 @@ class GroupViewsTests(TestCase):
         self.assertEqual(len(response.context["member_cards"]), 2)
         self.assertEqual(len(response.context["join_request_cards"]), 1)
         self.assertEqual(
-            [item.title for item in response.context["upcoming_animations"]],
+            [item.title for item in response.context["non_archived_animations"]],
             ["Future"],
         )
+        self.assertContains(response, "Animations non archivées liées :")
         self.assertIn("secret=secret", response.context["share_link"])
         self.assertEqual(response.context["delete_confirmation_word"], "SUPPRIMER")
 

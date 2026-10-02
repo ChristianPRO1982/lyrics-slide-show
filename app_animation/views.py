@@ -14,6 +14,7 @@ from django.db import IntegrityError, connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
@@ -92,6 +93,7 @@ from .services.archive import (
     build_animation_group_stats,
     get_animation_archive_delay,
     get_animation_archive_threshold,
+    get_animation_upcoming_limit,
     get_animation_upcoming_lookahead_days,
 )
 from .services.shortcuts import (
@@ -174,11 +176,24 @@ def _build_shortcuts_config(
     }
 
 
-def _build_animation_group_stats_context(group_id: int) -> dict[str, object]:
+def _build_animation_group_stats_context(
+    group_id: int,
+    *,
+    reference_time=None,
+) -> dict[str, object]:
+    reference_time = reference_time or timezone.now()
+    archive_threshold = get_animation_archive_threshold(reference_time)
+    upcoming_limit = get_animation_upcoming_limit(reference_time)
     archive_delay_hours = int(get_animation_archive_delay().total_seconds() // 3600)
     upcoming_lookahead_days = get_animation_upcoming_lookahead_days()
     return {
-        "animation_group_stats": build_animation_group_stats(group_id),
+        "animation_group_stats": build_animation_group_stats(
+            group_id,
+            archive_threshold=archive_threshold,
+            upcoming_limit=upcoming_limit,
+        ),
+        "animation_archive_threshold": archive_threshold,
+        "animation_upcoming_limit": upcoming_limit,
         "animation_archive_delay_hours": archive_delay_hours,
         "animation_upcoming_lookahead_days": upcoming_lookahead_days,
         "animation_stats_help": _(
@@ -202,10 +217,14 @@ def animations(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    archive_threshold = get_animation_archive_threshold()
+    reference_time = timezone.now()
+    stats_context = _build_animation_group_stats_context(
+        selected_group.group_id,
+        reference_time=reference_time,
+    )
     upcoming_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__gte=archive_threshold,
+        scheduled_at__gte=stats_context["animation_archive_threshold"],
     ).order_by("scheduled_at", "animation_id")
 
     return render(
@@ -214,7 +233,7 @@ def animations(request: HttpRequest) -> HttpResponse:
         {
             "selected_group": selected_group,
             "upcoming_animations": upcoming_animations,
-            **_build_animation_group_stats_context(selected_group.group_id),
+            **stats_context,
         },
     )
 
@@ -1187,10 +1206,14 @@ def animation_history(request: HttpRequest) -> HttpResponse:
         selected_group = get_selected_group_or_404(request)
     except Http404:
         return redirect_to_groups_when_no_selection(request)
-    archive_threshold = get_animation_archive_threshold()
+    reference_time = timezone.now()
+    stats_context = _build_animation_group_stats_context(
+        selected_group.group_id,
+        reference_time=reference_time,
+    )
     past_animations = Animation.objects.filter(
         group_id=selected_group.group_id,
-        scheduled_at__lt=archive_threshold,
+        scheduled_at__lt=stats_context["animation_archive_threshold"],
     ).order_by("-scheduled_at", "-animation_id")
 
     return render(
@@ -1199,7 +1222,7 @@ def animation_history(request: HttpRequest) -> HttpResponse:
         {
             "selected_group": selected_group,
             "past_animations": past_animations,
-            **_build_animation_group_stats_context(selected_group.group_id),
+            **stats_context,
         },
     )
 
