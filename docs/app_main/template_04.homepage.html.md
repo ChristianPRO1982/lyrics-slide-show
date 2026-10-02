@@ -23,7 +23,8 @@ Page d’accueil publique (`/`), accessible invité et membre.
 
 - navigation adaptée selon état connecté/non connecté,
 - contenu marketing alimenté par `SiteParams` selon langue,
-- `bloc1_text`, `bloc2_text` et le texte des cartes passent par un mini-markdown serveur (`**gras**`, `*italique*`, citations `> `, retours à la ligne en `<br>`), avec HTML d’entrée échappé,
+- `bloc1_text`, `bloc2_text` et le texte des cartes passent par un mini-markdown serveur (`**gras**`, `*italique*`, liens `[libellé](url)`, citations `> `, retours à la ligne en `<br>`), avec HTML d’entrée échappé,
+- les liens markdown ne sont rendus que pour des URLs sûres (`http`, `https`, `mailto`, `tel`, domaines nus normalisés en `https`, ancres, chemins absolus du site, chemins relatifs explicites `./` ou `../`),
 - une carte d’accueil n’est affichée que si `title` et `text` sont tous les deux renseignés,
 - une carte complète peut être affichée avec ou sans icône thémée selon la présence de `image`,
 - fallback texte/titres par défaut si paramètres absents,

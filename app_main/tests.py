@@ -2195,6 +2195,28 @@ class MainViewHelperCoverageTests(SimpleTestCase):
         self.assertIn("Citation<br>Ligne 2", rendered)
         self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", rendered)
 
+    def test_render_homepage_markdown_supports_safe_links(self):
+        rendered = render_homepage_markdown(
+            "[**Accueil**](/) et [GitHub](https://github.com/ChristianPRO1982/lyrics-slide-show) "
+            "et [cARTho](carthographie.fr)"
+        )
+
+        self.assertIn('<a href="/"><strong>Accueil</strong></a>', rendered)
+        self.assertIn(
+            '<a href="https://github.com/ChristianPRO1982/lyrics-slide-show">GitHub</a>',
+            rendered,
+        )
+        self.assertIn('<a href="https://carthographie.fr">cARTho</a>', rendered)
+
+    def test_render_homepage_markdown_keeps_unsafe_links_as_text(self):
+        rendered = render_homepage_markdown(
+            "[Piège](javascript:alert(1)) [Protocole](//example.com)"
+        )
+
+        self.assertIn("[Piège](javascript:alert(1))", rendered)
+        self.assertIn("[Protocole](//example.com)", rendered)
+        self.assertNotIn("<a ", rendered)
+
     def test_collect_heavy_images_filters_sorts_and_builds_both_url_types(self):
         with TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
