@@ -4,6 +4,9 @@
 
 Page racine de consultation, recherche et création des chants (`/songs/`).
 
+Cette page reste la recherche interactive destinée aux utilisateurs.
+Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/songs/`.
+
 ## Responsabilité front
 
 - affiche le titre de section et l’icône songs
@@ -24,6 +27,7 @@ Page racine de consultation, recherche et création des chants (`/songs/`).
 - pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
 - pour modérateur/admin avec chants non validés, expose `⚖️ Afficher les chants non validés`
 - les modes `favorites_quick`, `moderation_quick` et `non_validated_quick` sont temporaires et n’écrasent pas la recherche persistée
+- affiche en dernier dans le panneau outils un bouton vers le catalogue public léger `/songs/catalogue/`
 - affiche une liste desktop en cartes
 - affiche à part une liste compacte mobile avec panneau `⚙️`
 - chaque carte peut afficher :

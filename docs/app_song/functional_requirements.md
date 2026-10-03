@@ -223,6 +223,23 @@ Règles supplémentaires :
 - la requête texte est `trim`, compacte les espaces internes et traite les espaces saisis comme des jokers ordonnés
 - le filtre local JS du champ `Titre ou sous-titre` suit la même normalisation mais reste limité à `title + subtitle`
 
+### Catalogue public SEO
+
+La page `/songs/catalogue/` est distincte de la recherche interactive `/songs/`.
+
+Règles :
+
+- elle sert principalement à exposer les chants publics aux moteurs de recherche ;
+- elle reste utilisable par un humain et réutilise le layout général LSS ;
+- elle liste uniquement les chants `licensed = false` ;
+- elle trie les chants par `title`, `subtitle`, `song_id` ;
+- elle affiche `50` chants par page ;
+- chaque entrée est un vrai lien HTML vers `/songs/<song_id>/` ;
+- la pagination est serveur et composée de vrais liens HTML ;
+- `?page=1` redirige en `301` vers `/songs/catalogue/` ;
+- les pages hors plage ou invalides retournent une vraie `404` ;
+- seul `/songs/catalogue/` est déclaré dans le sitemap, pas les pages paginées.
+
 ### Persistance de recherche membre
 
 Pour membres authentifiés :

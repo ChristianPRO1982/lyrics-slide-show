@@ -51,6 +51,11 @@
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
     {% endif %}
+    <p>
+        <a class="song-tool-link site-action site-action--primary" href="{% url 'song_catalogue' %}">
+            {% trans "Consulter le catalogue complet des chants" %}
+        </a>
+    </p>
 {% endblock %}
 {% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
 {% block mobile_side_visual %}

@@ -66,7 +66,9 @@ LSS_CANONICAL_BASE_URL
 
 Les pages indexables doivent utiliser une canonical absolue en HTTPS.
 
-Les pages `noindex` ne doivent normalement pas fournir de canonical, afin d'éviter des signaux contradictoires. La seule exception prévue est une variante de recherche du catalogue `/songs/?...`, qui reste `noindex, follow` mais pointe vers la canonical `/songs/`.
+Les pages `noindex` ne doivent normalement pas fournir de canonical, afin d'éviter des signaux contradictoires.
+Exception actuelle : la recherche interactive `/songs/` et ses variantes avec paramètres restent `noindex, follow`
+avec une canonical self vers `/songs/`, car cette page reste une URL publique stable de recherche utilisateur.
 
 ## Pages indexables
 
@@ -75,7 +77,8 @@ Les pages suivantes sont indexables :
 | URL | Raison |
 | --- | --- |
 | `/` | présentation publique du service |
-| `/songs/` sans paramètres | catalogue public des chants |
+| `/songs/catalogue/` | catalogue public paginé des chants |
+| `/songs/catalogue/?page=N` | pages paginées du catalogue public, liées depuis le catalogue mais absentes du sitemap |
 | `/songs/<song_id>/` pour les chants publics | page individuelle d'un chant |
 | `/groups/` | liste publique des groupes |
 | `/login/` | entrée de connexion au service |
@@ -113,11 +116,24 @@ Les pages `noindex` ne doivent pas être bloquées dans `robots.txt`, car les ro
 
 ## Catalogue de chants
 
-La page `/songs/` sans paramètre est indexable.
+La page `/songs/` reste la recherche interactive destinée aux utilisateurs.
+Elle n'est pas indexable, même sans paramètres :
 
-Elle affiche un contexte visible indiquant qu'il s'agit d'une bibliothèque de
-paroles de chants. Les liens vers les chants conservent le titre complet du
-chant comme ancre naturelle, sans préfixe systématique `Paroles de`.
+```text
+noindex, follow
+```
+
+Elle conserve une canonical self vers :
+
+```text
+https://lss.carthographie.fr/songs/
+```
+
+La page `/songs/` contient un lien discret vers le catalogue public :
+
+```text
+https://lss.carthographie.fr/songs/catalogue/
+```
 
 Les variantes avec paramètres GET ne sont pas indexables :
 
@@ -142,7 +158,25 @@ https://lss.carthographie.fr/songs/
 
 Ce choix évite de créer un grand nombre de pages indexables pour les recherches, filtres et préférences.
 
-Les liens affichés vers les chants restent de vrais liens HTML `<a href="...">`.
+La page `/songs/catalogue/` est le catalogue HTML public destiné à l'exploration SEO.
+Elle est indexable, légère, paginée côté serveur, et intégrée au layout général de LSS.
+
+Règles du catalogue :
+
+- taille fixe de `50` chants par page ;
+- chants limités à `licensed=False` ;
+- tri stable par `title`, `subtitle`, `song_id` ;
+- liens de chants sous forme de vrais liens HTML `<a href="...">` ;
+- pagination sous forme de vrais liens HTML ;
+- `/songs/catalogue/?page=1` redirige en `301` vers `/songs/catalogue/` ;
+- une page hors plage ou une valeur de page invalide retourne une vraie `404` ;
+- seules les URLs paginées accessibles depuis les liens HTML du catalogue sont découvrables, elles ne sont pas déclarées dans le sitemap.
+
+Le seul maillage interne explicite vers le catalogue est :
+
+- le menu hamburger global ;
+- un lien discret depuis `/songs/` ;
+- la déclaration de `/songs/catalogue/` dans `sitemap.xml`.
 
 ## Pages individuelles de chants
 
@@ -205,13 +239,14 @@ Le sitemap contient uniquement les URL canoniques indexables :
 - `/` ;
 - `/privacy-policy/` ;
 - `/login/` ;
-- `/songs/` ;
+- `/songs/catalogue/` ;
 - `/groups/` ;
 - chaque `/songs/<song_id>/` dont le chant a `licensed=False`.
 
 Le sitemap ne contient jamais :
 
 - des paramètres de recherche ;
+- des pages paginées du catalogue `/songs/catalogue/?page=N` ;
 - des pages d'animations ;
 - des pages de thèmes ;
 - la page de langue ;
@@ -290,8 +325,9 @@ Les tests SEO ciblés sont dans `app_main.tests.SeoIntegrationTests`.
 Ils vérifient notamment :
 
 - la homepage indexable ;
-- `/songs/` indexable sans paramètres ;
-- une variante `/songs/?...` en `noindex` ;
+- `/songs/` en `noindex` avec canonical self ;
+- `/songs/catalogue/` indexable ;
+- la pagination du catalogue, dont `?page=1`, les pages hors plage et les valeurs invalides ;
 - une page de chant publique indexable et canonicalisée ;
 - `/groups/`, `/login/` et `/privacy-policy/` indexables ;
 - des pages métier en `noindex` ;

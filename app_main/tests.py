@@ -1758,6 +1758,23 @@ class BaseTemplatePopupTests(SimpleTestCase):
 
         self.assertIn('href="https://signup.example.test/register"', rendered)
 
+    def test_navigation_drawer_has_one_song_catalogue_link(self):
+        request = RequestFactory().get("/")
+        request.user = type(
+            "AnonymousUserStub",
+            (),
+            {
+                "is_authenticated": False,
+            },
+        )()
+
+        template = engines["django"].get_template("includes/nav.html")
+        rendered = template.render({"request": request})
+
+        self.assertEqual(rendered.count('href="/songs/catalogue/"'), 1)
+        self.assertIn("Catalogue des chants", rendered)
+        self.assertIn('data-django-alias="song-catalogue"', rendered)
+
 
 class WikiHelpTests(SimpleTestCase):
     def test_get_wiki_help_url_returns_mapped_url(self):
@@ -1963,11 +1980,12 @@ class SeoIntegrationTests(TestCase):
         self.assertContains(response, "outil gratuit", html=False)
         self.assertContains(response, '"@type":"WebSite"', html=False)
 
-    def test_songs_root_is_indexable_without_query_params(self):
+    def test_songs_root_is_noindex_with_self_canonical_and_catalogue_link(self):
         response = self.client.get(reverse("songs"))
+        content = self._content(response)
 
         self.assertEqual(response.status_code, 200)
-        self.assertRobots(response, "index, follow")
+        self.assertRobots(response, "noindex, follow")
         self.assertCanonical(response, "https://lss.carthographie.fr/songs/")
         self.assertContains(response, "Catalogue de chants | Lyrics Slide Show")
         self.assertContains(
@@ -1980,13 +1998,90 @@ class SeoIntegrationTests(TestCase):
             f'<a class="song-title-link" href="/songs/{self.public_song.song_id}/">SEO Public Song - Test</a>',
             html=False,
         )
+        self.assertEqual(content.count('href="/songs/catalogue/"'), 2)
+        self.assertContains(
+            response,
+            '<a class="song-tool-link site-action site-action--primary" href="/songs/catalogue/">',
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "Consulter le catalogue complet des chants",
+            html=False,
+        )
 
-    def test_songs_search_variant_is_noindex_with_catalog_canonical(self):
+    def test_songs_search_variant_is_noindex_with_self_canonical(self):
         response = self.client.get(reverse("songs"), {"text": "SEO"})
 
         self.assertEqual(response.status_code, 200)
         self.assertRobots(response, "noindex, follow")
         self.assertCanonical(response, "https://lss.carthographie.fr/songs/")
+
+    def test_song_catalogue_root_is_indexable_and_lists_public_songs(self):
+        response = self.client.get(reverse("song_catalogue"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "index, follow")
+        self.assertCanonical(response, "https://lss.carthographie.fr/songs/catalogue/")
+        self.assertContains(response, "<h1>Catalogue des chants</h1>", html=True)
+        self.assertContains(
+            response,
+            "Parcourez les chants publics disponibles dans Lyrics Slide Show",
+            html=False,
+        )
+        self.assertContains(response, "<p>Chants : <strong>1</strong></p>", html=True)
+        self.assertContains(
+            response,
+            f'<a class="song-catalogue-song-link" href="/songs/{self.public_song.song_id}/">SEO Public Song - Test</a>',
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            f'href="/songs/{self.licensed_song.song_id}/"',
+            html=False,
+        )
+
+    def test_song_catalogue_pagination_is_crawlable_and_canonicalized(self):
+        for index in range(60):
+            Song.objects.create(
+                title=f"Catalogue Song {index:03d}",
+                subtitle="",
+                description="",
+                status=SongStatus.NOT_VALIDATED,
+                licensed=False,
+            )
+
+        response = self.client.get(reverse("song_catalogue"), {"page": "2"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertRobots(response, "index, follow")
+        self.assertCanonical(
+            response,
+            "https://lss.carthographie.fr/songs/catalogue/?page=2",
+        )
+        content = self._content(response)
+        self.assertLessEqual(content.count("song-catalogue-song-link"), 50)
+        self.assertEqual(content.count("song-catalogue-pagination"), 2)
+        self.assertContains(
+            response,
+            'class="song-catalogue-page-link" href="/songs/catalogue/"',
+            html=False,
+        )
+
+    def test_song_catalogue_page_one_redirects_to_clean_url(self):
+        response = self.client.get(reverse("song_catalogue"), {"page": "1"})
+
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.headers["Location"], reverse("song_catalogue"))
+
+    def test_song_catalogue_invalid_pages_return_404(self):
+        cases = ("99999", "abc", "")
+
+        for page in cases:
+            with self.subTest(page=page):
+                response = self.client.get(reverse("song_catalogue"), {"page": page})
+
+                self.assertEqual(response.status_code, 404)
 
     def test_public_song_page_is_indexable_and_canonicalized(self):
         response = self.client.get(reverse("song", args=[self.public_song.song_id]))
@@ -2047,6 +2142,21 @@ class SeoIntegrationTests(TestCase):
                 self.assertRobots(response, "index, follow")
                 self.assertCanonical(response, canonical)
 
+    def test_public_pages_only_have_global_catalogue_navigation_link(self):
+        cases = (
+            reverse("homepage"),
+            reverse("groups"),
+            reverse("song", args=[self.public_song.song_id]),
+        )
+
+        for path in cases:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                content = self._content(response)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(content.count('href="/songs/catalogue/"'), 1)
+
     def test_business_pages_remain_noindex(self):
         self._login()
         GroupMembership.objects.create(
@@ -2091,7 +2201,8 @@ class SeoIntegrationTests(TestCase):
         self.assertIn("https://lss.carthographie.fr/</loc>", content)
         self.assertIn("https://lss.carthographie.fr/privacy-policy/</loc>", content)
         self.assertIn("https://lss.carthographie.fr/login/</loc>", content)
-        self.assertIn("https://lss.carthographie.fr/songs/</loc>", content)
+        self.assertIn("https://lss.carthographie.fr/songs/catalogue/</loc>", content)
+        self.assertNotIn("https://lss.carthographie.fr/songs/</loc>", content)
         self.assertIn("https://lss.carthographie.fr/groups/</loc>", content)
         self.assertIn(
             f"https://lss.carthographie.fr/songs/{self.public_song.song_id}/</loc>",
@@ -2107,6 +2218,7 @@ class SeoIntegrationTests(TestCase):
         self.assertNotIn("/account/", content)
         self.assertNotIn("/site-params/", content)
         self.assertNotIn("github.com", content)
+        self.assertNotIn("/songs/catalogue/?page=", content)
         self.assertTrue(urls)
         self.assertTrue(all("?" not in url for url in urls))
 

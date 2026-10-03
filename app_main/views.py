@@ -973,7 +973,7 @@ def sitemap_xml(_request: HttpRequest) -> HttpResponse:
         "homepage",
         "privacy_policy",
         "login",
-        "songs",
+        "song_catalogue",
         "groups",
     )
 

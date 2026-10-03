@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from urllib.parse import urlsplit
 
 from django.contrib import messages
+from django.core.paginator import EmptyPage, Paginator
 from django.db import IntegrityError, connection, transaction
 from django.db.models import Count
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -74,6 +75,7 @@ metadata_logger = logging.getLogger("app_song.metadata")
 
 SONG_DESCRIPTION_SUMMARY_LENGTH = 180
 SONG_PAGE_SUMMARY_MAX_LENGTH = 100
+SONG_CATALOGUE_PAGE_SIZE = 50
 DEFAULT_VERSE_MAX_LINES = 10
 DEFAULT_VERSE_MAX_CHARS = 50
 BLOCK_FIELD_PATTERN = re.compile(r"^blocks\[(?P<row>[^\]]+)\]\[(?P<field>[a-z_]+)\]$")
@@ -1292,7 +1294,7 @@ def songs(request: HttpRequest) -> HttpResponse:
                 title=_("Catalogue de chants | Lyrics Slide Show"),
                 description=SONGS_DESCRIPTION,
                 canonical=canonical_reverse("songs"),
-                index=not bool(request.GET),
+                index=False,
             ),
             "selected_group": selected_group,
             "search_params": display_search_params,
@@ -1324,6 +1326,64 @@ def songs(request: HttpRequest) -> HttpResponse:
                 "Nombre de chants retournés par la recherche sauvegardée"
             ),
             "song_catalog_count_help": _("Nombre total de chants en base de données"),
+        },
+    )
+
+
+def song_catalogue(request: HttpRequest) -> HttpResponse:
+    selected_group, _selected_via_secret = get_selected_group_state(request)
+    page_param = request.GET.get("page")
+    raw_page = str(page_param).strip() if page_param is not None else ""
+    if page_param is not None and not raw_page:
+        raise Http404
+    if raw_page and not raw_page.isdecimal():
+        raise Http404
+
+    page_number = int(raw_page) if raw_page else 1
+    if page_number < 1:
+        raise Http404
+    if raw_page and page_number == 1:
+        return redirect("song_catalogue", permanent=True)
+
+    paginator = Paginator(
+        Song.objects.filter(licensed=False).order_by("title", "subtitle", "song_id"),
+        SONG_CATALOGUE_PAGE_SIZE,
+    )
+    try:
+        page_obj = paginator.page(page_number)
+    except EmptyPage as exc:
+        raise Http404 from exc
+
+    catalogue_items = [
+        {
+            "song": song,
+            "title_complete": build_song_full_title(song),
+            "display_url": reverse("song", args=[song.song_id]),
+        }
+        for song in page_obj.object_list
+    ]
+    catalogue_url = reverse("song_catalogue")
+    canonical = canonical_reverse("song_catalogue")
+    if page_number > 1:
+        canonical = f"{canonical}?page={page_number}"
+
+    return render(
+        request,
+        "song/song_catalogue.html",
+        {
+            **seo_context(
+                title=_("Catalogue des chants | Lyrics Slide Show"),
+                description=_(
+                    "Consultez le catalogue public des paroles de chants disponibles dans Lyrics Slide Show."
+                ),
+                canonical=canonical,
+                index=True,
+            ),
+            "selected_group": selected_group,
+            "catalogue_items": catalogue_items,
+            "page_obj": page_obj,
+            "paginator": paginator,
+            "catalogue_url": catalogue_url,
         },
     )
 
