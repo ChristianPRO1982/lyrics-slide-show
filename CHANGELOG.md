@@ -1,3 +1,10 @@
+## [3.5.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.3...v3.5.4) (2026-10-03)
+
+
+### Bug Fixes
+
+* Implement song catalogue feature with SEO enhancements and pagination ([4399735](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4399735654970d65de6a6c0b97e2171057d282aa))
+
 ## [3.5.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.2...v3.5.3) (2026-10-02)
 
 
