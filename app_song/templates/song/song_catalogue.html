@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}{% trans "Catalogue des chants" %} | Lyrics Slide Show{% endif %}{% endblock %}
+{% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Chants" %}{% endif %}{% endblock %}
+{% block section_intro %}
+    <style>@import url("{% static 'css/app_song.css' %}");</style>
+{% endblock %}
+{% block tools_title %}{% trans "Chants" %}{% endblock %}
+{% block page_tools %}
+    <p>
+        <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">
+            {% trans "Rechercher des chants" %}
+        </a>
+    </p>
+{% endblock %}
+{% block mobile_side_title %}{% trans "Chants" %}{% endblock %}
+{% block mobile_side_content %}
+    <p>
+        <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">
+            {% trans "Rechercher des chants" %}
+        </a>
+    </p>
+{% endblock %}
+{% block page_kicker %}{% trans "Catalogue" %}{% endblock %}
+{% block page_title %}{% trans "Catalogue des chants" %}{% endblock %}
+{% block page_intro %}
+    <p>{% trans "Parcourez les chants publics disponibles dans Lyrics Slide Show et ouvrez chaque fiche pour consulter les paroles structurées." %}</p>
+{% endblock %}
+{% block page_summary %}
+    <p>{% trans "Chants" %} : <strong>{{ paginator.count }}</strong></p>
+{% endblock %}
+{% block content %}
+    <section class="song-catalogue" aria-label="{% trans 'Catalogue des chants' %}">
+        {% include "song/includes/_song_catalogue_pagination.html" %}
+
+        <ul class="song-catalogue-list">
+            {% for item in catalogue_items %}
+                <li>
+                    <a class="song-catalogue-song-link" href="{{ item.display_url }}">{{ item.title_complete }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% include "song/includes/_song_catalogue_pagination.html" %}
+    </section>
+{% endblock %}

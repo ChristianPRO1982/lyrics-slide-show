@@ -1,0 +1,17 @@
+{% load i18n %}
+
+{% if page_obj.has_other_pages %}
+    <nav class="song-catalogue-pagination" aria-label="{% trans 'Pagination du catalogue' %}">
+        {% if page_obj.has_previous %}
+            {% if page_obj.previous_page_number == 1 %}
+                <a class="song-catalogue-page-link" href="{{ catalogue_url }}">{% trans "Page précédente" %}</a>
+            {% else %}
+                <a class="song-catalogue-page-link" href="{{ catalogue_url }}?page={{ page_obj.previous_page_number }}">{% trans "Page précédente" %}</a>
+            {% endif %}
+        {% endif %}
+        <span>{% blocktrans with current=page_obj.number total=paginator.num_pages %}Page {{ current }} sur {{ total }}{% endblocktrans %}</span>
+        {% if page_obj.has_next %}
+            <a class="song-catalogue-page-link" href="{{ catalogue_url }}?page={{ page_obj.next_page_number }}">{% trans "Page suivante" %}</a>
+        {% endif %}
+    </nav>
+{% endif %}
