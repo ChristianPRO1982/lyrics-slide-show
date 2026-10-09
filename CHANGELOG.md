@@ -1,3 +1,20 @@
+# [3.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.4...v3.6.0) (2026-10-09)
+
+
+### Bug Fixes
+
+* fixes [#293](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/293) - Update smartphone view link text and adjust test assertions for clarity ([bf29666](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/bf2966614a0ec49649da8777a49b6c123db40345))
+* fixes [#299](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/299) - Update song prefix input placeholder and adjust prefix input behavior for chorus types ([4c369e9](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/4c369e99919bff88c35acd9fc13799dd541ff453))
+* fixes [#305](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/305) - disable pinch zoom on mobile to prevent accidental scaling ([e6ad491](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/e6ad491f79ab5794cc710f10bb53d4d7526abc60))
+* Update SEO documentation to clarify the addition of a button for the public catalogue in the songs panel ([89a0974](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/89a09746d39c394d245a6d4c27dca17098b5b7bb))
+
+
+### Features
+
+* **animation:** fixes [#298](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/298) - implement mobile actions panel with toggle functionality ([acaa0db](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/acaa0dbf8308dbab3469ddf9740382adb27455fc))
+* **animation:** fixes [#301](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/301) - add animation copy functionality with UI and backend support ([3a84cd4](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/3a84cd4edca9db31a0e230d32718af824d81ff75))
+* **app_song:** fixes [#295](https://github.com/ChristianPRO1982/lyrics-slide-show/issues/295) add moderator filter for songs with block rule violations ([881b1dd](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/881b1ddf7658a4f7c41fe310eb41ffa5417559f7))
+
 ## [3.5.4](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.3...v3.5.4) (2026-10-03)
 
 
