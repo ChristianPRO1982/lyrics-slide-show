@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.6.0...v3.6.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **animation:** add smartphone view link to animation actions and update documentation ([730f551](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/730f551aadf1ecd9ea871deafe34f20940b3d3e0))
+
 # [3.6.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.5.4...v3.6.0) (2026-10-09)
 
 
