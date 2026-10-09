@@ -2509,6 +2509,37 @@ class SharedLyricsHelperTests(TestCase):
             self.assertEqual(build_qr_png_base64("https://example.test"), "")
 
 
+class SharedLyricsTypographyTests(SimpleTestCase):
+    def test_build_lyrics_song_entry_uses_french_punctuation_nbsp(self):
+        song = Song(
+            song_id=7,
+            title="Invitation",
+            subtitle="",
+            status=SongStatus.NOT_VALIDATED,
+        )
+        verse = Verse(
+            verse_id=70,
+            song=song,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            text="Allez rejoins-nous !\nChante avec nous : maintenant",
+        )
+
+        entry = build_lyrics_song_entry(
+            song,
+            anchor_id="lyrics-song-1",
+            mode=ChorusRenderMode.FULL,
+            settings=SongRenderSettings.defaults(),
+            verses=[verse],
+        )
+
+        self.assertEqual(
+            entry["blocks"][0]["text"],
+            "Allez rejoins-nous\u00a0!\nChante avec nous\u00a0: maintenant",
+        )
+
+
 class HeavyAssetCoverageTests(SimpleTestCase):
     @override_settings(DEBUG=True)
     def test_heavy_page_prefers_lss_and_asset_endpoint_serves_images(self):

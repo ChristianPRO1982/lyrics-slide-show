@@ -34,8 +34,10 @@ from .genre_labels import (
 )
 from .rendering import (
     ChorusRenderMode,
+    FRENCH_NBSP_BEFORE_SIGNS,
     RenderedSongBlockKind,
     SongRenderSettings,
+    apply_french_punctuation_nbsp,
     build_song_full_title,
     build_song_full_title_with_tags,
     build_song_text_artifacts,
@@ -232,6 +234,69 @@ class SongRenderingMarkupTests(SimpleTestCase):
         verse_prefix2="",
         chorus_like_default_prefix="Refrain",
     )
+
+    def test_french_punctuation_nbsp_signs_are_configurable(self):
+        text = " ".join(f"Mot {sign}" for sign in FRENCH_NBSP_BEFORE_SIGNS)
+
+        corrected = apply_french_punctuation_nbsp(text)
+
+        for sign in FRENCH_NBSP_BEFORE_SIGNS:
+            with self.subTest(sign=sign):
+                self.assertIn(f"Mot\u00a0{sign}", corrected)
+                self.assertNotIn(f"Mot {sign}", corrected)
+
+    def test_french_punctuation_nbsp_keeps_attached_signs_and_linebreaks(self):
+        self.assertEqual(
+            apply_french_punctuation_nbsp("Coucou!\nEncore ?"),
+            "Coucou!\nEncore\u00a0?",
+        )
+
+    def test_html_and_plain_song_outputs_use_french_punctuation_nbsp(self):
+        artifacts = build_song_text_artifacts(
+            make_song(),
+            settings=self.settings,
+            verses=[
+                make_verse(
+                    1,
+                    2,
+                    "Coucou !\nDix = 10\nPrix 12 €",
+                    num_verse=1,
+                )
+            ],
+        )
+        plain_text = render_song_text(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            include_title=False,
+            verses=[
+                make_verse(
+                    1,
+                    2,
+                    "Coucou !\nDix = 10\nPrix 12 €",
+                    num_verse=1,
+                )
+            ],
+        )
+
+        self.assertIn(
+            "Coucou\u00a0!<br>Dix\u00a0= 10<br>Prix 12\u00a0€", artifacts.long_text_html
+        )
+        self.assertIn("Coucou\u00a0!\nDix\u00a0= 10\nPrix 12\u00a0€", plain_text)
+
+    def test_rendered_blocks_use_french_punctuation_nbsp(self):
+        blocks = render_song_blocks(
+            make_song(),
+            ChorusRenderMode.FULL,
+            settings=self.settings,
+            verses=[
+                make_verse(1, 1, "Allez rejoins-nous !", chorus=True),
+                make_verse(2, 2, "Viens chanter : encore", num_verse=1),
+            ],
+        )
+
+        self.assertEqual(blocks[0].text, "Allez rejoins-nous\u00a0!")
+        self.assertEqual(blocks[1].text, "Viens chanter\u00a0: encore")
 
     def test_table_html_to_plain_text_removes_table_markup_and_decodes_entities(self):
         self.assertEqual(
