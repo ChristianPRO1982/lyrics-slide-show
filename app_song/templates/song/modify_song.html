@@ -352,7 +352,7 @@
                                                         <div class="song-block-edit-options-col" data-song-block-edit-options-col>
                                                             <p class="song-block-prefix-row" data-song-block-prefix-field {% if block.type != 'special' %}hidden{% endif %}>
                                                                 <label class="song-block-prefix-row-label" for="song-block-prefix-{{ block.row_key|slugify }}">{% trans "Préfixe" %}</label>
-                                                                <input class="song-block-prefix-row-input" id="song-block-prefix-{{ block.row_key|slugify }}" type="text" value="{{ block.prefix }}" data-song-block-prefix-input>
+                                                                <input class="song-block-prefix-row-input" id="song-block-prefix-{{ block.row_key|slugify }}" type="text" value="{{ block.prefix }}" placeholder="{% trans '(préfixe)' %}" data-song-block-prefix-input>
                                                                 <span class="song-block-prefix-actions" data-song-block-prefix-actions>
                                                                     {% if official_prefixes %}
                                                                         <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-prefix-picker>
@@ -510,7 +510,7 @@
                                                         <div class="song-block-edit-options-col" data-song-block-edit-options-col>
                                                             <p class="song-block-prefix-row" data-song-block-prefix-field hidden>
                                                                 <label class="song-block-prefix-row-label" data-song-block-prefix-label>{% trans "Préfixe" %}</label>
-                                                                <input class="song-block-prefix-row-input" type="text" value="" data-song-block-prefix-input>
+                                                                <input class="song-block-prefix-row-input" type="text" value="" placeholder="{% trans '(préfixe)' %}" data-song-block-prefix-input>
                                                                 <span class="song-block-prefix-actions" data-song-block-prefix-actions>
                                                                     {% if official_prefixes %}
                                                                         <button type="button" class="song-secondary-action site-action site-action--secondary" data-song-block-prefix-picker>

@@ -1208,7 +1208,7 @@
 
             const isChorus = normalized.type === "chorus";
             const isChorusLike = normalized.type === "special";
-            if (prefixInput) prefixInput.disabled = isChorus;
+            if (prefixInput) prefixInput.disabled = !isChorusLike;
             if (followedCheckbox) followedCheckbox.disabled = isChorus;
             if (notCNumCheckbox) notCNumCheckbox.disabled = isChorus || isChorusLike;
             if (chorusLikeCheckbox) chorusLikeCheckbox.disabled = isChorus;

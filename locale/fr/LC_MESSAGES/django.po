@@ -4866,6 +4866,11 @@ msgstr ""
 msgid "Préfixe"
 msgstr ""
 
+#: app_song/templates/song/modify_song.html:355
+#: app_song/templates/song/modify_song.html:513
+msgid "(préfixe)"
+msgstr "(préfixe)"
+
 #: app_song/templates/song/modify_song.html:359
 #: app_song/templates/song/modify_song.html:517
 #: app_song/templates/song/modify_song_page_i18n.html:31

@@ -257,6 +257,9 @@
 [data-song-block-editor] textarea,
 [data-song-block-editor] input[type="text"],
 [data-song-block-editor] select {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
     width: 100%;
     padding: 0.7rem 0.9rem;
     border: 1px solid var(--site-popup-border);
@@ -1208,6 +1211,9 @@
 .song-block-editor textarea,
 .song-block-editor input,
 .song-block-editor select {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
     width: 100%;
 }
 
@@ -1222,6 +1228,7 @@
 .song-block-edit-options-col {
     display: grid;
     gap: 0.5rem;
+    min-width: 0;
 }
 
 .song-block-edit-text-col label,
@@ -1271,12 +1278,34 @@
 
 @media (max-width: 760px) {
     .song-block-prefix-row {
+        display: grid;
+        grid-template-columns: 1fr;
         flex-wrap: wrap;
         align-items: start;
     }
 
     .song-block-prefix-row-input {
         flex-basis: 100%;
+    }
+
+    .song-block-prefix-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+        white-space: normal;
+    }
+
+    .song-block-prefix-actions .site-action,
+    .song-block-prefix-actions .song-tool-link,
+    .song-edit-block-delete-cell .site-action,
+    [data-song-block-editor] .site-action,
+    [data-song-block-editor] .song-tool-button,
+    [data-song-block-editor] .song-secondary-action,
+    [data-song-block-editor] .song-tool-link {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        white-space: normal;
     }
 }
 
@@ -1517,7 +1546,7 @@
     }
 
     .song-edit-block-content-cell {
-        width: 5.5em !important;
+        width: 100% !important;
         overflow: hidden;
         text-overflow: ellipsis;
     }
