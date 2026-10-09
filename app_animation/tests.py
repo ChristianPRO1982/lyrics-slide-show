@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timedelta, timezone as datetime_timezone
 from io import BytesIO
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.conf import settings
@@ -1928,6 +1929,83 @@ class ShortcutValidationTests(SimpleTestCase):
 
         self.assertEqual(normalized["next_transition"], [])
         self.assertEqual(normalized["force_direct"], [])
+
+
+class _FakeQuerySet(list):
+    def select_related(self, *_args):
+        return self
+
+    def prefetch_related(self, *_args):
+        return self
+
+    def order_by(self, *_args):
+        return self
+
+    def all(self):
+        return self
+
+
+class AnimationRenderBundleTypographyTests(SimpleTestCase):
+    def test_bundle_and_runtime_payload_use_french_punctuation_nbsp(self):
+        verse = SimpleNamespace(
+            verse_id=1,
+            num=2,
+            num_verse=1,
+            chorus=False,
+            chorus_like=False,
+            followed=False,
+            notcontinuenumbering=False,
+            text="Coucou !\nDix = 10\nPrix 12 €",
+            prefix="",
+        )
+        song = SimpleNamespace(
+            song_id=10,
+            display_title="Song Typo",
+            verses=_FakeQuerySet([verse]),
+        )
+        animation_song = SimpleNamespace(
+            animation_song_id=20,
+            song_id=song.song_id,
+            song=song,
+            position=2,
+            background_asset_code_override="",
+            bg_color_override="",
+            text_color_override="",
+            font_family_override="",
+            font_size_override=None,
+            horizontal_padding_override=None,
+            slide_display_mode="single",
+            verse_overrides=_FakeQuerySet(),
+        )
+        animation = SimpleNamespace(
+            animation_id=30,
+            title="Session Typo",
+            scheduled_at=timezone.now(),
+            text_color="#FFFFFF",
+            bg_color="#000000",
+            font_family="Source Sans Pro",
+            font_size=72,
+            horizontal_padding=80,
+            background_asset_code="",
+            default_transition="",
+            animation_songs=_FakeQuerySet([animation_song]),
+        )
+
+        bundle = build_animation_render_bundle(animation)
+        slide = next(item for item in bundle if item.source_verse_id == verse.verse_id)
+        payload = animation_views._build_runtime_payload(
+            animation, "https://example.test/public"
+        )
+
+        self.assertEqual(slide.text, "Coucou\u00a0!\nDix\u00a0= 10\nPrix 12\u00a0€")
+        self.assertEqual(
+            payload["slides"][0]["text"],
+            "Coucou\u00a0!\nDix\u00a0= 10\nPrix 12\u00a0€",
+        )
+        self.assertEqual(
+            payload["projectionSteps"][0]["left"]["text"],
+            "Coucou\u00a0!\nDix\u00a0= 10\nPrix 12\u00a0€",
+        )
 
 
 class AnimationRenderBundleTests(TestCase):

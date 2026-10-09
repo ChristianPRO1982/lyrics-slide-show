@@ -78,6 +78,15 @@ class SongTextArtifacts:
     long_text_html: str
 
 
+# Extend this tuple when another French typographic sign must stay attached to
+# the preceding word in projected/smartphone text.
+FRENCH_NBSP_BEFORE_SIGNS = (";", ":", "!", "?", "=", "%", "‰", "»", "€")
+NBSP = "\u00a0"
+_FRENCH_NBSP_BEFORE_RE = re.compile(
+    rf" (?=[{''.join(re.escape(sign) for sign in FRENCH_NBSP_BEFORE_SIGNS)}])"
+)
+
+
 def normalize_lyrics_linebreaks(value: str | None) -> str:
     if not value:
         return ""
@@ -88,6 +97,16 @@ def normalize_lyrics_linebreaks(value: str | None) -> str:
         .replace("\r\n", "\n")
         .replace("\r", "\n")
     )
+
+
+def apply_french_punctuation_nbsp(value: str | None) -> str:
+    if not value:
+        return ""
+    return _FRENCH_NBSP_BEFORE_RE.sub(NBSP, str(value))
+
+
+def _normalize_rendered_text(value: str | None) -> str:
+    return apply_french_punctuation_nbsp(normalize_lyrics_linebreaks(value).strip())
 
 
 def _get_ordered_verses(
@@ -105,7 +124,7 @@ def _render_chorus_group(
 ) -> list[RenderedSongBlock]:
     blocks = []
     for index, chorus in enumerate(choruses):
-        text = normalize_lyrics_linebreaks(chorus.text).strip()
+        text = _normalize_rendered_text(chorus.text)
         if not text:
             continue
         blocks.append(
@@ -160,7 +179,9 @@ def _format_html_text(value: str | None) -> str:
     normalized = normalize_lyrics_linebreaks(value).strip()
     if not normalized:
         return ""
-    return "<br>".join(escape(line) for line in normalized.split("\n"))
+    return "<br>".join(
+        escape(apply_french_punctuation_nbsp(line)) for line in normalized.split("\n")
+    )
 
 
 def _render_table_row(
@@ -266,13 +287,18 @@ def _render_blocks_plain_text(
                 and block.kind == RenderedSongBlockKind.CHORUS_LIKE
             ):
                 if block.explicit_prefix:
-                    plain_blocks.append(f"{block.explicit_prefix}\n{text}")
+                    plain_blocks.append(
+                        f"{block.explicit_prefix}\n"
+                        f"{apply_french_punctuation_nbsp(text)}"
+                    )
                 else:
-                    plain_blocks.append(text)
+                    plain_blocks.append(apply_french_punctuation_nbsp(text))
             elif block.label:
-                plain_blocks.append(f"{block.label} {text}".strip())
+                plain_blocks.append(
+                    f"{block.label} {apply_french_punctuation_nbsp(text)}".strip()
+                )
             else:
-                plain_blocks.append(text)
+                plain_blocks.append(apply_french_punctuation_nbsp(text))
         index += 1
 
     return "\n\n".join(item.strip() for item in plain_blocks if item.strip()).strip()
@@ -305,7 +331,7 @@ def render_song_blocks(
 
     for verse in ordered_verses:
         if not verse.chorus:
-            text = normalize_lyrics_linebreaks(verse.text).strip()
+            text = _normalize_rendered_text(verse.text)
             if text and verse.chorus_like:
                 blocks.append(
                     RenderedSongBlock(

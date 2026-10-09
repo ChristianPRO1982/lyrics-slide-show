@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app_song.rendering import ChorusRenderMode, SongRenderSettings, render_song_blocks
+from app_song.rendering import (
+    ChorusRenderMode,
+    SongRenderSettings,
+    apply_french_punctuation_nbsp,
+    render_song_blocks,
+)
 
 from app_animation.models import Animation, AnimationSong, AnimationVerseOverride
 
@@ -151,7 +156,7 @@ def build_animation_render_bundle(animation: Animation) -> list[RenderedAnimatio
                     source_verse_id=source_verse_id,
                     kind=str(block.kind),
                     label=block.label,
-                    text=block.text,
+                    text=apply_french_punctuation_nbsp(block.text),
                     style=style,
                 )
             )
