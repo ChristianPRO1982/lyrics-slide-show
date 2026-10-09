@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from app_group.services import get_member_id_from_user, get_selected_group_state
 from app_main import lyrics as lyrics_helpers
@@ -36,6 +37,7 @@ from .font_catalog import (
     list_font_previews,
 )
 from .forms import (
+    AnimationCopyForm,
     AnimationForm,
     BackgroundImageInactiveEditForm,
     BackgroundImageUploadForm,
@@ -74,6 +76,7 @@ from .services.background_images import (
     resolve_background_asset_url,
     store_uploaded_image_file,
 )
+from .services.copy import copy_animation as copy_animation_service
 from .services.render_bundle import build_animation_render_bundle
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
 from .services.song_edits import (
@@ -1253,6 +1256,34 @@ def add_animation(request: HttpRequest) -> HttpResponse:
             "background_image_options": _background_image_popup_options(),
         },
     )
+
+
+@require_POST
+def copy_animation(request: HttpRequest, animation_id: int) -> HttpResponse:
+    try:
+        selected_group = get_selected_group_or_404(request)
+    except Http404:
+        return redirect_to_groups_when_no_selection(request)
+
+    source = get_object_or_404(Animation, animation_id=animation_id)
+    if source.group_id != selected_group.group_id:
+        raise Http404
+
+    form = AnimationCopyForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse(
+            {"ok": False, "errors": form.errors.get_json_data()},
+            status=400,
+        )
+
+    copied_animation = copy_animation_service(
+        source,
+        scheduled_at=form.cleaned_data["scheduled_at"],
+        title=form.cleaned_data["title"],
+        description=form.cleaned_data["description"],
+    )
+    messages.success(request, _("L'animation a été copiée."))
+    return redirect("modify_animation", animation_id=copied_animation.animation_id)
 
 
 def modify_animation(request: HttpRequest, animation_id: int) -> HttpResponse:

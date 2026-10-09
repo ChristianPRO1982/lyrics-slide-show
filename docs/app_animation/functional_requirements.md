@@ -55,6 +55,11 @@ La statistique `Animations futures` reprend toutes les animations non archivées
 limite haute. La statistique `Animations passées` reprend les animations strictement
 avant le seuil d'archivage.
 
+Depuis la liste principale et l'historique, une animation peut être copiée dans le
+même groupe. La copie reprend les paramètres visuels, la transition par défaut,
+la playlist ordonnée, les options par chant et les overrides par couplet. Le nouvel
+horaire, le titre et la description sont fournis explicitement au moment de la copie.
+
 ### Animation Song
 
 Une `Animation Song` est une occurrence d'un chant global dans une animation.

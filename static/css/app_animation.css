@@ -556,10 +556,17 @@ body.animation-background-picker-overlay-open {
 }
 
 .animation-list-card-actions-top {
-    display: grid;
-    grid-template-columns: minmax(0, 17fr) minmax(0, 3fr);
+    display: flex;
     gap: 0.55rem;
     width: 100%;
+}
+
+.animation-list-card-actions-top > :first-child {
+    flex: 1 1 auto;
+}
+
+.animation-list-card-actions-top > :not(:first-child) {
+    flex: 0 0 3.4rem;
 }
 
 .animation-list-card-actions-top > *,

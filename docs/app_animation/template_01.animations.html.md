@@ -29,4 +29,7 @@ Afficher la liste des animations à venir du groupe sélectionné.
 - l'encadré résumé affiche les statistiques du groupe : animations à venir, futures et passées,
 - le lien `ⓘ` de l'encadré résumé ouvre une popup `window.LSSMessageBox` expliquant les seuils,
 - affiche une carte par animation : titre, date, description optionnelle, lien `Modifier cette animation`,
+  bouton `🔁` de copie et liens de projection,
+- le bouton de copie ouvre une popup `window.LSSMessageBox` qui rappelle le titre et la description
+  de l'animation source, puis demande date/heure, titre et description de la copie,
 - état vide : message `Aucune animation à venir pour ce groupe.`.

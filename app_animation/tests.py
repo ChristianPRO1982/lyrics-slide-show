@@ -46,6 +46,7 @@ from .services.background_images import (
 from .utils import _open_image, validate_image
 from . import views as animation_views
 from .services.playlist import parse_ordered_mix, sync_animation_playlist
+from .services.copy import copy_animation
 from .services.render_bundle import build_animation_render_bundle
 from .services.shortcuts import (
     build_effective_shortcut_bindings,
@@ -1570,6 +1571,35 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
             template,
         )
         self.assertIn("📱", template)
+        self.assertIn("{% url 'copy_animation' animation.animation_id %}", template)
+        self.assertIn("data-animation-copy-trigger", template)
+        self.assertIn("🔁", template)
+
+    def test_animation_history_exposes_animation_copy_action(self):
+        template = Path(
+            "app_animation/templates/animation/animation_history.html"
+        ).read_text()
+        self.assertIn("{% url 'copy_animation' animation.animation_id %}", template)
+        self.assertIn("data-animation-copy-trigger", template)
+        self.assertIn("🔁", template)
+
+    def test_animation_copy_script_uses_messagebox_and_posts_required_fields(self):
+        script = Path("static/js/app_animation_copy.js").read_text()
+        include = Path(
+            "app_animation/templates/animation/includes/_animation_copy_controls.html"
+        ).read_text()
+
+        self.assertIn("window.LSSMessageBox", script)
+        self.assertIn("messageBox.show", script)
+        self.assertIn('id: "scheduled_at"', script)
+        self.assertIn('id: "title"', script)
+        self.assertIn('id: "description"', script)
+        self.assertIn("required: true", script)
+        self.assertIn("form.requestSubmit", script)
+        self.assertIn('name="scheduled_at"', include)
+        self.assertIn('name="title"', include)
+        self.assertIn('name="description"', include)
+        self.assertIn('{% trans "Créer la copie" %}', include)
 
     def test_animation_actions_partial_uses_flat_song_like_panel_structure(self):
         template = Path(
@@ -2058,6 +2088,129 @@ class AnimationRenderBundleTests(TestCase):
         )
 
 
+class AnimationCopyServiceTests(TestCase):
+    def test_copy_animation_duplicates_visuals_playlist_repeated_songs_and_overrides(
+        self,
+    ):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        source = Animation.objects.create(
+            group=group,
+            title="Source",
+            description="Source description",
+            scheduled_at=timezone.now(),
+            text_color="#111111",
+            bg_color="#222222",
+            font_family="Ubuntu",
+            font_size=84,
+            horizontal_padding=96,
+            background_asset_code="bg-source",
+            default_transition="fade",
+        )
+        song_a = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        song_b = Song.objects.create(
+            title="Song B", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        item_one = AnimationSong.objects.create(
+            animation=source,
+            song=song_a,
+            position=2,
+            slide_display_mode=SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+            text_color_override="#AAAAAA",
+            bg_color_override="#BBBBBB",
+            font_family_override="Roboto",
+            font_size_override=64,
+            horizontal_padding_override=72,
+            background_asset_code_override="song-bg",
+        )
+        item_two = AnimationSong.objects.create(
+            animation=source,
+            song=song_b,
+            position=4,
+        )
+        item_three = AnimationSong.objects.create(
+            animation=source,
+            song=song_a,
+            position=6,
+            slide_display_mode=SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+        AnimationVerseOverride.objects.create(
+            animation_song=item_one,
+            source_verse_id=12,
+            is_visible=False,
+            text_color_override="#CCCCCC",
+            bg_color_override="#DDDDDD",
+            font_family_override="Lora",
+            font_size_override=58,
+            horizontal_padding_override=44,
+            background_asset_code_override="verse-bg",
+        )
+
+        copied = copy_animation(
+            source,
+            scheduled_at=timezone.now() + timedelta(days=7),
+            title="Copy",
+            description="Copy description",
+        )
+
+        self.assertNotEqual(copied.animation_id, source.animation_id)
+        self.assertEqual(copied.group_id, group.group_id)
+        self.assertEqual(copied.title, "Copy")
+        self.assertEqual(copied.description, "Copy description")
+        self.assertEqual(copied.text_color, source.text_color)
+        self.assertEqual(copied.bg_color, source.bg_color)
+        self.assertEqual(copied.font_family, source.font_family)
+        self.assertEqual(copied.font_size, source.font_size)
+        self.assertEqual(copied.horizontal_padding, source.horizontal_padding)
+        self.assertEqual(copied.background_asset_code, source.background_asset_code)
+        self.assertEqual(copied.default_transition, source.default_transition)
+
+        copied_items = list(
+            copied.animation_songs.order_by("position", "animation_song_id")
+        )
+        self.assertEqual(
+            [(item.song_id, item.position) for item in copied_items],
+            [
+                (song_a.song_id, item_one.position),
+                (song_b.song_id, item_two.position),
+                (song_a.song_id, item_three.position),
+            ],
+        )
+        self.assertEqual(
+            copied_items[0].slide_display_mode,
+            SongSlideDisplayMode.CHORUS_THEN_PARALLEL,
+        )
+        self.assertEqual(copied_items[0].text_color_override, "#AAAAAA")
+        self.assertEqual(copied_items[0].bg_color_override, "#BBBBBB")
+        self.assertEqual(copied_items[0].font_family_override, "Roboto")
+        self.assertEqual(copied_items[0].font_size_override, 64)
+        self.assertEqual(copied_items[0].horizontal_padding_override, 72)
+        self.assertEqual(copied_items[0].background_asset_code_override, "song-bg")
+        self.assertEqual(
+            copied_items[2].slide_display_mode,
+            SongSlideDisplayMode.VERSES_BY_PAIRS,
+        )
+
+        copied_override = AnimationVerseOverride.objects.get(
+            animation_song=copied_items[0],
+            source_verse_id=12,
+        )
+        self.assertFalse(copied_override.is_visible)
+        self.assertEqual(copied_override.text_color_override, "#CCCCCC")
+        self.assertEqual(copied_override.bg_color_override, "#DDDDDD")
+        self.assertEqual(copied_override.font_family_override, "Lora")
+        self.assertEqual(copied_override.font_size_override, 58)
+        self.assertEqual(copied_override.horizontal_padding_override, 44)
+        self.assertEqual(copied_override.background_asset_code_override, "verse-bg")
+
+        source.refresh_from_db()
+        self.assertEqual(source.title, "Source")
+        self.assertEqual(source.description, "Source description")
+        self.assertEqual(source.animation_songs.count(), 3)
+        self.assertEqual(item_one.verse_overrides.count(), 1)
+
+
 class AnimationViewsTests(TestCase):
     def _select_group(self, group: Group, secret: str | None = None) -> None:
         session = self.client.session
@@ -2139,6 +2292,46 @@ class AnimationViewsTests(TestCase):
         response = self.client.get(reverse("animations"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("add_animation"))
+
+    def test_animations_page_contains_copy_button_for_each_animation(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(
+            group=group,
+            title="Animation à copier",
+            description="Ancienne description",
+            scheduled_at=timezone.now() + timedelta(days=1),
+        )
+
+        response = self.client.get(reverse("animations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-animation-copy-trigger")
+        self.assertContains(response, "🔁")
+        self.assertContains(
+            response,
+            reverse("copy_animation", args=[animation.animation_id]),
+        )
+        self.assertContains(response, "data-animation-copy-form")
+
+    def test_animation_history_contains_copy_button_for_each_animation(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        animation = Animation.objects.create(
+            group=group,
+            title="Animation passée",
+            scheduled_at=timezone.now() - timedelta(days=10),
+        )
+
+        response = self.client.get(reverse("animation_history"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-animation-copy-trigger")
+        self.assertContains(response, "🔁")
+        self.assertContains(
+            response,
+            reverse("copy_animation", args=[animation.animation_id]),
+        )
 
     @override_settings(ANIMATION_ARCHIVE_DELAY_HOURS=48)
     def test_recently_started_animation_remains_visible_before_archive_delay(self):
@@ -2342,6 +2535,91 @@ class AnimationViewsTests(TestCase):
         created = Animation.objects.get(title="Nouvelle animation image")
         self.assertIsNone(created.bg_color)
         self.assertEqual(created.background_asset_code, "bg-asset-01")
+
+    def test_copy_animation_post_redirects_to_copied_animation(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        self._select_group(group)
+        source = Animation.objects.create(
+            group=group,
+            title="Source",
+            description="Source description",
+            scheduled_at=timezone.now(),
+            text_color="#123456",
+            default_transition="fade",
+        )
+        song = Song.objects.create(
+            title="Song A", subtitle="", status=SongStatus.NOT_VALIDATED, licensed=False
+        )
+        AnimationSong.objects.create(animation=source, song=song, position=2)
+
+        response = self.client.post(
+            reverse("copy_animation", args=[source.animation_id]),
+            data={
+                "scheduled_at": "2026-05-08T19:45",
+                "title": "Copie",
+                "description": "Nouvelle description",
+            },
+        )
+
+        copied = Animation.objects.get(title="Copie")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            reverse("modify_animation", args=[copied.animation_id]),
+        )
+        self.assertEqual(copied.group_id, group.group_id)
+        self.assertEqual(copied.description, "Nouvelle description")
+        self.assertEqual(copied.text_color, "#123456")
+        self.assertEqual(copied.default_transition, "fade")
+        self.assertEqual(copied.animation_songs.count(), 1)
+
+    def test_copy_animation_post_refuses_animation_outside_selected_group(self):
+        selected_group = Group.objects.create(
+            name="Open Group", status=GroupStatus.OPEN
+        )
+        other_group = Group.objects.create(name="Other Group", status=GroupStatus.OPEN)
+        source = Animation.objects.create(
+            group=other_group,
+            title="Other Source",
+            scheduled_at=timezone.now(),
+        )
+        self._select_group(selected_group)
+
+        response = self.client.post(
+            reverse("copy_animation", args=[source.animation_id]),
+            data={
+                "scheduled_at": "2026-05-08T19:45",
+                "title": "Copie",
+                "description": "Nouvelle description",
+            },
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(Animation.objects.filter(title="Copie").exists())
+
+    def test_copy_animation_post_invalid_data_returns_json_400(self):
+        group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
+        source = Animation.objects.create(
+            group=group,
+            title="Source",
+            scheduled_at=timezone.now(),
+        )
+        self._select_group(group)
+
+        response = self.client.post(
+            reverse("copy_animation", args=[source.animation_id]),
+            data={
+                "scheduled_at": "",
+                "title": "",
+                "description": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["ok"], False)
+        self.assertIn("scheduled_at", response.json()["errors"])
+        self.assertIn("title", response.json()["errors"])
+        self.assertIn("description", response.json()["errors"])
 
     def test_modify_animation_requires_selected_group(self):
         group = Group.objects.create(name="Open Group", status=GroupStatus.OPEN)
