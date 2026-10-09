@@ -235,6 +235,32 @@ msgstr ""
 msgid "Couplets deux par deux"
 msgstr "Verses and choruses"
 
+#: app_song/templates/song/modify_song.html:156
+msgid "📏 Max de lignes"
+msgstr "📏 Max lines"
+
+#: app_song/templates/song/modify_song.html:160
+msgid "📏 Max de caractères par lignes"
+msgstr "📏 Max characters per line"
+
+#: app_song/templates/song/modify_song.html:155
+#: app_song/templates/song/modify_song.html:159
+#: app_song/templates/song/modify_song_page_i18n.html:51
+msgid "désactivé"
+msgstr "disabled"
+
+#: app_song/templates/song/modify_song.html:162
+msgid "Alertes de longueur"
+msgstr "Length warnings"
+
+#: app_song/templates/song/modify_song_page_i18n.html:52
+msgid "Il y a trop de lignes :"
+msgstr "Too many lines:"
+
+#: app_song/templates/song/modify_song_page_i18n.html:53
+msgid "Il y a trop de caractères pour une ligne :"
+msgstr "Too many characters on one line:"
+
 #: app_animation/templates/animation/add_animation.html:5
 #: app_animation/templates/animation/add_animation.html:39
 #: app_animation/templates/animation/includes/_animation_actions.html:2
@@ -4491,9 +4517,10 @@ msgstr ""
 msgid "Nombre maximal de lignes par couplet"
 msgstr ""
 
-#: app_member/forms.py:200
+#: app_member/forms.py:200 app_song/templates/song/modify_song.html:158
+#: app_song/templates/song/modify_song_page_i18n.html:53
 msgid "Nombre maximal de caractères par ligne"
-msgstr ""
+msgstr "Maximum number of characters per line"
 
 #: app_member/forms.py:202
 msgid "Préfixe du refrain"
@@ -5311,6 +5338,10 @@ msgstr "Non-validated songs"
 #: app_song/templates/song/songs.html:232
 msgid "Favoris uniquement"
 msgstr "Favourites only"
+
+#: app_song/templates/song/songs.html:238
+msgid "📏 Hors règles"
+msgstr "📏 Rule violations"
 
 #: app_song/templates/song/songs.html:242
 msgid "Trouver le genre ou le groupe ou l’artiste"

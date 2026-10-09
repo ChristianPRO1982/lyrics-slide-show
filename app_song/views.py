@@ -1237,6 +1237,15 @@ def _handle_song_post(request: HttpRequest, redirect_url: str) -> HttpResponse:
 def songs(request: HttpRequest) -> HttpResponse:
     selected_group, _selected_via_secret = get_selected_group_state(request)
     member_id = get_member_id_from_user(request.user)
+    site_params = get_site_params_for_language(getattr(request, "LANGUAGE_CODE", None))
+    verse_max_lines = (
+        site_params.verse_max_lines if site_params else DEFAULT_VERSE_MAX_LINES
+    )
+    verse_max_characters_for_line = (
+        site_params.verse_max_characters_for_a_line
+        if site_params
+        else DEFAULT_VERSE_MAX_CHARS
+    )
 
     if request.method == "POST":
         return _handle_song_post(request, "songs")
@@ -1250,7 +1259,11 @@ def songs(request: HttpRequest) -> HttpResponse:
     )
     non_validated_search_params = SongSearchParams(validation="non_validated_only")
     non_validated_search_results = search_songs(
-        non_validated_search_params, request.user, member_id
+        non_validated_search_params,
+        request.user,
+        member_id,
+        verse_max_lines=verse_max_lines,
+        verse_max_characters_for_line=verse_max_characters_for_line,
     )
     non_validated_quick = bool(
         _is_moderator(request.user)
@@ -1269,11 +1282,23 @@ def songs(request: HttpRequest) -> HttpResponse:
         # Temporary view: ignore and do not overwrite the persisted member search.
         applied_search_params = SongSearchParams(favorites_only=True)
         display_search_params = load_member_song_search(member_id)
-        search_results = search_songs(applied_search_params, request.user, member_id)
+        search_results = search_songs(
+            applied_search_params,
+            request.user,
+            member_id,
+            verse_max_lines=verse_max_lines,
+            verse_max_characters_for_line=verse_max_characters_for_line,
+        )
     else:
         applied_search_params = get_active_song_search(request, member_id)
         display_search_params = applied_search_params
-        search_results = search_songs(applied_search_params, request.user, member_id)
+        search_results = search_songs(
+            applied_search_params,
+            request.user,
+            member_id,
+            verse_max_lines=verse_max_lines,
+            verse_max_characters_for_line=verse_max_characters_for_line,
+        )
     song_cards = _build_song_cards(search_results.results, request.user)
     active_search_tags = (
         build_active_song_search_reference_tags(display_search_params)
@@ -1306,6 +1331,7 @@ def songs(request: HttpRequest) -> HttpResponse:
             "catalog_count": search_results.catalog_count,
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
+            "can_use_rule_violations_filter": _is_moderator(request.user),
             "can_create_song": _is_authenticated(request.user),
             "can_use_moderation_quick": bool(
                 _is_moderator(request.user) and moderation_search_results.results

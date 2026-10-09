@@ -135,7 +135,7 @@
         </p>
     {% endif %}
 {% endblock %}
-{% block page_summary_panel_classes %}{% if not page_summary_text %} site-main-aside--compact-hidden{% endif %}{% endblock %}
+{% block page_summary_panel_classes %}{% endblock %}
 {% block page_summary %}
     {% if page_summary_text %}
         <p>
@@ -145,6 +145,27 @@
             {% endif %}
         </p>
     {% endif %}
+    <div
+        class="song-block-rule-summary"
+        data-song-block-rule-summary
+        data-verse-max-lines="{{ verse_max_lines }}"
+        data-verse-max-characters-for-line="{{ verse_max_characters_for_line }}"
+    >
+        <ul class="song-block-rule-list">
+            <li>
+                {% trans "📏 Max de lignes" %} :
+                {% if verse_max_lines > 0 %}{{ verse_max_lines }}{% else %}{% trans "désactivé" %}{% endif %}
+            </li>
+            <li>
+                {% trans "📏 Max de caractères par lignes" %} :
+                {% if verse_max_characters_for_line > 0 %}{{ verse_max_characters_for_line }}{% else %}{% trans "désactivé" %}{% endif %}
+            </li>
+        </ul>
+        <div class="song-block-warning-summary" data-song-block-warning-summary hidden>
+            <p><strong>{% trans "Alertes de longueur" %}</strong></p>
+            <ul data-song-block-warning-summary-list></ul>
+        </div>
+    </div>
 {% endblock %}
 {% block content %}
 
@@ -258,10 +279,12 @@
                 {% for block in song_blocks %}
                     <article
                         class="site-theme-card song-card song-edit-block{% if block.type == 'chorus' or block.type == 'special' %} song-edit-block--emphasis{% endif %}"
+                        id="song-block-{{ block.row_key|slugify }}"
                         data-reorder-item
                         data-id="{{ block.row_key }}"
                         data-song-block-card
                         data-song-block-row="{{ block.row_key }}"
+                        data-song-block-anchor-id="song-block-{{ block.row_key|slugify }}"
                         data-song-block-pending-delete="false"
                     >
                         <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
@@ -273,6 +296,7 @@
                         </div>
 
                         <div data-reorder-normal-view>
+                            <div class="song-block-warnings" data-song-block-warnings hidden></div>
                             <table class="song-edit-block-table" style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
                                 <tbody>
                                     <tr class="song-edit-block-table-row">
@@ -442,7 +466,7 @@
                         </p>
                     </article>
                     <template data-song-block-template>
-                        <article class="site-theme-card song-card song-edit-block" data-reorder-item data-song-block-card data-song-block-row="" data-song-block-pending-delete="false">
+                        <article class="site-theme-card song-card song-edit-block" data-reorder-item data-song-block-card data-song-block-row="" data-song-block-anchor-id="" data-song-block-pending-delete="false">
                             <div class="song-edit-block-drag-view" data-reorder-drag-view hidden>
                                 <button type="button" class="song-tool-button song-reorder-handle-inline" data-reorder-handle aria-label="{% trans 'Déplacer' %}">⋮↕⋮</button>
                                 <strong class="song-edit-block-drag-label" data-song-block-drag-label></strong>
@@ -450,6 +474,7 @@
                             </div>
 
                             <div data-reorder-normal-view>
+                                <div class="song-block-warnings" data-song-block-warnings hidden></div>
                                 <table class="song-edit-block-table" style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="5">
                                     <tbody>
                                         <tr class="song-edit-block-table-row">

@@ -879,6 +879,17 @@
                 comment: String(item?.comment || "").trim(),
             }))
             .filter((item) => item.id && item.prefix);
+        const blockRuleSummary = document.querySelector("[data-song-block-rule-summary]");
+        const blockWarningSummary = document.querySelector("[data-song-block-warning-summary]");
+        const blockWarningSummaryList = document.querySelector("[data-song-block-warning-summary-list]");
+        const verseMaxLines = Number.parseInt(
+            blockRuleSummary?.getAttribute("data-verse-max-lines") || "0",
+            10,
+        );
+        const verseMaxCharactersForLine = Number.parseInt(
+            blockRuleSummary?.getAttribute("data-verse-max-characters-for-line") || "0",
+            10,
+        );
         const refreshUnsavedChanges = () => {
             if (modifySongUnsavedController) {
                 modifySongUnsavedController.refresh();
@@ -903,6 +914,41 @@
                 }
             }
             return "";
+        };
+
+        const normalizeBlockWarningLines = (value) => {
+            const normalized = String(value || "").replace(/\r\n?/g, "\n").trim();
+            return normalized ? normalized.split("\n") : [];
+        };
+
+        const getBlockWarningParts = (text) => {
+            const lines = normalizeBlockWarningLines(text);
+            const lineCount = lines.length;
+            const maxLineLength = lines.reduce((max, line) => Math.max(max, line.length), 0);
+            const parts = [];
+            if (verseMaxLines > 0 && lineCount > verseMaxLines) {
+                parts.push(`${label("tooManyLinesLabel")} ${lineCount}/${verseMaxLines}`);
+            }
+            if (verseMaxCharactersForLine > 0 && maxLineLength > verseMaxCharactersForLine) {
+                parts.push(`${label("lineTooLongLabel")} ${maxLineLength}/${verseMaxCharactersForLine}`);
+            }
+            return parts;
+        };
+
+        const getBlockAnchorId = (card) => {
+            const existing = String(card?.getAttribute("data-song-block-anchor-id") || "").trim();
+            if (existing) {
+                return existing;
+            }
+            const rowKey = String(card?.getAttribute("data-song-block-row") || "").trim();
+            const slug = rowKey.replace(/[^a-zA-Z0-9_-]+/g, "-") || "block";
+            return `song-block-${slug}`;
+        };
+
+        const getBlockSummaryLabel = (card) => {
+            const labelNode = card?.querySelector("[data-song-block-display-label]");
+            const labelText = String(labelNode?.textContent || "").trim();
+            return labelText || label("verseLabel");
         };
 
         const encodeForInputValue = (value) => {
@@ -1129,6 +1175,7 @@
                 if (readView) readView.hidden = false;
                 if (editView) editView.hidden = true;
             }
+            refreshBlockWarnings();
         };
 
         const readStateFromHidden = (card) => {
@@ -1146,6 +1193,59 @@
             });
         };
 
+        const renderBlockWarnings = (card) => {
+            if (!card) {
+                return null;
+            }
+            const warningContainer = card.querySelector("[data-song-block-warnings]");
+            if (!(warningContainer instanceof HTMLElement)) {
+                return null;
+            }
+            const hiddenDelete = getHidden(card, "[data-song-hidden-delete]");
+            if (hiddenDelete?.value === "1") {
+                warningContainer.hidden = true;
+                warningContainer.textContent = "";
+                return null;
+            }
+            const state = readStateFromHidden(card);
+            const parts = getBlockWarningParts(state.text);
+            if (!parts.length) {
+                warningContainer.hidden = true;
+                warningContainer.textContent = "";
+                return null;
+            }
+            const message = `📏 ${parts.join(" - ")}`;
+            warningContainer.hidden = false;
+            warningContainer.textContent = message;
+            return {
+                anchorId: getBlockAnchorId(card),
+                label: getBlockSummaryLabel(card),
+                message,
+            };
+        };
+
+        const refreshBlockWarnings = () => {
+            if (
+                !(blockWarningSummary instanceof HTMLElement)
+                || !(blockWarningSummaryList instanceof HTMLElement)
+            ) {
+                return;
+            }
+            blockWarningSummaryList.innerHTML = "";
+            const warnings = getCards()
+                .map((card) => renderBlockWarnings(card))
+                .filter(Boolean);
+            blockWarningSummary.hidden = warnings.length === 0;
+            warnings.forEach((warning) => {
+                const item = document.createElement("li");
+                const link = document.createElement("a");
+                link.href = `#${warning.anchorId}`;
+                link.textContent = `${warning.label} : ${warning.message}`;
+                item.appendChild(link);
+                blockWarningSummaryList.appendChild(item);
+            });
+        };
+
         const writeStateToHidden = (card, state) => {
             const normalized = normalizeBlockState(state);
             const hiddenType = getHidden(card, "[data-song-hidden-type]");
@@ -1160,6 +1260,7 @@
             if (hiddenNotCNum) hiddenNotCNum.value = normalized.notCNum ? "1" : "0";
             renderCardFromState(card, normalized);
             renderDeletePendingState(card);
+            refreshBlockWarnings();
             rebuildSlideDisplayModeOptions();
             refreshUnsavedChanges();
             return normalized;
@@ -1301,8 +1402,10 @@
             const rowSlug = rowKey.replace(/[^a-zA-Z0-9_-]+/g, "-");
 
             article.dataset.id = rowKey;
+            article.id = `song-block-${rowSlug}`;
             article.setAttribute("data-song-block-card", "");
             article.setAttribute("data-song-block-row", rowKey);
+            article.setAttribute("data-song-block-anchor-id", article.id);
             article.setAttribute("data-song-block-default-label", initialLabel);
             article.classList.toggle("song-edit-block--emphasis", initialType === "chorus");
 
@@ -1372,6 +1475,7 @@
                 renderCardFromState(card, readStateFromHidden(card));
                 renderDeletePendingState(card);
             });
+            refreshBlockWarnings();
         };
 
         reorderList.addEventListener("click", async (event) => {

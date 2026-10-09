@@ -1395,6 +1395,32 @@
     font-weight: 700;
 }
 
+.song-block-rule-summary {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.song-block-rule-summary p,
+.song-block-rule-summary ul {
+    margin: 0;
+}
+
+.song-block-rule-list,
+.song-block-warning-summary ul {
+    padding-left: 1.15rem;
+}
+
+.song-block-warning-summary {
+    display: grid;
+    gap: 0.35rem;
+    color: #8d3c14;
+    font-weight: 700;
+}
+
+.song-block-warning-summary[hidden] {
+    display: none !important;
+}
+
 .song-insert-separator {
     margin: 0.75rem 0;
     text-align: center;

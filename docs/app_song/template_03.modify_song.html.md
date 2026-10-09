@@ -18,6 +18,10 @@ Cette page sert :
 - pour modérateur/admin et s’il existe des messages visibles, affiche le lien `Voir toutes les demandes de modification`
 - ce lien ouvre une popup Markdown de tous les messages, avec non lus d’abord, séparateur avant les lus, et action `Marquer lu / Marquer non lu`
 - affiche le résumé de description avec popup de description complète
+- affiche toujours dans l’encadré résumé les règles non bloquantes de longueur de bloc :
+  - nombre maximal de lignes par bloc
+  - nombre maximal de caractères par ligne
+- si des blocs dépassent ces règles, l’encadré résumé ajoute un lien par bloc en alerte vers son ancre HTML
 - affiche les cartes `# Tags` et `Liens associés` en lecture
 - expose un bouton `Modifier le titre, sous-titre, la description et la validation`
 - ce bouton affiche deux cartes d’édition masquées par défaut :
@@ -27,6 +31,8 @@ Cette page sert :
 - porte le formulaire principal `#modify-song-form`
 - affiche la liste des blocs de paroles
 - pour chaque bloc éditable :
+  - expose une ancre HTML stable
+  - affiche en haut du bloc une alerte non bloquante si le texte dépasse `verse_max_lines` ou `verse_max_characters_for_line`
   - ouverture inline du préfixe ou du texte
   - options `Refrain`, `Suivi`, `Not C. num`, `Comme un refrain`
   - pour un bloc `comme un refrain`, le champ libre `Préfixe` reste présent
