@@ -220,9 +220,110 @@
 }
 
 .song-search-main input[type="search"],
+.song-advanced-grid input[type="search"],
 .song-advanced-grid select {
     min-height: 2.75rem;
     width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-field-bg);
+    color: var(--site-ink);
+}
+
+.song-search-main input[type="search"]::placeholder,
+.song-advanced-grid input[type="search"]::placeholder {
+    color: var(--site-ink-soft);
+    opacity: 1;
+}
+
+.song-search-main input[type="search"]:focus-visible,
+.song-advanced-grid input[type="search"]:focus-visible,
+.song-advanced-grid select:focus-visible {
+    outline: none;
+    border-color: var(--site-accent);
+    box-shadow: var(--site-focus-ring);
+}
+
+.song-meta-row input[type="text"],
+.song-meta-row select,
+[data-song-edit-meta-card] input[type="text"],
+[data-song-edit-meta-card] textarea,
+[data-song-edit-meta-card] select,
+.song-message-form textarea,
+.song-block-editor textarea,
+.song-block-editor input[type="text"],
+.song-block-editor select,
+[data-song-block-editor] textarea,
+[data-song-block-editor] input[type="text"],
+[data-song-block-editor] select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-field-bg);
+    color: var(--site-ink);
+}
+
+.song-meta-row input[type="text"],
+.song-meta-row select,
+[data-song-edit-meta-card] input[type="text"],
+[data-song-edit-meta-card] select,
+.song-block-editor input[type="text"],
+.song-block-editor select,
+[data-song-block-editor] input[type="text"],
+[data-song-block-editor] select {
+    min-height: 2.75rem;
+}
+
+.song-meta-row input[type="text"]::placeholder,
+[data-song-edit-meta-card] input[type="text"]::placeholder,
+[data-song-edit-meta-card] textarea::placeholder,
+.song-message-form textarea::placeholder,
+.song-block-editor textarea::placeholder,
+.song-block-editor input[type="text"]::placeholder,
+[data-song-block-editor] textarea::placeholder,
+[data-song-block-editor] input[type="text"]::placeholder {
+    color: var(--site-ink-soft);
+    opacity: 1;
+}
+
+.song-meta-row input[type="text"]:focus-visible,
+.song-meta-row select:focus-visible,
+[data-song-edit-meta-card] input[type="text"]:focus-visible,
+[data-song-edit-meta-card] textarea:focus-visible,
+[data-song-edit-meta-card] select:focus-visible,
+.song-message-form textarea:focus-visible,
+.song-block-editor textarea:focus-visible,
+.song-block-editor input[type="text"]:focus-visible,
+.song-block-editor select:focus-visible,
+[data-song-block-editor] textarea:focus-visible,
+[data-song-block-editor] input[type="text"]:focus-visible,
+[data-song-block-editor] select:focus-visible {
+    outline: none;
+    border-color: var(--site-accent);
+    box-shadow: var(--site-focus-ring);
+}
+
+.song-meta-row input[type="text"]:disabled,
+.song-meta-row select:disabled,
+[data-song-edit-meta-card] input[type="text"]:disabled,
+[data-song-edit-meta-card] textarea:disabled,
+[data-song-edit-meta-card] select:disabled,
+.song-block-editor textarea:disabled,
+.song-block-editor input[type="text"]:disabled,
+.song-block-editor select:disabled,
+[data-song-block-editor] textarea:disabled,
+[data-song-block-editor] input[type="text"]:disabled,
+[data-song-block-editor] select:disabled,
+.song-meta-row input[type="text"][readonly],
+[data-song-edit-meta-card] input[type="text"][readonly],
+[data-song-edit-meta-card] textarea[readonly],
+.song-block-editor textarea[readonly],
+.song-block-editor input[type="text"][readonly],
+[data-song-block-editor] textarea[readonly],
+[data-song-block-editor] input[type="text"][readonly] {
+    opacity: var(--site-action-disabled-opacity);
 }
 
 .song-search-main .song-checkbox-option {
@@ -320,7 +421,15 @@
 }
 
 .song-checkbox-option input {
+    accent-color: var(--site-accent);
     margin-top: 0.15rem;
+}
+
+.song-meta-row input[type="checkbox"],
+[data-song-edit-meta-card] input[type="checkbox"],
+.song-block-editor input[type="checkbox"],
+[data-song-block-editor] input[type="checkbox"] {
+    accent-color: var(--site-accent);
 }
 
 .song-reference-filter {
@@ -338,11 +447,6 @@
     gap: 0.75rem;
     max-height: none;
     overflow: visible;
-}
-
-.song-reference-filter-input {
-    min-height: 2.5rem;
-    width: 100%;
 }
 
 .song-reference-options {
@@ -639,16 +743,6 @@
     display: grid;
     gap: 0;
     align-items: center;
-}
-
-.song-meta-row input[type="text"] {
-    min-height: 2.75rem;
-    width: 100%;
-}
-
-.song-meta-row select {
-    min-height: 2.75rem;
-    width: 100%;
 }
 
 .song-meta-row--link {

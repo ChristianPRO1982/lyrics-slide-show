@@ -1607,11 +1607,11 @@ body.animation-background-picker-overlay-open {
 .lyrics-master-transition-select {
     width: 100%;
     min-width: 0;
-    border: 1px solid var(--site-line-strong);
+    border: 1px solid var(--site-popup-border);
     border-radius: 0.35rem;
     padding: 0.35rem 0.45rem;
-    background: var(--site-surface);
-    color: var(--site-text);
+    background: var(--site-popup-field-bg);
+    color: var(--site-ink);
 }
 
 .lyrics-master-qr-button-image {
@@ -1950,7 +1950,31 @@ body.animation-background-picker-overlay-open {
 }
 
 .lyrics-public-controls select {
+    min-height: 2.75rem;
     width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #b8c2ce;
+    border-radius: 0.45rem;
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+}
+
+.lyrics-public-controls select:focus-visible {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+}
+
+.lyrics-public-body.is-public-dark .lyrics-public-controls select {
+    border-color: #4b5563;
+    background: #1f2937;
+    color: #f9fafb;
+}
+
+.lyrics-public-body.is-public-dark .lyrics-public-controls select:focus-visible {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.24);
 }
 
 .lyrics-public-song {
@@ -2129,11 +2153,21 @@ body.animation-background-picker-overlay-open {
 .lyrics-remote-field select {
     min-height: 3rem;
     width: 100%;
-    border: 1px solid #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 6px;
-    background: #fff;
-    color: #111827;
+    background: #1f2937;
+    color: #f9fafb;
     font: inherit;
+}
+
+.lyrics-remote-field select:focus-visible {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.24);
+}
+
+.lyrics-remote-visibility-settings input[type="checkbox"] {
+    accent-color: #93c5fd;
 }
 
 .lyrics-remote-menu-action,
