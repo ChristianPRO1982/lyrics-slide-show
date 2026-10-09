@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lyrics Slide Show\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 11:52+0200\n"
+"POT-Creation-Date: 2026-10-09 12:25+0200\n"
 "PO-Revision-Date: 2026-04-10 00:00+0000\n"
 "Last-Translator: Codex\n"
 "Language-Team: English\n"
@@ -407,7 +407,13 @@ msgstr "Edit this animation"
 msgid "Copier cette animation"
 msgstr "Edit this animation"
 
-#: app_animation/templates/animation/animation_history.html:73
+#: app_animation/templates/animation/animation_history.html:68
+#: app_animation/templates/animation/animations.html:68
+#: app_animation/templates/animation/lyrics_slide_show.html:241
+msgid "Vue smartphone de l animation"
+msgstr "Smartphone view of the animation"
+
+#: app_animation/templates/animation/animation_history.html:74
 msgid "Aucune animation passée pour ce groupe."
 msgstr ""
 
@@ -420,11 +426,6 @@ msgstr ""
 #: templates/includes/nav.html:11
 msgid "Liste des animations"
 msgstr "Animations"
-
-#: app_animation/templates/animation/animations.html:68
-#: app_animation/templates/animation/lyrics_slide_show.html:241
-msgid "Vue smartphone de l animation"
-msgstr "Smartphone view of the animation"
 
 #: app_animation/templates/animation/animations.html:75
 msgid "Aucune animation à venir pour ce groupe."

@@ -1583,6 +1583,11 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("{% url 'copy_animation' animation.animation_id %}", template)
         self.assertIn("data-animation-copy-trigger", template)
         self.assertIn("🔁", template)
+        self.assertIn(
+            "{% url 'lyrics_slide_show_public' animation.animation_id %}",
+            template,
+        )
+        self.assertIn("📱", template)
 
     def test_animation_copy_script_uses_messagebox_and_posts_required_fields(self):
         script = Path("static/js/app_animation_copy.js").read_text()
