@@ -4139,7 +4139,11 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertIn(">Modifier<", compact_markup)
         self.assertIn(">Supprimer<", compact_markup)
         self.assertIn(">Impression<", compact_markup)
-        self.assertIn(">Smartphone view<", compact_markup)
+        self.assertIn(">📱 Smartphone View<", compact_markup)
+        self.assertLess(
+            compact_markup.index(">📱 Smartphone View<"),
+            compact_markup.index(">Afficher<"),
+        )
         self.assertIn('aria-label="Double slide">2️⃣</span>', compact_markup)
         self.assertIn('aria-label="Favori">⭐</span>', compact_markup)
         self.assertLess(
@@ -4175,7 +4179,11 @@ class SongGenresDisplayViewTests(TestCase):
         validated_slice = compact_markup[validated_index : validated_index + 2200]
 
         self.assertIn(">Afficher<", validated_slice)
-        self.assertIn(">Smartphone view<", validated_slice)
+        self.assertIn(">📱 Smartphone View<", validated_slice)
+        self.assertLess(
+            validated_slice.index(">📱 Smartphone View<"),
+            validated_slice.index(">Afficher<"),
+        )
         self.assertIn(">Impression<", validated_slice)
         self.assertNotIn(">Modifier<", validated_slice)
         self.assertNotIn(">Supprimer<", validated_slice)

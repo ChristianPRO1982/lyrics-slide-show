@@ -433,6 +433,7 @@
                                     aria-expanded="false"
                                 >⚙️</button>
                                 <div class="song-compact-options-panel" data-song-compact-options-panel hidden>
+                                    <a class="site-floating-action song-compact-options-link" href="{{ item.print_full_url }}">📱 {% trans "Smartphone View" %}</a>
                                     <a class="site-floating-action song-compact-options-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                                     {% if item.can_edit %}
                                         <a class="site-floating-action song-compact-options-link" href="{{ item.modify_url }}">{% trans "Modifier" %}</a>
@@ -443,7 +444,6 @@
                                             <button type="submit" class="site-floating-action song-compact-options-link song-compact-options-button">{% trans "Supprimer" %}</button>
                                         </form>
                                     {% endif %}
-                                    <a class="site-floating-action song-compact-options-link" href="{{ item.print_full_url }}">{% trans "Smartphone view" %}</a>
                                     <button
                                         type="button"
                                         class="site-floating-action song-compact-options-link song-compact-options-button"
