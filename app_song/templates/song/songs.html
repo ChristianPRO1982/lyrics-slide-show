@@ -237,6 +237,13 @@
                                 <input type="checkbox" name="favorites_only" value="1" {% if search_params.favorites_only %}checked{% endif %}>
                                 <span>{% trans "Favoris uniquement" %}</span>
                             </label>
+
+                            {% if can_use_rule_violations_filter %}
+                                <label class="song-checkbox-option">
+                                    <input type="checkbox" name="rule_violations_only" value="1" {% if search_params.rule_violations_only %}checked{% endif %}>
+                                    <span>{% trans "📏 Hors règles" %}</span>
+                                </label>
+                            {% endif %}
                         </div>
 
                         {% if reference_options.genres or reference_options.bands or reference_options.artists %}
@@ -433,6 +440,7 @@
                                     aria-expanded="false"
                                 >⚙️</button>
                                 <div class="song-compact-options-panel" data-song-compact-options-panel hidden>
+                                    <a class="site-floating-action song-compact-options-link" href="{{ item.print_full_url }}">📱 {% trans "Smartphone View" %}</a>
                                     <a class="site-floating-action song-compact-options-link" href="{{ item.display_url }}">{% trans "Afficher" %}</a>
                                     {% if item.can_edit %}
                                         <a class="site-floating-action song-compact-options-link" href="{{ item.modify_url }}">{% trans "Modifier" %}</a>
@@ -443,7 +451,6 @@
                                             <button type="submit" class="site-floating-action song-compact-options-link song-compact-options-button">{% trans "Supprimer" %}</button>
                                         </form>
                                     {% endif %}
-                                    <a class="site-floating-action song-compact-options-link" href="{{ item.print_full_url }}">{% trans "Smartphone view" %}</a>
                                     <button
                                         type="button"
                                         class="site-floating-action song-compact-options-link song-compact-options-button"

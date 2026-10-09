@@ -5,6 +5,7 @@
 {% block title %}{% trans "Gestion des cibles" %} | Lyrics Slide Show{% endblock %}
 {% block section_title %}{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}{% endblock %}
 {% block section_intro %}
+    <style>@import url("{% static 'css/app_animation.css' %}");</style>
     <style>@import url("{% static 'css/app_song.css' %}");</style>
 {% endblock %}
 {% block section_nav %}
@@ -32,8 +33,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True %}
+    {% include "animation/includes/_animation_mobile_actions.html" with show_back_to_animations_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Gestion des cibles" %}{% endblock %}
@@ -92,6 +92,7 @@
 {% endblock %}
 
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
     <script src="{% static 'js/unsaved_changes.js' %}"></script>
     <script>
         (() => {

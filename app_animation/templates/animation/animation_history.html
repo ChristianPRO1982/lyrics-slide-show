@@ -32,8 +32,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True %}
+    {% include "animation/includes/_animation_mobile_actions.html" with show_back_to_animations_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Historique des animations" %}{% endblock %}
@@ -53,7 +52,21 @@
                 {% if animation.description %}
                     <p>{{ animation.description|linebreaksbr }}</p>
                 {% endif %}
-                <p><a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a></p>
+                <div class="animation-list-card-actions">
+                    <div class="animation-list-card-actions-top">
+                        <a class="animation-tool-link site-action site-action--primary" href="{% url 'modify_animation' animation.animation_id %}">{% trans "Modifier cette animation" %}</a>
+                        <button
+                            class="animation-tool-button site-action site-action--primary"
+                            type="button"
+                            data-animation-copy-trigger
+                            data-copy-url="{% url 'copy_animation' animation.animation_id %}"
+                            data-source-title="{{ animation.title|escape }}"
+                            data-source-description="{{ animation.description|default:''|escape }}"
+                            aria-label="{% trans 'Copier cette animation' %}"
+                            title="{% trans 'Copier cette animation' %}"
+                        >🔁</button>
+                    </div>
+                </div>
             </article>
         {% empty %}
             <article class="site-theme-card">
@@ -61,7 +74,10 @@
             </article>
         {% endfor %}
     </section>
+    {% include "animation/includes/_animation_copy_controls.html" %}
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
+    <script src="{% static 'js/app_animation_copy.js' %}"></script>
     <script src="{% static 'js/app_animation_stats.js' %}"></script>
 {% endblock %}

@@ -42,18 +42,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    <div class="animation-tools-separator" aria-hidden="true"></div>
-    <p>
-        <button
-            type="submit"
-            form="background-picker-save-form"
-            class="animation-tool-button site-action site-action--primary"
-        >
-            {% trans "Sauvegarder et revenir à l'animation" %}
-        </button>
-    </p>
-    <p><a class="animation-tool-link site-action site-action--secondary" href="{{ picker_back_url }}">{% trans "Revenir sans sauvegarder" %}</a></p>
+    {% include "animation/includes/_animation_mobile_actions.html" with show_picker_save_action=True picker_save_form_id="background-picker-save-form" picker_back_url=picker_back_url %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ picker_scope_title }}{% endblock %}
@@ -184,6 +173,7 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
     <script>
         (() => {
             const grid = document.querySelector("[data-picker-grid]");

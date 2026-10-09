@@ -1,0 +1,21 @@
+{% load i18n %}
+
+<form method="post" data-animation-copy-form hidden>
+    {% csrf_token %}
+    <input type="hidden" name="scheduled_at" data-animation-copy-scheduled-at>
+    <input type="hidden" name="title" data-animation-copy-title>
+    <input type="hidden" name="description" data-animation-copy-description>
+</form>
+<div
+    data-animation-copy-i18n
+    data-popup-title="{% trans "Copier l'animation" %}"
+    data-source-title-label="{% trans "Titre actuel" %}"
+    data-source-description-label="{% trans "Description actuelle" %}"
+    data-empty-description-label="{% trans "Aucune description" %}"
+    data-scheduled-label="{% trans "Date et heure" %}"
+    data-title-label="{% trans "Titre" %}"
+    data-description-label="{% trans "Description" %}"
+    data-create-label="{% trans "Créer la copie" %}"
+    data-cancel-label="{% trans "Annuler" %}"
+    hidden
+></div>

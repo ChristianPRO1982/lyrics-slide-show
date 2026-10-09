@@ -22,7 +22,8 @@ Elle est réutilisée pour trois portées :
 
 - panneau section aligné sur le groupe sélectionné ;
 - panneau outils standard des animations ;
-- action contextuelle de retour vers `modify_animation`.
+- action contextuelle de retour vers `modify_animation` ;
+- sur mobile, les actions sont repliées par défaut derrière `Afficher les actions`.
 
 ### En-tête principal
 

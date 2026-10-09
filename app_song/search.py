@@ -29,10 +29,14 @@ from .models import (
     SongFavorite,
     SongGenre,
     SongStatus,
+    Verse,
 )
+from .rendering import normalize_lyrics_linebreaks
 from .tag_emojis import with_artist_emoji, with_band_emoji, with_music_emoji
 
 
+DEFAULT_RULE_VIOLATION_MAX_LINES = 10
+DEFAULT_RULE_VIOLATION_MAX_CHARS = 50
 SONG_SEARCH_VALIDATION_VALUES = {
     "all",
     "validated_only",
@@ -65,6 +69,7 @@ class SongSearchParams:
     artist_ids: tuple[int, ...] = ()
     validation: str = "all"
     favorites_only: bool = False
+    rule_violations_only: bool = False
 
     @classmethod
     def empty(cls) -> "SongSearchParams":
@@ -84,6 +89,7 @@ class SongSearchParams:
             artist_ids=_normalize_ids(value.get("artist_ids")),
             validation=validation,
             favorites_only=bool(value.get("favorites_only")),
+            rule_violations_only=bool(value.get("rule_violations_only")),
         )
 
     def for_guest(self) -> "SongSearchParams":
@@ -213,6 +219,7 @@ def _params_from_query(query: QueryDict) -> SongSearchParams:
         artist_ids=_ids_from_query(query, "artist_ids"),
         validation=validation,
         favorites_only=_bool_from_query(query.get("favorites_only")),
+        rule_violations_only=_bool_from_query(query.get("rule_violations_only")),
     )
 
 
@@ -252,9 +259,10 @@ def save_song_search(member_id: str | None, params: SongSearchParams) -> None:
         member_uuid = uuid.UUID(str(member_id))
     except (TypeError, ValueError):
         return
+    persisted_params = replace(params, rule_violations_only=False)
     MemberPreferences.objects.update_or_create(
         member_id=member_uuid,
-        defaults={"song_search": params.to_preferences()},
+        defaults={"song_search": persisted_params.to_preferences()},
     )
 
 
@@ -280,9 +288,11 @@ def get_active_song_search(
 
 def build_song_search_query(params: SongSearchParams, **overrides: object) -> str:
     values = params.to_preferences()
+    values["rule_violations_only"] = params.rule_violations_only
     values.update(overrides)
     normalized = SongSearchParams.from_mapping(values)
     explicit_favorites_override = "favorites_only" in overrides
+    explicit_rule_violations_override = "rule_violations_only" in overrides
     query: dict[str, object] = {}
 
     if normalized.text:
@@ -303,6 +313,10 @@ def build_song_search_query(params: SongSearchParams, **overrides: object) -> st
         query["favorites_only"] = "1"
     elif explicit_favorites_override:
         query["favorites_only"] = "0"
+    if normalized.rule_violations_only:
+        query["rule_violations_only"] = "1"
+    elif explicit_rule_violations_override:
+        query["rule_violations_only"] = "0"
     return urlencode(query, doseq=True)
 
 
@@ -657,6 +671,44 @@ def _build_song_catalog_search_row(row) -> SongCatalogSearchRow:
     )
 
 
+def _verse_text_breaks_rule(
+    value: str | None,
+    *,
+    verse_max_lines: int,
+    verse_max_characters_for_line: int,
+) -> bool:
+    normalized = normalize_lyrics_linebreaks(value).strip()
+    lines = normalized.split("\n") if normalized else []
+    if verse_max_lines > 0 and len(lines) > verse_max_lines:
+        return True
+    if verse_max_characters_for_line > 0:
+        max_line_length = max((len(line) for line in lines), default=0)
+        return max_line_length > verse_max_characters_for_line
+    return False
+
+
+def _song_ids_with_rule_violations(
+    song_ids: list[int],
+    *,
+    verse_max_lines: int,
+    verse_max_characters_for_line: int,
+) -> set[int]:
+    if not song_ids or (verse_max_lines <= 0 and verse_max_characters_for_line <= 0):
+        return set()
+
+    violating_song_ids: set[int] = set()
+    for song_id, text in Verse.objects.filter(song_id__in=song_ids).values_list(
+        "song_id", "text"
+    ):
+        if _verse_text_breaks_rule(
+            text,
+            verse_max_lines=verse_max_lines,
+            verse_max_characters_for_line=verse_max_characters_for_line,
+        ):
+            violating_song_ids.add(song_id)
+    return violating_song_ids
+
+
 def search_song_catalog_rows(
     params: SongSearchParams,
     *,
@@ -693,10 +745,15 @@ def search_songs(
     params: SongSearchParams,
     user,
     member_id: str | None,
+    *,
+    verse_max_lines: int = DEFAULT_RULE_VIOLATION_MAX_LINES,
+    verse_max_characters_for_line: int = DEFAULT_RULE_VIOLATION_MAX_CHARS,
 ) -> SongSearchResults:
     active_params = params if _is_authenticated(user) else params.for_guest()
     if not member_id:
         active_params = replace(active_params, favorites_only=False)
+    if not bool(_is_authenticated(user) and getattr(user, "is_moderator", False)):
+        active_params = replace(active_params, rule_violations_only=False)
 
     sql_rows = search_song_catalog_rows(
         active_params,
@@ -704,6 +761,18 @@ def search_songs(
         member_id=member_id,
     )
     ordered_song_ids = [row.song.song_id for row in sql_rows if row.song is not None]
+    counts_row = sql_rows[0] if sql_rows else SongCatalogSearchRow(None, False, 0, 0)
+    search_count = counts_row.search_count
+    if active_params.rule_violations_only:
+        violating_song_ids = _song_ids_with_rule_violations(
+            ordered_song_ids,
+            verse_max_lines=verse_max_lines,
+            verse_max_characters_for_line=verse_max_characters_for_line,
+        )
+        ordered_song_ids = [
+            song_id for song_id in ordered_song_ids if song_id in violating_song_ids
+        ]
+        search_count = len(ordered_song_ids)
     songs_by_id = {
         song.song_id: song for song in Song.objects.filter(song_id__in=ordered_song_ids)
     }
@@ -718,13 +787,12 @@ def search_songs(
         song.is_favorite = favorite_by_id.get(song_id, False)
         songs.append(song)
     results = _build_results_from_songs(songs)
-    counts_row = sql_rows[0] if sql_rows else SongCatalogSearchRow(None, False, 0, 0)
 
     return SongSearchResults(
         params=active_params,
         results=results,
         displayed_count=len(results),
-        search_count=counts_row.search_count,
+        search_count=search_count,
         catalog_count=counts_row.catalog_count,
     )
 

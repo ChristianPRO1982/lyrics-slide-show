@@ -1,0 +1,39 @@
+{% load i18n %}
+<div class="animation-mobile-actions-panel">
+    <div class="animation-mobile-summary">
+        <p><strong>{% if selected_group %}{{ selected_group.name }}{% else %}{% trans "Animations" %}{% endif %}</strong></p>
+    </div>
+    <p>
+        <button
+            type="button"
+            class="animation-tool-button site-action site-action--primary"
+            data-animation-mobile-actions-toggle
+            aria-expanded="false"
+            data-open-label="{% trans 'Afficher les actions' %}"
+            data-close-label="{% trans 'Masquer les actions' %}"
+        >
+            {% trans "Afficher les actions" %}
+        </button>
+    </p>
+    <div data-animation-mobile-actions hidden>
+        {% include "animation/includes/_animation_actions.html" %}
+        {% include "animation/includes/_animation_context_actions.html" %}
+        {% if show_picker_save_action or picker_back_url %}
+            <div class="animation-tools-separator" aria-hidden="true"></div>
+        {% endif %}
+        {% if show_picker_save_action %}
+            <p>
+                <button
+                    type="submit"
+                    form="{{ picker_save_form_id }}"
+                    class="animation-tool-button site-action site-action--primary"
+                >
+                    {% trans "Sauvegarder et revenir à l'animation" %}
+                </button>
+            </p>
+        {% endif %}
+        {% if picker_back_url %}
+            <p><a class="animation-tool-link site-action site-action--secondary" href="{{ picker_back_url }}">{% trans "Revenir sans sauvegarder" %}</a></p>
+        {% endif %}
+    </div>
+</div>

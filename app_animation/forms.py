@@ -125,6 +125,15 @@ class AnimationForm(forms.ModelForm):
         return value
 
 
+class AnimationCopyForm(forms.Form):
+    scheduled_at = forms.DateTimeField(
+        label=_("Date et heure"),
+        input_formats=["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S"],
+    )
+    title = forms.CharField(max_length=255, label=_("Titre"), strip=True)
+    description = forms.CharField(label=_("Description"), strip=True)
+
+
 class BackgroundImageUploadForm(forms.Form):
     no_targets_message = _(
         "Aucune cible n'est disponible. Un modérateur doit d'abord en créer une."

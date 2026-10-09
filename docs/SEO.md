@@ -129,7 +129,8 @@ Elle conserve une canonical self vers :
 https://lss.carthographie.fr/songs/
 ```
 
-La page `/songs/` contient un lien discret vers le catalogue public :
+La page `/songs/` contient un bouton discret vers le catalogue public,
+placé en dernier dans le panneau outils :
 
 ```text
 https://lss.carthographie.fr/songs/catalogue/
@@ -175,7 +176,7 @@ Règles du catalogue :
 Le seul maillage interne explicite vers le catalogue est :
 
 - le menu hamburger global ;
-- un lien discret depuis `/songs/` ;
+- un bouton discret depuis le panneau outils de `/songs/` ;
 - la déclaration de `/songs/catalogue/` dans `sitemap.xml`.
 
 ## Pages individuelles de chants

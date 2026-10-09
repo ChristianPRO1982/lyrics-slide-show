@@ -48,6 +48,9 @@
 {% trans "Refrain seul puis refrain + couplet" as slide_mode_chorus_then_parallel_label %}
 {% trans "Refrain et couplet toujours en parallèle" as slide_mode_chorus_always_parallel_label %}
 {% trans "Couplets deux par deux" as slide_mode_verses_by_pairs_label %}
+{% trans "désactivé" as disabled_limit_label %}
+{% trans "Il y a trop de lignes :" as too_many_lines_label %}
+{% trans "Il y a trop de caractères pour une ligne :" as line_too_long_label %}
 <script>
     window.LSS_SONG_I18N = {
         deleteTitle: "{{ song_delete_title|escapejs }}",
@@ -101,6 +104,9 @@
         slideModeChorusThenParallelLabel: "{{ slide_mode_chorus_then_parallel_label|escapejs }}",
         slideModeChorusAlwaysParallelLabel: "{{ slide_mode_chorus_always_parallel_label|escapejs }}",
         slideModeVersesByPairsLabel: "{{ slide_mode_verses_by_pairs_label|escapejs }}",
+        disabledLimitLabel: "{{ disabled_limit_label|escapejs }}",
+        tooManyLinesLabel: "{{ too_many_lines_label|escapejs }}",
+        lineTooLongLabel: "{{ line_too_long_label|escapejs }}",
         messageReadStateUrlTemplate: "{% url 'song_message_read_state' 0 %}",
         modifyPrefixesUrl: "{{ modify_prefixes_url|escapejs }}",
         canManagePrefixCatalog: {% if can_manage_prefix_catalog %}true{% else %}false{% endif %}

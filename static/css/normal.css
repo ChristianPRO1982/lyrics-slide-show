@@ -239,6 +239,56 @@ textarea {
     font: inherit;
 }
 
+.site-panel :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="color"]):not([type="range"]),
+    select,
+    textarea
+) {
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--site-popup-border);
+    border-radius: var(--site-radius-sm);
+    background: var(--site-popup-field-bg);
+    color: var(--site-ink);
+}
+
+.site-panel :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="color"]):not([type="range"]),
+    select
+) {
+    min-height: 2.75rem;
+}
+
+.site-panel :where(input, textarea)::placeholder {
+    color: var(--site-ink-soft);
+    opacity: 1;
+}
+
+.site-panel :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="color"]):not([type="range"]),
+    select,
+    textarea
+):focus-visible {
+    outline: none;
+    border-color: var(--site-accent);
+    box-shadow: var(--site-focus-ring);
+}
+
+.site-panel :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="color"]):not([type="range"]),
+    select,
+    textarea
+):disabled,
+.site-panel :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="color"]):not([type="range"]),
+    textarea
+)[readonly] {
+    opacity: var(--site-action-disabled-opacity);
+}
+
+.site-panel :where(input[type="checkbox"], input[type="radio"]) {
+    accent-color: var(--site-accent);
+}
+
 p,
 ul,
 ol {

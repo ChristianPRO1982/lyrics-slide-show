@@ -22,6 +22,7 @@ Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/song
   - logique `OU/ET`
   - filtre validation
   - filtre `Favoris uniquement`
+  - pour modérateur/admin, filtre temporaire `📏 Hors règles`
   - sélections `genres / groupes / artistes`
 - pour utilisateur authentifié, expose `💫 Afficher mes favoris`
 - pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
@@ -59,6 +60,7 @@ Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/song
 - `can_use_moderation_quick`
 - `can_use_non_validated_quick`
 - `can_use_advanced_search`
+- `can_use_rule_violations_filter`
 - `can_create_song`
 - `favorites_quick_active`
 - `moderation_quick_active`

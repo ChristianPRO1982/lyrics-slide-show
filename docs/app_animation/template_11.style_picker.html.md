@@ -24,7 +24,8 @@ Le but n'est pas de choisir une image isolée, mais de recopier un style déjà 
 
 - panneau section aligné sur le groupe sélectionné ;
 - panneau outils standard des animations ;
-- actions contextuelles de sauvegarde et de retour vers `modify_animation`.
+- actions contextuelles de sauvegarde et de retour vers `modify_animation` ;
+- sur mobile, les actions sont repliées par défaut derrière `Afficher les actions`.
 
 ### En-tête principal
 

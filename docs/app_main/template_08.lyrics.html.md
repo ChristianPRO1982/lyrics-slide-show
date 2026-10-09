@@ -105,6 +105,7 @@ Le tiroir contient :
 - l’override manuel clair/sombre n’est pas persisté entre rechargements ;
 - tant qu’aucun override manuel n’a eu lieu, un changement du thème système met la page à jour ;
 - la taille de police est persistée en `localStorage` pour toutes les pages `lyrics.html`.
+- le zoom par pincement est désactivé au mieux via viewport et interception des gestes multi-touch, afin d'éviter les changements d'échelle accidentels sur smartphone.
 
 ## Contraintes Visuelles
 

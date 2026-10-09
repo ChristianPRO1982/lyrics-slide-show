@@ -215,10 +215,12 @@ Critères supportés :
 - logique intra-références `OR/AND` (`match_all_selected_refs`)
 - filtre validation (`all`, `validated_only`, `non_validated_only`)
 - filtre favoris (`favorites_only`)
+- filtre modérateur temporaire `rule_violations_only` : chants dont au moins un bloc dépasse le nombre maximal de lignes ou le nombre maximal de caractères par ligne configuré
 
 Règles supplémentaires :
 
 - tri final : `title`, `subtitle`
+- `rule_violations_only` est réservé aux modérateurs/admins, n’est pas sauvegardé dans les préférences et ignore les règles désactivées (`0` ou moins)
 - recherche texte accent-insensible et insensible à la casse (`unaccent + lower`)
 - la requête texte est `trim`, compacte les espaces internes et traite les espaces saisis comme des jokers ordonnés
 - le filtre local JS du champ `Titre ou sous-titre` suit la même normalisation mais reste limité à `title + subtitle`

@@ -10,7 +10,7 @@ from django.urls import reverse
 from unittest.mock import MagicMock, patch
 from django.db import IntegrityError, connection
 
-from app_main.models import DirectoryUserRecord
+from app_main.models import DirectoryUserRecord, SiteParams
 from app_member.models import MemberPreferences, MemberRole
 
 from .models import (
@@ -490,6 +490,17 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         self.assertIn("icons/ui/normal/512/dark/close.png", template)
         self.assertIn("data-song-block-text-label", template)
         self.assertIn("data-song-block-prefix-label", template)
+        self.assertIn("data-song-block-rule-summary", template)
+        self.assertIn('data-verse-max-lines="{{ verse_max_lines }}"', template)
+        self.assertIn(
+            'data-verse-max-characters-for-line="{{ verse_max_characters_for_line }}"',
+            template,
+        )
+        self.assertIn('id="song-block-{{ block.row_key|slugify }}"', template)
+        self.assertIn("data-song-block-anchor-id", template)
+        self.assertIn("data-song-block-warnings", template)
+        self.assertIn("data-song-block-warning-summary", template)
+        self.assertIn("data-song-block-warning-summary-list", template)
 
     def test_modify_song_javascript_clones_shared_block_template(self):
         script = Path("static/js/app_song.js").read_text()
@@ -507,6 +518,13 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
             'card.setAttribute("data-song-block-pending-delete", isPendingDelete ? "true" : "false");',
             script,
         )
+        self.assertIn("const getBlockWarningParts = (text) => {", script)
+        self.assertIn("const refreshBlockWarnings = () => {", script)
+        self.assertIn("article.id = `song-block-${rowSlug}`;", script)
+        self.assertIn(
+            'article.setAttribute("data-song-block-anchor-id", article.id);',
+            script,
+        )
         self.assertNotIn("card.hidden = true;", script)
 
     def test_new_dynamic_block_labels_use_dedicated_short_names(self):
@@ -516,6 +534,14 @@ class ModifySongDynamicBlockTemplateContractsTests(SimpleTestCase):
         script = Path("static/js/app_song.js").read_text()
         self.assertIn('{% trans "Nv. C." as new_verse_label %}', i18n_template)
         self.assertIn('{% trans "Nv. R." as new_chorus_label %}', i18n_template)
+        self.assertIn(
+            '{% trans "Il y a trop de lignes :" as too_many_lines_label %}',
+            i18n_template,
+        )
+        self.assertIn(
+            '{% trans "Il y a trop de caractères pour une ligne :" as line_too_long_label %}',
+            i18n_template,
+        )
         self.assertIn(
             'label("newChorusLabel") || label("chorusPrefix") || label("chorusLabel")',
             script,
@@ -614,6 +640,7 @@ class SongSearchParamsTests(SimpleTestCase):
                 "everywhere": "1",
                 "validation": "validated_only",
                 "favorites_only": "1",
+                "rule_violations_only": "1",
                 "genre_ids": ["1", "2"],
             },
         )
@@ -630,6 +657,7 @@ class SongSearchParamsTests(SimpleTestCase):
         query["search_logic"] = "and"
         query["validation"] = "unsupported"
         query["favorites_only"] = "on"
+        query["rule_violations_only"] = "1"
         query.setlist("genre_ids", ["1,2", "3"])
         query.setlist("band_ids", ["4"])
         query.setlist("artist_ids", ["5,nope"])
@@ -647,6 +675,7 @@ class SongSearchParamsTests(SimpleTestCase):
                 artist_ids=(5,),
                 validation="all",
                 favorites_only=True,
+                rule_violations_only=True,
             ),
         )
 
@@ -661,6 +690,7 @@ class SongSearchParamsTests(SimpleTestCase):
                 "artist_ids": [],
                 "validation": "unknown",
                 "favorites_only": True,
+                "rule_violations_only": True,
             }
         )
 
@@ -669,6 +699,8 @@ class SongSearchParamsTests(SimpleTestCase):
         self.assertEqual(params.genre_ids, (3, 5))
         self.assertEqual(params.band_ids, (7, 9))
         self.assertEqual(params.validation, "all")
+        self.assertTrue(params.rule_violations_only)
+        self.assertNotIn("rule_violations_only", params.to_preferences())
 
     def test_validation_label_covers_validated_states(self):
         validated = Song(
@@ -710,6 +742,7 @@ class SongSearchParamsTests(SimpleTestCase):
                 artist_ids=(9,),
                 validation="validated_only",
                 favorites_only=True,
+                rule_violations_only=True,
             ),
             favorites_only=False,
         )
@@ -723,6 +756,15 @@ class SongSearchParamsTests(SimpleTestCase):
         self.assertIn("artist_ids=9", query)
         self.assertIn("validation=validated_only", query)
         self.assertIn("favorites_only=0", query)
+        self.assertIn("rule_violations_only=1", query)
+
+    def test_build_search_query_serializes_explicit_rule_violations_override(self):
+        query = build_song_search_query(
+            SongSearchParams(rule_violations_only=True),
+            rule_violations_only=False,
+        )
+
+        self.assertEqual(query, "rule_violations_only=0")
 
     def test_build_search_query_keeps_enabled_favorites_flag(self):
         query = build_song_search_query(SongSearchParams(favorites_only=True))
@@ -848,6 +890,7 @@ class SongSearchPersistenceTests(TestCase):
                 "genre_ids": ["2,3"],
                 "validation": "non_validated_only",
                 "favorites_only": "true",
+                "rule_violations_only": "1",
             },
         )
         request.user = SimpleNamespace(is_authenticated=True)
@@ -863,10 +906,12 @@ class SongSearchPersistenceTests(TestCase):
                 genre_ids=(2, 3),
                 validation="non_validated_only",
                 favorites_only=True,
+                rule_violations_only=True,
             ),
         )
         preferences = MemberPreferences.objects.get(member_id=self.member_id)
-        self.assertEqual(preferences.song_search, params.to_preferences())
+        self.assertEqual(preferences.song_search["text"], "louange")
+        self.assertNotIn("rule_violations_only", preferences.song_search)
 
 
 class SongSearchFilteringCoverageTests(TestCase):
@@ -1196,6 +1241,74 @@ class SongSearchFilteringCoverageTests(TestCase):
                 self.title_song_title,
             ],
         )
+
+    def test_search_songs_rule_violations_filter_is_moderator_only(self):
+        token = f"rules-{uuid.uuid4().hex[:8]}"
+        conforming_song = Song.objects.create(
+            title=f"A conforme {token}",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        too_many_lines_song = Song.objects.create(
+            title=f"B trop lignes {token}",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        too_long_line_song = Song.objects.create(
+            title=f"C trop caractères {token}",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=conforming_song, num=1, text="ligne ok\nsuite")
+        Verse.objects.create(
+            song=too_many_lines_song,
+            num=1,
+            text="un\ndeux\ntrois",
+        )
+        Verse.objects.create(
+            song=too_long_line_song,
+            num=1,
+            text="ligne beaucoup trop longue",
+        )
+
+        moderator_results = search_songs(
+            SongSearchParams(text=token, rule_violations_only=True),
+            user=SimpleNamespace(is_authenticated=True, is_moderator=True),
+            member_id=self.member_id,
+            verse_max_lines=2,
+            verse_max_characters_for_line=10,
+        )
+        self.assertEqual(
+            [item.song.title for item in moderator_results.results],
+            [too_many_lines_song.title, too_long_line_song.title],
+        )
+        self.assertEqual(moderator_results.search_count, 2)
+
+        disabled_rule_results = search_songs(
+            SongSearchParams(text=token, rule_violations_only=True),
+            user=SimpleNamespace(is_authenticated=True, is_moderator=True),
+            member_id=self.member_id,
+            verse_max_lines=0,
+            verse_max_characters_for_line=0,
+        )
+        self.assertEqual(disabled_rule_results.results, ())
+        self.assertEqual(disabled_rule_results.search_count, 0)
+
+        member_results = search_songs(
+            SongSearchParams(text=token, rule_violations_only=True),
+            user=SimpleNamespace(is_authenticated=True, is_moderator=False),
+            member_id=self.member_id,
+            verse_max_lines=2,
+            verse_max_characters_for_line=10,
+        )
+        self.assertFalse(member_results.params.rule_violations_only)
+        self.assertEqual(member_results.search_count, 3)
 
     def test_search_songs_text_normalization_compacts_internal_spaces(self):
         results = search_songs(
@@ -2389,6 +2502,11 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "/static/js/unsaved_changes.js")
         self.assertContains(response, "data-reorder-list")
         self.assertContains(response, "data-reorder-cancel")
+        self.assertContains(response, "data-song-block-rule-summary")
+        self.assertContains(response, "📏 Max de lignes")
+        self.assertContains(response, "📏 Max de caractères par lignes")
+        self.assertContains(response, "data-song-block-warning-summary")
+        self.assertContains(response, "data-song-block-warning-summary-list")
         self.assertContains(
             response, "data-reorder-cancel\n                        hidden"
         )
@@ -2422,6 +2540,11 @@ class ModifySongViewTests(TestCase):
         self.assertContains(response, "data-song-block-editor")
         self.assertContains(response, "data-song-block-read-view")
         self.assertContains(response, "data-song-block-edit-view")
+        self.assertContains(response, 'id="song-block-', html=False)
+        self.assertContains(
+            response, 'data-song-block-anchor-id="song-block-', html=False
+        )
+        self.assertContains(response, "data-song-block-warnings")
         self.assertContains(response, "data-song-block-delete-pending-toggle")
         self.assertContains(
             response, 'data-song-block-pending-delete="false"', html=False
@@ -3638,6 +3761,126 @@ class SongFavoritesSearchRegressionTests(TestCase):
         self.assertEqual(results.results[0].song.song_id, self.favorite_song.song_id)
 
 
+class SongRuleViolationsAdvancedSearchViewTests(TestCase):
+    moderator_id = "67676767-6767-6767-6767-676767676767"
+    member_id = "68686868-6868-6868-6868-686868686868"
+
+    def setUp(self):
+        SiteParams.objects.create(
+            language="fr",
+            title="Lyrics Slide Show",
+            title_h1="Lyrics Slide Show",
+            signup_url="",
+            home_text="Bienvenue",
+            bloc1_text="Bloc 1",
+            bloc2_text="Bloc 2",
+            verse_max_lines=2,
+            verse_max_characters_for_a_line=10,
+            chorus_prefix="Ref.",
+            verse_prefix1="C",
+            verse_prefix2=".",
+            admin_message="",
+            moderator_message="",
+        )
+        DirectoryUserRecord.objects.create(
+            id=self.moderator_id,
+            username="rule.moderator",
+            first_name="Rule",
+            last_name="Moderator",
+            email="rule.moderator@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        DirectoryUserRecord.objects.create(
+            id=self.member_id,
+            username="rule.member",
+            first_name="Rule",
+            last_name="Member",
+            email="rule.member@example.test",
+            enabled=True,
+            email_verified=False,
+        )
+        MemberRole.objects.create(
+            member_id=self.moderator_id,
+            is_moderator=True,
+            is_admin=False,
+        )
+        self.good_song = Song.objects.create(
+            title="Recherche règles conforme",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        self.bad_song = Song.objects.create(
+            title="Recherche règles hors limites",
+            subtitle="",
+            description="",
+            status=SongStatus.VALIDATED,
+            licensed=False,
+        )
+        Verse.objects.create(song=self.good_song, num=1, text="ligne\nok")
+        Verse.objects.create(song=self.bad_song, num=1, text="un\ndeux\ntrois")
+
+    def _login(self, *, moderator: bool):
+        user_id = self.moderator_id if moderator else self.member_id
+        session = self.client.session
+        session["lss_user"] = {
+            "external_id": user_id,
+            "username": "rule.moderator" if moderator else "rule.member",
+            "email": "rule@example.test",
+            "first_name": "Rule",
+            "last_name": "User",
+            "is_moderator": moderator,
+            "is_admin": False,
+        }
+        session.save()
+
+    def test_moderator_sees_rule_violations_checkbox_and_it_filters_temporarily(self):
+        self._login(moderator=True)
+
+        response = self.client.get(
+            reverse("songs"),
+            {"text": "Recherche règles", "rule_violations_only": "1"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "📏 Hors règles")
+        self.assertContains(
+            response,
+            'name="rule_violations_only" value="1" checked',
+            html=False,
+        )
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(displayed_titles, [self.bad_song.title])
+
+        preferences = MemberPreferences.objects.get(member_id=self.moderator_id)
+        self.assertEqual(preferences.song_search["text"], "Recherche règles")
+        self.assertNotIn("rule_violations_only", preferences.song_search)
+
+    def test_non_moderator_does_not_see_rule_violations_checkbox_or_filter(self):
+        self._login(moderator=False)
+
+        response = self.client.get(
+            reverse("songs"),
+            {"text": "Recherche règles", "rule_violations_only": "1"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "📏 Hors règles")
+        displayed_titles = [
+            item["song"].title for item in response.context["song_cards"]
+        ]
+        self.assertEqual(
+            displayed_titles,
+            [self.good_song.title, self.bad_song.title],
+        )
+        preferences = MemberPreferences.objects.get(member_id=self.member_id)
+        self.assertNotIn("rule_violations_only", preferences.song_search)
+
+
 class SongFavoritesQuickViewTests(TestCase):
     def setUp(self):
         self.user_id = "77777777-7777-7777-7777-777777777777"
@@ -4139,7 +4382,11 @@ class SongGenresDisplayViewTests(TestCase):
         self.assertIn(">Modifier<", compact_markup)
         self.assertIn(">Supprimer<", compact_markup)
         self.assertIn(">Impression<", compact_markup)
-        self.assertIn(">Smartphone view<", compact_markup)
+        self.assertIn(">📱 Smartphone View<", compact_markup)
+        self.assertLess(
+            compact_markup.index(">📱 Smartphone View<"),
+            compact_markup.index(">Afficher<"),
+        )
         self.assertIn('aria-label="Double slide">2️⃣</span>', compact_markup)
         self.assertIn('aria-label="Favori">⭐</span>', compact_markup)
         self.assertLess(
@@ -4175,7 +4422,11 @@ class SongGenresDisplayViewTests(TestCase):
         validated_slice = compact_markup[validated_index : validated_index + 2200]
 
         self.assertIn(">Afficher<", validated_slice)
-        self.assertIn(">Smartphone view<", validated_slice)
+        self.assertIn(">📱 Smartphone View<", validated_slice)
+        self.assertLess(
+            validated_slice.index(">📱 Smartphone View<"),
+            validated_slice.index(">Afficher<"),
+        )
         self.assertIn(">Impression<", validated_slice)
         self.assertNotIn(">Modifier<", validated_slice)
         self.assertNotIn(">Supprimer<", validated_slice)

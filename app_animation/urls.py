@@ -27,6 +27,7 @@ urlpatterns = [
         views.animation_style_picker,
         name="animation_style_picker",
     ),
+    path("<int:animation_id>/copy/", views.copy_animation, name="copy_animation"),
     path(
         "<int:animation_id>/lyrics-slide-show/",
         views.lyrics_slide_show,
