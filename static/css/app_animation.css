@@ -51,6 +51,20 @@
     font-weight: 700;
 }
 
+.animation-mobile-summary p {
+    margin: 0;
+}
+
+.animation-mobile-actions-panel,
+[data-animation-mobile-actions] {
+    display: grid;
+    gap: 0.75rem;
+}
+
+[data-animation-mobile-actions][hidden] {
+    display: none !important;
+}
+
 .animation-inline-info-link {
     appearance: none;
     display: inline;

@@ -32,8 +32,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
+    {% include "animation/includes/_animation_mobile_actions.html" with show_back_to_animations_action=True show_save_action=True show_lyrics_slide_show_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{{ animation.title }}{% endblock %}
@@ -445,6 +444,7 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
     {% include "animation/modify_animation_page_i18n.html" %}
     {{ popup_data|json_script:"lss-modify-animation-data" }}
     <script src="{% static 'js/unsaved_changes.js' %}"></script>

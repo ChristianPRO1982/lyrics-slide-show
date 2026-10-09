@@ -1592,6 +1592,34 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn('{% trans "Voir l\'historique" %}', template)
         self.assertIn('{% trans "← Retour aux animations à venir" %}', template)
 
+    def test_animation_mobile_actions_partial_collapses_all_mobile_actions(self):
+        template = Path(
+            "app_animation/templates/animation/includes/_animation_mobile_actions.html"
+        ).read_text()
+        script = Path("static/js/app_animation_mobile_actions.js").read_text()
+        stylesheet = Path("static/css/app_animation.css").read_text()
+
+        self.assertIn("animation-mobile-actions-panel", template)
+        self.assertIn("data-animation-mobile-actions-toggle", template)
+        self.assertIn("data-animation-mobile-actions hidden", template)
+        self.assertIn("{% trans 'Afficher les actions' %}", template)
+        self.assertIn("{% trans 'Masquer les actions' %}", template)
+        self.assertIn(
+            'class="animation-tool-button site-action site-action--primary"', template
+        )
+        self.assertIn('include "animation/includes/_animation_actions.html"', template)
+        self.assertIn(
+            'include "animation/includes/_animation_context_actions.html"', template
+        )
+        self.assertIn("show_picker_save_action", template)
+        self.assertIn('form="{{ picker_save_form_id }}"', template)
+        self.assertIn("picker_back_url", template)
+        self.assertIn("[data-animation-mobile-actions-toggle]", script)
+        self.assertIn("[data-animation-mobile-actions]", script)
+        self.assertIn("mobileActionsContainer.hidden = !isHidden", script)
+        self.assertIn("data-close-label", script)
+        self.assertIn("[data-animation-mobile-actions][hidden]", stylesheet)
+
     def test_background_image_pages_reuse_animation_section_panel_contract(self):
         background_images_template = Path(
             "app_animation/templates/animation/background_images.html"
@@ -1632,6 +1660,26 @@ class LyricsSlideShowTemplateContractsTests(SimpleTestCase):
         self.assertIn("data-style-picker-grid", style_picker_template)
         self.assertIn("data-style-picker-overlay", style_picker_template)
         self.assertNotIn('name="q"', style_picker_template)
+
+    def test_standard_animation_pages_load_collapsed_mobile_actions_script(self):
+        template_paths = [
+            "app_animation/templates/animation/animations.html",
+            "app_animation/templates/animation/animation_history.html",
+            "app_animation/templates/animation/add_animation.html",
+            "app_animation/templates/animation/modify_animation.html",
+            "app_animation/templates/animation/background_images.html",
+            "app_animation/templates/animation/background_picker.html",
+            "app_animation/templates/animation/style_picker.html",
+            "app_animation/templates/animation/upload_background_image.html",
+            "app_animation/templates/animation/modify_background_targets.html",
+        ]
+        for template_path in template_paths:
+            template = Path(template_path).read_text()
+            self.assertIn(
+                'include "animation/includes/_animation_mobile_actions.html"',
+                template,
+            )
+            self.assertIn("js/app_animation_mobile_actions.js", template)
 
     def test_animations_page_adds_history_as_contextual_action(self):
         template = Path("app_animation/templates/animation/animations.html").read_text()
@@ -2346,6 +2394,11 @@ class AnimationViewsTests(TestCase):
         self.assertContains(response, "data-animation-edit-form")
         self.assertContains(response, "data-unsaved-guard")
         self.assertContains(response, "/static/js/unsaved_changes.js")
+        self.assertContains(response, "/static/js/app_animation_mobile_actions.js")
+        self.assertContains(response, "data-animation-mobile-actions-toggle")
+        self.assertContains(response, "data-animation-mobile-actions hidden")
+        self.assertContains(response, "Afficher les actions")
+        self.assertContains(response, "Masquer les actions")
         self.assertContains(response, 'id="id_title"')
         self.assertContains(response, 'id="id_default_transition"')
         self.assertContains(response, 'name="ordered_mix"')
@@ -3918,6 +3971,10 @@ class AnimationViewsTests(TestCase):
         self.assertLess(content.index("Alpha"), content.index("Zebra"))
         self.assertContains(response, "Sauvegarder et revenir à l'animation")
         self.assertContains(response, "Revenir sans sauvegarder")
+        self.assertContains(response, "/static/js/app_animation_mobile_actions.js")
+        self.assertContains(response, "data-animation-mobile-actions-toggle")
+        self.assertContains(response, "data-animation-mobile-actions hidden")
+        self.assertContains(response, 'form="background-picker-save-form"')
         self.assertNotContains(response, "Modifier cette animation")
         self.assertNotContains(
             response, reverse("lyrics_slide_show", args=[animation.animation_id])

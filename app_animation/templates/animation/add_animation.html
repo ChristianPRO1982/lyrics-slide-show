@@ -32,8 +32,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with show_back_to_animations_action=True %}
+    {% include "animation/includes/_animation_mobile_actions.html" with show_back_to_animations_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Ajouter une animation" %}{% endblock %}
@@ -157,6 +156,7 @@
     </form>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
     {% trans "Couleurs du chant" as lss_add_anim_popup_title %}
     {% trans "Couleur du texte" as lss_add_anim_popup_text_color %}
     {% trans "Couleur de fond" as lss_add_anim_popup_bg_color %}

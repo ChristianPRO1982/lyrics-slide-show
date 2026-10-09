@@ -26,7 +26,7 @@ L'édition se fait via un formulaire `POST` caché, piloté côté navigateur pa
 - panneau section aligné sur le groupe sélectionné,
 - panneau outils via `animation/includes/_animation_actions.html`,
 - bouton `Enregistrer` (desktop),
-- actions communes aussi en panneau mobile.
+- actions communes et contextuelles en panneau mobile, repliées par défaut derrière `Afficher les actions`.
 
 ### En-tête de page
 

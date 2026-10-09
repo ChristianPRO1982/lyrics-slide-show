@@ -32,8 +32,7 @@
     </div>
 {% endblock %}
 {% block mobile_side_content %}
-    {% include "animation/includes/_animation_actions.html" %}
-    {% include "animation/includes/_animation_context_actions.html" with show_animation_history_action=True %}
+    {% include "animation/includes/_animation_mobile_actions.html" with show_animation_history_action=True %}
 {% endblock %}
 {% block page_kicker %}{% trans "Animations" %}{% endblock %}
 {% block page_title %}{% trans "Liste des animations" %}{% endblock %}
@@ -69,5 +68,6 @@
     </section>
 {% endblock %}
 {% block page_scripts %}
+    <script src="{% static 'js/app_animation_mobile_actions.js' %}"></script>
     <script src="{% static 'js/app_animation_stats.js' %}"></script>
 {% endblock %}

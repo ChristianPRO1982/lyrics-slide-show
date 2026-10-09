@@ -19,6 +19,7 @@ Créer une nouvelle animation dans le groupe sélectionné.
 ## Comportements UI
 
 - sections communes de navigation/actions via `includes/_animation_actions.html`,
+- actions du panneau mobile repliées par défaut derrière `Afficher les actions`,
 - champs rendus explicitement : titre, description, date/heure, transition, couleurs, police, taille, marge horizontale, code image de fond,
 - choix de transition alimenté par `AnimationForm` depuis le manifeste technique,
 - résumé live (`Test`) synchronisé avec les champs style,
