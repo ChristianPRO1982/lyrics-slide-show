@@ -4,7 +4,7 @@
 <html lang="{{ language_code|default:'fr' }}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>{{ page_title }} | {% trans "Paroles" %}</title>
   <link rel="icon" sizes="192x192" href="{% static 'images/lyrics/Lyrics.png' %}" type="image/png" data-lyrics-favicon>
   <style>
@@ -559,6 +559,16 @@
       let lockScrollSync = false;
       let copyTimer = null;
 
+      const preventPinchZoom = (event) => {
+        if (event.type.startsWith("gesture")) {
+          event.preventDefault();
+          return;
+        }
+        if (event.touches && event.touches.length > 1) {
+          event.preventDefault();
+        }
+      };
+
       const state = {
         fontSize: 1.48,
         theme: "auto",
@@ -809,6 +819,9 @@
           closeDrawer();
         }
       });
+      document.addEventListener("gesturestart", preventPinchZoom, { passive: false });
+      document.addEventListener("gesturechange", preventPinchZoom, { passive: false });
+      document.addEventListener("touchmove", preventPinchZoom, { passive: false });
 
       restoreFontSize();
       applyTheme();
