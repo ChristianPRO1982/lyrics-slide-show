@@ -38,6 +38,13 @@
                 </a>
             </p>
         {% endif %}
+        {% if can_use_rule_violations_quick %}
+            <p>
+                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ rule_violations_toggle_query }}">
+                    {% trans "⚖️ Hors règles" %}
+                </a>
+            </p>
+        {% endif %}
         {% if favorites_quick_active %}
             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
@@ -48,6 +55,10 @@
         {% endif %}
         {% if non_validated_quick_active %}
             <p><em>{% trans "Mode chants non validés temporaire actif." %}</em></p>
+            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+        {% endif %}
+        {% if rule_violations_quick_active %}
+            <p><em>{% trans "Mode hors règles temporaire actif." %}</em></p>
             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
         {% endif %}
     {% endif %}
@@ -186,6 +197,13 @@
                                 </a>
                             </p>
                         {% endif %}
+                        {% if can_use_rule_violations_quick %}
+                            <p>
+                                <a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}?{{ rule_violations_toggle_query }}">
+                                    {% trans "⚖️ Hors règles" %}
+                                </a>
+                            </p>
+                        {% endif %}
                         {% if favorites_quick_active %}
                             <p><em>{% trans "Mode favoris temporaire actif." %}</em></p>
                             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
@@ -196,6 +214,10 @@
                         {% endif %}
                         {% if non_validated_quick_active %}
                             <p><em>{% trans "Mode chants non validés temporaire actif." %}</em></p>
+                            <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
+                        {% endif %}
+                        {% if rule_violations_quick_active %}
+                            <p><em>{% trans "Mode hors règles temporaire actif." %}</em></p>
                             <p><a class="song-tool-link site-action site-action--primary" href="{% url 'songs' %}">{% trans "Revenir à ma recherche enregistrée" %}</a></p>
                         {% endif %}
                     </div>
@@ -238,12 +260,6 @@
                                 <span>{% trans "Favoris uniquement" %}</span>
                             </label>
 
-                            {% if can_use_rule_violations_filter %}
-                                <label class="song-checkbox-option">
-                                    <input type="checkbox" name="rule_violations_only" value="1" {% if search_params.rule_violations_only %}checked{% endif %}>
-                                    <span>{% trans "📏 Hors règles" %}</span>
-                                </label>
-                            {% endif %}
                         </div>
 
                         {% if reference_options.genres or reference_options.bands or reference_options.artists %}

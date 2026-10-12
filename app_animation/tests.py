@@ -5088,10 +5088,32 @@ class AnimationViewsTests(TestCase):
             'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
             html=False,
         )
+        self.assertContains(
+            response,
+            'const nextBlockStorageKey = "lss-smartphone-lyrics:next-block";',
+            html=False,
+        )
+        self.assertContains(response, "data-lyrics-next-block-toggle", html=False)
+        self.assertContains(response, "data-lyrics-block", html=False)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_off.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "const scrollToBlock = (blockNode) => {",
+            html=False,
+        )
         self.assertContains(response, 'theme: "auto"', html=False)
         self.assertNotContains(
             response,
             "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            "nextBlockStorageKey = `lss-smartphone-lyrics:${window.location.pathname}",
             html=False,
         )
         self.assertNotContains(response, "parsed.theme ===", html=False)

@@ -423,6 +423,17 @@
         <img src="{% static 'images/lyrics/all_lyrics-next_song.webp' %}" alt="{% trans 'Chant suivant' %}" data-lyrics-asset="nextSong">
       </button>
     {% endif %}
+    <button
+      type="button"
+      class="lyrics-icon-button"
+      data-lyrics-next-block-toggle
+      data-label-on="{% trans 'Désactiver le bloc suivant au clic' %}"
+      data-label-off="{% trans 'Activer le bloc suivant au clic' %}"
+      aria-label="{% trans 'Activer le bloc suivant au clic' %}"
+      title="{% trans 'Activer le bloc suivant au clic' %}"
+    >
+      <img src="{% static 'images/lyrics/all_lyrics-next_bloc_off.webp' %}" alt="{% trans 'Activer le bloc suivant au clic' %}" data-lyrics-asset="nextBlockOff">
+    </button>
   </nav>
 
   <div class="lyrics-topbar" {% if not has_multiple_songs %}hidden{% endif %}>
@@ -481,11 +492,11 @@
           <p class="lyrics-song-title">{{ song.song_title }}</p>
           {% for block in song.blocks %}
             {% if block.style == 1 %}
-              <p class="lyrics-block lyrics-block--chorus"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
+              <p class="lyrics-block lyrics-block--chorus" data-lyrics-block><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
             {% elif block.style == 3 %}
-              <p class="lyrics-block lyrics-block--chorus-like"><em>{{ block.prefix }}</em>{% if block.prefix %}<br>{% endif %}{{ block.text }}</p>
+              <p class="lyrics-block lyrics-block--chorus-like" data-lyrics-block><em>{{ block.prefix }}</em>{% if block.prefix %}<br>{% endif %}{{ block.text }}</p>
             {% else %}
-              <p class="lyrics-block"><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
+              <p class="lyrics-block" data-lyrics-block><em>{{ block.prefix }}</em>{% if block.prefix %} {% endif %}{{ block.text }}</p>
             {% endif %}
           {% endfor %}
         </section>
@@ -533,6 +544,14 @@
             light: "{% static 'images/lyrics/all_lyrics-next_song.webp' %}",
             dark: "{% static 'images/lyrics/all_lyrics-next_song_dark.webp' %}",
           },
+          nextBlockOff: {
+            light: "{% static 'images/lyrics/all_lyrics-next_bloc_off.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-next_bloc_off_dark.webp' %}",
+          },
+          nextBlockOn: {
+            light: "{% static 'images/lyrics/all_lyrics-next_bloc_on.webp' %}",
+            dark: "{% static 'images/lyrics/all_lyrics-next_bloc_on_dark.webp' %}",
+          },
           logo: {
             light: "{% static 'images/lyrics/Lyrics.png' %}",
             dark: "{% static 'images/lyrics/Lyrics_dark.png' %}",
@@ -552,10 +571,13 @@
       const shareInput = document.querySelector("[data-lyrics-share-url]");
       const copyButton = document.querySelector("[data-lyrics-copy-button]");
       const faviconLink = document.querySelector("[data-lyrics-favicon]");
+      const nextBlockToggle = document.querySelector("[data-lyrics-next-block-toggle]");
       const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";
+      const nextBlockStorageKey = "lss-smartphone-lyrics:next-block";
       const maxSongIndex = songs.length > 0 ? songs.length - 1 : 0;
 
       let currentIndex = 0;
+      let currentBlockIndex = 0;
       let lockScrollSync = false;
       let copyTimer = null;
 
@@ -572,6 +594,7 @@
       const state = {
         fontSize: 1.48,
         theme: "auto",
+        nextBlockEnabled: false,
       };
 
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
@@ -629,6 +652,32 @@
         }
       };
 
+      const saveNextBlockPreference = () => {
+        try {
+          window.localStorage.setItem(
+            nextBlockStorageKey,
+            JSON.stringify({ enabled: state.nextBlockEnabled }),
+          );
+        } catch (_error) {
+          // Ignore storage failures.
+        }
+      };
+
+      const restoreNextBlockPreference = () => {
+        try {
+          const raw = window.localStorage.getItem(nextBlockStorageKey);
+          if (!raw) {
+            return;
+          }
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object" && typeof parsed.enabled === "boolean") {
+            state.nextBlockEnabled = parsed.enabled;
+          }
+        } catch (_error) {
+          // Ignore bad state.
+        }
+      };
+
       const applyTheme = () => {
         const effectiveTheme = state.theme === "auto"
           ? (prefersDark.matches ? "dark" : "light")
@@ -641,9 +690,35 @@
         root.style.setProperty("--lyrics-content-font-size", `${state.fontSize}rem`);
       };
 
+      const applyNextBlockToggle = () => {
+        if (!(nextBlockToggle instanceof HTMLButtonElement)) {
+          return;
+        }
+        const label = state.nextBlockEnabled
+          ? (nextBlockToggle.dataset.labelOn || "")
+          : (nextBlockToggle.dataset.labelOff || "");
+        const image = nextBlockToggle.querySelector("img");
+        nextBlockToggle.setAttribute("aria-label", label);
+        nextBlockToggle.setAttribute("title", label);
+        nextBlockToggle.setAttribute("aria-pressed", state.nextBlockEnabled ? "true" : "false");
+        if (image instanceof HTMLImageElement) {
+          image.alt = label;
+          image.dataset.lyricsAsset = state.nextBlockEnabled ? "nextBlockOn" : "nextBlockOff";
+        }
+        applyTheme();
+      };
+
+      const getSongBlocks = (songNode) => {
+        if (!(songNode instanceof HTMLElement)) {
+          return [];
+        }
+        return Array.from(songNode.querySelectorAll("[data-lyrics-block]"));
+      };
+
       const setActiveIndex = (nextIndex) => {
         const safeIndex = Math.max(0, Math.min(maxSongIndex, nextIndex));
         currentIndex = safeIndex;
+        currentBlockIndex = 0;
         const songNode = songs[currentIndex];
         if (songSelect instanceof HTMLSelectElement && songNode instanceof HTMLElement) {
           songSelect.value = songNode.id;
@@ -666,6 +741,38 @@
         window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
       };
 
+      const scrollToBlock = (blockNode) => {
+        if (!(blockNode instanceof HTMLElement)) {
+          return;
+        }
+        const rect = blockNode.getBoundingClientRect();
+        const targetTop = window.scrollY + rect.top - topOffset();
+        window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+      };
+
+      const syncBlockFromScroll = () => {
+        const songNode = songs[currentIndex];
+        const blocks = getSongBlocks(songNode);
+        if (blocks.length === 0) {
+          currentBlockIndex = 0;
+          return;
+        }
+        const threshold = topOffset() + 18;
+        let bestIndex = 0;
+        for (let index = 0; index < blocks.length; index += 1) {
+          const rect = blocks[index].getBoundingClientRect();
+          if (rect.top - threshold <= 0) {
+            bestIndex = index;
+          } else {
+            break;
+          }
+        }
+        if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 6) {
+          bestIndex = blocks.length - 1;
+        }
+        currentBlockIndex = bestIndex;
+      };
+
       const syncFromScroll = () => {
         if (lockScrollSync || songs.length === 0) {
           return;
@@ -686,6 +793,7 @@
         if (bestIndex !== currentIndex) {
           setActiveIndex(bestIndex);
         }
+        syncBlockFromScroll();
       };
 
       const openDrawer = () => {
@@ -715,6 +823,27 @@
         const effectiveTheme = document.documentElement.getAttribute("data-lyrics-theme") === "dark" ? "dark" : "light";
         state.theme = effectiveTheme === "dark" ? "light" : "dark";
         applyTheme();
+      };
+
+      const toggleNextBlock = () => {
+        state.nextBlockEnabled = !state.nextBlockEnabled;
+        applyNextBlockToggle();
+        saveNextBlockPreference();
+      };
+
+      const goToNextBlock = () => {
+        if (!state.nextBlockEnabled || songs.length === 0) {
+          return;
+        }
+        syncFromScroll();
+        const songNode = songs[currentIndex];
+        const blocks = getSongBlocks(songNode);
+        if (blocks.length === 0) {
+          return;
+        }
+        const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;
+        currentBlockIndex = nextIndex;
+        scrollToBlock(blocks[currentBlockIndex]);
       };
 
       const copyShareUrl = async () => {
@@ -761,6 +890,8 @@
       drawerBackdrop?.addEventListener("click", closeDrawer);
       copyButton?.addEventListener("click", copyShareUrl);
       document.querySelector("[data-lyrics-theme-toggle]")?.addEventListener("click", toggleTheme);
+      nextBlockToggle?.addEventListener("click", toggleNextBlock);
+      root.addEventListener("click", goToNextBlock);
       document.querySelector("[data-lyrics-font-action='increase']")?.addEventListener("click", () => changeFontSize(0.1));
       document.querySelector("[data-lyrics-font-action='decrease']")?.addEventListener("click", () => changeFontSize(-0.1));
       document.querySelector("[data-lyrics-nav='prev']")?.addEventListener("click", () => {
@@ -824,8 +955,10 @@
       document.addEventListener("touchmove", preventPinchZoom, { passive: false });
 
       restoreFontSize();
+      restoreNextBlockPreference();
       applyTheme();
       applyFontSize();
+      applyNextBlockToggle();
       setActiveIndex(0);
       syncFromScroll();
     })();

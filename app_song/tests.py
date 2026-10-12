@@ -1893,12 +1893,12 @@ class SongViewsRenderingTests(TestCase):
         second_block = response.context["songs"][0]["blocks"][1]
         self.assertContains(
             response,
-            f'<p class="lyrics-block lyrics-block--chorus"><em>{first_block["prefix"]}</em> {first_block["text"]}</p>',
+            f'<p class="lyrics-block lyrics-block--chorus" data-lyrics-block><em>{first_block["prefix"]}</em> {first_block["text"]}</p>',
             html=False,
         )
         self.assertContains(
             response,
-            f'<p class="lyrics-block"><em>{second_block["prefix"]}</em> C&#x27;est un endroit</p>',
+            f'<p class="lyrics-block" data-lyrics-block><em>{second_block["prefix"]}</em> C&#x27;est un endroit</p>',
             html=False,
         )
         self.assertContains(
@@ -1922,7 +1922,42 @@ class SongViewsRenderingTests(TestCase):
             'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
             html=False,
         )
+        self.assertContains(
+            response,
+            'const nextBlockStorageKey = "lss-smartphone-lyrics:next-block";',
+            html=False,
+        )
         self.assertContains(response, 'theme: "auto"', html=False)
+        self.assertContains(response, "nextBlockEnabled: false", html=False)
+        self.assertContains(response, "data-lyrics-next-block-toggle", html=False)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_off.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_off_dark.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_on.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_on_dark.webp",
+            html=False,
+        )
+        self.assertContains(
+            response, "const scrollToBlock = (blockNode) => {", html=False
+        )
+        self.assertContains(
+            response,
+            "const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;",
+            html=False,
+        )
         self.assertContains(
             response,
             "window.localStorage.getItem(fontSizeStorageKey)",
@@ -1936,6 +1971,11 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(
             response,
             "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            "nextBlockStorageKey = `lss-smartphone-lyrics:${window.location.pathname}",
             html=False,
         )
         self.assertNotContains(response, "parsed.theme ===", html=False)
@@ -3901,31 +3941,45 @@ class SongRuleViolationsAdvancedSearchViewTests(TestCase):
         }
         session.save()
 
-    def test_moderator_sees_rule_violations_checkbox_and_it_filters_temporarily(self):
+    def test_moderator_sees_rule_violations_button_and_it_filters_temporarily(self):
         self._login(moderator=True)
-
-        response = self.client.get(
-            reverse("songs"),
-            {"text": "Recherche règles", "rule_violations_only": "1"},
+        MemberPreferences.objects.create(
+            member_id=self.moderator_id,
+            song_search={
+                "text": "Recherche règles",
+                "everywhere": False,
+                "match_all_selected_refs": False,
+                "genre_ids": [],
+                "band_ids": [],
+                "artist_ids": [],
+                "validation": "all",
+                "favorites_only": False,
+            },
         )
+
+        response = self.client.get(reverse("songs"), {"rule_violations_only": "1"})
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "📏 Hors règles")
-        self.assertContains(
+        self.assertContains(response, "⚖️ Hors règles")
+        self.assertNotContains(
             response,
-            'name="rule_violations_only" value="1" checked',
+            'name="rule_violations_only"',
             html=False,
         )
+        self.assertContains(response, "Mode hors règles temporaire actif.")
         displayed_titles = [
             item["song"].title for item in response.context["song_cards"]
         ]
         self.assertEqual(displayed_titles, [self.bad_song.title])
+        self.assertEqual(response.context["search_params"].text, "Recherche règles")
+        self.assertFalse(response.context["search_params"].rule_violations_only)
+        self.assertTrue(response.context["rule_violations_quick_active"])
 
         preferences = MemberPreferences.objects.get(member_id=self.moderator_id)
         self.assertEqual(preferences.song_search["text"], "Recherche règles")
         self.assertNotIn("rule_violations_only", preferences.song_search)
 
-    def test_non_moderator_does_not_see_rule_violations_checkbox_or_filter(self):
+    def test_non_moderator_does_not_see_rule_violations_button_or_filter(self):
         self._login(moderator=False)
 
         response = self.client.get(
@@ -3934,7 +3988,7 @@ class SongRuleViolationsAdvancedSearchViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "📏 Hors règles")
+        self.assertNotContains(response, "⚖️ Hors règles")
         displayed_titles = [
             item["song"].title for item in response.context["song_cards"]
         ]
@@ -3944,6 +3998,18 @@ class SongRuleViolationsAdvancedSearchViewTests(TestCase):
         )
         preferences = MemberPreferences.objects.get(member_id=self.member_id)
         self.assertNotIn("rule_violations_only", preferences.song_search)
+
+    def test_admin_sees_rule_violations_button(self):
+        self._login(moderator=True)
+        session = self.client.session
+        session["lss_user"]["is_admin"] = True
+        session.save()
+
+        response = self.client.get(reverse("songs"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["can_use_rule_violations_quick"])
+        self.assertContains(response, "⚖️ Hors règles")
 
 
 class SongFavoritesQuickViewTests(TestCase):
@@ -4818,7 +4884,7 @@ class SongClickableReferenceFiltersTests(TestCase):
 
         song_response = self.client.get(reverse("song", args=[self.song.song_id]))
 
-        self.assertEqual(song_response.context["active_search_tags"], ())
+        self.assertNotIn("active_search_tags", song_response.context)
         self.assertIsNone(song_response.context["genre_groups"][0][1][0]["add_url"])
         self.assertNotContains(song_response, "song-tag-badge-link--removable")
 

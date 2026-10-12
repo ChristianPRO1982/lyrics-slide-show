@@ -678,9 +678,8 @@
 
 .song-link-list-bullet {
     display: block;
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0.15rem;
+    width: 2rem;
+    height: 2rem;
     object-fit: contain;
 }
 

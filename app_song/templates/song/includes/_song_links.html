@@ -8,8 +8,8 @@
                         src="{% static 'images/song_links/'|add:link.display_type|add:'.png' %}"
                         alt=""
                         class="song-link-list-bullet"
-                        width="16"
-                        height="16"
+                        width="32"
+                        height="32"
                     >
                     <span>
                         <a href="{{ link.link }}" target="_blank" rel="noopener noreferrer">{{ link.display_href_label }}</a>{% if link.display_duplicate_marker %} {{ link.display_duplicate_marker }}{% endif %}

@@ -1,7 +1,7 @@
 from django.conf import settings
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from urllib.parse import urlsplit
 
 from django.contrib import messages
@@ -1270,6 +1270,11 @@ def songs(request: HttpRequest) -> HttpResponse:
         and member_id
         and _is_truthy(request.GET.get("non_validated_quick"))
     )
+    rule_violations_quick = bool(
+        _is_moderator(request.user)
+        and member_id
+        and _is_truthy(request.GET.get("rule_violations_only"))
+    )
     if moderation_quick:
         applied_search_params = SongSearchParams.empty()
         display_search_params = load_member_song_search(member_id)
@@ -1278,6 +1283,19 @@ def songs(request: HttpRequest) -> HttpResponse:
         applied_search_params = non_validated_search_params
         display_search_params = load_member_song_search(member_id)
         search_results = non_validated_search_results
+    elif rule_violations_quick:
+        display_search_params = load_member_song_search(member_id)
+        applied_search_params = replace(
+            display_search_params,
+            rule_violations_only=True,
+        )
+        search_results = search_songs(
+            applied_search_params,
+            request.user,
+            member_id,
+            verse_max_lines=verse_max_lines,
+            verse_max_characters_for_line=verse_max_characters_for_line,
+        )
     elif favorites_quick:
         # Temporary view: ignore and do not overwrite the persisted member search.
         applied_search_params = SongSearchParams(favorites_only=True)
@@ -1331,7 +1349,7 @@ def songs(request: HttpRequest) -> HttpResponse:
             "catalog_count": search_results.catalog_count,
             "can_use_favorites": bool(member_id),
             "can_use_advanced_search": _is_authenticated(request.user),
-            "can_use_rule_violations_filter": _is_moderator(request.user),
+            "can_use_rule_violations_quick": _is_moderator(request.user),
             "can_create_song": _is_authenticated(request.user),
             "can_use_moderation_quick": bool(
                 _is_moderator(request.user) and moderation_search_results.results
@@ -1348,6 +1366,8 @@ def songs(request: HttpRequest) -> HttpResponse:
             "moderation_quick_active": moderation_quick,
             "non_validated_toggle_query": "non_validated_quick=1",
             "non_validated_quick_active": non_validated_quick,
+            "rule_violations_toggle_query": "rule_violations_only=1",
+            "rule_violations_quick_active": rule_violations_quick,
             "song_search_count_help": _(
                 "Nombre de chants retournés par la recherche sauvegardée"
             ),
@@ -2250,11 +2270,6 @@ def song(request: HttpRequest, song_id: int) -> HttpResponse:
             "bands": bands,
             "artists": artists,
             "genre_groups": genre_groups,
-            "active_search_tags": (
-                build_active_song_search_reference_tags(saved_search_params)
-                if saved_search_params
-                else ()
-            ),
             "title_complete": text_artifacts.full_title,
             "title_complete_with_tags": text_artifacts.full_title_with_tags,
             "text_short_html": text_artifacts.short_text_html,

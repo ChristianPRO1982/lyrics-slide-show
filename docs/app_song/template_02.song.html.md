@@ -11,7 +11,6 @@ Page de lecture d’un chant (`/songs/<song_id>/`).
 - affiche les marqueurs métier éventuels `✔️`, `✔️⁉️`, `📄`, `2️⃣`, `⭐` dans un élément séparé proche du titre
 - affiche, pour membre authentifié avec messages non lus visibles, le lien exact `Il y a des modifications demandées pour ce chant, voir les demandes ici`
 - ce lien ouvre une popup Markdown contenant uniquement les messages non lus du plus récent au plus ancien
-- affiche les tags actifs de recherche
 - affiche un résumé de description avec lien `[...]` vers popup de description complète
 - expose une action flottante `📱` vers la vue `print_full_url` libellée `Smartphone view`
 - affiche la carte `# Tags` via `_song_metadata.html`

@@ -22,12 +22,12 @@ Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/song
   - logique `OU/ET`
   - filtre validation
   - filtre `Favoris uniquement`
-  - pour modérateur/admin, filtre temporaire `📏 Hors règles`
   - sélections `genres / groupes / artistes`
 - pour utilisateur authentifié, expose `💫 Afficher mes favoris`
 - pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
 - pour modérateur/admin avec chants non validés, expose `⚖️ Afficher les chants non validés`
-- les modes `favorites_quick`, `moderation_quick` et `non_validated_quick` sont temporaires et n’écrasent pas la recherche persistée
+- pour modérateur/admin, expose toujours `⚖️ Hors règles`, sans pré-calcul de résultats afin d’éviter un scan des paroles au chargement de la page
+- les modes `favorites_quick`, `moderation_quick`, `non_validated_quick` et `rule_violations_only` sont temporaires et n’écrasent pas la recherche persistée
 - affiche en dernier dans le panneau outils un bouton vers le catalogue public léger `/songs/catalogue/`
 - affiche une liste desktop en cartes
 - affiche à part une liste compacte mobile avec panneau `⚙️`
@@ -60,14 +60,16 @@ Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/song
 - `can_use_moderation_quick`
 - `can_use_non_validated_quick`
 - `can_use_advanced_search`
-- `can_use_rule_violations_filter`
+- `can_use_rule_violations_quick`
 - `can_create_song`
 - `favorites_quick_active`
 - `moderation_quick_active`
 - `non_validated_quick_active`
+- `rule_violations_quick_active`
 - `favorites_toggle_query`
 - `moderation_toggle_query`
 - `non_validated_toggle_query`
+- `rule_violations_toggle_query`
 - `song_identity_pairs`
 
 ## Nouveau chant
