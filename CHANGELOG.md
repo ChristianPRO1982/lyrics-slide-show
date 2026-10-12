@@ -1,3 +1,16 @@
+# [3.7.0](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.6.1...v3.7.0) (2026-10-12)
+
+
+### Bug Fixes
+
+* add temporary rule violations filter for moderators/admins and update documentation ([9339ad3](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9339ad3d825889aeea50f9d41d3118bd6bfd60e5))
+* update moderation/admin display rules and improve performance by avoiding pre-calculation ([6583c88](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/6583c88e848cc954156cb192f1e17e6104b25b9f))
+
+
+### Features
+
+* implement next block toggle functionality and update related templates and tests ([892d29f](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/892d29fc62879fb5380e9e9409d21bfe75e786d8))
+
 ## [3.6.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.6.0...v3.6.1) (2026-10-09)
 
 
