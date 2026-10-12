@@ -1904,6 +1904,80 @@ class WikiHelpTemplateTests(SimpleTestCase):
             rendered,
         )
 
+    def test_shared_lyrics_template_renders_next_block_toggle_contract(self):
+        request = RequestFactory().get("/songs/42/text/full-chorus/")
+        request.resolver_match = type(
+            "ResolverMatchStub", (), {"url_name": "song_text"}
+        )()
+        template = engines["django"].get_template("lyrics/lyrics.html")
+        rendered = template.render(
+            {
+                "request": request,
+                "language_code": "fr",
+                "page_title": "Paroles test",
+                "share_url": "https://example.test/songs/42/text/full-chorus/",
+                "songs": [
+                    {
+                        "song_id": 42,
+                        "song_title": "Chant test",
+                        "song_url": "/songs/42/",
+                        "anchor_id": "lyrics-song-1",
+                        "blocks": [
+                            {
+                                "prefix": "Refrain",
+                                "style": LYRICS_BLOCK_STYLE_CHORUS,
+                                "text": "Bloc refrain",
+                            },
+                            {
+                                "prefix": "Couplet 1",
+                                "style": LYRICS_BLOCK_STYLE_VERSE,
+                                "text": "Bloc couplet",
+                            },
+                        ],
+                    }
+                ],
+                "has_multiple_songs": True,
+                "animation_title": "",
+                "drawer_title": "Paroles test",
+                "drawer_link_url": "/songs/42/",
+                "drawer_link_label": "Chant test",
+                "is_animation_view": False,
+                **wiki_help(request),
+            }
+        )
+
+        self.assertIn("data-lyrics-next-block-toggle", rendered)
+        self.assertGreater(
+            rendered.index("data-lyrics-next-block-toggle"),
+            rendered.index("data-lyrics-theme-toggle"),
+        )
+        self.assertGreater(
+            rendered.index("data-lyrics-next-block-toggle"),
+            rendered.index('data-lyrics-nav="next"'),
+        )
+        self.assertIn("all_lyrics-next_bloc_off.webp", rendered)
+        self.assertIn("all_lyrics-next_bloc_off_dark.webp", rendered)
+        self.assertIn("all_lyrics-next_bloc_on.webp", rendered)
+        self.assertIn("all_lyrics-next_bloc_on_dark.webp", rendered)
+        self.assertIn(
+            'const nextBlockStorageKey = "lss-smartphone-lyrics:next-block";',
+            rendered,
+        )
+        self.assertIn("nextBlockEnabled: false", rendered)
+        self.assertIn("data-lyrics-block", rendered)
+        self.assertIn("const scrollToBlock = (blockNode) => {", rendered)
+        self.assertIn("window.localStorage.getItem(nextBlockStorageKey)", rendered)
+        self.assertIn("window.localStorage.setItem(", rendered)
+        self.assertIn("root.addEventListener(\"click\", goToNextBlock);", rendered)
+        self.assertIn(
+            "const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;",
+            rendered,
+        )
+        self.assertNotIn(
+            "nextBlockStorageKey = `lss-smartphone-lyrics:${window.location.pathname}",
+            rendered,
+        )
+
 
 class SeoIntegrationTests(TestCase):
     member_id = "11111111-1111-1111-1111-111111111111"

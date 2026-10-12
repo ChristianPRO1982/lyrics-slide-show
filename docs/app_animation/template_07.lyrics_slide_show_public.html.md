@@ -37,8 +37,11 @@ Note d'implémentation actuelle :
 
 - affichage du titre d'animation puis des chants dans l'ordre de playlist ;
 - contrôles : précédent/suivant, select chant, `A-`, `A+`, toggle thème ;
+- le bouton partagé `bloc suivant au clic` peut faire défiler le contenu principal
+  vers le bloc suivant du chant actif quand il est activé ;
 - le thème suit toujours le navigateur à l'ouverture ; le toggle thème est un override temporaire pour la page courante seulement ;
 - la taille de texte est persistée globalement pour toutes les vues smartphone de paroles ;
+- l'état du mode `bloc suivant au clic` est persisté globalement pour toutes les vues smartphone de paroles ;
 - le comportement front est celui du template partagé `lyrics/lyrics.html`.
 - aucune connexion WebSocket, commande de projection, session Web Remote ou état
   live de la master n'est chargé par cette vue.

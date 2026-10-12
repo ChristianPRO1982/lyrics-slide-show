@@ -1893,12 +1893,12 @@ class SongViewsRenderingTests(TestCase):
         second_block = response.context["songs"][0]["blocks"][1]
         self.assertContains(
             response,
-            f'<p class="lyrics-block lyrics-block--chorus"><em>{first_block["prefix"]}</em> {first_block["text"]}</p>',
+            f'<p class="lyrics-block lyrics-block--chorus" data-lyrics-block><em>{first_block["prefix"]}</em> {first_block["text"]}</p>',
             html=False,
         )
         self.assertContains(
             response,
-            f'<p class="lyrics-block"><em>{second_block["prefix"]}</em> C&#x27;est un endroit</p>',
+            f'<p class="lyrics-block" data-lyrics-block><em>{second_block["prefix"]}</em> C&#x27;est un endroit</p>',
             html=False,
         )
         self.assertContains(
@@ -1922,7 +1922,40 @@ class SongViewsRenderingTests(TestCase):
             'const fontSizeStorageKey = "lss-smartphone-lyrics:font-size";',
             html=False,
         )
+        self.assertContains(
+            response,
+            'const nextBlockStorageKey = "lss-smartphone-lyrics:next-block";',
+            html=False,
+        )
         self.assertContains(response, 'theme: "auto"', html=False)
+        self.assertContains(response, "nextBlockEnabled: false", html=False)
+        self.assertContains(response, "data-lyrics-next-block-toggle", html=False)
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_off.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_off_dark.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_on.webp",
+            html=False,
+        )
+        self.assertContains(
+            response,
+            "images/lyrics/all_lyrics-next_bloc_on_dark.webp",
+            html=False,
+        )
+        self.assertContains(response, "const scrollToBlock = (blockNode) => {", html=False)
+        self.assertContains(
+            response,
+            "const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;",
+            html=False,
+        )
         self.assertContains(
             response,
             "window.localStorage.getItem(fontSizeStorageKey)",
@@ -1936,6 +1969,11 @@ class SongViewsRenderingTests(TestCase):
         self.assertNotContains(
             response,
             "lss-smartphone-lyrics:${window.location.pathname}",
+            html=False,
+        )
+        self.assertNotContains(
+            response,
+            "nextBlockStorageKey = `lss-smartphone-lyrics:${window.location.pathname}",
             html=False,
         )
         self.assertNotContains(response, "parsed.theme ===", html=False)
