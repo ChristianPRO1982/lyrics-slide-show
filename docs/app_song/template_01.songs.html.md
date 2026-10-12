@@ -26,7 +26,7 @@ Elle est `noindex, follow` côté SEO et conserve une canonical self vers `/song
 - pour utilisateur authentifié, expose `💫 Afficher mes favoris`
 - pour modérateur/admin avec éléments à traiter, expose `⚖️ Afficher les chants à modérer`
 - pour modérateur/admin avec chants non validés, expose `⚖️ Afficher les chants non validés`
-- pour modérateur/admin, expose `⚖️ Hors règles`
+- pour modérateur/admin, expose toujours `⚖️ Hors règles`, sans pré-calcul de résultats afin d’éviter un scan des paroles au chargement de la page
 - les modes `favorites_quick`, `moderation_quick`, `non_validated_quick` et `rule_violations_only` sont temporaires et n’écrasent pas la recherche persistée
 - affiche en dernier dans le panneau outils un bouton vers le catalogue public léger `/songs/catalogue/`
 - affiche une liste desktop en cartes
