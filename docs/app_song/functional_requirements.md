@@ -271,6 +271,14 @@ Vue temporaire chants non validés (`non_validated_quick=1`) :
 - n’écrase pas la recherche persistée
 - le formulaire reste rempli avec la recherche persistée
 
+Vue temporaire hors règles (`rule_violations_only=1`) :
+
+- disponible uniquement pour modérateur/admin
+- applique le filtre `rule_violations_only=True` à la recherche persistée courante
+- n’écrase pas la recherche persistée
+- le formulaire reste rempli avec la recherche persistée
+- un retour à `/songs/` retire automatiquement ce filtre temporaire
+
 ## Favoris
 
 Favoris stockés dans `m_songs_users` (`SongFavorite`).
