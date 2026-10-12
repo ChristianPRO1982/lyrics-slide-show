@@ -1968,7 +1968,7 @@ class WikiHelpTemplateTests(SimpleTestCase):
         self.assertIn("const scrollToBlock = (blockNode) => {", rendered)
         self.assertIn("window.localStorage.getItem(nextBlockStorageKey)", rendered)
         self.assertIn("window.localStorage.setItem(", rendered)
-        self.assertIn("root.addEventListener(\"click\", goToNextBlock);", rendered)
+        self.assertIn('root.addEventListener("click", goToNextBlock);', rendered)
         self.assertIn(
             "const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;",
             rendered,

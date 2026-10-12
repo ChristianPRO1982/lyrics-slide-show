@@ -1950,7 +1950,9 @@ class SongViewsRenderingTests(TestCase):
             "images/lyrics/all_lyrics-next_bloc_on_dark.webp",
             html=False,
         )
-        self.assertContains(response, "const scrollToBlock = (blockNode) => {", html=False)
+        self.assertContains(
+            response, "const scrollToBlock = (blockNode) => {", html=False
+        )
         self.assertContains(
             response,
             "const nextIndex = currentBlockIndex >= blocks.length - 1 ? 0 : currentBlockIndex + 1;",
