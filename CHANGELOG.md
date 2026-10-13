@@ -1,3 +1,10 @@
+## [3.7.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.7.1...v3.7.2) (2026-10-13)
+
+
+### Bug Fixes
+
+* remove outdated PNG images and add original files for reference ([8c409b1](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/8c409b10e44f09c022f81db0758df4017a917953))
+
 ## [3.7.1](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.7.0...v3.7.1) (2026-10-13)
 
 
