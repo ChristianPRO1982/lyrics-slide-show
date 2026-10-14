@@ -1,3 +1,10 @@
+## [3.7.3](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.7.2...v3.7.3) (2026-10-14)
+
+
+### Bug Fixes
+
+* update and replace outdated lyric block images with new versions ([9ddd3bc](https://github.com/ChristianPRO1982/lyrics-slide-show/commit/9ddd3bc1b1e42f72ebda971d054173c5f7a86ca7))
+
 ## [3.7.2](https://github.com/ChristianPRO1982/lyrics-slide-show/compare/v3.7.1...v3.7.2) (2026-10-13)
 
 
